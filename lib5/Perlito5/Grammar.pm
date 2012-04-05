@@ -236,7 +236,7 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
     ($MATCH->{'to'} = $to);
     1
 }))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'namespace_before_ident'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'namespace_before_ident'}));
     1
 })))
 })) || ((do {
@@ -320,7 +320,7 @@ sub Perlito5::Grammar::exp_stmts2 {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'exp_stmts'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'exp_stmts'}));
     1
 })))
 }))
@@ -346,7 +346,7 @@ sub Perlito5::Grammar::exp {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'Perlito5::Expression.exp_parse'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.exp_parse'}));
     1
 })))
 }))
@@ -372,7 +372,7 @@ sub Perlito5::Grammar::exp2 {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'Perlito5::Expression.exp_parse'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.exp_parse'}));
     1
 })))
 }))
@@ -398,7 +398,7 @@ sub Perlito5::Grammar::opt_ident {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'ident'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'ident'}));
     1
 })))
 })) || ((do {
@@ -438,7 +438,7 @@ sub Perlito5::Grammar::opt_type {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'full_ident'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'full_ident'}));
     1
 })))
 })) || ((do {
@@ -549,7 +549,7 @@ sub Perlito5::Grammar::var_ident {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Var->new(('sigil' => $MATCH->{'var_sigil'}->flat()), ('namespace' => $MATCH->{'optional_namespace_before_ident'}->flat()), ('name' => $MATCH->{'var_name'}->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Var->new(('sigil' => Perlito5::Match::flat($MATCH->{'var_sigil'})), ('namespace' => Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'})), ('name' => Perlito5::Match::flat($MATCH->{'var_name'}))));
     1
 })))
 }))
@@ -782,7 +782,7 @@ sub Perlito5::Grammar::val_num {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new(('num' => $MATCH->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new(('num' => Perlito5::Match::flat($MATCH))));
     1
 })))
 }))
@@ -947,7 +947,7 @@ sub Perlito5::Grammar::val_int {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => oct($MATCH->flat()))));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => oct(Perlito5::Match::flat($MATCH)))));
     1
 })))
 })) || ((do {
@@ -981,7 +981,7 @@ sub Perlito5::Grammar::val_int {
     ($MATCH->{'to'} = $to);
     ($count > 0)
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => $MATCH->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => Perlito5::Match::flat($MATCH))));
     1
 }))))
 })))
@@ -1147,7 +1147,7 @@ sub Perlito5::Grammar::prototype {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ('' . $MATCH->{'args_sig'}->flat()));
+    ($MATCH->{'capture'} = ('' . Perlito5::Match::flat($MATCH->{'args_sig'})));
     1
 })))
 })) || ((do {
@@ -1227,11 +1227,11 @@ sub Perlito5::Grammar::anon_sub_def {
 })))
 })))
 }))) && ((do {
-    ((my  $sig) = $MATCH->{'prototype'}->flat());
+    ((my  $sig) = Perlito5::Match::flat($MATCH->{'prototype'}));
     if (($sig eq '*undef*')) {
         ($sig = undef())
     };
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => $sig), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => $sig), ('block' => Perlito5::Match::flat($MATCH->{'exp_stmts'}))));
     1
 })))
 }))
@@ -1320,17 +1320,17 @@ sub Perlito5::Grammar::named_sub_def {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    die('Syntax Error in sub ' . chr(39), $MATCH->{'ident'}->flat(), chr(39));
+    die('Syntax Error in sub ' . chr(39), Perlito5::Match::flat($MATCH->{'ident'}), chr(39));
     1
 })))
 })))
 }))) && ((do {
-    ((my  $name) = $MATCH->{'ident'}->flat());
-    ((my  $sig) = $MATCH->{'prototype'}->flat());
+    ((my  $name) = Perlito5::Match::flat($MATCH->{'ident'}));
+    ((my  $sig) = Perlito5::Match::flat($MATCH->{'prototype'}));
     if (($sig eq '*undef*')) {
         ($sig = undef())
     };
-    ((my  $namespace) = $MATCH->{'optional_namespace_before_ident'}->flat());
+    ((my  $namespace) = Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'}));
     if ($name) {
         if ($namespace) {
 
@@ -1344,7 +1344,7 @@ sub Perlito5::Grammar::named_sub_def {
         };
         ($Perlito5::PROTO->{$full_name} = $sig)
     };
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('namespace' => $namespace), ('sig' => $sig), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('namespace' => $namespace), ('sig' => $sig), ('block' => Perlito5::Match::flat($MATCH->{'exp_stmts'}))));
     1
 })))
 }))
@@ -1379,7 +1379,7 @@ sub Perlito5::Grammar::named_sub {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'Perlito5::Grammar.named_sub_def'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.named_sub_def'}));
     1
 })))
 }))

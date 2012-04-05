@@ -14,8 +14,8 @@ package Perlito5::Grammar::Bareword;
             unless $m_name;
         $p = $m_name->{"to"};
 
-        my $name = $m_name->flat();
-        my $namespace = $m_namespace->flat();
+        my $name = Perlito5::Match::flat($m_name);
+        my $namespace = Perlito5::Match::flat($m_namespace);
         my $full_name = $name;
         $full_name = $namespace . '::' . $name if $namespace;
 
@@ -217,7 +217,7 @@ package Perlito5::Grammar::Bareword;
             $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
                     $namespace,
                     $name,
-                    $m_list->flat()
+                    Perlito5::Match::flat($m_list)
                 ];
             $m_name->{"to"} = $m_list->{"to"};
             return $m_name;

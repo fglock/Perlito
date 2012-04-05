@@ -103,17 +103,17 @@ sub Perlito5::Grammar::Use::term_use {
         0
     }
 }))) && ((do {
-    ((my  $list) = $MATCH->{'Perlito5::Expression.list_parse'}->flat()->{'exp'});
+    ((my  $list) = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'})->{'exp'});
     if (($list eq '*undef*')) {
         ($list = undef())
     }
     else {
         ((my  $m) = $MATCH->{'Perlito5::Expression.list_parse'});
         ((my  $list_code) = substr($str, $m->{'from'}, ($m->{'to'} - $m->{'from'})));
-        ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     $list_code . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
+        ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     $list_code . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
         ($list = \@list)
     };
-    ((my  $ast) = Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()), ('arguments' => $list)));
+    ((my  $ast) = Perlito5::AST::Use->new(('code' => Perlito5::Match::flat($MATCH->{'use_decl'})), ('mod' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), ('arguments' => $list)));
     parse_time_eval($ast);
     ($MATCH->{'capture'} = ['term', $ast]);
 ;
@@ -213,7 +213,7 @@ sub Perlito5::Grammar::Use::expand_use {
     if (($m->{'to'} != length($source))) {
         die('Syntax Error near ', $m->{'to'})
     };
-    push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $m->flat()))])} )
+    push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => Perlito5::Match::flat($m)))])} )
 };
 sub Perlito5::Grammar::Use::add_comp_unit {
     ((my  $parse) = shift());
@@ -240,7 +240,7 @@ sub Perlito5::Grammar::Use::require {
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };
-    ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($INC{$filename}) . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
+    ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($INC{$filename}) . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
     if ($@) {
         ($INC{$filename} = undef());
         die($@)

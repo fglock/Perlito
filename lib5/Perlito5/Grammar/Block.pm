@@ -32,7 +32,7 @@ sub Perlito5::Grammar::Block::term_block {
     ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
     if ($m_name) {
         ($p = $m_name->{'to'});
-        ($block_name = $m_name->flat())
+        ($block_name = Perlito5::Match::flat($m_name))
     };
     ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
     if ($m) {
@@ -41,7 +41,7 @@ sub Perlito5::Grammar::Block::term_block {
     if ((substr($str, $p, 1) eq '{')) {
         ((my  $m) = Perlito5::Expression->term_curly($str, $p));
         if ($m) {
-            ((my  $v) = $m->flat());
+            ((my  $v) = Perlito5::Match::flat($m));
             ($v = Perlito5::AST::Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
             ($v = Perlito5::Expression::block_or_hash($v));
             if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {

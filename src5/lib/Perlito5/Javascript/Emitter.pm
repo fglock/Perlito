@@ -1181,7 +1181,7 @@ package Perlito5::AST::Apply;
                 my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
                 # say "at eval: ", $var_env_perl5;
                 my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
-                $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
+                $m = Perlito5::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
                 # say Perlito5::Dumper::Dumper( $m );
                 my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript::to_list($m) . '))';
                 $eval ='eval(perl5_to_js(' 

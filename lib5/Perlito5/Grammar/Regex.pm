@@ -43,9 +43,9 @@ sub Perlito5::Grammar::Regex::token {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ((my  $source) = ($MATCH->{'Perlito5::Grammar.ident'}->flat() . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos ); ' . 'my $tmp = ( ' . $MATCH->{'Perlito5::Grammar::Regex.rule'}->flat()->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}'));
+    ((my  $source) = (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos ); ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex.rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}'));
     ((my  $ast) = Perlito5::Grammar->named_sub_def($source, 0));
-    ($MATCH->{'capture'} = $ast->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($ast));
 ;
     1
 })))
@@ -81,7 +81,7 @@ sub Perlito5::Grammar::Regex::term_token {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', $MATCH->{'token'}->flat()]);
+    ($MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'token'})]);
     1
 })))
 }))
@@ -324,7 +324,7 @@ sub Perlito5::Grammar::Regex::parsed_code {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH));
     1
 })))
 }))
@@ -359,7 +359,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Before->new(('rule_exp' => $MATCH->{'rule'}->flat())));
+    ($MATCH->{'capture'} = Rul::Before->new(('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}))));
     1
 })))
 })) || ((do {
@@ -384,7 +384,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::NotBefore->new(('rule_exp' => $MATCH->{'rule'}->flat())));
+    ($MATCH->{'capture'} = Rul::NotBefore->new(('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}))));
     1
 }))))
 }))) || ((do {
@@ -400,7 +400,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && (((chr(39) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => $MATCH->{'literal'}->flat())));
+    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => Perlito5::Match::flat($MATCH->{'literal'}))));
     1
 }))))
 }))) || ((do {
@@ -419,7 +419,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 0)));
+    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new(('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'})), ('captures' => 0)));
     1
 })))
 })) || ((do {
@@ -435,7 +435,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 })) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 1)));
+    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new(('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'})), ('captures' => 1)));
     1
 }))))
 })))
@@ -453,7 +453,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Block->new(('closure' => $MATCH->{'parsed_code'}->flat())));
+    ($MATCH->{'capture'} = Rul::Block->new(('closure' => Perlito5::Match::flat($MATCH->{'parsed_code'}))));
     1
 }))))
 }))) || ((do {
@@ -472,7 +472,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => chr($MATCH->{'Perlito5::Grammar.digits'}->flat()))));
+    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'})))));
     1
 })))
 })) || ((do {
@@ -488,7 +488,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => chr($MATCH->{'Perlito5::Grammar.digits'}->flat()))));
+    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'})))));
     1
 }))))
 }))) || ((do {
@@ -504,7 +504,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = Rul::SpecialChar->new(('char' => $MATCH->{'any'}->flat())));
+    ($MATCH->{'capture'} = Rul::SpecialChar->new(('char' => Perlito5::Match::flat($MATCH->{'any'}))));
     1
 }))))
 })))
@@ -528,7 +528,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
         0
     }
 }))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'rule'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule'}));
     1
 }))))
 })))
@@ -554,7 +554,7 @@ sub Perlito5::Grammar::Regex::rule_term {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'rule_terms'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule_terms'}));
     1
 })))
 })) || ((do {
@@ -610,7 +610,7 @@ sub Perlito5::Grammar::Regex::rule_term {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => $MATCH->{'any'}->flat())));
+    ($MATCH->{'capture'} = Rul::Constant->new(('constant' => Perlito5::Match::flat($MATCH->{'any'}))));
     1
 }))))
 })))
@@ -727,13 +727,13 @@ sub Perlito5::Grammar::Regex::quantifier {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Rul::Quantifier->new(('term' => $MATCH->{'rule_term'}->flat()), ('quant' => $MATCH->{'quant_exp'}->flat()), ('greedy' => $MATCH->{'greedy_exp'}->flat())));
+    ($MATCH->{'capture'} = Rul::Quantifier->new(('term' => Perlito5::Match::flat($MATCH->{'rule_term'})), ('quant' => Perlito5::Match::flat($MATCH->{'quant_exp'})), ('greedy' => Perlito5::Match::flat($MATCH->{'greedy_exp'}))));
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = $MATCH->{'rule_term'}->flat());
+    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule_term'}));
     1
 })))
 })))
@@ -774,13 +774,13 @@ sub Perlito5::Grammar::Regex::concat_list {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = [$MATCH->{'quantifier'}->flat(), @{$MATCH->{'concat_list'}->flat()}]);
+    ($MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'quantifier'}), @{Perlito5::Match::flat($MATCH->{'concat_list'})}]);
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = [$MATCH->{'quantifier'}->flat()]);
+    ($MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'quantifier'})]);
     1
 })))
 })))
@@ -814,7 +814,7 @@ sub Perlito5::Grammar::Regex::concat_exp {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = Rul::Concat->new(('concat' => $MATCH->{'concat_list'}->flat())));
+    ($MATCH->{'capture'} = Rul::Concat->new(('concat' => Perlito5::Match::flat($MATCH->{'concat_list'}))));
     1
 })))
 }))
@@ -853,13 +853,13 @@ sub Perlito5::Grammar::Regex::or_list_exp {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = [$MATCH->{'concat_exp'}->flat(), @{$MATCH->{'or_list_exp'}->flat()}]);
+    ($MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'concat_exp'}), @{Perlito5::Match::flat($MATCH->{'or_list_exp'})}]);
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = [$MATCH->{'concat_exp'}->flat()]);
+    ($MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'concat_exp'})]);
     1
 })))
 })))
@@ -916,7 +916,7 @@ sub Perlito5::Grammar::Regex::rule {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Rul::Or->new(('or_list' => $MATCH->{'or_list_exp'}->flat())));
+    ($MATCH->{'capture'} = Rul::Or->new(('or_list' => Perlito5::Match::flat($MATCH->{'or_list_exp'}))));
     1
 })))
 }))

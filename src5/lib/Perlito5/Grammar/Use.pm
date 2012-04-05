@@ -21,7 +21,7 @@ token term_use {
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
 
-            my $list = $MATCH->{"Perlito5::Expression.list_parse"}->flat()->{"exp"};
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"})->{"exp"};
             if ($list eq '*undef*') {
                 $list = undef
             }
@@ -36,8 +36,8 @@ token term_use {
             }
 
             my $ast = Perlito5::AST::Use->new(
-                    code      => $MATCH->{"use_decl"}->flat(),
-                    mod       => $MATCH->{"Perlito5::Grammar.full_ident"}->flat(),
+                    code      => Perlito5::Match::flat($MATCH->{"use_decl"}),
+                    mod       => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),
                     arguments => $list
                 );
 
@@ -170,7 +170,7 @@ sub expand_use {
         [
             Perlito5::AST::CompUnit->new(
                 name => 'main',
-                body => $m->flat(),
+                body => Perlito5::Match::flat($m),
             )
         ]
     ) };

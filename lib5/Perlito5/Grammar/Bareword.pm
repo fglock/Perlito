@@ -19,8 +19,8 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         return ($m_name)
     };
     ($p = $m_name->{'to'});
-    ((my  $name) = $m_name->flat());
-    ((my  $namespace) = $m_namespace->flat());
+    ((my  $name) = Perlito5::Match::flat($m_name));
+    ((my  $namespace) = Perlito5::Match::flat($m_namespace));
     ((my  $full_name) = $name);
     if ($namespace) {
         ($full_name = ($namespace . '::' . $name))
@@ -131,7 +131,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     };
     ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
     if ($m_list) {
-        ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
+        ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, Perlito5::Match::flat($m_list)]);
         ($m_name->{'to'} = $m_list->{'to'});
         return ($m_name)
     };

@@ -42,7 +42,7 @@ token namespace_before_ident {
 };
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'*
-        { $MATCH->{"capture"} = $MATCH->{"namespace_before_ident"}->flat() }
+        { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"namespace_before_ident"}) }
     | '::'
         { $MATCH->{"capture"} = 'main' }
     | ''
@@ -55,25 +55,25 @@ token ws      { <.Perlito5::Grammar::Space.ws>  };
 token opt_ws  { <.Perlito5::Grammar::Space.ws>? };
 
 
-token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } };
+token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"exp_stmts"}) } };
 
 token exp {
     <Perlito5::Expression.exp_parse>
-        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
+        { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.exp_parse"}) }
 };
 
 token exp2 {
     <Perlito5::Expression.exp_parse>
-        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
+        { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.exp_parse"}) }
 };
 
 token opt_ident {
-    | <ident>  { $MATCH->{"capture"} = $MATCH->{"ident"}->flat() }
+    | <ident>  { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"ident"}) }
     | ''       { $MATCH->{"capture"} = 'postcircumfix:<( )>' }
 };
 
 token opt_type {
-    |   '::'?  <full_ident>   { $MATCH->{"capture"} = $MATCH->{"full_ident"}->flat() }
+    |   '::'?  <full_ident>   { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"full_ident"}) }
     |   ''                    { $MATCH->{"capture"} = '' }
 };
 
@@ -85,9 +85,9 @@ token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>
     {
         $MATCH->{"capture"} = Perlito5::AST::Var->new(
-            sigil       => $MATCH->{"var_sigil"}->flat(),
-            namespace   => $MATCH->{"optional_namespace_before_ident"}->flat(),
-            name        => $MATCH->{"var_name"}->flat(),
+            sigil       => Perlito5::Match::flat($MATCH->{"var_sigil"}),
+            namespace   => Perlito5::Match::flat($MATCH->{"optional_namespace_before_ident"}),
+            name        => Perlito5::Match::flat($MATCH->{"var_name"}),
         )
     }
 };
@@ -102,7 +102,7 @@ token val_num {
     |   \.        <.exponent>     # .e10 
     |   \d+     [ <.exponent>  |   \. <!before \. > \d*  <.exponent>? ]
     ]
-    { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
+    { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => Perlito5::Match::flat($MATCH) ) }
 };
 
 token digits {
@@ -114,9 +114,9 @@ token val_int {
     | '0' ['b'|'B'] [ 0 | 1 ]+
     | '0'  \d+        # XXX test for octal number
     ]
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => oct($MATCH->flat()) ) }
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => oct(Perlito5::Match::flat($MATCH)) ) }
     | \d+
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => Perlito5::Match::flat($MATCH) ) }
 };
 
 my @PKG;
@@ -137,7 +137,7 @@ token args_sig {
 
 token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { $MATCH->{"capture"} = "" . $MATCH->{"args_sig"}->flat() }
+        { $MATCH->{"capture"} = "" . Perlito5::Match::flat($MATCH->{"args_sig"}) }
     |   { $MATCH->{"capture"} = '*undef*' }   # default signature
 };
 
@@ -145,13 +145,13 @@ token anon_sub_def {
     <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
     [   \}     | { die 'Syntax Error in anon sub' } ]
     {
-        my $sig  = $MATCH->{"prototype"}->flat();
+        my $sig  = Perlito5::Match::flat($MATCH->{"prototype"});
         $sig = undef if $sig eq '*undef*';
         $MATCH->{"capture"} = Perlito5::AST::Sub->new(
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
-            block => $MATCH->{"exp_stmts"}->flat() 
+            block => Perlito5::Match::flat($MATCH->{"exp_stmts"}) 
         ) 
     }
 };
@@ -159,12 +159,12 @@ token anon_sub_def {
 
 token named_sub_def {
     <optional_namespace_before_ident> <ident> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"ident"}->flat(), '\'' } ]
+    [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"ident"}), '\'' } ]
     {
-        my $name = $MATCH->{"ident"}->flat();
-        my $sig  = $MATCH->{"prototype"}->flat();
+        my $name = Perlito5::Match::flat($MATCH->{"ident"});
+        my $sig  = Perlito5::Match::flat($MATCH->{"prototype"});
         $sig = undef if $sig eq '*undef*';
-        my $namespace = $MATCH->{"optional_namespace_before_ident"}->flat();
+        my $namespace = Perlito5::Match::flat($MATCH->{"optional_namespace_before_ident"});
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
             $namespace = $Perlito5::PKG_NAME unless $namespace;
@@ -179,14 +179,14 @@ token named_sub_def {
             name  => $name, 
             namespace => $namespace,
             sig   => $sig, 
-            block => $MATCH->{"exp_stmts"}->flat() 
+            block => Perlito5::Match::flat($MATCH->{"exp_stmts"}) 
         ) 
     }
 };
 
 token named_sub {
     'sub' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.named_sub_def>
-        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.named_sub_def"}->flat() }
+        { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.named_sub_def"}) }
 };
 
 =begin
@@ -198,7 +198,7 @@ Perlito5::Grammar - Grammar for Perlito
 =head1 SYNOPSIS
 
     my $match = $source.parse;
-    $match->flat();    # generated Perlito AST
+    Perlito5::Match::flat($match);    # generated Perlito AST
 
 =head1 DESCRIPTION
 

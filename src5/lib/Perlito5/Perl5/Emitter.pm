@@ -423,7 +423,7 @@ package Perlito5::AST::Apply;
                     '(do { '
                     .   'my $m = Perlito5::Grammar->exp_stmts(' 
                     .       '"do {" . ' . $arg->emit_perl5( $level + 1, 'scalar' ) . ' . "}", 0);'
-                    .   'my $source = $m->flat()->[0]->emit_perl5(0, "scalar");'
+                    .   'my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");'
                     # .   'warn $source;'
                     .   'eval $source;'
                     . '})';

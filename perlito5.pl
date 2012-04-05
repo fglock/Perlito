@@ -100,7 +100,7 @@ if (($backend && @ARGV)) {
     if ($execute) {
         ($Perlito5::EXPAND_USE = 1);
         (my  $ok);
-        (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
+        (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
         if (!($ok)) {
             ((my  $error) = ($@ || 'Unknown error'));
             warn($error)
@@ -122,10 +122,10 @@ if (($backend && @ARGV)) {
         else {
             (my  $comp_units);
             if ($expand_use) {
-                ($comp_units = Perlito5::Grammar::Use::add_comp_unit($m->flat()))
+                ($comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m)))
             }
             else {
-                ($comp_units = $m->flat())
+                ($comp_units = Perlito5::Match::flat($m))
             };
             ($comp_units = [Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $comp_units))]);
             if (($backend eq 'perl5')) {
@@ -150,7 +150,7 @@ if (($backend && @ARGV)) {
             }
             else {
                 if (($backend eq 'ast-pretty')) {
-                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1' . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
+                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1' . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
                     print($@)
                 }
             }

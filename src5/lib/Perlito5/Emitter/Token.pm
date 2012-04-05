@@ -322,7 +322,7 @@ Perlito5::Emitter::Token - Code generator for Perlito Perl 5 grammar
 =head1 SYNOPSIS
 
     my $match = $source.rule;
-    $match->flat()->emit_perl5;    # generated Perlito source code
+    Perlito5::Match::flat($match)->emit_perl5;    # generated Perlito source code
 
 =head1 DESCRIPTION
 

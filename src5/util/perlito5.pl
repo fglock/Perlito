@@ -161,10 +161,10 @@ if ($backend && @ARGV) {
         else {
             my $comp_units;
             if ($expand_use) {
-                $comp_units = Perlito5::Grammar::Use::add_comp_unit($m->flat())
+                $comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m))
             }
             else {
-                $comp_units = $m->flat();
+                $comp_units = Perlito5::Match::flat($m);
             }
 
             $comp_units = [

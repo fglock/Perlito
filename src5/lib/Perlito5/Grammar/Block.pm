@@ -21,7 +21,7 @@ sub term_block {
     my $m_name = Perlito5::Grammar->ident( $str, $p );
     if ($m_name) {
         $p = $m_name->{"to"};
-        $block_name = $m_name->flat();
+        $block_name = Perlito5::Match::flat($m_name);
     }
 
     my $m = Perlito5::Grammar::Space->ws( $str, $p );
@@ -34,7 +34,7 @@ sub term_block {
         # warn "maybe bareblock at $p";
         my $m = Perlito5::Expression->term_curly($str, $p);
         if ($m) {
-            my $v = $m->flat();
+            my $v = Perlito5::Match::flat($m);
 
             # TODO - this is not recognized as a statement: { 123 => 4;}
             # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}

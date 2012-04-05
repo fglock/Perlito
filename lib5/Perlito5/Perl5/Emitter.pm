@@ -281,7 +281,7 @@ for ($_) {
                 ($eval = $arg->emit_perl5(($level + 1), $wantarray))
             }
             else {
-                ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . '"do {" . ' . $arg->emit_perl5(($level + 1), 'scalar') . ' . "}", 0);' . 'my $source = $m->flat()->[0]->emit_perl5(0, "scalar");' . 'eval $source;' . '})'))
+                ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . '"do {" . ' . $arg->emit_perl5(($level + 1), 'scalar') . ' . "}", 0);' . 'my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");' . 'eval $source;' . '})'))
             };
             return ((Perlito5::Perl5::tab($level) . $eval))
         };
