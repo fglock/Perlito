@@ -5,12 +5,6 @@ our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar::Space;
 use Perlito5::Precedence;
-Perlito5::Precedence::add_term(('#' => \&term_space));
-Perlito5::Precedence::add_term((chr(9) => \&term_space));
-Perlito5::Precedence::add_term((chr(10) => \&term_space));
-Perlito5::Precedence::add_term((chr(12) => \&term_space));
-Perlito5::Precedence::add_term((chr(13) => \&term_space));
-Perlito5::Precedence::add_term((chr(32) => \&term_space));
 sub Perlito5::Grammar::Space::term_space {
     ((my  $str) = $_[0]);
     ((my  $pos) = $_[1]);
@@ -20,8 +14,20 @@ sub Perlito5::Grammar::Space::term_space {
     };
     $m
 };
+Perlito5::Precedence::add_term(('#' => \&term_space));
+Perlito5::Precedence::add_term((chr(9) => \&term_space));
+Perlito5::Precedence::add_term((chr(10) => \&term_space));
+Perlito5::Precedence::add_term((chr(12) => \&term_space));
+Perlito5::Precedence::add_term((chr(13) => \&term_space));
+Perlito5::Precedence::add_term((chr(32) => \&term_space));
 sub Perlito5::Grammar::Space::space {
     ((substr($_[1], $_[2], 1) =~ m!\s!) ? bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))}, 'Perlito5::Match') : 0)
+};
+sub Perlito5::Grammar::Space::opt_ws {
+    ((my  $self) = shift());
+    ((my  $str) = shift());
+    ((my  $pos) = shift());
+    (Perlito5::Grammar::Space->ws($str, $pos) || Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)))
 };
 sub Perlito5::Grammar::Space::not_newline {
     ((my  $grammar) = $_[0]);
@@ -385,84 +391,6 @@ sub Perlito5::Grammar::Space::ws {
     ($MATCH = $m);
     ($MATCH->{'to'} = $to);
     ($count > 0)
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::Space::opt_ws {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m) = $MATCH);
-    if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        ($MATCH = $m)
-    };
-    1
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::Space::opt_ws2 {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m) = $MATCH);
-    if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        ($MATCH = $m)
-    };
-    1
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::Space::opt_ws3 {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m) = $MATCH);
-    if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        ($MATCH = $m)
-    };
-    1
 }))
 }))));
     ($tmp ? $MATCH : 0)

@@ -704,10 +704,10 @@ sub Perlito5::Grammar::Regex::quantifier {
         0
     }
 }))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws2($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.opt_ws2'} = $m2);
+        ($MATCH->{'Perlito5::Grammar.opt_ws'} = $m2);
         1
     }
     else {
@@ -737,17 +737,17 @@ sub Perlito5::Grammar::Regex::quantifier {
         0
     }
 }))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws3($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.opt_ws3'} = $m2);
+        ($MATCH->{'Perlito5::Grammar.opt_ws'} = $m2);
         1
     }
     else {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Rul::Quantifier->new(('term' => $MATCH->{'rule_term'}->flat()), ('quant' => $MATCH->{'quant_exp'}->flat()), ('greedy' => $MATCH->{'greedy_exp'}->flat()), ('ws1' => $MATCH->{'Perlito5::Grammar.opt_ws'}->flat()), ('ws2' => $MATCH->{'Perlito5::Grammar.opt_ws2'}->flat()), ('ws3' => $MATCH->{'Perlito5::Grammar.opt_ws3'}->flat())));
+    ($MATCH->{'capture'} = Rul::Quantifier->new(('term' => $MATCH->{'rule_term'}->flat()), ('quant' => $MATCH->{'quant_exp'}->flat()), ('greedy' => $MATCH->{'greedy_exp'}->flat())));
     1
 })))
 })) || ((do {

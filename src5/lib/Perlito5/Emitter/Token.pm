@@ -30,9 +30,6 @@ sub new { my $class = shift; bless {@_}, $class }
 sub term { $_[0]->{'term'} }
 sub quant { $_[0]->{'quant'} }
 sub greedy { $_[0]->{'greedy'} }
-sub ws1 { $_[0]->{'ws1'} }
-sub ws2 { $_[0]->{'ws2'} }
-sub ws3 { $_[0]->{'ws3'} }
 sub emit_perl5 {
     my $self = $_[0];
 

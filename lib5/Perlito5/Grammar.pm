@@ -288,59 +288,7 @@ sub Perlito5::Grammar::opt_ws {
     ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        ($MATCH = $m)
-    };
-    1
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::opt_ws2 {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m) = $MATCH);
-    if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        ($MATCH = $m)
-    };
-    1
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::opt_ws3 {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m) = $MATCH);
-    if (!(((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1

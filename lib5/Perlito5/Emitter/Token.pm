@@ -39,15 +39,6 @@ sub Rul::Quantifier::quant {
 sub Rul::Quantifier::greedy {
     $_[0]->{'greedy'}
 };
-sub Rul::Quantifier::ws1 {
-    $_[0]->{'ws1'}
-};
-sub Rul::Quantifier::ws2 {
-    $_[0]->{'ws2'}
-};
-sub Rul::Quantifier::ws3 {
-    $_[0]->{'ws3'}
-};
 sub Rul::Quantifier::emit_perl5 {
     ((my  $self) = $_[0]);
     if ((($self->{'quant'} eq '') && ($self->{'greedy'} eq ''))) {

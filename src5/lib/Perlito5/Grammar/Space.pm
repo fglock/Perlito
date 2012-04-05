@@ -31,6 +31,13 @@ sub space {
     : 0;
 }
 
+sub opt_ws {
+    my $self = shift;
+    my $str = shift;
+    my $pos = shift;
+    Perlito5::Grammar::Space->ws($str, $pos) || Perlito5::Match->new( str => $str, from => $pos, to => $pos )
+}
+
 token not_newline {
     <!before [ \c10 | \c13 ]> .
 };
@@ -68,9 +75,6 @@ token ws {
     ]+
 };
 
-token opt_ws  {  <.ws>?  };
-token opt_ws2 {  <.ws>?  };
-token opt_ws3 {  <.ws>?  };
 
 1;
 

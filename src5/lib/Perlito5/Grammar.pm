@@ -52,10 +52,8 @@ token optional_namespace_before_ident {
 
 # TODO - use Perlito5::Grammar::Space->ws() instead
 sub space     { goto &Perlito5::Grammar::Space::space }
-token ws      { <.Perlito5::Grammar::Space.ws> };
-token opt_ws  {  <.ws>?  };
-token opt_ws2 {  <.ws>?  };
-token opt_ws3 {  <.ws>?  };
+token ws      { <.Perlito5::Grammar::Space.ws>  };
+token opt_ws  { <.Perlito5::Grammar::Space.ws>? };
 
 
 token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } };
