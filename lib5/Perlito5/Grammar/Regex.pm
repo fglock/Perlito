@@ -123,7 +123,7 @@ sub Perlito5::Grammar::Regex::literal {
     ($MATCH->{'to'} = $pos1);
     ((((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -206,7 +206,7 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
     ($MATCH->{'to'} = $pos1);
     ((((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -278,7 +278,7 @@ sub Perlito5::Grammar::Regex::string_code {
     ($MATCH->{'to'} = $pos1);
     ((((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -561,7 +561,7 @@ sub Perlito5::Grammar::Regex::rule_term {
     ($MATCH->{'to'} = $pos1);
     (((((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((((((((((do {

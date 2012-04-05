@@ -213,7 +213,7 @@ sub Rul::Before::rule_exp {
 };
 sub Rul::Before::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = Perlito5::Match->new( ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} ); ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? $tmp : 0; ' . '})')
+    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? $tmp : 0; ' . '})')
 };
 sub Rul::Before::set_captures_to_array {
     ((my  $self) = $_[0])
@@ -228,7 +228,7 @@ sub Rul::NotBefore::rule_exp {
 };
 sub Rul::NotBefore::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = Perlito5::Match->new( ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} ); ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? 0 : $tmp; ' . '})')
+    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? 0 : $tmp; ' . '})')
 };
 sub Rul::NotBefore::set_captures_to_array {
     ((my  $self) = $_[0])

@@ -970,7 +970,7 @@ sub Perlito5::Expression::term_do {
     }
 }))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -1052,7 +1052,7 @@ sub Perlito5::Expression::term_eval {
     }
 }))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -1126,7 +1126,7 @@ sub Perlito5::Expression::term_map_or_sort {
     }
 }))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {

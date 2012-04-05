@@ -110,7 +110,7 @@ sub Perlito5::Grammar::String::term_q_quote {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -180,7 +180,7 @@ sub Perlito5::Grammar::String::term_qq_quote {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -250,7 +250,7 @@ sub Perlito5::Grammar::String::term_qw_quote {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -346,7 +346,7 @@ sub Perlito5::Grammar::String::term_m_quote {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -416,7 +416,7 @@ sub Perlito5::Grammar::String::term_s_quote {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {

@@ -279,7 +279,7 @@ sub emit_perl5 {
 
     '(do { ' .
         'my $tmp = $MATCH; ' .
-        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"} ); ' .
+        '$MATCH = { \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"} }; ' .
         'my $res = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .
@@ -300,7 +300,7 @@ sub emit_perl5 {
 
     '(do { ' .
         'my $tmp = $MATCH; ' .
-        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"} ); ' .
+        '$MATCH = { \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"} }; ' .
         'my $res = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .

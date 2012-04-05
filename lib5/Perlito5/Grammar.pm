@@ -11,10 +11,10 @@ use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;
 sub Perlito5::Grammar::word {
-    ((substr($_[1], $_[2], 1) =~ m!\w!) ? bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))}, 'Perlito5::Match') : 0)
+    ((substr($_[1], $_[2], 1) =~ m!\w!) ? {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))} : 0)
 };
 sub Perlito5::Grammar::digit {
-    ((substr($_[1], $_[2], 1) =~ m!\d!) ? bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))}, 'Perlito5::Match') : 0)
+    ((substr($_[1], $_[2], 1) =~ m!\d!) ? {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))} : 0)
 };
 sub Perlito5::Grammar::ident {
     ((my  $grammar) = $_[0]);
@@ -26,7 +26,7 @@ sub Perlito5::Grammar::ident {
     ((do {
     (((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -146,7 +146,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -172,7 +172,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     }
 }))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -728,7 +728,7 @@ sub Perlito5::Grammar::val_num {
     ($MATCH->{'to'} = $pos1);
     ((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {

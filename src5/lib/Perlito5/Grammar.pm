@@ -9,23 +9,21 @@ use Perlito5::Grammar::Space;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/
-    ? bless {
+    ? {
         str  => $_[1],
         from => $_[2],
         to   => $_[2] + 1,
-      },
-      'Perlito5::Match'
+      }
     : 0;
 }
 
 sub digit {
     substr( $_[1], $_[2], 1 ) =~ m/\d/
-    ? bless {
+    ? {
         str  => $_[1],
         from => $_[2],
         to   => $_[2] + 1,
-      },
-      'Perlito5::Match'
+      }
     : 0;
 }
 

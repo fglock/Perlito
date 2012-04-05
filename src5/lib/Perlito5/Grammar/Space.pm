@@ -34,7 +34,7 @@ sub term_space {
     while (exists $space{substr($str, $p, 1)}) {
         $p = $space{substr($str, $p, 1)}->($str, $p+1)
     }
-    Perlito5::Match->new( str => $str, from => $pos, to => $p, capture => [ 'space',   ' ' ] );
+    return { str => $str, from => $pos, to => $p, capture => [ 'space',   ' ' ] }
 }
 
 
@@ -83,7 +83,7 @@ sub ws {
     if ($p == $pos) {
         return 0;
     }
-    Perlito5::Match->new( str => $str, from => $pos, to => $p );
+    return { str => $str, from => $pos, to => $p }
 }
 
 sub opt_ws {
@@ -93,7 +93,7 @@ sub opt_ws {
     while (exists $space{substr($str, $p, 1)}) {
         $p = $space{substr($str, $p, 1)}->($str, $p+1)
     }
-    Perlito5::Match->new( str => $str, from => $pos, to => $p );
+    return { str => $str, from => $pos, to => $p }
 }
 
 1;

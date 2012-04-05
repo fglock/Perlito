@@ -37,7 +37,7 @@ sub Perlito5::Grammar::Space::term_space {
     for ( ; exists($space{substr($str, $p, 1)});  ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
-    Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['space', ' ']))
+    return ({('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['space', ' '])})
 };
 Perlito5::Precedence::add_term(('#' => \&term_space));
 Perlito5::Precedence::add_term((chr(9) => \&term_space));
@@ -61,7 +61,7 @@ sub Perlito5::Grammar::Space::to_eol {
     ((do {
     (((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
+    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -287,7 +287,7 @@ sub Perlito5::Grammar::Space::ws {
     if (($p == $pos)) {
         return (0)
     };
-    Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p))
+    return ({('str' => $str), ('from' => $pos), ('to' => $p)})
 };
 sub Perlito5::Grammar::Space::opt_ws {
     ((my  $self) = shift());
@@ -296,7 +296,7 @@ sub Perlito5::Grammar::Space::opt_ws {
     for ( ; exists($space{substr($str, $p, 1)});  ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
-    Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p))
+    return ({('str' => $str), ('from' => $pos), ('to' => $p)})
 };
 1;
 
