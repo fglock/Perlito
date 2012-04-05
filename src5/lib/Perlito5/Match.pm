@@ -2,11 +2,6 @@ use v5;
 
 package Perlito5::Match;
 
-sub new {
-    my $class = shift;
-    return { @_ }
-}
-
 sub flat {
     my $self = $_[0];
     defined( $self->{'capture'} )

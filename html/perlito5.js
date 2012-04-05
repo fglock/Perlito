@@ -930,11 +930,6 @@ var p5100 = p5pkg['main'];
 		// use v5
 ;
 		var p5104 = p5make_package("Perlito5::Match");
-		p5make_sub("Perlito5::Match", "new", function (List__, p5want) {
-				var v_class = null;
-				(v_class = (p5104.shift([List__])));
-				return (p5context([(new p5HashRef(p5a_to_h(p5list_to_a(List__))))], p5want));
-		});
 		p5make_sub("Perlito5::Match", "flat", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
