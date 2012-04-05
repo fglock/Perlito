@@ -20,61 +20,80 @@ Perlito5::Precedence::add_term( chr(12) => \&term_space );
 Perlito5::Precedence::add_term( chr(13) => \&term_space );
 Perlito5::Precedence::add_term( chr(32) => \&term_space );
 
-sub space {
-    substr( $_[1], $_[2], 1 ) =~ m/\s/
-    ? bless {
-        str  => $_[1],
-        from => $_[2],
-        to   => $_[2] + 1,
-      },
-      'Perlito5::Match'
-    : 0;
+
+token to_eol {
+    [ <!before [ \c10 | \c13 ]> . ]*
+};
+
+token pod_pod_begin {
+    |   [ \c10 | \c13 ] '=cut' <.to_eol>
+    |   . <.to_eol> <.pod_pod_begin>
+};
+
+token pod_begin {
+    |   [ \c10 | \c13 ] '=end' <.to_eol>
+    |   . <.to_eol> <.pod_begin>
+};
+
+token start_of_line {
+    <.Perlito5::Grammar::String.here_doc>
+    [ '='  [
+           |  'pod'    <.pod_pod_begin>
+           |  'head1'  <.pod_pod_begin>
+           |  'begin'  <.pod_begin>
+           |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
+           ]
+    | ''
+    ]
+};
+
+my %space = (
+    '#'     => sub {
+                    my $m = Perlito5::Grammar::Space->to_eol($_[0], $_[1]);
+                    $m->{"to"};
+                },
+    chr(9)  => sub { $_[1] },
+    chr(10) => sub {
+                    my $str = $_[0];
+                    my $pos = $_[1];
+                    $pos++ if substr($str, $pos, 1) eq chr(13);
+                    my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
+                    $m->{"to"};
+                },
+    chr(12) => sub { $_[1] },
+    chr(13) => sub {
+                    my $str = $_[0];
+                    my $pos = $_[1];
+                    $pos++ if substr($str, $pos, 1) eq chr(10);
+                    my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
+                    $m->{"to"};
+                },
+    chr(32) => sub { $_[1] },
+);
+
+sub ws {
+    my $self = shift;
+    my $str = shift;
+    my $pos = shift;
+    my $p = $pos;
+    while (exists $space{substr($str, $p, 1)}) {
+        $p = $space{substr($str, $p, 1)}->($str, $p+1)
+    }
+    if ($p == $pos) {
+        return 0;
+    }
+    Perlito5::Match->new( str => $str, from => $pos, to => $p );
 }
 
 sub opt_ws {
     my $self = shift;
     my $str = shift;
-    my $pos = shift;
-    Perlito5::Grammar::Space->ws($str, $pos) || Perlito5::Match->new( str => $str, from => $pos, to => $pos )
+    my $p = shift;
+    while (exists $space{substr($str, $p, 1)}) {
+        $p = $space{substr($str, $p, 1)}->($str, $p+1)
+    }
+    Perlito5::Match->new( str => $str, from => $pos, to => $p );
 }
-
-token not_newline {
-    <!before [ \c10 | \c13 ]> .
-};
-
-token pod_pod_begin {
-    |   [ \c10 | \c13 ] '=cut' \N*
-    |   . \N* <.pod_pod_begin>
-};
-
-token pod_begin {
-    |   [ \c10 | \c13 ] '=end' \N*
-    |   . \N* <.pod_begin>
-};
-
-token ws {
-    [
-    |   '#' \N*
-    |
-        [ \c10 \c13?
-        | \c13 \c10?
-        ]
-
-        <.Perlito5::Grammar::String.here_doc>
-
-        [
-        |  '='  [
-                |  'pod'    <.pod_pod_begin>
-                |  'head1'  <.pod_pod_begin>
-                |  'begin'  <.pod_begin>
-                |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
-                ]
-        |  ''
-        ]
-    |   \s
-    ]+
-};
-
 
 1;
 
