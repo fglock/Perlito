@@ -8570,79 +8570,25 @@ return r;
 				return (p5context([( p5bool((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\d/) ? 1 : 0)) ? (new p5HashRef(p5a_to_h(p5list_to_a('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1))))) : 0)], p5want));
 		});
 		p5make_sub("Perlito5::Grammar", "ident", function (List__, p5want) {
-				var v_grammar = null;
-				(v_grammar = (List__[0]));
-				var v_str = null;
-				(v_str = (List__[1]));
-				var v_pos = null;
-				(v_pos = (List__[2]));
-				var v_MATCH = null;
-				(v_MATCH = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_pos))))));
-				var v_tmp = null;
-				(v_tmp = (p5context([p5context([(function () {
-						var v_pos1 = null;
-						(v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-						return (p5context([p5context([(function () {
-	return (p5context([p5and(p5context([(function () {
-	var v_tmp = null;
-	(v_tmp = (v_MATCH));
-	(v_MATCH = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', (v_tmp || (v_tmp = new p5HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new p5HashRef({})))._hash_['to']))))));
-	var v_res = null;
-	(v_res = (p5context([(function () {
-			var v_pos1 = null;
-			(v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-			return (p5context([p5context([(function () {
-	var v_m2 = null;
-	(v_m2 = (p5call(v_grammar, "digit", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']), 0)));
-	if ( p5bool(v_m2) ) {
-		((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new p5HashRef({})))._hash_['to']);
-		return (p5context([1], p5want));
-	}
-	
-	else {
-		return (p5context([0], p5want));
-	}
-})()], p5want)], p5want));
-		})()], 0)));
-	return (p5context([(v_MATCH = (( p5bool(v_res) ? 0 : v_tmp)))], p5want));
-})()], p5want), function () { return p5context([(function () {
-	var v_last_match_null = null;
-	(v_last_match_null = (0));
-	var v_m = null;
-	(v_m = (v_MATCH));
-	var v_to = null;
-	(v_to = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-	var v_count = null;
-	(v_count = (0));
-	for ( ; (p5bool((function () {
-	var v_m2 = null;
-	(v_m2 = (p5call(v_grammar, "word", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']), 0)));
-	if ( p5bool(v_m2) ) {
-		((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new p5HashRef({})))._hash_['to']);
-		return (p5context([1], p5want));
-	}
-	
-	else {
-		return (p5context([0], p5want));
-	}
-})()) && (p5num(v_last_match_null) < 2));  ) {
-		if ( (p5num(v_to) == p5num((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'])) ) {
-			(v_last_match_null = ((p5num(v_last_match_null) + 1)));
-		}
-		else {
-			(v_last_match_null = (0));
-		};
-		(v_m = (v_MATCH));
-		(v_to = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-		(v_count = ((p5num(v_count) + 1)));
-	};
-	(v_MATCH = (v_m));
-	((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = v_to);
-	return (p5context([(p5num(v_count) > 0)], p5want));
-})()], p5want) })], p5want));
-})()], p5want)], p5want));
-					})()], 0)], 0)));
-				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
+			try {
+				if ( (p5bool(!((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\w/) ? 1 : 0))) || p5bool((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\d/) ? 1 : 0))) ) {
+					throw(p5context([], p5want));
+				};
+				var v_m = null;
+				(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1)))))));
+				for ( ; p5bool((p5str(p5130.substr([List__[1], (v_m || (v_m = new p5HashRef({})))._hash_['to'], 1], p5want)).match(/\w/) ? 1 : 0));  ) {
+					((v_m || (v_m = new p5HashRef({})))._hash_['to'])++;
+				};
+				return (p5context([v_m], p5want));
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
 		});
 		p5make_sub("Perlito5::Grammar", "full_ident", function (List__, p5want) {
 				var v_grammar = null;

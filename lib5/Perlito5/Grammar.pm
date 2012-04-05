@@ -17,62 +17,14 @@ sub Perlito5::Grammar::digit {
     ((substr($_[1], $_[2], 1) =~ m!\d!) ? {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))} : 0)
 };
 sub Perlito5::Grammar::ident {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
-    ((my  $res) = ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))
-})));
-    ($MATCH = ($res ? 0 : $tmp))
-})) && ((do {
-    ((my  $last_match_null) = 0);
-    ((my  $m) = $MATCH);
-    ((my  $to) = $MATCH->{'to'});
-    ((my  $count) = 0);
-    for ( ; (((do {
-    ((my  $m2) = $grammar->word($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})) && (($last_match_null < 2)));  ) {
-        if (($to == $MATCH->{'to'})) {
-            ($last_match_null = ($last_match_null + 1))
-        }
-        else {
-            ($last_match_null = 0)
-        };
-        ($m = $MATCH);
-        ($to = $MATCH->{'to'});
-        ($count = ($count + 1))
+    if (((substr($_[1], $_[2], 1) !~ m!\w!) || (substr($_[1], $_[2], 1) =~ m!\d!))) {
+        return ()
     };
-    ($MATCH = $m);
-    ($MATCH->{'to'} = $to);
-    ($count > 0)
-})))
-}))
-}))));
-    ($tmp ? $MATCH : 0)
+    ((my  $m) = {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))});
+    for ( ; (substr($_[1], $m->{'to'}, 1) =~ m!\w!);  ) {
+        ($m->{'to'})++
+    };
+    $m
 };
 sub Perlito5::Grammar::full_ident {
     ((my  $grammar) = $_[0]);

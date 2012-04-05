@@ -27,9 +27,19 @@ sub digit {
     : 0;
 }
 
-token ident {
-    <!before \d > <.word>+
-};
+sub ident {
+    return 
+        if substr( $_[1], $_[2], 1 ) !~ m/\w/
+        || substr( $_[1], $_[2], 1 ) =~ m/\d/;
+    my $m = {
+         str  => $_[1],
+         from => $_[2],
+         to   => $_[2] + 1,
+       };
+    $m->{"to"}++
+        while substr( $_[1], $m->{"to"}, 1 ) =~ m/\w/;
+    $m;
+}
 
 token full_ident {
     <.ident>  [ '::' <.ident> ]*

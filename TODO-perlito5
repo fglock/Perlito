@@ -62,6 +62,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: don't emit throw() in term position; javascript requires a function() wrapper because throw() is a statement
+
 -- initialize @INC from $ENV{PERL5LIB}
 
 -- javascript errors don't show in the global error handler when running in node.js
