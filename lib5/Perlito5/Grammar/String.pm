@@ -614,7 +614,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                 ($more = $delimiter)
             }
             else {
-                ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)))
+                ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : ((($c eq chr(92)) && ($c2 eq chr(92))) ? {('str' => $str), ('from' => $p), ('to' => ($p + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => chr(92))))} : ((($c eq chr(92)) && ($c2 eq chr(39))) ? {('str' => $str), ('from' => $p), ('to' => ($p + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => chr(39))))} : 0))))
             }
         };
         if ($m) {
@@ -822,28 +822,6 @@ sub Perlito5::Grammar::String::char_any {
     ((do {
     (('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 }))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::String::single_quoted_unescape {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((((chr(92) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && (((chr(92) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => chr(92))));
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((((chr(92) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && (((chr(39) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => chr(39))));
-    1
-}))))
-})))
 }))));
     ($tmp ? $MATCH : 0)
 };

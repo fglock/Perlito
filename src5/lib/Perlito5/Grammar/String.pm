@@ -214,7 +214,11 @@ sub string_interpolation_parse {
         else {
             $m = $interpolate
                 ? Perlito5::Grammar::String->double_quoted_buf( $str, $p, $delimiter )
-                : Perlito5::Grammar::String->single_quoted_unescape( $str, $p );
+                : $c eq "\\" && $c2 eq "\\"
+                ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
+                : $c eq "\\" && $c2 eq "'"
+                ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
+                : 0
         }
         if ( $m ) {
             my $obj = Perlito5::Match::flat($m);
@@ -462,13 +466,6 @@ sub double_quote_parse {
 
 token char_any {
     .
-};
-
-token single_quoted_unescape {
-    |  \\ \\
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => "\\" ) }
-    |  \\ \'
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '\'' ) }
 };
 
 sub double_quoted_buf {
