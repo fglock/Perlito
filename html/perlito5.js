@@ -21,7 +21,7 @@ var isNode = typeof require != "undefined";
 
 if (typeof p5pkg !== "object") {
     p5pkg = {};
-    LOCAL = [];
+    p5LOCAL = [];
 
     var universal = function () {};
     p5pkg.UNIVERSAL = new universal();
@@ -95,7 +95,7 @@ function p5code_lookup_by_name(package, sub_name) {
 
 function p5method_lookup(method, class_name, seen) {
     // default mro
-    c = p5pkg[class_name];
+    var c = p5pkg[class_name];
     if ( c.hasOwnProperty(method) ) {
         return c[method]
     }
@@ -186,12 +186,12 @@ function p5set_local(namespace, name, sigil) {
     if (sigil == "$") {
         v = "v_"+name;
     }
-    LOCAL.push([namespace, v, namespace[v]]);
+    p5LOCAL.push([namespace, v, namespace[v]]);
 }
 
 function p5cleanup_local(idx, value) {
-    while (LOCAL.length > idx) {
-        l = LOCAL.pop();
+    while (p5LOCAL.length > idx) {
+        l = p5LOCAL.pop();
         l[0][l[1]] = l[2];
     }
     return value;
@@ -1563,7 +1563,7 @@ var p5100 = p5pkg['main'];
 						(p5pkg["Perlito5"]["v_THROW"] = (0));
 					};
 					if ( p5bool(v_has_local) ) {
-						(v_out = ((p5str(v_out) + (p5str(p5pkg["Perlito5::Javascript"].tab(p5list_to_a(v_level), 0)) + 'var local_idx = LOCAL.length;' + String.fromCharCode(10)))));
+						(v_out = ((p5str(v_out) + (p5str(p5pkg["Perlito5::Javascript"].tab(p5list_to_a(v_level), 0)) + 'var local_idx = p5LOCAL.length;' + String.fromCharCode(10)))));
 					};
 					if ( p5bool((v_self || (v_self = new p5HashRef({})))._hash_['top_level']) ) {
 						(v_level)++;

@@ -206,7 +206,7 @@ for ($_) {
             ($Perlito5::THROW = 0)
         };
         if ($has_local) {
-            ($out = ($out . (Perlito5::Javascript::tab($level) . 'var local_idx = LOCAL.length;' . chr(10))))
+            ($out = ($out . (Perlito5::Javascript::tab($level) . 'var local_idx = p5LOCAL.length;' . chr(10))))
         };
         if ($self->{'top_level'}) {
             ($level)++

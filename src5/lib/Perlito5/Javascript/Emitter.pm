@@ -370,7 +370,7 @@ package Perlito5::Javascript::LexicalBlock;
         $Perlito5::THROW = 0
             if $self->{"top_level"};
 
-        $out .= Perlito5::Javascript::tab($level) . "var local_idx = LOCAL.length;\n"
+        $out .= Perlito5::Javascript::tab($level) . "var local_idx = p5LOCAL.length;\n"
             if $has_local;
         if ($self->{"top_level"}) {
             $level++;
