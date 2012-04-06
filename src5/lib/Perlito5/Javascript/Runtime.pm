@@ -303,9 +303,9 @@ p5str = function(o) {
     if (typeof o === "object" && (o instanceof Array)) {
         return CORE.join(["", o]);
     }
-    if (typeof o.string === "function") {
-        return o.string();
-    }
+    // if (typeof o.string === "function") {
+    //     return o.string();
+    // }
     if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\d)$/,"e-0$1");
     }
@@ -325,9 +325,9 @@ p5num = function(o) {
     if (typeof o === "object" && (o instanceof Array)) {
         return o.length;
     }
-    if (typeof o.num === "function") {
-        return o.num();
-    }
+    // if (typeof o.num === "function") {
+    //     return o.num();
+    // }
     if (typeof o !== "number") {
         return parseFloat(p5str(o));
     }
@@ -335,29 +335,28 @@ p5num = function(o) {
 };
 
 p5bool = function(o) {
-    if (o == null) {
-        return o;
-    }
-    if (typeof o === "boolean") {
-        return o;
-    }
-    if (typeof o === "number") {
-        return o;
-    }
-    if (typeof o === "string") {
-        return o != "" && o != "0";
-    }
-    if (typeof o.bool === "function") {
-        return o.bool();
-    }
-    if (typeof o.length === "number") {
-        return o.length;
-    }
-    if (o instanceof Error) {
-        return true;
-    }
-    for (var i in o) {
-        return true;
+    if (o) {
+        if (typeof o === "boolean") {
+            return o;
+        }
+        if (typeof o === "number") {
+            return o;
+        }
+        if (typeof o === "string") {
+            return o != "" && o != "0";
+        }
+        // if (typeof o.bool === "function") {
+        //     return o.bool();
+        // }
+        if (typeof o.length === "number") {
+            return o.length;
+        }
+        if (o instanceof Error) {
+            return true;
+        }
+        for (var i in o) {
+            return true;
+        }
     }
     return false;
 };
