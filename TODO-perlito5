@@ -21,6 +21,8 @@ TODO list for Perlito5
 
 * Parser
 
+-- bug: fix 'exists' prototype (perl doesn't have a prototype for 'exists')
+
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
    my $v;
    BEGIN { $v = "123" }
