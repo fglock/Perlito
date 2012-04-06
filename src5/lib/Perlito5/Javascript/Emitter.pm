@@ -224,6 +224,8 @@ package Perlito5::Javascript;
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
+        my $literal_type = $_[2] || 'array';    # 'array', 'hash'
+
         my $wantarray = 'list';
 
         my $interpolate = 0;
@@ -239,6 +241,34 @@ package Perlito5::Javascript;
                        || exists($op_to_bool{ $_->{"code"} })
                        )
                     )
+        }
+
+        if ($literal_type eq 'hash') {
+            if (!$interpolate) {
+                # { x : y, ... }
+
+                my @out;
+                my $printable = 1;
+                my @in = @$items;
+                while (@in) {
+                    my $k = shift @in;
+                    my $v = shift @in;
+                    $k = $k->emit_javascript($level, 0);
+
+                    $printable = 0
+                        if $k =~ / /;
+
+                    $v = $v
+                         ? $v->emit_javascript($level, 0)
+                         : 'null';
+                    push @out, "$k : $v";
+                }
+
+                return '{' . join(', ', @out) . '}'
+                    if $printable;
+
+            }
+            return 'p5a_to_h(' . to_list($items, $level, 'array') . ')';
         }
 
         $interpolate
@@ -1062,7 +1092,7 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<{ }>' => sub {
             my $self = $_[0];
-            '(new p5HashRef(p5a_to_h(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . ')))';
+            '(new p5HashRef(' . Perlito5::Javascript::to_list( $self->{"arguments"}, $level, 'hash' ) . '))';
         },
         'prefix:<\\>' => sub {
             my $self  = $_[0];
@@ -1588,7 +1618,7 @@ package Perlito5::AST::Apply;
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = p5a_to_h(' . Perlito5::Javascript::to_list([$arguments], $level+1) . '))' 
+            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1, 'hash') . ')' 
         }
         '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
     }

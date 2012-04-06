@@ -100,12 +100,34 @@ join("", chr(9) x $level)
     sub Perlito5::Javascript::to_list {
         ((my  $items) = to_list_preprocess($_[0]));
         ((my  $level) = $_[1]);
+        ((my  $literal_type) = ($_[2] || 'array'));
         ((my  $wantarray) = 'list');
         ((my  $interpolate) = 0);
         for (@{$items}) {
             if (((((!($_->isa('Perlito5::AST::Val::Int')) && !($_->isa('Perlito5::AST::Val::Num'))) && !($_->isa('Perlito5::AST::Val::Buf'))) && !((($_->isa('Perlito5::AST::Var') && ($_->{'sigil'} eq '$'))))) && !((($_->isa('Perlito5::AST::Apply') && (((exists($op_to_str{$_->{'code'}}) || exists($op_to_num{$_->{'code'}})) || exists($op_to_bool{$_->{'code'}})))))))) {
                 ($interpolate = 1)
             }
+        };
+        if (($literal_type eq 'hash')) {
+            if (!($interpolate)) {
+                (my  @out);
+                ((my  $printable) = 1);
+                ((my  @in) = @{$items});
+                for ( ; @in;  ) {
+                    ((my  $k) = shift(@in));
+                    ((my  $v) = shift(@in));
+                    ($k = $k->emit_javascript($level, 0));
+                    if (($k =~ m! !)) {
+                        ($printable = 0)
+                    };
+                    ($v = ($v ? $v->emit_javascript($level, 0) : 'null'));
+                    push(@out, ($k . ' : ' . $v) )
+                };
+                if ($printable) {
+                    return (('{' . join(', ', @out) . '}'))
+                }
+            };
+            return (('p5a_to_h(' . to_list($items, $level, 'array') . ')'))
         };
         ($interpolate ? (('p5list_to_a(' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ')')) : (('[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ']')))
     };
@@ -712,7 +734,7 @@ for ($_) {
     ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($self->{'arguments'}) . '))')
 }), ('circumfix:<{ }>' => sub {
     ((my  $self) = $_[0]);
-    ('(new p5HashRef(p5a_to_h(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')))')
+    ('(new p5HashRef(' . Perlito5::Javascript::to_list($self->{'arguments'}, $level, 'hash') . '))')
 }), ('prefix:<' . chr(92) . '>' => sub {
     ((my  $self) = $_[0]);
     ((my  $level) = $_[1]);
@@ -1034,7 +1056,7 @@ for ($_) {
         }
         else {
             if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '%')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '%')))) {
-                return (('(' . $parameters->emit_javascript() . ' = p5a_to_h(' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . '))'))
+                return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], ($level + 1), 'hash') . ')'))
             }
         };
         ('(' . $parameters->emit_javascript($level) . ' = ' . $arguments->emit_javascript(($level + 1)) . ')')
