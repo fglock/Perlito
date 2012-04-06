@@ -104,7 +104,7 @@ join("", chr(9) x $level)
         ((my  $wantarray) = 'list');
         ((my  $interpolate) = 0);
         for (@{$items}) {
-            if (((((!($_->isa('Perlito5::AST::Val::Int')) && !($_->isa('Perlito5::AST::Val::Num'))) && !($_->isa('Perlito5::AST::Val::Buf'))) && !((($_->isa('Perlito5::AST::Var') && ($_->{'sigil'} eq '$'))))) && !((($_->isa('Perlito5::AST::Apply') && (((exists($op_to_str{$_->{'code'}}) || exists($op_to_num{$_->{'code'}})) || exists($op_to_bool{$_->{'code'}})))))))) {
+            if ((((((!($_->isa('Perlito5::AST::Val::Int')) && !($_->isa('Perlito5::AST::Val::Num'))) && !($_->isa('Perlito5::AST::Val::Buf'))) && !($_->isa('Perlito5::AST::Sub'))) && !((($_->isa('Perlito5::AST::Var') && ($_->{'sigil'} eq '$'))))) && !((($_->isa('Perlito5::AST::Apply') && ((((exists($op_to_str{$_->{'code'}}) || exists($op_to_num{$_->{'code'}})) || exists($op_to_bool{$_->{'code'}})) || ($_->{'code'} eq 'prefix:<' . chr(92) . '>')))))))) {
                 ($interpolate = 1)
             }
         };
