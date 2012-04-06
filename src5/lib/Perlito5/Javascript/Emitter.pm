@@ -1184,7 +1184,63 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
+
+            my $parameters = $self->{"arguments"}->[0];
+            my $arguments  = $self->{"arguments"}->[1];
+
+            if (   $parameters->isa( 'Perlito5::AST::Apply' )
+               &&  ( $parameters->code eq 'my' || $parameters->code eq 'circumfix:<( )>' )
+               )
+            {
+                # my ($x, $y) = ...
+                # ($x, $y) = ...
+
+                my $tmp  = 'tmp' . Perlito5::Javascript::get_label();
+                my $tmp2 = 'tmp' . Perlito5::Javascript::get_label();
+                return
+                  '(function () { '
+                    . 'var ' . $tmp  . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . '; '
+                    . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); '
+                    . join( '; ',
+                            (
+                            map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
+                                 ? $tmp . '.shift()' 
+                                 : $_->sigil eq '$' 
+                                 ? $_->emit_javascript() . ' = ' . $tmp . '.shift()'
+                                 : $_->sigil eq '@' 
+                                 ? $_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []'
+                                 : $_->sigil eq '%' 
+                                 ? $_->emit_javascript() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []'
+                                 : die("not implemented")
+                                 ),
+                                 @{ $parameters->arguments }
+                            ),
+                            'return ' . $tmp2
+                          )
+                . ' })()'
+            }
+
+            if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
+               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
+               )
+            {
+                return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments], $level+1) . ')'
+            }
+
+            if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
+                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
+                )
+            {
+                return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . ')'
+            }
+            elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
+                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
+                )
+            {
+                return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1, 'hash') . ')' 
+            }
+            '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
+
         },
         'return' => sub {
             my $self = $_[0];
@@ -1566,64 +1622,6 @@ package Perlito5::AST::Apply;
 
     }
 
-    sub emit_javascript_bind {
-        my $parameters = shift;
-        my $arguments = shift;
-        my $level = shift;
-
-        if (   $parameters->isa( 'Perlito5::AST::Apply' )
-           &&  ( $parameters->code eq 'my' || $parameters->code eq 'circumfix:<( )>' )
-           )
-        {
-            # my ($x, $y) = ...
-            # ($x, $y) = ...
-
-            my $tmp  = 'tmp' . Perlito5::Javascript::get_label();
-            my $tmp2 = 'tmp' . Perlito5::Javascript::get_label();
-            return
-              '(function () { '
-                . 'var ' . $tmp  . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . '; '
-                . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); '
-                . join( '; ',
-                        (
-                        map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
-                             ? $tmp . '.shift()' 
-                             : $_->sigil eq '$' 
-                             ? $_->emit_javascript() . ' = ' . $tmp . '.shift()'
-                             : $_->sigil eq '@' 
-                             ? $_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []'
-                             : $_->sigil eq '%' 
-                             ? $_->emit_javascript() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []'
-                             : die("not implemented")
-                             ),
-                             @{ $parameters->arguments }
-                        ),
-                        'return ' . $tmp2
-                      )
-            . ' })()'
-        }
-
-        if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
-           ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
-           )
-        {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments], $level+1) . ')'
-        }
-
-        if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
-            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
-            )
-        {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . ')'
-        }
-        elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
-            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
-            )
-        {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1, 'hash') . ')' 
-        }
-        '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
-    }
 }
 
 package Perlito5::AST::If;
