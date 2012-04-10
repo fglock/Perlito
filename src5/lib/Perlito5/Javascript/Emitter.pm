@@ -68,6 +68,7 @@ package Perlito5::Javascript;
         infix:<ne>
         infix:<ge>
         infix:<le>
+        prefix:<not>
         exists
     );
     # these operators always return "string"
@@ -1035,6 +1036,10 @@ package Perlito5::AST::Apply;
             'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{"arguments"} } ) ) . ')';
         },
         'prefix:<!>' => sub {
+            my $self = $_[0];
+            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
+        },
+        'prefix:<not>' => sub {
             my $self = $_[0];
             '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
         },

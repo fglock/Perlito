@@ -1275,7 +1275,7 @@ var p5100 = p5pkg['main'];
 			// our p5pkg["Perlito5::Javascript"]["Hash_op_to_bool"]
 			(p5pkg["Perlito5::Javascript"]["Hash_op_to_bool"] = p5a_to_h(p5list_to_a(p5map(p5125, function (p5want) {
 					return (p5context([(p5context([p5pkg["Perlito5::Javascript"]["v__"], 1], p5want))], p5want));
-				}, ['prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'exists']))));
+				}, ['prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists']))));
 			// our p5pkg["Perlito5::Javascript"]["Hash_op_to_str"]
 			(p5pkg["Perlito5::Javascript"]["Hash_op_to_str"] = p5a_to_h(p5list_to_a(p5map(p5125, function (p5want) {
 					return (p5context([(p5context([p5pkg["Perlito5::Javascript"]["v__"], 1], p5want))], p5want));
@@ -2282,6 +2282,10 @@ var p5100 = p5pkg['main'];
 	return (p5context([p5pkg["Perlito5::Javascript"].to_num([p5pkg["Perlito5::AST::Apply"]["v__"]], p5want)], p5want));
 }, p5list_to_a(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_)))], 0) + ')')], p5want));
 				}, 'prefix:<!>', function (List__, p5want) {
+						var v_self = null;
+						(v_self = (List__[0]));
+						return (p5context([('!( ' + p5str(p5pkg["Perlito5::Javascript"].to_bool(p5list_to_a(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[0]), 0)) + ')')], p5want));
+				}, 'prefix:<not>', function (List__, p5want) {
 						var v_self = null;
 						(v_self = (List__[0]));
 						return (p5context([('!( ' + p5str(p5pkg["Perlito5::Javascript"].to_bool(p5list_to_a(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[0]), 0)) + ')')], p5want));
