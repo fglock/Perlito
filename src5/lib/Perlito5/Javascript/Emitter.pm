@@ -70,6 +70,7 @@ package Perlito5::Javascript;
         infix:<le>
         prefix:<not>
         exists
+        defined
     );
     # these operators always return "string"
     our %op_to_str = map +($_ => 1), qw(
