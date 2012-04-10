@@ -4,59 +4,57 @@ package Perlito5::Grammar::String;
 
 use Perlito5::Precedence;
 
-Perlito5::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_single_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_double_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( '<'  => sub { Perlito5::Grammar::String->term_glob($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '`'  => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '`'  => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'm'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_slash_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'm'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
 
-token term_double_quote {
-    \" <double_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"double_quote_parse"}) ]  }
-};
-token term_single_quote {
-    \' <single_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"single_quote_parse"}) ]  }
-};
+
 token term_q_quote {
-    'q' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <q_quote_parse>
+    [ 'q' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    | \'
+    ]
+    <q_quote_parse>
         { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"q_quote_parse"}) ]  }
 };
 token term_qq_quote {
-    'qq' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qq_quote_parse>
+    [ 'qq' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    | '"'
+    ]
+    <qq_quote_parse>
         { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qq_quote_parse"}) ]  }
 };
 token term_qw_quote {
-    'qw' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
+    'qw' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    <qw_quote_parse>
         { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qw_quote_parse"}) ]  }
 };
-token term_slash_quote {
-    '/' <m_quote_parse>
-        { 
-            $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"m_quote_parse"}) ]  
-        }
-};
 token term_m_quote {
-    'm' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <m_quote_parse>
+    [ 'm' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    | '/' 
+    ]
+    <m_quote_parse>
         {
             $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"m_quote_parse"}) ]  
         }
 };
 token term_s_quote {
-    's' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <s_quote_parse>
+    's' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    <s_quote_parse>
         { 
             $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"s_quote_parse"}) ]  
         }
 };
 token term_qx {
-    [ 'qx' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] 
+    [ 'qx' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ] 
     | '`'
     ]
     <qx_quote_parse>
@@ -498,21 +496,6 @@ sub here_doc {
     die 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
 }
 
-
-sub single_quote_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    return $self->string_interpolation_parse($str, $pos, "'", "'", 0);
-}
-
-sub double_quote_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    return $self->string_interpolation_parse($str, $pos, '"', '"', 1);
-}
- 
 
 token char_any {
     .
