@@ -6,6 +6,9 @@ use Perlito5::Precedence;
 
 Perlito5::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_single_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_double_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '<'  => sub { Perlito5::Grammar::String->term_glob($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '`'  => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
@@ -51,6 +54,17 @@ token term_s_quote {
         { 
             $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"s_quote_parse"}) ]  
         }
+};
+token term_qx {
+    [ 'qx' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] 
+    | '`'
+    ]
+    <qx_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qx_quote_parse"}) ]  }
+};
+token term_glob {
+    '<' <glob_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"glob_quote_parse"}) ]  }
 };
 
 
@@ -177,6 +191,42 @@ sub s_quote_parse {
         namespace => ''
     );
     return $part2;
+}
+sub qx_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
+    $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+
+    my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
+    if ( $m ) {
+        $m->{"capture"} = Perlito5::AST::Apply->new(
+                code      => 'qx',
+                arguments => [ Perlito5::Match::flat($m) ],
+                namespace => '',
+            );
+    }
+    return $m;
+}
+sub glob_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
+    $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+
+    my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
+    if ( $m ) {
+        $m->{"capture"} = Perlito5::AST::Apply->new(
+                code      => 'glob',
+                arguments => [ Perlito5::Match::flat($m) ],
+                namespace => '',
+            );
+    }
+    return $m;
 }
 
 sub string_interpolation_parse {
