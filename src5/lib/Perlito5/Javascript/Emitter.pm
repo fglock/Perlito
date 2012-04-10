@@ -151,7 +151,7 @@ package Perlito5::Javascript;
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
                ) 
             {
-                return to_str( $cond->{"arguments"}[0] )
+                return to_str( $cond->{"arguments"}[0], $level )
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
@@ -188,7 +188,7 @@ package Perlito5::Javascript;
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
                ) 
             {
-                return to_bool( $cond->{"arguments"}[0] )
+                return to_bool( $cond->{"arguments"}[0], $level )
             }
 
             # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
@@ -198,8 +198,8 @@ package Perlito5::Javascript;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{"arguments"}->[0]) . ' && '
-                           . to_bool($cond->{"arguments"}->[1]) . ')'
+                return '(' . to_bool($cond->{"arguments"}->[0], $level) . ' && '
+                           . to_bool($cond->{"arguments"}->[1], $level) . ')'
             }
             if (  $cond->isa( 'Perlito5::AST::Apply' ) 
                && (  $cond->code eq 'infix:<||>'
@@ -207,8 +207,8 @@ package Perlito5::Javascript;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{"arguments"}->[0]) . ' || '
-                           . to_bool($cond->{"arguments"}->[1]) . ')'
+                return '(' . to_bool($cond->{"arguments"}->[0], $level) . ' || '
+                           . to_bool($cond->{"arguments"}->[1], $level) . ')'
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
@@ -509,7 +509,7 @@ package Perlito5::Javascript::LexicalBlock;
                 my $otherwise = $last_statement->otherwise;
                 $body         = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str,
-                        'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) {' . "\n"
+                        'if ( ' . Perlito5::Javascript::to_bool( $cond, $level+1 ) . ' ) {' . "\n"
                         .   $body->emit_javascript($level+1) . "\n"
                         . Perlito5::Javascript::tab($level) . '}';
                 if ($otherwise) {
@@ -1044,12 +1044,14 @@ package Perlito5::AST::Apply;
             'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{"arguments"} } ) ) . ')';
         },
         'prefix:<!>' => sub {
-            my $self = $_[0];
-            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
+            my $self      = shift;
+            my $level     = shift;
+            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0], $level ) . ')';
         },
         'prefix:<not>' => sub {
-            my $self = $_[0];
-            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
+            my $self      = shift;
+            my $level     = shift;
+            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0], $level ) . ')';
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
@@ -1645,7 +1647,7 @@ package Perlito5::AST::If;
         my $level = shift;
         my $cond = $self->{"cond"};
         my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
-        my $s = 'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) {' . "\n"
+        my $s = 'if ( ' . Perlito5::Javascript::to_bool($cond, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript( $level + 1 ) . "\n"
             . Perlito5::Javascript::tab($level) . '}';
         if ( @{ $self->{"otherwise"}->stmts } ) {
@@ -1669,9 +1671,9 @@ package Perlito5::AST::While;
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
         return
            'for ( '
-        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript()           . '; '  : '; ' )
-        .  ( $self->{"cond"}     ? Perlito5::Javascript::to_bool( $self->{"cond"} )       . '; '  : '; ' )
-        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript()       . ' '   : ' '  )
+        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript($level + 1)               . '; '  : '; ' )
+        .  ( $self->{"cond"}     ? Perlito5::Javascript::to_bool($self->{"cond"}, $level + 1) . '; '  : '; ' )
+        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript($level + 1)           . ' '   : ' '  )
         .  ') {' . "\n" 
             . $body->emit_javascript( $level + 1 ) . "\n"
         .  Perlito5::Javascript::tab($level) . '}'
@@ -1684,7 +1686,7 @@ package Perlito5::AST::For;
         my $self = shift;
         my $level = shift;
 
-        my $cond = Perlito5::Javascript::to_list([$self->{"cond"}]);
+        my $cond = Perlito5::Javascript::to_list([$self->{"cond"}], $level + 1);
         if ($self->{"body"}->sig()) {
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
             # TODO - for without "my"

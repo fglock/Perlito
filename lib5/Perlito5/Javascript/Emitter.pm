@@ -56,7 +56,7 @@ join("", chr(9) x $level)
         ((my  $level) = shift());
         ((my  $wantarray) = 'scalar');
         if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
-            return (to_str($cond->{'arguments'}->[0]))
+            return (to_str($cond->{'arguments'}->[0], $level))
         };
         if ((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))))) {
             return ($cond->emit_javascript($level, $wantarray))
@@ -81,13 +81,13 @@ join("", chr(9) x $level)
         ((my  $level) = shift());
         ((my  $wantarray) = 'scalar');
         if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
-            return (to_bool($cond->{'arguments'}->[0]))
+            return (to_bool($cond->{'arguments'}->[0], $level))
         };
         if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<&&>') || ($cond->code() eq 'infix:<and>'))))) {
-            return (('(' . to_bool($cond->{'arguments'}->[0]) . ' && ' . to_bool($cond->{'arguments'}->[1]) . ')'))
+            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' && ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
         };
         if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<||>') || ($cond->code() eq 'infix:<or>'))))) {
-            return (('(' . to_bool($cond->{'arguments'}->[0]) . ' || ' . to_bool($cond->{'arguments'}->[1]) . ')'))
+            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' || ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
         };
         if (((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))))) {
             return ($cond->emit_javascript($level, $wantarray))
@@ -306,7 +306,7 @@ for ($_) {
                 ((my  $body) = $last_statement->body());
                 ((my  $otherwise) = $last_statement->otherwise());
                 ($body = Perlito5::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                push(@str, ('if ( ' . Perlito5::Javascript::to_bool($cond) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') );
+                push(@str, ('if ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') );
                 if ($otherwise) {
                     ($otherwise = Perlito5::Javascript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
                     push(@str, (chr(10) . Perlito5::Javascript::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') )
@@ -692,11 +692,13 @@ for ($_) {
     ((my  $self) = $_[0]);
     ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
 }), ('prefix:<!>' => sub {
-    ((my  $self) = $_[0]);
-    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')')
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0], $level) . ')')
 }), ('prefix:<not>' => sub {
-    ((my  $self) = $_[0]);
-    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')')
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0], $level) . ')')
 }), ('prefix:<~>' => sub {
     ((my  $self) = $_[0]);
     ('~( ' . Perlito5::Javascript::to_num($self->{'arguments'}->[0]) . ')')
@@ -1074,7 +1076,7 @@ for ($_) {
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0), ('create_context' => 1)));
-        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($cond) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
+        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
         if (@{$self->{'otherwise'}->stmts()}) {
             ((my  $otherwise) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'otherwise'}->stmts()), ('needs_return' => 0), ('create_context' => 1)));
             ($s = ($s . chr(10) . Perlito5::Javascript::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
@@ -1088,7 +1090,7 @@ for ($_) {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0), ('create_context' => 1)));
-        return (('for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_javascript() . '; ') : '; ')) . (($self->{'cond'} ? (Perlito5::Javascript::to_bool($self->{'cond'}) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_javascript() . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+        return (('for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'} ? (Perlito5::Javascript::to_bool($self->{'cond'}, ($level + 1)) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_javascript(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
     }
 };
 package Perlito5::AST::For;
@@ -1096,7 +1098,7 @@ for ($_) {
     sub Perlito5::AST::For::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $cond) = Perlito5::Javascript::to_list([$self->{'cond'}]));
+        ((my  $cond) = Perlito5::Javascript::to_list([$self->{'cond'}], ($level + 1)));
         if ($self->{'body'}->sig()) {
             ((my  $v) = $self->{'body'}->sig());
             ($Perlito5::VAR->[0]->{$v->perl5_name()} = {('decl' => 'my')});
