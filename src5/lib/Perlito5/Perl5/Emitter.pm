@@ -91,11 +91,7 @@ package Perlito5::AST::CompUnit;
 
         my $str = ''
             . "use v5;\n"
-            # . "use utf8;\n"
-            # . "use warnings;\n"
-            # . "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n"
-            . "use Perlito5::Perl5::Runtime;\n"
-            . "our \$MATCH = {};\n";
+            . "use Perlito5::Perl5::Runtime;\n";
         for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_perl5(0)
         }
