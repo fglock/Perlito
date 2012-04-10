@@ -73,6 +73,9 @@ my %pair = (
     '<' => '>',
 );
 
+my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
+
+
 sub q_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
@@ -507,7 +510,8 @@ sub double_quoted_buf {
     my $pos = $_[2];
     my $delimiter = $_[3];
 
-    if  (  (substr($str, $pos, 1) eq '$' || substr($str, $pos, 1) eq '@')
+    my $c = substr($str, $pos, 1);
+    if  (  ($c eq '$' || $c eq '@')
         && substr($str, $pos+1, length($delimiter)) ne $delimiter
         )
     {
@@ -561,47 +565,47 @@ sub double_quoted_buf {
         }
         return $m;
     }
-    elsif (substr($str, $pos, 1) eq '\\') {
-        my $m = $self->double_quoted_unescape($str, $pos+1);
-        $m->{"capture"} = Perlito5::AST::Val::Buf->new( buf => Perlito5::Match::flat($m) );
-        return $m;
+    elsif ($c eq '\\') {
+        my $c2 = substr($str, $pos+1, 1);
+        if ( exists $escape_sequence{$c2} ) {
+            return {
+                'str' => $str,
+                'from' => $pos,
+                'to' => $pos+2,
+                capture => Perlito5::AST::Val::Buf->new( buf => chr($escape_sequence{$c2}) ),
+            };
+        }
+
+        # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
+        # TODO - \cC = Control-C
+        # TODO - \N{charname}     - requires "use charnames"
+        # TODO - \x{03a3}         - unicode hex
+        # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
+        # TODO - \l \u            - uppercase next char
+    
+        ## |  c
+        ##     [   \[ <Perlito5::Grammar.digits> \]
+        ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##     |  <Perlito5::Grammar.digits>
+        ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##     ]
+
+        ## my %double_quoted_unescape = (
+        ##     '0' => \&unescape_octal,
+        ##     'x' => \&unescape_hex,
+        ##     'c' => \&unescape_ctrl,
+        ##     'N' => \&unescape_charname,
+        ## );
+
+        return {
+            'str' => $str,
+            'from' => $pos,
+            'to' => $pos+2,
+            capture => Perlito5::AST::Val::Buf->new( buf => $c2 ),
+        };
     }
     return 0;
 }
-
-token double_quoted_unescape {
-
-    # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
-    # TODO - \cC = Control-C
-    # TODO - \N{charname}     - requires "use charnames"
-    # TODO - \x{03a3}         - unicode hex
-    # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
-    # TODO - \l \u            - uppercase next char
-
-    ## |  c
-    ##     [   \[ <Perlito5::Grammar.digits> \]
-    ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-    ##     |  <Perlito5::Grammar.digits>
-    ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-    ##     ]
-
-    |  a
-        { $MATCH->{"capture"} = chr(7) }
-    |  b
-        { $MATCH->{"capture"} = chr(8) }
-    |  e
-        { $MATCH->{"capture"} = chr(27) }
-    |  f
-        { $MATCH->{"capture"} = chr(12) }
-    |  n
-        { $MATCH->{"capture"} = chr(10) }
-    |  r
-        { $MATCH->{"capture"} = chr(13) }
-    |  t
-        { $MATCH->{"capture"} = chr(9) }
-    |  <char_any>
-        { $MATCH->{"capture"} = Perlito5::Match::flat($MATCH->{"char_any"}) }
-};
 
 1;
 

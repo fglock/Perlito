@@ -460,6 +460,7 @@ sub Perlito5::Grammar::String::term_glob {
     ($tmp ? $MATCH : 0)
 };
 ((my  %pair) = (('{' => '}'), ('(' => ')'), ('[' => ']'), ('<' => '>')));
+((my  %escape_sequence) = ('a', '7', 'b', '8', 'e', '27', 'f', '12', 'n', '10', 'r', '13', 't', '9'));
 sub Perlito5::Grammar::String::q_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -846,7 +847,8 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
     ((my  $delimiter) = $_[3]);
-    if (((((substr($str, $pos, 1) eq '$') || (substr($str, $pos, 1) eq '@'))) && (substr($str, ($pos + 1), length($delimiter)) ne $delimiter))) {
+    ((my  $c) = substr($str, $pos, 1));
+    if ((((($c eq '$') || ($c eq '@'))) && (substr($str, ($pos + 1), length($delimiter)) ne $delimiter))) {
         ((my  $m) = Perlito5::Expression->term_sigil($str, $pos));
         if ($m) {
 
@@ -885,81 +887,15 @@ sub Perlito5::Grammar::String::double_quoted_buf {
         return ($m)
     }
     else {
-        if ((substr($str, $pos, 1) eq chr(92))) {
-            ((my  $m) = $self->double_quoted_unescape($str, ($pos + 1)));
-            ($m->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => Perlito5::Match::flat($m))));
-            return ($m)
+        if (($c eq chr(92))) {
+            ((my  $c2) = substr($str, ($pos + 1), 1));
+            if (exists($escape_sequence{$c2})) {
+                return ({('str' => $str), ('from' => $pos), ('to' => ($pos + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => chr($escape_sequence{$c2}))))})
+            };
+            return ({('str' => $str), ('from' => $pos), ('to' => ($pos + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => $c2)))})
         }
     };
     return (0)
-};
-sub Perlito5::Grammar::String::double_quoted_unescape {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((((((((do {
-    (((('a' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(7));
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('b' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(8));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('e' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(27));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('f' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(12));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('n' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(10));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('r' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(13));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((('t' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ($MATCH->{'capture'} = chr(9));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $m2) = $grammar->char_any($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'char_any'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'char_any'}));
-    1
-}))))
-})))
-}))));
-    ($tmp ? $MATCH : 0)
 };
 1;
 
