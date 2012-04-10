@@ -223,6 +223,21 @@ package Perlito5::Javascript;
             }
     }
 
+    sub is_scalar {
+            !$_[0]->isa( 'Perlito5::AST::Val::Int' )
+         && !$_[0]->isa( 'Perlito5::AST::Val::Num' )
+         && !$_[0]->isa( 'Perlito5::AST::Val::Buf' )
+         && !$_[0]->isa( 'Perlito5::AST::Sub' )
+         && !($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{"sigil"} eq '$')
+         && !($_[0]->isa( 'Perlito5::AST::Apply' ) 
+             && (  exists($op_to_str{ $_[0]->{"code"} })
+                || exists($op_to_num{ $_[0]->{"code"} })
+                || exists($op_to_bool{ $_[0]->{"code"} })
+                || $_[0]->{"code"} eq 'prefix:<\\>'
+                )
+             )
+    }
+
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
@@ -233,18 +248,7 @@ package Perlito5::Javascript;
         my $interpolate = 0;
         for (@$items) {
             $interpolate = 1
-                if !$_->isa( 'Perlito5::AST::Val::Int' )
-                && !$_->isa( 'Perlito5::AST::Val::Num' )
-                && !$_->isa( 'Perlito5::AST::Val::Buf' )
-                && !$_->isa( 'Perlito5::AST::Sub' )
-                && !($_->isa( 'Perlito5::AST::Var' ) && $_->{"sigil"} eq '$')
-                && !($_->isa( 'Perlito5::AST::Apply' ) 
-                    && (  exists($op_to_str{ $_->{"code"} })
-                       || exists($op_to_num{ $_->{"code"} })
-                       || exists($op_to_bool{ $_->{"code"} })
-                       || $_->{"code"} eq 'prefix:<\\>'
-                       )
-                    )
+                if is_scalar($_);
         }
 
         if ($literal_type eq 'hash') {
@@ -340,6 +344,9 @@ package Perlito5::Javascript;
         my $items = to_scalar_preprocess( $_[0] );
         my $level = $_[1];
         my $wantarray = 'runtime';
+
+        return $items->[0]->emit_javascript($level, $wantarray)
+            if @$items == 1 && is_scalar($items->[0]);
 
         'p5context(' 
             . '['
@@ -530,10 +537,10 @@ package Perlito5::Javascript::LexicalBlock;
             }
             else {
                 if ( $has_local ) {
-                    push @str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));';
+                    push @str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . '));';
                 }
                 else {
-                    push @str, 'return (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . ');';
+                    push @str, 'return (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . ');';
                 }
             }
         }
@@ -1249,9 +1256,10 @@ package Perlito5::AST::Apply;
 
         },
         'return' => sub {
-            my $self = $_[0];
+            my $self      = $_[0];
+            my $level     = shift;
             $Perlito5::THROW = 1;
-            'throw(' . Perlito5::Javascript::to_runtime_context( $self->{"arguments"} ) . ')';
+            'throw(' . Perlito5::Javascript::to_runtime_context( $self->{"arguments"}, $level ) . ')';
         },
         'goto' => sub {
             my $self = $_[0];

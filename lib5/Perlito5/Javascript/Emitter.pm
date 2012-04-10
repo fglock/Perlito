@@ -96,6 +96,9 @@ join("", chr(9) x $level)
             return (('p5bool(' . $cond->emit_javascript($level, $wantarray) . ')'))
         }
     };
+    sub Perlito5::Javascript::is_scalar {
+        (((((!($_[0]->isa('Perlito5::AST::Val::Int')) && !($_[0]->isa('Perlito5::AST::Val::Num'))) && !($_[0]->isa('Perlito5::AST::Val::Buf'))) && !($_[0]->isa('Perlito5::AST::Sub'))) && !((($_[0]->isa('Perlito5::AST::Var') && ($_[0]->{'sigil'} eq '$'))))) && !((($_[0]->isa('Perlito5::AST::Apply') && ((((exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}})) || exists($op_to_bool{$_[0]->{'code'}})) || ($_[0]->{'code'} eq 'prefix:<' . chr(92) . '>')))))))
+    };
     sub Perlito5::Javascript::to_list {
         ((my  $items) = to_list_preprocess($_[0]));
         ((my  $level) = $_[1]);
@@ -103,7 +106,7 @@ join("", chr(9) x $level)
         ((my  $wantarray) = 'list');
         ((my  $interpolate) = 0);
         for (@{$items}) {
-            if ((((((!($_->isa('Perlito5::AST::Val::Int')) && !($_->isa('Perlito5::AST::Val::Num'))) && !($_->isa('Perlito5::AST::Val::Buf'))) && !($_->isa('Perlito5::AST::Sub'))) && !((($_->isa('Perlito5::AST::Var') && ($_->{'sigil'} eq '$'))))) && !((($_->isa('Perlito5::AST::Apply') && ((((exists($op_to_str{$_->{'code'}}) || exists($op_to_num{$_->{'code'}})) || exists($op_to_bool{$_->{'code'}})) || ($_->{'code'} eq 'prefix:<' . chr(92) . '>')))))))) {
+            if (is_scalar($_)) {
                 ($interpolate = 1)
             }
         };
@@ -168,6 +171,9 @@ join("", chr(9) x $level)
         ((my  $items) = to_scalar_preprocess($_[0]));
         ((my  $level) = $_[1]);
         ((my  $wantarray) = 'runtime');
+        if (((@{$items} == 1) && is_scalar($items->[0]))) {
+            return ($items->[0]->emit_javascript($level, $wantarray))
+        };
         ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ']' . ', p5want)')
     };
     sub Perlito5::Javascript::emit_javascript_autovivify {
@@ -317,10 +323,10 @@ for ($_) {
                     }
                     else {
                         if ($has_local) {
-                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));') )
+                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . '));') )
                         }
                         else {
-                            push(@str, ('return (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . ');') )
+                            push(@str, ('return (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . ');') )
                         }
                     }
                 }
@@ -825,8 +831,9 @@ for ($_) {
     ('(' . $parameters->emit_javascript($level) . ' = ' . $arguments->emit_javascript(($level + 1)) . ')')
 }), ('return' => sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = shift());
     ($Perlito5::THROW = 1);
-    ('throw(' . Perlito5::Javascript::to_runtime_context($self->{'arguments'}) . ')')
+    ('throw(' . Perlito5::Javascript::to_runtime_context($self->{'arguments'}, $level) . ')')
 }), ('goto' => sub {
     ((my  $self) = $_[0]);
     ($Perlito5::THROW = 1);
