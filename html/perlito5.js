@@ -7637,6 +7637,16 @@ var p5100 = p5pkg['main'];
 							if ( (Hash_escape_sequence).hasOwnProperty(v_c2) ) {
 								throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", p5list_to_a('buf', p5131.chr([Hash_escape_sequence[v_c2]], 1)), 1))))));
 							};
+							if ( (p5str(v_c2) == 'c') ) {
+								(function () {
+									var v_c3 = null;
+									(v_c3 = ((p5num((p5num(p5131.ord([p5131.substr([v_str, (p5num(v_pos) + 2), 1], 0)], 0)) - p5num(p5131.ord(['A'], 0)))) + 1)));
+									if ( (p5num(v_c3) < 0) ) {
+										(v_c3 = ((128 + p5num(v_c3))));
+									};
+									throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 3), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", p5list_to_a('buf', p5131.chr([v_c3], 1)), 1))))));
+									})();
+							};
 							throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_c2], 1))))));
 							})();
 					};

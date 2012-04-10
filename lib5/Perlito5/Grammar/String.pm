@@ -892,6 +892,13 @@ sub Perlito5::Grammar::String::double_quoted_buf {
             if (exists($escape_sequence{$c2})) {
                 return ({('str' => $str), ('from' => $pos), ('to' => ($pos + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => chr($escape_sequence{$c2}))))})
             };
+            if (($c2 eq 'c')) {
+                ((my  $c3) = ((ord(substr($str, ($pos + 2), 1)) - ord('A')) + 1));
+                if (($c3 < 0)) {
+                    ($c3 = (128 + $c3))
+                };
+                return ({('str' => $str), ('from' => $pos), ('to' => ($pos + 3)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => chr($c3))))})
+            };
             return ({('str' => $str), ('from' => $pos), ('to' => ($pos + 2)), ('capture' => Perlito5::AST::Val::Buf->new(('buf' => $c2)))})
         }
     };

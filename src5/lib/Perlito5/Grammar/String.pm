@@ -575,15 +575,26 @@ sub double_quoted_buf {
                 capture => Perlito5::AST::Val::Buf->new( buf => chr($escape_sequence{$c2}) ),
             };
         }
+        if ( $c2 eq 'c' ) {
+            # \cC = Control-C
+            # \c0 = "p"
+            my $c3 = ord( substr($str, $pos+2, 1) ) - ord('A') + 1;
+            $c3 = 128 + $c3 
+                if $c3 < 0;
+            return {
+                'str' => $str,
+                'from' => $pos,
+                'to' => $pos+3,
+                capture => Perlito5::AST::Val::Buf->new( buf => chr($c3) ),
+            };
+        }
 
         # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
-        # TODO - \cC = Control-C
         # TODO - \N{charname}     - requires "use charnames"
         # TODO - \x{03a3}         - unicode hex
         # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
         # TODO - \l \u            - uppercase next char
     
-        ## |  c
         ##     [   \[ <Perlito5::Grammar.digits> \]
         ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
         ##     |  <Perlito5::Grammar.digits>
