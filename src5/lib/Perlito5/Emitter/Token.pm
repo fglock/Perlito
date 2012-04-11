@@ -97,7 +97,6 @@ sub emit_perl5 {
             . '})';
     }
 
-    # TODO
     warn "Rul::Quantifier:  not implemented";
     $self->{"term"}->emit_perl5;
 }
@@ -166,7 +165,6 @@ sub emit_perl5 {
         $code = 'if ($m2) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
     }
     elsif ($self->{"captures"} > 1) {
-        # TODO: capture level > 2
         $code = 'if ($m2) { '
                 .   '$MATCH->{"to"} = $m2->{"to"}; '
                 .   'if (exists $MATCH->{\'' . $self->{"metasyntax"} . '\'}) { '

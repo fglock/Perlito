@@ -1,5 +1,6 @@
 TODO list for Perlito5
 
+
 * perlito5 command-line
 
 --
@@ -117,13 +118,14 @@ TODO list for Perlito5
 
 * More backends
 
--- Perl6 backend started
-
 -- Python backend
+   reuse the Perlito6 implementation
 
 -- Ruby backend
+   reuse the Perlito6 implementation
 
 -- Java backend
+   not sure if this is a good idea; other dynamic languages are reported slow in JVM
 
 
 * Nice to Have
@@ -149,4 +151,16 @@ TODO list for Perlito5
 -- *{$pkg . "::foo"} = \&bar;
 
 -- AUTOLOAD
+
+
+* Deprecate
+
+-- remove unused features from src5/lib/Perlito5/Grammar/Regex.pm
+
+-- Interpreter backend
+   this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
+
+-- Perl6 backend (started)
+   this is not being maintained; not sure if compiling to Perl6 is the best way
+   maybe compiling directly to Parrot/dotnet/Haskell gives better results
 
