@@ -9,7 +9,6 @@ touch META.yml
 mkdir t
 cp -r ../t5/*.t t/
 rm t/21-test.t
-rm t/22-unicode.t
 
 mkdir lib
 cp -r ../lib5/Perlito5 lib/
