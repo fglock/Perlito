@@ -21,7 +21,7 @@ use Perlito5::Runtime;
 use Perlito5::Dumper;
 
 my $_V5_COMPILER_NAME    = 'Perlito5';
-my $_V5_COMPILER_VERSION = '8.0';
+my $_V5_COMPILER_VERSION = '9.0';
 my $source      = '';
 my $backend     = '';
 my $execute     = 0;

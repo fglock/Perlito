@@ -19,7 +19,7 @@ class Main {
     use Perlito6::Runtime;
 
     my $_V6_COMPILER_NAME    = 'Perlito6';
-    my $_V6_COMPILER_VERSION = '8.0';
+    my $_V6_COMPILER_VERSION = '9.0';
     my $source      = '';
     my $backend     = '';
     my $execute     = 0;
