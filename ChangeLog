@@ -1,18 +1,17 @@
-Dev  2012-02-29
+9.0  2012-04-11
 
-* Perlito Perl 5:
+* Perlito5 (Perl 5 compiler):
 
 - parser:
 
--- optimized a bit
--- it is now possible to add new words to the grammar from inside perl5 modules;
+-- there is now an internal "grammar API"; new words can be added to the grammar from inside perl5 modules;
    The non-standard "token" grammar was moved to a module
 -- here-docs
 -- new Perl5-in-Perl6 backend (experimental)
 -- new option -Bjs/-Bperl5
 -- new option -Cast-perl5
 -- added option -I
-   Note: -I./src5/lib is needed to compile the compiler and to run some of the tests
+   Note: -I./src5/lib is required to compile the compiler and also to run some of the tests
 -- runs some tests from the perl5 test suite (pmurias++)
 -- implemented prototypes (function signatures)
 -- "use", import/unimport; "use strict"/"no strict"
@@ -23,28 +22,27 @@ Dev  2012-02-29
 
 - javascript backend:
 
--- the runtime also works on node-js (pmurias++)
+-- works on node-js (pmurias++)
 -- @ISA and inheritance
 -- %ENV, @ARGV
--- regexes (using javascript native regex)
+-- simple regexes (using javascript native regex)
 -- symbol tables/typeglobs
 -- references
 -- "local", "our"; goto &sub
 -- wantarray; each; __PACKAGE__
 -- native javascript can be accessed with JS::inline('string')
--- reduced generated code size by 4x
-   The browser backend doesn't load the grammar compiler
+-- reduced generated code size; emitted code is more optimized and better formatted
+-- cleanup unused modules from the browser backend
 
-  javascript backend regressions:
+- javascript backend regressions:
 
--- dropped support for d8 shell (v8 javascript), because it doesn't 
-   support some file system functions needed by the compiler
+-- the d8 shell (v8 javascript) doesn't support some file system functions needed by the compiler
 -- perlito5 calling convention is incompatible with native javascript
    The last commit using native javascript calls is "e1e3316b"
--- there is some slowdown caused by the runtime context (wantarray) implementation
 
-* Perlito Perl 6:
+* Perlito6 (Perl 6 compiler):
 - compiler namespace moved from Perlito to Perlito6
+
 
 
 8.0  2011-12-24
