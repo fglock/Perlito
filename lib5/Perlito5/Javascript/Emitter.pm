@@ -23,8 +23,8 @@ join("", chr(9) x $level)
     ((our  %op_infix_js_str) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
     ((our  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<%>' => ' % '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     ((our  %op_to_bool) = map(+((($_ => 1))), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
-    ((our  %op_to_str) = map(+((($_ => 1))), ('substr', 'join', 'list:<.>')));
-    ((our  %op_to_num) = map(+((($_ => 1))), ('length', 'index')));
+    ((our  %op_to_str) = map(+((($_ => 1))), ('substr', 'join', 'list:<.>', 'chr')));
+    ((our  %op_to_num) = map(+((($_ => 1))), ('length', 'index', 'ord', 'oct')));
     ((my  %safe_char) = ((' ' => 1), ('!' => 1), ('"' => 1), ('#' => 1), ('$' => 1), ('%' => 1), ('&' => 1), ('(' => 1), (')' => 1), ('*' => 1), ('+' => 1), (',' => 1), ('-' => 1), ('.' => 1), ('/' => 1), (':' => 1), (';' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('?' => 1), ('@' => 1), ('[' => 1), (']' => 1), ('^' => 1), ('_' => 1), ('`' => 1), ('{' => 1), ('|' => 1), ('}' => 1), ('~' => 1)));
     sub Perlito5::Javascript::escape_string {
         ((my  $s) = shift());

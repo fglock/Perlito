@@ -77,11 +77,14 @@ package Perlito5::Javascript;
         substr
         join
         list:<.>
+        chr
     );
     # these operators always return "num"
     our %op_to_num = map +($_ => 1), qw(
         length
         index
+        ord
+        oct
     );
 
     my %safe_char = (
