@@ -1,7 +1,7 @@
 #!./perl
 
 #print "1..57\n";
-print "1..20\n";
+print "1..29\n";
 
 $x = 'x';
 
@@ -109,7 +109,7 @@ E1
 ## print "d" =~ /^$X[-1]$/ ? "ok 27\n" : "not ok 27\n";
 ## print "a1" !~ /^$X[-1]$/ ? "ok 28\n" : "not ok 28\n";
 
-print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
+print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 21\n" : "not ok 21\n");
 
 
 ## $foo = "not ok 30\n";
@@ -174,11 +174,11 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
   $ {^M} = 'Someother 3';
   package main;
   print "not " unless $^Q eq 'Someother';
-  print "ok 39\n";
+  print "ok 22\n";
   print "not " unless $ {^Quixote} eq 'Someother 2';
-  print "ok 40\n";
+  print "ok 23\n";
   print "not " unless $ {^M} eq 'Someother 3';
-  print "ok 41\n";
+  print "ok 24\n";
 
   
 }
@@ -215,7 +215,7 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # arrays now *always* interpolate into "..." strings.
 # 20000522 MJD (mjd@plover.com)
 {
-  my $test = 47;
+  my $test = 25;
   eval(q(">@nosuch<" eq "><")) || print "# $@", "not ";
   print "ok $test\n";
   ++$test;
@@ -274,4 +274,4 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # Is "[~" scanned correctly?
 @a = (1,2,3);
 print "not " unless($a[~~2] == 3);
-print "ok 57\n";
+print "ok 29\n";
