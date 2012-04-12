@@ -113,8 +113,10 @@ package Perlito5::Grammar::Bareword;
 
             if ( $sig eq '' ) {
                 # empty sig - we allow (), but only if it is empty
+                my $has_paren = 0;
                 if ( substr($str, $p, 1) eq '(' ) {
                     $p++;
+                    $has_paren = 1;
                     my $m = Perlito5::Grammar::Space->ws( $str, $p );
                     if ($m) {
                         $p = $m->{"to"}
@@ -129,7 +131,7 @@ package Perlito5::Grammar::Bareword;
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
-                            arguments => []
+                            arguments => $has_paren ? [] : undef
                         )
                     ];
                 $m_name->{"to"} = $p;

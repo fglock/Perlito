@@ -54,8 +54,10 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     };
     if (defined($sig)) {
         if (($sig eq '')) {
+            ((my  $has_paren) = 0);
             if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;
+                ($has_paren = 1);
                 ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
                 if ($m) {
                     ($p = $m->{'to'})
@@ -65,7 +67,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 };
                 ($p)++
             };
-            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => []))]);
+            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => ($has_paren ? [] : undef())))]);
             ($m_name->{'to'} = $p);
             return ($m_name)
         };
