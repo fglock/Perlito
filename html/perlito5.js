@@ -1204,6 +1204,9 @@ var p5100 = p5pkg['main'];
 				(v_obj = (List__[0]));
 				var v_level = null;
 				(v_level = (p5or(List__[1], function () { return 0 })));
+				if ( !( (v_obj != null)) ) {
+					throw(p5context(['undef'], p5want));
+				};
 				var v_ref = null;
 				(v_ref = (p5124.ref([v_obj], 0)));
 				var v_tab = null;
@@ -3613,8 +3616,10 @@ var p5100 = p5pkg['main'];
 				};
 				var v_m_list = null;
 				(v_m_list = (p5call(p5pkg["Perlito5::Expression"], "list_parse", [v_str, v_p], 0)));
-				if ( p5bool(v_m_list) ) {
-					((v_m_name || (v_m_name = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('postfix_or_term', 'funcall', v_namespace, v_name, p5pkg["Perlito5::Match"].flat([v_m_list], 1)))));
+				var v_list = null;
+				(v_list = ((v_m_list || (v_m_list = new p5HashRef({})))._hash_['capture']));
+				if ( (p5str((v_list || (v_list = new p5HashRef({})))._hash_['exp']) != '*undef*') ) {
+					((v_m_name || (v_m_name = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(['postfix_or_term', 'funcall', v_namespace, v_name, v_list])));
 					((v_m_name || (v_m_name = new p5HashRef({})))._hash_['to'] = (v_m_list || (v_m_list = new p5HashRef({})))._hash_['to']);
 					throw(p5context([v_m_name], p5want));
 				};
@@ -3730,7 +3735,7 @@ var p5100 = p5pkg['main'];
 						throw(p5context([v_v], p5want));
 					};
 					if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == 'funcall_no_params') ) {
-						(v_v = (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', (v_v || (v_v = new p5ArrayRef([])))._array_[3], 'namespace', (v_v || (v_v = new p5ArrayRef([])))._array_[2]), 0)));
+						(v_v = (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', (v_v || (v_v = new p5ArrayRef([])))._array_[3], 'namespace', (v_v || (v_v = new p5ArrayRef([])))._array_[2], 'arguments', null), 0)));
 						throw(p5context([v_v], p5want));
 					};
 					if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == 'methcall') ) {
@@ -3813,8 +3818,6 @@ var p5100 = p5pkg['main'];
 				};
 				if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == 'funcall_no_params') ) {
 					p5129.die([['unexpected function call']], null);
-					p5129.push([(v_v || (v_v = new p5ArrayRef([])))._array_, [v_value]], null);
-					throw(p5context([v_v], p5want));
 				};
 				if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == 'methcall') ) {
 					(function () {
@@ -3826,8 +3829,6 @@ var p5100 = p5pkg['main'];
 				};
 				if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == 'funcall') ) {
 					p5129.die([['unexpected function call']], null);
-					p5129.push([(v_v || (v_v = new p5ArrayRef([])))._array_, [v_value]], null);
-					throw(p5context([v_v], p5want));
 				};
 				if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[1]) == '( )') ) {
 					(function () {

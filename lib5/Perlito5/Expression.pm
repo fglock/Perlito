@@ -66,7 +66,7 @@ sub Perlito5::Expression::pop_term {
             return ($v)
         };
         if (($v->[1] eq 'funcall_no_params')) {
-            ($v = Perlito5::AST::Apply->new(('code' => $v->[3]), ('namespace' => $v->[2])));
+            ($v = Perlito5::AST::Apply->new(('code' => $v->[3]), ('namespace' => $v->[2]), ('arguments' => undef())));
             return ($v)
         };
         if (($v->[1] eq 'methcall')) {
@@ -123,9 +123,7 @@ sub Perlito5::Expression::reduce_postfix {
         return ($v)
     };
     if (($v->[1] eq 'funcall_no_params')) {
-        die('unexpected function call');
-        push(@{$v}, $value );
-        return ($v)
+        die('unexpected function call')
     };
     if (($v->[1] eq 'methcall')) {
         ((my  $param_list) = expand_list($v->[3]->{'exp'}));
@@ -133,9 +131,7 @@ sub Perlito5::Expression::reduce_postfix {
         return ($v)
     };
     if (($v->[1] eq 'funcall')) {
-        die('unexpected function call');
-        push(@{$v}, $value );
-        return ($v)
+        die('unexpected function call')
     };
     if (($v->[1] eq '( )')) {
         ((my  $param_list) = expand_list($v->[2]));

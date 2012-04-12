@@ -4,6 +4,9 @@ sub Dumper {
     my $obj = $_[0];
     my $level = $_[1] || 0;
 
+    return 'undef'
+        if !defined $obj;
+
     my $ref = ref($obj);
     my $tab = '    ' x $level;
     my $tab1 = $tab . '    ';

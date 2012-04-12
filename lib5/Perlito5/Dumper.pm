@@ -6,6 +6,9 @@ package Perlito5::Dumper;
 sub Perlito5::Dumper::Dumper {
     ((my  $obj) = $_[0]);
     ((my  $level) = ($_[1] || 0));
+    if (!(defined($obj))) {
+        return ('undef')
+    };
     ((my  $ref) = ref($obj));
     ((my  $tab) = join("", '    ' x $level));
     ((my  $tab1) = ($tab . '    '));

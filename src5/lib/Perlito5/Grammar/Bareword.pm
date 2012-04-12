@@ -213,11 +213,12 @@ package Perlito5::Grammar::Bareword;
 
 
         my $m_list = Perlito5::Expression->list_parse( $str, $p );
-        if ( $m_list ) {
+        my $list = $m_list->{"capture"};
+        if ($list->{'exp'} ne '*undef*') {
             $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
                     $namespace,
                     $name,
-                    Perlito5::Match::flat($m_list)
+                    $list
                 ];
             $m_name->{"to"} = $m_list->{"to"};
             return $m_name;
