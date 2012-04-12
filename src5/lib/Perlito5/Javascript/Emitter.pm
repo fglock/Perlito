@@ -8,7 +8,10 @@ package Perlito5::Javascript;
     my $label_count = 100;
     my %label;
     sub pkg {
-        $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+        # this is an optimization to reduce the number of lookups
+        # this breaks eval() because the variable is not always seen at runtime
+        # $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+        'p5pkg["' . $Perlito5::PKG_NAME . '"]'
     }
     sub pkg_new_var {
         $label{ $Perlito5::PKG_NAME } = "p5" . $label_count++
@@ -1350,6 +1353,7 @@ package Perlito5::AST::Apply;
                     . "}\n"
                     . "catch(err) {\n"
                     .    "if ( err instanceof p5_error ) {\n"
+                    .        'p5pkg["main"]["v_@"] = err;' . "\n"
                     .    "}\n"
                     .    "else if ( err instanceof Error ) {\n"
                     .        'p5pkg["main"]["v_@"] = err;' . "\n"
@@ -1582,17 +1586,28 @@ package Perlito5::AST::Apply;
         my $sig;
         {
             my $name = $self->{code};
-            my $namespace = $self->{namespace};
-            my $effective_name = $self->{code} . "::" . $self->{namespace};
+            my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
+            my $effective_name = $namespace . "::" . $self->{code};
             if ( exists $Perlito5::PROTO->{$effective_name} ) {
                 $sig = $Perlito5::PROTO->{$effective_name};
             }
-            elsif ( (!$namespace || $namespace eq 'CORE')
+            elsif ( (!$self->{namespace} || $namespace eq 'CORE')
                   && exists $Perlito5::CORE_PROTO->{"CORE::$name"}
                   )
             {
                 $effective_name = "CORE::$name";
                 $sig = $Perlito5::CORE_PROTO->{$effective_name};
+            }
+            else {
+                # this subroutine was never declared
+
+                if ($self->{bareword}) {
+                    if ( $Perlito5::STRICT ) {
+                        die 'Bareword "' . $name . '" not allowed while "strict subs" in use';
+                    }
+                    return Perlito5::Javascript::escape_string( $name );
+                }
+
             }
         }
 

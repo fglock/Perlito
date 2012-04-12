@@ -10,7 +10,7 @@ for ($_) {
     ((my  $label_count) = 100);
     (my  %label);
     sub Perlito5::Javascript::pkg {
-        ($label{$Perlito5::PKG_NAME} = ($label{$Perlito5::PKG_NAME} || ('p5' . ($label_count)++)))
+        ('p5pkg["' . $Perlito5::PKG_NAME . '"]')
     };
     sub Perlito5::Javascript::pkg_new_var {
         ($label{$Perlito5::PKG_NAME} = ('p5' . ($label_count)++))
@@ -872,7 +872,7 @@ for ($_) {
         ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
         ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
     };
-    ('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()')
+    ('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()')
 }, 'undef', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -1013,15 +1013,23 @@ for ($_) {
         (my  $sig);
         for ($_) {
             ((my  $name) = $self->{'code'});
-            (+((my  $namespace)) = $self->{'namespace'});
-            ((my  $effective_name) = ($self->{'code'} . '::' . $self->{'namespace'}));
+            ((my  $namespace) = ($self->{'namespace'} || $Perlito5::PKG_NAME));
+            ((my  $effective_name) = ($namespace . '::' . $self->{'code'}));
             if (exists($Perlito5::PROTO->{$effective_name})) {
                 ($sig = $Perlito5::PROTO->{$effective_name})
             }
             else {
-                if ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
+                if ((((!($self->{'namespace'}) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
                     ($effective_name = ('CORE::' . $name));
                     ($sig = $Perlito5::CORE_PROTO->{$effective_name})
+                }
+                else {
+                    if ($self->{'bareword'}) {
+                        if ($Perlito5::STRICT) {
+                            die(('Bareword "' . $name . '" not allowed while "strict subs" in use'))
+                        };
+                        return (Perlito5::Javascript::escape_string($name))
+                    }
                 }
             }
         };

@@ -247,6 +247,9 @@ sub Perlito5::Grammar::Use::require {
     else {
         if (!($result)) {
             delete($INC{$filename});
+            if ($@) {
+                warn($@)
+            };
             die(($filename . ' did not return true value'))
         }
         else {

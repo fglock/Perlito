@@ -211,6 +211,7 @@ sub require {
         die $@;
     } elsif (!$result) {
         delete $INC{$filename};
+        warn $@ if $@;
         die "$filename did not return true value";
     } else {
         return $result;
