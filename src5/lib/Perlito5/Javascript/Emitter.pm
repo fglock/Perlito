@@ -769,6 +769,10 @@ package Perlito5::AST::Var;
                     $s = $s . ' || (' . $s . ' = [])';  # init
                     $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
                 }
+                elsif ($sigil eq '%') {
+                    $s = $s . ' || (' . $s . ' = {})';  # init
+                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
+                }
 
                 if ($self->{sigil} eq '$#') {
                     return '(' . $s . '.length - 1)';

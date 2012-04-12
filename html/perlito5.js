@@ -1961,6 +1961,12 @@ var p5100 = p5pkg['main'];
 								if ( (p5str(v_sigil) == '@') ) {
 									(v_s = ((p5str(v_s) + ' || (' + p5str(v_s) + ' = [])')));
 									(v_s = (('p5pkg[' + p5str(v_s) + ', "' + p5str((v_self || (v_self = new p5HashRef({})))._hash_['namespace']) + '"]["' + p5str((v_table || (v_table = new p5HashRef({})))._hash_[v_sigil]) + p5str((v_self || (v_self = new p5HashRef({})))._hash_['name']) + '"]')));
+								}
+								else {
+									if ( (p5str(v_sigil) == '%') ) {
+										(v_s = ((p5str(v_s) + ' || (' + p5str(v_s) + ' = {})')));
+										(v_s = (('p5pkg[' + p5str(v_s) + ', "' + p5str((v_self || (v_self = new p5HashRef({})))._hash_['namespace']) + '"]["' + p5str((v_table || (v_table = new p5HashRef({})))._hash_[v_sigil]) + p5str((v_self || (v_self = new p5HashRef({})))._hash_['name']) + '"]')));
+									};
 								};
 								if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_['sigil']) == '$#') ) {
 									throw(p5context([('(' + p5str(v_s) + '.length - 1)')], p5want));

@@ -464,6 +464,12 @@ for ($_) {
                 if (($sigil eq '@')) {
                     ($s = ($s . ' || (' . $s . ' = [])'));
                     ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'))
+                }
+                else {
+                    if (($sigil eq '%')) {
+                        ($s = ($s . ' || (' . $s . ' = {})'));
+                        ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'))
+                    }
                 };
                 if (($self->{'sigil'} eq '$#')) {
                     return (('(' . $s . '.length - 1)'))
