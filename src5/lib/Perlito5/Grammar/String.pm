@@ -511,7 +511,17 @@ sub double_quoted_buf {
     my $delimiter = $_[3];
 
     my $c = substr($str, $pos, 1);
-    if  (  ($c eq '$' || $c eq '@')
+
+
+    if ($c eq '$' && substr($str, $pos+1, 1) eq '{')
+    {
+        my $m = Perlito5::Expression->term_sigil($str, $pos);
+        return $m unless $m;
+        my $var = Perlito5::Match::flat($m)->[1];
+        $m->{capture} = $var;
+        return $m;
+    }
+    elsif  (  ($c eq '$' || $c eq '@')
         && substr($str, $pos+1, length($delimiter)) ne $delimiter
         )
     {

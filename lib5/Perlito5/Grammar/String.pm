@@ -848,7 +848,7 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ((my  $pos) = $_[2]);
     ((my  $delimiter) = $_[3]);
     ((my  $c) = substr($str, $pos, 1));
-    if ((((($c eq '$') || ($c eq '@'))) && (substr($str, ($pos + 1), length($delimiter)) ne $delimiter))) {
+    if ((($c eq '$') && (substr($str, ($pos + 1), 1) eq '{'))) {
         ((my  $m) = Perlito5::Expression->term_sigil($str, $pos));
         if ($m) {
 
@@ -857,49 +857,63 @@ sub Perlito5::Grammar::String::double_quoted_buf {
             return ($m)
         };
         ((my  $var) = Perlito5::Match::flat($m)->[1]);
-        ((my  $p) = $m->{'to'});
-        (my  $m_index);
-        if ((substr($str, $p, 1) eq '[')) {
-            ($p)++;
-            ($m_index = Perlito5::Expression->list_parse($str, $p));
-            if ($m_index) {
-                ((my  $exp) = $m_index->{'capture'}->{'exp'});
-                ($p = $m_index->{'to'});
-                if ((($exp ne '*undef*') && (substr($str, $p, 1) eq ']'))) {
-                    ($p)++;
-                    ($m_index->{'capture'} = Perlito5::AST::Index->new('obj', $var, 'index_exp', $exp));
-                    ($m_index->{'to'} = $p);
-                    return ($m_index)
-                }
-            }
-        };
-        ($m_index = Perlito5::Expression->term_curly($str, $m->{'to'}));
-        if ($m_index) {
-            ($m_index->{'capture'} = Perlito5::AST::Lookup->new('obj', $var, 'index_exp', Perlito5::Match::flat($m_index)->[2]->[0]));
-            return ($m_index)
-        };
-        if ((substr($str, $pos, 1) eq '@')) {
-            ($m->{'capture'} = Perlito5::AST::Apply->new('code', 'join', 'arguments', [Perlito5::AST::Val::Buf->new('buf', ' '), $var], 'namespace', ''))
-        }
-        else {
-            ($m->{'capture'} = $var)
-        };
+        ($m->{'capture'} = $var);
         return ($m)
     }
     else {
-        if (($c eq chr(92))) {
-            ((my  $c2) = substr($str, ($pos + 1), 1));
-            if (exists($escape_sequence{$c2})) {
-                return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($escape_sequence{$c2}))})
+        if ((((($c eq '$') || ($c eq '@'))) && (substr($str, ($pos + 1), length($delimiter)) ne $delimiter))) {
+            ((my  $m) = Perlito5::Expression->term_sigil($str, $pos));
+            if ($m) {
+
+            }
+            else {
+                return ($m)
             };
-            if (($c2 eq 'c')) {
-                ((my  $c3) = ((ord(substr($str, ($pos + 2), 1)) - ord('A')) + 1));
-                if (($c3 < 0)) {
-                    ($c3 = (128 + $c3))
+            ((my  $var) = Perlito5::Match::flat($m)->[1]);
+            ((my  $p) = $m->{'to'});
+            (my  $m_index);
+            if ((substr($str, $p, 1) eq '[')) {
+                ($p)++;
+                ($m_index = Perlito5::Expression->list_parse($str, $p));
+                if ($m_index) {
+                    ((my  $exp) = $m_index->{'capture'}->{'exp'});
+                    ($p = $m_index->{'to'});
+                    if ((($exp ne '*undef*') && (substr($str, $p, 1) eq ']'))) {
+                        ($p)++;
+                        ($m_index->{'capture'} = Perlito5::AST::Index->new('obj', $var, 'index_exp', $exp));
+                        ($m_index->{'to'} = $p);
+                        return ($m_index)
+                    }
+                }
+            };
+            ($m_index = Perlito5::Expression->term_curly($str, $m->{'to'}));
+            if ($m_index) {
+                ($m_index->{'capture'} = Perlito5::AST::Lookup->new('obj', $var, 'index_exp', Perlito5::Match::flat($m_index)->[2]->[0]));
+                return ($m_index)
+            };
+            if ((substr($str, $pos, 1) eq '@')) {
+                ($m->{'capture'} = Perlito5::AST::Apply->new('code', 'join', 'arguments', [Perlito5::AST::Val::Buf->new('buf', ' '), $var], 'namespace', ''))
+            }
+            else {
+                ($m->{'capture'} = $var)
+            };
+            return ($m)
+        }
+        else {
+            if (($c eq chr(92))) {
+                ((my  $c2) = substr($str, ($pos + 1), 1));
+                if (exists($escape_sequence{$c2})) {
+                    return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($escape_sequence{$c2}))})
                 };
-                return ({'str', $str, 'from', $pos, 'to', ($pos + 3), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($c3))})
-            };
-            return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
+                if (($c2 eq 'c')) {
+                    ((my  $c3) = ((ord(substr($str, ($pos + 2), 1)) - ord('A')) + 1));
+                    if (($c3 < 0)) {
+                        ($c3 = (128 + $c3))
+                    };
+                    return ({'str', $str, 'from', $pos, 'to', ($pos + 3), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($c3))})
+                };
+                return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
+            }
         }
     };
     return (0)
