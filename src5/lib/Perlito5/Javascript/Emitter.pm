@@ -10,6 +10,9 @@ package Perlito5::Javascript;
     sub pkg {
         $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
     }
+    sub pkg_new_var {
+        $label{ $Perlito5::PKG_NAME } = "p5" . $label_count++
+    }
     sub get_label {
         $label_count++
     }
@@ -620,7 +623,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
                 .  "var p5want = null;\n"
-                .  "var " . Perlito5::Javascript::pkg . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
+                .  "var " . Perlito5::Javascript::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
               '$@'    => { decl => 'our', namespace => 'main' },
@@ -1049,7 +1052,7 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            "var " . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{namespace} . '")';
+            "var " . Perlito5::Javascript::pkg_new_var() . ' = p5make_package("' . $self->{namespace} . '")';
         },
         'infix:<=>>' => sub {
             my $self      = shift;

@@ -12,6 +12,9 @@ for ($_) {
     sub Perlito5::Javascript::pkg {
         ($label{$Perlito5::PKG_NAME} = ($label{$Perlito5::PKG_NAME} || ('p5' . ($label_count)++)))
     };
+    sub Perlito5::Javascript::pkg_new_var {
+        ($label{$Perlito5::PKG_NAME} = ('p5' . ($label_count)++))
+    };
     sub Perlito5::Javascript::get_label {
         ($label_count)++
     };
@@ -371,7 +374,7 @@ for ($_) {
     sub Perlito5::AST::CompUnit::emit_javascript_program {
         ((my  $comp_units) = shift());
         ($Perlito5::PKG_NAME = 'main');
-        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript::pkg . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
+        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
         ($Perlito5::VAR = [{'@_', {'decl', 'my'}, '$@', {'decl', 'our', 'namespace', 'main'}, '$^O', {'decl', 'our', 'namespace', 'main'}, '%ENV', {'decl', 'our', 'namespace', 'main'}, '%INC', {'decl', 'our', 'namespace', 'main'}, '@#', {'decl', 'our', 'namespace', 'main'}, '@ARGV', {'decl', 'our', 'namespace', 'main'}, '@INC', {'decl', 'our', 'namespace', 'main'}, '$_', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$a', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$b', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
@@ -685,7 +688,7 @@ for ($_) {
     'p5want'
 }, 'package', sub {
     ((my  $self) = $_[0]);
-    ('var ' . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{'namespace'} . '")')
+    ('var ' . Perlito5::Javascript::pkg_new_var() . ' = p5make_package("' . $self->{'namespace'} . '")')
 }, 'infix:<=>>', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
