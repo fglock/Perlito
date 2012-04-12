@@ -30,13 +30,13 @@ sub Rul::Quantifier::new {
     bless({@_}, $class)
 };
 sub Rul::Quantifier::term {
-    $_[0]->{'term'}
+    $_[0]->{    'term'}
 };
 sub Rul::Quantifier::quant {
-    $_[0]->{'quant'}
+    $_[0]->{    'quant'}
 };
 sub Rul::Quantifier::greedy {
-    $_[0]->{'greedy'}
+    $_[0]->{    'greedy'}
 };
 sub Rul::Quantifier::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -68,7 +68,7 @@ sub Rul::Or::new {
     bless({@_}, $class)
 };
 sub Rul::Or::or_list {
-    $_[0]->{'or_list'}
+    $_[0]->{    'or_list'}
 };
 sub Rul::Or::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -84,7 +84,7 @@ sub Rul::Concat::new {
     bless({@_}, $class)
 };
 sub Rul::Concat::concat {
-    $_[0]->{'concat'}
+    $_[0]->{    'concat'}
 };
 sub Rul::Concat::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -100,10 +100,10 @@ sub Rul::Perlito5::AST::Subrule::new {
     bless({@_}, $class)
 };
 sub Rul::Perlito5::AST::Subrule::metasyntax {
-    $_[0]->{'metasyntax'}
+    $_[0]->{    'metasyntax'}
 };
 sub Rul::Perlito5::AST::Subrule::captures {
-    $_[0]->{'captures'}
+    $_[0]->{    'captures'}
 };
 sub Rul::Perlito5::AST::Subrule::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -134,7 +134,7 @@ sub Rul::Constant::new {
     bless({@_}, $class)
 };
 sub Rul::Constant::constant {
-    $_[0]->{'constant'}
+    $_[0]->{    'constant'}
 };
 sub Rul::Constant::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -162,7 +162,7 @@ sub Rul::SpecialChar::new {
     bless({@_}, $class)
 };
 sub Rul::SpecialChar::char {
-    $_[0]->{'char'}
+    $_[0]->{    'char'}
 };
 sub Rul::SpecialChar::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -193,7 +193,7 @@ sub Rul::Block::new {
     bless({@_}, $class)
 };
 sub Rul::Block::closure {
-    $_[0]->{'closure'}
+    $_[0]->{    'closure'}
 };
 sub Rul::Block::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -208,7 +208,7 @@ sub Rul::Before::new {
     bless({@_}, $class)
 };
 sub Rul::Before::rule_exp {
-    $_[0]->{'rule_exp'}
+    $_[0]->{    'rule_exp'}
 };
 sub Rul::Before::emit_perl5 {
     ((my  $self) = $_[0]);
@@ -223,7 +223,7 @@ sub Rul::NotBefore::new {
     bless({@_}, $class)
 };
 sub Rul::NotBefore::rule_exp {
-    $_[0]->{'rule_exp'}
+    $_[0]->{    'rule_exp'}
 };
 sub Rul::NotBefore::emit_perl5 {
     ((my  $self) = $_[0]);

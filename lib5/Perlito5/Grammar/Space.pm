@@ -6,7 +6,7 @@ package Perlito5::Grammar::Space;
 use Perlito5::Precedence;
 ((my  %space) = (('#' => sub {
     ((my  $m) = Perlito5::Grammar::Space->to_eol($_[0], $_[1]));
-    $m->{'to'}
+    $m->{    'to'}
 }), (chr(9) => sub {
     $_[1]
 }), (chr(10) => sub {
@@ -16,7 +16,7 @@ use Perlito5::Precedence;
         ($pos)++
     };
     ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
-    $m->{'to'}
+    $m->{    'to'}
 }), (chr(12) => sub {
     $_[1]
 }), (chr(13) => sub {
@@ -26,7 +26,7 @@ use Perlito5::Precedence;
         ($pos)++
     };
     ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
-    $m->{'to'}
+    $m->{    'to'}
 }), (chr(32) => sub {
     $_[1]
 })));

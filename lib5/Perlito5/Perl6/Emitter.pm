@@ -71,13 +71,13 @@ for ($_) {
         bless({@_}, $class)
     };
     sub Perlito5::Perl6::LexicalBlock::block {
-        $_[0]->{'block'}
+        $_[0]->{        'block'}
     };
     sub Perlito5::Perl6::LexicalBlock::needs_return {
-        $_[0]->{'needs_return'}
+        $_[0]->{        'needs_return'}
     };
     sub Perlito5::Perl6::LexicalBlock::top_level {
-        $_[0]->{'top_level'}
+        $_[0]->{        'top_level'}
     };
     sub Perlito5::Perl6::LexicalBlock::emit_perl6 {
         ((my  $self) = shift());

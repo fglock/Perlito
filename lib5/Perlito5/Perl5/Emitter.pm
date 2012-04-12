@@ -111,9 +111,18 @@ for ($_) {
         ((my  $level) = $_[1]);
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = $self->{'obj'});
-            return (($v->emit_perl5($level) . '{' . $self->{'index_exp'}->emit_perl5() . '}'))
+            return (($v->emit_perl5($level) . '{' . $self->emit_perl5_index($self->{'index_exp'}, $level) . '}'))
         };
-        ($self->{'obj'}->emit_perl5($level) . '->{' . $self->{'index_exp'}->emit_perl5() . '}')
+        ($self->{'obj'}->emit_perl5($level) . '->{' . $self->emit_perl5_index($self->{'index_exp'}, $level) . '}')
+    };
+    sub Perlito5::AST::Lookup::emit_perl5_index {
+        ((my  $self) = shift());
+        ((my  $index) = shift());
+        ((my  $level) = shift());
+        if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
+            return (Perlito5::AST::Val::Buf->new(('buf' => $index->{'code'}))->emit_perl5($level))
+        };
+        $index->emit_perl5($level)
     }
 };
 package Perlito5::AST::Var;
@@ -146,7 +155,7 @@ for ($_) {
             return ((Perlito5::Perl5::tab($level) . $invocant . '->[' . $self->{'arguments'}->emit_perl5() . ']'))
         };
         if (($self->{'method'} eq 'postcircumfix:<{ }>')) {
-            return ((Perlito5::Perl5::tab($level) . $invocant . '->{' . $self->{'arguments'}->emit_perl5() . '}'))
+            return ((Perlito5::Perl5::tab($level) . $invocant . '->{' . Perlito5::AST::Lookup->emit_perl5_index($self->{'arguments'}, $level) . '}'))
         };
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<( )>')) {

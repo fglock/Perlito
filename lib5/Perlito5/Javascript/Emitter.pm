@@ -190,13 +190,13 @@ for ($_) {
         bless({@_}, $class)
     };
     sub Perlito5::Javascript::LexicalBlock::block {
-        $_[0]->{'block'}
+        $_[0]->{        'block'}
     };
     sub Perlito5::Javascript::LexicalBlock::needs_return {
-        $_[0]->{'needs_return'}
+        $_[0]->{        'needs_return'}
     };
     sub Perlito5::Javascript::LexicalBlock::top_level {
-        $_[0]->{'top_level'}
+        $_[0]->{        'top_level'}
     };
     sub Perlito5::Javascript::LexicalBlock::has_decl {
         ((my  $self) = $_[0]);
@@ -378,7 +378,7 @@ for ($_) {
     sub Perlito5::AST::Val::Int::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        $self->{'int'}
+        $self->{        'int'}
     }
 };
 package Perlito5::AST::Val::Num;
@@ -386,7 +386,7 @@ for ($_) {
     sub Perlito5::AST::Val::Num::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        $self->{'num'}
+        $self->{        'num'}
     }
 };
 package Perlito5::AST::Val::Buf;

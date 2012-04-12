@@ -28,7 +28,7 @@ package Perlito5::AST::Val::Buf;
 sub Perlito5::AST::Val::Buf::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
-    $self->{'buf'}
+    $self->{    'buf'}
 };
 package Perlito5::AST::Lit::Block;
 sub Perlito5::AST::Lit::Block::eval {
@@ -49,7 +49,7 @@ package Perlito5::AST::Lookup;
 sub Perlito5::AST::Lookup::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
-    ($self->{'obj'}->eval($env))->{$self->{'index_exp'}->eval($env)}
+    ($self->{'obj'}->eval($env))->{    $self->{'index_exp'}->eval($env)}
 };
 package Perlito5::AST::Var;
 sub Perlito5::AST::Var::eval {
