@@ -1469,7 +1469,7 @@ var p5100 = p5pkg['main'];
 										var v_v = null;
 										(v_v = (p5125.shift([List_in])));
 										(v_k = (p5call(v_k, "emit_javascript", [v_level, 0], 0)));
-										if ( p5bool((p5str(v_k).match(/ /) ? 1 : 0)) ) {
+										if ( p5bool((p5str(v_k).match(/[ \[]/) ? 1 : 0)) ) {
 											(v_printable = (0));
 										};
 										(v_v = (( p5bool(v_v) ? p5call(v_v, "emit_javascript", [v_level, 0], 0) : 'null')));
@@ -3085,17 +3085,17 @@ var p5100 = p5pkg['main'];
 		var List_Parsed_op_chars = [];
 		(List_Parsed_op_chars = [2, 1]);
 		var Hash_Parsed_op = {};
-		(Hash_Parsed_op = {'?' : function (List__, p5want) {
+		(Hash_Parsed_op = p5a_to_h(['?', function (List__, p5want) {
 					return (p5call(p5pkg["Perlito5::Expression"], "term_ternary", p5list_to_a(List__[0], List__[1]), p5want));
-			}, '(' : function (List__, p5want) {
+			}, '(', function (List__, p5want) {
 					return (p5call(p5pkg["Perlito5::Expression"], "term_paren", p5list_to_a(List__[0], List__[1]), p5want));
-			}, '[' : function (List__, p5want) {
+			}, '[', function (List__, p5want) {
 					return (p5call(p5pkg["Perlito5::Expression"], "term_square", p5list_to_a(List__[0], List__[1]), p5want));
-			}, '{' : function (List__, p5want) {
+			}, '{', function (List__, p5want) {
 					return (p5call(p5pkg["Perlito5::Expression"], "term_curly", p5list_to_a(List__[0], List__[1]), p5want));
-			}, '->' : function (List__, p5want) {
+			}, '->', function (List__, p5want) {
 					return (p5call(p5pkg["Perlito5::Expression"], "term_arrow", p5list_to_a(List__[0], List__[1]), p5want));
-			}});
+			}]));
 		var List_Term_chars = [];
 		(List_Term_chars = [7, 6, 5, 4, 3, 2, 1]);
 		var Hash_Term = {};
@@ -7062,7 +7062,7 @@ var p5100 = p5pkg['main'];
 				return (( p5bool(v_tmp) ? v_MATCH : 0));
 		});
 		var Hash_pair = {};
-		(Hash_pair = {'{' : '}', '(' : ')', '[' : ']', '<' : '>'});
+		(Hash_pair = p5a_to_h(['{', '}', '(', ')', '[', ']', '<', '>']));
 		var Hash_escape_sequence = {};
 		(Hash_escape_sequence = {'a' : '7', 'b' : '8', 'e' : '27', 'f' : '12', 'n' : '10', 'r' : '13', 't' : '9'});
 		p5make_sub("Perlito5::Grammar::String", "q_quote_parse", function (List__, p5want) {

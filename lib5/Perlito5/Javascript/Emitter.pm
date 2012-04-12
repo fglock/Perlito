@@ -119,7 +119,7 @@ join("", chr(9) x $level)
                     ((my  $k) = shift(@in));
                     ((my  $v) = shift(@in));
                     ($k = $k->emit_javascript($level, 0));
-                    if (($k =~ m! !)) {
+                    if (($k =~ m![ \[]!)) {
                         ($printable = 0)
                     };
                     ($v = ($v ? $v->emit_javascript($level, 0) : 'null'));

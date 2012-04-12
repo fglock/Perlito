@@ -267,7 +267,7 @@ package Perlito5::Javascript;
                     $k = $k->emit_javascript($level, 0);
 
                     $printable = 0
-                        if $k =~ / /;
+                        if $k =~ /[ \[]/;
 
                     $v = $v
                          ? $v->emit_javascript($level, 0)
