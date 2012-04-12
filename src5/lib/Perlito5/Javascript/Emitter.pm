@@ -85,6 +85,11 @@ package Perlito5::Javascript;
         index
         ord
         oct
+        infix:<->
+        infix:<+>
+        infix:<*>
+        infix:</>
+        infix:<%>
     );
 
     my %safe_char = (
