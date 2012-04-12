@@ -1581,7 +1581,8 @@ package Perlito5::AST::Apply;
 
         my $sig;
         {
-            my $name = $self->{code};+            my $namespace = $self->{namespace};
+            my $name = $self->{code};
+            my $namespace = $self->{namespace};
             my $effective_name = $self->{code} . "::" . $self->{namespace};
             if ( exists $Perlito5::PROTO->{$effective_name} ) {
                 $sig = $Perlito5::PROTO->{$effective_name};
