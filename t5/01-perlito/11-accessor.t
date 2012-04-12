@@ -8,7 +8,7 @@ package Other;
         my $self = \%params;
         bless $self, $class;
     }
-    sub subr { say 'ok ', $_[0]->{'a'} };
+    sub subr { say 'ok ', $_[0]->{a} };
 
 
 package Main;
@@ -19,6 +19,6 @@ package Main;
     my $other = Other->new1( 'a' => 2 );
     $other->subr();
 
-    $other->{'a'} = 3;
-    say 'ok ', $other->{'a'};
+    $other->{a} = 3;
+    say 'ok ', $other->{a};
 

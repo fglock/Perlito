@@ -22,7 +22,7 @@ sub subr2 {
     $a + $b + $c
 }
 
-sub my_accessor { $_[0]->{'my_accessor'} + 1 }
+sub my_accessor { $_[0]->{my_accessor} + 1 }
 
 package Main;
     
@@ -48,8 +48,8 @@ package Main;
 
 
     my $obj = Other->new( my_accessor => '123' );
-    print 'not ' if $obj->{'my_accessor'} ne '123';
-    say 'ok 3 - ', $obj->{'my_accessor'};
+    print 'not ' if $obj->{my_accessor} ne '123';
+    say 'ok 3 - ', $obj->{my_accessor};
 
     print 'not ' if $obj->my_accessor ne '124';
     say 'ok 4 - ', $obj->my_accessor;

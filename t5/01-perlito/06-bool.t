@@ -72,11 +72,11 @@ sub new {
 
     my $h = {}; 
     say +( $h ? "" : "not " ), "ok 29 - hash in scalar";
-    $h->{'x'} = 0;
+    $h->{x} = 0;
     say +( $h ? "" : "not " ), "ok 30";
 
     my %h; 
     say +( %h ? "not " : "" ), "ok 31 - hash";
-    $h{'x'} = 0;
+    $h{x} = 0;
     say +( %h ? "" : "not " ), "ok 32";
 
