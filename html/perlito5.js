@@ -1897,13 +1897,26 @@ var p5100 = p5pkg['main'];
 				}
 			});
 			p5make_sub("Perlito5::AST::Lookup", "emit_javascript_index", function (List__, p5want) {
+				try {
 					var v_self = null;
 					(v_self = (p5111.shift([List__])));
 					var v_index = null;
 					(v_index = (p5111.shift([List__])));
 					var v_level = null;
 					(v_level = (p5111.shift([List__])));
+					if ( (p5bool(p5call(v_index, "isa", ['Perlito5::AST::Apply'], 0)) && !( ((v_index || (v_index = new p5HashRef({})))._hash_['arguments'] != null))) ) {
+						throw(p5call(p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", p5list_to_a('buf', (v_index || (v_index = new p5HashRef({})))._hash_['code']), p5want), "emit_javascript", [v_level], p5want));
+					};
 					return (p5call(v_index, "emit_javascript", [v_level], p5want));
+				}
+				catch(err) {
+					if ( err instanceof Error ) {
+						throw(err);
+					}
+					else {
+						return(err);
+					}
+				}
 			});
 		};
 		var p5112 = p5make_package("Perlito5::AST::Var");

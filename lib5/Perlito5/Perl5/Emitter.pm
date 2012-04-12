@@ -287,6 +287,9 @@ for ($_) {
         if (($code eq 'return')) {
             return ((Perlito5::Perl5::tab($level) . 'return (' . join(', ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')'))
         };
+        if (!(defined($self->{'arguments'}))) {
+            return ((Perlito5::Perl5::tab($level) . $code))
+        };
         (Perlito5::Perl5::tab($level) . $code . '(' . join(', ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')')
     };
     sub Perlito5::AST::Apply::emit_perl5_bind {

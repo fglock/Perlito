@@ -42,8 +42,8 @@ TODO list for Perlito5
 -- parse "local $x[1]"
 -- parse local $@
 
--- $v{x} doesn't autoquote the index
--- $v{x} doesn't interpolate inside double quotes
+-- $v{x::y} autoquotes the index when x::y() exists
+-- $v->{x} doesn't interpolate inside double quotes
 -- deref inside double quotes:
     $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
     [$[object Object]]

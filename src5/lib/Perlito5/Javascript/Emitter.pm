@@ -707,12 +707,14 @@ package Perlito5::AST::Lookup;
         my $index = shift;
         my $level = shift;
 
-        # TODO
+        # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
+        # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
+        # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
+        # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
 
-        # ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
-        # ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
-        # ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
-        # ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
+        if ($index->isa('Perlito5::AST::Apply') && !defined $index->{'arguments'}) {
+            return Perlito5::AST::Val::Buf->new( buf => $index->{'code'} )->emit_javascript($level);
+        }
 
         $index->emit_javascript($level);
     }

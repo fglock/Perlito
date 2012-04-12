@@ -431,6 +431,10 @@ package Perlito5::AST::Apply;
             return Perlito5::Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
         }
 
+        if (!defined $self->{"arguments"}) {
+            return Perlito5::Perl5::tab($level) . $code;
+        }
+
         Perlito5::Perl5::tab($level) . $code . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
     }
 
