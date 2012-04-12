@@ -433,7 +433,7 @@ for ($_) {
         ((my  $self) = shift());
         ((my  $index) = shift());
         ((my  $level) = shift());
-        if (($index->isa('Perlito5::AST::Apply') && !(defined($index->{'arguments'})))) {
+        if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
             return (Perlito5::AST::Val::Buf->new(('buf' => $index->{'code'}))->emit_javascript($level))
         };
         $index->emit_javascript($level)

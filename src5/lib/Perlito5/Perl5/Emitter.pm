@@ -431,7 +431,7 @@ package Perlito5::AST::Apply;
             return Perlito5::Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
         }
 
-        if (!defined $self->{"arguments"}) {
+        if ( $self->{"bareword"} && !@{$self->{"arguments"}} ) {
             return Perlito5::Perl5::tab($level) . $code;
         }
 

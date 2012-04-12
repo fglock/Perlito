@@ -712,7 +712,10 @@ package Perlito5::AST::Lookup;
         # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
         # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
 
-        if ($index->isa('Perlito5::AST::Apply') && !defined $index->{'arguments'}) {
+        if ($index->isa('Perlito5::AST::Apply') 
+           && $index->{"bareword"}
+           )
+        {
             return Perlito5::AST::Val::Buf->new( buf => $index->{'code'} )->emit_javascript($level);
         }
 

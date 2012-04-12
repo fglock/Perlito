@@ -109,11 +109,11 @@ package Perlito5::Grammar::Bareword;
 
         # say "calling $effective_name ($sig)";
 
+        my $has_paren = 0;
         if ( defined $sig ) {
 
             if ( $sig eq '' ) {
                 # empty sig - we allow (), but only if it is empty
-                my $has_paren = 0;
                 if ( substr($str, $p, 1) eq '(' ) {
                     $p++;
                     $has_paren = 1;
@@ -131,7 +131,8 @@ package Perlito5::Grammar::Bareword;
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
-                            arguments => $has_paren ? [] : undef
+                            arguments => [],
+                            bareword  => ($has_paren == 0)
                         )
                     ];
                 $m_name->{"to"} = $p;
@@ -145,6 +146,7 @@ package Perlito5::Grammar::Bareword;
                     $m = Perlito5::Expression->term_paren( $str, $p );
                     if ( !$m ) { return $m };
                     $p = $m->{"to"};
+                    $has_paren = 1;
                     $arg = $m->{"capture"}[2];
                     $arg = Perlito5::Expression::expand_list( $arg );
                     my $v = shift @{ $arg };
@@ -168,6 +170,7 @@ package Perlito5::Grammar::Bareword;
                 my @args;
                 if ( defined $arg ) {
                     push @args, $arg;
+                    $has_paren = 1;
                 }
                 else {
                     die "Not enough arguments for $name"
@@ -184,7 +187,8 @@ package Perlito5::Grammar::Bareword;
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
-                            arguments => \@args
+                            arguments => \@args,
+                            bareword  => ($has_paren == 0)
                         )
                     ];
                 return $m;

@@ -84,7 +84,7 @@ sub pop_term {
         }
         if ($v->[1] eq 'funcall_no_params') {
             # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
-            $v = Perlito5::AST::Apply->new( code => $v->[3], namespace => $v->[2], arguments => undef );
+            $v = Perlito5::AST::Apply->new( code => $v->[3], namespace => $v->[2], arguments => [], bareword => 1 );
             # say "#     ", $v->perl;
             return $v;
         }

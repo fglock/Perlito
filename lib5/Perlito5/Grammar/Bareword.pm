@@ -52,9 +52,9 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             ($sig = undef())
         }
     };
+    ((my  $has_paren) = 0);
     if (defined($sig)) {
         if (($sig eq '')) {
-            ((my  $has_paren) = 0);
             if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;
                 ($has_paren = 1);
@@ -67,7 +67,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 };
                 ($p)++
             };
-            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => ($has_paren ? [] : undef())))]);
+            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => []), ('bareword' => (($has_paren == 0))))]);
             ($m_name->{'to'} = $p);
             return ($m_name)
         };
@@ -80,6 +80,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     return ($m)
                 };
                 ($p = $m->{'to'});
+                ($has_paren = 1);
                 ($arg = $m->{'capture'}->[2]);
                 ($arg = Perlito5::Expression::expand_list($arg));
                 ((my  $v) = shift(@{$arg}));
@@ -106,7 +107,8 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             };
             (my  @args);
             if (defined($arg)) {
-                push(@args, $arg )
+                push(@args, $arg );
+                ($has_paren = 1)
             }
             else {
                 if (($sig eq '$')) {
@@ -116,7 +118,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     push(@args, Perlito5::AST::Var->new(('namespace' => ''), ('name' => '_'), ('sigil' => '$')) )
                 }
             };
-            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => \@args))]);
+            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => \@args), ('bareword' => (($has_paren == 0))))]);
             return ($m)
         }
     };

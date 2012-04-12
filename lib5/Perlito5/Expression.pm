@@ -66,7 +66,7 @@ sub Perlito5::Expression::pop_term {
             return ($v)
         };
         if (($v->[1] eq 'funcall_no_params')) {
-            ($v = Perlito5::AST::Apply->new(('code' => $v->[3]), ('namespace' => $v->[2]), ('arguments' => undef())));
+            ($v = Perlito5::AST::Apply->new(('code' => $v->[3]), ('namespace' => $v->[2]), ('arguments' => []), ('bareword' => 1)));
             return ($v)
         };
         if (($v->[1] eq 'methcall')) {
