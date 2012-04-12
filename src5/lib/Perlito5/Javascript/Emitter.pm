@@ -151,10 +151,10 @@ package Perlito5::Javascript;
             my $level = shift;
             my $wantarray = 'scalar';
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{"arguments"} && @{$cond->{"arguments"}}
+               && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_str( $cond->{"arguments"}[0], $level )
+                return to_str( $cond->{arguments}[0], $level )
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
@@ -188,10 +188,10 @@ package Perlito5::Javascript;
             my $wantarray = 'scalar';
 
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{"arguments"} && @{$cond->{"arguments"}}
+               && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_bool( $cond->{"arguments"}[0], $level )
+                return to_bool( $cond->{arguments}[0], $level )
             }
 
             # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
@@ -201,8 +201,8 @@ package Perlito5::Javascript;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{"arguments"}->[0], $level) . ' && '
-                           . to_bool($cond->{"arguments"}->[1], $level) . ')'
+                return '(' . to_bool($cond->{arguments}->[0], $level) . ' && '
+                           . to_bool($cond->{arguments}->[1], $level) . ')'
             }
             if (  $cond->isa( 'Perlito5::AST::Apply' ) 
                && (  $cond->code eq 'infix:<||>'
@@ -210,8 +210,8 @@ package Perlito5::Javascript;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{"arguments"}->[0], $level) . ' || '
-                           . to_bool($cond->{"arguments"}->[1], $level) . ')'
+                return '(' . to_bool($cond->{arguments}->[0], $level) . ' || '
+                           . to_bool($cond->{arguments}->[1], $level) . ')'
             }
 
             if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
@@ -231,12 +231,12 @@ package Perlito5::Javascript;
          && !$_[0]->isa( 'Perlito5::AST::Val::Num' )
          && !$_[0]->isa( 'Perlito5::AST::Val::Buf' )
          && !$_[0]->isa( 'Perlito5::AST::Sub' )
-         && !($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{"sigil"} eq '$')
+         && !($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{sigil} eq '$')
          && !($_[0]->isa( 'Perlito5::AST::Apply' ) 
-             && (  exists($op_to_str{ $_[0]->{"code"} })
-                || exists($op_to_num{ $_[0]->{"code"} })
-                || exists($op_to_bool{ $_[0]->{"code"} })
-                || $_[0]->{"code"} eq 'prefix:<\\>'
+             && (  exists($op_to_str{ $_[0]->{code} })
+                || exists($op_to_num{ $_[0]->{code} })
+                || exists($op_to_bool{ $_[0]->{code} })
+                || $_[0]->{code} eq 'prefix:<\\>'
                 )
              )
     }
@@ -378,15 +378,15 @@ package Perlito5::Javascript;
 package Perlito5::Javascript::LexicalBlock;
 {
     sub new { my $class = shift; bless {@_}, $class }
-    sub block { $_[0]->{'block'} }
-    sub needs_return { $_[0]->{'needs_return'} }
-    sub top_level { $_[0]->{'top_level'} }
+    sub block { $_[0]->{block} }
+    sub needs_return { $_[0]->{needs_return} }
+    sub top_level { $_[0]->{top_level} }
     # sub create_context ... 
 
     sub has_decl {
         my $self = $_[0];
         my $type = $_[1];
-        for my $decl ( @{$self->{"block"}} ) {
+        for my $decl ( @{$self->{block}} ) {
             if (defined $decl) {
                 if (  $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq $type
                    || $decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq $type
@@ -414,7 +414,7 @@ package Perlito5::Javascript::LexicalBlock;
         my $level = shift;
 
         my @block;
-        for (@{$self->{"block"}}) {
+        for (@{$self->{block}}) {
             if (defined($_)) {
                 push @block, $_
             }
@@ -425,17 +425,17 @@ package Perlito5::Javascript::LexicalBlock;
         my $out = '';
         my @str;
         my $has_local = $self->has_decl("local");
-        my $create_context = $self->{"create_context"} && $self->has_decl("my");
+        my $create_context = $self->{create_context} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
         unshift @{ $Perlito5::VAR }, {};
 
         $Perlito5::THROW = 0
-            if $self->{"top_level"};
+            if $self->{top_level};
 
         $out .= Perlito5::Javascript::tab($level) . "var local_idx = p5LOCAL.length;\n"
             if $has_local;
-        if ($self->{"top_level"}) {
+        if ($self->{top_level}) {
             $level++;
         }
         if ( $create_context ) {
@@ -445,12 +445,12 @@ package Perlito5::Javascript::LexicalBlock;
 
         my $tab = Perlito5::Javascript::tab($level);
         my $last_statement;
-        if ($self->{"needs_return"}) {
+        if ($self->{needs_return}) {
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
-                $Perlito5::PKG_NAME = $decl->{"namespace"};
+                $Perlito5::PKG_NAME = $decl->{namespace};
                 $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
@@ -461,7 +461,7 @@ package Perlito5::Javascript::LexicalBlock;
             }
             # TODO - local, our
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'my' ) {
-                for (@{$decl->{"arguments"}}) {
+                for (@{$decl->{arguments}}) {
                     if ($_->isa( 'Perlito5::AST::Var' )) {
                         my $d = Perlito5::AST::Decl->new( decl => $decl->code, var => $_ );
                         push @str, $d->emit_javascript_init;
@@ -469,13 +469,13 @@ package Perlito5::Javascript::LexicalBlock;
                 }
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                my $arg = $decl->{"arguments"}[0];
+                my $arg = $decl->{arguments}[0];
                 if ($arg->isa( 'Perlito5::AST::Decl' )) {
                     push @str, $arg->emit_javascript_init;
                 }
                 # TODO - local, our
                 if ($arg->isa( 'Perlito5::AST::Apply' ) && $arg->code eq 'my' ) {
-                    for (@{$arg->{"arguments"}}) {
+                    for (@{$arg->{arguments}}) {
                         if ($_->isa( 'Perlito5::AST::Var' )) {
                             my $d = Perlito5::AST::Decl->new( decl => $arg->code, var => $_ );
                             push @str, $d->emit_javascript_init;
@@ -488,22 +488,22 @@ package Perlito5::Javascript::LexicalBlock;
                 push @str, $decl->emit_javascript($level, 'void') . ';';
             }
         }
-        if ($self->{"needs_return"} && $last_statement) {
+        if ($self->{needs_return} && $last_statement) {
 
             if ($last_statement->isa( 'Perlito5::AST::Decl' )) {
                 push @str, $last_statement->emit_javascript_init;
             }
             if ($last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'infix:<=>') {
-                if ($last_statement->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
-                    push @str, $last_statement->{"arguments"}[0]->emit_javascript_init;
+                if ($last_statement->{arguments}[0]->isa( 'Perlito5::AST::Decl' )) {
+                    push @str, $last_statement->{arguments}[0]->emit_javascript_init;
                 }
             }
             if  (  $last_statement->isa( 'Perlito5::AST::Apply' ) 
                 && $last_statement->code eq 'return'
-                && $self->{"top_level"}
+                && $self->{top_level}
                 ) 
             {
-                $last_statement = $last_statement->{"arguments"}[0];
+                $last_statement = $last_statement->{arguments}[0];
             }
 
             if ($last_statement->isa( 'Perlito5::AST::If' )) {
@@ -524,7 +524,7 @@ package Perlito5::Javascript::LexicalBlock;
                 }
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::Lit::Block' ) ) {
-                my $body = Perlito5::Javascript::LexicalBlock->new( block => $last_statement->{"stmts"}, needs_return => 1 );
+                my $body = Perlito5::Javascript::LexicalBlock->new( block => $last_statement->{stmts}, needs_return => 1 );
                 push @str,
                       'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
                     .   $body->emit_javascript( $level + 1 ) . "\n"
@@ -554,7 +554,7 @@ package Perlito5::Javascript::LexicalBlock;
             $level--;
             push @str, "})();";
         }
-        if ($self->{"top_level"} && $Perlito5::THROW) {
+        if ($self->{top_level} && $Perlito5::THROW) {
             $level--;
             $out .= 
                   Perlito5::Javascript::tab($level) . "try {\n"
@@ -579,7 +579,7 @@ package Perlito5::Javascript::LexicalBlock;
         }
         $Perlito5::PKG_NAME = $outer_pkg;
         $Perlito5::THROW    = $outer_throw
-            if $self->{"top_level"};
+            if $self->{top_level};
         shift @{ $Perlito5::VAR };
         return $out;
     }
@@ -592,7 +592,7 @@ package Perlito5::AST::CompUnit;
         my $self = $_[0];
         my $level = $_[1];
         my $str = "(function () {\n"
-            .   Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}, needs_return => 0 )->emit_javascript( $level + 1 ) . "\n"
+            .   Perlito5::Javascript::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript( $level + 1 ) . "\n"
             . Perlito5::Javascript::tab($level) . "})()\n";
         return $str;
     }
@@ -628,7 +628,7 @@ package Perlito5::AST::Val::Int;
     sub emit_javascript {
         my $self  = shift;
         my $level = shift;
-        $self->{"int"};
+        $self->{int};
     }
 }
 
@@ -637,7 +637,7 @@ package Perlito5::AST::Val::Num;
     sub emit_javascript {
         my $self  = shift;
         my $level = shift;
-        $self->{"num"};
+        $self->{num};
     }
 }
 
@@ -646,7 +646,7 @@ package Perlito5::AST::Val::Buf;
     sub emit_javascript {
         my $self  = shift;
         my $level = shift;
-        Perlito5::Javascript::escape_string( $self->{"buf"} );
+        Perlito5::Javascript::escape_string( $self->{buf} );
     }
 }
 
@@ -655,7 +655,7 @@ package Perlito5::AST::Lit::Block;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"stmts"}, needs_return => 0 );
+        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0 );
         return
               'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
             .   $body->emit_javascript( $level + 1 ) . "\n"
@@ -669,16 +669,16 @@ package Perlito5::AST::Index;
         my $self = shift;
         my $level = shift;
 
-        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
-           && $self->{"obj"}->sigil eq '$'
+        if (  $self->{obj}->isa('Perlito5::AST::Var')
+           && $self->{obj}->sigil eq '$'
            )
         {
-            my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
-            return $v->emit_javascript($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
+            my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
+            return $v->emit_javascript($level) . '[' . $self->{index_exp}->emit_javascript() . ']';
         }
 
-          Perlito5::Javascript::emit_javascript_autovivify( $self->{"obj"}, $level, 'array' )
-        . '._array_[' . $self->{"index_exp"}->emit_javascript() . ']';
+          Perlito5::Javascript::emit_javascript_autovivify( $self->{obj}, $level, 'array' )
+        . '._array_[' . $self->{index_exp}->emit_javascript() . ']';
     }
 }
 
@@ -687,19 +687,19 @@ package Perlito5::AST::Lookup;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        # my $var = $self->{"obj"}->emit_javascript;
-        # return $var . '[' . $self->{"index_exp"}->emit_javascript() . ']'
+        # my $var = $self->{obj}->emit_javascript;
+        # return $var . '[' . $self->{index_exp}->emit_javascript() . ']'
 
-        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
-           && $self->{"obj"}->sigil eq '$'
+        if (  $self->{obj}->isa('Perlito5::AST::Var')
+           && $self->{obj}->sigil eq '$'
            )
         {
-            my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
-            return $v->emit_javascript($level) . '[' . $self->emit_javascript_index($self->{"index_exp"}, $level) . ']';
+            my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
+            return $v->emit_javascript($level) . '[' . $self->emit_javascript_index($self->{index_exp}, $level) . ']';
         }
 
-          Perlito5::Javascript::emit_javascript_autovivify( $self->{"obj"}, $level, 'hash' )
-        . '._hash_[' . $self->emit_javascript_index($self->{"index_exp"}, $level) . ']';
+          Perlito5::Javascript::emit_javascript_autovivify( $self->{obj}, $level, 'hash' )
+        . '._hash_[' . $self->emit_javascript_index($self->{index_exp}, $level) . ']';
     }
 
     sub emit_javascript_index {
@@ -713,10 +713,10 @@ package Perlito5::AST::Lookup;
         # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
 
         if ($index->isa('Perlito5::AST::Apply') 
-           && $index->{"bareword"}
+           && $index->{bareword}
            )
         {
-            return Perlito5::AST::Val::Buf->new( buf => $index->{'code'} )->emit_javascript($level);
+            return Perlito5::AST::Val::Buf->new( buf => $index->{code} )->emit_javascript($level);
         }
 
         $index->emit_javascript($level);
@@ -742,12 +742,12 @@ package Perlito5::AST::Var;
         my $decl_type;  # my, our, local
         my $decl = $self->perl5_get_decl( $perl5_name );
         if ( $decl ) {
-            # say "found ", $decl->{"decl"};
-            $decl_type = $decl->{"decl"};
+            # say "found ", $decl->{decl};
+            $decl_type = $decl->{decl};
         }
         else {
-            if ( !$self->{"namespace"}
-               && $self->{"sigil"} ne '*' 
+            if ( !$self->{namespace}
+               && $self->{sigil} ne '*' 
                )
             {
                 if ( $Perlito5::STRICT ) {
@@ -755,24 +755,24 @@ package Perlito5::AST::Var;
                 }
                 # no strict - "auto-declare" the var
                 $decl_type = 'our';
-                $self->{"namespace"} = $Perlito5::PKG_NAME;
+                $self->{namespace} = $Perlito5::PKG_NAME;
 
-                my $sigil = $self->{"sigil"} eq '$#' ? '@' : $self->{"sigil"};
-                my $s = 'p5pkg["' . $self->{"namespace"} . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+                my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
+                my $s = 'p5pkg["' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
 
                 if ($sigil eq '@') {
                     $s = $s . ' || (' . $s . ' = [])';  # init
-                    $s = 'p5pkg[' . $s . ', "' . $self->{"namespace"} . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
                 }
 
-                if ($self->{"sigil"} eq '$#') {
+                if ($self->{sigil} eq '$#') {
                     return '(' . $s . '.length - 1)';
                 }
                 return $s;
             }
         }
 
-        if ( $self->{"sigil"} eq '@' ) {
+        if ( $self->{sigil} eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_javascript($level, 'list') . '.length';
             }
@@ -784,50 +784,50 @@ package Perlito5::AST::Var;
             }
         }
 
-        if ( $self->{"sigil"} eq '&' ) {
-            return 'p5pkg["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+        if ( $self->{sigil} eq '&' ) {
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $self->{name} . '"]';
         }
-        if ( $self->{"sigil"} eq '*' ) {
-            return 'p5pkg["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+        if ( $self->{sigil} eq '*' ) {
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $self->{name} . '"]';
         }
         if ( $decl_type eq 'our' ) {
 
-            my $sigil = $self->{"sigil"} eq '$#' ? '@' : $self->{"sigil"};
-            my $s = 'p5pkg["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+            my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
+            my $s = 'p5pkg["' . ($self->{namespace} || $decl->{namespace}) . '"]["' . $table->{$sigil} . $self->{name} . '"]';
 
-            if ($self->{"sigil"} eq '$#') {
+            if ($self->{sigil} eq '$#') {
                 return '(' . $s . '.length - 1)';
             }
             return $s;
         }
 
         my $ns = '';
-        if ($self->{"namespace"}) {
-            $ns = 'p5pkg["' . $self->{"namespace"} . '"]';
-            if ($self->{"sigil"} eq '$#') {
-                return '(' . $ns . '["' . $table->{'@'} . $self->{"name"} . '"].length - 1)';
+        if ($self->{namespace}) {
+            $ns = 'p5pkg["' . $self->{namespace} . '"]';
+            if ($self->{sigil} eq '$#') {
+                return '(' . $ns . '["' . $table->{'@'} . $self->{name} . '"].length - 1)';
             }
-            return $ns . '["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]'
+            return $ns . '["' . $table->{$self->{sigil}} . $self->{name} . '"]'
         }
 
-        if ($self->{"sigil"} eq '$#') {
-            return '(' . $ns . $table->{'@'} . $self->{"name"} . '.length - 1)';
+        if ($self->{sigil} eq '$#') {
+            return '(' . $ns . $table->{'@'} . $self->{name} . '.length - 1)';
         }
 
-        $ns . $table->{$self->{"sigil"}} . $self->{"name"}
+        $ns . $table->{$self->{sigil}} . $self->{name}
     }
     sub perl5_name {
         my $self = shift;
 
-        my $sigil = $self->{'sigil'};
+        my $sigil = $self->{sigil};
         $sigil = '@' if $sigil eq '$#';
 
         $sigil
-        . ( $self->{"namespace"}
-          ? $self->{"namespace"} . '::'
+        . ( $self->{namespace}
+          ? $self->{namespace} . '::'
           : ''
           )
-        . $self->{"name"}
+        . $self->{name}
     }
     sub perl5_get_decl {
         my $self = shift;
@@ -845,39 +845,39 @@ package Perlito5::AST::Decl;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        $self->{"var"}->emit_javascript( $level );
+        $self->{var}->emit_javascript( $level );
     }
     sub emit_javascript_init {
         my $self = shift;
 
-        my $env = { decl => $self->{"decl"} };
-        my $perl5_name = $self->{"var"}->perl5_name;
-        if ( $self->{"decl"} ne 'my' ) {
+        my $env = { decl => $self->{decl} };
+        my $perl5_name = $self->{var}->perl5_name;
+        if ( $self->{decl} ne 'my' ) {
 
             die "No package name allowed for variable $perl5_name in \"our\""
-                if $self->{"decl"} eq 'our' && $self->{"var"}{"namespace"};
+                if $self->{decl} eq 'our' && $self->{var}{namespace};
 
-            if ( $self->{"var"}{"namespace"} eq '' ) {
+            if ( $self->{var}{namespace} eq '' ) {
                 # say "looking up $perl5_name";
                 my $decl_namespace = '';
-                my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
-                if ( $self->{"decl"} eq 'local' && $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
-                    # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
-                    $decl_namespace = $decl->{"namespace"};
+                my $decl = $self->{var}->perl5_get_decl( $perl5_name );
+                if ( $self->{decl} eq 'local' && $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
+                    # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
+                    $decl_namespace = $decl->{namespace};
                 }
-                $env->{"namespace"} = $decl_namespace || $Perlito5::PKG_NAME;
+                $env->{namespace} = $decl_namespace || $Perlito5::PKG_NAME;
             }
         }
 
         $Perlito5::VAR->[0]{ $perl5_name } = $env;
 
-        if ($self->{"decl"} eq 'my') {
+        if ($self->{decl} eq 'my') {
             my $str = "";
-            $str = $str . 'var ' . $self->{"var"}->emit_javascript() . ' = ';
-            if ($self->{"var"}->sigil eq '%') {
+            $str = $str . 'var ' . $self->{var}->emit_javascript() . ' = ';
+            if ($self->{var}->sigil eq '%') {
                 $str = $str . '{};';
             }
-            elsif ($self->{"var"}->sigil eq '@') {
+            elsif ($self->{var}->sigil eq '@') {
                 $str = $str . '[];';
             }
             else {
@@ -885,42 +885,42 @@ package Perlito5::AST::Decl;
             }
             return $str;
         }
-        elsif ($self->{"decl"} eq 'our') {
+        elsif ($self->{decl} eq 'our') {
             # TODO
-            return '// our ' . $self->{"var"}->emit_javascript();
+            return '// our ' . $self->{var}->emit_javascript();
         }
-        elsif ($self->{"decl"} eq 'local') {
+        elsif ($self->{decl} eq 'local') {
             # TODO - add grammar support
             # if ($self->var->isa("Lookup")) {
             #     return 
-            #         'p5set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
-            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
+            #         'p5set_local(' . $self->var->{obj}->emit_javascript() . ', '
+            #                      . $self->var->{index_exp}->emit_javascript() . ', '
             #                      . '""); '
-            #         . $self->{"var"}->emit_javascript( $level );
+            #         . $self->{var}->emit_javascript( $level );
             # }
 
-            my $perl5_name = $self->{"var"}->perl5_name;
+            my $perl5_name = $self->{var}->perl5_name;
             # say "looking up $perl5_name";
             my $decl_namespace = '';
-            my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
-            if ( $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
-                # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
-                $decl_namespace = $decl->{"namespace"};
+            my $decl = $self->{var}->perl5_get_decl( $perl5_name );
+            if ( $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
+                # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
+                $decl_namespace = $decl->{namespace};
             }
 
-            my $ns = 'p5pkg["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
+            my $ns = 'p5pkg["' . ($self->{var}{namespace} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
 
             return
                   'p5set_local(' . $ns . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
+                               . Perlito5::Javascript::escape_string($self->{var}{name}) . ','
+                               . Perlito5::Javascript::escape_string($self->{var}{sigil}) . '); ' 
         }
-        elsif ($self->{"decl"} eq 'state') {
+        elsif ($self->{decl} eq 'state') {
             # TODO
-            return '// state ' . $self->{"var"}->emit_javascript();
+            return '// state ' . $self->{var}->emit_javascript();
         }
         else {
-            die "not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'";
+            die "not implemented: Perlito5::AST::Decl '" . $self->{decl} . "'";
         }
     }
 }
@@ -931,8 +931,8 @@ package Perlito5::AST::Proto;
         my $self = shift;
         my $level = shift;
         return Perlito5::Javascript::pkg()
-            if $self->{"name"} eq '__PACKAGE__';
-        'p5pkg["' . $self->{"name"} . '"]'
+            if $self->{name} eq '__PACKAGE__';
+        'p5pkg["' . $self->{name} . '"]'
     }
 }
 
@@ -943,20 +943,20 @@ package Perlito5::AST::Call;
         my $level = shift;
         my $wantarray = shift;
 
-        my $meth = $self->{"method"};
+        my $meth = $self->{method};
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
-            return Perlito5::Javascript::emit_javascript_autovivify( $self->{"invocant"}, $level, 'array' )
-                . '._array_[' . $self->{"arguments"}->emit_javascript($level, 'list') . ']';
+            return Perlito5::Javascript::emit_javascript_autovivify( $self->{invocant}, $level, 'array' )
+                . '._array_[' . $self->{arguments}->emit_javascript($level, 'list') . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
-            return Perlito5::Javascript::emit_javascript_autovivify( $self->{"invocant"}, $level, 'hash' )
-                . '._hash_[' . Perlito5::AST::Lookup->emit_javascript_index($self->{"arguments"}, $level, 'list') . ']';
+            return Perlito5::Javascript::emit_javascript_autovivify( $self->{invocant}, $level, 'hash' )
+                . '._hash_[' . Perlito5::AST::Lookup->emit_javascript_index($self->{arguments}, $level, 'list') . ']';
         }
 
-        my $invocant = $self->{"invocant"}->emit_javascript;
+        my $invocant = $self->{invocant}->emit_javascript;
         if  ($meth eq 'postcircumfix:<( )>')  {
-            return '(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{"arguments"}) . ')';
+            return '(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{arguments}) . ')';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_javascript();
@@ -966,7 +966,7 @@ package Perlito5::AST::Call;
         }
         return 'p5call(' . $invocant . ', ' 
                          . $meth . ', ' 
-                         . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
+                         . Perlito5::Javascript::to_list($self->{arguments}) . ', '
                          .   ($wantarray eq 'list'   ? '1' 
                              :$wantarray eq 'scalar' ? '0' 
                              :$wantarray eq 'void'   ? 'null'
@@ -985,15 +985,15 @@ package Perlito5::AST::Apply;
         my $regex = shift;
 
         my $str;
-        my $code = $regex->{"code"};
-        my $regex_args = $regex->{"arguments"};
+        my $code = $regex->{code};
+        my $regex_args = $regex->{arguments};
         if ($code eq 'p5:s') {
             $str = $var->emit_javascript() 
-                 . ' = p5str(' . $var->emit_javascript() . ').replace(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[2] . ', '
+                 . ' = p5str(' . $var->emit_javascript() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2] . ', '
                  .  $regex_args->[1]->emit_javascript() . ')';
         }
         elsif ($code eq 'p5:m') {
-            $str = '(p5str(' . $var->emit_javascript() . ').match(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[1] . ')'
+            $str = '(p5str(' . $var->emit_javascript() . ').match(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[1] . ')'
                     . ' ? 1 : 0)';
         }
         else {
@@ -1026,11 +1026,11 @@ package Perlito5::AST::Apply;
     my %emit_js = (
         'infix:<=~>' => sub {
             my $self = $_[0];
-            emit_regex_javascript( '=~', $self->{"arguments"}->[0], $self->{"arguments"}->[1] );
+            emit_regex_javascript( '=~', $self->{arguments}->[0], $self->{arguments}->[1] );
         },
         'infix:<!~>' => sub {
             my $self = $_[0];
-            emit_regex_javascript( '!~', $self->{"arguments"}->[0], $self->{"arguments"}->[1] );
+            emit_regex_javascript( '!~', $self->{arguments}->[0], $self->{arguments}->[1] );
         },
         'p5:s' => sub {
             my $self = $_[0];
@@ -1050,94 +1050,94 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            "var " . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{"namespace"} . '")';
+            "var " . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{namespace} . '")';
         },
         'infix:<=>>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            join( ', ', map( $_->emit_javascript($level), @{ $self->{"arguments"} } ) );
+            join( ', ', map( $_->emit_javascript($level), @{ $self->{arguments} } ) );
         },
         'infix:<cmp>' => sub {
             my $self = $_[0];
-            'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_str($_), @{ $self->{"arguments"} } ) ) . ')';
+            'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_str($_), @{ $self->{arguments} } ) ) . ')';
         },
         'infix:<<=>>' => sub {
             my $self = $_[0];
-            'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{"arguments"} } ) ) . ')';
+            'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<!>' => sub {
             my $self      = shift;
             my $level     = shift;
-            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0], $level ) . ')';
+            '!( ' . Perlito5::Javascript::to_bool( $self->{arguments}->[0], $level ) . ')';
         },
         'prefix:<not>' => sub {
             my $self      = shift;
             my $level     = shift;
-            '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0], $level ) . ')';
+            '!( ' . Perlito5::Javascript::to_bool( $self->{arguments}->[0], $level ) . ')';
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
-            '~( ' . Perlito5::Javascript::to_num( $self->{"arguments"}->[0] ) . ')';
+            '~( ' . Perlito5::Javascript::to_num( $self->{arguments}->[0] ) . ')';
         },
         'prefix:<->' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '-( ' . $self->{"arguments"}->[0]->emit_javascript( $level, 'scalar' ) . ')';
+            '-( ' . $self->{arguments}->[0]->emit_javascript( $level, 'scalar' ) . ')';
         },
         'prefix:<+>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '(' . $self->{"arguments"}->[0]->emit_javascript( $level, $wantarray ) . ')';
+            '(' . $self->{arguments}->[0]->emit_javascript( $level, $wantarray ) . ')';
         },
         'require' => sub {
             my $self = $_[0];
-            'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str( $self->{"arguments"}[0] ) . '])';
+            'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str( $self->{arguments}[0] ) . '])';
         },
 
         'prefix:<$>' => sub {
             my $self = $_[0];
-            my $arg  = $self->{"arguments"}->[0];
+            my $arg  = $self->{arguments}->[0];
             Perlito5::Javascript::emit_javascript_autovivify( $arg, $level, 'scalar' ) . '._scalar_';
         },
         'prefix:<@>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
-            my $arg   = $self->{"arguments"}->[0];
+            my $arg   = $self->{arguments}->[0];
             Perlito5::Javascript::emit_javascript_autovivify( $arg, $level, 'array' ) . '._array_';
         },
         'prefix:<$#>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
-            my $arg   = $self->{"arguments"}->[0];
+            my $arg   = $self->{arguments}->[0];
             '(' . Perlito5::Javascript::emit_javascript_autovivify( $arg, $level, 'array' ) . '._array_.length - 1)';
         },
         'prefix:<%>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
-            my $arg   = $self->{"arguments"}->[0];
+            my $arg   = $self->{arguments}->[0];
             Perlito5::Javascript::emit_javascript_autovivify( $arg, $level, 'hash' ) . '._hash_';
         },
         'prefix:<&>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
-            my $arg   = $self->{"arguments"}->[0];
+            my $arg   = $self->{arguments}->[0];
             'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript($level) . ')';
         },
         'circumfix:<[ ]>' => sub {
             my $self = $_[0];
-            '(new p5ArrayRef(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . '))';
+            '(new p5ArrayRef(' . Perlito5::Javascript::to_list( $self->{arguments} ) . '))';
         },
         'circumfix:<{ }>' => sub {
             my $self = $_[0];
-            '(new p5HashRef(' . Perlito5::Javascript::to_list( $self->{"arguments"}, $level, 'hash' ) . '))';
+            '(new p5HashRef(' . Perlito5::Javascript::to_list( $self->{arguments}, $level, 'hash' ) . '))';
         },
         'prefix:<\\>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
-            my $arg   = $self->{"arguments"}->[0];
+            my $arg   = $self->{arguments}->[0];
             if ( $arg->isa('Perlito5::AST::Var') ) {
                 if ( $arg->sigil eq '@' ) {
                     return '(new p5ArrayRef(' . $arg->emit_javascript($level) . '))';
@@ -1146,11 +1146,11 @@ package Perlito5::AST::Apply;
                     return '(new p5HashRef(' . $arg->emit_javascript($level) . '))';
                 }
                 if ( $arg->sigil eq '&' ) {
-                    if ( $arg->{"namespace"} ) {
-                        return 'p5pkg["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
+                    if ( $arg->{namespace} ) {
+                        return 'p5pkg["' . $arg->{namespace} . '"].' . $arg->{name};
                     }
                     else {
-                        return Perlito5::Javascript::pkg() . '.' . $arg->{"name"};
+                        return Perlito5::Javascript::pkg() . '.' . $arg->{name};
                     }
                 }
             }
@@ -1159,50 +1159,50 @@ package Perlito5::AST::Apply;
 
         'postfix:<++>' => sub {
             my $self = $_[0];
-            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')++';
+            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{arguments} } ) ) . ')++';
         },
         'postfix:<-->' => sub {
             my $self = $_[0];
-            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')--';
+            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{arguments} } ) ) . ')--';
         },
         'prefix:<++>' => sub {
             my $self = $_[0];
-            '++(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+            '++(' . join( ' ', map( $_->emit_javascript, @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<-->' => sub {
             my $self = $_[0];
-            '--(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+            '--(' . join( ' ', map( $_->emit_javascript, @{ $self->{arguments} } ) ) . ')';
         },
 
         'infix:<x>' => sub {
             my $self = $_[0];
-            'p5str_replicate(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+            'p5str_replicate(' . join( ', ', map( $_->emit_javascript, @{ $self->{arguments} } ) ) . ')';
         },
 
         'list:<.>' => sub {
             my $self = $_[0];
-            '(' . join( ' + ', map( Perlito5::Javascript::to_str($_), @{ $self->{"arguments"} } ) ) . ')';
+            '(' . join( ' + ', map( Perlito5::Javascript::to_str($_), @{ $self->{arguments} } ) ) . ')';
         },
         'list:<,>' => sub {
             my $self = $_[0];
-            Perlito5::Javascript::to_list( $self->{"arguments"} );
+            Perlito5::Javascript::to_list( $self->{arguments} );
         },
 
         'infix:<..>' => sub {
             my $self = $_[0];
-            '(function (a) { ' . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript() . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])';
+            '(function (a) { ' . 'for (var i=' . $self->{arguments}->[0]->emit_javascript() . ', l=' . $self->{arguments}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])';
         },
 
         'delete' => sub {
             my $self = $_[0];
-            '(delete ' . $self->{"arguments"}[0]->emit_javascript() . ')';
+            '(delete ' . $self->{arguments}[0]->emit_javascript() . ')';
         },
 
         'ternary:<? :>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? ' . ( $self->{"arguments"}->[1] )->emit_javascript( $level, $wantarray ) . ' : ' . ( $self->{"arguments"}->[2] )->emit_javascript( $level, $wantarray ) . ')';
+            '( ' . Perlito5::Javascript::to_bool( $self->{arguments}->[0] ) . ' ? ' . ( $self->{arguments}->[1] )->emit_javascript( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_javascript( $level, $wantarray ) . ')';
         },
         'my' => sub {
             my $self      = shift;
@@ -1210,21 +1210,21 @@ package Perlito5::AST::Apply;
             my $wantarray = shift;
 
             # TODO - bug: this is a side-effect of my($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{"arguments"} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{"arguments"} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'infix:<=>' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
 
-            my $parameters = $self->{"arguments"}->[0];
-            my $arguments  = $self->{"arguments"}->[1];
+            my $parameters = $self->{arguments}->[0];
+            my $arguments  = $self->{arguments}->[1];
 
             if (   $parameters->isa( 'Perlito5::AST::Apply' )
                &&  ( $parameters->code eq 'my' || $parameters->code eq 'circumfix:<( )>' )
@@ -1284,12 +1284,12 @@ package Perlito5::AST::Apply;
             my $self      = $_[0];
             my $level     = shift;
             $Perlito5::THROW = 1;
-            'throw(' . Perlito5::Javascript::to_runtime_context( $self->{"arguments"}, $level ) . ')';
+            'throw(' . Perlito5::Javascript::to_runtime_context( $self->{arguments}, $level ) . ')';
         },
         'goto' => sub {
             my $self = $_[0];
             $Perlito5::THROW = 1;
-            'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__, p5want]))';
+            'throw((' . $self->{arguments}->[0]->emit_javascript() . ')([List__, p5want]))';
         },
 
         'do' => sub {
@@ -1305,7 +1305,7 @@ package Perlito5::AST::Apply;
                        Perlito5::AST::Apply->new(
                           code => 'slurp',
                           namespace => 'Perlito5::IO',
-                          arguments => $self->{"arguments"}
+                          arguments => $self->{arguments}
                         )
                     ]
                 );
@@ -1318,7 +1318,7 @@ package Perlito5::AST::Apply;
             my $wantarray = shift;
             $Perlito5::THROW = 1;   # we can return() from inside eval
 
-            my $arg = $self->{"arguments"}->[0];
+            my $arg = $self->{arguments}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
                 $eval = $arg->emit_javascript( $level + 1, $wantarray );
@@ -1364,8 +1364,8 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return '(' . $self->{"arguments"}->[0]->emit_javascript . ' = null)'
+            if ( $self->{arguments} && @{$self->{arguments}} ) {
+                return '(' . $self->{arguments}->[0]->emit_javascript . ' = null)'
             }
             return 'null'
         },
@@ -1374,15 +1374,15 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '('  . join(' ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))    . ' != null)' 
+            '('  . join(' ', map( $_->emit_javascript( $level ), @{$self->{arguments}} ))    . ' != null)' 
         },
 
         'shift' => sub {
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} )) . '])'
+            if ( $self->{arguments} && @{$self->{arguments}} ) {
+                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level ), @{$self->{arguments}} )) . '])'
             }
             return Perlito5::Javascript::pkg() . '.shift([List__])'
         },
@@ -1391,12 +1391,12 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            my @in  = @{$self->{"arguments"}};
+            my @in  = @{$self->{arguments}};
             my $fun  = shift @in;
             my $list = Perlito5::Javascript::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
-                $fun = $fun->{'stmts'}
+                $fun = $fun->{stmts}
             }
             else {
                 $fun = [$fun];
@@ -1415,12 +1415,12 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            my @in  = @{$self->{"arguments"}};
+            my @in  = @{$self->{arguments}};
             my $fun  = shift @in;
             my $list = Perlito5::Javascript::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
-                $fun = $fun->{'stmts'}
+                $fun = $fun->{stmts}
             }
             else {
                 $fun = [$fun];
@@ -1439,7 +1439,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            my @in  = @{$self->{"arguments"}};
+            my @in  = @{$self->{arguments}};
             my $fun;
             my $list;
 
@@ -1448,7 +1448,7 @@ package Perlito5::AST::Apply;
                 $fun = shift @in;
                 $fun =
                       'function (p5want) {' . "\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $fun->{'stmts'}, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $fun->{stmts}, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}'
             }
             else {
@@ -1467,8 +1467,8 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             'p5defined_or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
-                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         },
 
@@ -1476,7 +1476,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            my $arg = $self->{"arguments"}->[0];
+            my $arg = $self->{arguments}->[0];
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
@@ -1484,13 +1484,13 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
-                    return '(' . $v->emit_javascript() . ').hasOwnProperty(' . $arg->emit_javascript_index($arg->{"index_exp"}, $level) . ')';
+                    return '(' . $v->emit_javascript() . ').hasOwnProperty(' . $arg->emit_javascript_index($arg->{index_exp}, $level) . ')';
                 }
-                return '(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->emit_javascript_index($arg->{"index_exp"}, $level) . ')';
+                return '(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->emit_javascript_index($arg->{index_exp}, $level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_javascript() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->emit_javascript_index($arg->{"arguments"}, $level) . ')';
+                    return '(' . $arg->invocant->emit_javascript() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->emit_javascript_index($arg->{arguments}, $level) . ')';
                 }
             }
         },
@@ -1508,13 +1508,13 @@ package Perlito5::AST::Apply;
             return $apply->emit_javascript( $level );
         }
 
-        my $code = $self->{"code"};
+        my $code = $self->{code};
 
         if (ref $code ne '') {
             my @args = ();
             push @args, $_->emit_javascript
-                for @{$self->{"arguments"}};
-            return '(' . $self->{"code"}->emit_javascript( $level ) . ')(' . join(',', @args) . ')';
+                for @{$self->{arguments}};
+            return '(' . $self->{code}->emit_javascript( $level ) . ')(' . join(',', @args) . ')';
         }
 
         return $emit_js{$code}->($self, $level, $wantarray)
@@ -1522,17 +1522,17 @@ package Perlito5::AST::Apply;
 
         if (exists $Perlito5::Javascript::op_infix_js_str{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript::op_infix_js_str{$code}, map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} ))
+                . join( $Perlito5::Javascript::op_infix_js_str{$code}, map( Perlito5::Javascript::to_str($_), @{$self->{arguments}} ))
                 . ')'
         }
         if (exists $Perlito5::Javascript::op_infix_js_num{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript::op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
+                . join( $Perlito5::Javascript::op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{arguments}} ))
                 . ')'
         }
         if (exists $Perlito5::Javascript::op_prefix_js_str{$code}) {
             return $Perlito5::Javascript::op_prefix_js_str{$code} . '(' 
-                . Perlito5::Javascript::to_str($self->{"arguments"}[0])
+                . Perlito5::Javascript::to_str($self->{arguments}[0])
                 . ')'
         }
 
@@ -1541,8 +1541,8 @@ package Perlito5::AST::Apply;
            )
         {
             return 'p5and' . '('
-                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
-                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         }
         if (  $code eq 'infix:<||>'
@@ -1550,27 +1550,27 @@ package Perlito5::AST::Apply;
            )
         {
             return 'p5or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
-                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         }
 
-        if ($self->{"namespace"}) {
+        if ($self->{namespace}) {
 
-            if (  $self->{"namespace"} eq 'JS' 
+            if (  $self->{namespace} eq 'JS' 
                && $code eq 'inline'
                ) 
             {
-                if ( $self->{"arguments"}->[0]->isa('Perlito5::AST::Val::Buf') ) {
+                if ( $self->{arguments}->[0]->isa('Perlito5::AST::Val::Buf') ) {
                     # JS::inline('var x = 123')
-                    return $self->{"arguments"}[0]{"buf"};
+                    return $self->{arguments}[0]{buf};
                 }
                 else {
                     die "JS::inline needs a string constant";
                 }
             }
 
-            $code = 'p5pkg["' . $self->{"namespace"} . '"].' . $code;
+            $code = 'p5pkg["' . $self->{namespace} . '"].' . $code;
         }
         else {
             $code = Perlito5::Javascript::pkg() . '.' . $code
@@ -1578,8 +1578,8 @@ package Perlito5::AST::Apply;
 
         my $sig;
         {
-            my $name = $self->{"code"};+            my $namespace = $self->{"namespace"};
-            my $effective_name = $self->{"code"} . "::" . $self->{"namespace"};
+            my $name = $self->{code};+            my $namespace = $self->{namespace};
+            my $effective_name = $self->{code} . "::" . $self->{namespace};
             if ( exists $Perlito5::PROTO->{$effective_name} ) {
                 $sig = $Perlito5::PROTO->{$effective_name};
             }
@@ -1595,7 +1595,7 @@ package Perlito5::AST::Apply;
         if ($sig) {
             # warn "sig $effective_name $sig\n";
             my @out = ();
-            my @in  = @{$self->{"arguments"} || []};
+            my @in  = @{$self->{arguments} || []};
 
             # TODO - generate the right prototype
 
@@ -1641,12 +1641,12 @@ package Perlito5::AST::Apply;
         }
 
         my @args = ();
-        my $arg_list = Perlito5::Javascript::to_list_preprocess( $self->{"arguments"} );
+        my $arg_list = Perlito5::Javascript::to_list_preprocess( $self->{arguments} );
         push @args, $_->emit_javascript( $level )
             for @$arg_list;
 
         my $arg_code = 
-            $self->{"code"} eq 'scalar'      # scalar() is special
+            $self->{code} eq 'scalar'      # scalar() is special
             ? '[' . join(', ', @args) . ']'
             : Perlito5::Javascript::to_list($arg_list);
 
@@ -1668,13 +1668,13 @@ package Perlito5::AST::If;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        my $cond = $self->{"cond"};
-        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
+        my $cond = $self->{cond};
+        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
         my $s = 'if ( ' . Perlito5::Javascript::to_bool($cond, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript( $level + 1 ) . "\n"
             . Perlito5::Javascript::tab($level) . '}';
-        if ( @{ $self->{"otherwise"}->stmts } ) {
-            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0, create_context => 1 );
+        if ( @{ $self->{otherwise}->stmts } ) {
+            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
             $s = $s
                 . "\n"
                 . Perlito5::Javascript::tab($level) . 'else {' . "\n"
@@ -1691,12 +1691,12 @@ package Perlito5::AST::While;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
+        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
         return
            'for ( '
-        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript($level + 1)               . '; '  : '; ' )
-        .  ( $self->{"cond"}     ? Perlito5::Javascript::to_bool($self->{"cond"}, $level + 1) . '; '  : '; ' )
-        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript($level + 1)           . ' '   : ' '  )
+        .  ( $self->{init}     ? $self->{init}->emit_javascript($level + 1)               . '; '  : '; ' )
+        .  ( $self->{cond}     ? Perlito5::Javascript::to_bool($self->{cond}, $level + 1) . '; '  : '; ' )
+        .  ( $self->{continue} ? $self->{continue}->emit_javascript($level + 1)           . ' '   : ' '  )
         .  ') {' . "\n" 
             . $body->emit_javascript( $level + 1 ) . "\n"
         .  Perlito5::Javascript::tab($level) . '}'
@@ -1709,18 +1709,18 @@ package Perlito5::AST::For;
         my $self = shift;
         my $level = shift;
 
-        my $cond = Perlito5::Javascript::to_list([$self->{"cond"}], $level + 1);
-        if ($self->{"body"}->sig()) {
+        my $cond = Perlito5::Javascript::to_list([$self->{cond}], $level + 1);
+        if ($self->{body}->sig()) {
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
             # TODO - for without "my"
 
             # mark the variable as "declared"
-            my $v = $self->{"body"}->sig;
+            my $v = $self->{body}->sig;
             $Perlito5::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
             my $sig = $v->emit_javascript( $level + 1 );
             return 'p5for_lex('
                     . "function ($sig) {\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
                     .   $cond
                     . ')'
@@ -1729,7 +1729,7 @@ package Perlito5::AST::For;
             # use $_
             return 'p5for(' . Perlito5::Javascript::pkg() . ', '
                     . 'function () {' . "\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
                     .   $cond
                     . ')'
@@ -1745,11 +1745,11 @@ package Perlito5::AST::Sub;
 
         my $s =
           'function (List__, p5want) {' . "\n"
-        .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript( $level + 1 ) . "\n"
+        .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript( $level + 1 ) . "\n"
         . Perlito5::Javascript::tab($level) . '}';
 
-        if ( $self->{"name"} ) {
-            return 'p5make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
+        if ( $self->{name} ) {
+            return 'p5make_sub("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
         }
         else {
             return $s;
@@ -1776,7 +1776,7 @@ package Perlito5::AST::Use;
         my $self = shift;
         my $level = shift;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        '// ' . $self->{"code"} . ' ' . $self->{"mod"} . "\n"
+        '// ' . $self->{code} . ' ' . $self->{mod} . "\n"
     }
 }
 

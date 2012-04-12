@@ -21,13 +21,13 @@ token term_use {
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
 
-            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"})->{"exp"};
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"})->{exp};
             if ($list eq '*undef*') {
                 $list = undef
             }
             else {
                 my $m = $MATCH->{"Perlito5::Expression.list_parse"};
-                my $list_code = substr( $str, $m->{"from"}, $m->{"to"} - $m->{"from"} );
+                my $list_code = substr( $str, $m->{from}, $m->{to} - $m->{from} );
 
                 # TODO - set the lexical context for eval
 
@@ -36,14 +36,14 @@ token term_use {
             }
 
             my $ast = Perlito5::AST::Use->new(
-                    code      => Perlito5::Match::flat($MATCH->{"use_decl"}),
+                    code      => Perlito5::Match::flat($MATCH->{use_decl}),
                     mod       => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),
                     arguments => $list
                 );
 
             parse_time_eval($ast);
 
-            $MATCH->{"capture"} = [ 'term', $ast ];
+            $MATCH->{capture} = [ 'term', $ast ];
         }
 };
 
@@ -52,7 +52,7 @@ sub parse_time_eval {
 
     my $module_name = $self->mod;
     my $use_or_not  = $self->code;
-    my $arguments   = $self->{"arguments"};
+    my $arguments   = $self->{arguments};
 
     # test for "empty list" (and don't call import)
     my $skip_import = defined($arguments) && @$arguments == 0;
@@ -164,8 +164,8 @@ sub expand_use {
     # compile; push AST into comp_units
     # warn $source;
     my $m = Perlito5::Grammar->exp_stmts($source, 0);
-    die "Syntax Error near ", $m->{"to"}
-        if $m->{"to"} != length($source);
+    die "Syntax Error near ", $m->{to}
+        if $m->{to} != length($source);
     push @$comp_units, @{ add_comp_unit(
         [
             Perlito5::AST::CompUnit->new(

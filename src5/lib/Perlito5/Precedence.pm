@@ -158,8 +158,8 @@ sub op_parse {
                 #   and_more
                 #   and(...)
 
-                if (  exists($Operator->{"infix"}{$op}) 
-                   && !exists($Operator->{"prefix"}{$op})
+                if (  exists($Operator->{infix}{$op}) 
+                   && !exists($Operator->{prefix}{$op})
                    && !$last_is_term
                    )
                 {
@@ -189,7 +189,7 @@ sub add_op {
     if (!(defined($param))) {
         $param = {}
     }
-    my $assoc = $param->{'assoc'} || 'left';
+    my $assoc = $param->{assoc} || 'left';
     $Operator->{$fixity}{$name} = 1;
     $Precedence->{$name}        = $precedence;
     $Assoc->{$assoc}{$name}     = 1;
@@ -375,12 +375,12 @@ add_op( 'infix',    '*start*', $prec );
 sub precedence_parse {
     my $self = shift;
 
-    my $get_token       = $self->{'get_token'};
-    my $reduce          = $self->{'reduce'};
+    my $get_token       = $self->{get_token};
+    my $reduce          = $self->{reduce};
     my $last_end_token  = $End_token;
     my $last_end_token_chars = $End_token_chars;
-    $End_token          = $self->{'end_token'};
-    $End_token_chars    = $self->{'end_token_chars'};
+    $End_token          = $self->{end_token};
+    $End_token_chars    = $self->{end_token_chars};
     my $op_stack  = [];   # [category, name]
     my $num_stack = [];
     my $last      = ['op', '*start*'];
@@ -396,11 +396,11 @@ sub precedence_parse {
             # allow (,,,)
             push( @$num_stack, ['term', undef] );
         }
-        if ($Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) )) {
+        if ($Operator->{prefix}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) )) {
             $token->[0] = 'prefix';
             unshift( @$op_stack, $token);
         }
-        elsif ( ($Operator->{'postfix'}){$token->[1]} && is_term($last) )
+        elsif ( ($Operator->{postfix}){$token->[1]} && is_term($last) )
         {
             my $pr = $Precedence->{$token->[1]};
             while (scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] })) {
@@ -422,7 +422,7 @@ sub precedence_parse {
         }
         elsif ($Precedence->{$token->[1]}) {
             my $pr = $Precedence->{$token->[1]};
-            if ($Assoc->{'right'}{$token->[1]}) {
+            if ($Assoc->{right}{$token->[1]}) {
                 while (scalar(@$op_stack) && ( $pr < $Precedence->{ ($op_stack->[0])[1] } )) {
                     $reduce->($op_stack, $num_stack);
                 }
@@ -432,7 +432,7 @@ sub precedence_parse {
                     $reduce->($op_stack, $num_stack);
                 }
             }
-            if ($Operator->{'ternary'}{$token->[1]}) {
+            if ($Operator->{ternary}{$token->[1]}) {
                 $token->[0] = 'ternary';
             }
             else {

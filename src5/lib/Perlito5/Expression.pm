@@ -90,14 +90,14 @@ sub pop_term {
         }
         if ($v->[1] eq 'methcall') {
             # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
-            my $param_list = expand_list( ($v->[3]){'exp'} );
+            my $param_list = expand_list( ($v->[3]){exp} );
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => $param_list );
             # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'funcall') {
             # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
-            my $param_list = expand_list( ($v->[4]){'exp'} );
+            my $param_list = expand_list( ($v->[4]){exp} );
             $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
             # say "#     ", $v->perl;
             return $v;
@@ -170,7 +170,7 @@ sub reduce_postfix {
     }
     if ($v->[1] eq 'methcall') {
         # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
-        my $param_list = expand_list($v->[3]{'exp'});
+        my $param_list = expand_list($v->[3]{exp});
         $v = Perlito5::AST::Call->new( invocant => $value, method => $v->[2], arguments => $param_list );
         return $v;
     }
@@ -181,11 +181,11 @@ sub reduce_postfix {
         # say "#   Params ", ($v->[2])->perl;
         my $param_list = expand_list($v->[2]);
         if ( ref($value) eq 'Perlito5::AST::Apply' && !(defined($value->arguments))) {
-            $value->{'arguments'} = $param_list;
+            $value->{arguments} = $param_list;
             return $value;
         }
         if ( ref($value) eq 'Perlito5::AST::Call' && !(defined($value->arguments))) {
-            $value->{'arguments'} = $param_list;
+            $value->{arguments} = $param_list;
             return $value;
         }
         $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
@@ -335,13 +335,13 @@ my $reduce_to_ast = sub {
 token term_arrow {
     '->' <.Perlito5::Grammar::Space.opt_ws>
         [
-        | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{"paren_parse"})   ] }
-        | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{"square_parse"})  ] }
-        | '{' <curly_parse>   '}'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{"curly_parse"})   ] }
+        | '(' <paren_parse>   ')'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
+        | '[' <square_parse>  ']'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{square_parse})  ] }
+        | '{' <curly_parse>   '}'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
 
         | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar::Space.opt_ws>
             [ '(' <paren_parse> ')'
-              { $MATCH->{"capture"} = [ 'postfix_or_term',
+              { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall',
                        Perlito5::AST::Var->new(
                                sigil       => '$',
@@ -349,12 +349,12 @@ token term_arrow {
                                name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}),
                            ),
                        { 
-                         exp       => Perlito5::Match::flat($MATCH->{"paren_parse"}),
+                         exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
                          terminated => 0,
                        },
                      ]
               }
-            | { $MATCH->{"capture"} = [ 'postfix_or_term',
+            | { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall_no_params',
                        Perlito5::AST::Var->new(
                                sigil       => '$',
@@ -368,16 +368,16 @@ token term_arrow {
 
         | <Perlito5::Grammar.full_ident> <.Perlito5::Grammar::Space.opt_ws>
             [ '(' <paren_parse> ')'
-              { $MATCH->{"capture"} = [ 'postfix_or_term',
+              { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall',
                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),   # TODO - split namespace
                        { 
-                         exp       => Perlito5::Match::flat($MATCH->{"paren_parse"}),
+                         exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
                          terminated => 0,
                        },
                      ]
               }
-            | { $MATCH->{"capture"} = [ 'postfix_or_term',
+            | { $MATCH->{capture} = [ 'postfix_or_term',
                         'methcall_no_params',
                         Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"})   # TODO - split namespace
                       ]
@@ -491,46 +491,46 @@ token term_sigil {
         [ '{' 
             [
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
-                    { $MATCH->{"capture"} = [ 'term', 
+                    { $MATCH->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
-                                    sigil       => Perlito5::Match::flat($MATCH->{"var_sigil_or_pseudo"}),
+                                    sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
                                     namespace   => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}),
                                     name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
                                 )
                         ]
                     }
             | '^' <Perlito5::Grammar.var_name> '}'
-                    { $MATCH->{"capture"} = [ 'term', 
+                    { $MATCH->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
-                                    sigil       => Perlito5::Match::flat($MATCH->{"var_sigil_or_pseudo"}),
+                                    sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
                                     namespace   => 'main',
                                     name        => '^' . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
                                 )
                         ]
                     }
             | <curly_parse>   '}'
-                { $MATCH->{"capture"} = [ 'term',  
+                { $MATCH->{capture} = [ 'term',  
                         Perlito5::AST::Apply->new( 
-                                'arguments' => [ Perlito5::Match::flat($MATCH->{"curly_parse"}) ],
-                                'code'      => 'prefix:<' . Perlito5::Match::flat($MATCH->{"var_sigil_or_pseudo"}) . '>', 
+                                'arguments' => [ Perlito5::Match::flat($MATCH->{curly_parse}) ],
+                                'code'      => 'prefix:<' . Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}) . '>', 
                                 'namespace' => ''
                             )
                     ] 
                 }
             ]
         | '^' <Perlito5::Grammar.word>
-                { $MATCH->{"capture"} = [ 'term', 
+                { $MATCH->{capture} = [ 'term', 
                         Perlito5::AST::Var->new(
-                                sigil       => Perlito5::Match::flat($MATCH->{"var_sigil_or_pseudo"}),
+                                sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
                                 namespace   => 'main',
                                 name        => '^' . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.word"}),
                             )
                     ]
                 }
         | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
-                { $MATCH->{"capture"} = [ 'term', 
+                { $MATCH->{capture} = [ 'term', 
                         Perlito5::AST::Var->new(
-                                sigil       => Perlito5::Match::flat($MATCH->{"var_sigil_or_pseudo"}),
+                                sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
                                 namespace   => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}),
                                 name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
                             )
@@ -538,31 +538,31 @@ token term_sigil {
                 }
         ]
     | <term_special_var>
-            { $MATCH->{"capture"} = $MATCH->{"term_special_var"}->{"capture"} }
+            { $MATCH->{capture} = $MATCH->{term_special_var}->{capture} }
 };
 
 token term_digit {
-      <Perlito5::Grammar.val_num>    { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_num"}) ]  }  # 123.456
-    | <Perlito5::Grammar.val_int>    { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_int"}) ]  }  # 123
+      <Perlito5::Grammar.val_num>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_num"}) ]  }  # 123.456
+    | <Perlito5::Grammar.val_int>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_int"}) ]  }  # 123
 };
 
 token term_ternary {
     '?'  <ternary5_parse> ':'
-                { $MATCH->{"capture"} = [ 'op',          '? :', Perlito5::Match::flat($MATCH->{"ternary5_parse"})  ] }
+                { $MATCH->{capture} = [ 'op',          '? :', Perlito5::Match::flat($MATCH->{ternary5_parse})  ] }
 };
 
 token term_paren {
-    '('  <paren_parse>   ')'        { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   Perlito5::Match::flat($MATCH->{"paren_parse"})   ] }
+    '('  <paren_parse>   ')'        { $MATCH->{capture} = [ 'postfix_or_term',  '( )',   Perlito5::Match::flat($MATCH->{paren_parse})   ] }
 };
 
 token term_square {
-    '['  <square_parse>  ']'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   Perlito5::Match::flat($MATCH->{"square_parse"})  ] }
+    '['  <square_parse>  ']'      { $MATCH->{capture} = [ 'postfix_or_term',  '[ ]',   Perlito5::Match::flat($MATCH->{square_parse})  ] }
 };
 
 token term_curly {
     '{'  <.Perlito5::Grammar::Space.ws>?
            <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar::Space.ws>? '}'
-                { $MATCH->{"capture"} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) ] }
+                { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) ] }
 };
 
 
@@ -572,14 +572,14 @@ token declarator {
 
 token term_declarator {
     <declarator> <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
-        { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Decl->new( decl => Perlito5::Match::flat($MATCH->{"declarator"}), type => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"}), var => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) ) ] }
+        { $MATCH->{capture} = [ 'term', Perlito5::AST::Decl->new( decl => Perlito5::Match::flat($MATCH->{declarator}), type => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"}), var => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) ) ] }
 };
 
 token term_return {
     'return' <.Perlito5::Grammar::Space.opt_ws> <list_parse>
         {
-            my $args = Perlito5::Match::flat($MATCH->{"list_parse"})->{"exp"};
-            $MATCH->{"capture"} = [ 'term',
+            my $args = Perlito5::Match::flat($MATCH->{list_parse})->{exp};
+            $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code      => 'return',
                     arguments => $args eq '*undef*' ? [] : [$args],
@@ -591,13 +591,13 @@ token term_return {
 
 token term_anon_sub {
     'sub' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.anon_sub_def>
-                { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.anon_sub_def"})     ] }
+                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.anon_sub_def"})     ] }
 };
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
     'do' <.Perlito5::Grammar::Space.ws> <before '{'> <statement_parse>
-                { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{"statement_parse"}) ) ] }
+                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{statement_parse}) ) ] }
 };
 
 token term_package {
@@ -605,7 +605,7 @@ token term_package {
         {
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
             $Perlito5::PKG_NAME = $name;
-            $MATCH->{"capture"} = [ 'term',
+            $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code      => 'package',
                     arguments => [], 
@@ -619,12 +619,12 @@ token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
     'eval' <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly>
         {
-            $MATCH->{"capture"} = [ 'term',
+            $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code      => 'eval',
                     arguments => [
                         Perlito5::AST::Do->new(
-                            block => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"term_curly"})->[2] ),
+                            block => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
                         )
                     ], 
                     namespace => ''
@@ -640,12 +640,12 @@ token term_map_or_sort {
     <map_or_sort> <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly> 
         <list_parse>
         {
-            $MATCH->{"capture"} = [ 'term',
+            $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{"map_or_sort"}),
+                    code      => Perlito5::Match::flat($MATCH->{map_or_sort}),
                     arguments => [
-                        Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"term_curly"})->[2] ),
-                        @{ Perlito5::Match::flat(expand_list($MATCH->{"list_parse"})->{"exp"}) }
+                        Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
+                        @{ Perlito5::Match::flat(expand_list($MATCH->{list_parse})->{exp}) }
                     ], 
                     namespace => ''
                  )
@@ -782,9 +782,9 @@ sub op_parse_spc {
     if (!$m) {
         return $m;
     }
-    my $spc = Perlito5::Grammar::Space->ws($str, $m->{"to"});
+    my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
     if ($spc) {
-        $m->{"to"} = $spc->{"to"};
+        $m->{to} = $spc->{to};
     }
     return $m;
 }
@@ -832,7 +832,7 @@ sub argument_parse {
                 $v->[0] = 'end';
             }
             if ($v->[0] ne 'end') {
-                $last_pos = $m->{"to"};
+                $last_pos = $m->{to};
             }
         }
         # say "# list_lexer got " . $v->perl;
@@ -912,7 +912,7 @@ sub list_parse {
                 $v->[0] = 'end';
             }
             if ($v->[0] ne 'end') {
-                $last_pos = $m->{"to"};
+                $last_pos = $m->{to};
             }
         }
         # say "# list_lexer got " . $v->perl;
@@ -964,10 +964,10 @@ sub circumfix_parse {
         if (!$m) {
             die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
         }
-        my $v = $m->{"capture"};
+        my $v = $m->{capture};
         $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
         if ($v->[0] ne 'end') {
-            $last_pos = $m->{"to"};
+            $last_pos = $m->{to};
         }
         # say "# circumfix_lexer " . $v->perl;
         return $v;
@@ -1044,10 +1044,10 @@ sub exp_parse {
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
-            $v = $m->{"capture"};
+            $v = $m->{capture};
             $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if ($v->[0] ne 'end') {
-                $last_pos = $m->{"to"};
+                $last_pos = $m->{to};
             }
         }
         # say "# exp_lexer got " . $v->perl;
@@ -1152,9 +1152,9 @@ sub modifier {
 
     if ($modifier eq 'if') {
         return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp)->{'exp'},
+                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) 
             ),
@@ -1162,9 +1162,9 @@ sub modifier {
     }
     if ($modifier eq 'unless') {
         return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp)->{'exp'},
+                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) 
             ),
@@ -1172,9 +1172,9 @@ sub modifier {
     }
     if ($modifier eq 'while') {
         return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
-                cond    => Perlito5::Match::flat($modifier_exp)->{'exp'},
+                cond    => Perlito5::Match::flat($modifier_exp)->{exp},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
         };
     }
@@ -1183,9 +1183,9 @@ sub modifier {
         ) 
     {
         return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::For->new(
-                cond    => Perlito5::Match::flat($modifier_exp)->{'exp'},
+                cond    => Perlito5::Match::flat($modifier_exp)->{exp},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
         };
     }
@@ -1197,7 +1197,7 @@ token delimited_statement {
     <.Perlito5::Grammar::Space.ws>?
     [ ';' <.Perlito5::Grammar::Space.ws>?
     | <statement_parse> ';'? <.Perlito5::Grammar::Space.ws>?
-        { $MATCH->{"capture"} = $MATCH->{"statement_parse"}{"capture"} }
+        { $MATCH->{capture} = $MATCH->{statement_parse}{capture} }
     ]
 };
 
@@ -1221,17 +1221,17 @@ sub statement_parse {
         # say "# not a statement or expression";
         return $res;
     }
-    if (Perlito5::Match::flat($res)->{'terminated'}) {
+    if (Perlito5::Match::flat($res)->{terminated}) {
         # say "# statement expression terminated result: ", $res->perl;
-        $res->{"capture"} = Perlito5::Match::flat($res)->{'exp'};
+        $res->{capture} = Perlito5::Match::flat($res)->{exp};
         return $res;
     }
     # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->{"to"}, Perlito5::Match::flat($res)->{'exp'});
+    my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res)->{exp});
     if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
-        $res->{"capture"} = Perlito5::Match::flat($res)->{'exp'};
+        $res->{capture} = Perlito5::Match::flat($res)->{exp};
         return $res;
     }
     return $modifier;

@@ -20,13 +20,13 @@ sub term_block {
     my $block_name;
     my $m_name = Perlito5::Grammar->ident( $str, $p );
     if ($m_name) {
-        $p = $m_name->{"to"};
+        $p = $m_name->{to};
         $block_name = Perlito5::Match::flat($m_name);
     }
 
     my $m = Perlito5::Grammar::Space->ws( $str, $p );
     if ( $m ) {
-        $p = $m->{"to"};
+        $p = $m->{to};
     }
 
     if ( substr($str, $p, 1) eq '{' ) {
@@ -43,8 +43,8 @@ sub term_block {
             $v = Perlito5::Expression::block_or_hash($v);
 
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
-                $v->{"name"} = $block_name;
-                $m->{"capture"} = $v;
+                $v->{name} = $block_name;
+                $m->{capture} = $v;
                 return $m;
             }
         }

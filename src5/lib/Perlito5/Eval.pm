@@ -6,7 +6,7 @@ sub eval {
     my $env = $_[1];
 
     my $env1 = [ {}, @$env ];
-    for my $stmt ( @{$self->{"body"}} ) {
+    for my $stmt ( @{$self->{body}} ) {
         $stmt->eval($env1);
     }
 }
@@ -15,7 +15,7 @@ package Perlito5::AST::Val::Int;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
-    0 + $self->{"int"} 
+    0 + $self->{int} 
 }
 
 
@@ -23,7 +23,7 @@ package Perlito5::AST::Val::Num;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
-    0 + $self->{"num"} 
+    0 + $self->{num} 
 }
 
 
@@ -31,7 +31,7 @@ package Perlito5::AST::Val::Buf;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
-    $self->{"buf"} 
+    $self->{buf} 
 }
 
 
@@ -41,7 +41,7 @@ sub eval {
     my $env = $_[1];
 
     my $env1 = [ {}, @$env ];
-    for my $stmt ( @{$self->{"stmts"}} ) {
+    for my $stmt ( @{$self->{stmts}} ) {
         $stmt->eval($env1);
     }
 }
@@ -52,7 +52,7 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    ( $self->{"obj"}->eval($env) )[ $self->{"index_exp"}->eval($env) ];
+    ( $self->{obj}->eval($env) )[ $self->{index_exp}->eval($env) ];
 }
 
 
@@ -61,7 +61,7 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    ( $self->{"obj"}->eval($env) ){ $self->{"index_exp"}->eval($env) };
+    ( $self->{obj}->eval($env) ){ $self->{index_exp}->eval($env) };
 }
 
 
@@ -71,16 +71,16 @@ sub eval {
     my $env = $_[1];
 
     my $ns = '';
-    if ($self->{"namespace"}) {
-        $ns = $self->{"namespace"} . '::';
+    if ($self->{namespace}) {
+        $ns = $self->{namespace} . '::';
     }
     else {
-        if (($self->{"sigil"} eq '@') && ($self->{"name"} eq 'ARGV')) {
+        if (($self->{sigil} eq '@') && ($self->{name} eq 'ARGV')) {
             return @ARGV
         }
     }
 
-    my $name = $self->{"sigil"} . $ns . $self->{"name"};
+    my $name = $self->{sigil} . $ns . $self->{name};
     for my $e ( @{$env} ) {
         if (exists( $e->{ $name } )) {
             return $e->{ $name };
@@ -96,7 +96,7 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    '' . $self->{"name"}
+    '' . $self->{name}
 }
 
 
@@ -106,12 +106,12 @@ sub eval {
     my $env = $_[1];
 
     warn "Interpreter TODO: Perlito5::AST::Call";
-    my $invocant = $self->{"invocant"}->eval($env);
+    my $invocant = $self->{invocant}->eval($env);
     if ($invocant eq 'self') {
         $invocant = '$self';
     }
-    # $invocant.$meth( @{$self->{"arguments"}} );
-    warn "Interpreter runtime error: method '", $self->{"method"}, "()' not found";
+    # $invocant.$meth( @{$self->{arguments}} );
+    warn "Interpreter runtime error: method '", $self->{method}, "()' not found";
 }
 
 
@@ -121,14 +121,14 @@ sub eval {
     my $env = $_[1];
 
     my $ns = '';
-    if ($self->{"namespace"}) {
-        $ns = $self->{"namespace"} . '::';
+    if ($self->{namespace}) {
+        $ns = $self->{namespace} . '::';
     }
-    my $code = $ns . $self->{"code"};
+    my $code = $ns . $self->{code};
     # warn "Perlito5::AST::Apply ", $env->perl, " code: '", $code, "'";
     for my $e ( @{$env} ) {
         if (exists( $e->{ $code } )) {
-            return ($e->{ $code }->( $env, @{$self->{"arguments"}} ));
+            return ($e->{ $code }->( $env, @{$self->{arguments}} ));
         }
     }
     warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -140,16 +140,16 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    my $cond = $self->{"cond"};
+    my $cond = $self->{cond};
     if ($cond->eval($env)) {
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @{($self->{"body"})->stmts} ) {
+        for my $stmt ( @{($self->{body})->stmts} ) {
             $stmt->eval($env1);
         }
     }
     else {
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @{($self->{"otherwise"})->stmts} ) {
+        for my $stmt ( @{($self->{otherwise})->stmts} ) {
             $stmt->eval($env1);
         }
     }
@@ -162,12 +162,12 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    my $cond = $self->{"cond"};
-    my $topic_name = $self->{"body"}->sig->plain_name;
+    my $cond = $self->{cond};
+    my $topic_name = $self->{body}->sig->plain_name;
     my $env1 = [ {}, @$env ];
     for my $topic (@{ $cond->eval($env) }) {
         $env1->[0] = { $topic_name => $topic };
-        for my $stmt ( @{($self->{"body"})->stmts} ) {
+        for my $stmt ( @{($self->{body})->stmts} ) {
             $stmt->eval($env1);
         }
     }
@@ -194,8 +194,8 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    my $decl = $self->{"decl"};
-    my $name = $self->{"var"}->plain_name;
+    my $decl = $self->{decl};
+    my $name = $self->{var}->plain_name;
     if (!( exists ($env->[0]){ $name } )) {
         ($env->[0]){ $name } = undef;
     }
@@ -209,7 +209,7 @@ sub eval {
     my $env = $_[1];
 
     my @param_name;
-    # TODO - process $self->{"sig"}->positional
+    # TODO - process $self->{sig}->positional
     my $sub =
             sub {
                 my $env = shift;
@@ -224,13 +224,13 @@ sub eval {
                 }
                 my $env1 = [ %context, @$env ];
                 my $r;
-                for my $stmt ( @{$self->{"block"}} ) {
+                for my $stmt ( @{$self->{block}} ) {
                     $r = $stmt->eval($env1);
                 }
                 return $r;
             };
-    if ($self->{"name"}) {
-        ($env->[0]){$self->{"name"}} = $sub;
+    if ($self->{name}) {
+        ($env->[0]){$self->{name}} = $sub;
     }
     return $sub;
 }
@@ -242,7 +242,7 @@ sub eval {
     my $env = $_[1];
 
     my $env1 = [ {}, @$env ];
-    for my $stmt ( @{$self->{"block"}} ) {
+    for my $stmt ( @{$self->{block}} ) {
         $stmt->eval($env1);
     }
 }
@@ -254,7 +254,7 @@ sub eval {
     my $env = $_[1];
 
     warn "Interpreter TODO: Perlito5::AST::Use";
-    'use ' . $self->{"mod"}
+    'use ' . $self->{mod}
 }
 
 

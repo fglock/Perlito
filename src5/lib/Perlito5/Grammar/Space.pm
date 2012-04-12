@@ -6,7 +6,7 @@ use Perlito5::Precedence;
 my %space = (
     '#'     => sub {
                     my $m = Perlito5::Grammar::Space->to_eol($_[0], $_[1]);
-                    $m->{"to"};
+                    $m->{to};
                 },
     chr(9)  => sub { $_[1] },
     chr(10) => sub {
@@ -14,7 +14,7 @@ my %space = (
                     my $pos = $_[1];
                     $pos++ if substr($str, $pos, 1) eq chr(13);
                     my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
-                    $m->{"to"};
+                    $m->{to};
                 },
     chr(12) => sub { $_[1] },
     chr(13) => sub {
@@ -22,7 +22,7 @@ my %space = (
                     my $pos = $_[1];
                     $pos++ if substr($str, $pos, 1) eq chr(10);
                     my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
-                    $m->{"to"};
+                    $m->{to};
                 },
     chr(32) => sub { $_[1] },
 );

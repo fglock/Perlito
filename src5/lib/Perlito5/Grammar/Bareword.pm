@@ -8,11 +8,11 @@ package Perlito5::Grammar::Bareword;
 
         my $p = $pos;
         my $m_namespace = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
-        $p = $m_namespace->{"to"};
+        $p = $m_namespace->{to};
         my $m_name      = Perlito5::Grammar->ident( $str, $p );
         return $m_name
             unless $m_name;
-        $p = $m_name->{"to"};
+        $p = $m_name->{to};
 
         my $name = Perlito5::Match::flat($m_name);
         my $namespace = Perlito5::Match::flat($m_namespace);
@@ -25,19 +25,19 @@ package Perlito5::Grammar::Bareword;
         my $m = Perlito5::Grammar::Space->ws( $str, $p );
         if ( $m ) {
             # $has_space_after = 1;
-            $p = $m->{"to"};
+            $p = $m->{to};
         }
 
         if ( substr( $str, $p, 2 ) eq '=>' ) {
             # autoquote
-            $m_name->{"capture"} = [ 'term', Perlito5::AST::Val::Buf->new( buf => $full_name ) ];
-            $m_name->{"to"} = $p;
+            $m_name->{capture} = [ 'term', Perlito5::AST::Val::Buf->new( buf => $full_name ) ];
+            $m_name->{to} = $p;
             return $m_name;
         }
         if ( substr( $str, $p, 2 ) eq '->' ) {
             # class-method call
-            $m_name->{"capture"} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
-            $m_name->{"to"} = $p;
+            $m_name->{capture} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
+            $m_name->{to} = $p;
             return $m_name;
         }
 
@@ -96,7 +96,7 @@ package Perlito5::Grammar::Bareword;
             # warn "not found: $effective_name";
 
             ## # it's just a bareword - we will disambiguate later
-            ## $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
+            ## $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
             ##         $namespace,
             ##         $name
             ##     ];
@@ -119,7 +119,7 @@ package Perlito5::Grammar::Bareword;
                     $has_paren = 1;
                     my $m = Perlito5::Grammar::Space->ws( $str, $p );
                     if ($m) {
-                        $p = $m->{"to"}
+                        $p = $m->{to}
                     }
                     if ( substr($str, $p, 1) ne ')' ) {
                         die "syntax error near ", substr( $str, $pos, 10 );
@@ -127,7 +127,7 @@ package Perlito5::Grammar::Bareword;
                     $p++;
                 }
                 # TODO - "subs with empty protos are candidates for inlining"
-                $m_name->{"capture"} = [ 'term', 
+                $m_name->{capture} = [ 'term', 
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
@@ -135,7 +135,7 @@ package Perlito5::Grammar::Bareword;
                             bareword  => ($has_paren == 0)
                         )
                     ];
-                $m_name->{"to"} = $p;
+                $m_name->{to} = $p;
                 return $m_name;
             }
 
@@ -145,9 +145,9 @@ package Perlito5::Grammar::Bareword;
                 if ( substr($str, $p, 1) eq '(' ) {
                     $m = Perlito5::Expression->term_paren( $str, $p );
                     if ( !$m ) { return $m };
-                    $p = $m->{"to"};
+                    $p = $m->{to};
                     $has_paren = 1;
-                    $arg = $m->{"capture"}[2];
+                    $arg = $m->{capture}[2];
                     $arg = Perlito5::Expression::expand_list( $arg );
                     my $v = shift @{ $arg };
                     die "Too many arguments for $name"
@@ -156,14 +156,14 @@ package Perlito5::Grammar::Bareword;
                 }
                 else {
                     $m = Perlito5::Expression->argument_parse( $str, $p );
-                    $arg = $m->{"capture"}{"exp"};
+                    $arg = $m->{capture}{exp};
                     if ( $arg eq '*undef*' ) {
                         $arg = undef;
                     }
-                    elsif ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{"code"} eq 'circumfix:<( )>' ) {
-                        my $v = shift @{ $arg->{"arguments"} };
+                    elsif ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>' ) {
+                        my $v = shift @{ $arg->{arguments} };
                         die "Too many arguments for $name"
-                            if @{ $arg->{"arguments"} };
+                            if @{ $arg->{arguments} };
                         $arg = $v;
                     }
                 }
@@ -183,7 +183,7 @@ package Perlito5::Grammar::Bareword;
                         if $sig eq '_';
                     # ';$' --> ignore the missing arg
                 }
-                $m->{"capture"} = [ 'term', 
+                $m->{capture} = [ 'term', 
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
@@ -205,9 +205,9 @@ package Perlito5::Grammar::Bareword;
         if ( substr($str, $p, 1) eq '(' ) {
             $m = Perlito5::Expression->term_paren( $str, $p );
             if ( !$m ) { return $m };
-            my $arg = $m->{"capture"}[2];
+            my $arg = $m->{capture}[2];
             $arg = Perlito5::Expression::expand_list( $arg );
-            $m->{"capture"} = [ 'term', 
+            $m->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
                         code      => $name,
                         namespace => $namespace,
@@ -219,19 +219,19 @@ package Perlito5::Grammar::Bareword;
 
 
         my $m_list = Perlito5::Expression->list_parse( $str, $p );
-        my $list = $m_list->{"capture"};
-        if ($list->{'exp'} ne '*undef*') {
-            $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
+        my $list = $m_list->{capture};
+        if ($list->{exp} ne '*undef*') {
+            $m_name->{capture} = [ 'postfix_or_term', 'funcall',
                     $namespace,
                     $name,
                     $list
                 ];
-            $m_name->{"to"} = $m_list->{"to"};
+            $m_name->{to} = $m_list->{to};
             return $m_name;
         }
 
         # it's just a bareword - we will disambiguate later
-        $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
+        $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
                 $namespace,
                 $name
             ];

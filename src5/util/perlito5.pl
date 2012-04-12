@@ -148,12 +148,12 @@ if ($backend && @ARGV) {
             $ok = 1;
         };
         if (  !$ok
-           || $m->{"to"} != length($source)
+           || $m->{to} != length($source)
            )
         {
             my $error = $@
-                || (  $m->{"to"} != length($source)
-                   && "Syntax Error near " . $m->{"to"}
+                || (  $m->{to} != length($source)
+                   && "Syntax Error near " . $m->{to}
                    )
                 || "Unknown error";
             warn $error;

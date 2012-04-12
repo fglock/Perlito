@@ -18,7 +18,7 @@ sub Rul::constant {
         ($str = chr(92) . chr(39))
     };
     if ($len) {
-        ('( ' . chr(39) . $str . chr(39) . ' eq substr( $str, $MATCH->{"to"}, ' . $len . ') ' . '&& ( $MATCH->{"to"} = ' . $len . ' + $MATCH->{"to"} )' . ')')
+        ('( ' . chr(39) . $str . chr(39) . ' eq substr( $str, $MATCH->{to}, ' . $len . ') ' . '&& ( $MATCH->{to} = ' . $len . ' + $MATCH->{to} )' . ')')
     }
     else {
         return ('1')
@@ -45,11 +45,11 @@ sub Rul::Quantifier::emit_perl5 {
     };
     if ((($self->{'quant'} eq '+') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
-        return (('(do { ' . 'my $last_match_null = 0; ' . 'my $m = $MATCH; ' . 'my $to = $MATCH->{"to"}; ' . 'my $count = 0; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($to == $MATCH->{"to"}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$m = $MATCH; ' . '$to = $MATCH->{"to"}; ' . '$count = $count + 1; ' . '}; ' . '$MATCH = $m; ' . '$MATCH->{"to"} = $to; ' . '$count > 0; ' . '})'))
+        return (('(do { ' . 'my $last_match_null = 0; ' . 'my $m = $MATCH; ' . 'my $to = $MATCH->{to}; ' . 'my $count = 0; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($to == $MATCH->{to}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$m = $MATCH; ' . '$to = $MATCH->{to}; ' . '$count = $count + 1; ' . '}; ' . '$MATCH = $m; ' . '$MATCH->{to} = $to; ' . '$count > 0; ' . '})'))
     };
     if ((($self->{'quant'} eq '*') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
-        return (('(do { ' . 'my $last_match_null = 0; ' . 'my $m = $MATCH; ' . 'my $to = $MATCH->{"to"}; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($to == $MATCH->{"to"}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$m = $MATCH; ' . '$to = $MATCH->{"to"}; ' . '}; ' . '$MATCH = $m; ' . '$MATCH->{"to"} = $to; ' . '1 ' . '})'))
+        return (('(do { ' . 'my $last_match_null = 0; ' . 'my $m = $MATCH; ' . 'my $to = $MATCH->{to}; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($to == $MATCH->{to}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$m = $MATCH; ' . '$to = $MATCH->{to}; ' . '}; ' . '$MATCH = $m; ' . '$MATCH->{to} = $to; ' . '1 ' . '})'))
     };
     if ((($self->{'quant'} eq '?') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
@@ -72,7 +72,7 @@ sub Rul::Or::or_list {
 };
 sub Rul::Or::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('(do { ' . 'my $pos1 = $MATCH->{"to"}; (do { ' . join('}) || (do { $MATCH->{"to"} = $pos1; ', map($_->emit_perl5(), @{$self->{'or_list'}})) . '}) })')
+    ('(do { ' . 'my $pos1 = $MATCH->{to}; (do { ' . join('}) || (do { $MATCH->{to} = $pos1; ', map($_->emit_perl5(), @{$self->{'or_list'}})) . '}) })')
 };
 sub Rul::Or::set_captures_to_array {
     ((my  $self) = $_[0]);
@@ -110,17 +110,17 @@ sub Rul::Perlito5::AST::Subrule::emit_perl5 {
     ((my  $meth) = (((1 + index($self->{'metasyntax'}, '.'))) ? Perlito5::Runtime::_replace($self->{'metasyntax'}, '.', '->') : (('$grammar->' . $self->{'metasyntax'}))));
     (my  $code);
     if (($self->{'captures'} == 1)) {
-        ($code = ('if ($m2) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = $m2; 1 } else { 0 }; '))
+        ($code = ('if ($m2) { $MATCH->{to} = $m2->{to}; $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = $m2; 1 } else { 0 }; '))
     }
     else {
         if (($self->{'captures'} > 1)) {
-            ($code = ('if ($m2) { ' . '$MATCH->{"to"} = $m2->{"to"}; ' . 'if (exists $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '}) { ' . 'push @{ $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} }, $m2; ' . '} ' . 'else { ' . '$MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = [ $m2 ]; ' . '}; ' . '1 ' . '} else { 0 }; '))
+            ($code = ('if ($m2) { ' . '$MATCH->{to} = $m2->{to}; ' . 'if (exists $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '}) { ' . 'push @{ $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} }, $m2; ' . '} ' . 'else { ' . '$MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = [ $m2 ]; ' . '}; ' . '1 ' . '} else { 0 }; '))
         }
         else {
-            ($code = 'if ($m2) { $MATCH->{"to"} = $m2->{"to"}; 1 } else { 0 }; ')
+            ($code = 'if ($m2) { $MATCH->{to} = $m2->{to}; 1 } else { 0 }; ')
         }
     };
-    ('(do { ' . 'my $m2 = ' . $meth . '($str, $MATCH->{"to"}); ' . $code . '})')
+    ('(do { ' . 'my $m2 = ' . $meth . '($str, $MATCH->{to}); ' . $code . '})')
 };
 sub Rul::Perlito5::AST::Subrule::set_captures_to_array {
     ((my  $self) = $_[0]);
@@ -151,7 +151,7 @@ sub Rul::Perlito5::AST::Dot::new {
 };
 sub Rul::Perlito5::AST::Dot::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('( ' . chr(39) . chr(39) . ' ne substr( $str, $MATCH->{"to"}, 1 ) ' . '&& ($MATCH->{"to"} = 1 + $MATCH->{"to"})' . ')')
+    ('( ' . chr(39) . chr(39) . ' ne substr( $str, $MATCH->{to}, 1 ) ' . '&& ($MATCH->{to} = 1 + $MATCH->{to})' . ')')
 };
 sub Rul::Perlito5::AST::Dot::set_captures_to_array {
     ((my  $self) = $_[0])
@@ -212,7 +212,7 @@ sub Rul::Before::rule_exp {
 };
 sub Rul::Before::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? $tmp : 0; ' . '})')
+    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? $tmp : 0; ' . '})')
 };
 sub Rul::Before::set_captures_to_array {
     ((my  $self) = $_[0])
@@ -227,7 +227,7 @@ sub Rul::NotBefore::rule_exp {
 };
 sub Rul::NotBefore::emit_perl5 {
     ((my  $self) = $_[0]);
-    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{"to"}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{"to"} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? 0 : $tmp; ' . '})')
+    ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? 0 : $tmp; ' . '})')
 };
 sub Rul::NotBefore::set_captures_to_array {
     ((my  $self) = $_[0])

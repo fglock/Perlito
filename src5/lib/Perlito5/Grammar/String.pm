@@ -23,19 +23,19 @@ token term_q_quote {
     | \'
     ]
     <q_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"q_quote_parse"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{q_quote_parse}) ]  }
 };
 token term_qq_quote {
     [ 'qq' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
     | '"'
     ]
     <qq_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qq_quote_parse"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qq_quote_parse}) ]  }
 };
 token term_qw_quote {
     'qw' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
     <qw_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qw_quote_parse"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qw_quote_parse}) ]  }
 };
 token term_m_quote {
     [ 'm' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
@@ -43,14 +43,14 @@ token term_m_quote {
     ]
     <m_quote_parse>
         {
-            $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"m_quote_parse"}) ]  
+            $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{m_quote_parse}) ]  
         }
 };
 token term_s_quote {
     's' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
     <s_quote_parse>
         { 
-            $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"s_quote_parse"}) ]  
+            $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{s_quote_parse}) ]  
         }
 };
 token term_qx {
@@ -58,11 +58,11 @@ token term_qx {
     | '`'
     ]
     <qx_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"qx_quote_parse"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qx_quote_parse}) ]  }
 };
 token term_glob {
     '<' <glob_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', Perlito5::Match::flat($MATCH->{"glob_quote_parse"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{glob_quote_parse}) ]  }
 };
 
 
@@ -104,9 +104,9 @@ sub qw_quote_parse {
 
     my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ( $m ) {
-        $m->{"capture"} = Perlito5::AST::Apply->new(
+        $m->{capture} = Perlito5::AST::Apply->new(
                 code      => 'list:<,>',
-                arguments => [ map( Perlito5::AST::Val::Buf->new( buf => $_ ), split(' ', Perlito5::Match::flat($m)->{"buf"})) ],
+                arguments => [ map( Perlito5::AST::Val::Buf->new( buf => $_ ), split(' ', Perlito5::Match::flat($m)->{buf})) ],
                 namespace => '',
             );
     }
@@ -124,19 +124,19 @@ sub m_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
+    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
 
     my $m;
-    my $p = $part1->{"to"};
+    my $p = $part1->{to};
 
     my $modifiers = '';
     $m = Perlito5::Grammar->ident($str, $p);
     if ( $m ) {
         $modifiers = Perlito5::Match::flat($m);
-        $part1->{"to"} = $m->{"to"};
+        $part1->{to} = $m->{to};
     }
 
-    $part1->{"capture"} = Perlito5::AST::Apply->new( 
+    $part1->{capture} = Perlito5::AST::Apply->new( 
         code => 'p5:m',
         arguments => [ $str_regex, $modifiers ],
         namespace => ''
@@ -155,15 +155,15 @@ sub s_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
+    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
 
     my $part2;
     my $m;
-    my $p = $part1->{"to"};
+    my $p = $part1->{to};
     if ( exists $pair{$delimiter} ) {
         # warn "pair delimiter $delimiter at $p";
         $m = Perlito5::Grammar::Space->opt_ws($str, $p);
-        $p = $m->{"to"};
+        $p = $m->{to};
         $delimiter = substr( $str, $p, 1 );
         my $open_delimiter = $delimiter;
         $p++;
@@ -178,15 +178,15 @@ sub s_quote_parse {
         return $part2 unless $part2;
     }
 
-    $p = $part2->{"to"};
+    $p = $part2->{to};
     my $modifiers = '';
     $m = Perlito5::Grammar->ident($str, $p);
     if ( $m ) {
         $modifiers = Perlito5::Match::flat($m);
-        $part2->{"to"} = $m->{"to"};
+        $part2->{to} = $m->{to};
     }
 
-    $part2->{"capture"} = Perlito5::AST::Apply->new( 
+    $part2->{capture} = Perlito5::AST::Apply->new( 
         code => 'p5:s',
         arguments => [ $str_regex, Perlito5::Match::flat($part2), $modifiers ],
         namespace => ''
@@ -203,7 +203,7 @@ sub qx_quote_parse {
 
     my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ( $m ) {
-        $m->{"capture"} = Perlito5::AST::Apply->new(
+        $m->{capture} = Perlito5::AST::Apply->new(
                 code      => 'qx',
                 arguments => [ Perlito5::Match::flat($m) ],
                 namespace => '',
@@ -221,7 +221,7 @@ sub glob_quote_parse {
 
     my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ( $m ) {
-        $m->{"capture"} = Perlito5::AST::Apply->new(
+        $m->{capture} = Perlito5::AST::Apply->new(
                 code      => 'glob',
                 arguments => [ Perlito5::Match::flat($m) ],
                 namespace => '',
@@ -274,7 +274,7 @@ sub string_interpolation_parse {
         if ( $m ) {
             my $obj = Perlito5::Match::flat($m);
             if ( ref($obj) eq 'Perlito5::AST::Val::Buf' ) {
-                $buf .= $obj->{"buf"};
+                $buf .= $obj->{buf};
                 $obj = undef;
             }
             if ( $obj ) {
@@ -284,7 +284,7 @@ sub string_interpolation_parse {
                 }
                 push @args, $obj;
             }
-            $p = $m->{"to"};
+            $p = $m->{to};
             $buf .= $more;
         }
         else {
@@ -292,8 +292,8 @@ sub string_interpolation_parse {
             if ( $c eq chr(10) || $c eq chr(13) ) {
                 # after a newline, check for here-docs
                 my $m = $self->here_doc( $str, $p );
-                if ( $p != $m->{"to"} ) {
-                    $p = $m->{"to"};
+                if ( $p != $m->{to} ) {
+                    $p = $m->{to};
                 }
                 else {
                     $buf .= $c;
@@ -356,8 +356,8 @@ sub here_doc_wanted {
             $p += 1;
             my $m = $self->string_interpolation_parse($str, $p, $quote, $quote, 0);
             if ( $m ) {
-                $p = $m->{"to"};
-                $delimiter = Perlito5::Match::flat($m)->{"buf"};
+                $p = $m->{to};
+                $delimiter = Perlito5::Match::flat($m)->{buf};
                 $type = $quote eq "'" ? 'single_quote' : 'double_quote';
                 # say "got a $type here-doc delimiter: [$delimiter]";
             }
@@ -366,7 +366,7 @@ sub here_doc_wanted {
             $p += 1 if $quote eq '\\';
             my $m = Perlito5::Grammar->ident($str, $p);
             if ( $m ) {
-                $p = $m->{"to"};
+                $p = $m->{to};
                 $delimiter = Perlito5::Match::flat($m);
                 $type = $quote eq '\\' ? 'single_quote' : 'double_quote';
                 # say "got a $type here-doc delimiter: [$delimiter]";
@@ -399,7 +399,7 @@ sub here_doc_wanted {
 
     push @Here_doc, [
         $type,
-        $placeholder->{"arguments"}[0]{"arguments"},
+        $placeholder->{arguments}[0]{arguments},
         $delimiter,
     ];
 
@@ -450,7 +450,7 @@ sub here_doc {
                 my $m = $self->newline( $str, $p );
                 if ( $p >= length($str) || $m ) {
                     # return true
-                    $p = $m->{"to"} if $m;
+                    $p = $m->{to} if $m;
                     return {
                         'str' => $str, 'from' => $pos, 'to' => $p - 1
                     }
@@ -479,7 +479,7 @@ sub here_doc {
             $m = $self->newline( $str, $p );
             if ( $p >= length($str) || $m ) {
                 push @$result, Perlito5::AST::Val::Buf->new( buf => '' );
-                $p = $m->{"to"} if $m;
+                $p = $m->{to} if $m;
                 return {
                     'str' => $str, 'from' => $pos, 'to' => $p
                 };
@@ -492,7 +492,7 @@ sub here_doc {
         if ( $m ) {
             push @$result, Perlito5::Match::flat($m);
             push @$result, Perlito5::AST::Val::Buf->new( buf => "\n" );
-            $m->{"to"} = $m->{"to"} - 1;
+            $m->{to} = $m->{to} - 1;
             return $m;
         }
     }
@@ -523,29 +523,29 @@ sub double_quoted_buf {
 
         my $var = Perlito5::Match::flat($m)->[1];
 
-        my $p = $m->{"to"};
+        my $p = $m->{to};
         my $m_index;
         if (substr($str, $p, 1) eq '[') {
             $p++;
             $m_index = Perlito5::Expression->list_parse($str, $p);
             if ($m_index) {
-                my $exp = $m_index->{"capture"}{"exp"};
-                $p = $m_index->{"to"};
+                my $exp = $m_index->{capture}{exp};
+                $p = $m_index->{to};
                 if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
                     $p++;
-                    $m_index->{"capture"} = Perlito5::AST::Index->new(
+                    $m_index->{capture} = Perlito5::AST::Index->new(
                             obj       => $var,
                             index_exp => $exp,
                         );
-                    $m_index->{"to"} = $p;
+                    $m_index->{to} = $p;
                     return $m_index;
 
                 }
             }
         }
-        $m_index = Perlito5::Expression->term_curly($str, $m->{"to"});
+        $m_index = Perlito5::Expression->term_curly($str, $m->{to});
         if ($m_index) {
-            $m_index->{"capture"} = Perlito5::AST::Lookup->new(
+            $m_index->{capture} = Perlito5::AST::Lookup->new(
                     obj       => $var,
                     index_exp => Perlito5::Match::flat($m_index)->[2][0],
                 );
@@ -553,7 +553,7 @@ sub double_quoted_buf {
         }
 
         if (substr($str, $pos, 1) eq '@') {
-            $m->{"capture"} = 
+            $m->{capture} = 
                  Perlito5::AST::Apply->new(
                     code      => 'join',
                     arguments => [ Perlito5::AST::Val::Buf->new( buf => ' ' ), $var ],
@@ -561,7 +561,7 @@ sub double_quoted_buf {
                  );
         }
         else {
-            $m->{"capture"} = $var;
+            $m->{capture} = $var;
         }
         return $m;
     }
@@ -596,9 +596,9 @@ sub double_quoted_buf {
         # TODO - \l \u            - uppercase next char
     
         ##     [   \[ <Perlito5::Grammar.digits> \]
-        ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
         ##     |  <Perlito5::Grammar.digits>
-        ##         { $MATCH->{"capture"} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
         ##     ]
 
         ## my %double_quoted_unescape = (
