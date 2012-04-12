@@ -132,7 +132,7 @@ sub Perlito5::AST::For::eval {
     ((my  $topic_name) = $self->{'body'}->sig()->plain_name());
     ((my  $env1) = [{}, @{$env}]);
     for my $topic (@{$cond->eval($env)}) {
-        ($env1->[0] = {($topic_name => $topic)});
+        ($env1->[0] = {$topic_name, $topic});
         for my $stmt (@{($self->{'body'})->stmts()}) {
             $stmt->eval($env1)
         }

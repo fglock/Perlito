@@ -10,16 +10,16 @@ use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;
 sub Perlito5::Grammar::word {
-    ((substr($_[1], $_[2], 1) =~ m!\w!) ? {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))} : 0)
+    ((substr($_[1], $_[2], 1) =~ m!\w!) ? {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)} : 0)
 };
 sub Perlito5::Grammar::digit {
-    ((substr($_[1], $_[2], 1) =~ m!\d!) ? {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))} : 0)
+    ((substr($_[1], $_[2], 1) =~ m!\d!) ? {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)} : 0)
 };
 sub Perlito5::Grammar::ident {
     if (((substr($_[1], $_[2], 1) !~ m!\w!) || (substr($_[1], $_[2], 1) =~ m!\d!))) {
         return ()
     };
-    ((my  $m) = {('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))});
+    ((my  $m) = {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)});
     for ( ; (substr($_[1], $m->{'to'}, 1) =~ m!\w!);  ) {
         ($m->{'to'})++
     };
@@ -29,7 +29,7 @@ sub Perlito5::Grammar::full_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -82,7 +82,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -97,7 +97,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     }
 })) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -123,7 +123,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     }
 }))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -155,7 +155,7 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
@@ -210,7 +210,7 @@ sub Perlito5::Grammar::ws {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -230,7 +230,7 @@ sub Perlito5::Grammar::opt_ws {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -256,7 +256,7 @@ sub Perlito5::Grammar::exp_stmts2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -282,7 +282,7 @@ sub Perlito5::Grammar::exp {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -308,7 +308,7 @@ sub Perlito5::Grammar::exp2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -334,7 +334,7 @@ sub Perlito5::Grammar::opt_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -366,7 +366,7 @@ sub Perlito5::Grammar::opt_type {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -406,7 +406,7 @@ sub Perlito5::Grammar::var_sigil {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((((do {
@@ -431,7 +431,7 @@ sub Perlito5::Grammar::var_name {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -465,7 +465,7 @@ sub Perlito5::Grammar::var_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -500,7 +500,7 @@ sub Perlito5::Grammar::var_ident {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Var->new(('sigil' => Perlito5::Match::flat($MATCH->{'var_sigil'})), ('namespace' => Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'})), ('name' => Perlito5::Match::flat($MATCH->{'var_name'}))));
+    ($MATCH->{'capture'} = Perlito5::AST::Var->new('sigil', Perlito5::Match::flat($MATCH->{'var_sigil'}), 'namespace', Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'}), 'name', Perlito5::Match::flat($MATCH->{'var_name'})));
     1
 })))
 }))
@@ -511,7 +511,7 @@ sub Perlito5::Grammar::exponent {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -571,7 +571,7 @@ sub Perlito5::Grammar::val_num {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -679,7 +679,7 @@ sub Perlito5::Grammar::val_num {
     ($MATCH->{'to'} = $pos1);
     ((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $tmp) = $MATCH);
-    ($MATCH = {('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})});
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
     ((my  $res) = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -733,7 +733,7 @@ sub Perlito5::Grammar::val_num {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new(('num' => Perlito5::Match::flat($MATCH))));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new('num', Perlito5::Match::flat($MATCH)));
     1
 })))
 }))
@@ -744,7 +744,7 @@ sub Perlito5::Grammar::digits {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -783,7 +783,7 @@ sub Perlito5::Grammar::val_int {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -898,7 +898,7 @@ sub Perlito5::Grammar::val_int {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => oct(Perlito5::Match::flat($MATCH)))));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(Perlito5::Match::flat($MATCH))));
     1
 })))
 })) || ((do {
@@ -932,7 +932,7 @@ sub Perlito5::Grammar::val_int {
     ($MATCH->{'to'} = $to);
     ($count > 0)
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new(('int' => Perlito5::Match::flat($MATCH))));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', Perlito5::Match::flat($MATCH)));
     1
 }))))
 })))
@@ -944,7 +944,7 @@ sub Perlito5::Grammar::exp_stmts {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -996,7 +996,7 @@ sub Perlito5::Grammar::args_sig {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -1056,7 +1056,7 @@ sub Perlito5::Grammar::prototype {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -1115,7 +1115,7 @@ sub Perlito5::Grammar::anon_sub_def {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -1182,7 +1182,7 @@ sub Perlito5::Grammar::anon_sub_def {
     if (($sig eq '*undef*')) {
         ($sig = undef())
     };
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => $sig), ('block' => Perlito5::Match::flat($MATCH->{'exp_stmts'}))));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new('name', undef(), 'namespace', undef(), 'sig', $sig, 'block', Perlito5::Match::flat($MATCH->{'exp_stmts'})));
     1
 })))
 }))
@@ -1193,7 +1193,7 @@ sub Perlito5::Grammar::named_sub_def {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -1295,7 +1295,7 @@ sub Perlito5::Grammar::named_sub_def {
         };
         ($Perlito5::PROTO->{$full_name} = $sig)
     };
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('namespace' => $namespace), ('sig' => $sig), ('block' => Perlito5::Match::flat($MATCH->{'exp_stmts'}))));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new('name', $name, 'namespace', $namespace, 'sig', $sig, 'block', Perlito5::Match::flat($MATCH->{'exp_stmts'})));
     1
 })))
 }))
@@ -1306,7 +1306,7 @@ sub Perlito5::Grammar::named_sub {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {

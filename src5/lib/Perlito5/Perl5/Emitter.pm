@@ -169,29 +169,10 @@ package Perlito5::AST::Lookup;
            )
         {
             my $v = $self->{obj};
-            return $v->emit_perl5($level) . '{' . $self->emit_perl5_index($self->{index_exp}, $level) . '}';
+            return $v->emit_perl5($level) . '{' . $self->autoquote($self->{index_exp})->emit_perl5($level) . '}';
         }
 
-        $self->{obj}->emit_perl5($level) . '->{' . $self->emit_perl5_index($self->{index_exp}, $level) . '}';
-    }
-    sub emit_perl5_index {
-        my $self  = shift;
-        my $index = shift;
-        my $level = shift;
-
-        # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
-        # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
-        # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
-        # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
-
-        if ($index->isa('Perlito5::AST::Apply')
-           && $index->{bareword}
-           )
-        {
-            return Perlito5::AST::Val::Buf->new( buf => $index->{code} )->emit_perl5($level);
-        }
-
-        $index->emit_perl5($level);
+        $self->{obj}->emit_perl5($level) . '->{' . $self->autoquote($self->{index_exp})->emit_perl5($level) . '}';
     }
 }
 
@@ -231,7 +212,7 @@ package Perlito5::AST::Call;
             return Perlito5::Perl5::tab($level) . $invocant . '->[' . $self->{arguments}->emit_perl5() . ']'
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
-            return Perlito5::Perl5::tab($level) . $invocant . '->{' . Perlito5::AST::Lookup->emit_perl5_index($self->{arguments}, $level) . '}'
+            return Perlito5::Perl5::tab($level) . $invocant . '->{' . Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_perl5($level) . '}'
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -289,7 +270,6 @@ package Perlito5::AST::Apply;
 
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
-        'infix:<=>>' => ' => ',
 
         'infix:<=~>' => ' =~ ',
         'infix:<!~>' => ' !~ ',
@@ -363,6 +343,11 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'infix:<x>')  { 
             return 'join("", ' . join(' x ', map( $_->emit_perl5, @{$self->{arguments}} ))  . ')'
+        }
+        if ($code eq 'infix:<=>>')  { 
+            return Perlito5::Perl5::tab($level) 
+                . Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5($level)  . ', ' 
+                . $self->{arguments}[1]->emit_perl5($level)
         }
 
         if ($code eq 'join')       {    

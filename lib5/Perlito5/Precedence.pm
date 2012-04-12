@@ -29,75 +29,75 @@ sub Perlito5::Precedence::is_ident_middle {
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
 ((my  @Parsed_op_chars) = (2, 1));
-((my  %Parsed_op) = (('?' => sub {
+((my  %Parsed_op) = ('?', sub {
     Perlito5::Expression->term_ternary($_[0], $_[1])
-}), ('(' => sub {
+}, '(', sub {
     Perlito5::Expression->term_paren($_[0], $_[1])
-}), ('[' => sub {
+}, '[', sub {
     Perlito5::Expression->term_square($_[0], $_[1])
-}), ('{' => sub {
+}, '{', sub {
     Perlito5::Expression->term_curly($_[0], $_[1])
-}), ('->' => sub {
+}, '->', sub {
     Perlito5::Expression->term_arrow($_[0], $_[1])
-})));
+}));
 ((my  @Term_chars) = (7, 6, 5, 4, 3, 2, 1));
-((my  %Term) = (('$' => sub {
+((my  %Term) = ('$', sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('@' => sub {
+}, '@', sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('%' => sub {
+}, '%', sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('&' => sub {
+}, '&', sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('*' => sub {
+}, '*', sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('.' => sub {
+}, '.', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('0' => sub {
+}, '0', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('1' => sub {
+}, '1', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('2' => sub {
+}, '2', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('3' => sub {
+}, '3', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('4' => sub {
+}, '4', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('5' => sub {
+}, '5', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('6' => sub {
+}, '6', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('7' => sub {
+}, '7', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('8' => sub {
+}, '8', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('9' => sub {
+}, '9', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('my' => sub {
+}, 'my', sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('do' => sub {
+}, 'do', sub {
     Perlito5::Expression->term_do($_[0], $_[1])
-}), ('our' => sub {
+}, 'our', sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('sub' => sub {
+}, 'sub', sub {
     Perlito5::Expression->term_anon_sub($_[0], $_[1])
-}), ('map' => sub {
+}, 'map', sub {
     Perlito5::Expression->term_map_or_sort($_[0], $_[1])
-}), ('eval' => sub {
+}, 'eval', sub {
     Perlito5::Expression->term_eval($_[0], $_[1])
-}), ('sort' => sub {
+}, 'sort', sub {
     Perlito5::Expression->term_map_or_sort($_[0], $_[1])
-}), ('grep' => sub {
+}, 'grep', sub {
     Perlito5::Expression->term_map_or_sort($_[0], $_[1])
-}), ('state' => sub {
+}, 'state', sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('local' => sub {
+}, 'local', sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('return' => sub {
+}, 'return', sub {
     Perlito5::Expression->term_return($_[0], $_[1])
-}), ('package' => sub {
+}, 'package', sub {
     Perlito5::Expression->term_package($_[0], $_[1])
-})));
+}));
 sub Perlito5::Precedence::add_term {
     ((my  $name) = shift());
     ((my  $param) = shift());
@@ -118,7 +118,7 @@ sub Perlito5::Precedence::op_parse {
             ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
             ((my  $c2) = substr($str, ($pos + length($term)), 1));
             if (!(((is_ident_middle($c1) && is_ident_middle($c2))))) {
-                return ({('str' => $str), ('from' => $pos), ('to' => $pos), ('capture' => ['end', $term])})
+                return ({'str', $str, 'from', $pos, 'to', $pos, 'capture', ['end', $term]})
             }
         }
     };
@@ -152,7 +152,7 @@ sub Perlito5::Precedence::op_parse {
 
                 }
                 else {
-                    return ({('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('capture' => ['op', $op])})
+                    return ({'str', $str, 'from', $pos, 'to', ($pos + $len), 'capture', ['op', $op]})
                 }
             }
         }
@@ -194,7 +194,7 @@ add_op('prefix', '--', $prec);
 add_op('postfix', '++', $prec);
 add_op('postfix', '--', $prec);
 ($prec = ($prec - 1));
-add_op('infix', '**', $prec, {('assoc' => 'right')});
+add_op('infix', '**', $prec, {'assoc', 'right'});
 ($prec = ($prec - 1));
 add_op('prefix', chr(92), $prec);
 add_op('prefix', '+', $prec);
@@ -212,66 +212,66 @@ add_op('infix', 'x', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '+', $prec);
 add_op('infix', '-', $prec);
-add_op('infix', '.', $prec, {('assoc' => 'list')});
+add_op('infix', '.', $prec, {'assoc', 'list'});
 ($prec = ($prec - 1));
 add_op('infix', '<<', $prec);
 add_op('infix', '>>', $prec);
 ($prec = ($prec - 1));
-add_op('infix', 'lt', $prec, {('assoc' => 'chain')});
-add_op('infix', 'le', $prec, {('assoc' => 'chain')});
-add_op('infix', 'gt', $prec, {('assoc' => 'chain')});
-add_op('infix', 'ge', $prec, {('assoc' => 'chain')});
-add_op('infix', '<=', $prec, {('assoc' => 'chain')});
-add_op('infix', '>=', $prec, {('assoc' => 'chain')});
-add_op('infix', '<', $prec, {('assoc' => 'chain')});
-add_op('infix', '>', $prec, {('assoc' => 'chain')});
+add_op('infix', 'lt', $prec, {'assoc', 'chain'});
+add_op('infix', 'le', $prec, {'assoc', 'chain'});
+add_op('infix', 'gt', $prec, {'assoc', 'chain'});
+add_op('infix', 'ge', $prec, {'assoc', 'chain'});
+add_op('infix', '<=', $prec, {'assoc', 'chain'});
+add_op('infix', '>=', $prec, {'assoc', 'chain'});
+add_op('infix', '<', $prec, {'assoc', 'chain'});
+add_op('infix', '>', $prec, {'assoc', 'chain'});
 ($prec = ($prec - 1));
 add_op('infix', '<=>', $prec);
 add_op('infix', 'cmp', $prec);
-add_op('infix', '==', $prec, {('assoc' => 'chain')});
-add_op('infix', '!=', $prec, {('assoc' => 'chain')});
-add_op('infix', 'ne', $prec, {('assoc' => 'chain')});
-add_op('infix', 'eq', $prec, {('assoc' => 'chain')});
+add_op('infix', '==', $prec, {'assoc', 'chain'});
+add_op('infix', '!=', $prec, {'assoc', 'chain'});
+add_op('infix', 'ne', $prec, {'assoc', 'chain'});
+add_op('infix', 'eq', $prec, {'assoc', 'chain'});
 ($prec = ($prec - 1));
-add_op('infix', '&', $prec, {('assoc' => 'list')});
+add_op('infix', '&', $prec, {'assoc', 'list'});
 add_op('prefix', '&', $prec);
 ($prec = ($prec - 1));
-add_op('infix', '|', $prec, {('assoc' => 'list')});
+add_op('infix', '|', $prec, {'assoc', 'list'});
 add_op('prefix', '|', $prec);
 add_op('infix', '^', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '..', $prec);
 add_op('infix', '...', $prec);
-add_op('infix', '~~', $prec, {('assoc' => 'chain')});
+add_op('infix', '~~', $prec, {'assoc', 'chain'});
 ($prec = ($prec - 1));
 add_op('infix', '&&', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '||', $prec);
 add_op('infix', '//', $prec);
 ($prec = ($prec - 1));
-add_op('ternary', '? :', $prec, {('assoc' => 'right')});
+add_op('ternary', '? :', $prec, {'assoc', 'right'});
 ($prec = ($prec - 1));
-add_op('infix', '=', $prec, {('assoc' => 'right')});
-add_op('infix', '**=', $prec, {('assoc' => 'right')});
-add_op('infix', '+=', $prec, {('assoc' => 'right')});
-add_op('infix', '-=', $prec, {('assoc' => 'right')});
-add_op('infix', '*=', $prec, {('assoc' => 'right')});
-add_op('infix', '/=', $prec, {('assoc' => 'right')});
-add_op('infix', 'x=', $prec, {('assoc' => 'right')});
-add_op('infix', '|=', $prec, {('assoc' => 'right')});
-add_op('infix', '&=', $prec, {('assoc' => 'right')});
-add_op('infix', '.=', $prec, {('assoc' => 'right')});
-add_op('infix', '<<=', $prec, {('assoc' => 'right')});
-add_op('infix', '>>=', $prec, {('assoc' => 'right')});
-add_op('infix', '%=', $prec, {('assoc' => 'right')});
-add_op('infix', '||=', $prec, {('assoc' => 'right')});
-add_op('infix', '&&=', $prec, {('assoc' => 'right')});
-add_op('infix', '^=', $prec, {('assoc' => 'right')});
-add_op('infix', '//=', $prec, {('assoc' => 'right')});
+add_op('infix', '=', $prec, {'assoc', 'right'});
+add_op('infix', '**=', $prec, {'assoc', 'right'});
+add_op('infix', '+=', $prec, {'assoc', 'right'});
+add_op('infix', '-=', $prec, {'assoc', 'right'});
+add_op('infix', '*=', $prec, {'assoc', 'right'});
+add_op('infix', '/=', $prec, {'assoc', 'right'});
+add_op('infix', 'x=', $prec, {'assoc', 'right'});
+add_op('infix', '|=', $prec, {'assoc', 'right'});
+add_op('infix', '&=', $prec, {'assoc', 'right'});
+add_op('infix', '.=', $prec, {'assoc', 'right'});
+add_op('infix', '<<=', $prec, {'assoc', 'right'});
+add_op('infix', '>>=', $prec, {'assoc', 'right'});
+add_op('infix', '%=', $prec, {'assoc', 'right'});
+add_op('infix', '||=', $prec, {'assoc', 'right'});
+add_op('infix', '&&=', $prec, {'assoc', 'right'});
+add_op('infix', '^=', $prec, {'assoc', 'right'});
+add_op('infix', '//=', $prec, {'assoc', 'right'});
 ($prec = ($prec - 1));
 add_op('infix', '=>', $prec);
 ($prec = ($prec - 1));
-add_op('list', ',', $prec, {('assoc' => 'list')});
+add_op('list', ',', $prec, {'assoc', 'list'});
 ($prec = ($prec - 1));
 add_op('prefix', 'not', $prec);
 ($prec = ($prec - 1));

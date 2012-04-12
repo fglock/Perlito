@@ -71,6 +71,14 @@ sub Perlito5::AST::Lookup::obj {
 sub Perlito5::AST::Lookup::index_exp {
     $_[0]->{    'index_exp'}
 };
+sub Perlito5::AST::Lookup::autoquote {
+    ((my  $self) = shift());
+    ((my  $index) = shift());
+    if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
+        return (Perlito5::AST::Val::Buf->new('buf', $index->{'code'}))
+    };
+    $index
+};
 package Perlito5::AST::Var;
 sub Perlito5::AST::Var::new {
     ((my  $class) = shift());

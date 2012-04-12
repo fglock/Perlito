@@ -4,7 +4,7 @@ use Perlito5::Perl5::Runtime;
 package main;
 use v5;
 package Perlito5::AST::Apply;
-((my  %op) = (('infix:<+=>' => 'infix:<+>'), ('infix:<-=>' => 'infix:<->'), ('infix:<*=>' => 'infix:<*>'), ('infix:</=>' => 'infix:</>'), ('infix:<||=>' => 'infix:<||>'), ('infix:<&&=>' => 'infix:<&&>'), ('infix:<|=>' => 'infix:<|>'), ('infix:<&=>' => 'infix:<&>'), ('infix:<//=>' => 'infix:<//>'), ('infix:<.=>' => 'list:<.>')));
+((my  %op) = ('infix:<+=>', 'infix:<+>', 'infix:<-=>', 'infix:<->', 'infix:<*=>', 'infix:<*>', 'infix:</=>', 'infix:</>', 'infix:<||=>', 'infix:<||>', 'infix:<&&=>', 'infix:<&&>', 'infix:<|=>', 'infix:<|>', 'infix:<&=>', 'infix:<&>', 'infix:<//=>', 'infix:<//>', 'infix:<.=>', 'list:<.>'));
 sub Perlito5::AST::Apply::op_assign {
     ((my  $self) = $_[0]);
     ((my  $code) = $self->{'code'});
@@ -12,7 +12,7 @@ sub Perlito5::AST::Apply::op_assign {
         return (0)
     };
     if (exists($op{$code})) {
-        return (Perlito5::AST::Apply->new(('code' => 'infix:<=>'), ('arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{'arguments'}))])))
+        return (Perlito5::AST::Apply->new('code', 'infix:<=>', 'arguments', [$self->{'arguments'}->[0], Perlito5::AST::Apply->new('code', $op{$code}, 'arguments', $self->{'arguments'})]))
     };
     return (0)
 };
@@ -31,15 +31,15 @@ sub Perlito5::AST::Do::simplify {
         if (($stmt->isa('Perlito5::AST::Apply') && ($stmt->code() eq 'circumfix:<( )>'))) {
             ((my  $args) = $stmt->arguments());
             if ((@{$args} == 1)) {
-                return (Perlito5::AST::Do->new(('block' => $args->[0]))->simplify())
+                return (Perlito5::AST::Do->new('block', $args->[0])->simplify())
             };
-            return (Perlito5::AST::Do->new(('block' => $block)))
+            return (Perlito5::AST::Do->new('block', $block))
         };
         if ($stmt->isa('Perlito5::AST::Do')) {
             return ($stmt->simplify())
         }
     };
-    return (Perlito5::AST::Do->new(('block' => $block)))
+    return (Perlito5::AST::Do->new('block', $block))
 };
 
 1;

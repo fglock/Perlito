@@ -29,8 +29,15 @@ package Perlito5::Grammar::Bareword;
         }
 
         if ( substr( $str, $p, 2 ) eq '=>' ) {
-            # autoquote
-            $m_name->{capture} = [ 'term', Perlito5::AST::Val::Buf->new( buf => $full_name ) ];
+            # autoquote bareword
+            $m_name->{capture} = [ 'term', 
+                        Perlito5::AST::Apply->new(
+                            code      => $name,
+                            namespace => $namespace,
+                            arguments => [],
+                            bareword  => 1
+                        )
+                    ];
             $m_name->{to} = $p;
             return $m_name;
         }

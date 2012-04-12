@@ -7,7 +7,7 @@ sub Perlito5::Grammar::unless {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -103,7 +103,7 @@ sub Perlito5::Grammar::unless {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    ($MATCH->{'capture'} = Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2]), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || [])))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => $body)))));
+    ($MATCH->{'capture'} = Perlito5::AST::If->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || [])), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', $body)));
     1
 })))
 })) || ((do {
@@ -113,7 +113,7 @@ sub Perlito5::Grammar::unless {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'unless' . chr(39))
     };
-    ($MATCH->{'capture'} = Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2]), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => []))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => $body)))));
+    ($MATCH->{'capture'} = Perlito5::AST::If->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', []), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', $body)));
     1
 })))
 })))
@@ -126,7 +126,7 @@ sub Perlito5::Grammar::if {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -222,7 +222,7 @@ sub Perlito5::Grammar::if {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    ($MATCH->{'capture'} = Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2]), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $body))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || []))))));
+    ($MATCH->{'capture'} = Perlito5::AST::If->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', $body), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || []))));
     1
 })))
 })) || ((do {
@@ -251,7 +251,7 @@ sub Perlito5::Grammar::if {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    ($MATCH->{'capture'} = Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2]), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $body))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [Perlito5::Match::flat($MATCH->{'if'})])))));
+    ($MATCH->{'capture'} = Perlito5::AST::If->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', $body), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', [Perlito5::Match::flat($MATCH->{'if'})])));
     1
 }))))
 }))) || ((do {
@@ -261,7 +261,7 @@ sub Perlito5::Grammar::if {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    ($MATCH->{'capture'} = Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2]), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $body))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [])))));
+    ($MATCH->{'capture'} = Perlito5::AST::If->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', $body), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', [])));
     1
 })))
 })))
@@ -274,7 +274,7 @@ sub Perlito5::Grammar::when {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -303,7 +303,7 @@ sub Perlito5::Grammar::when {
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
-    ($MATCH->{'capture'} = When->new(('parameters' => Perlito5::Match::flat($MATCH->{'exp'})->{'exp'}), ('body' => $body)));
+    ($MATCH->{'capture'} = When->new('parameters', Perlito5::Match::flat($MATCH->{'exp'})->{'exp'}, 'body', $body));
     1
 })))
 }))
@@ -314,7 +314,7 @@ sub Perlito5::Grammar::for {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -414,7 +414,7 @@ sub Perlito5::Grammar::for {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::For->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'})), ('topic' => undef()), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'})), ('sig' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'}))))));
+    ($MATCH->{'capture'} = Perlito5::AST::For->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}), 'topic', undef(), 'body', Perlito5::AST::Lit::Block->new('stmts', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'}))));
     1
 })))
 })) || ((do {
@@ -476,7 +476,7 @@ sub Perlito5::Grammar::for {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::For->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'})), ('topic' => undef()), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'})), ('sig' => undef())))));
+    ($MATCH->{'capture'} = Perlito5::AST::For->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}), 'topic', undef(), 'body', Perlito5::AST::Lit::Block->new('stmts', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig', undef())));
     1
 }))))
 })))
@@ -489,7 +489,7 @@ sub Perlito5::Grammar::while {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -550,7 +550,7 @@ sub Perlito5::Grammar::while {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::While->new(('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'})), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'})), ('sig' => undef())))));
+    ($MATCH->{'capture'} = Perlito5::AST::While->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}), 'body', Perlito5::AST::Lit::Block->new('stmts', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig', undef())));
     1
 })))
 }))

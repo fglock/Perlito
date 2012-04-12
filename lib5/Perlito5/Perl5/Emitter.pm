@@ -10,7 +10,7 @@ for ($_) {
         ((my  $level) = shift());
 join("", '    ' x $level)
     };
-    ((my  %safe_char) = ((' ' => 1), ('!' => 1), ('"' => 1), ('#' => 1), ('$' => 1), ('%' => 1), ('&' => 1), ('(' => 1), (')' => 1), ('*' => 1), ('+' => 1), (',' => 1), ('-' => 1), ('.' => 1), ('/' => 1), (':' => 1), (';' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('?' => 1), ('@' => 1), ('[' => 1), (']' => 1), ('^' => 1), ('_' => 1), ('`' => 1), ('{' => 1), ('|' => 1), ('}' => 1), ('~' => 1)));
+    ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
     sub Perlito5::Perl5::escape_string {
         ((my  $s) = shift());
         (my  @out);
@@ -111,18 +111,9 @@ for ($_) {
         ((my  $level) = $_[1]);
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = $self->{'obj'});
-            return (($v->emit_perl5($level) . '{' . $self->emit_perl5_index($self->{'index_exp'}, $level) . '}'))
+            return (($v->emit_perl5($level) . '{' . $self->autoquote($self->{'index_exp'})->emit_perl5($level) . '}'))
         };
-        ($self->{'obj'}->emit_perl5($level) . '->{' . $self->emit_perl5_index($self->{'index_exp'}, $level) . '}')
-    };
-    sub Perlito5::AST::Lookup::emit_perl5_index {
-        ((my  $self) = shift());
-        ((my  $index) = shift());
-        ((my  $level) = shift());
-        if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-            return (Perlito5::AST::Val::Buf->new(('buf' => $index->{'code'}))->emit_perl5($level))
-        };
-        $index->emit_perl5($level)
+        ($self->{'obj'}->emit_perl5($level) . '->{' . $self->autoquote($self->{'index_exp'})->emit_perl5($level) . '}')
     }
 };
 package Perlito5::AST::Var;
@@ -155,7 +146,7 @@ for ($_) {
             return ((Perlito5::Perl5::tab($level) . $invocant . '->[' . $self->{'arguments'}->emit_perl5() . ']'))
         };
         if (($self->{'method'} eq 'postcircumfix:<{ }>')) {
-            return ((Perlito5::Perl5::tab($level) . $invocant . '->{' . Perlito5::AST::Lookup->emit_perl5_index($self->{'arguments'}, $level) . '}'))
+            return ((Perlito5::Perl5::tab($level) . $invocant . '->{' . Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_perl5($level) . '}'))
         };
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<( )>')) {
@@ -169,8 +160,8 @@ for ($_) {
 };
 package Perlito5::AST::Apply;
 for ($_) {
-    ((my  %op_prefix_perl5) = (('say' => 'Perlito5::Runtime::say'), ('print' => 'print'), ('keys' => 'keys'), ('values' => 'values'), ('warn' => 'warn'), ('prefix:<!>' => '!'), ('prefix:<++>' => '++'), ('prefix:<-->' => '--'), ('prefix:<+>' => '+'), ('prefix:<->' => '-'), ('prefix:<-f>' => '-f')));
-    ((my  %op_infix_perl5) = (('list:<,>' => ', '), ('list:<.>' => ' . '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<**>' => ' ** '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<&&>' => ' && '), ('infix:<||>' => ' || '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<//>' => ' // '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<=>>' => ' => '), ('infix:<=~>' => ' =~ '), ('infix:<!~>' => ' !~ ')));
+    ((my  %op_prefix_perl5) = ('say', 'Perlito5::Runtime::say', 'print', 'print', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-f>', '-f'));
+    ((my  %op_infix_perl5) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
     sub Perlito5::AST::Apply::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -232,6 +223,9 @@ for ($_) {
         if (($code eq 'infix:<x>')) {
             return (('join("", ' . join(' x ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')'))
         };
+        if (($code eq 'infix:<=>>')) {
+            return ((Perlito5::Perl5::tab($level) . Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_perl5($level) . ', ' . $self->{'arguments'}->[1]->emit_perl5($level)))
+        };
         if (($code eq 'join')) {
             ((my  $str) = shift(@{$self->{'arguments'}}));
             return ((Perlito5::Perl5::tab($level) . 'join(' . $str->emit_perl5() . ', ' . join(',', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')'))
@@ -279,7 +273,7 @@ for ($_) {
             return (('Perlito5::Grammar::Use::require(' . $self->{'arguments'}->[0]->emit_perl5() . ')'))
         };
         if (($code eq 'do')) {
-            ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
+            ((my  $ast) = Perlito5::AST::Apply->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'slurp', 'namespace', 'Perlito5::IO', 'arguments', $self->{'arguments'})]));
             return ($ast->emit_perl5($level))
         };
         if (($code eq 'eval')) {

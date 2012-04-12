@@ -168,16 +168,16 @@ sub Rul::SpecialChar::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $char) = $self->{'char'});
     if (($char eq 'n')) {
-        return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl5())
+        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'is_newline', 'captures', 0)->emit_perl5())
     };
     if (($char eq 'N')) {
-        return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'not_newline'), ('captures' => 0))->emit_perl5())
+        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'not_newline', 'captures', 0)->emit_perl5())
     };
     if (($char eq 'd')) {
-        return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'digit'), ('captures' => 0))->emit_perl5())
+        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'digit', 'captures', 0)->emit_perl5())
     };
     if (($char eq 's')) {
-        return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'space'), ('captures' => 0))->emit_perl5())
+        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'space', 'captures', 0)->emit_perl5())
     };
     if (($char eq 't')) {
         return (Rul::constant(chr(9)))

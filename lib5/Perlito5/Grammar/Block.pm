@@ -4,24 +4,24 @@ use Perlito5::Perl5::Runtime;
 package main;
 package Perlito5::Grammar::Block;
 use Perlito5::Expression;
-Perlito5::Expression::add_statement(('{' => sub {
+Perlito5::Expression::add_statement('{', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
-Perlito5::Expression::add_statement(('BEGIN' => sub {
+});
+Perlito5::Expression::add_statement('BEGIN', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
-Perlito5::Expression::add_statement(('UNITCHECK' => sub {
+});
+Perlito5::Expression::add_statement('UNITCHECK', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
-Perlito5::Expression::add_statement(('CHECK' => sub {
+});
+Perlito5::Expression::add_statement('CHECK', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
-Perlito5::Expression::add_statement(('INIT' => sub {
+});
+Perlito5::Expression::add_statement('INIT', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
-Perlito5::Expression::add_statement(('END' => sub {
+});
+Perlito5::Expression::add_statement('END', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
-}));
+});
 sub Perlito5::Grammar::Block::term_block {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -41,7 +41,7 @@ sub Perlito5::Grammar::Block::term_block {
         ((my  $m) = Perlito5::Expression->term_curly($str, $p));
         if ($m) {
             ((my  $v) = Perlito5::Match::flat($m));
-            ($v = Perlito5::AST::Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
+            ($v = Perlito5::AST::Lit::Block->new('stmts', $v->[2], 'sig', $v->[3]));
             ($v = Perlito5::Expression::block_or_hash($v));
             if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {
                 ($v->{'name'} = $block_name);

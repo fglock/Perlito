@@ -45,6 +45,25 @@ sub new { my $class = shift; bless {@_}, $class }
 sub obj { $_[0]->{obj} }
 sub index_exp { $_[0]->{index_exp} }
 
+sub autoquote {
+    my $self  = shift;
+    my $index = shift;
+
+    # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
+    # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
+    # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
+    # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
+
+    if ($index->isa('Perlito5::AST::Apply')
+       && $index->{bareword}
+       )
+    {
+        return Perlito5::AST::Val::Buf->new( buf => $index->{code} );
+    }
+
+    $index;
+}
+
 
 
 package Perlito5::AST::Var;

@@ -5,18 +5,18 @@ package main;
 package Perlito5::Grammar::Use;
 use Perlito5::Precedence;
 use Perlito5::Grammar;
-Perlito5::Precedence::add_term(('no' => sub {
+Perlito5::Precedence::add_term('no', sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term(('use' => sub {
+});
+Perlito5::Precedence::add_term('use', sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
-}));
-((my  %Perlito_internal_module) = (('strict' => 'Perlito5::strict'), ('warnings' => 'Perlito5::warnings')));
+});
+((my  %Perlito_internal_module) = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings'));
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -32,7 +32,7 @@ sub Perlito5::Grammar::Use::term_use {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {('str' => $str), ('from' => $pos), ('to' => $pos)});
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
@@ -112,7 +112,7 @@ sub Perlito5::Grammar::Use::term_use {
         ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     $list_code . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
         ($list = \@list)
     };
-    ((my  $ast) = Perlito5::AST::Use->new(('code' => Perlito5::Match::flat($MATCH->{'use_decl'})), ('mod' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), ('arguments' => $list)));
+    ((my  $ast) = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'arguments', $list));
     parse_time_eval($ast);
     ($MATCH->{'capture'} = ['term', $ast]);
 ;
@@ -212,7 +212,7 @@ sub Perlito5::Grammar::Use::expand_use {
     if (($m->{'to'} != length($source))) {
         die('Syntax Error near ', $m->{'to'})
     };
-    push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => Perlito5::Match::flat($m)))])} )
+    push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new('name', 'main', 'body', Perlito5::Match::flat($m))])} )
 };
 sub Perlito5::Grammar::Use::add_comp_unit {
     ((my  $parse) = shift());

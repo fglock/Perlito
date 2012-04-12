@@ -29,12 +29,12 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($p = $m->{'to'})
     };
     if ((substr($str, $p, 2) eq '=>')) {
-        ($m_name->{'capture'} = ['term', Perlito5::AST::Val::Buf->new(('buf' => $full_name))]);
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', [], 'bareword', 1)]);
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
     if ((substr($str, $p, 2) eq '->')) {
-        ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new(('name' => $full_name))]);
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new('name', $full_name)]);
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
@@ -67,7 +67,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 };
                 ($p)++
             };
-            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => []), ('bareword' => (($has_paren == 0))))]);
+            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', [], 'bareword', (($has_paren == 0)))]);
             ($m_name->{'to'} = $p);
             return ($m_name)
         };
@@ -115,10 +115,10 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     die(('Not enough arguments for ' . $name))
                 };
                 if (($sig eq '_')) {
-                    push(@args, Perlito5::AST::Var->new(('namespace' => ''), ('name' => '_'), ('sigil' => '$')) )
+                    push(@args, Perlito5::AST::Var->new('namespace', '', 'name', '_', 'sigil', '$') )
                 }
             };
-            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => \@args), ('bareword' => (($has_paren == 0))))]);
+            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', \@args, 'bareword', (($has_paren == 0)))]);
             return ($m)
         }
     };
@@ -129,7 +129,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         };
         ((my  $arg) = $m->{'capture'}->[2]);
         ($arg = Perlito5::Expression::expand_list($arg));
-        ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => $arg))]);
+        ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', $arg)]);
         return ($m)
     };
     ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
