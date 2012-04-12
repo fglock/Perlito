@@ -23,8 +23,8 @@ use Perlito5::Dumper;
 my $_V5_COMPILER_NAME    = 'Perlito5';
 my $_V5_COMPILER_VERSION = '9.0';
 my $source      = '';
-my $backend     = '';
-my $execute     = 0;
+my $backend     = $^O;
+my $execute     = 1;
 my $verbose     = 0;
 my $expand_use  = 1;
 
@@ -56,24 +56,15 @@ if (substr($ARGV[0], 0, 2) eq '-C') {
     }
 }
 if (substr($ARGV[0], 0, 2) eq '-B') {
-    $backend = substr($ARGV[0], 2, 10);
-    $execute = 1;
+    # obsolete option, "execute" is now default
     shift @ARGV;
-    if (  $backend eq 'perl5'
-       || $backend eq 'python'
-       || $backend eq 'ruby'
-       || $backend eq 'js'
-       )
-    {
-        $expand_use = 0;
-    }
 }
 if (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
     $backend = '';
     say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
     shift @ARGV;
 }
-elsif (($ARGV[0] eq '-h') || ($ARGV[0] eq '--help') || ($backend eq '')) {
+elsif ($ARGV[0] eq '-h' || $ARGV[0] eq '--help' || !@ARGV) {
     $backend = '';
     say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, "
 perlito5 [switches] [programfile]
@@ -84,7 +75,6 @@ perlito5 [switches] [programfile]
     -Idirectory     specify \@INC/include directory (several -I's allowed)
     -Ctarget        target backend: js, perl5, perl6
     -Cast-perl5     emits a dump of the abstract syntax tree
-    -Btarget        execute using the backend: js
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
     -e program      one line of program (omit programfile)

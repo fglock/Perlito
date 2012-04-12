@@ -23,8 +23,8 @@ use Perlito5::Dumper;
 ((my  $_V5_COMPILER_NAME) = 'Perlito5');
 ((my  $_V5_COMPILER_VERSION) = '9.0');
 ((my  $source) = '');
-((my  $backend) = '');
-((my  $execute) = 0);
+((my  $backend) = $main::^O);
+((my  $execute) = 1);
 ((my  $verbose) = 0);
 ((my  $expand_use) = 1);
 if ($verbose) {
@@ -49,12 +49,7 @@ if ((substr($ARGV[0], 0, 2) eq '-C')) {
     }
 };
 if ((substr($ARGV[0], 0, 2) eq '-B')) {
-    ($backend = substr($ARGV[0], 2, 10));
-    ($execute = 1);
-    shift(@ARGV);
-    if ((((($backend eq 'perl5') || ($backend eq 'python')) || ($backend eq 'ruby')) || ($backend eq 'js'))) {
-        ($expand_use = 0)
-    }
+    shift(@ARGV)
 };
 if (((($ARGV[0] eq '-V')) || (($ARGV[0] eq '--version')))) {
     ($backend = '');
@@ -62,9 +57,9 @@ if (((($ARGV[0] eq '-V')) || (($ARGV[0] eq '--version')))) {
     shift(@ARGV)
 }
 else {
-    if ((((($ARGV[0] eq '-h')) || (($ARGV[0] eq '--help'))) || (($backend eq '')))) {
+    if (((($ARGV[0] eq '-h') || ($ARGV[0] eq '--help')) || !(@ARGV))) {
         ($backend = '');
-        Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    -Btarget        execute using the backend: js' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+        Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
         shift(@ARGV)
     }
 };
