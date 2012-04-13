@@ -509,16 +509,24 @@ token term_sigil {
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> 
                 <.Perlito5::Grammar::Space.opt_ws>
 
-                # [ <before [ '{' | '[' ]>
-                #     {
-                #         # TODO
-                #         die 'not implemented: ${var{index}}';
+                [ [ '{' | '[' ]
+                    {
+                        # we are parsing:  ${var{index}}
+                        # create the 'Var' object
+                        $MATCH->{capture} = Perlito5::AST::Var->new(
+                            sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
+                            namespace   => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}),
+                            name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
+                        );
+                        $MATCH->{to}--;
+                        # hijack some string interpolation code to parse the subscript
+                        $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH);
+                        $MATCH->{capture} = [ 'term', $MATCH->{capture} ];
+                    }
+                    <.Perlito5::Grammar::Space.opt_ws>
+                    '}'
 
-                #     }
-
-                # | 
-
-                  '}'
+                | '}'
                     { $MATCH->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
                                     sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
@@ -527,8 +535,7 @@ token term_sigil {
                                 )
                         ]
                     }
-
-                # ]
+                ]
 
             | '^' <Perlito5::Grammar.var_name> '}'
                     { $MATCH->{capture} = [ 'term', 
