@@ -441,7 +441,20 @@ sub term_special_var {
     my $pos = $_[2];
     my $len = 0;
 
-    # TODO: ' $ {!} ', ' @ {+} ', ' $#{+} '
+    # TODO:
+    #
+    # this is ok:
+    #  ' $ {!} ', ' @ {+} ', ' $#{+} '
+    #  ' @{ x ->[10] } '
+    #  ' ${v {int} -> {t}} '
+    #
+    # syntax errors:
+    #  ' $# {+} ', ' $ #{+} ', ' @ { + } '
+    #  ' @x->[10] '
+    #
+    # this is never a function call:
+    #  ' ${main::x} '
+    #
 
     my $s = substr( $str, $pos, 3 );
     if ( exists $special_var{$s} ) {
