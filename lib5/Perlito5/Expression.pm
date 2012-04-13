@@ -488,10 +488,19 @@ sub Perlito5::Expression::term_sigil {
 }))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
-    (((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
-    (((((do {
+    ((((((do {
     ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -506,6 +515,15 @@ sub Perlito5::Expression::term_sigil {
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         ($MATCH->{'Perlito5::Grammar.var_name'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
         1
     }
     else {

@@ -504,9 +504,21 @@ token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
 
 token term_sigil {
     <var_sigil_or_pseudo> <.Perlito5::Grammar::Space.opt_ws>
-        [ '{' 
+        [ '{' <.Perlito5::Grammar::Space.opt_ws> 
             [
-            | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
+            | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> 
+                <.Perlito5::Grammar::Space.opt_ws>
+
+                # [ <before [ '{' | '[' ]>
+                #     {
+                #         # TODO
+                #         die 'not implemented: ${var{index}}';
+
+                #     }
+
+                # | 
+
+                  '}'
                     { $MATCH->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
                                     sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
@@ -515,6 +527,9 @@ token term_sigil {
                                 )
                         ]
                     }
+
+                # ]
+
             | '^' <Perlito5::Grammar.var_name> '}'
                     { $MATCH->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
