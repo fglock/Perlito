@@ -7657,25 +7657,6 @@ var p5100 = p5pkg['main'];
 				}
 			}
 		});
-		p5make_sub("Perlito5::Grammar::String", "char_any", function (List__, p5want) {
-				var v_grammar = null;
-				(v_grammar = (List__[0]));
-				var v_str = null;
-				(v_str = (List__[1]));
-				var v_pos = null;
-				(v_pos = (List__[2]));
-				var v_MATCH = null;
-				(v_MATCH = ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_pos}))));
-				var v_tmp = null;
-				(v_tmp = (p5context([p5context([(function () {
-						var v_pos1 = null;
-						(v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-						return (p5context([(function () {
-							return (p5and(('' != p5pkg["Perlito5::Grammar::String"].substr([v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (1 + p5num((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'])))], p5want) }));
-						})()], p5want));
-					})()], 0)], 0)));
-				return (( p5bool(v_tmp) ? v_MATCH : 0));
-		});
 		p5make_sub("Perlito5::Grammar::String", "double_quoted_var_with_subscript", function (List__, p5want) {
 			try {
 				var v_self = null;

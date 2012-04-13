@@ -500,10 +500,6 @@ sub here_doc {
 }
 
 
-token char_any {
-    .
-};
-
 sub double_quoted_var_with_subscript {
     my $self = $_[0];
     my $m_var = $_[1];

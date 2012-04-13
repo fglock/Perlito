@@ -829,19 +829,6 @@ sub Perlito5::Grammar::String::here_doc {
     };
     die(('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF'))
 };
-sub Perlito5::Grammar::String::char_any {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
 sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     ((my  $self) = $_[0]);
     ((my  $m_var) = $_[1]);
