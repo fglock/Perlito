@@ -48,6 +48,12 @@ if ((substr($ARGV[0], 0, 2) eq '-C')) {
         ($expand_use = 0)
     }
 };
+if (($ARGV[0] eq '-MO=Deparse')) {
+    ($backend = 'perl5');
+    ($execute = 0);
+    ($expand_use = 0);
+    shift(@ARGV)
+};
 if ((substr($ARGV[0], 0, 2) eq '-B')) {
     shift(@ARGV)
 };

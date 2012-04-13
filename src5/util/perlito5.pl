@@ -55,6 +55,13 @@ if (substr($ARGV[0], 0, 2) eq '-C') {
         $expand_use = 0;
     }
 }
+if ($ARGV[0] eq '-MO=Deparse') {
+    # this emulates perl -MO=Deparse option
+    $backend = 'perl5';
+    $execute = 0;
+    $expand_use = 0;
+    shift @ARGV;
+}
 if (substr($ARGV[0], 0, 2) eq '-B') {
     # obsolete option, "execute" is now default
     shift @ARGV;
