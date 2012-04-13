@@ -440,6 +440,9 @@ sub term_special_var {
     my $str = $_[1];
     my $pos = $_[2];
     my $len = 0;
+
+    # TODO: ' $ {!} ', ' @ {+} ', ' $#{+} '
+
     my $s = substr( $str, $pos, 3 );
     if ( exists $special_var{$s} ) {
         $len = 3;
