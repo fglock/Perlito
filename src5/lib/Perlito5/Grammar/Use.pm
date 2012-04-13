@@ -12,6 +12,7 @@ my %Perlito_internal_module = (
     strict   => 'Perlito5::strict',
     warnings => 'Perlito5::warnings',
     utf8     => 'Perlito5::utf8',
+    bytes    => 'Perlito5::bytes',
 );
 
 
