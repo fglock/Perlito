@@ -26,6 +26,7 @@ sub to_go_namespace {
 $Perlito5::EXPAND_USE = 1;
 $Perlito5::STRICT     = 0;
 $Perlito5::WARNINGS   = 0;
+$Perlito5::UTF8       = 0;
 
 
 # the special variables list

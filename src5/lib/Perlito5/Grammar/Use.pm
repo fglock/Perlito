@@ -11,6 +11,7 @@ Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use(
 my %Perlito_internal_module = (
     strict   => 'Perlito5::strict',
     warnings => 'Perlito5::warnings',
+    utf8     => 'Perlito5::utf8',
 );
 
 
