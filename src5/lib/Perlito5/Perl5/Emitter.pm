@@ -314,9 +314,24 @@ package Perlito5::AST::Apply;
 
         }
         if ($self->{code} eq 'p5:m') {
+
+            my $s;
+            if ($self->{arguments}->[0]->isa('Perlito5::AST::Val::Buf')) {
+                $s = $self->{arguments}->[0]->{buf}
+            }
+            else {
+                for my $ast (@{$self->{arguments}[0]{arguments}}) {
+                    if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                        $s .= $ast->{buf}
+                    }
+                    else {
+                        $s .= $ast->emit_perl5();  # variable name
+                    }
+                }
+            }
+
             return Perlito5::Perl5::tab($level)
-                . 'm!' . $self->{arguments}->[0]->{buf}   # emit_perl5() 
-                .  '!' . $self->{arguments}->[1];
+                . 'm!' . $s . '!' . $self->{arguments}->[1];
         }
 
         if ($code eq '__PACKAGE__') {
@@ -532,7 +547,6 @@ package Perlito5::AST::Decl;
         my $level = $_[1];
         
         my $decl = $self->{decl};
-        my $name = $self->{var}->plain_name;
         my $str =
               '(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5() . ')';
         return Perlito5::Perl5::tab($level) . $str;

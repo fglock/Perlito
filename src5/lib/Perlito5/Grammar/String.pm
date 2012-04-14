@@ -120,17 +120,15 @@ sub m_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
-    return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    return $part1 unless $part1;
+    my $str_regex = $part1->{capture};
 
-    my $m;
     my $p = $part1->{to};
-
     my $modifiers = '';
-    $m = Perlito5::Grammar->ident($str, $p);
+    my $m = Perlito5::Grammar->ident($str, $p);
     if ( $m ) {
         $modifiers = Perlito5::Match::flat($m);
         $part1->{to} = $m->{to};
@@ -236,7 +234,7 @@ sub string_interpolation_parse {
     my $pos            = $_[2];
     my $open_delimiter = $_[3];
     my $delimiter      = $_[4];
-    my $interpolate    = $_[5];
+    my $interpolate    = $_[5];  # 0 - single-quote; 1 - double-quote; 2 - regex
 
     my $p = $pos;
 
@@ -262,14 +260,25 @@ sub string_interpolation_parse {
             $m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate);
             $more = $delimiter;
         }
-        else {
-            $m = $interpolate
-                ? Perlito5::Grammar::String->double_quoted_buf( $str, $p, $delimiter )
-                : $c eq "\\" && $c2 eq "\\"
-                ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
-                : $c eq "\\" && $c2 eq "'"
-                ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
-                : 0
+        elsif ($interpolate && ($c eq '$' || $c eq '@')) {
+            $m = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter )
+        }
+        elsif ($c eq '\\') {
+            if ($interpolate == 2) {
+                # regex
+            }
+            elsif ($interpolate == 1) {
+                # double-quotes
+                $m = Perlito5::Grammar::String->double_quoted_unescape( $str, $p );
+            }
+            else {
+                # single-quotes
+                $m =  $c2 eq "\\"
+                    ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
+                    : $c2 eq "'"
+                    ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
+                    : 0;
+            }
         }
         if ( $m ) {
             my $obj = Perlito5::Match::flat($m);
@@ -500,6 +509,64 @@ sub here_doc {
 }
 
 
+sub double_quoted_unescape {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+
+    my $c2 = substr($str, $pos+1, 1);
+    my $m;
+    if ( exists $escape_sequence{$c2} ) {
+        $m = {
+            'str' => $str,
+            'from' => $pos,
+            'to' => $pos+2,
+            capture => Perlito5::AST::Val::Buf->new( buf => chr($escape_sequence{$c2}) ),
+        };
+    }
+    elsif ( $c2 eq 'c' ) {
+        # \cC = Control-C
+        # \c0 = "p"
+        my $c3 = ord( substr($str, $pos+2, 1) ) - ord('A') + 1;
+        $c3 = 128 + $c3 
+            if $c3 < 0;
+        $m = {
+            'str' => $str,
+            'from' => $pos,
+            'to' => $pos+3,
+            capture => Perlito5::AST::Val::Buf->new( buf => chr($c3) ),
+        };
+    }
+    else {
+        # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
+        # TODO - \N{charname}     - requires "use charnames"
+        # TODO - \x{03a3}         - unicode hex
+        # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
+        # TODO - \l \u            - uppercase next char
+
+        ##     [   \[ <Perlito5::Grammar.digits> \]
+        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##     |  <Perlito5::Grammar.digits>
+        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
+        ##     ]
+
+        ## my %double_quoted_unescape = (
+        ##     '0' => \&unescape_octal,
+        ##     'x' => \&unescape_hex,
+        ##     'c' => \&unescape_ctrl,
+        ##     'N' => \&unescape_charname,
+        ## );
+
+        $m = {
+            'str' => $str,
+            'from' => $pos,
+            'to' => $pos+2,
+            capture => Perlito5::AST::Val::Buf->new( buf => $c2 ),
+        };
+    }
+    return $m;
+}
+
 sub double_quoted_var_with_subscript {
     my $self = $_[0];
     my $m_var = $_[1];
@@ -537,7 +604,7 @@ sub double_quoted_var_with_subscript {
     return $m_var;
 }
 
-sub double_quoted_buf {
+sub double_quoted_var {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -582,56 +649,6 @@ sub double_quoted_buf {
                 namespace => ''
              );
         return $m;
-    }
-    elsif ($c eq '\\') {
-        my $c2 = substr($str, $pos+1, 1);
-        if ( exists $escape_sequence{$c2} ) {
-            return {
-                'str' => $str,
-                'from' => $pos,
-                'to' => $pos+2,
-                capture => Perlito5::AST::Val::Buf->new( buf => chr($escape_sequence{$c2}) ),
-            };
-        }
-        if ( $c2 eq 'c' ) {
-            # \cC = Control-C
-            # \c0 = "p"
-            my $c3 = ord( substr($str, $pos+2, 1) ) - ord('A') + 1;
-            $c3 = 128 + $c3 
-                if $c3 < 0;
-            return {
-                'str' => $str,
-                'from' => $pos,
-                'to' => $pos+3,
-                capture => Perlito5::AST::Val::Buf->new( buf => chr($c3) ),
-            };
-        }
-
-        # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
-        # TODO - \N{charname}     - requires "use charnames"
-        # TODO - \x{03a3}         - unicode hex
-        # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
-        # TODO - \l \u            - uppercase next char
-    
-        ##     [   \[ <Perlito5::Grammar.digits> \]
-        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-        ##     |  <Perlito5::Grammar.digits>
-        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-        ##     ]
-
-        ## my %double_quoted_unescape = (
-        ##     '0' => \&unescape_octal,
-        ##     'x' => \&unescape_hex,
-        ##     'c' => \&unescape_ctrl,
-        ##     'N' => \&unescape_charname,
-        ## );
-
-        return {
-            'str' => $str,
-            'from' => $pos,
-            'to' => $pos+2,
-            capture => Perlito5::AST::Val::Buf->new( buf => $c2 ),
-        };
     }
     return 0;
 }

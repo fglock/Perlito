@@ -187,7 +187,21 @@ for ($_) {
             return ((Perlito5::Perl5::tab($level) . 's!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2]))
         };
         if (($self->{'code'} eq 'p5:m')) {
-            return ((Perlito5::Perl5::tab($level) . 'm!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]))
+            (my  $s);
+            if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Val::Buf')) {
+                ($s = $self->{'arguments'}->[0]->{'buf'})
+            }
+            else {
+                for my $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
+                    if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                        ($s = ($s . $ast->{'buf'}))
+                    }
+                    else {
+                        ($s = ($s . $ast->emit_perl5()))
+                    }
+                }
+            };
+            return ((Perlito5::Perl5::tab($level) . 'm!' . $s . '!' . $self->{'arguments'}->[1]))
         };
         if (($code eq '__PACKAGE__')) {
             return (('"' . $Perlito5::PKG_NAME . '"'))
@@ -342,7 +356,6 @@ for ($_) {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $decl) = $self->{'decl'});
-        ((my  $name) = $self->{'var'}->plain_name());
         ((my  $str) = ('(' . $self->{'decl'} . ' ' . $self->{'type'} . ' ' . $self->{'var'}->emit_perl5() . ')'));
         return ((Perlito5::Perl5::tab($level) . $str))
     }

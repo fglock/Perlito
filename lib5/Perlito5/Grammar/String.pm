@@ -508,18 +508,17 @@ sub Perlito5::Grammar::String::m_quote_parse {
     if (exists($pair{$delimiter})) {
         ($closing_delimiter = $pair{$delimiter})
     };
-    ((my  $part1) = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1));
+    ((my  $part1) = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2));
     if ($part1) {
 
     }
     else {
         return ($part1)
     };
-    ((my  $str_regex) = Perlito5::AST::Val::Buf->new('buf', substr($str, $pos, (($part1->{'to'} - $pos) - 1))));
-    (my  $m);
+    ((my  $str_regex) = $part1->{'capture'});
     ((my  $p) = $part1->{'to'});
     ((my  $modifiers) = '');
-    ($m = Perlito5::Grammar->ident($str, $p));
+    ((my  $m) = Perlito5::Grammar->ident($str, $p));
     if ($m) {
         ($modifiers = Perlito5::Match::flat($m));
         ($part1->{'to'} = $m->{'to'})
@@ -643,7 +642,24 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                 ($more = $delimiter)
             }
             else {
-                ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : ((($c eq chr(92)) && ($c2 eq chr(92))) ? {'str', $str, 'from', $p, 'to', ($p + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr(92))} : ((($c eq chr(92)) && ($c2 eq chr(39))) ? {'str', $str, 'from', $p, 'to', ($p + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr(39))} : 0))))
+                if (($interpolate && ((($c eq '$') || ($c eq '@'))))) {
+                    ($m = Perlito5::Grammar::String->double_quoted_var($str, $p, $delimiter))
+                }
+                else {
+                    if (($c eq chr(92))) {
+                        if (($interpolate == 2)) {
+
+                        }
+                        else {
+                            if (($interpolate == 1)) {
+                                ($m = Perlito5::Grammar::String->double_quoted_unescape($str, $p))
+                            }
+                            else {
+                                ($m = (($c2 eq chr(92)) ? {'str', $str, 'from', $p, 'to', ($p + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr(92))} : (($c2 eq chr(39)) ? {'str', $str, 'from', $p, 'to', ($p + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr(39))} : 0)))
+                            }
+                        }
+                    }
+                }
             }
         };
         if ($m) {
@@ -829,6 +845,29 @@ sub Perlito5::Grammar::String::here_doc {
     };
     die(('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF'))
 };
+sub Perlito5::Grammar::String::double_quoted_unescape {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $c2) = substr($str, ($pos + 1), 1));
+    (my  $m);
+    if (exists($escape_sequence{$c2})) {
+        ($m = {'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($escape_sequence{$c2}))})
+    }
+    else {
+        if (($c2 eq 'c')) {
+            ((my  $c3) = ((ord(substr($str, ($pos + 2), 1)) - ord('A')) + 1));
+            if (($c3 < 0)) {
+                ($c3 = (128 + $c3))
+            };
+            ($m = {'str', $str, 'from', $pos, 'to', ($pos + 3), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($c3))})
+        }
+        else {
+            ($m = {'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
+        }
+    };
+    return ($m)
+};
 sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     ((my  $self) = $_[0]);
     ((my  $m_var) = $_[1]);
@@ -857,7 +896,7 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     };
     return ($m_var)
 };
-sub Perlito5::Grammar::String::double_quoted_buf {
+sub Perlito5::Grammar::String::double_quoted_var {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -900,22 +939,6 @@ sub Perlito5::Grammar::String::double_quoted_buf {
                 ($m = $self->double_quoted_var_with_subscript($m));
                 ($m->{'capture'} = Perlito5::AST::Apply->new('code', 'join', 'arguments', [Perlito5::AST::Val::Buf->new('buf', ' '), $m->{'capture'}], 'namespace', ''));
                 return ($m)
-            }
-            else {
-                if (($c eq chr(92))) {
-                    ((my  $c2) = substr($str, ($pos + 1), 1));
-                    if (exists($escape_sequence{$c2})) {
-                        return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($escape_sequence{$c2}))})
-                    };
-                    if (($c2 eq 'c')) {
-                        ((my  $c3) = ((ord(substr($str, ($pos + 2), 1)) - ord('A')) + 1));
-                        if (($c3 < 0)) {
-                            ($c3 = (128 + $c3))
-                        };
-                        return ({'str', $str, 'from', $pos, 'to', ($pos + 3), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($c3))})
-                    };
-                    return ({'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
-                }
             }
         }
     };
