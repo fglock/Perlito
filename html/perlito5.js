@@ -2237,7 +2237,16 @@ var p5100 = p5pkg['main'];
 					}
 					else {
 						if ( (p5str(v_code) == 'p5:m') ) {
-							(v_str = (('(p5str(' + p5str(p5call(v_var, "emit_javascript", [], 0)) + ').match(/' + p5str(((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[0] || ((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[0] = new p5HashRef({})))._hash_['buf']) + '/' + p5str((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[1]) + ')' + ' ? 1 : 0)')));
+							(function () {
+								var v_ast = null;
+								(v_ast = ((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[0]));
+								if ( p5bool(p5call(v_ast, "isa", ['Perlito5::AST::Val::Buf'], 0)) ) {
+									(v_str = (('(' + 'p5str(' + p5str(p5call(v_var, "emit_javascript", [], 0)) + ')' + '.match(/' + p5str((v_ast || (v_ast = new p5HashRef({})))._hash_['buf']) + '/' + p5str((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[1]) + ')' + ' ? 1 : 0)')));
+								}
+								else {
+									(v_str = (('(new RegExp(' + p5str(p5call(v_ast, "emit_javascript", [], 0)) + ', ' + '"' + p5str((v_regex_args || (v_regex_args = new p5ArrayRef([])))._array_[1]) + '"' + '))' + '.exec(' + 'p5str(' + p5str(p5call(v_var, "emit_javascript", [], 0)) + ')' + ')')));
+								};
+								})();
 						}
 						else {
 							p5pkg["Perlito5::AST::Apply"].die([[('Error: regex emitter - unknown operator ' + p5str(v_code))]], null);

@@ -1002,8 +1002,27 @@ package Perlito5::AST::Apply;
                  .  $regex_args->[1]->emit_javascript() . ')';
         }
         elsif ($code eq 'p5:m') {
-            $str = '(p5str(' . $var->emit_javascript() . ').match(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[1] . ')'
+
+            my $ast = $regex_args->[0];
+            if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                # constant
+
+                 $str = '(' 
+                    . 'p5str(' . $var->emit_javascript() . ')'
+                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1] . ')'
                     . ' ? 1 : 0)';
+            }
+            else {
+                # run-time interpolation
+
+                $str = '(new RegExp('
+                        . $ast->emit_javascript() . ', '
+                        . '"' . $regex_args->[1] . '"'
+                    . '))'
+                    . '.exec('
+                        . 'p5str(' . $var->emit_javascript() . ')'
+                    . ')';
+            }
         }
         else {
             die "Error: regex emitter - unknown operator $code";
