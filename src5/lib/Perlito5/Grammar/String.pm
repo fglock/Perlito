@@ -578,7 +578,13 @@ sub double_quoted_var_with_subscript {
     my $m_index;
     if (substr($str, $p, 1) eq '[') {
 
-        # TODO - inside a regex: disambiguate from char-class
+        if ($interpolate == 2) {
+            # inside a regex: disambiguate from char-class
+            my $m = Perlito5::Expression->term_digit($str, $p+1)
+                 || Perlito5::Expression->term_sigil($str, $p+1);
+            return $m_var unless $m;
+            return $m_var unless substr($str, $m->{to}, 1) eq ']';
+        }
 
         $p++;
         $m_index = Perlito5::Expression->list_parse($str, $p);

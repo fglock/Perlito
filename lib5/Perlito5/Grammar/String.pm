@@ -877,6 +877,21 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     ((my  $p) = $pos);
     (my  $m_index);
     if ((substr($str, $p, 1) eq '[')) {
+        if (($interpolate == 2)) {
+            ((my  $m) = (Perlito5::Expression->term_digit($str, ($p + 1)) || Perlito5::Expression->term_sigil($str, ($p + 1))));
+            if ($m) {
+
+            }
+            else {
+                return ($m_var)
+            };
+            if ((substr($str, $m->{'to'}, 1) eq ']')) {
+
+            }
+            else {
+                return ($m_var)
+            }
+        };
         ($p)++;
         ($m_index = Perlito5::Expression->list_parse($str, $p));
         if ($m_index) {

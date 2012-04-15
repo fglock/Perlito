@@ -7707,6 +7707,24 @@ var p5100 = p5pkg['main'];
 				(v_p = (v_pos));
 				var v_m_index = null;
 				if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0) == '[') ) {
+					if ( (p5num(v_interpolate) == 2) ) {
+						(function () {
+							var v_m = null;
+							(v_m = (p5or(p5call(p5pkg["Perlito5::Expression"], "term_digit", [v_str, (p5num(v_p) + 1)], 0), function () { return p5call(p5pkg["Perlito5::Expression"], "term_sigil", [v_str, (p5num(v_p) + 1)], 0) })));
+							if ( p5bool(v_m) ) {
+								null;
+							}
+							else {
+								throw(p5context([v_m_var], p5want));
+							};
+							if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, (v_m || (v_m = new p5HashRef({})))._hash_['to'], 1], 0) == ']') ) {
+								null;
+							}
+							else {
+								throw(p5context([v_m_var], p5want));
+							};
+							})();
+					};
 					(v_p)++;
 					(v_m_index = (p5call(p5pkg["Perlito5::Expression"], "list_parse", [v_str, v_p], 0)));
 					if ( p5bool(v_m_index) ) {
