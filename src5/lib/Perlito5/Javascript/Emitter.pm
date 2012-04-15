@@ -699,11 +699,11 @@ package Perlito5::AST::Index;
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
-            return $v->emit_javascript($level) . '[' . $self->{index_exp}->emit_javascript() . ']';
+            return $v->emit_javascript($level) . '[' . Perlito5::Javascript::to_num($self->{index_exp}, $level) . ']';
         }
 
           Perlito5::Javascript::emit_javascript_autovivify( $self->{obj}, $level, 'array' )
-        . '._array_[' . $self->{index_exp}->emit_javascript() . ']';
+        . '._array_[' . Perlito5::Javascript::to_num($self->{index_exp}, $level) . ']';
     }
 }
 
@@ -956,7 +956,9 @@ package Perlito5::AST::Call;
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Javascript::emit_javascript_autovivify( $self->{invocant}, $level, 'array' )
-                . '._array_[' . $self->{arguments}->emit_javascript($level, 'list') . ']';
+                . '._array_[' . Perlito5::Javascript::to_num($self->{arguments}) . ']';
+                # TODO - array slice
+                # . '._array_[' . $self->{arguments}->emit_javascript($level, 'list') . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Javascript::emit_javascript_autovivify( $self->{invocant}, $level, 'hash' )
