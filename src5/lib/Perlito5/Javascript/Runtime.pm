@@ -296,6 +296,10 @@ p5a_to_h = function(a) {
     return res;
 };
 
+p5idx = function(a, i) {
+    return i >= 0 ? i : a.length + i
+};
+
 p5str = function(o) {
     if (o == null) {
         return "";

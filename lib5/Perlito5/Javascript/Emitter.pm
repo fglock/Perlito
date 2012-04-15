@@ -422,9 +422,9 @@ for ($_) {
         ((my  $level) = shift());
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = Perlito5::AST::Var->new('sigil', '@', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
-            return (($v->emit_javascript($level) . '[' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ']'))
+            return (($v->emit_javascript($level) . '[' . 'p5idx(' . $v->emit_javascript($level) . ',' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ')' . ']'))
         };
-        (Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '._array_[' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ']')
+        (Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '._array_[' . 'p5idx(' . Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '._array_,' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ')' . ']')
     }
 };
 package Perlito5::AST::Lookup;
@@ -618,7 +618,7 @@ for ($_) {
         ((my  $wantarray) = shift());
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<[ ]>')) {
-            return ((Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '._array_[' . Perlito5::Javascript::to_num($self->{'arguments'}) . ']'))
+            return ((Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '._array_[' . 'p5idx(' . Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '._array_,' . Perlito5::Javascript::to_num($self->{'arguments'}) . ')' . ']'))
         };
         if (($meth eq 'postcircumfix:<{ }>')) {
             return ((Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'hash') . '._hash_[' . Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_javascript($level, 'list') . ']'))
