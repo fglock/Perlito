@@ -580,7 +580,11 @@ sub double_quoted_var_with_subscript {
 
         if ($interpolate == 2) {
             # inside a regex: disambiguate from char-class
+            # these are valid indexes: 12 -1 $x
             my $m = Perlito5::Expression->term_digit($str, $p+1)
+                 || (  substr($str, $p+1, 1) eq '-'
+                    && Perlito5::Expression->term_digit($str, $p+2)
+                    )
                  || Perlito5::Expression->term_sigil($str, $p+1);
             return $m_var unless $m;
             return $m_var unless substr($str, $m->{to}, 1) eq ']';

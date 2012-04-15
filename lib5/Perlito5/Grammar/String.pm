@@ -878,7 +878,7 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     (my  $m_index);
     if ((substr($str, $p, 1) eq '[')) {
         if (($interpolate == 2)) {
-            ((my  $m) = (Perlito5::Expression->term_digit($str, ($p + 1)) || Perlito5::Expression->term_sigil($str, ($p + 1))));
+            ((my  $m) = ((Perlito5::Expression->term_digit($str, ($p + 1)) || (((substr($str, ($p + 1), 1) eq '-') && Perlito5::Expression->term_digit($str, ($p + 2))))) || Perlito5::Expression->term_sigil($str, ($p + 1))));
             if ($m) {
 
             }
