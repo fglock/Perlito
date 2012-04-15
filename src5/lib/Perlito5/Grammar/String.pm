@@ -261,7 +261,7 @@ sub string_interpolation_parse {
             $more = $delimiter;
         }
         elsif ($interpolate && ($c eq '$' || $c eq '@')) {
-            $m = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter )
+            $m = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter, $interpolate )
         }
         elsif ($c eq '\\') {
             if ($interpolate == 2) {
@@ -570,12 +570,16 @@ sub double_quoted_unescape {
 sub double_quoted_var_with_subscript {
     my $self = $_[0];
     my $m_var = $_[1];
+    my $interpolate = $_[2];  # 0 - single-quote; 1 - double-quote; 2 - regex
 
     my $str = $m_var->{str};
     my $pos = $m_var->{to};
     my $p = $pos;
     my $m_index;
     if (substr($str, $p, 1) eq '[') {
+
+        # TODO - inside a regex: disambiguate from char-class
+
         $p++;
         $m_index = Perlito5::Expression->list_parse($str, $p);
         if ($m_index) {
@@ -588,7 +592,7 @@ sub double_quoted_var_with_subscript {
                         index_exp => $exp,
                     );
                 $m_index->{to} = $p;
-                return $self->double_quoted_var_with_subscript($m_index);
+                return $self->double_quoted_var_with_subscript($m_index, $interpolate);
             }
         }
     }
@@ -598,7 +602,7 @@ sub double_quoted_var_with_subscript {
                 obj       => $m_var->{capture},
                 index_exp => Perlito5::Match::flat($m_index)->[2][0],
             );
-        return $self->double_quoted_var_with_subscript($m_index);
+        return $self->double_quoted_var_with_subscript($m_index, $interpolate);
     }
 
     return $m_var;
@@ -609,6 +613,7 @@ sub double_quoted_var {
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = $_[3];
+    my $interpolate = $_[4];  # 0 - single-quote; 1 - double-quote; 2 - regex
 
     my $c = substr($str, $pos, 1);
 
@@ -629,7 +634,7 @@ sub double_quoted_var {
         return $m unless $m;
 
         $m->{capture} = $m->{capture}[1];
-        return $self->double_quoted_var_with_subscript($m);
+        return $self->double_quoted_var_with_subscript($m, $interpolate);
     }
     elsif ($c eq '@' && substr($str, $pos+1, length($delimiter)) ne $delimiter)
     {
@@ -637,7 +642,7 @@ sub double_quoted_var {
         return $m unless $m;
 
         $m->{capture} = $m->{capture}[1];
-        $m = $self->double_quoted_var_with_subscript($m);
+        $m = $self->double_quoted_var_with_subscript($m, $interpolate);
 
         $m->{capture} = 
              Perlito5::AST::Apply->new(

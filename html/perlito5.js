@@ -7396,7 +7396,7 @@ var p5100 = p5pkg['main'];
 							}
 							else {
 								if ( (p5bool(v_interpolate) && ((p5str(v_c) == '$') || (p5str(v_c) == '@'))) ) {
-									(v_m = (p5call(p5pkg["Perlito5::Grammar::String"], "double_quoted_var", [v_str, v_p, v_delimiter], 0)));
+									(v_m = (p5call(p5pkg["Perlito5::Grammar::String"], "double_quoted_var", [v_str, v_p, v_delimiter, v_interpolate], 0)));
 								}
 								else {
 									if ( (p5str(v_c) == String.fromCharCode(92)) ) {
@@ -7697,6 +7697,8 @@ var p5100 = p5pkg['main'];
 				(v_self = (List__[0]));
 				var v_m_var = null;
 				(v_m_var = (List__[1]));
+				var v_interpolate = null;
+				(v_interpolate = (List__[2]));
 				var v_str = null;
 				(v_str = ((v_m_var || (v_m_var = new p5HashRef({})))._hash_['str']));
 				var v_pos = null;
@@ -7716,7 +7718,7 @@ var p5100 = p5pkg['main'];
 								(v_p)++;
 								((v_m_index || (v_m_index = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Index"], "new", p5list_to_a('obj', (v_m_var || (v_m_var = new p5HashRef({})))._hash_['capture'], 'index_exp', v_exp), p5want));
 								((v_m_index || (v_m_index = new p5HashRef({})))._hash_['to'] = v_p);
-								throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index], p5want));
+								throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index, v_interpolate], p5want));
 							};
 							})();
 					};
@@ -7724,7 +7726,7 @@ var p5100 = p5pkg['main'];
 				(v_m_index = (p5call(p5pkg["Perlito5::Expression"], "term_curly", [v_str, v_pos], 0)));
 				if ( p5bool(v_m_index) ) {
 					((v_m_index || (v_m_index = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Lookup"], "new", p5list_to_a('obj', (v_m_var || (v_m_var = new p5HashRef({})))._hash_['capture'], 'index_exp', ((p5pkg["Perlito5::Match"].flat([v_m_index], p5want) || (p5pkg["Perlito5::Match"].flat([v_m_index], p5want) = new p5ArrayRef([])))._array_[2] || ((p5pkg["Perlito5::Match"].flat([v_m_index], p5want) || (p5pkg["Perlito5::Match"].flat([v_m_index], p5want) = new p5ArrayRef([])))._array_[2] = new p5ArrayRef([])))._array_[0]), p5want));
-					throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index], p5want));
+					throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index, v_interpolate], p5want));
 				};
 				return (p5context([v_m_var], p5want));
 			}
@@ -7747,6 +7749,8 @@ var p5100 = p5pkg['main'];
 				(v_pos = (List__[2]));
 				var v_delimiter = null;
 				(v_delimiter = (List__[3]));
+				var v_interpolate = null;
+				(v_interpolate = (List__[4]));
 				var v_c = null;
 				(v_c = (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_pos, 1], 0)));
 				if ( ((p5str(v_c) == '$') && (p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 1), 1], 0) == '{')) ) {
@@ -7777,7 +7781,7 @@ var p5100 = p5pkg['main'];
 								throw(p5context([v_m], p5want));
 							};
 							((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] || ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_[1]);
-							throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m], p5want));
+							throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m, v_interpolate], p5want));
 							})();
 					}
 					else {
@@ -7792,7 +7796,7 @@ var p5100 = p5pkg['main'];
 									throw(p5context([v_m], p5want));
 								};
 								((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] || ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_[1]);
-								(v_m = (p5call(v_self, "double_quoted_var_with_subscript", [v_m], 0)));
+								(v_m = (p5call(v_self, "double_quoted_var_with_subscript", [v_m, v_interpolate], 0)));
 								((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'join', 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', ' '], 1), (v_m || (v_m = new p5HashRef({})))._hash_['capture']))), 'namespace', ''), p5want));
 								throw(p5context([v_m], p5want));
 								})();
