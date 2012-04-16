@@ -27,7 +27,9 @@ TODO list for Perlito5
 
 * Parser
 
--- fix the prototype for 'stat' (see t/test.pl in the perl test suite)
+-- '$#' should be a syntax error (parses as $#{undef} )
+
+-- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
    my $v;
