@@ -1245,8 +1245,33 @@ sub statement_parse {
     $res = $self->exp_parse($str, $pos);
     if (!$res) {
         # say "# not a statement or expression";
+        return;
+    }
+
+    # did we just see a label?
+    if (  substr($str, $res->{to}, 1) eq ':'
+       && $res->{capture}{exp}->isa('Perlito5::AST::Apply')
+       && $res->{capture}{exp}{bareword}
+       )
+    {
+        my $label = $res->{capture}{exp}{code};
+        # say "label $label";
+        my $ws   = Perlito5::Grammar::Space->opt_ws( $str, $res->{to} + 1 );
+        my $stmt = $self->statement_parse( $str, $ws->{to} );
+        if ($stmt) {
+            $stmt->{capture}{label} = $label;
+            return $stmt;
+        }
+        $res->{to} = $ws->{to};
+        $res->{capture} = Perlito5::AST::Apply->new(
+                'arguments' => [],
+                'code'      => 'undef',
+                'namespace' => '',
+                'label'     => $label,
+            );
         return $res;
     }
+
     if (Perlito5::Match::flat($res)->{terminated}) {
         # say "# statement expression terminated result: ", $res->perl;
         $res->{capture} = Perlito5::Match::flat($res)->{exp};

@@ -1580,6 +1580,18 @@ sub Perlito5::Expression::statement_parse {
     };
     ($res = $self->exp_parse($str, $pos));
     if (!($res)) {
+        return ()
+    };
+    if ((((substr($str, $res->{'to'}, 1) eq ':') && $res->{'capture'}->{'exp'}->isa('Perlito5::AST::Apply')) && $res->{'capture'}->{'exp'}->{'bareword'})) {
+        ((my  $label) = $res->{'capture'}->{'exp'}->{'code'});
+        ((my  $ws) = Perlito5::Grammar::Space->opt_ws($str, ($res->{'to'} + 1)));
+        ((my  $stmt) = $self->statement_parse($str, $ws->{'to'}));
+        if ($stmt) {
+            ($stmt->{'capture'}->{'label'} = $label);
+            return ($stmt)
+        };
+        ($res->{'to'} = $ws->{'to'});
+        ($res->{'capture'} = Perlito5::AST::Apply->new('arguments', [], 'code', 'undef', 'namespace', '', 'label', $label));
         return ($res)
     };
     if (Perlito5::Match::flat($res)->{'terminated'}) {
