@@ -27,7 +27,7 @@ TODO list for Perlito5
 
 * Parser
 
--- bug: fix 'exists' prototype (perl doesn't have a prototype for 'exists')
+-- fix the prototype for 'stat' (see t/test.pl in the perl test suite)
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
    my $v;

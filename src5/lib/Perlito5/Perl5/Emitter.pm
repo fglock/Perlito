@@ -240,6 +240,7 @@ package Perlito5::AST::Apply;
         'prefix:<+>'    => '+',
         'prefix:<->'    => '-',
         'prefix:<-d>'   => '-d',
+        'prefix:<-e>'   => '-e',
         'prefix:<-f>'   => '-f',
         'prefix:<not>'  => 'not',
     );
@@ -251,6 +252,7 @@ package Perlito5::AST::Apply;
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
+        'infix:<%>'  => ' % ',
         'infix:<**>' => ' ** ',
         'infix:<>>'  => ' > ',
         'infix:<<>'  => ' < ',
