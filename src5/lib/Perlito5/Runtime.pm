@@ -288,7 +288,7 @@ $Perlito5::CORE_PROTO = {
           'CORE::default' => undef,
           'CORE::shift' => ';\\@',
           'CORE::symlink' => '$$',
-          'CORE::exists' => undef,
+          'CORE::exists' => '$',      # original 'undef',
           'CORE::printf' => undef
         };
 1;

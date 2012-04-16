@@ -239,7 +239,9 @@ package Perlito5::AST::Apply;
         'prefix:<-->'   => '--',
         'prefix:<+>'    => '+',
         'prefix:<->'    => '-',
+        'prefix:<-d>'   => '-d',
         'prefix:<-f>'   => '-f',
+        'prefix:<not>'  => 'not',
     );
 
     my %op_infix_perl5 = (
@@ -390,6 +392,7 @@ package Perlito5::AST::Apply;
         if ($code eq 'prefix:<@>') { return Perlito5::Perl5::tab($level) . '@{' . join(' ', map( $_->emit_perl5, @{$self->{arguments}} ))     . '}' }
         if ($code eq 'prefix:<%>') { return Perlito5::Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @{$self->{arguments}} ))     . '}' }
         if ($code eq 'prefix:<&>') { return Perlito5::Perl5::tab($level) . '&{' . join(' ', map( $_->emit_perl5, @{$self->{arguments}} ))     . '}' }
+        if ($code eq 'prefix:<$#>') { return Perlito5::Perl5::tab($level) . '$#{' . join(' ', map( $_->emit_perl5, @{$self->{arguments}} ))     . '}' }
 
 
         if ($code eq 'postfix:<++>') { return Perlito5::Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{arguments}} ))  . ')++' }
