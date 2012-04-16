@@ -132,7 +132,9 @@ sub Perlito5::Grammar::Regex::literal {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -215,7 +217,9 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -287,7 +291,9 @@ sub Perlito5::Grammar::Regex::string_code {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }

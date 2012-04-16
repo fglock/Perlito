@@ -296,7 +296,9 @@ sub Perlito5::Precedence::precedence_parse {
     if (($token->[0] eq 'space')) {
         ($token = $get_token->())
     };
-    for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
+    for ( ; ((defined($token)) && (($token->[0] ne 'end'))); do { for ($_) {
+
+}} ) {
         if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
             push(@{$num_stack}, ['term', undef()] )
         };
@@ -307,7 +309,9 @@ sub Perlito5::Precedence::precedence_parse {
         else {
             if ((($Operator->{'postfix'})->{$token->[1]} && is_term($last))) {
                 ((my  $pr) = $Precedence->{$token->[1]});
-                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+
+}} ) {
                     $reduce->($op_stack, $num_stack)
                 };
                 if (($token->[0] ne 'postfix_or_term')) {
@@ -329,12 +333,16 @@ sub Perlito5::Precedence::precedence_parse {
                     if ($Precedence->{$token->[1]}) {
                         ((my  $pr) = $Precedence->{$token->[1]});
                         if ($Assoc->{'right'}->{$token->[1]}) {
-                            for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
+                            for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+
+}} ) {
                                 $reduce->($op_stack, $num_stack)
                             }
                         }
                         else {
-                            for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                            for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+
+}} ) {
                                 $reduce->($op_stack, $num_stack)
                             }
                         };
@@ -361,7 +369,9 @@ sub Perlito5::Precedence::precedence_parse {
     if ((defined($token) && (($token->[0] ne 'end')))) {
         die('Unexpected end token: ', $token)
     };
-    for ( ; scalar(@{$op_stack});  ) {
+    for ( ; scalar(@{$op_stack}); do { for ($_) {
+
+}} ) {
         $reduce->($op_stack, $num_stack)
     };
     ($End_token = $last_end_token);

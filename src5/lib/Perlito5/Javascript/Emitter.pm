@@ -682,9 +682,9 @@ package Perlito5::AST::Lit::Block;
         my $level = shift;
         my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0 );
         return
-              'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
+              '(function () { for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
             .   $body->emit_javascript( $level + 1 ) . "\n"
-            . Perlito5::Javascript::tab($level) . '}'
+            . Perlito5::Javascript::tab($level) . '}})()'
     }
 }
 

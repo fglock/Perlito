@@ -109,12 +109,14 @@ token for {
             '{' <.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.opt_ws>
-            '}'
+            '}' <.opt_ws>
+        <opt_continue_block>
         {
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
                     topic => undef, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) )
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) ),
+                    continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
     |
@@ -123,12 +125,14 @@ token for {
             '{' <.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.opt_ws>
-            '}'
+            '}' <.opt_ws>
+        <opt_continue_block>
         {
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
                     topic => undef, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
     ]
@@ -140,12 +144,29 @@ token while {
             '{' <.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.opt_ws>
-            '}'
+            '}' <.opt_ws>
+    <opt_continue_block>
         {
             $MATCH->{capture} = Perlito5::AST::While->new( 
                     cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    continue => $MATCH->{opt_continue_block}{capture}
                  )
+        }
+};
+
+token opt_continue_block {
+        'continue' <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
+        {
+            $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
+        }
+    |
+        {
+            $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => [], sig => undef )
         }
 };
 

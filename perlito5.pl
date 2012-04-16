@@ -35,7 +35,9 @@ if (((($ARGV[0] eq '-v')) || (($ARGV[0] eq '--verbose')))) {
     ($verbose = 1);
     shift(@ARGV)
 };
-for ( ; (substr($ARGV[0], 0, 2) eq '-I');  ) {
+for ( ; (substr($ARGV[0], 0, 2) eq '-I'); do { for ($_) {
+
+}} ) {
     ($lib = substr($ARGV[0], 2, 10));
     unshift(@INC, $lib);
     shift(@ARGV)

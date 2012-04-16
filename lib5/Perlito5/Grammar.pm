@@ -60,7 +60,9 @@ sub Perlito5::Grammar::full_ident {
     }
 })))
 }))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -133,7 +135,9 @@ sub Perlito5::Grammar::namespace_before_ident {
     ($MATCH = ($res ? $tmp : 0))
 })))
 }))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -173,7 +177,9 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
     ((my  $last_match_null) = 0);
     ((my  $m) = $MATCH);
     ((my  $to) = $MATCH->{'to'});
-    for ( ; (((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && (($last_match_null < 2)));  ) {
+    for ( ; (((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -548,7 +554,9 @@ sub Perlito5::Grammar::exponent {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -592,7 +600,9 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -650,7 +660,9 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -700,7 +712,9 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -761,7 +775,9 @@ sub Perlito5::Grammar::digits {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -812,7 +828,9 @@ sub Perlito5::Grammar::val_int {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -850,7 +868,9 @@ sub Perlito5::Grammar::val_int {
     ($MATCH->{'to'} = $pos1);
     (((('1' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 })))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -881,7 +901,9 @@ sub Perlito5::Grammar::val_int {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -917,7 +939,9 @@ sub Perlito5::Grammar::val_int {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -970,7 +994,9 @@ sub Perlito5::Grammar::exp_stmts {
     else {
         0
     }
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -1035,7 +1061,9 @@ sub Perlito5::Grammar::args_sig {
     ($MATCH->{'to'} = $pos1);
     (((('&' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 })))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }

@@ -175,6 +175,9 @@ sub Perlito5::AST::For::new {
 sub Perlito5::AST::For::cond {
     $_[0]->{    'cond'}
 };
+sub Perlito5::AST::For::continue {
+    $_[0]->{    'continue'}
+};
 sub Perlito5::AST::For::body {
     $_[0]->{    'body'}
 };

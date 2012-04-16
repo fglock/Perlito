@@ -33,7 +33,9 @@ use Perlito5::Precedence;
 sub Perlito5::Grammar::Space::term_space {
     ((my  $str) = $_[0]);
     ((my  $p) = $_[1]);
-    for ( ; exists($space{substr($str, $p, 1)});  ) {
+    for ( ; exists($space{substr($str, $p, 1)}); do { for ($_) {
+
+}} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     return ({'str', $str, 'from', $pos, 'to', $p, 'capture', ['space', ' ']})
@@ -76,7 +78,9 @@ sub Perlito5::Grammar::Space::to_eol {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))
-})) && (($last_match_null < 2)));  ) {
+})) && (($last_match_null < 2))); do { for ($_) {
+
+}} ) {
         if (($to == $MATCH->{'to'})) {
             ($last_match_null = ($last_match_null + 1))
         }
@@ -280,7 +284,9 @@ sub Perlito5::Grammar::Space::ws {
     ((my  $str) = shift());
     ((my  $pos) = shift());
     ((my  $p) = $pos);
-    for ( ; exists($space{substr($str, $p, 1)});  ) {
+    for ( ; exists($space{substr($str, $p, 1)}); do { for ($_) {
+
+}} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     if (($p == $pos)) {
@@ -292,7 +298,9 @@ sub Perlito5::Grammar::Space::opt_ws {
     ((my  $self) = shift());
     ((my  $str) = shift());
     ((my  $p) = shift());
-    for ( ; exists($space{substr($str, $p, 1)});  ) {
+    for ( ; exists($space{substr($str, $p, 1)}); do { for ($_) {
+
+}} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     return ({'str', $str, 'from', $pos, 'to', $p})
