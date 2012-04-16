@@ -16,6 +16,8 @@ Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq
 Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'tr' => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'y'  => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
 
 
 token term_q_quote {
@@ -64,7 +66,13 @@ token term_glob {
     '<' <glob_quote_parse>
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{glob_quote_parse}) ]  }
 };
-
+token term_tr_quote {
+    [ 'tr' | 'y' ] [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    <tr_quote_parse>
+        { 
+            $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{tr_quote_parse}) ]  
+        }
+};
 
 my %pair = (
     '{' => '}',
@@ -226,6 +234,50 @@ sub glob_quote_parse {
             );
     }
     return $m;
+}
+sub tr_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
+    my $closing_delimiter = $delimiter;
+    $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
+    return $part1 unless $part1;
+
+    # TODO - call the regex compiler
+    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+
+    my $part2;
+    my $m;
+    my $p = $part1->{to};
+    if ( exists $pair{$delimiter} ) {
+        # warn "pair delimiter $delimiter at $p";
+        $m = Perlito5::Grammar::Space->opt_ws($str, $p);
+        $p = $m->{to};
+        $delimiter = substr( $str, $p, 1 );
+        my $open_delimiter = $delimiter;
+        $p++;
+        # warn "second delimiter $delimiter";
+        $closing_delimiter = $delimiter;
+        $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+        $part2 = $self->string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+        return $part2 unless $part2;
+    }
+    else {
+        $part2 = $self->string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+        return $part2 unless $part2;
+    }
+
+    $p = $part2->{to};
+
+    $part2->{capture} = Perlito5::AST::Apply->new( 
+        code => 'p5:tr',
+        arguments => [ $str_regex, Perlito5::Match::flat($part2) ],
+        namespace => ''
+    );
+    return $part2;
 }
 
 sub string_interpolation_parse {
