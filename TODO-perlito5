@@ -3,7 +3,12 @@ TODO list for Perlito5
 
 * perlito5 command-line
 
---
+-- process the arguments in a loop; ignore argument order
+-- search for modules in PERL5LIB
+   perlito5 own directories must be searched first (perlito5 defines it's own strict.pm)
+   maybe search PERLITO5LIB first
+   alternately, check $^H for strictness - such that perl's own strict.pm just works
+   and ${^WARNING_BITS} for warnings
 
 
 * basic functionality
@@ -95,8 +100,6 @@ TODO list for Perlito5
 -- pos($str)
 
 -- missing some types of subroutine signatures
-
--- bug: negative index in array doesn't work
 
 -- bug: variable aliases create copies instead
 

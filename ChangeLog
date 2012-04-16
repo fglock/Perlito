@@ -9,6 +9,11 @@ dev  2012-04-12
 - parser:
 
 -- autoquote hash-keys fix
+-- string interpolation in m//
+
+- javascript backend:
+
+-- negative index in array
 
 
 * Perlito6 (Perl 6 compiler):
