@@ -203,6 +203,9 @@ do { for ($_) {
             };
             return ((Perlito5::Perl5::tab($level) . 'm!' . $s . '!' . $self->{'arguments'}->[1]))
         };
+        if (($self->{'code'} eq 'p5:tr')) {
+            return ((Perlito5::Perl5::tab($level) . 'tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!'))
+        };
         if (($code eq '__PACKAGE__')) {
             return (('"' . $Perlito5::PKG_NAME . '"'))
         };

@@ -661,7 +661,12 @@ do { for ($_) {
                 }
             }
             else {
-                die(('Error: regex emitter - unknown operator ' . $code))
+                if (($code eq 'p5:tr')) {
+                    die('Error: tr/// not implemented')
+                }
+                else {
+                    die(('Error: regex emitter - unknown operator ' . $code))
+                }
             }
         };
         if (($op eq '=~')) {
@@ -692,6 +697,9 @@ do { for ($_) {
     ((my  $self) = $_[0]);
     emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
 }, 'p5:m', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
+}, 'p5:tr', sub {
     ((my  $self) = $_[0]);
     emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
 }, '__PACKAGE__', sub {

@@ -2258,7 +2258,12 @@ var p5100 = p5pkg['main'];
 								})();
 						}
 						else {
-							p5pkg["Perlito5::AST::Apply"].die([[('Error: regex emitter - unknown operator ' + p5str(v_code))]], null);
+							if ( (p5str(v_code) == 'p5:tr') ) {
+								p5pkg["Perlito5::AST::Apply"].die([['Error: tr/// not implemented']], null);
+							}
+							else {
+								p5pkg["Perlito5::AST::Apply"].die([[('Error: regex emitter - unknown operator ' + p5str(v_code))]], null);
+							};
 						};
 					};
 					if ( (p5str(v_op) == '=~') ) {
@@ -2316,6 +2321,10 @@ var p5100 = p5pkg['main'];
 						(v_self = (List__[p5idx(List__,0)]));
 						return (p5pkg["Perlito5::AST::Apply"].emit_regex_javascript(p5list_to_a('=~', p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '$', 'namespace', '', 'name', '_'], 1), v_self), p5want));
 				}, 'p5:m', function (List__, p5want) {
+						var v_self = null;
+						(v_self = (List__[p5idx(List__,0)]));
+						return (p5pkg["Perlito5::AST::Apply"].emit_regex_javascript(p5list_to_a('=~', p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '$', 'namespace', '', 'name', '_'], 1), v_self), p5want));
+				}, 'p5:tr', function (List__, p5want) {
 						var v_self = null;
 						(v_self = (List__[p5idx(List__,0)]));
 						return (p5pkg["Perlito5::AST::Apply"].emit_regex_javascript(p5list_to_a('=~', p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '$', 'namespace', '', 'name', '_'], 1), v_self), p5want));
