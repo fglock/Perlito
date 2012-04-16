@@ -342,12 +342,18 @@ do { for ($_) {
     sub Perlito5::AST::For::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ((my  $cond) = $self->{'cond'});
+        (my  $cond);
+        if ((ref($self->{'cond'}) eq 'ARRAY')) {
+            ($cond = ((($self->{'cond'}->[0] ? ($self->{'cond'}->[0]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[1] ? ($self->{'cond'}->[1]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[2] ? ($self->{'cond'}->[2]->emit_javascript(($level + 1)) . ' ') : ' '))))
+        }
+        else {
+            ($cond = $self->{'cond'}->emit_perl5())
+        };
         (my  $sig);
         if ($self->{'body'}->sig()) {
             ($sig = ('my ' . $self->{'body'}->sig()->emit_perl5() . ' '))
         };
-        return ((Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}'))
+        return ((Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}'))
     }
 }};
 package Perlito5::AST::Decl;

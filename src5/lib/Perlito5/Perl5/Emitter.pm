@@ -513,7 +513,7 @@ package Perlito5::AST::While;
         my $cond = $self->{cond};
            Perlito5::Perl5::tab($level) . 'for ( '
         .  ( $self->{init}     ? $self->{init}->emit_perl5()           . '; ' : '; ' )
-        .  ( $cond      ? $cond->emit_perl5()            . '; ' : '; ' )
+        .  ( $cond             ? $cond->emit_perl5()                   . '; ' : '; ' )
         .  ( $self->{continue} ? $self->{continue}->emit_perl5()       . ' '  : ' '  )
         .  ') {' . "\n"
         .       join(";\n", 
@@ -529,12 +529,23 @@ package Perlito5::AST::For;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $cond = $self->{cond};
+        my $cond;
+        if (ref($self->{cond}) eq 'ARRAY') {
+            # C-style for
+            $cond =
+               ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript($level + 1) . '; '  : '; ' )
+            .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript($level + 1) . '; '  : '; ' )
+            .  ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript($level + 1) . ' '   : ' '  )
+        }
+        else {
+            $cond = $self->{cond}->emit_perl5()
+        }
+
         my $sig;
         if ($self->{body}->sig()) {
             $sig = 'my ' . $self->{body}->sig->emit_perl5() . ' ';
         }
-        return  Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . "\n"
+        return  Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond . ') {' . "\n"
              .   join(";\n", map( $_->emit_perl5( $level + 1 ), @{ $self->{body}->stmts } )) . "\n"
              . Perlito5::Perl5::tab($level) . "}"
     }

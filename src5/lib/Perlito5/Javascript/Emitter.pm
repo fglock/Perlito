@@ -1766,6 +1766,19 @@ package Perlito5::AST::For;
         my $self = shift;
         my $level = shift;
 
+        if (ref($self->{cond}) eq 'ARRAY') {
+            # C-style for
+            my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
+            return
+               'for ( '
+            .  ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript($level + 1) . '; '  : '; ' )
+            .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript($level + 1) . '; '  : '; ' )
+            .  ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript($level + 1) . ' '   : ' '  )
+            .  ') {' . "\n" 
+                . $body->emit_javascript( $level + 1 ) . "\n"
+            .  Perlito5::Javascript::tab($level) . '}'
+        }
+
         my $cond = Perlito5::Javascript::to_list([$self->{cond}], $level + 1);
         if ($self->{body}->sig()) {
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again

@@ -1129,6 +1129,10 @@ do { for ($_) {
     sub Perlito5::AST::For::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
+        if ((ref($self->{'cond'}) eq 'ARRAY')) {
+            ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
+            return (('for ( ' . (($self->{'cond'}->[0] ? ($self->{'cond'}->[0]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[1] ? ($self->{'cond'}->[1]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[2] ? ($self->{'cond'}->[2]->emit_javascript(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+        };
         ((my  $cond) = Perlito5::Javascript::to_list([$self->{'cond'}], ($level + 1)));
         if ($self->{'body'}->sig()) {
             ((my  $v) = $self->{'body'}->sig());

@@ -70,6 +70,9 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: some declarations are not "seen":
+   for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i
+
 -- bug: don't emit throw() in term position; javascript requires a function() wrapper because throw() is a statement
 
 -- initialize @INC from $ENV{PERL5LIB}

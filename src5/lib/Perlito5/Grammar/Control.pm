@@ -121,17 +121,40 @@ token for {
         }
     |
         <.opt_ws>
-            '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
+
+            # (@x)  (my $i = 0; $i < 10; $i++)
+
+            '(' 
+                <Perlito5::Expression.exp_parse>
+                    [ ';' 
+                          { $MATCH->{c_style_for} = 1 }
+                          [ <Perlito5::Grammar.exp>  || <.opt_ws> ]
+                      ';' [ <Perlito5::Grammar.exp2> || <.opt_ws> ]
+                    | ''
+                    ]
+            ')' <.opt_ws>
             '{' <.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
+                <Perlito5::Grammar.exp_stmts2>
                 <.opt_ws>
             '}' <.opt_ws>
         <opt_continue_block>
         {
+            my $header;
+            if ($MATCH->{c_style_for}) {
+                $header = [
+                    $MATCH->{"Perlito5::Expression.exp_parse"}{capture}{exp},
+                    $MATCH->{"Perlito5::Grammar.exp"}{capture}{exp},
+                    $MATCH->{"Perlito5::Grammar.exp2"}{capture}{exp},
+                ];
+            }
+            else {
+                $header = $MATCH->{"Perlito5::Expression.exp_parse"}{capture}{exp};
+            }
+
             $MATCH->{capture} = Perlito5::AST::For->new( 
-                    cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
+                    cond  => $header, 
                     topic => undef, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts2"}), sig => undef ),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
