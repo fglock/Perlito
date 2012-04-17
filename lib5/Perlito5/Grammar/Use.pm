@@ -236,6 +236,10 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 };
 sub Perlito5::Grammar::Use::require {
     ((my  $filename) = shift());
+    ((my  $is_bareword) = shift());
+    if ($is_bareword) {
+        ($filename = modulename_to_filename($filename))
+    };
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };

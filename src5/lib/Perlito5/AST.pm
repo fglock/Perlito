@@ -58,7 +58,7 @@ sub autoquote {
        && $index->{bareword}
        )
     {
-        return Perlito5::AST::Val::Buf->new( buf => $index->{code} );
+        return Perlito5::AST::Val::Buf->new( buf => ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code} );
     }
 
     $index;

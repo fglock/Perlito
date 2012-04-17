@@ -755,7 +755,7 @@ do { for ($_) {
     ('(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ')')
 }, 'require', sub {
     ((my  $self) = $_[0]);
-    ('p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . '])')
+    ('p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ', ' . (($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0)) . '])')
 }, 'prefix:<$>', sub {
     ((my  $self) = $_[0]);
     ((my  $arg) = $self->{'arguments'}->[0]);
@@ -1065,7 +1065,7 @@ do { for ($_) {
                         if ($Perlito5::STRICT) {
                             die(('Bareword "' . $name . '" not allowed while "strict subs" in use'))
                         };
-                        return (Perlito5::Javascript::escape_string($name))
+                        return (Perlito5::Javascript::escape_string(((($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $name)))
                     }
                 }
             }

@@ -75,7 +75,7 @@ sub Perlito5::AST::Lookup::autoquote {
     ((my  $self) = shift());
     ((my  $index) = shift());
     if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-        return (Perlito5::AST::Val::Buf->new('buf', $index->{'code'}))
+        return (Perlito5::AST::Val::Buf->new('buf', ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'})))
     };
     $index
 };

@@ -1157,7 +1157,10 @@ package Perlito5::AST::Apply;
         },
         'require' => sub {
             my $self = $_[0];
-            'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str( $self->{arguments}[0] ) . '])';
+            'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
+                . Perlito5::Javascript::to_str( $self->{arguments}[0] ) . ', ' 
+                . ($self->{arguments}[0]{bareword} ? 1 : 0) 
+            . '])';
         },
 
         'prefix:<$>' => sub {
@@ -1666,14 +1669,14 @@ package Perlito5::AST::Apply;
             }
             else {
                 # this subroutine was never declared
-
                 if ($self->{bareword}) {
                     if ( $Perlito5::STRICT ) {
                         die 'Bareword "' . $name . '" not allowed while "strict subs" in use';
                     }
-                    return Perlito5::Javascript::escape_string( $name );
+                    return Perlito5::Javascript::escape_string( 
+                            ($self->{namespace} ? $self->{namespace} . '::' : "") . $name 
+                        );
                 }
-
             }
         }
 

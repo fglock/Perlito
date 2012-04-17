@@ -202,6 +202,10 @@ sub add_comp_unit {
 
 sub require {
     my $filename = shift;
+    my $is_bareword = shift;
+
+    $filename = modulename_to_filename($filename)
+        if $is_bareword;
 
     return 
         if filename_lookup($filename) eq "done";
