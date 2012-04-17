@@ -997,7 +997,19 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             ($m = {'str', $str, 'from', $pos, 'to', ($pos + 3), 'capture', Perlito5::AST::Val::Buf->new('buf', chr($c3))})
         }
         else {
-            ($m = {'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
+            if (($c2 eq 'x')) {
+                if ((substr($str, ($pos + 2), 1) eq '{')) {
+                    ((my  $p) = ($pos + 3));
+                    for ( ; (($p < length($str)) && (substr($str, $p, 1) ne '}'));  ) {
+                        ($p)++
+                    };
+                    ((my  $tmp) = oct(('0x' . substr($str, ($pos + 3), ($p - $pos)))));
+                    ($m = {'str', $str, 'from', $pos, 'to', ($p + 1), 'capture', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Int->new('int', $tmp)], 'code', 'chr')})
+                }
+            }
+            else {
+                ($m = {'str', $str, 'from', $pos, 'to', ($pos + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', $c2)})
+            }
         }
     };
     return ($m)

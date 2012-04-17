@@ -589,10 +589,34 @@ sub double_quoted_unescape {
             capture => Perlito5::AST::Val::Buf->new( buf => chr($c3) ),
         };
     }
+    elsif ( $c2 eq 'x' ) {
+        if (substr($str, $pos+2, 1) eq '{') {
+            # TODO - \x{03a3}         - unicode hex
+            my $p = $pos+3;
+            $p++
+                while $p < length($str) && substr($str, $p, 1) ne '}';
+            my $tmp = oct( "0x" . substr($str, $pos+3, $p - $pos) );
+            $m = {
+                str => $str,
+                from => $pos,
+                to => $p + 1,
+                capture => Perlito5::AST::Apply->new(
+                        'arguments' => [
+                            Perlito5::AST::Val::Int->new( 'int' => $tmp ),
+                        ],
+                        'code' => 'chr',
+                    )
+            };
+        }
+        else {
+            # TODO - "\x"+hex  - max 2 digit hex
+
+
+        }
+    }
     else {
-        # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
+        # TODO - "\"+octal        - initial zero is optional; max 3 digit octal (377)
         # TODO - \N{charname}     - requires "use charnames"
-        # TODO - \x{03a3}         - unicode hex
         # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
         # TODO - \l \u            - uppercase next char
 
