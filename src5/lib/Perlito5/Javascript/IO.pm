@@ -46,6 +46,9 @@ if (isNode) {
     p5is_directory = function(s) {
         var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
     }
+    p5file_exists = function(s) {
+        return p5is_file(s) || p5is_directory(s);
+    }
 
 }
 

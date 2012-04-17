@@ -28,11 +28,12 @@ package Perlito5::Javascript;
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
         'prefix:<-A>' => 'p5atime',
-        'prefix:<-M>' => 'p5mtime',
         'prefix:<-C>' => 'p5ctime',
-        'prefix:<-s>' => 'p5size',
-        'prefix:<-f>' => 'p5is_file',
+        'prefix:<-M>' => 'p5mtime',
         'prefix:<-d>' => 'p5is_directory',
+        'prefix:<-e>' => 'p5file_exists',
+        'prefix:<-f>' => 'p5is_file',
+        'prefix:<-s>' => 'p5size',
     );
 
     # these operators need 2 "str" parameters
