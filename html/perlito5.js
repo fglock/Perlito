@@ -880,25 +880,35 @@ if (isNode) {
 
     p5atime = function(s) {
         var stat = fs.statSync(s); return stat["atime"];
-    }
+    };
     p5mtime = function(s) {
         var stat = fs.statSync(s); return stat["mtime"];
-    }
+    };
     p5ctime = function(s) {
         var stat = fs.statSync(s); return stat["ctime"];
-    }
+    };
     p5size = function(s) {
         var stat = fs.statSync(s); return stat["size"];
-    }
+    };
     p5is_file = function(s) {
         var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
-    }
+    };
     p5is_directory = function(s) {
         var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
-    }
+    };
     p5file_exists = function(s) {
         return p5is_file(s) || p5is_directory(s);
-    }
+    };
+
+    CORE.chdir = function(List__) {
+        try {
+            process.chdir(List__[0]);
+            return 1;
+        }
+        catch(err) {
+            return '';
+        }
+    };
 
 }
 
