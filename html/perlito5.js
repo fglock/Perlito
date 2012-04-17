@@ -567,7 +567,8 @@ CORE.bless = function(List__) {
 };
 
 CORE.chr = function(List__) {
-    return String.fromCharCode(p5num(List__[0]));
+    var v = p5num(List__[0]);
+    return String.fromCharCode(v >= 0 ? v : 65533);
 };
 
 CORE.ord = function(List__) {
@@ -591,8 +592,8 @@ CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
 CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
 CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
 
-CORE.lc      = function(List__) { return List__[0].toLowerCase() };
-CORE.uc      = function(List__) { return List__[0].toUpperCase() };
+CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
+CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
 
 CORE.lcfirst = function(List__) {
     var s = List__[0];
@@ -879,22 +880,52 @@ if (isNode) {
     var fs = require("fs");
 
     p5atime = function(s) {
-        var stat = fs.statSync(s); return stat["atime"];
+        try {
+            var stat = fs.statSync(s); return stat["atime"];
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5mtime = function(s) {
-        var stat = fs.statSync(s); return stat["mtime"];
+        try {
+            var stat = fs.statSync(s); return stat["mtime"];
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5ctime = function(s) {
-        var stat = fs.statSync(s); return stat["ctime"];
+        try {
+            var stat = fs.statSync(s); return stat["ctime"];
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5size = function(s) {
-        var stat = fs.statSync(s); return stat["size"];
+        try {
+            var stat = fs.statSync(s); return stat["size"];
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5is_file = function(s) {
-        var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
+        try {
+            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5is_directory = function(s) {
-        var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
+        try {
+            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
+        }
+        catch(err) {
+            return '';
+        }
     };
     p5file_exists = function(s) {
         return p5is_file(s) || p5is_directory(s);
@@ -7537,6 +7568,10 @@ var p5100 = p5pkg['main'];
 		(Hash_pair = p5a_to_h(['{', '}', '(', ')', '[', ']', '<', '>']));
 		var Hash_escape_sequence = {};
 		(Hash_escape_sequence = {'a' : '7', 'b' : '8', 'e' : '27', 'f' : '12', 'n' : '10', 'r' : '13', 't' : '9'});
+		var Hash_hex = {};
+		(Hash_hex = p5a_to_h(p5list_to_a(p5map(p5pkg["Perlito5::Grammar::String"], function (p5want) {
+				return ((p5context([p5pkg["Perlito5::Grammar::String"]["v__"], 1], p5want)));
+			}, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']))));
 		p5make_sub("Perlito5::Grammar::String", "q_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[p5idx(List__,0)]));
@@ -8178,7 +8213,38 @@ var p5100 = p5pkg['main'];
 							})();
 					}
 					else {
-						(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_c2], 1)))))));
+						if ( (p5str(v_c2) == 'x') ) {
+							if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 2), 1], 0) == '{') ) {
+								(function () {
+									var v_p = null;
+									(v_p = ((p5num(v_pos) + 3)));
+									for ( ; ((p5num(v_p) < p5pkg["Perlito5::Grammar::String"].length([v_str], 0)) && (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0) != '}'));  ) {
+										(v_p)++;
+									};
+									var v_tmp = null;
+									(v_tmp = (p5pkg["Perlito5::Grammar::String"].oct([('0x' + p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 3), (p5num(v_p) - p5num(v_pos))], 0))], 0)));
+									(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_p) + 1), 'capture', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', v_tmp], 1)))), 'code', 'chr'), 1)))))));
+									})();
+							}
+							else {
+								(function () {
+									var v_p = null;
+									(v_p = ((p5num(v_pos) + 2)));
+									if ( p5bool(Hash_hex[p5pkg["Perlito5::Grammar::String"].uc([p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0)], p5want)]) ) {
+										(v_p)++;
+									};
+									if ( p5bool(Hash_hex[p5pkg["Perlito5::Grammar::String"].uc([p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0)], p5want)]) ) {
+										(v_p)++;
+									};
+									var v_tmp = null;
+									(v_tmp = (p5pkg["Perlito5::Grammar::String"].oct([('0x' + p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 2), (p5num(v_p) - p5num(v_pos))], 0))], 0)));
+									(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_p, 'capture', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', v_tmp], 1)))), 'code', 'chr'), 1)))))));
+									})();
+							};
+						}
+						else {
+							(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_c2], 1)))))));
+						};
 					};
 				};
 				return (p5context([v_m], p5want));
@@ -8621,7 +8687,7 @@ return r;
 						(p5pkg["main"]["Hash_INC"][v_filename] = v_realfilename);
 						throw(p5context(['todo'], p5want));
 					};
-				}, p5list_to_a(p5pkg["main"]["List_INC"]));
+				}, p5list_to_a(p5pkg["main"]["List_INC"], '.'));
 				return (p5pkg["Perlito5::Grammar::Use"].die([[('Can' + String.fromCharCode(39) + 't find ' + p5str(v_filename) + ' in @INC')]], p5want));
 			}
 			catch(err) {

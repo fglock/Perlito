@@ -109,8 +109,8 @@ CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
 CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
 CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
 
-CORE.lc      = function(List__) { return List__[0].toLowerCase() };
-CORE.uc      = function(List__) { return List__[0].toUpperCase() };
+CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
+CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
 
 CORE.lcfirst = function(List__) {
     var s = List__[0];
