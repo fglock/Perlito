@@ -25,8 +25,18 @@ TODO list for Perlito5
 -- Data::Dumper (implemented as Perlito5::Dumper)
 
 -- create perlito5-specific libs for:
-   feature.pm
-   Config.pm
+    feature.pm
+    Config.pm
+    overload.pm
+    bytes.pm
+    integer.pm
+    constant.pm
+    lib.pm
+    Carp.pm
+    vars.pm
+    Tie::Array
+    Tie::Hash
+    Tie::Scalar
 
 
 * Parser
