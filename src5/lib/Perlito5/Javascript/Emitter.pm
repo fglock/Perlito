@@ -1008,6 +1008,11 @@ package Perlito5::AST::Apply;
         my $var = shift;
         my $regex = shift;
 
+        if ($regex->isa('Perlito5::AST::Var')) {
+            # $x =~ $regex
+            $regex = { code => 'p5:m', arguments => [ $regex, '' ] };
+        }
+
         my $str;
         my $code = $regex->{code};
         my $regex_args = $regex->{arguments};
@@ -1040,7 +1045,9 @@ package Perlito5::AST::Apply;
             }
         }
         elsif ($code eq 'p5:tr') {
-            die "Error: tr/// not implemented";
+            # TODO: tr/// not implemented
+            $str =  
+                 'p5tr(' . $var->emit_javascript() . ', ' . $regex_args->[0]->emit_javascript() . ', ' . $regex_args->[1]->emit_javascript() . ')'
         }
         else {
             die "Error: regex emitter - unknown operator $code";
