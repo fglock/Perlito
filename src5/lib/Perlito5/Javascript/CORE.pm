@@ -4,7 +4,8 @@ package Perlito5::Javascript::CORE;
 
 sub emit_javascript {
 
-    return '//
+    return <<'EOT'
+//
 //
 // lib/Perlito5/Javascript/CORE.js
 //
@@ -128,8 +129,14 @@ CORE.ucfirst = function(List__) {
 
 CORE.quotemeta = function(List__) {
     var s = p5str(List__[0]);
-    CORE.warn("quotemeta() not implemented");
-    return s;
+    var out = [];
+    for(var i = 0; i < s.length; i++) {
+        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {
+            out.push(String.fromCharCode(92));
+        }
+        out.push(s.substr(i, 1));
+    }
+    return out.join("");       
 };
 
 CORE.substr = function(List__) {
@@ -378,7 +385,7 @@ CORE.prototype = function(List__, data) {
     p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
 };
 
-';
+EOT
 } # end of emit_javascript()
 
 1;
