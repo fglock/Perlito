@@ -83,6 +83,7 @@ my %pair = (
 
 my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
+my %hex = map +($_ => 1), qw/ 0 1 2 3 4 5 6 7 8 9 A B C D E F /;
 
 sub q_quote_parse {
     my $self = $_[0];
@@ -591,7 +592,7 @@ sub double_quoted_unescape {
     }
     elsif ( $c2 eq 'x' ) {
         if (substr($str, $pos+2, 1) eq '{') {
-            # TODO - \x{03a3}         - unicode hex
+            # \x{03a3}         - unicode hex
             my $p = $pos+3;
             $p++
                 while $p < length($str) && substr($str, $p, 1) ne '}';
@@ -609,9 +610,22 @@ sub double_quoted_unescape {
             };
         }
         else {
-            # TODO - "\x"+hex  - max 2 digit hex
-
-
+            # "\x"+hex  - max 2 digit hex
+            my $p = $pos+2;
+            $p++ if $hex{ uc substr($str, $p, 1) };
+            $p++ if $hex{ uc substr($str, $p, 1) };
+            my $tmp = oct( "0x" . substr($str, $pos+2, $p - $pos) );
+            $m = {
+                str => $str,
+                from => $pos,
+                to => $p,
+                capture => Perlito5::AST::Apply->new(
+                        'arguments' => [
+                            Perlito5::AST::Val::Int->new( 'int' => $tmp ),
+                        ],
+                        'code' => 'chr',
+                    )
+            };
         }
     }
     else {

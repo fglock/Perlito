@@ -535,6 +535,7 @@ sub Perlito5::Grammar::String::term_tr_quote {
 };
 ((my  %pair) = ('{', '}', '(', ')', '[', ']', '<', '>'));
 ((my  %escape_sequence) = ('a', '7', 'b', '8', 'e', '27', 'f', '12', 'n', '10', 'r', '13', 't', '9'));
+((my  %hex) = map(+(($_, 1)), ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')));
 sub Perlito5::Grammar::String::q_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1005,6 +1006,17 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
                     };
                     ((my  $tmp) = oct(('0x' . substr($str, ($pos + 3), ($p - $pos)))));
                     ($m = {'str', $str, 'from', $pos, 'to', ($p + 1), 'capture', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Int->new('int', $tmp)], 'code', 'chr')})
+                }
+                else {
+                    ((my  $p) = ($pos + 2));
+                    if ($hex{uc(substr($str, $p, 1))}) {
+                        ($p)++
+                    };
+                    if ($hex{uc(substr($str, $p, 1))}) {
+                        ($p)++
+                    };
+                    ((my  $tmp) = oct(('0x' . substr($str, ($pos + 2), ($p - $pos)))));
+                    ($m = {'str', $str, 'from', $pos, 'to', $p, 'capture', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Int->new('int', $tmp)], 'code', 'chr')})
                 }
             }
             else {

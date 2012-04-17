@@ -84,7 +84,8 @@ CORE.bless = function(List__) {
 };
 
 CORE.chr = function(List__) {
-    return String.fromCharCode(p5num(List__[0]));
+    var v = p5num(List__[0]);
+    return String.fromCharCode(v >= 0 ? v : 65533);
 };
 
 CORE.ord = function(List__) {

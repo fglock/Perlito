@@ -128,7 +128,7 @@ sub filename_lookup {
         die "Compilation failed in require";
     }
 
-    for my $prefix (@INC) {
+    for my $prefix (@INC, '.') {
         my $realfilename = "$prefix/$filename";
         if (-f $realfilename) {
             $INC{$filename} = $realfilename;
