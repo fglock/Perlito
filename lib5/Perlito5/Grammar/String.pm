@@ -738,7 +738,13 @@ sub Perlito5::Grammar::String::tr_quote_parse {
         }
     };
     ($p = $part2->{'to'});
-    ($part2->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:tr', 'arguments', [$str_regex, Perlito5::Match::flat($part2)], 'namespace', ''));
+    ((my  $modifiers) = '');
+    ($m = Perlito5::Grammar->ident($str, $p));
+    if ($m) {
+        ($modifiers = Perlito5::Match::flat($m));
+        ($part2->{'to'} = $m->{'to'})
+    };
+    ($part2->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:tr', 'arguments', [$str_regex, Perlito5::Match::flat($part2), $modifiers], 'namespace', ''));
     return ($part2)
 };
 sub Perlito5::Grammar::String::string_interpolation_parse {
