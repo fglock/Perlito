@@ -409,13 +409,18 @@ sub Perlito5::Expression::term_special_var {
     ((my  $pos) = $_[2]);
     ((my  $len) = 0);
     ((my  $s) = substr($str, $pos, 3));
-    if (exists($special_var{$s})) {
-        ($len = 3)
+    if (($s eq '$#[')) {
+        ($len = 2)
     }
     else {
-        ($s = substr($str, $pos, 2));
         if (exists($special_var{$s})) {
-            ($len = 2)
+            ($len = 3)
+        }
+        else {
+            ($s = substr($str, $pos, 2));
+            if (exists($special_var{$s})) {
+                ($len = 2)
+            }
         }
     };
     if ($len) {

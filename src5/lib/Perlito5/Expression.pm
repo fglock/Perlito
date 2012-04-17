@@ -457,7 +457,11 @@ sub term_special_var {
     #
 
     my $s = substr( $str, $pos, 3 );
-    if ( exists $special_var{$s} ) {
+    if ( $s eq '$#[' ) {
+        # special case: $# is not valid, but @# is ok
+        $len = 2;
+    }
+    elsif ( exists $special_var{$s} ) {
         $len = 3;
     }
     else {
