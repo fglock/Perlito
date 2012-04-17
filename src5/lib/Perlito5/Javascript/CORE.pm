@@ -113,17 +113,23 @@ CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
 CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
 
 CORE.lcfirst = function(List__) {
-    var s = List__[0];
+    var s = p5str(List__[0]);
     var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";
-    s = s.length > 1 ? substr(s, 1) : "";
+    s = s.length > 1 ? s.substr(1) : "";
     return c + s
 };
 
 CORE.ucfirst = function(List__) {
-    var s = List__[0];
+    var s = p5str(List__[0]);
     var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";
-    s = s.length > 1 ? substr(s, 1) : "";
+    s = s.length > 1 ? s.substr(1) : "";
     return c + s
+};
+
+CORE.quotemeta = function(List__) {
+    var s = p5str(List__[0]);
+    CORE.warn("quotemeta() not implemented");
+    return s;
 };
 
 CORE.substr = function(List__) {
