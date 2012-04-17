@@ -147,7 +147,7 @@ sub Perlito5::Precedence::op_parse {
         if (exists($Op{$op})) {
             ((my  $c1) = substr($str, (($pos + length($op)) - 1), 1));
             ((my  $c2) = substr($str, ($pos + length($op)), 1));
-            if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
+            if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))) && !(((($c1 eq '&') && ($c2 eq '&')))))) {
                 if (((exists($Operator->{'infix'}->{$op}) && !(exists($Operator->{'prefix'}->{$op}))) && !($last_is_term))) {
 
                 }
@@ -233,11 +233,9 @@ add_op('infix', '!=', $prec, {'assoc', 'chain'});
 add_op('infix', 'ne', $prec, {'assoc', 'chain'});
 add_op('infix', 'eq', $prec, {'assoc', 'chain'});
 ($prec = ($prec - 1));
-add_op('infix', '&', $prec, {'assoc', 'list'});
-add_op('prefix', '&', $prec);
+add_op('infix', '&', $prec);
 ($prec = ($prec - 1));
-add_op('infix', '|', $prec, {'assoc', 'list'});
-add_op('prefix', '|', $prec);
+add_op('infix', '|', $prec);
 add_op('infix', '^', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '..', $prec);

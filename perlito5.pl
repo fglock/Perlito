@@ -23,7 +23,7 @@ use Perlito5::Dumper;
 ((my  $_V5_COMPILER_NAME) = 'Perlito5');
 ((my  $_V5_COMPILER_VERSION) = '9.0');
 ((my  $source) = '');
-((my  $backend) = $main::^O);
+((my  $backend) = ${^O});
 ((my  $execute) = 1);
 ((my  $verbose) = 0);
 ((my  $expand_use) = 1);

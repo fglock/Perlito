@@ -3282,7 +3282,7 @@ var p5100 = p5pkg['main'];
 							(v_c1 = (p5pkg["Perlito5::Precedence"].substr([v_str, ((p5num(v_pos) + p5pkg["Perlito5::Precedence"].length([v_op], 0)) - 1), 1], 0)));
 							var v_c2 = null;
 							(v_c2 = (p5pkg["Perlito5::Precedence"].substr([v_str, (p5num(v_pos) + p5pkg["Perlito5::Precedence"].length([v_op], 0)), 1], 0)));
-							if ( !( (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c1], 0)) && (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c2], 0)) || (p5str(v_c2) == '(')))) ) {
+							if ( (!( (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c1], 0)) && (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c2], 0)) || (p5str(v_c2) == '(')))) && !( ((p5str(v_c1) == '&') && (p5str(v_c2) == '&')))) ) {
 								if ( ((((v_Operator || (v_Operator = new p5HashRef({})))._hash_['infix'])._hash_.hasOwnProperty(v_op) && !( ((v_Operator || (v_Operator = new p5HashRef({})))._hash_['prefix'])._hash_.hasOwnProperty(v_op))) && !( p5bool(v_last_is_term))) ) {
 									null;
 								}
@@ -3384,11 +3384,9 @@ var p5100 = p5pkg['main'];
 		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', 'ne', v_prec, (new p5HashRef({'assoc' : 'chain'}))), null);
 		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', 'eq', v_prec, (new p5HashRef({'assoc' : 'chain'}))), null);
 		(v_prec = ((p5num(v_prec) - 1)));
-		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', '&', v_prec, (new p5HashRef({'assoc' : 'list'}))), null);
-		p5pkg["Perlito5::Precedence"].add_op(['prefix', '&', v_prec], null);
+		p5pkg["Perlito5::Precedence"].add_op(['infix', '&', v_prec], null);
 		(v_prec = ((p5num(v_prec) - 1)));
-		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', '|', v_prec, (new p5HashRef({'assoc' : 'list'}))), null);
-		p5pkg["Perlito5::Precedence"].add_op(['prefix', '|', v_prec], null);
+		p5pkg["Perlito5::Precedence"].add_op(['infix', '|', v_prec], null);
 		p5pkg["Perlito5::Precedence"].add_op(['infix', '^', v_prec], null);
 		(v_prec = ((p5num(v_prec) - 1)));
 		p5pkg["Perlito5::Precedence"].add_op(['infix', '..', v_prec], null);
@@ -3690,6 +3688,9 @@ var p5100 = p5pkg['main'];
 							((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", ['code', v_name, 'namespace', v_namespace, 'arguments', (new p5ArrayRef(List_args)), 'bareword', (p5num(v_has_paren) == 0)], 1)))));
 							throw(p5context([v_m], p5want));
 							})();
+					};
+					if ( (p5str(v_sig) == '*') ) {
+						null;
 					};
 				};
 				if ( (p5pkg["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 1], 0) == '(') ) {
@@ -4278,13 +4279,18 @@ var p5100 = p5pkg['main'];
 				(v_len = (0));
 				var v_s = null;
 				(v_s = (p5pkg["Perlito5::Expression"].substr([v_str, v_pos, 3], 0)));
-				if ( (Hash_special_var).hasOwnProperty(v_s) ) {
-					(v_len = (3));
+				if ( (p5str(v_s) == '$#[') ) {
+					(v_len = (2));
 				}
 				else {
-					(v_s = (p5pkg["Perlito5::Expression"].substr([v_str, v_pos, 2], 0)));
 					if ( (Hash_special_var).hasOwnProperty(v_s) ) {
-						(v_len = (2));
+						(v_len = (3));
+					}
+					else {
+						(v_s = (p5pkg["Perlito5::Expression"].substr([v_str, v_pos, 2], 0)));
+						if ( (Hash_special_var).hasOwnProperty(v_s) ) {
+							(v_len = (2));
+						};
 					};
 				};
 				if ( p5bool(v_len) ) {

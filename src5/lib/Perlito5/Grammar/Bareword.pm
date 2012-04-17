@@ -201,6 +201,16 @@ package Perlito5::Grammar::Bareword;
                 return $m;
             }
 
+            if ( $sig eq '*' ) {
+                # TODO
+
+                # stat FILEHANDLE
+                # stat EXPR
+                # stat DIRHANDLE
+                # If EXPR is omitted, it stats $_.
+
+            }
+
         } # / defined $sig
 
 

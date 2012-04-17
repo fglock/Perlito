@@ -120,6 +120,9 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             };
             ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', \@args, 'bareword', (($has_paren == 0)))]);
             return ($m)
+        };
+        if (($sig eq '*')) {
+
         }
     };
     if ((substr($str, $p, 1) eq '(')) {
