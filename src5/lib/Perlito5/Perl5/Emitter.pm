@@ -185,7 +185,13 @@ package Perlito5::AST::Var;
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
-            $ns = $self->{namespace} . '::';
+            if ($self->{namespace} eq 'main' && substr($self->{name}, 0, 1) eq '^') {
+                # don't add the namespace to special variables
+                return Perlito5::Perl5::tab($level) . $self->{sigil} . '{' . $self->{name} . '}'
+            }
+            else {
+                $ns = $self->{namespace} . '::';
+            }
         }
         return Perlito5::Perl5::tab($level) . $self->{sigil} . $ns . $self->{name}
     }

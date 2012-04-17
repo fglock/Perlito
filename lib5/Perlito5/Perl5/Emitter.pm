@@ -123,7 +123,12 @@ do { for ($_) {
         ((my  $level) = $_[1]);
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
-            ($ns = ($self->{'namespace'} . '::'))
+            if ((($self->{'namespace'} eq 'main') && (substr($self->{'name'}, 0, 1) eq '^'))) {
+                return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . $self->{'name'} . '}'))
+            }
+            else {
+                ($ns = ($self->{'namespace'} . '::'))
+            }
         };
         return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . $ns . $self->{'name'}))
     }
