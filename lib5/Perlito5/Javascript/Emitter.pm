@@ -448,6 +448,13 @@ do { for ($_) {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $wantarray) = shift());
+        ((my  $str_name) = $self->{'name'});
+        if (($str_name eq chr(92))) {
+            ($str_name = chr(92) . chr(92))
+        };
+        if (($str_name eq '"')) {
+            ($str_name = chr(92) . '"')
+        };
         ((my  $perl5_name) = $self->perl5_name());
         (my  $decl_type);
         ((my  $decl) = $self->perl5_get_decl($perl5_name));
@@ -462,15 +469,15 @@ do { for ($_) {
                 ($decl_type = 'our');
                 ($self->{'namespace'} = $Perlito5::PKG_NAME);
                 ((my  $sigil) = (($self->{'sigil'} eq '$#') ? '@' : $self->{'sigil'}));
-                ((my  $s) = ('p5pkg["' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'));
+                ((my  $s) = ('p5pkg["' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'));
                 if (($sigil eq '@')) {
                     ($s = ($s . ' || (' . $s . ' = [])'));
-                    ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'))
+                    ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'))
                 }
                 else {
                     if (($sigil eq '%')) {
                         ($s = ($s . ' || (' . $s . ' = {})'));
-                        ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'))
+                        ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'))
                     }
                 };
                 if (($self->{'sigil'} eq '$#')) {
@@ -488,14 +495,14 @@ do { for ($_) {
             }
         };
         if (($self->{'sigil'} eq '&')) {
-            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
+            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
         };
         if (($self->{'sigil'} eq '*')) {
-            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
+            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
         };
         if (($decl_type eq 'our')) {
             ((my  $sigil) = (($self->{'sigil'} eq '$#') ? '@' : $self->{'sigil'}));
-            ((my  $s) = ('p5pkg["' . (($self->{'namespace'} || $decl->{'namespace'})) . '"]["' . $table->{$sigil} . $self->{'name'} . '"]'));
+            ((my  $s) = ('p5pkg["' . (($self->{'namespace'} || $decl->{'namespace'})) . '"]["' . $table->{$sigil} . $str_name . '"]'));
             if (($self->{'sigil'} eq '$#')) {
                 return (('(' . $s . '.length - 1)'))
             };
@@ -505,14 +512,14 @@ do { for ($_) {
         if ($self->{'namespace'}) {
             ($ns = ('p5pkg["' . $self->{'namespace'} . '"]'));
             if (($self->{'sigil'} eq '$#')) {
-                return (('(' . $ns . '["' . $table->{'@'} . $self->{'name'} . '"].length - 1)'))
+                return (('(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)'))
             };
-            return (($ns . '["' . $table->{$self->{'sigil'}} . $self->{'name'} . '"]'))
+            return (($ns . '["' . $table->{$self->{'sigil'}} . $str_name . '"]'))
         };
         if (($self->{'sigil'} eq '$#')) {
-            return (('(' . $ns . $table->{'@'} . $self->{'name'} . '.length - 1)'))
+            return (('(' . $ns . $table->{'@'} . $str_name . '.length - 1)'))
         };
-        ($ns . $table->{$self->{'sigil'}} . $self->{'name'})
+        ($ns . $table->{$self->{'sigil'}} . $str_name)
     };
     sub Perlito5::AST::Var::perl5_name {
         ((my  $self) = shift());
@@ -837,6 +844,11 @@ do { for ($_) {
     ((my  $level) = shift());
     ((my  $wantarray) = shift());
     ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
+}, 'local', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
 }, 'circumfix:<( )>', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -848,7 +860,7 @@ do { for ($_) {
     ((my  $wantarray) = shift());
     ((my  $parameters) = $self->{'arguments'}->[0]);
     ((my  $arguments) = $self->{'arguments'}->[1]);
-    if (($parameters->isa('Perlito5::AST::Apply') && ((($parameters->code() eq 'my') || ($parameters->code() eq 'circumfix:<( )>'))))) {
+    if (($parameters->isa('Perlito5::AST::Apply') && (((($parameters->code() eq 'my') || ($parameters->code() eq 'local')) || ($parameters->code() eq 'circumfix:<( )>'))))) {
         ((my  $tmp) = ('tmp' . Perlito5::Javascript::get_label()));
         ((my  $tmp2) = ('tmp' . Perlito5::Javascript::get_label()));
         return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . '; ' . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); ' . join('; ', (map(+(((($_->isa('Perlito5::AST::Apply') && ($_->code() eq 'undef')) ? ($tmp . '.shift()') : (($_->sigil() eq '$') ? ($_->emit_javascript() . ' = ' . $tmp . '.shift()') : (($_->sigil() eq '@') ? ($_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []') : (($_->sigil() eq '%') ? ($_->emit_javascript() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []') : die('not implemented'))))))), @{$parameters->arguments()})),('return ' . $tmp2)) . ' })()'))

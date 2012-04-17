@@ -751,6 +751,10 @@ package Perlito5::AST::Var;
         my $level = shift;
         my $wantarray = shift;
 
+        my $str_name = $self->{name};
+        $str_name = '\\\\' if $str_name eq '\\';   # escape $\
+        $str_name = '\\"' if $str_name eq '"';     # escape $"
+
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
         my $decl_type;  # my, our, local
@@ -772,15 +776,15 @@ package Perlito5::AST::Var;
                 $self->{namespace} = $Perlito5::PKG_NAME;
 
                 my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
-                my $s = 'p5pkg["' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
+                my $s = 'p5pkg["' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
 
                 if ($sigil eq '@') {
                     $s = $s . ' || (' . $s . ' = [])';  # init
-                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
+                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
                 }
                 elsif ($sigil eq '%') {
                     $s = $s . ' || (' . $s . ' = {})';  # init
-                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $self->{name} . '"]';
+                    $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
                 }
 
                 if ($self->{sigil} eq '$#') {
@@ -803,15 +807,15 @@ package Perlito5::AST::Var;
         }
 
         if ( $self->{sigil} eq '&' ) {
-            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $self->{name} . '"]';
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]';
         }
         if ( $self->{sigil} eq '*' ) {
-            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $self->{name} . '"]';
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]';
         }
         if ( $decl_type eq 'our' ) {
 
             my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
-            my $s = 'p5pkg["' . ($self->{namespace} || $decl->{namespace}) . '"]["' . $table->{$sigil} . $self->{name} . '"]';
+            my $s = 'p5pkg["' . ($self->{namespace} || $decl->{namespace}) . '"]["' . $table->{$sigil} . $str_name . '"]';
 
             if ($self->{sigil} eq '$#') {
                 return '(' . $s . '.length - 1)';
@@ -823,16 +827,16 @@ package Perlito5::AST::Var;
         if ($self->{namespace}) {
             $ns = 'p5pkg["' . $self->{namespace} . '"]';
             if ($self->{sigil} eq '$#') {
-                return '(' . $ns . '["' . $table->{'@'} . $self->{name} . '"].length - 1)';
+                return '(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)';
             }
-            return $ns . '["' . $table->{$self->{sigil}} . $self->{name} . '"]'
+            return $ns . '["' . $table->{$self->{sigil}} . $str_name . '"]'
         }
 
         if ($self->{sigil} eq '$#') {
-            return '(' . $ns . $table->{'@'} . $self->{name} . '.length - 1)';
+            return '(' . $ns . $table->{'@'} . $str_name . '.length - 1)';
         }
 
-        $ns . $table->{$self->{sigil}} . $self->{name}
+        $ns . $table->{$self->{sigil}} . $str_name
     }
     sub perl5_name {
         my $self = shift;
@@ -1270,6 +1274,14 @@ package Perlito5::AST::Apply;
             # TODO - bug: this is a side-effect of my($x,$y)
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
+        'local' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            # TODO - bug: this is a side-effect of local($x,$y)
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+        },
         'circumfix:<( )>' => sub {
             my $self      = shift;
             my $level     = shift;
@@ -1285,10 +1297,11 @@ package Perlito5::AST::Apply;
             my $arguments  = $self->{arguments}->[1];
 
             if (   $parameters->isa( 'Perlito5::AST::Apply' )
-               &&  ( $parameters->code eq 'my' || $parameters->code eq 'circumfix:<( )>' )
+               &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
                )
             {
                 # my ($x, $y) = ...
+                # local ($x, $y) = ...
                 # ($x, $y) = ...
 
                 my $tmp  = 'tmp' . Perlito5::Javascript::get_label();
