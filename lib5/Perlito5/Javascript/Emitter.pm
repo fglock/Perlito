@@ -1104,8 +1104,32 @@ do { for ($_) {
                                 push(@out, Perlito5::Javascript::to_list(\@in) )
                             }
                             else {
-                                for (@in) {
-                                    push(@out, $_->emit_javascript($level, 'scalar') )
+                                if (($sig eq '*')) {
+                                    ((my  $arg) = shift(@in));
+                                    if ($arg->{'bareword'}) {
+                                        push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
+                                    }
+                                    else {
+                                        push(@out, $arg->emit_javascript($level, 'scalar') )
+                                    }
+                                }
+                                else {
+                                    if (($sig eq ';*')) {
+                                        if (@in) {
+                                            ((my  $arg) = shift(@in));
+                                            if ($arg->{'bareword'}) {
+                                                push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
+                                            }
+                                            else {
+                                                push(@out, $arg->emit_javascript($level, 'scalar') )
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (@in) {
+                                            push(@out, $_->emit_javascript($level, 'scalar') )
+                                        }
+                                    }
                                 }
                             }
                         }

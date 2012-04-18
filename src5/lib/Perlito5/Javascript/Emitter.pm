@@ -1710,6 +1710,28 @@ package Perlito5::AST::Apply;
             elsif ( $sig eq '@' ) {         # warn
                 push @out, Perlito5::Javascript::to_list(\@in);
             }
+            elsif ( $sig eq '*' ) {         # closedir
+                    my $arg = shift @in;
+                    if ($arg->{bareword}) {
+                        push @out,
+                            'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["f_' . $arg->{code} . '"]';
+                    }
+                    else {
+                        push @out, $arg->emit_javascript( $level, 'scalar' );
+                    }
+            }
+            elsif ( $sig eq ';*' ) {         # close
+                if (@in) {
+                    my $arg = shift @in;
+                    if ($arg->{bareword}) {
+                        push @out,
+                            'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["f_' . $arg->{code} . '"]';
+                    }
+                    else {
+                        push @out, $arg->emit_javascript( $level, 'scalar' );
+                    }
+                }
+            }
             else {
                 # just a list of scalars:
                 #   bless      $;$ 
