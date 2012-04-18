@@ -41,6 +41,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- bug: unary precedence error:
+   int $x ? "a" : "b"     --> int($x ? "a" : "b")
+   defined $x ? "a" : "b" --> defined($x ? "a" : "b")
+
 -- '$#' should be a syntax error (parses as $#{undef} )
 
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
