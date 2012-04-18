@@ -953,11 +953,22 @@ if (isNode) {
         }
     };
 
+    CORE.rename = function(List__) {
+        try {
+            fs.renameSync(p5str(List__[0]), p5str(List__[1]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return '';
+        }
+    };
+
     CORE.unlink = function(List__) {
         var count = 0;
         try {
             for(var i = 0; i < List__.length; i++) {
-                fs.unlink(p5str(List__[i]));
+                fs.unlinkSync(p5str(List__[i]));
                 count++;
             }
             return count;
