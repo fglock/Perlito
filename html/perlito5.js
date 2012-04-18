@@ -953,6 +953,17 @@ if (isNode) {
         }
     };
 
+    CORE.close = function(List__) {
+        try {
+            fs.closeSync(p5str(List__[0]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return '';
+        }
+    };
+
     CORE.rename = function(List__) {
         try {
             fs.renameSync(p5str(List__[0]), p5str(List__[1]));
