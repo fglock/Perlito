@@ -327,7 +327,7 @@ CORE.index = function(List__) {
     var o = List__[0];
     var s = List__[1];
     try {
-        return o.indexOf(s);
+        return o.indexOf(s, p5num(List__[2]));
     }
     catch(err) {
         return -1;
@@ -337,6 +337,9 @@ CORE.rindex = function(List__) {
     var o = List__[0];
     var s = List__[1];
     try {
+        if (List__.length > 2) {
+            return o.lastIndexOf(s, p5num(List__[2]));
+        }
         return o.lastIndexOf(s);
     }
     catch(err) {

@@ -810,7 +810,20 @@ CORE.index = function(List__) {
     var o = List__[0];
     var s = List__[1];
     try {
-        return o.indexOf(s);
+        return o.indexOf(s, p5num(List__[2]));
+    }
+    catch(err) {
+        return -1;
+    }
+};
+CORE.rindex = function(List__) {
+    var o = List__[0];
+    var s = List__[1];
+    try {
+        if (List__.length > 2) {
+            return o.lastIndexOf(s, p5num(List__[2]));
+        }
+        return o.lastIndexOf(s);
     }
     catch(err) {
         return -1;
@@ -8782,7 +8795,7 @@ return r;
 						throw(p5context(['todo'], p5want));
 					};
 				}, p5list_to_a(p5pkg["main"]["List_INC"], '.'));
-				return (p5pkg["Perlito5::Grammar::Use"].die([[('Can' + String.fromCharCode(39) + 't find ' + p5str(v_filename) + ' in @INC')]], p5want));
+				return (p5pkg["Perlito5::Grammar::Use"].die([[('Can' + String.fromCharCode(39) + 't locate ' + p5str(v_filename) + ' in @INC ' + '(@INC contains ' + p5pkg["Perlito5::Grammar::Use"].join([' ', p5list_to_a(p5pkg["main"]["List_INC"])], 0) + ').')]], p5want));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
