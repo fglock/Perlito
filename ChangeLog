@@ -15,6 +15,7 @@ dev  2012-04-12
 
 -- negative index in array
 -- more file operations: chdir, unlink, close
+-- functions: rand
 
 
 * Perlito6 (Perl 6 compiler):
