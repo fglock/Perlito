@@ -33,47 +33,7 @@ if ($verbose) {
     warn "// ARGV: @ARGV";
 }
 
-if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
-    $verbose = 1;
-    shift @ARGV;
-}
-while (substr($ARGV[0], 0, 2) eq '-I') {
-    $lib = substr($ARGV[0], 2, 10);
-    unshift @INC, $lib;
-    shift @ARGV;
-}
-if (substr($ARGV[0], 0, 2) eq '-C') {
-    $backend = substr($ARGV[0], 2, 10);
-    $execute = 0;
-    shift @ARGV;
-    if (  $backend eq 'perl5' 
-       || $backend eq 'python' 
-       || $backend eq 'ruby'
-       || $backend eq 'perl6'
-       )
-    {
-        $expand_use = 0;
-    }
-}
-if ($ARGV[0] eq '-MO=Deparse') {
-    # this emulates perl -MO=Deparse option
-    $backend = 'perl5';
-    $execute = 0;
-    $expand_use = 0;
-    shift @ARGV;
-}
-if (substr($ARGV[0], 0, 2) eq '-B') {
-    # obsolete option, "execute" is now default
-    shift @ARGV;
-}
-if (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
-    $backend = '';
-    say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-    shift @ARGV;
-}
-elsif ($ARGV[0] eq '-h' || $ARGV[0] eq '--help' || !@ARGV) {
-    $backend = '';
-    say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, "
+my $help_message = "
 perlito5 [switches] [programfile]
   switches:
     -h --help
@@ -86,16 +46,73 @@ perlito5 [switches] [programfile]
                     expand 'use' statements at compile time
     -e program      one line of program (omit programfile)
 ";
-    shift @ARGV;
+
+
+while (substr($ARGV[0], 0, 1) eq '-'
+    && substr($ARGV[0], 0, 2) ne '-e'
+    )
+{
+    if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
+        $verbose = 1;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '-I') {
+        shift @ARGV;
+        $lib = shift @ARGV;
+        unshift @INC, $lib;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-I') {
+        $lib = substr($ARGV[0], 2, 10);
+        unshift @INC, $lib;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-C') {
+        $backend = substr($ARGV[0], 2, 10);
+        $execute = 0;
+        shift @ARGV;
+        if (  $backend eq 'perl5' 
+           || $backend eq 'python' 
+           || $backend eq 'ruby'
+           || $backend eq 'perl6'
+           )
+        {
+            $expand_use = 0;
+        }
+    }
+    elsif ($ARGV[0] eq '-MO=Deparse') {
+        # this emulates perl -MO=Deparse option
+        $backend = 'perl5';
+        $execute = 0;
+        $expand_use = 0;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-B') {
+        # obsolete option, "execute" is now default
+        shift @ARGV;
+    }
+    elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
+        $backend = '';
+        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '-h' || $ARGV[0] eq '--help' || !@ARGV) {
+        $backend = '';
+        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, $help_message;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '--expand_use') {
+        $expand_use = 1;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '--noexpand_use') {
+        $expand_use = 0;
+        shift @ARGV;
+    }
+    else {
+        die "Unrecognized switch: $ARGV[0]  (-h will show valid options).\n";
+    }
 }
-if ($ARGV[0] eq '--expand_use') {
-    $expand_use = 1;
-    shift @ARGV;
-}
-if ($ARGV[0] eq '--noexpand_use') {
-    $expand_use = 0;
-    shift @ARGV;
-}
+
 if ($backend && @ARGV) {
     if ($ARGV[0] eq '-e') {
         shift @ARGV;

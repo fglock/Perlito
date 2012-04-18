@@ -31,53 +31,80 @@ if ($verbose) {
     warn('// Perlito5 compiler');
     warn(('// ARGV: ' . join(' ', @ARGV)))
 };
-if (((($ARGV[0] eq '-v')) || (($ARGV[0] eq '--verbose')))) {
-    ($verbose = 1);
-    shift(@ARGV)
-};
-for ( ; (substr($ARGV[0], 0, 2) eq '-I'); do { for ($_) {
+((my  $help_message) = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+for ( ; ((substr($ARGV[0], 0, 1) eq '-') && (substr($ARGV[0], 0, 2) ne '-e')); do { for ($_) {
 
 }} ) {
-    ($lib = substr($ARGV[0], 2, 10));
-    unshift(@INC, $lib);
-    shift(@ARGV)
-};
-if ((substr($ARGV[0], 0, 2) eq '-C')) {
-    ($backend = substr($ARGV[0], 2, 10));
-    ($execute = 0);
-    shift(@ARGV);
-    if ((((($backend eq 'perl5') || ($backend eq 'python')) || ($backend eq 'ruby')) || ($backend eq 'perl6'))) {
-        ($expand_use = 0)
-    }
-};
-if (($ARGV[0] eq '-MO=Deparse')) {
-    ($backend = 'perl5');
-    ($execute = 0);
-    ($expand_use = 0);
-    shift(@ARGV)
-};
-if ((substr($ARGV[0], 0, 2) eq '-B')) {
-    shift(@ARGV)
-};
-if (((($ARGV[0] eq '-V')) || (($ARGV[0] eq '--version')))) {
-    ($backend = '');
-    Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
-    shift(@ARGV)
-}
-else {
-    if (((($ARGV[0] eq '-h') || ($ARGV[0] eq '--help')) || !(@ARGV))) {
-        ($backend = '');
-        Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+    if (((($ARGV[0] eq '-v')) || (($ARGV[0] eq '--verbose')))) {
+        ($verbose = 1);
         shift(@ARGV)
     }
-};
-if (($ARGV[0] eq '--expand_use')) {
-    ($expand_use = 1);
-    shift(@ARGV)
-};
-if (($ARGV[0] eq '--noexpand_use')) {
-    ($expand_use = 0);
-    shift(@ARGV)
+    else {
+        if (($ARGV[0] eq '-I')) {
+            shift(@ARGV);
+            ($lib = shift(@ARGV));
+            unshift(@INC, $lib)
+        }
+        else {
+            if ((substr($ARGV[0], 0, 2) eq '-I')) {
+                ($lib = substr($ARGV[0], 2, 10));
+                unshift(@INC, $lib);
+                shift(@ARGV)
+            }
+            else {
+                if ((substr($ARGV[0], 0, 2) eq '-C')) {
+                    ($backend = substr($ARGV[0], 2, 10));
+                    ($execute = 0);
+                    shift(@ARGV);
+                    if ((((($backend eq 'perl5') || ($backend eq 'python')) || ($backend eq 'ruby')) || ($backend eq 'perl6'))) {
+                        ($expand_use = 0)
+                    }
+                }
+                else {
+                    if (($ARGV[0] eq '-MO=Deparse')) {
+                        ($backend = 'perl5');
+                        ($execute = 0);
+                        ($expand_use = 0);
+                        shift(@ARGV)
+                    }
+                    else {
+                        if ((substr($ARGV[0], 0, 2) eq '-B')) {
+                            shift(@ARGV)
+                        }
+                        else {
+                            if (((($ARGV[0] eq '-V')) || (($ARGV[0] eq '--version')))) {
+                                ($backend = '');
+                                Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
+                                shift(@ARGV)
+                            }
+                            else {
+                                if (((($ARGV[0] eq '-h') || ($ARGV[0] eq '--help')) || !(@ARGV))) {
+                                    ($backend = '');
+                                    Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, $help_message);
+                                    shift(@ARGV)
+                                }
+                                else {
+                                    if (($ARGV[0] eq '--expand_use')) {
+                                        ($expand_use = 1);
+                                        shift(@ARGV)
+                                    }
+                                    else {
+                                        if (($ARGV[0] eq '--noexpand_use')) {
+                                            ($expand_use = 0);
+                                            shift(@ARGV)
+                                        }
+                                        else {
+                                            die(('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10)))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 };
 if (($backend && @ARGV)) {
     if (($ARGV[0] eq '-e')) {
