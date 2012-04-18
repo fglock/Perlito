@@ -174,6 +174,7 @@ p5pkg["main"]["Hash_ENV"] = {};
 if (isNode) {
     p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
     p5pkg["main"]["Hash_ENV"]  = process.env;
+    p5pkg["main"]["v_$"]       = process.pid;
 } else if (typeof arguments === "object") {
     p5pkg["main"]["List_ARGV"] = arguments;
 }
