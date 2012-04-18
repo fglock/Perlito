@@ -7,7 +7,7 @@ BEGIN {
 }
 
 use strict;
-plan( tests => 120 );
+plan( tests => 36 );
 
 
 sub run_tests {

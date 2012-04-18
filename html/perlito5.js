@@ -821,7 +821,14 @@ CORE.rindex = function(List__) {
     var s = List__[1];
     try {
         if (List__.length > 2) {
-            return o.lastIndexOf(s, p5num(List__[2]));
+            var i = p5num(List__[2]);
+            if (i < 0) {
+                if (s.length == 0) {
+                    return 0;
+                }
+                return -1;
+            }
+            return o.lastIndexOf(s, i);
         }
         return o.lastIndexOf(s);
     }
