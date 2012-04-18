@@ -83,11 +83,26 @@ if (isNode) {
 
     CORE.chdir = function(List__) {
         try {
-            process.chdir(List__[0]);
+            process.chdir(p5str(List__[0]));
             return 1;
         }
         catch(err) {
             return '';
+        }
+    };
+
+    CORE.unlink = function(List__) {
+        var count = 0;
+        try {
+            for(var i = 0; i < List__.length; i++) {
+                fs.unlink(p5str(List__[i]));
+                count++;
+            }
+            return count;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return count;
         }
     };
 

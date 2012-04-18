@@ -86,6 +86,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: "map BLOCK" broken because BLOCK doesn't return the last value; this is missing tests
+
 -- bug: some declarations are not "seen":
    for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i
 

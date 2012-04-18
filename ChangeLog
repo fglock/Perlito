@@ -14,6 +14,7 @@ dev  2012-04-12
 - javascript backend:
 
 -- negative index in array
+-- more file operations: chdir, unlink
 
 
 * Perlito6 (Perl 6 compiler):
