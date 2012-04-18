@@ -1073,38 +1073,30 @@ do { for ($_) {
         if ($sig) {
             ((my  @out) = ());
             ((my  @in) = @{($self->{'arguments'} || [])});
-            if (($sig eq chr(92) . '@@')) {
-                push(@out, shift(@in)->emit_javascript($level, 'list') );
-                push(@out, Perlito5::Javascript::to_list(\@in) )
-            }
-            else {
-                if ((($sig eq chr(92) . '[@%]') || ($sig eq ';' . chr(92) . '@'))) {
-                    push(@out, shift(@in)->emit_javascript($level, 'list') )
+            ((my  $optional) = 0);
+            for ( ; length($sig); do { for ($_) {
+
+}} ) {
+                ((my  $c) = substr($sig, 0, 1));
+                if (($c eq ';')) {
+                    ($optional = 1)
                 }
                 else {
-                    if (($sig eq chr(92) . '@;$$@')) {
-                        push(@out, shift(@in)->emit_javascript($level, 'list') );
-                        if (@in) {
+                    if ((($c eq '$') || ($c eq '_'))) {
+                        if ((@in || !($optional))) {
                             push(@out, shift(@in)->emit_javascript($level, 'scalar') )
-                        };
-                        if (@in) {
-                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
-                        };
-                        if (@in) {
-                            push(@out, Perlito5::Javascript::to_list(\@in) )
                         }
                     }
                     else {
-                        if (($sig eq '$@')) {
-                            push(@out, shift(@in)->emit_javascript($level, 'scalar') );
-                            push(@out, Perlito5::Javascript::to_list(\@in) )
+                        if (($c eq '@')) {
+                            if ((@in || !($optional))) {
+                                push(@out, Perlito5::Javascript::to_list(\@in) )
+                            };
+                            (@in = ())
                         }
                         else {
-                            if (($sig eq '@')) {
-                                push(@out, Perlito5::Javascript::to_list(\@in) )
-                            }
-                            else {
-                                if (($sig eq '*')) {
+                            if (($c eq '*')) {
+                                if ((@in || !($optional))) {
                                     ((my  $arg) = shift(@in));
                                     if ($arg->{'bareword'}) {
                                         push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
@@ -1113,28 +1105,37 @@ do { for ($_) {
                                         push(@out, $arg->emit_javascript($level, 'scalar') )
                                     }
                                 }
-                                else {
-                                    if (($sig eq ';*')) {
-                                        if (@in) {
-                                            ((my  $arg) = shift(@in));
-                                            if ($arg->{'bareword'}) {
-                                                push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
-                                            }
-                                            else {
-                                                push(@out, $arg->emit_javascript($level, 'scalar') )
-                                            }
+                            }
+                            else {
+                                if (($c eq chr(92))) {
+                                    if ((substr($sig, 0, 2) eq chr(92) . '$')) {
+                                        ($sig = substr($sig, 1));
+                                        if ((@in || !($optional))) {
+                                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
                                         }
                                     }
                                     else {
-                                        for (@in) {
-                                            push(@out, $_->emit_javascript($level, 'scalar') )
+                                        if (((substr($sig, 0, 2) eq chr(92) . '@') || (substr($sig, 0, 2) eq chr(92) . '%'))) {
+                                            ($sig = substr($sig, 1));
+                                            if ((@in || !($optional))) {
+                                                push(@out, shift(@in)->emit_javascript($level, 'list') )
+                                            }
+                                        }
+                                        else {
+                                            if ((substr($sig, 0, 5) eq chr(92) . '[@%]')) {
+                                                ($sig = substr($sig, 4));
+                                                if ((@in || !($optional))) {
+                                                    push(@out, shift(@in)->emit_javascript($level, 'list') )
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                };
+                ($sig = substr($sig, 1))
             };
             return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
         };

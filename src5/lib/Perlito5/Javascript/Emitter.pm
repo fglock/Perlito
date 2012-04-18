@@ -1687,60 +1687,51 @@ package Perlito5::AST::Apply;
 
             # TODO - generate the right prototype
 
-
-            if ( $sig eq '\\@@' ) {         # push, unshift
-                push @out, shift(@in)->emit_javascript( $level, 'list' );
-                push @out, Perlito5::Javascript::to_list(\@in);
-            }
-            elsif ( $sig eq '\\[@%]'        # keys, values, each
-                ||  $sig eq ';\\@' ) {      # pop, shift
-                push @out, shift(@in)->emit_javascript( $level, 'list' );
-            }
-            elsif ( $sig eq '\\@;$$@'       # splice
-                ) {
-                push @out, shift(@in)->emit_javascript( $level, 'list' );
-                push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in;
-                push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in;
-                push @out, Perlito5::Javascript::to_list(\@in) if @in;
-            }
-            elsif ( $sig eq '$@' ) {        # join
-                push @out, shift(@in)->emit_javascript( $level, 'scalar' );
-                push @out, Perlito5::Javascript::to_list(\@in);
-            }
-            elsif ( $sig eq '@' ) {         # warn
-                push @out, Perlito5::Javascript::to_list(\@in);
-            }
-            elsif ( $sig eq '*' ) {         # closedir
-                    my $arg = shift @in;
-                    if ($arg->{bareword}) {
-                        push @out,
-                            'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["f_' . $arg->{code} . '"]';
-                    }
-                    else {
-                        push @out, $arg->emit_javascript( $level, 'scalar' );
-                    }
-            }
-            elsif ( $sig eq ';*' ) {         # close
-                if (@in) {
-                    my $arg = shift @in;
-                    if ($arg->{bareword}) {
-                        push @out,
-                            'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["f_' . $arg->{code} . '"]';
-                    }
-                    else {
-                        push @out, $arg->emit_javascript( $level, 'scalar' );
+            my $optional = 0;
+            while (length $sig) {
+                my $c = substr($sig, 0, 1);
+                if ($c eq ';') {
+                    $optional = 1;
+                }
+                elsif ($c eq '$' || $c eq '_') {
+                    push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in || !$optional;
+                }
+                elsif ($c eq '@') {
+                    push @out, Perlito5::Javascript::to_list(\@in) if @in || !$optional;
+                    @in = ();
+                }
+                elsif ($c eq '*') {
+                    if (@in || !$optional) {
+                        my $arg = shift @in;
+                        if ($arg->{bareword}) {
+                            push @out,
+                                'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["f_' . $arg->{code} . '"]';
+                        }
+                        else {
+                            push @out, $arg->emit_javascript( $level, 'scalar' );
+                        }
                     }
                 }
+                elsif ($c eq '\\') {
+                    if (substr($sig, 0, 2) eq '\\$') {
+                        $sig = substr($sig, 1);
+                        push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in || !$optional;
+                    }
+                    elsif (substr($sig, 0, 2) eq '\\@'
+                        || substr($sig, 0, 2) eq '\\%'
+                        )
+                    {
+                        $sig = substr($sig, 1);
+                        push @out, shift(@in)->emit_javascript( $level, 'list' ) if @in || !$optional;
+                    }
+                    elsif (substr($sig, 0, 5) eq '\\[@%]') {
+                        $sig = substr($sig, 4);
+                        push @out, shift(@in)->emit_javascript( $level, 'list' ) if @in || !$optional;
+                    }
+                }
+                $sig = substr($sig, 1);
             }
-            else {
-                # just a list of scalars:
-                #   bless      $;$ 
-                #   substr     $$;$$ 
-                #   length     _ 
-                #   index      $$;$ 
-                push @out, $_->emit_javascript( $level, 'scalar' )
-                    for @in;
-            }
+
             return $code . '([' . join(', ', @out) . '], '
                 .   ($wantarray eq 'list'   ? '1' 
                     :$wantarray eq 'scalar' ? '0' 
