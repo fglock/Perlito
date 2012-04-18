@@ -333,6 +333,16 @@ CORE.index = function(List__) {
         return -1;
     }
 };
+CORE.rindex = function(List__) {
+    var o = List__[0];
+    var s = List__[1];
+    try {
+        return o.lastIndexOf(s);
+    }
+    catch(err) {
+        return -1;
+    }
+};
 
 CORE.length = function(List__) {
     var o = List__[0];
