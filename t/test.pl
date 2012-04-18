@@ -219,7 +219,8 @@ sub ok ($@) {
 ####  
 sub _qq {
     my $x = shift;
-    return defined $x ? '"' . display ($x) . '"' : 'undef';
+    # WORKAROUND for incorrect parsing etc.
+    return (defined $x) ? '"' . $x . '"' : 'undef';
 };
 
 ####  # keys are the codes \n etc map to, values are 2 char strings such as \n
@@ -231,8 +232,7 @@ sub _qq {
 ####  # Trying to avoid setting $_, or relying on local $_ to work.
 
 # WORKAROUND - lack of unpack
-sub display {
-    return @_
+#sub display {
 #    my @result;
 #    foreach my $x (@_) {
 #        if (defined $x and not ref $x) {
@@ -263,7 +263,7 @@ sub display {
 #        push @result, $x;
 #    }
 #    return @result;
-}
+#}
 
 sub is ($$@) {
     my ($got, $expected, $name, @mess) = @_;
