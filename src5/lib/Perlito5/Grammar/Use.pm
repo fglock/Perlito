@@ -135,7 +135,7 @@ sub filename_lookup {
             return "todo";
         }
     }
-    die "Can't find $filename in \@INC";
+    die "Can't locate $filename in \@INC ".'(@INC contains '.join(" ",@INC).').';
 }
 
 sub expand_use {

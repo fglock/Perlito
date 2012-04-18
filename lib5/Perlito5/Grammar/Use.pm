@@ -193,7 +193,7 @@ sub Perlito5::Grammar::Use::filename_lookup {
             return ('todo')
         }
     };
-    die(('Can' . chr(39) . 't find ' . $filename . ' in @INC'))
+    die(('Can' . chr(39) . 't locate ' . $filename . ' in @INC ' . '(@INC contains ' . join(' ', @INC) . ').'))
 };
 sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
