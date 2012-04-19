@@ -1,4 +1,56 @@
+
+* Perlito5-in-Javascript differences from "perl"
+
+
+- Perlito5 in the browser doesn't implement many of the perl I/O operators;
+  Perlito5 in node.js should implement most of the I/O operators.
+
+- Scalar vs. List context should work the same as in perl.
+
+- Scalar, Hash, Array, Code should work the same as in perl.
+
+- Objects should work the same as in perl.
+
+- Javascript doesn't implement reference counting;
+  DESTROY will not work;
+  weaken() will be a no-op.
+
+- Tie is not implemented yet.
+
+- Overload is not implemented yet.
+
+- AUTOLOAD is not implemented yet.
+
+- XS is not supported.
+
+- Variable aliasing is not implemented yet;
+  modifying $_ or $_[0] doesn't change the original variable.
+
+- Variable redeclaration is not implemented yet.
+
+- String increment is not implemented yet.
+
+- Unicode is not implemented yet.
+
+- Regex is missing some features.
+
+- Control structures are partially implemented;
+  "goto LABEL" is not supported.
+  "given/when" is not implemented.
+  "goto &sub" works, but tail call is not implemented yet.
+
+- String pos() is not implemented yet.
+
+- Signals are not implemented yet.
+
+- BEGIN blocks are partially implemented.
+
+- Typeglobs are partially implemented.
+
+
+
 * Perlito5 compiler globals
+
 
 - context: system-wide; shared by all modules
 
