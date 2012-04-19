@@ -15,6 +15,7 @@ Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'qr' => sub { Perlito5::Grammar::String->term_qr_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'tr' => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'y'  => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
@@ -71,6 +72,13 @@ token term_tr_quote {
     <tr_quote_parse>
         { 
             $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{tr_quote_parse}) ]  
+        }
+};
+token term_qr_quote {
+    'qr' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > . ]
+    <qr_quote_parse>
+        { 
+            $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qr_quote_parse}) ]  
         }
 };
 
@@ -199,6 +207,35 @@ sub s_quote_parse {
         namespace => ''
     );
     return $part2;
+}
+sub qr_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
+    my $closing_delimiter = $delimiter;
+    $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+
+    # TODO - call the regex compiler
+    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    return $part1 unless $part1;
+    my $str_regex = $part1->{capture};
+
+    my $p = $part1->{to};
+    my $modifiers = '';
+    my $m = Perlito5::Grammar->ident($str, $p);
+    if ( $m ) {
+        $modifiers = Perlito5::Match::flat($m);
+        $part1->{to} = $m->{to};
+    }
+
+    $part1->{capture} = Perlito5::AST::Apply->new( 
+        code => 'p5:qr',
+        arguments => [ $str_regex, $modifiers ],
+        namespace => ''
+    );
+    return $part1;
 }
 sub qx_quote_parse {
     my $self = $_[0];

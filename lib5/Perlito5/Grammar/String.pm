@@ -38,6 +38,9 @@ Perlito5::Precedence::add_term('qw', sub {
 Perlito5::Precedence::add_term('qx', sub {
     Perlito5::Grammar::String->term_qx($_[0], $_[1])
 });
+Perlito5::Precedence::add_term('qr', sub {
+    Perlito5::Grammar::String->term_qr_quote($_[0], $_[1])
+});
 Perlito5::Precedence::add_term('s', sub {
     Perlito5::Grammar::String->term_s_quote($_[0], $_[1])
 });
@@ -533,6 +536,66 @@ sub Perlito5::Grammar::String::term_tr_quote {
 }))));
     ($tmp ? $MATCH : 0)
 };
+sub Perlito5::Grammar::String::term_qr_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
+    ((my  $tmp) = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((('qr' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((((do {
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
+    ((my  $res) = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((my  $m2) = Perlito5::Grammar->word($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))
+})));
+    ($MATCH = ($res ? 0 : $tmp))
+}))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
+})))
+}))) && ((do {
+    ((my  $m2) = $grammar->qr_quote_parse($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'qr_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qr_quote_parse'})]);
+    1
+})))
+}))
+}))));
+    ($tmp ? $MATCH : 0)
+};
 ((my  %pair) = ('{', '}', '(', ')', '[', ']', '<', '>'));
 ((my  %escape_sequence) = ('a', '7', 'b', '8', 'e', '27', 'f', '12', 'n', '10', 'r', '13', 't', '9'));
 ((my  %hex) = map(+(($_, 1)), ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')));
@@ -658,6 +721,34 @@ sub Perlito5::Grammar::String::s_quote_parse {
     };
     ($part2->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:s', 'arguments', [$str_regex, Perlito5::Match::flat($part2), $modifiers], 'namespace', ''));
     return ($part2)
+};
+sub Perlito5::Grammar::String::qr_quote_parse {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $delimiter) = substr($str, ($pos - 1), 1));
+    ((my  $open_delimiter) = $delimiter);
+    ((my  $closing_delimiter) = $delimiter);
+    if (exists($pair{$delimiter})) {
+        ($closing_delimiter = $pair{$delimiter})
+    };
+    ((my  $part1) = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2));
+    if ($part1) {
+
+    }
+    else {
+        return ($part1)
+    };
+    ((my  $str_regex) = $part1->{'capture'});
+    ((my  $p) = $part1->{'to'});
+    ((my  $modifiers) = '');
+    ((my  $m) = Perlito5::Grammar->ident($str, $p));
+    if ($m) {
+        ($modifiers = Perlito5::Match::flat($m));
+        ($part1->{'to'} = $m->{'to'})
+    };
+    ($part1->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:qr', 'arguments', [$str_regex, $modifiers], 'namespace', ''));
+    return ($part1)
 };
 sub Perlito5::Grammar::String::qx_quote_parse {
     ((my  $self) = $_[0]);
