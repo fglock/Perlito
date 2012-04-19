@@ -135,6 +135,7 @@ TODO list for Perlito5
 -- add symbol tables for scalar, array and hash
 
 -- string increment and string ranges
+    See: p5str_inc()
 
 -- finish "overload" implementation
 

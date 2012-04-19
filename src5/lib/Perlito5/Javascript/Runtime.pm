@@ -396,6 +396,30 @@ p5str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
+p5str_inc = function(s) {
+    s = p5str(s);
+    if (s.length < 2) {
+        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
+            return String.fromCharCode(s.charCodeAt(0) + 1);
+        }
+        if (s == "9") {
+            return "10";
+        }
+        if (s == "Z") {
+            return "AA";
+        }
+        if (s == "z") {
+            return "aa";
+        }
+        return "1";
+    }
+    var c = p5str_inc(s.substr(s.length-1, 1));
+    if (c.length == 1) {
+        return s.substr(0, s.length-1) + c;
+    }
+    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+};
+
 p5for = function(namespace, func, args) {
     var v_old = namespace["v__"];
     for(var i = 0; i < args.length; i++) {
