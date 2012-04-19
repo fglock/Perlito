@@ -1,15 +1,38 @@
 
-* Perlito5-in-Javascript differences from "perl"
+* Perlito5-in-Javascript - what works
 
 
-- Perlito5 in the browser doesn't implement many of the perl I/O operators;
-  Perlito5 in node.js should implement most of the I/O operators.
-
-- Scalar vs. List context should work the same as in perl.
+- Subroutines, anonymous subroutines, prototypes, namespaces.
+  "main", "CORE" and "CORE::GLOBAL".
 
 - Scalar, Hash, Array, Code should work the same as in perl.
 
 - Objects should work the same as in perl.
+
+- Scalar vs. List context, wantarray().
+
+- Variables.
+  "my", "our", "local".
+  Most special variables.
+  Most variable declarations.
+
+- Most control structures.
+
+- Most string, numeric, array, hash operators.
+
+- Some I/O operators.
+
+- Some regex operators.
+
+
+
+* Perlito5-in-Javascript differences from "perl"
+
+
+- "state" declaration is not implemented yet.
+
+- Perlito5 in the browser doesn't implement many of the perl I/O operators;
+  Perlito5 in node.js should implement most of the I/O operators.
 
 - Javascript doesn't implement reference counting;
   DESTROY will not work;
