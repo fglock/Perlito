@@ -250,13 +250,6 @@ add_op( 'postfix', 'hash',               $prec, );
 add_op( 'prefix', $_, $prec)
     for qw(
         $  $#  &  *  @  %
-        -r -w -x -o
-        -R -W -X -O
-        -e -z -s
-        -f -d -l -p -S -b -c -t
-        -u -g -k
-        -T -B
-        -M -A -C
     );
 
 $prec = $prec - 1;
@@ -294,7 +287,21 @@ $prec = $prec - 1;
 add_op( 'infix',    '<<',  $prec );
 add_op( 'infix',    '>>',  $prec );
 
+$prec = $prec - 1;
 # named unary operators - these are parsed by the "Grammar::Bareword" module
+
+# TODO -  -f($file).".bak" is equivalent to -f "$file.bak" 
+
+add_op( 'prefix', $_, $prec)
+    for qw(
+        -r -w -x -o
+        -R -W -X -O
+        -e -z -s
+        -f -d -l -p -S -b -c -t
+        -u -g -k
+        -T -B
+        -M -A -C
+    );
 
 $prec = $prec - 1;
 add_op( 'infix',    'lt',  $prec, { assoc => 'chain' } );

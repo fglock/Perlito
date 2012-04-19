@@ -3510,7 +3510,7 @@ var p5100 = p5pkg['main'];
 		p5pkg["Perlito5::Precedence"].add_op(['postfix', 'hash', v_prec], null);
 		p5for(p5pkg["Perlito5::Precedence"], function () {
 			p5pkg["Perlito5::Precedence"].add_op(['prefix', p5pkg["Perlito5::Precedence"]["v__"], v_prec], null);
-		}, ['$', '$#', '&', '*', '@', '%', '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C']);
+		}, ['$', '$#', '&', '*', '@', '%']);
 		(v_prec = ((p5num(v_prec) - 1)));
 		p5pkg["Perlito5::Precedence"].add_op(['prefix', '++', v_prec], null);
 		p5pkg["Perlito5::Precedence"].add_op(['prefix', '--', v_prec], null);
@@ -3539,6 +3539,10 @@ var p5100 = p5pkg['main'];
 		(v_prec = ((p5num(v_prec) - 1)));
 		p5pkg["Perlito5::Precedence"].add_op(['infix', '<<', v_prec], null);
 		p5pkg["Perlito5::Precedence"].add_op(['infix', '>>', v_prec], null);
+		(v_prec = ((p5num(v_prec) - 1)));
+		p5for(p5pkg["Perlito5::Precedence"], function () {
+			p5pkg["Perlito5::Precedence"].add_op(['prefix', p5pkg["Perlito5::Precedence"]["v__"], v_prec], null);
+		}, ['-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C']);
 		(v_prec = ((p5num(v_prec) - 1)));
 		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', 'lt', v_prec, (new p5HashRef({'assoc' : 'chain'}))), null);
 		p5pkg["Perlito5::Precedence"].add_op(p5list_to_a('infix', 'le', v_prec, (new p5HashRef({'assoc' : 'chain'}))), null);

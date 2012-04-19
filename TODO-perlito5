@@ -45,6 +45,9 @@ TODO list for Perlito5
    int $x ? "a" : "b"     --> int($x ? "a" : "b")
    defined $x ? "a" : "b" --> defined($x ? "a" : "b")
 
+-- bug: filetest operators special case:
+   -f($file).".bak" should be equivalent to -f "$file.bak"
+
 -- '$#' should be a syntax error (parses as $#{undef} )
 
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
