@@ -120,7 +120,9 @@ TODO list for Perlito5
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables
 
--- lvalue substr(); 4-arguments substr()
+-- lvalue ternary: ($a_or_b ? $a : $b) = $c;
+-- lvalue substr()
+-- 4-arguments substr()
 -- pos($str)
 
 -- missing some types of subroutine signatures
