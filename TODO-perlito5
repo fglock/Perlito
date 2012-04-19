@@ -41,10 +41,6 @@ TODO list for Perlito5
 
 * Parser
 
--- bug: unary precedence error:
-   int $x ? "a" : "b"     --> int($x ? "a" : "b")
-   defined $x ? "a" : "b" --> defined($x ? "a" : "b")
-
 -- bug: filetest operators special case:
    -f($file).".bak" should be equivalent to -f "$file.bak"
 

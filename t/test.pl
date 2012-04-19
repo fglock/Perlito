@@ -219,8 +219,7 @@ sub ok ($@) {
 ####  
 sub _qq {
     my $x = shift;
-    # WORKAROUND for incorrect parsing etc.
-    return (defined $x) ? '"' . $x . '"' : 'undef';
+    return defined $x ? '"' . $x . '"' : 'undef';
 };
 
 ####  # keys are the codes \n etc map to, values are 2 char strings such as \n
