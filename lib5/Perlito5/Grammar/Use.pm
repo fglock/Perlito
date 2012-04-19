@@ -146,13 +146,17 @@ sub Perlito5::Grammar::Use::parse_time_eval {
 Perlito5::Grammar::Use::require($filename);
             if (!($skip_import)) {
                 if (($use_or_not eq 'use')) {
-                    if (defined(&{($module_name . '::import')})) {
+                    if ((defined($_) & do { for ($_) {
+    ($module_name . '::import')
+}})) {
                         $module_name->import(@{$arguments})
                     }
                 }
                 else {
                     if (($use_or_not eq 'no')) {
-                        if (defined(&{($module_name . '::unimport')})) {
+                        if ((defined($_) & do { for ($_) {
+    ($module_name . '::unimport')
+}})) {
                             $module_name->unimport(@{$arguments})
                         }
                     }
