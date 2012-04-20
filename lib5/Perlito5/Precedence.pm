@@ -294,22 +294,24 @@ sub Perlito5::Precedence::precedence_parse {
     ((my  $op_stack) = []);
     ((my  $num_stack) = []);
     ((my  $last) = ['op', '*start*']);
-    ((my  $token) = $get_token->());
+    ((my  $last_is_term) = 0);
+    ((my  $token) = $get_token->($last_is_term));
     if (($token->[0] eq 'space')) {
-        ($token = $get_token->())
+        ($token = $get_token->($last_is_term))
     };
     for ( ; ((defined($token)) && (($token->[0] ne 'end'))); do { for ($_) {
 
 }} ) {
+        ((my  $token_is_term) = is_term($token));
         if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
             push(@{$num_stack}, ['term', undef()] )
         };
-        if (($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last))))))) {
+        if (($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !($last_is_term))))) {
             ($token->[0] = 'prefix');
             unshift(@{$op_stack}, $token)
         }
         else {
-            if ((($Operator->{'postfix'})->{$token->[1]} && is_term($last))) {
+            if ((($Operator->{'postfix'})->{$token->[1]} && $last_is_term)) {
                 ((my  $pr) = $Precedence->{$token->[1]});
                 for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
 
@@ -322,8 +324,8 @@ sub Perlito5::Precedence::precedence_parse {
                 unshift(@{$op_stack}, $token)
             }
             else {
-                if (is_term($token)) {
-                    if (is_term($last)) {
+                if ($token_is_term) {
+                    if ($last_is_term) {
                         Perlito5::Runtime::say('#      last:  ', Perlito5::Dumper::Dumper($last));
                         Perlito5::Runtime::say('#      token: ', Perlito5::Dumper::Dumper($token));
                         die('Value tokens must be separated by an operator')
@@ -363,9 +365,10 @@ sub Perlito5::Precedence::precedence_parse {
             }
         };
         ($last = $token);
-        ($token = $get_token->());
+        ($last_is_term = $token_is_term);
+        ($token = $get_token->($last_is_term));
         if (($token->[0] eq 'space')) {
-            ($token = $get_token->())
+            ($token = $get_token->($last_is_term))
         }
     };
     if ((defined($token) && (($token->[0] ne 'end')))) {
