@@ -22,7 +22,7 @@ sub Perlito5::Precedence::is_fixity_type {
 };
 sub Perlito5::Precedence::is_term {
     ((my  $token) = shift());
-    ((($token->[0] eq 'term')) || (($token->[0] eq 'postfix_or_term')))
+    (((($token->[0] eq 'term')) || (($token->[0] eq 'postfix_or_term'))) || (($token->[0] eq 'postfix')))
 };
 sub Perlito5::Precedence::is_ident_middle {
     ((my  $c) = shift());

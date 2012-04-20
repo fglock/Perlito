@@ -3356,7 +3356,7 @@ var p5100 = p5pkg['main'];
 		p5make_sub("Perlito5::Precedence", "is_term", function (List__, p5want) {
 				var v_token = null;
 				(v_token = (p5pkg["Perlito5::Precedence"].shift([List__])));
-				return (p5or(p5context([(p5str((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)]) == 'term')], p5want), function () { return p5context([(p5str((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)]) == 'postfix_or_term')], p5want) }));
+				return (p5or(p5or(p5context([(p5str((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)]) == 'term')], p5want), function () { return p5context([(p5str((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)]) == 'postfix_or_term')], p5want) }), function () { return p5context([(p5str((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)]) == 'postfix')], p5want) }));
 		});
 		p5make_sub("Perlito5::Precedence", "is_ident_middle", function (List__, p5want) {
 				var v_c = null;

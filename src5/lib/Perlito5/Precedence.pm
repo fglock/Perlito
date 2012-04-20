@@ -30,7 +30,7 @@ sub is_fixity_type {
 
 sub is_term {
     my $token = shift;
-    ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term')
+    ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix')
 }
 
 sub is_ident_middle {

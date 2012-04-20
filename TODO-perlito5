@@ -40,7 +40,7 @@ TODO list for Perlito5
 
 * Parser
 
--- bug: '  $s111++ + $s222 '
+-- add test for fixed bug:'  $s111++ + $s222 '
     parses as  (+$s222)++
 
 -- bug: '  $step++ < $steps '
