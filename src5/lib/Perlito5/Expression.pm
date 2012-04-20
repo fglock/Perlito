@@ -832,8 +832,8 @@ sub argument_parse {
     my $lexer_stack = [];
     my $terminated = 0;
     my $last_token_was_space = 1;
-    my $last_is_term;
     my $get_token = sub {
+        my $last_is_term = $_[0];
         my $v;
         if (scalar(@$lexer_stack)) {
             $v = pop @$lexer_stack;
@@ -853,7 +853,6 @@ sub argument_parse {
                 return [ 'end', '*end*' ];
             }
             $v = $m->{capture};
-            $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
                 && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
@@ -912,8 +911,8 @@ sub list_parse {
     my $lexer_stack = [];
     my $terminated = 0;
     my $last_token_was_space = 1;
-    my $last_is_term;
     my $get_token = sub {
+        my $last_is_term = $_[0];
         my $v;
         if (scalar(@$lexer_stack)) {
             $v = pop @$lexer_stack;
@@ -933,7 +932,6 @@ sub list_parse {
                 return [ 'end', '*end*' ];
             }
             $v = $m->{capture};
-            $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
                 && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
@@ -989,14 +987,13 @@ sub circumfix_parse {
     # say "# circumfix_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
-    my $last_is_term;
     my $get_token = sub {
+        my $last_is_term = $_[0];
         my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
         if (!$m) {
             die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
         }
         my $v = $m->{capture};
-        $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
         if ($v->[0] ne 'end') {
             $last_pos = $m->{to};
         }
@@ -1063,8 +1060,8 @@ sub exp_parse {
     my $last_pos = $pos;
     my $lexer_stack = [];
     my $terminated = 0;
-    my $last_is_term;
     my $get_token = sub {
+        my $last_is_term = $_[0];
         my $v;
         if (scalar(@$lexer_stack)) {
             $v = pop @$lexer_stack;
@@ -1076,7 +1073,6 @@ sub exp_parse {
                 return [ 'end', '*end*' ];
             }
             $v = $m->{capture};
-            $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if ($v->[0] ne 'end') {
                 $last_pos = $m->{to};
             }

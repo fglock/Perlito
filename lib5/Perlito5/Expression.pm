@@ -1223,8 +1223,8 @@ sub Perlito5::Expression::argument_parse {
     ((my  $lexer_stack) = []);
     ((my  $terminated) = 0);
     ((my  $last_token_was_space) = 1);
-    (my  $last_is_term);
     ((my  $get_token) = sub {
+    ((my  $last_is_term) = $_[0]);
     (my  $v);
     if (scalar(@{$lexer_stack})) {
         ($v = pop(@{$lexer_stack}));
@@ -1238,12 +1238,6 @@ sub Perlito5::Expression::argument_parse {
             return (['end', '*end*'])
         };
         ($v = $m->{'capture'});
-        if (($v->[0] eq 'space')) {
-
-        }
-        else {
-            ($last_is_term = Perlito5::Precedence::is_term($v))
-        };
         if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
             ($v->[0] = 'end')
         };
@@ -1273,8 +1267,8 @@ sub Perlito5::Expression::list_parse {
     ((my  $lexer_stack) = []);
     ((my  $terminated) = 0);
     ((my  $last_token_was_space) = 1);
-    (my  $last_is_term);
     ((my  $get_token) = sub {
+    ((my  $last_is_term) = $_[0]);
     (my  $v);
     if (scalar(@{$lexer_stack})) {
         ($v = pop(@{$lexer_stack}));
@@ -1288,12 +1282,6 @@ sub Perlito5::Expression::list_parse {
             return (['end', '*end*'])
         };
         ($v = $m->{'capture'});
-        if (($v->[0] eq 'space')) {
-
-        }
-        else {
-            ($last_is_term = Perlito5::Precedence::is_term($v))
-        };
         if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
             ($v->[0] = 'end')
         };
@@ -1320,19 +1308,13 @@ sub Perlito5::Expression::circumfix_parse {
     ((my  $delimiter) = $_[3]);
     (my  $expr);
     ((my  $last_pos) = $pos);
-    (my  $last_is_term);
     ((my  $get_token) = sub {
+    ((my  $last_is_term) = $_[0]);
     ((my  $m) = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term));
     if (!($m)) {
         die('Expected closing delimiter: ', $delimiter, ' near ', $last_pos)
     };
     ((my  $v) = $m->{'capture'});
-    if (($v->[0] eq 'space')) {
-
-    }
-    else {
-        ($last_is_term = Perlito5::Precedence::is_term($v))
-    };
     if (($v->[0] ne 'end')) {
         ($last_pos = $m->{'to'})
     };
@@ -1380,8 +1362,8 @@ sub Perlito5::Expression::exp_parse {
     ((my  $last_pos) = $pos);
     ((my  $lexer_stack) = []);
     ((my  $terminated) = 0);
-    (my  $last_is_term);
     ((my  $get_token) = sub {
+    ((my  $last_is_term) = $_[0]);
     (my  $v);
     if (scalar(@{$lexer_stack})) {
         ($v = pop(@{$lexer_stack}))
@@ -1392,12 +1374,6 @@ sub Perlito5::Expression::exp_parse {
             return (['end', '*end*'])
         };
         ($v = $m->{'capture'});
-        if (($v->[0] eq 'space')) {
-
-        }
-        else {
-            ($last_is_term = Perlito5::Precedence::is_term($v))
-        };
         if (($v->[0] ne 'end')) {
             ($last_pos = $m->{'to'})
         }
