@@ -40,6 +40,9 @@ TODO list for Perlito5
 
 * Parser
 
+-- bug: '  $s111++ + $s222 '
+    parses as  (+$s222)++
+
 -- bug: '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
 
