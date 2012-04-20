@@ -45,12 +45,16 @@ TODO list for Perlito5
 
 -- bug: '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
+    This seems to be because there are 2 different places where "last_is_term" is tracked;
+    Precedence.pm is right, Expression.pm is wrong.
 
 -- bug: filetest operators special case:
     ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
     parses as -(f($file)).".bak" 
     but: ' -f ($file).".bak" '
     parses correctly
+    This seems to be because there is a rule that \w followed by '(' is a function call;
+    this needs more testing: ' ... and(2) '
 
 -- ' 123 456 ' should be a syntax error (parses as two statements)
 -- ' $# ' should be a syntax error (parses as $#{undef} )
