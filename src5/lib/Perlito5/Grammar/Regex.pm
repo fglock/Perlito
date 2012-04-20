@@ -2,11 +2,21 @@ package Perlito5::Grammar::Regex;
 
 use Perlito5::Precedence;
 
+    # this module implements a Recursive descent parser
+    # using (more or less) the Perl 6 "token" algorithm
+    #
+    # the parsing process is based on Perl 6:
+    # "Perl 6 "sandwiches" an operator-precedence parser in between two Recursive descent parsers"
+    #
+    # see the precedence_parse() implementation for the operator-precedence parser (Perlito5::Precedence)
+    #
+    # http://en.wikipedia.org/wiki/Recursive_descent_parser
+    #
 
-# Register the "token" keyword
+
+# Here we register the "token" keyword as a language term.
 #
-# This is not a Perl5 word, but Perl6 - but it is useful inside the grammar compiler
-
+# "token" is not a Perl5 word, but Perl6 - but it is useful inside the grammar compiler
 
 token token {
     <Perlito5::Grammar.ident>  <.Perlito5::Grammar::Space.opt_ws> \{

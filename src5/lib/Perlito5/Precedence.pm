@@ -382,6 +382,19 @@ add_op( 'infix',    '*start*', $prec );
 
 
 sub precedence_parse {
+
+    # this routine implements operator precedence
+    # using (more or less) the "shunting yard" algorithm
+    #
+    # the parsing process is based on Perl 6:
+    # "Perl 6 "sandwiches" an operator-precedence parser in between two Recursive descent parsers"
+    #
+    # see the "token" implementation for the recursive descent parser (Perlito5::Grammar::Regex)
+    #
+    # http://en.wikipedia.org/wiki/Operator-precedence_parser
+    # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
+    #
+
     my $self = shift;
 
     my $get_token       = $self->{get_token};
