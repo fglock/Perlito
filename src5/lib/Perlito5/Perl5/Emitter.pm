@@ -90,7 +90,7 @@ package Perlito5::AST::CompUnit;
         my $comp_units = $_[0];
 
         my $str = ''
-            . "use v5;\n"
+            . "use v5.10;\n"    # just in case, because we might use 'when'
             . "use Perlito5::Perl5::Runtime;\n";
         for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_perl5(0)

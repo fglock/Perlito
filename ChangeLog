@@ -18,6 +18,10 @@ dev  2012-04-12
 -- more file and process operations: chdir, unlink, close, exit
 -- more functions: rand
 
+- perl5 backend:
+
+-- require v5.10 just in case, because we might use 'when'
+
 
 * Perlito6 (Perl 6 compiler):
 

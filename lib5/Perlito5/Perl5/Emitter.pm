@@ -52,7 +52,7 @@ do { for ($_) {
     };
     sub Perlito5::AST::CompUnit::emit_perl5_program {
         ((my  $comp_units) = $_[0]);
-        ((my  $str) = ('' . 'use v5;' . chr(10) . 'use Perlito5::Perl5::Runtime;' . chr(10)));
+        ((my  $str) = ('' . 'use v5.10;' . chr(10) . 'use Perlito5::Perl5::Runtime;' . chr(10)));
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_perl5(0)))
         };
