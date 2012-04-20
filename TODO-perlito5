@@ -40,6 +40,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- clean up:
+    the several "end_tables" in Expression.pm are duplicating the function of 
+    $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
+
 -- bug: '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
     This seems to be because there are 2 different places where "last_is_term" is tracked;
