@@ -2,7 +2,7 @@
 use v5;
 use Perlito5::Perl5::Runtime;
 package main;
-use v5;
+undef();
 package Perlito5::Match;
 sub Perlito5::Match::flat {
     ((my  $self) = $_[0]);

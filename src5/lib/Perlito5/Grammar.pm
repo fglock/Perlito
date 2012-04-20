@@ -134,6 +134,10 @@ token val_int {
         }
 };
 
+token val_version {
+    ['v']? <.digits> [ '.' <.digits> [ '.' <.digits> ]? ]?
+};
+
 my @PKG;
 token exp_stmts {
     {

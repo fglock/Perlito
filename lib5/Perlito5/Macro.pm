@@ -2,7 +2,7 @@
 use v5;
 use Perlito5::Perl5::Runtime;
 package main;
-use v5;
+undef();
 package Perlito5::AST::Apply;
 ((my  %op) = ('infix:<+=>', 'infix:<+>', 'infix:<-=>', 'infix:<->', 'infix:<*=>', 'infix:<*>', 'infix:</=>', 'infix:</>', 'infix:<||=>', 'infix:<||>', 'infix:<&&=>', 'infix:<&&>', 'infix:<|=>', 'infix:<|>', 'infix:<&=>', 'infix:<&>', 'infix:<//=>', 'infix:<//>', 'infix:<.=>', 'list:<.>'));
 sub Perlito5::AST::Apply::op_assign {

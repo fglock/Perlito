@@ -20,6 +20,20 @@ token use_decl { 'use' | 'no' };
 
 token term_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
+    [
+        <Perlito5::Grammar.val_version>
+        {
+            # TODO - check version
+
+            $MATCH->{capture} = [ 'term',
+                Perlito5::AST::Apply->new(
+                    code => 'undef',
+                    namespace => '',
+                    arguments => []
+                )
+            ];
+        }
+    |
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
 
@@ -47,6 +61,7 @@ token term_use {
 
             $MATCH->{capture} = [ 'term', $ast ];
         }
+    ]
 };
 
 sub parse_time_eval {
@@ -61,8 +76,8 @@ sub parse_time_eval {
 
     $arguments = [] unless defined $arguments;
 
-    if (  $module_name eq 'v5' 
-       || $module_name eq 'feature'
+    if (
+       $module_name eq 'feature'
        )
     {
         # not implemented
@@ -145,8 +160,7 @@ sub expand_use {
 
     my $module_name = $stmt->mod;
     return
-        if $module_name eq 'v5'
-        || $module_name eq 'strict'
+        if $module_name eq 'strict'
         || $module_name eq 'warnings'
         || $module_name eq 'feature';
     my $filename = modulename_to_filename($module_name);

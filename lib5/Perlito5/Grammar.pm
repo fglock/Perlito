@@ -1027,6 +1027,79 @@ sub Perlito5::Grammar::val_int {
 }))));
     ($tmp ? $MATCH : 0)
 };
+sub Perlito5::Grammar::val_version {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
+    ((my  $tmp) = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((((do {
+    ((my  $m) = $MATCH);
+    if (!(((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (('v' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})))) {
+        ($MATCH = $m)
+    };
+    1
+})) && ((do {
+    ((my  $m2) = $grammar->digits($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m) = $MATCH);
+    if (!(((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->digits($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m) = $MATCH);
+    if (!(((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->digits($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})))
+}))
+})))) {
+        ($MATCH = $m)
+    };
+    1
+})))
+}))
+})))) {
+        ($MATCH = $m)
+    };
+    1
+})))
+}))
+}))));
+    ($tmp ? $MATCH : 0)
+};
 (my  @PKG);
 sub Perlito5::Grammar::exp_stmts {
     ((my  $grammar) = $_[0]);

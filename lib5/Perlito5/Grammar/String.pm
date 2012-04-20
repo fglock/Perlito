@@ -2,7 +2,7 @@
 use v5;
 use Perlito5::Perl5::Runtime;
 package main;
-use v5;
+undef();
 package Perlito5::Grammar::String;
 use Perlito5::Precedence;
 Perlito5::Precedence::add_term(chr(39), sub {

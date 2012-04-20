@@ -2,7 +2,7 @@
 use v5;
 use Perlito5::Perl5::Runtime;
 package main;
-use v5;
+undef();
 package Perlito;
 use Perlito5::Match;
 use Perlito5::Emitter::Token;

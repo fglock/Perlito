@@ -36,7 +36,7 @@ sub Perlito5::Grammar::Use::term_use {
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((((do {
+    ((((do {
     ((my  $m2) = $grammar->use_decl($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -56,6 +56,26 @@ sub Perlito5::Grammar::Use::term_use {
         0
     }
 }))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (((do {
+    ((my  $m2) = Perlito5::Grammar->val_version($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.val_version'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', [])]);
+;
+    1
+})))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((((do {
     ((my  $m2) = Perlito5::Grammar->full_ident($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -65,7 +85,7 @@ sub Perlito5::Grammar::Use::term_use {
     else {
         0
     }
-}))) && ((do {
+})) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
     ((my  $pos1) = $MATCH->{'to'});
@@ -117,6 +137,8 @@ sub Perlito5::Grammar::Use::term_use {
     ($MATCH->{'capture'} = ['term', $ast]);
 ;
     1
+}))))
+})))
 })))
 }))
 }))));
@@ -134,7 +156,7 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     else {
         ($arguments = [])
     };
-    if ((($module_name eq 'v5') || ($module_name eq 'feature'))) {
+    if (($module_name eq 'feature')) {
 
     }
     else {
@@ -204,7 +226,7 @@ sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
     ((my  $stmt) = shift());
     ((my  $module_name) = $stmt->mod());
-    if ((((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'warnings')) || ($module_name eq 'feature'))) {
+    if (((($module_name eq 'strict') || ($module_name eq 'warnings')) || ($module_name eq 'feature'))) {
         return ()
     };
     ((my  $filename) = modulename_to_filename($module_name));

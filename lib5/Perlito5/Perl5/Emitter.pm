@@ -2,7 +2,7 @@
 use v5;
 use Perlito5::Perl5::Runtime;
 package main;
-use v5;
+undef();
 use Perlito5::AST;
 package Perlito5::Perl5;
 do { for ($_) {
