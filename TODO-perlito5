@@ -40,6 +40,9 @@ TODO list for Perlito5
 
 * Parser
 
+-- bug: '  $step++ < $steps '
+    Can't find string terminator '>' anywhere before EOF
+
 -- bug: filetest operators special case:
     ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
     parses as -(f($file)).".bak" 
