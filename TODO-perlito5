@@ -40,21 +40,13 @@ TODO list for Perlito5
 
 * Parser
 
--- add test for fixed bug:'  $s111++ + $s222 '
-    parses as  (+$s222)++
-
 -- bug: '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
     This seems to be because there are 2 different places where "last_is_term" is tracked;
     Precedence.pm is right, Expression.pm is wrong.
 
--- add test for fixed bug: filetest operators special case:
-    ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
-    parses as -(f($file)).".bak" 
-    but: ' -f ($file).".bak" '
-    parses correctly
-    This seems to be because there is a rule that \w followed by '(' is a function call;
-    this needs more testing: ' ... and(2) '
+-- bug: ' $$x [$y] '
+    parses as ${$x}->[$y];
 
 -- ' 123 456 ' should be a syntax error (parses as two statements)
 -- ' $# ' should be a syntax error (parses as $#{undef} )
@@ -90,6 +82,20 @@ TODO list for Perlito5
    method Module $param;
 -- lookup for existing subroutines:
    sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
+
+-- add tests for fixed bugs:
+
+    filetest operators special case:
+    ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
+    parses as -(f($file)).".bak" 
+    but: ' -f ($file).".bak" '
+    parses correctly
+    This seems to be because there is a rule that \w followed by '(' is a function call;
+    this needs more testing: ' ... and(2) '
+
+    '  $s111++ + $s222 '
+    parses as  (+$s222)++
+
 
 
 * Perl5 backend
