@@ -144,6 +144,7 @@ if ($backend && @ARGV) {
             my $error = $@
                 || "Unknown error";
             warn $error;
+            exit(255);
         }
     }
     else {

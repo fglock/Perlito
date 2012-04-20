@@ -132,7 +132,8 @@ if (($backend && @ARGV)) {
         (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
         if (!($ok)) {
             ((my  $error) = ($@ || 'Unknown error'));
-            warn($error)
+            warn($error);
+            exit(255)
         }
     }
     else {

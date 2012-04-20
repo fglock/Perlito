@@ -102,6 +102,10 @@ if (isNode) {
         }
     };
 
+    CORE.exit = function(List__) {
+        process.exit(List__[0]);
+    };
+
     CORE.rename = function(List__) {
         try {
             fs.renameSync(p5str(List__[0]), p5str(List__[1]));
