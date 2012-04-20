@@ -157,30 +157,6 @@ CORE.substr = function(List__) {
     return p5str(expr).substr(offset, length);
 };
 
-CORE.scalar = function(List__) {
-    var o = List__[0];
-    if (o == null) {
-        return o;
-    };
-    if (typeof o.scalar === "function") {
-        return o.scalar();
-    }
-    if (typeof o === "object" && (o instanceof Array)) {
-        return o.length;
-    }
-    switch (typeof o) {
-        case "string":   return o;
-        case "function": return o;
-        case "number":   return o;
-        case "boolean":  return o;
-    }
-    var l = 0;
-    for (var i in o) {
-        l++;
-    }
-    return l;
-};
-
 CORE.values = function(List__, p5want) {
     var o = List__[0];
     delete o["_each_"];

@@ -834,6 +834,9 @@ do { for ($_) {
 }, 'delete', sub {
     ((my  $self) = $_[0]);
     ('(delete ' . $self->{'arguments'}->[0]->emit_javascript() . ')')
+}, 'scalar', sub {
+    ((my  $self) = $_[0]);
+    Perlito5::Javascript::to_scalar($self->{'arguments'}, ($level + 1))
 }, 'ternary:<? :>', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

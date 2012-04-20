@@ -1264,6 +1264,11 @@ package Perlito5::AST::Apply;
             '(delete ' . $self->{arguments}[0]->emit_javascript() . ')';
         },
 
+        'scalar' => sub {
+            my $self = $_[0];
+            Perlito5::Javascript::to_scalar($self->{arguments}, $level+1);
+        },
+
         'ternary:<? :>' => sub {
             my $self      = shift;
             my $level     = shift;
