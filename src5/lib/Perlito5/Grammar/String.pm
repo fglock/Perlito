@@ -91,7 +91,8 @@ my %pair = (
 
 my %escape_sequence = qw/ a 7 b 8 e 27 f 12 n 10 r 13 t 9 /;
 
-my %hex = map +($_ => 1), qw/ 0 1 2 3 4 5 6 7 8 9 A B C D E F /;
+my %hex   = map +($_ => 1), qw/ 0 1 2 3 4 5 6 7 8 9 A B C D E F /;
+my %octal = map +($_ => 1), qw/ 0 1 2 3 4 5 6 7 /;
 
 sub q_quote_parse {
     my $self = $_[0];
@@ -671,24 +672,28 @@ sub double_quoted_unescape {
             };
         }
     }
+    elsif ( exists $octal{$c2} ) {
+        # "\"+octal        - initial zero is optional; max 3 digit octal (377)
+        my $p = $pos+2;
+        $p++ if $octal{ substr($str, $p, 1) };
+        $p++ if $octal{ substr($str, $p, 1) };
+        my $tmp = oct( substr($str, $pos+1, $p - $pos) );
+        $m = {
+            str => $str,
+            from => $pos,
+            to => $p,
+            capture => Perlito5::AST::Apply->new(
+                    'arguments' => [
+                        Perlito5::AST::Val::Int->new( 'int' => $tmp ),
+                    ],
+                    'code' => 'chr',
+                )
+        };
+    }
     else {
-        # TODO - "\"+octal        - initial zero is optional; max 3 digit octal (377)
         # TODO - \N{charname}     - requires "use charnames"
         # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
         # TODO - \l \u            - uppercase next char
-
-        ##     [   \[ <Perlito5::Grammar.digits> \]
-        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-        ##     |  <Perlito5::Grammar.digits>
-        ##         { $MATCH->{capture} = chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) }
-        ##     ]
-
-        ## my %double_quoted_unescape = (
-        ##     '0' => \&unescape_octal,
-        ##     'x' => \&unescape_hex,
-        ##     'c' => \&unescape_ctrl,
-        ##     'N' => \&unescape_charname,
-        ## );
 
         $m = {
             'str' => $str,

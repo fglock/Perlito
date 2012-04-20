@@ -7830,6 +7830,10 @@ var p5100 = p5pkg['main'];
 		(Hash_hex = p5a_to_h(p5list_to_a(p5map(p5pkg["Perlito5::Grammar::String"], function (p5want) {
 				return ((p5context([p5pkg["Perlito5::Grammar::String"]["v__"], 1], p5want)));
 			}, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']))));
+		var Hash_octal = {};
+		(Hash_octal = p5a_to_h(p5list_to_a(p5map(p5pkg["Perlito5::Grammar::String"], function (p5want) {
+				return ((p5context([p5pkg["Perlito5::Grammar::String"]["v__"], 1], p5want)));
+			}, ['0', '1', '2', '3', '4', '5', '6', '7']))));
 		p5make_sub("Perlito5::Grammar::String", "q_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[p5idx(List__,0)]));
@@ -8557,7 +8561,24 @@ var p5100 = p5pkg['main'];
 							};
 						}
 						else {
-							(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_c2], 1)))))));
+							if ( (Hash_octal).hasOwnProperty(v_c2) ) {
+								(function () {
+									var v_p = null;
+									(v_p = ((p5num(v_pos) + 2)));
+									if ( p5bool(Hash_octal[p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], p5want)]) ) {
+										(v_p)++;
+									};
+									if ( p5bool(Hash_octal[p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], p5want)]) ) {
+										(v_p)++;
+									};
+									var v_tmp = null;
+									(v_tmp = (p5pkg["Perlito5::Grammar::String"].oct([p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 1), (p5num(v_p) - p5num(v_pos))], 0)], 0)));
+									(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_p, 'capture', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', v_tmp], 1)))), 'code', 'chr'), 1)))))));
+									})();
+							}
+							else {
+								(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_c2], 1)))))));
+							};
 						};
 					};
 				};
