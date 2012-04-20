@@ -278,8 +278,8 @@ sub Perlito5::Grammar::when {
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    ((((((((('w' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((('h' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('e' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('n' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
+    ((((((((((('w' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((('h' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('e' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('n' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -288,22 +288,40 @@ sub Perlito5::Grammar::when {
         0
     }
 }))) && ((do {
-    ((my  $m2) = $grammar->exp($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Expression->term_paren($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'exp'} = $m2);
+        ($MATCH->{'Perlito5::Expression.term_paren'} = $m2);
         1
     }
     else {
         0
     }
 }))) && ((do {
-    die('when - not implemented');
-    ((my  $body) = Perlito5::Match::flat($MATCH->{'exp'})->{'end_block'});
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Expression->term_curly($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Expression.term_curly'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $body) = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_curly'})->[2]);
     if (!(defined($body))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
-    ($MATCH->{'capture'} = When->new('parameters', Perlito5::Match::flat($MATCH->{'exp'})->{'exp'}, 'body', $body));
+    ($MATCH->{'capture'} = Perlito5::AST::When->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.term_paren'})->[2], 'body', Perlito5::AST::Lit::Block->new('stmts', $body)));
     1
 })))
 }))

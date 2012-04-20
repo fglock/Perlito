@@ -1423,6 +1423,8 @@ sub Perlito5::Expression::exp_parse {
     Perlito5::Grammar->for($_[0], $_[1])
 }, 'while', sub {
     Perlito5::Grammar->while($_[0], $_[1])
+}, 'when', sub {
+    Perlito5::Grammar->when($_[0], $_[1])
 }, 'sub', sub {
     Perlito5::Grammar->named_sub($_[0], $_[1])
 }));
@@ -1447,7 +1449,7 @@ sub Perlito5::Expression::exp_stmt {
     return (0)
 };
 ((my  @Modifier_chars) = (7, 6, 5, 4, 3, 2));
-((my  %Modifier) = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1));
+((my  %Modifier) = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1, 'when', 1));
 sub Perlito5::Expression::statement_modifier {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1479,6 +1481,9 @@ sub Perlito5::Expression::modifier {
     };
     if (($modifier eq 'unless')) {
         return ({'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp)->{'exp'}, 'body', Perlito5::AST::Lit::Block->new('stmts', []), 'otherwise', Perlito5::AST::Lit::Block->new('stmts', [$expression]))})
+    };
+    if (($modifier eq 'when')) {
+        return ({'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::When->new('cond', Perlito5::Match::flat($modifier_exp)->{'exp'}, 'body', Perlito5::AST::Lit::Block->new('stmts', [$expression]))})
     };
     if (($modifier eq 'while')) {
         return ({'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::While->new('cond', Perlito5::Match::flat($modifier_exp)->{'exp'}, 'body', Perlito5::AST::Lit::Block->new('stmts', [$expression]))})

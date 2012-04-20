@@ -87,18 +87,18 @@ token if {
 };
 
 token when {
-    when <.ws> <exp>
-    {
-        die "when - not implemented";
-
-        my $body = Perlito5::Match::flat($MATCH->{exp})->{end_block};
-        if (!defined($body)) {
-            die "Missing code block in 'when'";
+    when <.opt_ws> <Perlito5::Expression.term_paren>
+         <.opt_ws> <Perlito5::Expression.term_curly>
+        {
+            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_curly"})->[2];
+            if (!defined($body)) {
+                die "Missing code block in 'when'";
+            }
+            $MATCH->{capture} = Perlito5::AST::When->new(
+                cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_paren"})->[2],
+                body      => Perlito5::AST::Lit::Block->new(stmts => $body),
+             )
         }
-        $MATCH->{capture} = When->new(
-                parameters => Perlito5::Match::flat($MATCH->{exp})->{exp},
-                body       => $body )
-    }
 };
 
 token for {

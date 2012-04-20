@@ -1787,6 +1787,24 @@ package Perlito5::AST::If;
 }
 
 
+package Perlito5::AST::When;
+{
+    sub emit_javascript {
+        my $self = shift;
+        my $level = shift;
+        my $cond = $self->{cond};
+        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
+
+        # TODO
+
+        my $s = 'when ( ' . Perlito5::Javascript::to_bool($cond, $level + 1) . ' ) {' . "\n"
+            .       $body->emit_javascript( $level + 1 ) . "\n"
+            . Perlito5::Javascript::tab($level) . '}';
+        return $s;
+    }
+}
+
+
 package Perlito5::AST::While;
 {
     sub emit_javascript {

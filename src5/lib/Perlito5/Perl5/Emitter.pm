@@ -521,6 +521,24 @@ package Perlito5::AST::If;
     }
 }
 
+package Perlito5::AST::When;
+{
+    sub emit_perl5 {
+        my $self = $_[0];
+        my $level = $_[1];
+        
+        return Perlito5::Perl5::tab($level) . 'when (' . $self->{cond}->emit_perl5() . ") \{\n"
+             .  ($self->{body}
+                ? join(";\n", 
+                       map( $_->emit_perl5( $level + 1 ), @{ $self->{body}->stmts } )
+                  ) . "\n"
+                : ''
+                )
+             . Perlito5::Perl5::tab($level) . "}";
+    }
+}
+
+
 package Perlito5::AST::While;
 {
     sub emit_perl5 {

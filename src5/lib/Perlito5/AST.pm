@@ -113,6 +113,13 @@ sub otherwise { $_[0]->{otherwise} }
 
 
 
+package Perlito5::AST::When;
+sub new { my $class = shift; bless {@_}, $class }
+sub cond { $_[0]->{cond} }
+sub body { $_[0]->{body} }
+
+
+
 package Perlito5::AST::While;
 sub new { my $class = shift; bless {@_}, $class }
 sub init { $_[0]->{init} }

@@ -1163,6 +1163,17 @@ do { for ($_) {
         return ($s)
     }
 }};
+package Perlito5::AST::When;
+do { for ($_) {
+    sub Perlito5::AST::When::emit_javascript {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $cond) = $self->{'cond'});
+        ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
+        ((my  $s) = ('when ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
+        return ($s)
+    }
+}};
 package Perlito5::AST::While;
 do { for ($_) {
     sub Perlito5::AST::While::emit_javascript {

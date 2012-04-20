@@ -147,7 +147,8 @@ if (($backend && @ARGV)) {
             });
         if ((!($ok) || ($m->{'to'} != length($source)))) {
             ((my  $error) = (($@ || ((($m->{'to'} != length($source)) && ('Syntax Error near ' . $m->{'to'})))) || 'Unknown error'));
-            warn($error)
+            warn($error);
+            exit(255)
         }
         else {
             (my  $comp_units);

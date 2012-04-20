@@ -1114,6 +1114,7 @@ my %Statement = (
     'when'   => sub { Perlito5::Grammar->when($_[0], $_[1]) },
     'for'    => sub { Perlito5::Grammar->for($_[0], $_[1]) },
     'while'  => sub { Perlito5::Grammar->while($_[0], $_[1]) },
+    'when'   => sub { Perlito5::Grammar->when($_[0], $_[1]) },
     'sub'    => sub { Perlito5::Grammar->named_sub($_[0], $_[1]) },
 );
 
@@ -1149,6 +1150,7 @@ my %Modifier = (
     'for'    => 1, 
     'foreach'=> 1, 
     'while'  => 1, 
+    'when'   => 1,
 );
 
 sub statement_modifier {
@@ -1198,6 +1200,15 @@ sub modifier {
                 cond      => Perlito5::Match::flat($modifier_exp)->{exp},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) 
+            ),
+        };
+    }
+    if ($modifier eq 'when') {
+        return {
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
+            capture => Perlito5::AST::When->new(
+                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
+                body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
             ),
         };
     }

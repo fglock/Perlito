@@ -150,6 +150,17 @@ sub Perlito5::AST::If::body {
 sub Perlito5::AST::If::otherwise {
     $_[0]->{    'otherwise'}
 };
+package Perlito5::AST::When;
+sub Perlito5::AST::When::new {
+    ((my  $class) = shift());
+    bless({@_}, $class)
+};
+sub Perlito5::AST::When::cond {
+    $_[0]->{    'cond'}
+};
+sub Perlito5::AST::When::body {
+    $_[0]->{    'body'}
+};
 package Perlito5::AST::While;
 sub Perlito5::AST::While::new {
     ((my  $class) = shift());
