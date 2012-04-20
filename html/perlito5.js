@@ -3511,7 +3511,7 @@ var p5100 = p5pkg['main'];
 							(v_c1 = (p5pkg["Perlito5::Precedence"].substr([v_str, ((p5num(v_pos) + p5pkg["Perlito5::Precedence"].length([v_op], 0)) - 1), 1], 0)));
 							var v_c2 = null;
 							(v_c2 = (p5pkg["Perlito5::Precedence"].substr([v_str, (p5num(v_pos) + p5pkg["Perlito5::Precedence"].length([v_op], 0)), 1], 0)));
-							if ( (!( (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c1], 0)) && (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c2], 0)) || (p5str(v_c2) == '(')))) && !( ((p5str(v_c1) == '&') && (p5str(v_c2) == '&')))) ) {
+							if ( (!( (p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c1], 0)) && p5bool(p5pkg["Perlito5::Precedence"].is_ident_middle([v_c2], 0)))) && !( ((p5str(v_c1) == '&') && (p5str(v_c2) == '&')))) ) {
 								if ( ((((v_Operator || (v_Operator = new p5HashRef({})))._hash_['infix'])._hash_.hasOwnProperty(v_op) && !( ((v_Operator || (v_Operator = new p5HashRef({})))._hash_['prefix'])._hash_.hasOwnProperty(v_op))) && !( p5bool(v_last_is_term))) ) {
 									null;
 								}

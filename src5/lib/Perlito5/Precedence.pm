@@ -154,7 +154,7 @@ sub op_parse {
             my $c1 = substr($str, $pos + length($op) - 1, 1);
             my $c2 = substr($str, $pos + length($op), 1);
             if (
-                  !(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))    # )
+                  !(is_ident_middle($c1) && is_ident_middle($c2))
                && !($c1 eq '&' && $c2 eq '&')
                ) 
             {
