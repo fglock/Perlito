@@ -117,7 +117,8 @@ sub emit_time_eval {
 
 sub modulename_to_filename {
     my $s = shift;
-    return Perlito5::Runtime::_replace( $s, '::', '/' ) . '.pm';
+    $s =~ s{::}{/}g;
+    return $s . '.pm';
 }
 
 sub filename_lookup {

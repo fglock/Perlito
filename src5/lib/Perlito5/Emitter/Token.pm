@@ -156,8 +156,11 @@ sub captures { $_[0]->{captures} }
 sub emit_perl5 {
     my $self = $_[0];
 
+    my $s = $self->{metasyntax};
+    $s =~ s{\.}{->}g;
+
     my $meth = ( 1 + index( $self->{metasyntax}, '.' ) )
-        ? Perlito5::Runtime::_replace( $self->{metasyntax}, '.', '->' )
+        ? $s
         : ( '$grammar->' . $self->{metasyntax} );
 
     my $code;

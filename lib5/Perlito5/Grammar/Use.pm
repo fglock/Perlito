@@ -180,7 +180,8 @@ sub Perlito5::Grammar::Use::emit_time_eval {
 };
 sub Perlito5::Grammar::Use::modulename_to_filename {
     ((my  $s) = shift());
-    return ((Perlito5::Runtime::_replace($s, '::', '/') . '.pm'))
+    ($s =~ s!::!/!g);
+    return (($s . '.pm'))
 };
 sub Perlito5::Grammar::Use::filename_lookup {
     ((my  $filename) = shift());

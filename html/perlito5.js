@@ -8947,7 +8947,8 @@ return r;
 		p5make_sub("Perlito5::Grammar::Use", "modulename_to_filename", function (List__, p5want) {
 				var v_s = null;
 				(v_s = (p5pkg["Perlito5::Grammar::Use"].shift([List__])));
-				return (p5context([(p5str(p5pkg["Perlito5::Runtime"]._replace([v_s, '::', '/'], 0)) + '.pm')], p5want));
+				v_s = p5str(v_s).replace(/::/g, '/');
+				return (p5context([(p5str(v_s) + '.pm')], p5want));
 		});
 		p5make_sub("Perlito5::Grammar::Use", "filename_lookup", function (List__, p5want) {
 			try {
@@ -11430,27 +11431,6 @@ return r;
 		var p5156 = p5make_package("Perlito5::Runtime");
 		// use Perlito5::strict
 ;
-		p5make_sub("Perlito5::Runtime", "_replace", function (List__, p5want) {
-				var v_s = null;
-				(v_s = (p5pkg["Perlito5::Runtime"].shift([List__])));
-				var v_old = null;
-				(v_old = (p5pkg["Perlito5::Runtime"].shift([List__])));
-				var v_new = null;
-				(v_new = (p5pkg["Perlito5::Runtime"].shift([List__])));
-				var v_p = null;
-				(v_p = (p5pkg["Perlito5::Runtime"].index([v_s, v_old], 0)));
-				return (( (p5num(v_p) >= 0) ? (p5pkg["Perlito5::Runtime"].substr([v_s, 0, v_p], 0) + p5str(v_new) + p5str(p5pkg["Perlito5::Runtime"]._replace([p5pkg["Perlito5::Runtime"].substr([v_s, (p5num(v_p) + p5pkg["Perlito5::Runtime"].length([v_old], 0))], 1), v_old, v_new], 0))) : v_s));
-		});
-		p5make_sub("Perlito5::Runtime", "lisp_escape_string", function (List__, p5want) {
-				var v_s = null;
-				(v_s = (p5pkg["Perlito5::Runtime"].shift([List__])));
-				return (p5pkg["Perlito5::Runtime"]._replace([v_s, String.fromCharCode(92), String.fromCharCode(92) + String.fromCharCode(92)], p5want));
-		});
-		p5make_sub("Perlito5::Runtime", "to_go_namespace", function (List__, p5want) {
-				var v_s = null;
-				(v_s = (p5pkg["Perlito5::Runtime"].shift([List__])));
-				return (p5pkg["Perlito5::Runtime"]._replace([v_s, '::', '__'], p5want));
-		});
 		(p5pkg["Perlito5"]["v_EXPAND_USE"] = (1));
 		(p5pkg["Perlito5"]["v_STRICT"] = (0));
 		(p5pkg["Perlito5"]["v_WARNINGS"] = (0));

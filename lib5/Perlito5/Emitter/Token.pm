@@ -107,7 +107,9 @@ sub Rul::Perlito5::AST::Subrule::captures {
 };
 sub Rul::Perlito5::AST::Subrule::emit_perl5 {
     ((my  $self) = $_[0]);
-    ((my  $meth) = (((1 + index($self->{'metasyntax'}, '.'))) ? Perlito5::Runtime::_replace($self->{'metasyntax'}, '.', '->') : (('$grammar->' . $self->{'metasyntax'}))));
+    ((my  $s) = $self->{'metasyntax'});
+    ($s =~ s!\.!->!g);
+    ((my  $meth) = (((1 + index($self->{'metasyntax'}, '.'))) ? $s : (('$grammar->' . $self->{'metasyntax'}))));
     (my  $code);
     if (($self->{'captures'} == 1)) {
         ($code = ('if ($m2) { $MATCH->{to} = $m2->{to}; $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = $m2; 1 } else { 0 }; '))
