@@ -852,7 +852,7 @@ sub argument_parse {
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
-            $v = Perlito5::Match::flat($m);
+            $v = $m->{capture};
             $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
@@ -932,7 +932,7 @@ sub list_parse {
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
-            $v = Perlito5::Match::flat($m);
+            $v = $m->{capture};
             $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if  (  $is_first_token
                 && ($v->[0] eq 'op')

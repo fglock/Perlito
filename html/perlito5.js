@@ -5578,7 +5578,7 @@ var p5100 = p5pkg['main'];
 									if ( !( p5bool(v_m)) ) {
 										throw((new p5ArrayRef(['end', '*end*'])));
 									};
-									(v_v = (p5pkg["Perlito5::Match"].flat([v_m], 0)));
+									(v_v = ((v_m || (v_m = new p5HashRef({})))._hash_['capture']));
 									if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,0)]) == 'space') ) {
 										null;
 									}
@@ -5663,7 +5663,7 @@ var p5100 = p5pkg['main'];
 									if ( !( p5bool(v_m)) ) {
 										throw((new p5ArrayRef(['end', '*end*'])));
 									};
-									(v_v = (p5pkg["Perlito5::Match"].flat([v_m], 0)));
+									(v_v = ((v_m || (v_m = new p5HashRef({})))._hash_['capture']));
 									if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,0)]) == 'space') ) {
 										null;
 									}

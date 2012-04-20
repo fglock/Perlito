@@ -1237,7 +1237,7 @@ sub Perlito5::Expression::argument_parse {
         if (!($m)) {
             return (['end', '*end*'])
         };
-        ($v = Perlito5::Match::flat($m));
+        ($v = $m->{'capture'});
         if (($v->[0] eq 'space')) {
 
         }
@@ -1287,7 +1287,7 @@ sub Perlito5::Expression::list_parse {
         if (!($m)) {
             return (['end', '*end*'])
         };
-        ($v = Perlito5::Match::flat($m));
+        ($v = $m->{'capture'});
         if (($v->[0] eq 'space')) {
 
         }
