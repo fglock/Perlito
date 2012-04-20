@@ -44,11 +44,6 @@ TODO list for Perlito5
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
--- bug: '  $step++ < $steps '
-    Can't find string terminator '>' anywhere before EOF
-    This seems to be because there are 2 different places where "last_is_term" is tracked;
-    Precedence.pm is right, Expression.pm is wrong.
-
 -- bug: ' $$x [$y] '
     parses as ${$x}->[$y];
 
@@ -96,9 +91,13 @@ TODO list for Perlito5
     parses correctly
     This seems to be because there is a rule that \w followed by '(' is a function call;
     this needs more testing: ' ... and(2) '
+    Test: redefine 'and', 'not' and check what works.
 
     '  $s111++ + $s222 '
     parses as  (+$s222)++
+
+    '  $step++ < $steps '
+    Can't find string terminator '>' anywhere before EOF
 
 
 

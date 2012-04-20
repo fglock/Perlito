@@ -3716,6 +3716,7 @@ var p5100 = p5pkg['main'];
 										((v_token || (v_token = new p5ArrayRef([])))._array_[p5idx((v_token || (v_token = new p5ArrayRef([])))._array_,0)] = 'postfix');
 									};
 									p5pkg["Perlito5::Precedence"].unshift([(v_op_stack || (v_op_stack = new p5ArrayRef([])))._array_, [v_token]], null);
+									(v_token_is_term = (1));
 									})();
 							}
 							else {

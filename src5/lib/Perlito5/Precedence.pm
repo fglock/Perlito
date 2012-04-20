@@ -434,6 +434,9 @@ sub precedence_parse {
                 $token->[0] = 'postfix';
             }
             unshift( @$op_stack, $token);
+            # note: from the point of view os the tokenizer, a postfix is a term:
+            #       '$step++ < $steps', there is a term before '<'
+            $token_is_term = 1;
         }
         elsif ($token_is_term) {
             if ($last_is_term) {

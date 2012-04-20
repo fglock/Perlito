@@ -321,7 +321,8 @@ sub Perlito5::Precedence::precedence_parse {
                 if (($token->[0] ne 'postfix_or_term')) {
                     ($token->[0] = 'postfix')
                 };
-                unshift(@{$op_stack}, $token)
+                unshift(@{$op_stack}, $token);
+                ($token_is_term = 1)
             }
             else {
                 if ($token_is_term) {
