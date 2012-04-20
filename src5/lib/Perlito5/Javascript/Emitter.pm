@@ -1796,8 +1796,18 @@ package Perlito5::AST::When;
         my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
 
         # TODO
+        # transform EXPR into ($_ ~~ EXPR)
 
-        my $s = 'when ( ' . Perlito5::Javascript::to_bool($cond, $level + 1) . ' ) {' . "\n"
+        # this is a placeholder - this is wrong!
+        my $expr = Perlito5::AST::Apply->new(
+            code => 'infix:<==>', 
+            arguments => [
+                Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+                $cond
+            ] 
+        );
+
+        my $s = 'if ( ' . Perlito5::Javascript::to_bool($expr, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript( $level + 1 ) . "\n"
             . Perlito5::Javascript::tab($level) . '}';
         return $s;

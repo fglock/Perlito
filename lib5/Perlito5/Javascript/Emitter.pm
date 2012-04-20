@@ -1170,7 +1170,8 @@ do { for ($_) {
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
-        ((my  $s) = ('when ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
+        ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
+        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
         return ($s)
     }
 }};
