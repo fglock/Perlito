@@ -3,7 +3,6 @@ TODO list for Perlito5
 
 * perlito5 command-line
 
--- process the arguments in a loop; ignore argument order
 -- search for modules in PERL5LIB
    perlito5 own directories must be searched first (perlito5 defines it's own strict.pm)
    maybe search PERLITO5LIB first
@@ -42,9 +41,14 @@ TODO list for Perlito5
 * Parser
 
 -- bug: filetest operators special case:
-   -f($file).".bak" should be equivalent to -f "$file.bak"
+    ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
+    parses as -(f($file)).".bak" 
+    but: ' -f ($file).".bak" '
+    parses correctly
 
--- '$#' should be a syntax error (parses as $#{undef} )
+-- ' 123 456 ' should be a syntax error (parses as two statements)
+-- ' $# ' should be a syntax error (parses as $#{undef} )
+-- ' $x->meth 123 ' should be a syntax error
 
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
@@ -71,8 +75,6 @@ TODO list for Perlito5
 -- deref inside double quotes:
     $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
     [$[object Object]]
-
--- this should give a syntax error: $x->meth 123
 
 -- indirect object notation
    method Module $param;
@@ -160,7 +162,9 @@ TODO list for Perlito5
 
 * Nice to Have
 
--- labels, "next", "last", "continue"
+-- "next", "last", "continue"
+-- caller()
+-- "when"
 
 -- run more of the "perl" test suite
 

@@ -148,6 +148,7 @@ if ($backend && @ARGV) {
         }
     }
     else {
+        # call the "ahead of time" compiler
 
         # since we are generating code that will run from scratch,
         # we need to start with an empty %INC so that all modules are "used"
@@ -172,6 +173,7 @@ if ($backend && @ARGV) {
                    )
                 || "Unknown error";
             warn $error;
+            exit(255);
         }
         else {
             my $comp_units;
