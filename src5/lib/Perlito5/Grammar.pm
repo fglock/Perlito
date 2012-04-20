@@ -101,16 +101,19 @@ token var_ident {
 };
 
 token exponent {
-    [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+
+    [ 'e' | 'E' ]  [ '+' | '-' | '' ]  [ '_' | \d ]+
 };
 
 token val_num {
     [
-    |   \. \d+    <.exponent>?    # .10 .10e10
-    |   \.        <.exponent>     # .e10 
-    |   \d+     [ <.exponent>  |   \. <!before \. > \d*  <.exponent>? ]
+    |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
+    |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
     ]
-    { $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => Perlito5::Match::flat($MATCH) ) }
+    {
+        my $s = Perlito5::Match::flat($MATCH);
+        $s =~ s/_//g;
+        $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
+    }
 };
 
 token digits {
@@ -119,12 +122,16 @@ token digits {
 
 token val_int {
     [ '0' ['x'|'X'] <.word>+   # XXX test for hex number
-    | '0' ['b'|'B'] [ 0 | 1 ]+
-    | '0'  \d+        # XXX test for octal number
+    | '0' ['b'|'B'] [ '_' | '0' | '1' ]+
+    | '0' [ '_' | \d]+        # XXX test for octal number
     ]
         { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(Perlito5::Match::flat($MATCH)) ) }
-    | \d+
-        { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => Perlito5::Match::flat($MATCH) ) }
+    | \d [ '_' | \d]*
+        {
+            my $s = Perlito5::Match::flat($MATCH);
+            $s =~ s/_//g;
+            $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => $s )
+        }
 };
 
 my @PKG;

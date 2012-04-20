@@ -96,6 +96,7 @@ CORE.ord = function(List__) {
 CORE.oct = function(List__) {
     var v = List__[0];
     var b = v.substr(0,2);
+    v = v.replace("_", "");
     if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }
     if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }
     return parseInt(v, 8);

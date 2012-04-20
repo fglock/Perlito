@@ -546,6 +546,12 @@ sub Perlito5::Grammar::exponent {
     ((my  $to) = $MATCH->{'to'});
     ((my  $count) = 0);
     for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -554,6 +560,8 @@ sub Perlito5::Grammar::exponent {
     else {
         0
     }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -585,13 +593,8 @@ sub Perlito5::Grammar::val_num {
     ((do {
     (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    ((((do {
-    ((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $last_match_null) = 0);
-    ((my  $m) = $MATCH);
-    ((my  $to) = $MATCH->{'to'});
-    ((my  $count) = 0);
-    for ( ; (((do {
+    (((do {
+    (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -600,6 +603,27 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
+}))) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -610,12 +634,11 @@ sub Perlito5::Grammar::val_num {
             ($last_match_null = 0)
         };
         ($m = $MATCH);
-        ($to = $MATCH->{'to'});
-        ($count = ($count + 1))
+        ($to = $MATCH->{'to'})
     };
     ($MATCH = $m);
     ($MATCH->{'to'} = $to);
-    ($count > 0)
+    1
 }))) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
@@ -634,24 +657,7 @@ sub Perlito5::Grammar::val_num {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->exponent($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $last_match_null) = 0);
-    ((my  $m) = $MATCH);
-    ((my  $to) = $MATCH->{'to'});
-    ((my  $count) = 0);
-    for ( ; (((do {
+    (((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -660,6 +666,27 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
+})) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -670,13 +697,12 @@ sub Perlito5::Grammar::val_num {
             ($last_match_null = 0)
         };
         ($m = $MATCH);
-        ($to = $MATCH->{'to'});
-        ($count = ($count + 1))
+        ($to = $MATCH->{'to'})
     };
     ($MATCH = $m);
     ($MATCH->{'to'} = $to);
-    ($count > 0)
-})) && ((do {
+    1
+}))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->{'to'}));
@@ -704,6 +730,12 @@ sub Perlito5::Grammar::val_num {
     ((my  $m) = $MATCH);
     ((my  $to) = $MATCH->{'to'});
     for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -712,6 +744,8 @@ sub Perlito5::Grammar::val_num {
     else {
         0
     }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -747,7 +781,9 @@ sub Perlito5::Grammar::val_num {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new('num', Perlito5::Match::flat($MATCH)));
+    ((my  $s) = Perlito5::Match::flat($MATCH));
+    ($s =~ s!_!!g);
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Num->new('num', $s));
     1
 })))
 }))
@@ -862,9 +898,12 @@ sub Perlito5::Grammar::val_int {
     ((my  $count) = 0);
     for ( ; (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (('0' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    ((((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('0' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((('1' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 })))
@@ -893,6 +932,12 @@ sub Perlito5::Grammar::val_int {
     ((my  $to) = $MATCH->{'to'});
     ((my  $count) = 0);
     for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -901,6 +946,8 @@ sub Perlito5::Grammar::val_int {
     else {
         0
     }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -925,12 +972,7 @@ sub Perlito5::Grammar::val_int {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $last_match_null) = 0);
-    ((my  $m) = $MATCH);
-    ((my  $to) = $MATCH->{'to'});
-    ((my  $count) = 0);
-    for ( ; (((do {
+    (((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -939,6 +981,27 @@ sub Perlito5::Grammar::val_int {
     else {
         0
     }
+})) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('_' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})))
+})))
 })) && (($last_match_null < 2))); do { for ($_) {
 
 }} ) {
@@ -949,14 +1012,15 @@ sub Perlito5::Grammar::val_int {
             ($last_match_null = 0)
         };
         ($m = $MATCH);
-        ($to = $MATCH->{'to'});
-        ($count = ($count + 1))
+        ($to = $MATCH->{'to'})
     };
     ($MATCH = $m);
     ($MATCH->{'to'} = $to);
-    ($count > 0)
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', Perlito5::Match::flat($MATCH)));
+    1
+}))) && ((do {
+    ((my  $s) = Perlito5::Match::flat($MATCH));
+    ($s =~ s!_!!g);
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', $s));
     1
 }))))
 })))

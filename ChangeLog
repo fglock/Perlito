@@ -10,6 +10,7 @@ dev  2012-04-12
 
 -- autoquote hash-keys fix
 -- string interpolation in m//
+-- accept underlines inside numbers
 
 - javascript backend:
 
