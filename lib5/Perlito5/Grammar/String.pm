@@ -1099,7 +1099,9 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             if (($c2 eq 'x')) {
                 if ((substr($str, ($pos + 2), 1) eq '{')) {
                     ((my  $p) = ($pos + 3));
-                    for ( ; (($p < length($str)) && (substr($str, $p, 1) ne '}'));  ) {
+                    for ( ; (($p < length($str)) && (substr($str, $p, 1) ne '}')); do { for ($_) {
+
+}} ) {
                         ($p)++
                     };
                     ((my  $tmp) = oct(('0x' . substr($str, ($pos + 3), ($p - $pos)))));

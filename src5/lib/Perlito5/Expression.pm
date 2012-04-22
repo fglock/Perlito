@@ -1212,8 +1212,10 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
-                cond    => Perlito5::Match::flat($modifier_exp)->{exp},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
+                cond     => Perlito5::Match::flat($modifier_exp)->{exp},
+                body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
+                continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
+            ) 
         };
     }
     if  (  $modifier eq 'for'
@@ -1223,8 +1225,10 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::For->new(
-                cond    => Perlito5::Match::flat($modifier_exp)->{exp},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
+                cond     => Perlito5::Match::flat($modifier_exp)->{exp},
+                body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
+                continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
+            ) 
         };
     }
     die "Unexpected statement modifier '$modifier'";

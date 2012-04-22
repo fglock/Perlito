@@ -20,7 +20,9 @@ sub Perlito5::Grammar::ident {
         return ()
     };
     ((my  $m) = {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)});
-    for ( ; (substr($_[1], $m->{'to'}, 1) =~ m!\w!);  ) {
+    for ( ; (substr($_[1], $m->{'to'}, 1) =~ m!\w!); do { for ($_) {
+
+}} ) {
         ($m->{'to'})++
     };
     $m

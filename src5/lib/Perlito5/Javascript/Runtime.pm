@@ -427,7 +427,8 @@ p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
-p5for = function(namespace, func, args, label) {
+p5for = function(namespace, func, args, cont, label) {
+    var _redo = false;
     var v_old = namespace["v__"];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
@@ -444,11 +445,27 @@ p5for = function(namespace, func, args, label) {
                 throw(err)
             }
         }
-    }
+        if (!_redo) {
+            try {
+                cont()
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == 'last') { return }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+       }
+   }
     namespace["v__"] = v_old;
 };
 
-p5for_lex = function(func, args, label) {
+p5for_lex = function(func, args, cont, label) {
+    var _redo = false;
     for(var i = 0; i < args.length; i++) {
         try {
             func(args[i])
@@ -463,10 +480,25 @@ p5for_lex = function(func, args, label) {
                 throw(err)
             }
         }
+        if (!_redo) {
+            try {
+                cont()
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == 'last') { return }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+        }
     }
 };
 
-p5while = function(func, cond, label) {
+p5while = function(func, cond, cont, label) {
     var _redo = false;
     while (_redo || p5bool(cond())) {
         _redo = false;
@@ -481,6 +513,21 @@ p5while = function(func, cond, label) {
             }            
             else {
                 throw(err)
+            }
+        }
+        if (!_redo) {
+            try {
+                cont()
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == 'last') { return }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
             }
         }
     }
