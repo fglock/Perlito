@@ -466,6 +466,26 @@ p5for_lex = function(func, args, label) {
     }
 };
 
+p5while = function(func, cond, label) {
+    var _redo = false;
+    while (_redo || p5bool(cond())) {
+        _redo = false;
+        try {
+            func()
+        }
+        catch(err) {
+            if (err instanceof p5_error && err.v == label) {
+                if (err.type == 'last') { return }
+                else if (err.type == 'redo') { _redo = true }
+                else if (err.type != 'next') { throw(err) }
+            }            
+            else {
+                throw(err)
+            }
+        }
+    }
+};
+
 p5map = function(namespace, func, args) {
     var v_old = namespace["v__"];
     var out = [];

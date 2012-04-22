@@ -192,6 +192,15 @@ join("", chr(9) x $level)
         ((my  $level) = shift());
         ((my  $type) = shift());
         ('(' . $obj->emit_javascript($level) . ' || (' . $obj->emit_javascript($level) . ' = ' . ((($type eq 'array') ? 'new p5ArrayRef([])' : (($type eq 'hash') ? 'new p5HashRef({})' : 'new p5ScalarRef(null)'))) . ')' . ')')
+    };
+    sub Perlito5::Javascript::emit_function_javascript {
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $argument) = shift());
+        if (($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return'))) {
+            return (('function () { ' . $argument->emit_javascript($level, $wantarray) . ' }'))
+        };
+        return (('function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }'))
     }
 }};
 package Perlito5::Javascript::LexicalBlock;
@@ -686,16 +695,6 @@ do { for ($_) {
         };
         die('Error: regex emitter')
     };
-    sub Perlito5::AST::Apply::emit_function_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $argument) = shift());
-        if (($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return'))) {
-            return (('function () { ' . $argument->emit_javascript($level, $wantarray) . ' }'))
-        };
-        return (('function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }'))
-    };
     ((my  %emit_js) = ('infix:<=~>', sub {
     ((my  $self) = $_[0]);
     emit_regex_javascript('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
@@ -999,7 +998,7 @@ do { for ($_) {
     ((my  $self) = shift());
     ((my  $level) = shift());
     ((my  $wantarray) = shift());
-    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
+    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
 }, 'exists', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -1048,10 +1047,10 @@ do { for ($_) {
             return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
         };
         if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
-            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
+            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
-            return (('p5or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
+            return (('p5or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if ($self->{'namespace'}) {
             if ((($self->{'namespace'} eq 'JS') && ($code eq 'inline'))) {
@@ -1200,8 +1199,8 @@ do { for ($_) {
     sub Perlito5::AST::While::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
-        return (('for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'} ? (Perlito5::Javascript::to_bool($self->{'cond'}, ($level + 1)) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_javascript(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+        ((my  $cond) = $self->{'cond'});
+        return (('p5while(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . Perlito5::Javascript::emit_function_javascript($level, 0, $cond) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
     }
 }};
 package Perlito5::AST::For;
