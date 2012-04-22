@@ -302,34 +302,34 @@ sub is ($$@) {
 ####      }
 ####      _ok($pass, _where(), $name, @mess);
 ####  }
-####  
-####  sub cmp_ok ($$$@) {
-####      my($got, $type, $expected, $name, @mess) = @_;
-####  
-####      my $pass;
-####      {
-####          local $^W = 0;
-####          local($@,$!);   # don't interfere with $@
-####                          # eval() sometimes resets $!
-####          $pass = eval "\$got $type \$expected";
-####      }
-####      unless ($pass) {
-####          # It seems Irix long doubles can have 2147483648 and 2147483648
-####          # that stringify to the same thing but are actually numerically
-####          # different. Display the numbers if $type isn't a string operator,
-####          # and the numbers are stringwise the same.
-####          # (all string operators have alphabetic names, so tr/a-z// is true)
-####          # This will also show numbers for some unneeded cases, but will
-####          # definitely be helpful for things such as == and <= that fail
-####          if ($got eq $expected and $type !~ tr/a-z//) {
-####              unshift @mess, "# $got - $expected = " . ($got - $expected) . "\n";
-####          }
-####          unshift(@mess, "#      got "._qq($got)."\n",
-####                         "# expected $type "._qq($expected)."\n");
-####      }
-####      _ok($pass, _where(), $name, @mess);
-####  }
-####  
+
+sub cmp_ok ($$$@) {
+    my($got, $type, $expected, $name, @mess) = @_;
+
+    my $pass;
+    {
+        local $^W = 0;
+        local($@,$!);   # don't interfere with $@
+                        # eval() sometimes resets $!
+        $pass = eval "\$got $type \$expected";
+    }
+    #### unless ($pass) {
+    ####     # It seems Irix long doubles can have 2147483648 and 2147483648
+    ####     # that stringify to the same thing but are actually numerically
+    ####     # different. Display the numbers if $type isn't a string operator,
+    ####     # and the numbers are stringwise the same.
+    ####     # (all string operators have alphabetic names, so tr/a-z// is true)
+    ####     # This will also show numbers for some unneeded cases, but will
+    ####     # definitely be helpful for things such as == and <= that fail
+    ####     if ($got eq $expected and $type !~ tr/a-z//) {
+    ####         unshift @mess, "# $got - $expected = " . ($got - $expected) . "\n";
+    ####     }
+    ####     unshift(@mess, "#      got "._qq($got)."\n",
+    ####                    "# expected $type "._qq($expected)."\n");
+    #### }
+    _ok($pass, _where(), $name, @mess);
+}
+
 ####  # Check that $got is within $range of $expected
 ####  # if $range is 0, then check it's exact
 ####  # else if $expected is 0, then $range is an absolute value

@@ -135,6 +135,7 @@ TODO list for Perlito5
 
 -- add regex compiler
 -- /e modifier
+-- /x modifier
 -- support all perl5 regex syntax
 -- @v = /x/g
 
@@ -183,7 +184,6 @@ TODO list for Perlito5
 
 * Nice to Have
 
--- "continue"
 -- caller()
 -- "when"
 
