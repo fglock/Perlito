@@ -53,9 +53,16 @@ if (typeof p5pkg !== "object") {
     p5pkg["CORE::GLOBAL"] = new core_global();
     p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
 
-    p5_error = function (v) {
+    p5_error = function (type, v) {
+        this.type = type;
         this.v = v;
-        this.toString = function(){ return this.v };
+        this.toString = function(){
+            if (this.type == 'next') {
+                if (this.v == "") { return 'Can\'t "next" outside a loop block' }
+                return 'Label not found for "next ' + this.v + '"';
+            }
+            return this.v;
+        };
     };
     p5_error.prototype = Error.prototype;
 }
@@ -564,7 +571,7 @@ CORE.die = function(List__) {
         s = s + p5str(List__[i]);
     }
     p5pkg["main"]["v_@"] = "Died: " + s;
-    throw(new p5_error("Died: " + s));
+    throw(new p5_error("die", "Died: " + s));
 };
 
 CORE.warn = function(List__) {
@@ -2754,6 +2761,15 @@ var p5100 = p5pkg['main'];
 							return(err);
 						}
 					}
+				}, 'next', function (List__, p5want) {
+						var v_self = null;
+						(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+						var v_level = null;
+						(v_level = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+						(p5pkg["Perlito5"]["v_THROW"] = (1));
+						var v_label = null;
+						(v_label = (p5or((((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[p5idx(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_,0)] || (((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[p5idx(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_,0)] = new p5HashRef({})))._hash_['code'], function () { return '' })));
+						return (p5context([('throw(new p5_error("next", "' + p5str(v_label) + '"))')], p5want));
 				}, 'return', function (List__, p5want) {
 						var v_self = null;
 						(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));

@@ -59,9 +59,16 @@ if (typeof p5pkg !== "object") {
     p5pkg["CORE::GLOBAL"] = new core_global();
     p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
 
-    p5_error = function (v) {
+    p5_error = function (type, v) {
+        this.type = type;
         this.v = v;
-        this.toString = function(){ return this.v };
+        this.toString = function(){
+            if (this.type == 'next') {
+                if (this.v == "") { return 'Can\'t "next" outside a loop block' }
+                return 'Label not found for "next ' + this.v + '"';
+            }
+            return this.v;
+        };
     };
     p5_error.prototype = Error.prototype;
 }

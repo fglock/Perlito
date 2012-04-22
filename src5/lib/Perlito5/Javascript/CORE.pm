@@ -57,7 +57,7 @@ CORE.die = function(List__) {
         s = s + p5str(List__[i]);
     }
     p5pkg["main"]["v_@"] = "Died: " + s;
-    throw(new p5_error("Died: " + s));
+    throw(new p5_error("die", "Died: " + s));
 };
 
 CORE.warn = function(List__) {

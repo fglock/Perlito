@@ -1360,6 +1360,13 @@ package Perlito5::AST::Apply;
             '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
 
         },
+        'next' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            $Perlito5::THROW = 1;
+            my $label =  $self->{arguments}[0]{code} || "";
+            'throw(new p5_error("next", "' . $label . '"))'
+        },
         'return' => sub {
             my $self      = shift;
             my $level     = shift;
