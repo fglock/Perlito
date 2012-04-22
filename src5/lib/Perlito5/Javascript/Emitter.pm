@@ -582,7 +582,7 @@ package Perlito5::Javascript::LexicalBlock;
         }
         if ($self->{top_level} && $Perlito5::THROW) {
 
-            # TODO - emit error message if catched a "next LABEL" when expecting a "return" exception
+            # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
             $level--;
             $out .= 
@@ -684,14 +684,14 @@ package Perlito5::AST::Lit::Block;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0 );
 
-        # TODO - implement "next" (see "p5for")
-
-        return
-              '(function () { for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
-            .   $body->emit_javascript( $level + 1 ) . "\n"
-            . Perlito5::Javascript::tab($level) . '}})()'
+        return 'p5for_lex('
+                . "function () {\n"
+                .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
+                . Perlito5::Javascript::tab($level + 1) . '}, '
+                .   '[0], '
+                .   '"' . ($self->{label} || "") . '"'
+                . ')'
     }
 }
 
@@ -1366,6 +1366,7 @@ package Perlito5::AST::Apply;
             '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
 
         },
+
         'next' => sub {
             my $self      = shift;
             my $level     = shift;
@@ -1373,6 +1374,21 @@ package Perlito5::AST::Apply;
             my $label =  $self->{arguments}[0]{code} || "";
             'throw(new p5_error("next", "' . $label . '"))'
         },
+        'last' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            $Perlito5::THROW = 1;
+            my $label =  $self->{arguments}[0]{code} || "";
+            'throw(new p5_error("last", "' . $label . '"))'
+        },
+        'redo' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            $Perlito5::THROW = 1;
+            my $label =  $self->{arguments}[0]{code} || "";
+            'throw(new p5_error("redo", "' . $label . '"))'
+        },
+
         'return' => sub {
             my $self      = shift;
             my $level     = shift;
@@ -1431,7 +1447,6 @@ package Perlito5::AST::Apply;
             }
 
             # TODO - test return() from inside eval
-            # TODO - test next LABEL from inside eval
 
                 "(function () {\n"
                     . "var r = null;\n"

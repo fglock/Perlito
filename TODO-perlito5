@@ -181,7 +181,7 @@ TODO list for Perlito5
 
 * Nice to Have
 
--- "next", "last", "continue"
+-- "continue"
 -- caller()
 -- "when"
 

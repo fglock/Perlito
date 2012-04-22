@@ -413,8 +413,7 @@ do { for ($_) {
     sub Perlito5::AST::Lit::Block::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0));
-        return (('(function () { for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}})()'))
+        return (('p5for_lex(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
     }
 }};
 package Perlito5::AST::Index;
@@ -886,6 +885,18 @@ do { for ($_) {
     ($Perlito5::THROW = 1);
     ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
     ('throw(new p5_error("next", "' . $label . '"))')
+}, 'last', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
+    ('throw(new p5_error("last", "' . $label . '"))')
+}, 'redo', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
+    ('throw(new p5_error("redo", "' . $label . '"))')
 }, 'return', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
