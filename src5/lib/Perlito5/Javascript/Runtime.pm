@@ -427,18 +427,42 @@ p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
-p5for = function(namespace, func, args) {
+p5for = function(namespace, func, args, label) {
     var v_old = namespace["v__"];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        func()
+        try {
+            func()
+        }
+        catch(err) {
+            if (err instanceof p5_error) {
+                if (err.type != 'next' || err.v != label) {
+                    throw(err)
+                }
+            }
+            else {
+                throw(err)
+            }
+        }
     }
     namespace["v__"] = v_old;
 };
 
-p5for_lex = function(func, args) {
+p5for_lex = function(func, args, label) {
     for(var i = 0; i < args.length; i++) {
-        func(args[i])
+        try {
+            func(args[i])
+        }
+        catch(err) {
+            if (err instanceof p5_error) {
+                if (err.type != 'next' || err.v != label) {
+                    throw(err)
+                }
+            }            
+            else {
+                throw(err)
+            }
+        }
     }
 };
 

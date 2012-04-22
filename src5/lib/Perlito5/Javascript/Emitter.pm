@@ -581,6 +581,9 @@ package Perlito5::Javascript::LexicalBlock;
             push @str, "})();";
         }
         if ($self->{top_level} && $Perlito5::THROW) {
+
+            # TODO - emit error message if catched a "next LABEL" when expecting a "return" exception
+
             $level--;
             $out .= 
                   Perlito5::Javascript::tab($level) . "try {\n"
@@ -682,6 +685,9 @@ package Perlito5::AST::Lit::Block;
         my $self = shift;
         my $level = shift;
         my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0 );
+
+        # TODO - implement "next" (see "p5for")
+
         return
               '(function () { for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
             .   $body->emit_javascript( $level + 1 ) . "\n"
@@ -1425,6 +1431,7 @@ package Perlito5::AST::Apply;
             }
 
             # TODO - test return() from inside eval
+            # TODO - test next LABEL from inside eval
 
                 "(function () {\n"
                     . "var r = null;\n"
@@ -1874,18 +1881,20 @@ package Perlito5::AST::For;
             my $sig = $v->emit_javascript( $level + 1 );
             return 'p5for_lex('
                     . "function ($sig) {\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
-                    . Perlito5::Javascript::tab($level) . '}, '
-                    .   $cond
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
+                    . Perlito5::Javascript::tab($level + 1) . '}, '
+                    .   $cond . ', '
+                    .   '"' . ($self->{label} || "") . '"'
                     . ')'
         }
         else {
             # use $_
             return 'p5for(' . Perlito5::Javascript::pkg() . ', '
                     . 'function () {' . "\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
-                    . Perlito5::Javascript::tab($level) . '}, '
-                    .   $cond
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
+                    . Perlito5::Javascript::tab($level + 1) . '}, '
+                    .   $cond . ', '
+                    .   '"' . ($self->{label} || "") . '"'
                     . ')'
         }
     }

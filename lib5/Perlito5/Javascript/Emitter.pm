@@ -1207,10 +1207,10 @@ do { for ($_) {
             ((my  $v) = $self->{'body'}->sig());
             ($Perlito5::VAR->[0]->{$v->perl5_name()} = {'decl', 'my'});
             ((my  $sig) = $v->emit_javascript(($level + 1)));
-            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $cond . ')'))
+            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         }
         else {
-            return (('p5for(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $cond . ')'))
+            return (('p5for(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         }
     }
 }};
