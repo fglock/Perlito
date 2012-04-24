@@ -42,7 +42,6 @@ TODO list for Perlito5
 
 -- "given" statement not implemented
 -- "default" statement not implemented
--- "break" not implemented
 
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
@@ -122,7 +121,6 @@ TODO list for Perlito5
 
 -- "given" statement not implemented
 -- "default" statement not implemented
--- "break" not implemented
 
 -- bug: some declarations are not "seen":
    for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i

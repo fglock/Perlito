@@ -886,6 +886,11 @@ do {{
         }
     };
     ('(' . $parameters->emit_javascript($level) . ' = ' . $arguments->emit_javascript(($level + 1)) . ')')
+}, 'break', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    'throw(new p5_error("break", ""))'
 }, 'next', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

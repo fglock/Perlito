@@ -63,6 +63,9 @@ if (typeof p5pkg !== "object") {
         this.type = type;
         this.v = v;
         this.toString = function(){
+            if (this.type == 'break') {
+                return 'Can\'t "break" outside a given block'
+            }
             if (this.type == 'next' || this.type == 'last' || this.type == 'redo') {
                 if (this.v == "") { return 'Can\'t "' + this.type + '" outside a loop block' }
                 return 'Label not found for "' + this.type + ' ' + this.v + '"';

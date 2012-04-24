@@ -1380,6 +1380,12 @@ package Perlito5::AST::Apply;
 
         },
 
+        'break' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            $Perlito5::THROW = 1;
+            'throw(new p5_error("break", ""))'
+        },
         'next' => sub {
             my $self      = shift;
             my $level     = shift;

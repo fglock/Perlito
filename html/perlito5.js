@@ -57,6 +57,9 @@ if (typeof p5pkg !== "object") {
         this.type = type;
         this.v = v;
         this.toString = function(){
+            if (this.type == 'break') {
+                return 'Can\'t "break" outside a given block'
+            }
             if (this.type == 'next' || this.type == 'last' || this.type == 'redo') {
                 if (this.v == "") { return 'Can\'t "' + this.type + '" outside a loop block' }
                 return 'Label not found for "' + this.type + ' ' + this.v + '"';
@@ -2864,6 +2867,13 @@ var p5100 = p5pkg['main'];
 								return(err);
 							}
 						}
+					}, 'break', function (List__, p5want) {
+							var v_self = null;
+							(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+							var v_level = null;
+							(v_level = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+							(p5pkg["Perlito5"]["v_THROW"] = (1));
+							return (p5context(['throw(new p5_error("break", ""))'], p5want));
 					}, 'next', function (List__, p5want) {
 							var v_self = null;
 							(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
