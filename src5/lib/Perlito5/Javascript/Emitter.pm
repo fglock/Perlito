@@ -1892,6 +1892,11 @@ package Perlito5::AST::For;
 
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
+
+            # TODO - catch next/last/redo
+            # TODO - loop label
+            # TODO - continue-block
+
             my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
             return
                'for ( '

@@ -17,6 +17,7 @@
   Most variable declarations.
 
 - Most control structures.
+  "next", "last", "redo", "continue" and labels.
 
 - Most string, numeric, array, hash operators.
 
@@ -28,6 +29,9 @@
 
 * Perlito5-in-Javascript differences from "perl"
 
+- "~~" smartmatch is not implemented
+
+- "sleep" is not implemented
 
 - "state" declaration is not implemented yet.
 
@@ -59,7 +63,7 @@
 
 - Control structures are partially implemented;
   "goto LABEL" is not supported.
-  "given/when" is not implemented.
+  "given" is not implemented.
   "goto &sub" works, but tail call is not implemented yet.
 
 - String pos() is not implemented yet.
