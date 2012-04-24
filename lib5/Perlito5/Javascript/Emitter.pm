@@ -1198,7 +1198,7 @@ do {{
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
         ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
-        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
+        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::Javascript::tab($level) . '}'));
         return ($s)
     }
 }};

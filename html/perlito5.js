@@ -3327,7 +3327,7 @@ var p5100 = p5pkg['main'];
 						var v_expr = null;
 						(v_expr = (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'infix:<==>', 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '$', 'namespace', '', 'name', '_'], 1), v_cond)))), 0)));
 						var v_s = null;
-						(v_s = (('if ( ' + p5str(p5pkg["Perlito5::Javascript"].to_bool([v_expr, (p5num(v_level) + 1)], 0)) + ' ) {' + String.fromCharCode(10) + p5str(p5call(v_body, "emit_javascript", [(p5num(v_level) + 1)], 0)) + String.fromCharCode(10) + p5str(p5pkg["Perlito5::Javascript"].tab([v_level], 0)) + '}')));
+						(v_s = (('if ( ' + p5str(p5pkg["Perlito5::Javascript"].to_bool([v_expr, (p5num(v_level) + 1)], 0)) + ' ) {' + String.fromCharCode(10) + p5str(p5call(v_body, "emit_javascript", [(p5num(v_level) + 1)], 0)) + String.fromCharCode(10) + p5str(p5pkg["Perlito5::Javascript"].tab([(p5num(v_level) + 1)], 0)) + 'throw(new p5_error("next", "' + p5str(p5pkg["Perlito5::AST::When"]["v_label"]) + '"))' + p5str(p5pkg["Perlito5::Javascript"].tab([v_level], 0)) + '}')));
 						return (p5context([v_s], p5want));
 				});
 			}, [0], false, "");

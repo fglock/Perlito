@@ -1842,8 +1842,7 @@ package Perlito5::AST::When;
         my $cond = $self->{cond};
         my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
 
-        # TODO
-        # transform EXPR into ($_ ~~ EXPR)
+        # TODO - transform EXPR into ($_ ~~ EXPR)
 
         # this is a placeholder - this is wrong!
         my $expr = Perlito5::AST::Apply->new(
@@ -1854,8 +1853,12 @@ package Perlito5::AST::When;
             ] 
         );
 
+        # TODO - use a "next" exception inside a "for", but use a "break" exception inside a "given"
+
         my $s = 'if ( ' . Perlito5::Javascript::to_bool($expr, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript( $level + 1 ) . "\n"
+
+            . Perlito5::Javascript::tab($level+1) . 'throw(new p5_error("next", "' . $label . '"))'
             . Perlito5::Javascript::tab($level) . '}';
         return $s;
     }
