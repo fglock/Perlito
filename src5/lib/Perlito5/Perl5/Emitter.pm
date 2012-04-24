@@ -132,6 +132,9 @@ package Perlito5::AST::Lit::Block;
         my $self = $_[0];
         my $level = $_[1];
         
+        # TODO - emit "continue" block
+        # TODO - return the value of the last statement in the block
+
           Perlito5::Perl5::tab($level) . "do { for (\$_) {\n"
         .   join(";\n", map( $_->emit_perl5( $level + 1 ), @{$self->{stmts}} )) . "\n"
         . Perlito5::Perl5::tab($level) . "}}"

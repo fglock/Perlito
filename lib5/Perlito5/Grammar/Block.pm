@@ -33,19 +33,50 @@ sub Perlito5::Grammar::Block::term_block {
         ($p = $m_name->{'to'});
         ($block_name = Perlito5::Match::flat($m_name))
     };
-    ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
-    if ($m) {
-        ($p = $m->{'to'})
+    ((my  $ws) = Perlito5::Grammar::Space->ws($str, $p));
+    if ($ws) {
+        ($p = $ws->{'to'})
     };
     if ((substr($str, $p, 1) eq '{')) {
         ((my  $m) = Perlito5::Expression->term_curly($str, $p));
         if ($m) {
+            ($p = $m->{'to'});
+            ($ws = Perlito5::Grammar::Space->ws($str, $p));
+            if ($ws) {
+                ($p = $ws->{'to'})
+            };
+            ((my  $continue) = Perlito5::AST::Lit::Block->new('stmts', []));
+            ((my  $has_continue) = 0);
+            if ((!($block_name) && (substr($str, $p, 8) eq 'continue'))) {
+                ($p = ($p + 8));
+                ($ws = Perlito5::Grammar::Space->ws($str, $p));
+                if ($ws) {
+                    ($p = $ws->{'to'})
+                };
+                ((my  $cont) = Perlito5::Expression->term_curly($str, $p));
+                if ($cont) {
+
+                }
+                else {
+                    die('syntax error')
+                };
+                warn('continue!');
+                ($continue->{'stmts'} = $cont->{'capture'}->[2]);
+                ($has_continue = 1);
+                ($m->{'to'} = $cont->{'to'})
+            };
             ((my  $v) = Perlito5::Match::flat($m));
             ($v = Perlito5::AST::Lit::Block->new('stmts', $v->[2], 'sig', $v->[3]));
-            ($v = Perlito5::Expression::block_or_hash($v));
+            if ($has_continue) {
+
+            }
+            else {
+                ($v = Perlito5::Expression::block_or_hash($v))
+            };
             if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {
                 ($v->{'name'} = $block_name);
                 ($m->{'capture'} = $v);
+                ($m->{'capture'}->{'continue'} = $continue);
                 return ($m)
             }
         }

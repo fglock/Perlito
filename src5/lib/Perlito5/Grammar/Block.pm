@@ -24,9 +24,9 @@ sub term_block {
         $block_name = Perlito5::Match::flat($m_name);
     }
 
-    my $m = Perlito5::Grammar::Space->ws( $str, $p );
-    if ( $m ) {
-        $p = $m->{to};
+    my $ws = Perlito5::Grammar::Space->ws( $str, $p );
+    if ( $ws ) {
+        $p = $ws->{to};
     }
 
     if ( substr($str, $p, 1) eq '{' ) {
@@ -34,17 +34,43 @@ sub term_block {
         # warn "maybe bareblock at $p";
         my $m = Perlito5::Expression->term_curly($str, $p);
         if ($m) {
+
+            $p = $m->{to};
+            $ws = Perlito5::Grammar::Space->ws( $str, $p );
+            if ( $ws ) {
+                $p = $ws->{to};
+            }
+            my $continue = Perlito5::AST::Lit::Block->new(stmts => [] );
+            my $has_continue = 0;
+            if ( !$block_name && substr($str, $p, 8) eq 'continue' ) {
+                # anonymous blocks can have a 'continue' block
+                $p += 8;
+                $ws = Perlito5::Grammar::Space->ws( $str, $p );
+                if ( $ws ) {
+                    $p = $ws->{to};
+                }
+                my $cont = Perlito5::Expression->term_curly($str, $p);
+                die "syntax error" unless $cont;
+                warn "continue!";
+
+                $continue->{stmts} = $cont->{capture}[2];
+                $has_continue = 1;
+                $m->{to} = $cont->{to};
+            }
+
             my $v = Perlito5::Match::flat($m);
 
             # TODO - this is not recognized as a statement: { 123 => 4;}
             # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
 
             $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
-            $v = Perlito5::Expression::block_or_hash($v);
+            $v = Perlito5::Expression::block_or_hash($v)
+                unless $has_continue;
 
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
                 $v->{name} = $block_name;
                 $m->{capture} = $v;
+                $m->{capture}{continue} = $continue;
                 return $m;
             }
         }

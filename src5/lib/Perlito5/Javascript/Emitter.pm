@@ -696,6 +696,8 @@ package Perlito5::AST::Lit::Block;
         my $self = shift;
         my $level = shift;
 
+        # TODO - emit "continue" block
+
         return 'p5for_lex('
                 . "function () {\n"
                 .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
