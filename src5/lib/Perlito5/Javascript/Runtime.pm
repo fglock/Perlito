@@ -438,7 +438,7 @@ p5for = function(namespace, func, args, cont, label) {
         catch(err) {
             if (err instanceof p5_error && err.v == label) {
                 if (err.type == 'last') { return }
-                else if (err.type == 'redo') { i-- }
+                else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
             }
             else {
@@ -473,7 +473,7 @@ p5for_lex = function(func, args, cont, label) {
         catch(err) {
             if (err instanceof p5_error && err.v == label) {
                 if (err.type == 'last') { return }
-                else if (err.type == 'redo') { i-- }
+                else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
             }            
             else {
