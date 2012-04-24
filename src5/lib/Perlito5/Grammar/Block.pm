@@ -34,7 +34,7 @@ sub term_block {
         # warn "maybe bareblock at $p";
         my $m = Perlito5::Expression->term_curly($str, $p);
         if ($m) {
-
+            my $block_start = $p;
             $p = $m->{to};
             $ws = Perlito5::Grammar::Space->ws( $str, $p );
             if ( $ws ) {
@@ -65,12 +65,24 @@ sub term_block {
 
             $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
             $v = Perlito5::Expression::block_or_hash($v)
-                unless $has_continue;
+                unless $has_continue || $block_name;
 
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
-                $v->{name} = $block_name;
-                $m->{capture} = $v;
-                $m->{capture}{continue} = $continue;
+                if ($block_name eq 'BEGIN') {
+                    # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
+                    eval substr($str, $block_start, $m->{to} - $block_start);
+                    $m->{capture} = 
+                        Perlito5::AST::Apply->new(
+                            code => 'undef',
+                            namespace => '',
+                            arguments => []
+                        );
+                }
+                else {
+                    $v->{name} = $block_name;
+                    $m->{capture} = $v;
+                    $m->{capture}{continue} = $continue;
+                }
                 return $m;
             }
         }

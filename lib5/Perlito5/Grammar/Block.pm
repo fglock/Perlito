@@ -40,6 +40,7 @@ sub Perlito5::Grammar::Block::term_block {
     if ((substr($str, $p, 1) eq '{')) {
         ((my  $m) = Perlito5::Expression->term_curly($str, $p));
         if ($m) {
+            ((my  $block_start) = $p);
             ($p = $m->{'to'});
             ($ws = Perlito5::Grammar::Space->ws($str, $p));
             if ($ws) {
@@ -67,16 +68,22 @@ sub Perlito5::Grammar::Block::term_block {
             };
             ((my  $v) = Perlito5::Match::flat($m));
             ($v = Perlito5::AST::Lit::Block->new('stmts', $v->[2], 'sig', $v->[3]));
-            if ($has_continue) {
+            if (($has_continue || $block_name)) {
 
             }
             else {
                 ($v = Perlito5::Expression::block_or_hash($v))
             };
             if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {
-                ($v->{'name'} = $block_name);
-                ($m->{'capture'} = $v);
-                ($m->{'capture'}->{'continue'} = $continue);
+                if (($block_name eq 'BEGIN')) {
+                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         substr($str, $block_start, ($m->{'to'} - $block_start)) . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
+                    ($m->{'capture'} = Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', []))
+                }
+                else {
+                    ($v->{'name'} = $block_name);
+                    ($m->{'capture'} = $v);
+                    ($m->{'capture'}->{'continue'} = $continue)
+                };
                 return ($m)
             }
         }

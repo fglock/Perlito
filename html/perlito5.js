@@ -9336,6 +9336,8 @@ return r;
 						(v_m = (p5call(p5pkg["Perlito5::Expression"], "term_curly", [v_str, v_p], 0)));
 						if ( p5bool(v_m) ) {
 							(function () {
+								var v_block_start = null;
+								(v_block_start = (v_p));
 								(v_p = ((v_m || (v_m = new p5HashRef({})))._hash_['to']));
 								(v_ws = (p5call(p5pkg["Perlito5::Grammar::Space"], "ws", [v_str, v_p], 0)));
 								if ( p5bool(v_ws) ) {
@@ -9369,16 +9371,40 @@ return r;
 								var v_v = null;
 								(v_v = (p5pkg["Perlito5::Match"].flat([v_m], 0)));
 								(v_v = (p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,2)], 'sig', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)]), 0)));
-								if ( p5bool(v_has_continue) ) {
+								if ( (p5bool(v_has_continue) || p5bool(v_block_name)) ) {
 									null;
 								}
 								else {
 									(v_v = (p5pkg["Perlito5::Expression"].block_or_hash([v_v], 0)));
 								};
 								if ( (p5str(p5pkg["Perlito5::Grammar::Block"].ref([v_v], 0)) == 'Perlito5::AST::Lit::Block') ) {
-									((v_v || (v_v = new p5HashRef({})))._hash_['name'] = v_block_name);
-									((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = v_v);
-									(((v_m || (v_m = new p5HashRef({})))._hash_['capture'] || ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['continue'] = v_continue);
+									if ( (p5str(v_block_name) == 'BEGIN') ) {
+										(function () {
+var r = null;
+p5pkg["main"]["v_@"] = "";
+try {
+r = eval(perl5_to_js(p5pkg["Perlito5::Grammar::Block"].substr([v_str, v_block_start, (p5num((v_m || (v_m = new p5HashRef({})))._hash_['to']) - p5num(v_block_start))], 0), "Perlito5::Grammar::Block", (new p5ArrayRef(p5list_to_a((new p5HashRef({})), (new p5HashRef({})), (new p5HashRef(p5a_to_h(p5list_to_a('$block_start', (new p5HashRef({'decl' : 'my'})), '$continue', (new p5HashRef({'decl' : 'my'})), '$has_continue', (new p5HashRef({'decl' : 'my'})), '$v', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$m', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$block_name', (new p5HashRef({'decl' : 'my'})), '$m_name', (new p5HashRef({'decl' : 'my'})), '$p', (new p5HashRef({'decl' : 'my'})), '$pos', (new p5HashRef({'decl' : 'my'})), '$self', (new p5HashRef({'decl' : 'my'})), '$str', (new p5HashRef({'decl' : 'my'})), '$ws', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Block'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Block'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Block'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@_', (new p5HashRef({'decl' : 'my'})))))))))))
+}
+catch(err) {
+if ( err instanceof p5_error ) {
+p5pkg["main"]["v_@"] = err;
+}
+else if ( err instanceof Error ) {
+p5pkg["main"]["v_@"] = err;
+}
+else {
+throw(err);
+}
+}
+return r;
+})();
+										((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'undef', 'namespace', '', 'arguments', (new p5ArrayRef([]))), p5want));
+									}
+									else {
+										((v_v || (v_v = new p5HashRef({})))._hash_['name'] = v_block_name);
+										((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = v_v);
+										(((v_m || (v_m = new p5HashRef({})))._hash_['capture'] || ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['continue'] = v_continue);
+									};
 									throw(p5context([v_m], p5want));
 								};
 								})();
