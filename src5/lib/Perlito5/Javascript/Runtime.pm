@@ -63,9 +63,9 @@ if (typeof p5pkg !== "object") {
         this.type = type;
         this.v = v;
         this.toString = function(){
-            if (this.type == 'next') {
-                if (this.v == "") { return 'Can\'t "next" outside a loop block' }
-                return 'Label not found for "next ' + this.v + '"';
+            if (this.type == 'next' || this.type == 'last' || this.type == 'redo') {
+                if (this.v == "") { return 'Can\'t "' + this.type + '" outside a loop block' }
+                return 'Label not found for "' + this.type + ' ' + this.v + '"';
             }
             return this.v;
         };
