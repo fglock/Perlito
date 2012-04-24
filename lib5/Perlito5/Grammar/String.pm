@@ -850,7 +850,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     ((my  $balanced) = ($open_delimiter && exists($pair{$open_delimiter})));
     (my  @args);
     ((my  $buf) = '');
-    for ( ; (($p < length($str)) && (substr($str, $p, length($delimiter)) ne $delimiter)); do { for ($_) {
+    for ( ; (($p < length($str)) && (substr($str, $p, length($delimiter)) ne $delimiter)); do {{
 
 }} ) {
         ((my  $c) = substr($str, $p, 1));
@@ -1029,7 +1029,7 @@ sub Perlito5::Grammar::String::here_doc {
     ((my  $result) = $here->[1]);
     ((my  $delimiter) = $here->[2]);
     if (($type eq 'single_quote')) {
-        for ( ; ($p < length($str)); do { for ($_) {
+        for ( ; ($p < length($str)); do {{
 
 }} ) {
             if ((substr($str, $p, length($delimiter)) eq $delimiter)) {
@@ -1043,12 +1043,12 @@ sub Perlito5::Grammar::String::here_doc {
                     return ({'str', $str, 'from', $pos, 'to', ($p - 1)})
                 }
             };
-            for ( ; (($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13))))); do { for ($_) {
+            for ( ; (($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13))))); do {{
 
 }} ) {
                 ($p)++
             };
-            for ( ; (($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13))))); do { for ($_) {
+            for ( ; (($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13))))); do {{
 
 }} ) {
                 ($p)++
@@ -1099,7 +1099,7 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             if (($c2 eq 'x')) {
                 if ((substr($str, ($pos + 2), 1) eq '{')) {
                     ((my  $p) = ($pos + 3));
-                    for ( ; (($p < length($str)) && (substr($str, $p, 1) ne '}')); do { for ($_) {
+                    for ( ; (($p < length($str)) && (substr($str, $p, 1) ne '}')); do {{
 
 }} ) {
                         ($p)++

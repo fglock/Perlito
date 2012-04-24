@@ -6,7 +6,7 @@ undef();
 use Perlito5::AST;
 use Perlito5::Dumper;
 package Perlito5::Javascript;
-do { for ($_) {
+do {{
     ((my  $label_count) = 100);
     (my  %label);
     sub Perlito5::Javascript::pkg {
@@ -118,7 +118,7 @@ join("", chr(9) x $level)
                 (my  @out);
                 ((my  $printable) = 1);
                 ((my  @in) = @{$items});
-                for ( ; @in; do { for ($_) {
+                for ( ; @in; do {{
 
 }} ) {
                     ((my  $k) = shift(@in));
@@ -204,7 +204,7 @@ join("", chr(9) x $level)
     }
 }};
 package Perlito5::Javascript::LexicalBlock;
-do { for ($_) {
+do {{
     sub Perlito5::Javascript::LexicalBlock::new {
         ((my  $class) = shift());
         bless({@_}, $class)
@@ -375,7 +375,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::CompUnit;
-do { for ($_) {
+do {{
     sub Perlito5::AST::CompUnit::emit_javascript {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -394,7 +394,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Int;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Int::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -402,7 +402,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Num;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Num::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -410,7 +410,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Buf;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Buf::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -418,7 +418,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Lit::Block;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Lit::Block::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -426,7 +426,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Index;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Index::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -438,7 +438,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Lookup;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Lookup::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -450,7 +450,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Var;
-do { for ($_) {
+do {{
     ((my  $table) = {'$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''});
     sub Perlito5::AST::Var::emit_javascript {
         ((my  $self) = shift());
@@ -549,7 +549,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Decl;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Decl::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -617,7 +617,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Proto;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Proto::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -628,7 +628,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Call;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Call::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -654,7 +654,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Apply;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Apply::emit_regex_javascript {
         ((my  $op) = shift());
         ((my  $var) = shift());
@@ -1067,7 +1067,7 @@ do { for ($_) {
             ($code = (Perlito5::Javascript::pkg() . '.' . $code))
         };
         (my  $sig);
-        do { for ($_) {
+        do {{
             ((my  $name) = $self->{'code'});
             ((my  $namespace) = ($self->{'namespace'} || $Perlito5::PKG_NAME));
             ((my  $effective_name) = ($namespace . '::' . $self->{'code'}));
@@ -1093,7 +1093,7 @@ do { for ($_) {
             ((my  @out) = ());
             ((my  @in) = @{($self->{'arguments'} || [])});
             ((my  $optional) = 0);
-            for ( ; length($sig); do { for ($_) {
+            for ( ; length($sig); do {{
 
 }} ) {
                 ((my  $c) = substr($sig, 0, 1));
@@ -1168,7 +1168,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::If;
-do { for ($_) {
+do {{
     sub Perlito5::AST::If::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1183,7 +1183,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::When;
-do { for ($_) {
+do {{
     sub Perlito5::AST::When::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1195,7 +1195,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::While;
-do { for ($_) {
+do {{
     sub Perlito5::AST::While::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1204,7 +1204,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::For;
-do { for ($_) {
+do {{
     sub Perlito5::AST::For::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1225,7 +1225,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Sub;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Sub::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1239,7 +1239,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Do;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Do::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -1248,7 +1248,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Use;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Use::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());

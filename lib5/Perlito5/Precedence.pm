@@ -299,7 +299,7 @@ sub Perlito5::Precedence::precedence_parse {
     if (($token->[0] eq 'space')) {
         ($token = $get_token->($last_is_term))
     };
-    for ( ; ((defined($token)) && (($token->[0] ne 'end'))); do { for ($_) {
+    for ( ; ((defined($token)) && (($token->[0] ne 'end'))); do {{
 
 }} ) {
         ((my  $token_is_term) = is_term($token));
@@ -313,7 +313,7 @@ sub Perlito5::Precedence::precedence_parse {
         else {
             if ((($Operator->{'postfix'})->{$token->[1]} && $last_is_term)) {
                 ((my  $pr) = $Precedence->{$token->[1]});
-                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do {{
 
 }} ) {
                     $reduce->($op_stack, $num_stack)
@@ -338,14 +338,14 @@ sub Perlito5::Precedence::precedence_parse {
                     if ($Precedence->{$token->[1]}) {
                         ((my  $pr) = $Precedence->{$token->[1]});
                         if ($Assoc->{'right'}->{$token->[1]}) {
-                            for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+                            for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]}))); do {{
 
 }} ) {
                                 $reduce->($op_stack, $num_stack)
                             }
                         }
                         else {
-                            for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do { for ($_) {
+                            for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do {{
 
 }} ) {
                                 $reduce->($op_stack, $num_stack)
@@ -375,7 +375,7 @@ sub Perlito5::Precedence::precedence_parse {
     if ((defined($token) && (($token->[0] ne 'end')))) {
         die('Unexpected end token: ', $token)
     };
-    for ( ; scalar(@{$op_stack}); do { for ($_) {
+    for ( ; scalar(@{$op_stack}); do {{
 
 }} ) {
         $reduce->($op_stack, $num_stack)

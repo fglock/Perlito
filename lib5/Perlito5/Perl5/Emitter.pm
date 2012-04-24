@@ -5,7 +5,7 @@ package main;
 undef();
 use Perlito5::AST;
 package Perlito5::Perl5;
-do { for ($_) {
+do {{
     sub Perlito5::Perl5::tab {
         ((my  $level) = shift());
 join("", '    ' x $level)
@@ -38,7 +38,7 @@ join("", '    ' x $level)
     }
 }};
 package Perlito5::AST::CompUnit;
-do { for ($_) {
+do {{
     sub Perlito5::AST::CompUnit::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -61,7 +61,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Int;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Int::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -69,7 +69,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Num;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Num::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -77,7 +77,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Val::Buf;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Val::Buf::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -85,15 +85,15 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Lit::Block;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Lit::Block::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        (Perlito5::Perl5::tab($level) . 'do { for ($_) {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}}')
+        (Perlito5::Perl5::tab($level) . 'do {{' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}}')
     }
 }};
 package Perlito5::AST::Index;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Index::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -105,7 +105,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Lookup;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Lookup::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -117,7 +117,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Var;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Var::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -134,7 +134,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Proto;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Proto::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -142,7 +142,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Call;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Call::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -164,7 +164,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Apply;
-do { for ($_) {
+do {{
     ((my  %op_prefix_perl5) = ('say', 'Perlito5::Runtime::say', 'print', 'print', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not'));
     ((my  %op_infix_perl5) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
     sub Perlito5::AST::Apply::emit_perl5 {
@@ -332,7 +332,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::If;
-do { for ($_) {
+do {{
     sub Perlito5::AST::If::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -340,7 +340,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::When;
-do { for ($_) {
+do {{
     sub Perlito5::AST::When::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -348,7 +348,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::While;
-do { for ($_) {
+do {{
     sub Perlito5::AST::While::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -357,7 +357,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::For;
-do { for ($_) {
+do {{
     sub Perlito5::AST::For::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -376,7 +376,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Decl;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Decl::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -386,7 +386,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Sub;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Sub::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -400,7 +400,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Do;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Do::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
@@ -409,7 +409,7 @@ do { for ($_) {
     }
 }};
 package Perlito5::AST::Use;
-do { for ($_) {
+do {{
     sub Perlito5::AST::Use::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);

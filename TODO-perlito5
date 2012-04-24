@@ -40,8 +40,6 @@ TODO list for Perlito5
 
 * Parser
 
--- continue block in block: ' { print 1 } continue { print 2 } '
-
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
@@ -109,10 +107,12 @@ TODO list for Perlito5
 
 - fix regex delimiters, or escape the regexes 
 
+-- continue block in block: ' { print 1 } continue { print 2 } '
+
 
 * Javascript backend
 
--- bug: "map BLOCK" broken because BLOCK doesn't return the last value; this is missing tests
+-- continue block in block: ' { print 1 } continue { print 2 } '
 
 -- bug: some declarations are not "seen":
    for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i

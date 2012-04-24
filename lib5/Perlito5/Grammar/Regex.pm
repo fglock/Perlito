@@ -132,7 +132,7 @@ sub Perlito5::Grammar::Regex::literal {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2))); do { for ($_) {
+})) && (($last_match_null < 2))); do {{
 
 }} ) {
         if (($to == $MATCH->{'to'})) {
@@ -217,7 +217,7 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2))); do { for ($_) {
+})) && (($last_match_null < 2))); do {{
 
 }} ) {
         if (($to == $MATCH->{'to'})) {
@@ -291,7 +291,7 @@ sub Perlito5::Grammar::Regex::string_code {
     ($MATCH = ($res ? 0 : $tmp))
 })) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))))
 })))
-})) && (($last_match_null < 2))); do { for ($_) {
+})) && (($last_match_null < 2))); do {{
 
 }} ) {
         if (($to == $MATCH->{'to'})) {
