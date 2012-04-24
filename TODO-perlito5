@@ -112,8 +112,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- continue block in block: ' { print 1 } continue { print 2 } '
-
 -- bug: some declarations are not "seen":
    for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i
 

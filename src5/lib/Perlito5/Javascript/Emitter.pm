@@ -696,16 +696,27 @@ package Perlito5::AST::Lit::Block;
         my $self = shift;
         my $level = shift;
 
-        # TODO - emit "continue" block
-
         return 'p5for_lex('
                 . "function () {\n"
                 .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
                 . Perlito5::Javascript::tab($level + 1) . '}, '
                 .   '[0], '
-                .   'function () {}, '
+                . $self->emit_javascript_continue($level) . ', '
                 .   '"' . ($self->{label} || "") . '"'
                 . ')'
+    }
+    sub emit_javascript_continue {
+        my $self = shift;
+        my $level = shift;
+
+        if (!$self->{continue} || !@{ $self->{continue}{stmts} }) {
+            return 'false'
+        }
+
+        return
+              "function () {\n"
+            .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{continue}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
+            . Perlito5::Javascript::tab($level + 1) . '}'
     }
 }
 
@@ -1864,11 +1875,7 @@ package Perlito5::AST::While;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
                     . Perlito5::Javascript::tab($level + 1) . '}, '
                     . Perlito5::Javascript::emit_function_javascript($level, 0, $cond) . ', '
-
-                    . "function () {\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{continue}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
-                    . Perlito5::Javascript::tab($level + 1) . '}, '
-
+                    . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
                     . ')'
     }
@@ -1907,11 +1914,7 @@ package Perlito5::AST::For;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
                     . Perlito5::Javascript::tab($level + 1) . '}, '
                     .   $cond . ', '
-
-                    . "function () {\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{continue}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
-                    . Perlito5::Javascript::tab($level + 1) . '}, '
-
+                    . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
                     . ')'
         }
@@ -1922,11 +1925,7 @@ package Perlito5::AST::For;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
                     . Perlito5::Javascript::tab($level + 1) . '}, '
                     .   $cond . ', '
-
-                    . "function () {\n"
-                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{continue}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
-                    . Perlito5::Javascript::tab($level + 1) . '}, '
-
+                    . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
                     . ')'
         }

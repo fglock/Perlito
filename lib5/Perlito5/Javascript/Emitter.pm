@@ -422,7 +422,15 @@ do {{
     sub Perlito5::AST::Lit::Block::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        return (('p5for_lex(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . 'function () {}, ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+        return (('p5for_lex(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . $self->emit_javascript_continue($level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+    };
+    sub Perlito5::AST::Lit::Block::emit_javascript_continue {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        if ((!($self->{'continue'}) || !(@{$self->{'continue'}->{'stmts'}}))) {
+            return ('false')
+        };
+        return (('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}'))
     }
 }};
 package Perlito5::AST::Index;
@@ -1200,7 +1208,7 @@ do {{
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
-        return (('p5while(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . Perlito5::Javascript::emit_function_javascript($level, 0, $cond) . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+        return (('p5while(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . Perlito5::Javascript::emit_function_javascript($level, 0, $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
     }
 }};
 package Perlito5::AST::For;
@@ -1217,10 +1225,10 @@ do {{
             ((my  $v) = $self->{'body'}->sig());
             ($Perlito5::VAR->[0]->{$v->perl5_name()} = {'decl', 'my'});
             ((my  $sig) = $v->emit_javascript(($level + 1)));
-            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         }
         else {
-            return (('p5for(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+            return (('p5for(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         }
     }
 }};

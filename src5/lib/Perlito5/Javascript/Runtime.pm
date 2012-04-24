@@ -445,9 +445,9 @@ p5for = function(namespace, func, args, cont, label) {
                 throw(err)
             }
         }
-        if (!_redo) {
+        if (cont) {
             try {
-                cont()
+                if (!_redo) { cont() }
             }
             catch(err) {
                 if (err instanceof p5_error && err.v == label) {
@@ -480,9 +480,9 @@ p5for_lex = function(func, args, cont, label) {
                 throw(err)
             }
         }
-        if (!_redo) {
+        if (cont) {
             try {
-                cont()
+                if (!_redo) { cont() }
             }
             catch(err) {
                 if (err instanceof p5_error && err.v == label) {
@@ -515,9 +515,9 @@ p5while = function(func, cond, cont, label) {
                 throw(err)
             }
         }
-        if (!_redo) {
+        if (cont) {
             try {
-                cont()
+                if (!_redo) { cont() }
             }
             catch(err) {
                 if (err instanceof p5_error && err.v == label) {
