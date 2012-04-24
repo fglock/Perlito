@@ -1895,7 +1895,7 @@ package Perlito5::AST::For;
 
             # TODO - catch next/last/redo
             # TODO - loop label
-            # TODO - continue-block
+            # TODO - continue-block is a syntax error
 
             my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
             return
