@@ -40,6 +40,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- "sub _" should be in package "main"
+
+-- BEGIN/END/... blocks can be prefixed with "sub"
+
 -- "given" statement not implemented
 -- "default" statement not implemented
 
