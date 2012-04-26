@@ -194,6 +194,9 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- debugging symbols
+-- line numbers in error messages
+
 -- caller()
 -- "when"
 
