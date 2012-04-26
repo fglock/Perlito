@@ -696,8 +696,20 @@ package Perlito5::AST::Lit::Block;
         my $self = shift;
         my $level = shift;
 
+        my $init = "";
+        if ($self->{name} eq 'INIT') {
+            my $tmp  = 'p5pkg.main._tmp' . Perlito5::Javascript::get_label();
+
+            # INIT-blocks execute only once
+            $init = Perlito5::Javascript::tab($level + 2) . "if ($tmp) { return }; $tmp = 1;\n";
+
+            # TODO - make this execute before anything else
+
+        }
+
         return 'p5for_lex('
                 . "function () {\n"
+                .   $init
                 .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 ))->emit_javascript($level + 2) . "\n"
                 . Perlito5::Javascript::tab($level + 1) . '}, '
                 .   '[0], '

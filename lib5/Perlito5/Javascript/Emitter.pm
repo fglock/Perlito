@@ -422,7 +422,12 @@ do {{
     sub Perlito5::AST::Lit::Block::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        return (('p5for_lex(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . $self->emit_javascript_continue($level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+        ((my  $init) = '');
+        if (($self->{'name'} eq 'INIT')) {
+            ((my  $tmp) = ('p5pkg.main._tmp' . Perlito5::Javascript::get_label()));
+            ($init = (Perlito5::Javascript::tab(($level + 2)) . ('if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10))))
+        };
+        return (('p5for_lex(' . 'function () {' . chr(10) . $init . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . $self->emit_javascript_continue($level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
     };
     sub Perlito5::AST::Lit::Block::emit_javascript_continue {
         ((my  $self) = shift());
