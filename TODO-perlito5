@@ -177,6 +177,8 @@ TODO list for Perlito5
 -- sprintf()
 -- y()()
 
+-- BEGIN{} should execute in the environment of the program under compilation
+
 
 * More backends
 
@@ -203,7 +205,8 @@ TODO list for Perlito5
 
 -- __END__, __LINE__, __DATA__, __FILE__
 
--- BEGIN{}, INIT{}, END{}
+-- INIT{}, END{}
+   look at the implementation in perlito6-in-Go
 
 -- source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)

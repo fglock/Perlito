@@ -30,10 +30,13 @@ TODO list for Perlito6
 
 - reuse the good parts of Perlito5 data model
 
+- add node.js features
+-- properly implement die(); this should avoid some infinite-loops when we keep compiling after an error is found
 
-* Perlito6 in Rakudo
 
-- Rakudo should be able to execute Perlito6 directly. What do we need to fix in both sides?
+* Perlito6 in Rakudo/Niecza/Pugs
+
+- any Perl6 should be able to execute Perlito6 directly. What do we need to fix?
 
 
 * Perlito6 in Lisp
