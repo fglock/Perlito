@@ -1,6 +1,6 @@
 Running the tests using perl:
 
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl5 $_ ` '
+    prove -r -e 'perl -Ilib5 perlito5.pl -I./src5/lib ' t5
 
 Running the tests using node.js:
 
