@@ -969,7 +969,7 @@ sub Perlito5::Grammar::val_int {
 }))))
 })))
 })) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(Perlito5::Match::flat($MATCH))));
+    ($MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(lc(Perlito5::Match::flat($MATCH)))));
     1
 })))
 })) || ((do {

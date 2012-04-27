@@ -11007,7 +11007,7 @@ return r;
 									})()], p5want) })], p5want));
 								})()], p5want) }));
 							})()], p5want), function () { return p5context([(function () {
-								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', p5pkg["Perlito5::Grammar"].oct([p5pkg["Perlito5::Match"].flat([v_MATCH], 0)], 1)], p5want));
+								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', p5pkg["Perlito5::Grammar"].oct([p5pkg["Perlito5::Grammar"].lc([p5pkg["Perlito5::Match"].flat([v_MATCH], 0)], 0)], 1)], p5want));
 								return (p5context([1], p5want));
 							})()], p5want) }));
 						})()], p5want), function () { return p5context([(function () {

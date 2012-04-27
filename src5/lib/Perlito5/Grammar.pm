@@ -125,7 +125,7 @@ token val_int {
     | '0' ['b'|'B'] [ '_' | '0' | '1' ]+
     | '0' [ '_' | \d]+        # XXX test for octal number
     ]
-        { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(Perlito5::Match::flat($MATCH)) ) }
+        { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
     | \d [ '_' | \d]*
         {
             my $s = Perlito5::Match::flat($MATCH);
