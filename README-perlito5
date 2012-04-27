@@ -1,12 +1,17 @@
-Running the tests using perl:
+Running the tests using "perl":
 
+    # this will run all tests
     prove -r -e 'perl -Ilib5 perlito5.pl -I./src5/lib ' t5
 
-Running the tests using node.js:
+Running the tests using "node.js":
 
-    # see below how to create perlito5.js
+    # this command will compile "perlito5.js"
+    perl -Ilib5 perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+
+    # this will run a single test script
     node perlito5.js -Isrc5/lib t5/01-perlito/01-sanity.t
 
+    # this will run all tests
     prove -r -e 'node perlito5.js -I./src5/lib' t5
 
 

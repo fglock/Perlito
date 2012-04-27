@@ -2128,7 +2128,16 @@ var p5100 = p5pkg['main'];
 						(v_self = (p5pkg["Perlito5::AST::Lit::Block"].shift([List__])));
 						var v_level = null;
 						(v_level = (p5pkg["Perlito5::AST::Lit::Block"].shift([List__])));
-						return (p5context([('p5for_lex(' + 'function () {' + String.fromCharCode(10) + p5str(p5call(p5context([p5call(p5pkg["Perlito5::Javascript::LexicalBlock"], "new", p5list_to_a('block', (v_self || (v_self = new p5HashRef({})))._hash_['stmts'], 'needs_return', 0, 'top_level', 0), p5want)], 0), "emit_javascript", [(p5num(v_level) + 2)], 0)) + String.fromCharCode(10) + p5str(p5pkg["Perlito5::Javascript"].tab([(p5num(v_level) + 1)], 0)) + '}, ' + '[0], ' + p5str(p5call(v_self, "emit_javascript_continue", [v_level], 0)) + ', ' + '"' + p5str(p5or((v_self || (v_self = new p5HashRef({})))._hash_['label'], function () { return '' })) + '"' + ')')], p5want));
+						var v_init = null;
+						(v_init = (''));
+						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_['name']) == 'INIT') ) {
+							(function () {
+								var v_tmp = null;
+								(v_tmp = (('p5pkg.main._tmp' + p5str(p5pkg["Perlito5::Javascript"].get_label([], 0)))));
+								(v_init = ((p5str(p5pkg["Perlito5::Javascript"].tab([(p5num(v_level) + 2)], 0)) + ('if (' + p5str(v_tmp) + ') { return }; ' + p5str(v_tmp) + ' = 1;' + String.fromCharCode(10)))));
+								})();
+						};
+						return (p5context([('p5for_lex(' + 'function () {' + String.fromCharCode(10) + p5str(v_init) + p5str(p5call(p5context([p5call(p5pkg["Perlito5::Javascript::LexicalBlock"], "new", p5list_to_a('block', (v_self || (v_self = new p5HashRef({})))._hash_['stmts'], 'needs_return', 0, 'top_level', 0), p5want)], 0), "emit_javascript", [(p5num(v_level) + 2)], 0)) + String.fromCharCode(10) + p5str(p5pkg["Perlito5::Javascript"].tab([(p5num(v_level) + 1)], 0)) + '}, ' + '[0], ' + p5str(p5call(v_self, "emit_javascript_continue", [v_level], 0)) + ', ' + '"' + p5str(p5or((v_self || (v_self = new p5HashRef({})))._hash_['label'], function () { return '' })) + '"' + ')')], p5want));
 				});
 				p5make_sub("Perlito5::AST::Lit::Block", "emit_javascript_continue", function (List__, p5want) {
 					try {
