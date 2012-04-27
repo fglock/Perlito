@@ -1,13 +1,6 @@
 Running the tests using perl:
 
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl5 $_ > x && perl -Ilib5 x  ` '
-
-
-Running the tests using perl6:
-
-    . util-perl6/setup-perlito5-perl6.sh
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
-
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl5 $_ ` '
 
 Running the tests using node.js:
 
@@ -34,4 +27,15 @@ Compile the compiler to Perl5 using perl:
 Compiler perlito5-in-browser using perl:
 
     perl util-js/make-perlito5-js.sh
+
+
+TODO:
+
+Running the tests using perl6:
+
+    # TODO - this is not implemented yet
+    . util-perl6/setup-perlito5-perl6.sh
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
+
+
 
