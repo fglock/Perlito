@@ -1,8 +1,3 @@
-Running the tests using "perl":
-
-    # this will run all tests
-    prove -r -e 'perl -Ilib5 perlito5.pl -I./src5/lib ' t5
-
 Running the tests using "node.js":
 
     # this command will compile "perlito5.js"
@@ -32,6 +27,13 @@ Compile the compiler to Perl5 using perl:
 Compiler perlito5-in-browser using perl:
 
     perl util-js/make-perlito5-js.sh
+
+
+Running the tests using "perl":
+
+    # this will run all tests
+    prove -r -e 'perl -Ilib5 perlito5.pl -I./src5/lib ' t5
+
 
 
 TODO:
