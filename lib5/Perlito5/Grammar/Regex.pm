@@ -43,7 +43,7 @@ sub Perlito5::Grammar::Regex::token {
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ((my  $source) = (Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex.rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}'));
-    ((my  $ast) = Perlito5::Grammar->named_sub_def($source, 0));
+    ((my  $ast) = Perlito5::Grammar::Block->named_sub_def($source, 0));
     ($MATCH->{'capture'} = Perlito5::Match::flat($ast));
 ;
     1

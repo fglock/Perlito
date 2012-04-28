@@ -36,7 +36,7 @@ token token {
                 '$tmp ? $MATCH : 0; '
             . '}';
         #say 'Intermediate code: ', $source;
-        my $ast = Perlito5::Grammar->named_sub_def( $source, 0 );
+        my $ast = Perlito5::Grammar::Block->named_sub_def( $source, 0 );
         # say 'Intermediate ast: ', $ast->flat;
         $MATCH->{capture} = Perlito5::Match::flat($ast);
     }

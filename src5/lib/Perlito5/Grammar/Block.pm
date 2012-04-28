@@ -9,6 +9,7 @@ Perlito5::Expression::add_statement( 'UNITCHECK' => sub { Perlito5::Grammar::Blo
 Perlito5::Expression::add_statement( 'CHECK' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( 'INIT'  => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( 'END'   => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
 
 
 sub term_block {
@@ -90,6 +91,39 @@ sub term_block {
 
     return 0;
 }
+
+token named_sub_def {
+    <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident> <Perlito5::Grammar.prototype> <.Perlito5::Grammar.opt_ws> \{ <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.opt_ws>
+    [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
+    {
+        my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
+        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.prototype"});
+        $sig = undef if $sig eq '*undef*';
+        my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"});
+        if ( $name ) {
+            # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
+            $namespace = $Perlito5::PKG_NAME unless $namespace;
+
+            my $full_name = "${namespace}::$name";
+            warn "Subroutine $full_name redefined"
+                if exists $Perlito5::PROTO->{$full_name};
+
+            $Perlito5::PROTO->{$full_name} = $sig;
+        }
+        $MATCH->{capture} = Perlito5::AST::Sub->new(
+            name  => $name, 
+            namespace => $namespace,
+            sig   => $sig, 
+            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) 
+        ) 
+    }
+};
+
+token named_sub {
+    'sub' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar::Block.named_sub_def>
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.named_sub_def"}) }
+};
+
 
 1;
 

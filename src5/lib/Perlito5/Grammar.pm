@@ -176,38 +176,6 @@ token anon_sub_def {
 };
 
 
-token named_sub_def {
-    <optional_namespace_before_ident> <ident> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{ident}), '\'' } ]
-    {
-        my $name = Perlito5::Match::flat($MATCH->{ident});
-        my $sig  = Perlito5::Match::flat($MATCH->{prototype});
-        $sig = undef if $sig eq '*undef*';
-        my $namespace = Perlito5::Match::flat($MATCH->{optional_namespace_before_ident});
-        if ( $name ) {
-            # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
-            $namespace = $Perlito5::PKG_NAME unless $namespace;
-
-            my $full_name = "${namespace}::$name";
-            warn "Subroutine $full_name redefined"
-                if exists $Perlito5::PROTO->{$full_name};
-
-            $Perlito5::PROTO->{$full_name} = $sig;
-        }
-        $MATCH->{capture} = Perlito5::AST::Sub->new(
-            name  => $name, 
-            namespace => $namespace,
-            sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{exp_stmts}) 
-        ) 
-    }
-};
-
-token named_sub {
-    'sub' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.named_sub_def>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.named_sub_def"}) }
-};
-
 =begin
 
 =head1 NAME

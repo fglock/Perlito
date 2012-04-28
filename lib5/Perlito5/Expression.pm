@@ -1401,8 +1401,6 @@ sub Perlito5::Expression::exp_parse {
     Perlito5::Grammar->while($_[0], $_[1])
 }, 'when', sub {
     Perlito5::Grammar->when($_[0], $_[1])
-}, 'sub', sub {
-    Perlito5::Grammar->named_sub($_[0], $_[1])
 }));
 sub Perlito5::Expression::add_statement {
     ((my  $name) = shift());
