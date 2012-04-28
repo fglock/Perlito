@@ -125,7 +125,6 @@ function p5method_lookup(method, class_name, seen) {
             seen[isa[i]]++;
         }
     }
-    // TODO - AUTOLOAD
 }
 
 function p5call(invocant, method, list) {
@@ -158,7 +157,16 @@ function p5call(invocant, method, list) {
         }
 
         // TODO - cache the methods that were already looked up
-        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
+
+        var m = p5method_lookup('AUTOLOAD', invocant._class_._ref_, {}) || p5pkg.UNIVERSAL.AUTOLOAD;
+        if (m) {
+            // TODO - AUTOLOAD
+            // TODO - change p5method_lookup to return the package name;
+            //        define $AUTOLOAD in that package before calling AUTOLOAD
+            p5pkg.CORE.warn(["AUTOLOAD not implemented"]);
+        }
+
+        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);
 
     }
 
