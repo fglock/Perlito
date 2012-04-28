@@ -4,27 +4,18 @@ use Perlito5::Perl5::Runtime;
 package main;
 package Perlito5::Grammar::Block;
 use Perlito5::Expression;
+((our  %Named_block) = ('BEGIN', 1, 'UNITCHECK', 1, 'CHECK', 1, 'INIT', 1, 'END', 1));
 Perlito5::Expression::add_statement('{', sub {
-    Perlito5::Grammar::Block->term_block($_[0], $_[1])
-});
-Perlito5::Expression::add_statement('BEGIN', sub {
-    Perlito5::Grammar::Block->term_block($_[0], $_[1])
-});
-Perlito5::Expression::add_statement('UNITCHECK', sub {
-    Perlito5::Grammar::Block->term_block($_[0], $_[1])
-});
-Perlito5::Expression::add_statement('CHECK', sub {
-    Perlito5::Grammar::Block->term_block($_[0], $_[1])
-});
-Perlito5::Expression::add_statement('INIT', sub {
-    Perlito5::Grammar::Block->term_block($_[0], $_[1])
-});
-Perlito5::Expression::add_statement('END', sub {
     Perlito5::Grammar::Block->term_block($_[0], $_[1])
 });
 Perlito5::Expression::add_statement('sub', sub {
     Perlito5::Grammar::Block->named_sub($_[0], $_[1])
 });
+for (keys(%Named_block)) {
+    Perlito5::Expression::add_statement($_, sub {
+    Perlito5::Grammar::Block->term_block($_[0], $_[1])
+})
+};
 sub Perlito5::Grammar::Block::term_block {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -207,39 +198,35 @@ sub Perlito5::Grammar::Block::named_sub_def {
     ($tmp ? $MATCH : 0)
 };
 sub Perlito5::Grammar::Block::named_sub {
-    ((my  $grammar) = $_[0]);
+    ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (((((('sub' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
+    if ((substr($str, $pos, 3) eq 'sub')) {
+
     }
     else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = Perlito5::Grammar::Block->named_sub_def($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar::Block.named_sub_def'} = $m2);
-        1
+        return ()
+    };
+    ((my  $ws) = Perlito5::Grammar::Space->ws($str, ($pos + 3)));
+    if ($ws) {
+
     }
     else {
-        0
+        return ()
+    };
+    ($p = $ws->{'to'});
+    ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
+    if ($m_name) {
+
     }
-}))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block.named_sub_def'}));
-    1
-})))
-}))
-}))));
-    ($tmp ? $MATCH : 0)
+    else {
+        return ()
+    };
+    ((my  $block_name) = Perlito5::Match::flat($m_name));
+    if (exists($Named_block{$block_name})) {
+        return (Perlito5::Grammar::Block->term_block($str, $p))
+    };
+    return (Perlito5::Grammar::Block->named_sub_def($str, $p))
 };
 1;
 

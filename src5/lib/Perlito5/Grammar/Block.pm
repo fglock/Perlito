@@ -3,13 +3,18 @@ package Perlito5::Grammar::Block;
 
 use Perlito5::Expression;
 
+our %Named_block = (
+    BEGIN     => 1,
+    UNITCHECK => 1,
+    CHECK     => 1,
+    INIT      => 1,
+    END       => 1,
+);
+
 Perlito5::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'BEGIN' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'UNITCHECK' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'CHECK' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'INIT'  => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'END'   => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
+    for keys %Named_block;
 
 
 sub term_block {
@@ -119,10 +124,28 @@ token named_sub_def {
     }
 };
 
-token named_sub {
-    'sub' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar::Block.named_sub_def>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.named_sub_def"}) }
-};
+sub named_sub {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+
+    return
+        unless substr($str, $pos, 3) eq 'sub';
+    my $ws = Perlito5::Grammar::Space->ws( $str, $pos + 3 );
+    return
+        unless $ws;
+    $p = $ws->{to};
+
+    my $m_name = Perlito5::Grammar->ident( $str, $p );
+    return
+        unless $m_name;
+
+    my $block_name = Perlito5::Match::flat($m_name);
+    if (exists $Named_block{$block_name}) {
+        return Perlito5::Grammar::Block->term_block($str, $p);
+    }
+    return Perlito5::Grammar::Block->named_sub_def($str, $p);
+}
 
 
 1;
