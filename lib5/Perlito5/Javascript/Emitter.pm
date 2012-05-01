@@ -27,7 +27,7 @@ join("", chr(9) x $level)
     ((our  %op_infix_js_num) = ('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << '));
     ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
     ((our  %op_to_str) = map(+(($_, 1)), ('substr', 'join', 'list:<.>', 'chr')));
-    ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>')));
+    ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>')));
     ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
     sub Perlito5::Javascript::escape_string {
         ((my  $s) = shift());
@@ -319,7 +319,7 @@ do {{
                     push(@str, $last_statement->{'arguments'}->[0]->emit_javascript_init() )
                 }
             };
-            if ((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')) && $self->{'top_level'})) {
+            if (((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')) && $self->{'top_level'}) && @{$last_statement->{'arguments'}})) {
                 ($last_statement = $last_statement->{'arguments'}->[0])
             };
             if ($last_statement->isa('Perlito5::AST::If')) {
@@ -744,6 +744,9 @@ do {{
 }, 'infix:<<=>>', sub {
     ((my  $self) = $_[0]);
     ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
+}, 'infix:<**>', sub {
+    ((my  $self) = $_[0]);
+    ('Math.pow(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
 }, 'prefix:<!>', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

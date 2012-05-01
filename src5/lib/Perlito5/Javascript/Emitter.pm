@@ -97,6 +97,7 @@ package Perlito5::Javascript;
         infix:<*>
         infix:</>
         infix:<%>
+        infix:<**>
     );
 
     my %safe_char = (
@@ -539,6 +540,7 @@ package Perlito5::Javascript::LexicalBlock;
             if  (  $last_statement->isa( 'Perlito5::AST::Apply' ) 
                 && $last_statement->code eq 'return'
                 && $self->{top_level}
+                && @{ $last_statement->{arguments} }
                 ) 
             {
                 $last_statement = $last_statement->{arguments}[0];
@@ -1161,6 +1163,10 @@ package Perlito5::AST::Apply;
         'infix:<<=>>' => sub {
             my $self = $_[0];
             'p5cmp(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{arguments} } ) ) . ')';
+        },
+        'infix:<**>' => sub {
+            my $self = $_[0];
+            'Math.pow(' . join( ', ', map( Perlito5::Javascript::to_num($_), @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<!>' => sub {
             my $self      = shift;
