@@ -40,12 +40,10 @@ if (typeof p5pkg !== "object") {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
-            // TODO - use p5method_lookup
-            return o._class_[s]
+            return p5method_lookup(s, o._class_._ref__, {})
         }
         var c = s.split("::");
         s = c.pop(); 
-        // TODO - use p5method_lookup
         return p5method_lookup(s, c.join("::"), {});
     };
     p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;
@@ -89,6 +87,7 @@ function p5make_package(pkg_name) {
         p5pkg[pkg_name]["v_a"] = null;
         p5pkg[pkg_name]["v_b"] = null;
         p5pkg[pkg_name]["v__"] = null;
+        p5pkg[pkg_name]["v_AUTOLOAD"] = null;
     }
     return p5pkg[pkg_name];
 }
@@ -109,21 +108,31 @@ function p5code_lookup_by_name(package, sub_name) {
     return null;
 }
 
-function p5method_lookup(method, class_name, seen) {
+function p5get_class_for_method(method, class_name, seen) {
     // default mro
-    var c = p5pkg[class_name];
-    if ( c.hasOwnProperty(method) ) {
-        return c[method]
+    // TODO - cache the methods that were already looked up
+    if ( p5pkg[class_name].hasOwnProperty(method) ) {
+        return class_name
     }
-    var isa = c.List_ISA;
+    var isa = p5pkg[class_name].List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
-            var m = p5method_lookup(method, isa[i]);
+            var m = p5get_class_for_method(method, isa[i]);
             if (m) {
                 return m 
             }
             seen[isa[i]]++;
         }
+    }
+}
+
+function p5method_lookup(method, class_name, seen) {
+    var c = p5get_class_for_method(method, class_name, seen);
+    if (c) {
+        return p5pkg[c][method]
+    }
+    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {
+        return p5pkg.UNIVERSAL[method]
     }
 }
 
@@ -139,31 +148,23 @@ function p5call(invocant, method, list) {
         if (m) {
             return m(list)
         }
-        if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {
-            return p5pkg.UNIVERSAL[method](list)
-        }
 
         // method can have an optional namespace
-        var package = method.split(/::/);
-        if (package.length > 1) {
-            var name = package.pop();
-            package = package.join("::");
-            m = p5method_lookup(name, package, {});
-            // CORE.say([ name, " ", package ]);
+        var pkg_name = method.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            m = p5method_lookup(name, pkg_name, {});
             if (m) {
                 return m(list)
             }
-            p5pkg.CORE.die(["method not found: ", name, " in class ", package]);
+            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
         }
 
-        // TODO - cache the methods that were already looked up
-
-        var m = p5method_lookup('AUTOLOAD', invocant._class_._ref_, {}) || p5pkg.UNIVERSAL.AUTOLOAD;
-        if (m) {
-            // TODO - AUTOLOAD
-            // TODO - change p5method_lookup to return the package name;
-            //        define $AUTOLOAD in that package before calling AUTOLOAD
-            p5pkg.CORE.warn(["AUTOLOAD not implemented"]);
+        pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', "UNIVERSAL", {});
+        if (pkg_name) {
+            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
+            return p5pkg[pkg_name]["AUTOLOAD"](list);
         }
 
         p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);

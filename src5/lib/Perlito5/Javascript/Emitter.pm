@@ -491,6 +491,7 @@ package Perlito5::Javascript::LexicalBlock;
                 $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
+                $Perlito5::VAR->[0]{'$AUTOLOAD'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
 
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
@@ -654,6 +655,7 @@ package Perlito5::AST::CompUnit;
               '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '$AUTOLOAD' => { decl => 'our', namespace => $Perlito5::PKG_NAME },
             }
         ];
         for my $comp_unit ( @$comp_units ) {

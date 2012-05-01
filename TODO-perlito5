@@ -187,6 +187,9 @@ TODO list for Perlito5
 
 -- BEGIN{} should execute in the environment of the program under compilation
 
+-- AUTOLOAD
+    AUTOLOAD is implemented for method lookups, but not for normal subroutines
+
 
 * More backends
 
@@ -227,7 +230,6 @@ TODO list for Perlito5
 -- local(*{$caller."::a"}) = \my $a;
 -- *{$pkg . "::foo"} = \&bar;
 
--- AUTOLOAD
 
 
 * Deprecate
