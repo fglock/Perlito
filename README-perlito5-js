@@ -46,7 +46,7 @@
 
 - Overload is not implemented yet.
 
-- AUTOLOAD is not implemented yet.
+- AUTOLOAD is not implemented yet for function calls; but AUTOLOAD should work for method calls
 
 - XS is not supported.
 
@@ -59,7 +59,7 @@
 
 - Unicode is not implemented yet.
 
-- Regex is missing some features.
+- Regex is missing some features, such as /e and /x modifiers.
 
 - Control structures are partially implemented;
   "goto LABEL" is not supported.
