@@ -89,9 +89,7 @@ package Perlito5::AST::CompUnit;
     sub emit_perl5_program {
         my $comp_units = $_[0];
 
-        my $str = ''
-            . "use v5.10;\n"    # just in case, because we might use 'when'
-            . "use Perlito5::Perl5::Runtime;\n";
+        my $str = "use v5.10;\n";    # because we might use 'when' and 'say'
         for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_perl5(0)
         }
@@ -237,7 +235,7 @@ package Perlito5::AST::Apply;
 {
 
     my %op_prefix_perl5 = (
-        say     => 'Perlito5::Runtime::say',
+        say     => 'say',
         print   => 'print',
         keys    => 'keys',
         values  => 'values',
@@ -639,14 +637,8 @@ package Perlito5::AST::Use;
         my $self = $_[0];
         my $level = $_[1];
         
-        if  (  $self->{mod} eq 'strict'
-            || $self->{mod} eq 'feature'
-            )
-        {
-            return "\n"
-                . Perlito5::Perl5::tab($level) . "# " . $self->{code} . " " . $self->{mod} . "\n"
-        }
-        Perlito5::Perl5::tab($level) . $self->{code} . ' ' . $self->{mod}
+        return "\n"
+            . Perlito5::Perl5::tab($level) . "# " . $self->{code} . " " . $self->{mod} . "\n"
     }
 }
 

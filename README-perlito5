@@ -1,7 +1,7 @@
 Running the tests using "node.js":
 
     # this command will compile "perlito5.js"
-    perl -Ilib5 perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+    perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
     # this will run a single test script
     node perlito5.js -Isrc5/lib t5/01-perlito/01-sanity.t
@@ -14,7 +14,7 @@ Compile the compiler to Javascript into perlito5.js:
 
 -- using perl and perlito5.pl:
 
-    perl -Ilib5 perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+    perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
 -- using node.js and perlito5.js:
 
@@ -22,9 +22,9 @@ Compile the compiler to Javascript into perlito5.js:
 
 Compile the compiler to Perl5 using perl:
 
-    perl util-perl5/bootstrap-perlito5-perl5.sh
+    perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl
 
-Compiler perlito5-in-browser using perl:
+Compile perlito5-in-browser using perl:
 
     perl util-js/make-perlito5-js.sh
 
@@ -32,7 +32,7 @@ Compiler perlito5-in-browser using perl:
 Running the tests using "perl":
 
     # this will run all tests
-    prove -r -e 'perl -Ilib5 perlito5.pl -I./src5/lib ' t5
+    prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
 
 
 
@@ -42,7 +42,7 @@ Running the tests using perl6:
 
     # TODO - this is not implemented yet
     . util-perl6/setup-perlito5-perl6.sh
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
 
 
 

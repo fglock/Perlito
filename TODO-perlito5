@@ -35,6 +35,8 @@ TODO list for Perlito5
 
 * Parser
 
+-- no __END__
+
 -- "sub _" should be in package "main"
 
 -- "given" statement not implemented
@@ -201,7 +203,7 @@ TODO list for Perlito5
 -- use the same error messages and warnings as 'perl'
 -- no warnings 'redefine';
 
--- __END__, __LINE__, __DATA__, __FILE__
+-- __LINE__, __DATA__, __FILE__
 
 -- INIT{}, END{}
    look at the implementation in perlito6-in-Go

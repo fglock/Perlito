@@ -1,27 +1,24 @@
+package Perlito5::Perl5::Runtime;
 
-use v5;
-
-use Perlito5::Match;
+sub emit_perl5 {
+    return <<'EOT';
 
 package Perlito5::IO;
 
-    sub slurp {
-        my $source_filename = shift;
-        open FILE, $source_filename
-          or die "Cannot read $source_filename\n";
-        local $/ = undef;
-        $source = <FILE>;
-        close FILE;
-        return $source;
-    }
+sub slurp {
+    my $source_filename = shift;
+    open FILE, $source_filename
+      or die "Cannot read $source_filename\n";
+    local $/ = undef;
+    $source = <FILE>;
+    close FILE;
+    return $source;
+}
 
-package Perlito5::Runtime;
-
-    sub say   { print( @_, "\n" ) }
+EOT
+}
 
 1;
-
-__END__
 
 =pod
 

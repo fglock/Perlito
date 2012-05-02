@@ -660,11 +660,8 @@ package Perlito5::AST::Use;
         my $self = shift;
         my $level = shift;
         my $mod = $self->{mod};
-        return 
-            if $mod eq 'feature' 
-            || $mod eq 'strict'
-            || $mod eq 'v5';
-        Perlito5::Perl6::tab($level) . 'use ' . $self->{mod} . ";"
+        return "\n"
+            . Perlito5::Perl6::tab($level) . '# use ' . $self->{mod} . ";"
     }
 }
 
