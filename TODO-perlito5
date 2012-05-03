@@ -81,7 +81,26 @@ TODO list for Perlito5
 
 -- add "print" special parsing - note this is related to indirect object notation
 -- indirect object notation
-   method Module $param;
+    http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
+    http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
+    http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
+
+    method Module $param;
+    new Class( arg => $value );
+    new Class::($args);
+    say $config->{output} "This is a diagnostic message!";  # indirect call
+    say {$config->{output}} "This is a diagnostic message!"; # say to filehandle
+
+    use Class;
+    sub Class {
+    warn 'Called Class sub not Class package';
+    'Class'
+    }
+    my $q = Class->new; # calls the Class sub above
+    my $s = new Class; # throws a 'Bareword found where operator expected' error
+    my $t = Class::->new # this works
+    my $u = new Class::; # this also works (even with sub main in the current package)
+
 -- lookup for existing subroutines:
    sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
 
