@@ -35,6 +35,14 @@ Running the tests using "perl":
     prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
 
 
+Bootstrap with perl:
+
+    perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
+
+Bootstrap with node.js:
+
+    time node perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
+
 
 TODO:
 

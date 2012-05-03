@@ -5897,13 +5897,20 @@ package Perlito5::Grammar::Space;
 }));
 sub Perlito5::Grammar::Space::term_space {
     ((my  $str) = $_[0]);
-    ((my  $p) = $_[1]);
+    ((my  $pos) = $_[1]);
+    ((my  $p) = $pos);
     for ( ; exists($space{substr($str, $p, 1)}); do {{
 
 }} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
+    if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
+        return ({'str', $str, 'from', $pos, 'to', length($str)})
+    };
     return ({'str', $str, 'from', $pos, 'to', $p, 'capture', ['space', ' ']})
+};
+sub Perlito5::Grammar::Space::term_end {
+    return ({'str', $_[0], 'from', $_[1], 'to', length($_[0]), 'capture', ['space', ' ']})
 };
 Perlito5::Precedence::add_term('#', \&term_space);
 Perlito5::Precedence::add_term(chr(9), \&term_space);
@@ -5911,6 +5918,8 @@ Perlito5::Precedence::add_term(chr(10), \&term_space);
 Perlito5::Precedence::add_term(chr(12), \&term_space);
 Perlito5::Precedence::add_term(chr(13), \&term_space);
 Perlito5::Precedence::add_term(chr(32), \&term_space);
+Perlito5::Precedence::add_term('__END__', \&term_end);
+Perlito5::Precedence::add_term('__DATA__', \&term_end);
 sub Perlito5::Grammar::Space::to_eol {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -6154,6 +6163,9 @@ sub Perlito5::Grammar::Space::ws {
 }} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
+    if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
+        return ({'str', $str, 'from', $pos, 'to', length($str)})
+    };
     if (($p == $pos)) {
         return (0)
     };
@@ -6162,11 +6174,15 @@ sub Perlito5::Grammar::Space::ws {
 sub Perlito5::Grammar::Space::opt_ws {
     ((my  $self) = shift());
     ((my  $str) = shift());
-    ((my  $p) = shift());
+    ((my  $pos) = shift());
+    ((my  $p) = $pos);
     for ( ; exists($space{substr($str, $p, 1)}); do {{
 
 }} ) {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
+    };
+    if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
+        return ({'str', $str, 'from', $pos, 'to', length($str)})
     };
     return ({'str', $str, 'from', $pos, 'to', $p})
 };
