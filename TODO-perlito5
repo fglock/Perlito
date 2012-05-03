@@ -68,9 +68,6 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
--- parse "local $x[1]"
--- parse local $@
-
 -- $v{x::y} autoquotes the index when x::y() exists
 -- $v->{x} doesn't interpolate inside double quotes
 -- deref inside double quotes:

@@ -1707,7 +1707,14 @@ sub Perlito5::Expression::term_declarator {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', Perlito5::Match::flat($MATCH->{'declarator'}), 'type', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}), 'var', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'}))]);
+    ((my  $decl) = Perlito5::Match::flat($MATCH->{'declarator'}));
+    ((my  $type) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}));
+    ((my  $var) = $MATCH->{'Perlito5::Grammar.var_ident'}->{'capture'});
+    if (($decl eq 'local')) {
+        ($MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{'Perlito5::Grammar.var_ident'}));
+        ($var = $MATCH->{'capture'})
+    };
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var)]);
     1
 })))
 }))
