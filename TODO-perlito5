@@ -74,7 +74,7 @@ TODO list for Perlito5
     $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
     [$[object Object]]
 
--- add "print" special parsing - note this is related to indirect object notation
+-- add "print", "printf", "say" special parsing - note this is related to indirect object notation
 -- indirect object notation
     http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
     http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
