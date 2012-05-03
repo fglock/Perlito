@@ -200,6 +200,8 @@ TODO list for Perlito5
 -- y()()
 
 -- BEGIN{} should execute in the environment of the program under compilation
+-- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
+    even if the closure was never created or used in the first place
 
 -- AUTOLOAD
     AUTOLOAD is implemented for method lookups, but not for normal subroutines
