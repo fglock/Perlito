@@ -350,7 +350,6 @@ token term_arrow {
                            ),
                        { 
                          exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
-                         terminated => 0,
                        },
                      ]
               }
@@ -373,7 +372,6 @@ token term_arrow {
                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),   # TODO - split namespace
                        { 
                          exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
-                         terminated => 0,
                        },
                      ]
               }
@@ -830,7 +828,6 @@ sub argument_parse {
     my $last_pos = $pos;
     my $is_first_token = 1;
     my $lexer_stack = [];
-    my $terminated = 0;
     my $last_token_was_space = 1;
     my $get_token = sub {
         my $last_is_term = $_[0];
@@ -884,17 +881,13 @@ sub argument_parse {
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
-            capture => {
-                exp        => '*undef*',
-                terminated => undef } 
+            capture => { exp => '*undef*' } 
         };
     }
     my $result = pop_term($res);
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => {
-            exp        => $result,
-            terminated => $terminated } 
+        capture => { exp => $result } 
     };
 }
 
@@ -909,7 +902,6 @@ sub list_parse {
     my $last_pos = $pos;
     my $is_first_token = 1;
     my $lexer_stack = [];
-    my $terminated = 0;
     my $last_token_was_space = 1;
     my $get_token = sub {
         my $last_is_term = $_[0];
@@ -964,17 +956,13 @@ sub list_parse {
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
-            capture => {
-                exp        => '*undef*',
-                terminated => undef }
+            capture => { exp => '*undef*' }
         };
     }
     my $result = pop_term($res);
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => {
-            exp        => $result,
-            terminated => $terminated }
+        capture => { exp => $result }
     };
 }
 
@@ -1059,7 +1047,6 @@ sub exp_parse {
     my $expr;
     my $last_pos = $pos;
     my $lexer_stack = [];
-    my $terminated = 0;
     my $get_token = sub {
         my $last_is_term = $_[0];
         my $v;
@@ -1096,9 +1083,7 @@ sub exp_parse {
     # say "# exp_parse result: ", $result->perl;
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => {
-            exp        => $result,
-            terminated => $terminated }
+        capture => { exp => $result }
     };
 }
 
@@ -1287,11 +1272,6 @@ sub statement_parse {
         return $res;
     }
 
-    if (Perlito5::Match::flat($res)->{terminated}) {
-        # say "# statement expression terminated result: ", $res->perl;
-        $res->{capture} = Perlito5::Match::flat($res)->{exp};
-        return $res;
-    }
     # say "# look for a statement modifier";
     my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res)->{exp});
     if (!$modifier) {

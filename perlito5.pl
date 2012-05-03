@@ -1143,7 +1143,7 @@ sub Perlito5::Expression::term_arrow {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'})), {'exp', Perlito5::Match::flat($MATCH->{'paren_parse'}), 'terminated', 0}]);
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'})), {'exp', Perlito5::Match::flat($MATCH->{'paren_parse'})}]);
     1
 })))
 })) || ((do {
@@ -1189,7 +1189,7 @@ sub Perlito5::Expression::term_arrow {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), {'exp', Perlito5::Match::flat($MATCH->{'paren_parse'}), 'terminated', 0}]);
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), {'exp', Perlito5::Match::flat($MATCH->{'paren_parse'})}]);
     1
 })))
 })) || ((do {
@@ -2025,7 +2025,6 @@ sub Perlito5::Expression::argument_parse {
     ((my  $last_pos) = $pos);
     ((my  $is_first_token) = 1);
     ((my  $lexer_stack) = []);
-    ((my  $terminated) = 0);
     ((my  $last_token_was_space) = 1);
     ((my  $get_token) = sub {
     ((my  $last_is_term) = $_[0]);
@@ -2056,10 +2055,10 @@ sub Perlito5::Expression::argument_parse {
     ((my  $prec) = Perlito5::Precedence->new('get_token', $get_token, 'reduce', $reduce_to_ast, 'end_token', $Argument_end_token, 'end_token_chars', $Argument_end_token_chars));
     ((my  $res) = $prec->precedence_parse());
     if ((scalar(@{$res}) == 0)) {
-        return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', '*undef*', 'terminated', undef()}})
+        return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', '*undef*'}})
     };
     ((my  $result) = pop_term($res));
-    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result, 'terminated', $terminated}})
+    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result}})
 };
 sub Perlito5::Expression::list_parse {
     ((my  $self) = $_[0]);
@@ -2069,7 +2068,6 @@ sub Perlito5::Expression::list_parse {
     ((my  $last_pos) = $pos);
     ((my  $is_first_token) = 1);
     ((my  $lexer_stack) = []);
-    ((my  $terminated) = 0);
     ((my  $last_token_was_space) = 1);
     ((my  $get_token) = sub {
     ((my  $last_is_term) = $_[0]);
@@ -2100,10 +2098,10 @@ sub Perlito5::Expression::list_parse {
     ((my  $prec) = Perlito5::Precedence->new('get_token', $get_token, 'reduce', $reduce_to_ast, 'end_token', $List_end_token, 'end_token_chars', $List_end_token_chars));
     ((my  $res) = $prec->precedence_parse());
     if ((scalar(@{$res}) == 0)) {
-        return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', '*undef*', 'terminated', undef()}})
+        return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', '*undef*'}})
     };
     ((my  $result) = pop_term($res));
-    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result, 'terminated', $terminated}})
+    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result}})
 };
 sub Perlito5::Expression::circumfix_parse {
     ((my  $self) = $_[0]);
@@ -2165,7 +2163,6 @@ sub Perlito5::Expression::exp_parse {
     (my  $expr);
     ((my  $last_pos) = $pos);
     ((my  $lexer_stack) = []);
-    ((my  $terminated) = 0);
     ((my  $get_token) = sub {
     ((my  $last_is_term) = $_[0]);
     (my  $v);
@@ -2190,7 +2187,7 @@ sub Perlito5::Expression::exp_parse {
         return (0)
     };
     ((my  $result) = pop_term($res));
-    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result, 'terminated', $terminated}})
+    return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', {'exp', $result}})
 };
 ((my  @Statement_chars) = (9, 8, 7, 6, 5, 4, 3, 2, 1));
 ((my  %Statement) = ('if', sub {
@@ -2380,10 +2377,6 @@ sub Perlito5::Expression::statement_parse {
         };
         ($res->{'to'} = $ws->{'to'});
         ($res->{'capture'} = Perlito5::AST::Apply->new('arguments', [], 'code', 'undef', 'namespace', '', 'label', $label));
-        return ($res)
-    };
-    if (Perlito5::Match::flat($res)->{'terminated'}) {
-        ($res->{'capture'} = Perlito5::Match::flat($res)->{'exp'});
         return ($res)
     };
     ((my  $modifier) = $self->statement_modifier($str, $res->{'to'}, Perlito5::Match::flat($res)->{'exp'}));
