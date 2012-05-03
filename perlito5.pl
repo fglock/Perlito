@@ -2380,8 +2380,13 @@ sub Perlito5::Expression::statement_parse {
         return ($res)
     };
     ((my  $modifier) = $self->statement_modifier($str, $res->{'to'}, Perlito5::Match::flat($res)->{'exp'}));
+    ((my  $p) = ($modifier ? $modifier->{'to'} : $res->{'to'}));
+    ((my  $terminator) = substr($str, $p, 1));
+    if (((($terminator ne ';') && ($terminator ne '}')) && ($terminator ne ''))) {
+        die('Number or Bareword found where operator expected')
+    };
     if (!($modifier)) {
-        ($res->{'capture'} = Perlito5::Match::flat($res)->{'exp'});
+        ($res->{'capture'} = $res->{'capture'}->{'exp'});
         return ($res)
     };
     return ($modifier)

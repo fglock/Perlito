@@ -6260,8 +6260,15 @@ var p5100 = p5pkg['main'];
 				};
 				var v_modifier = null;
 				(v_modifier = (p5call(v_self, "statement_modifier", p5list_to_a(v_str, (v_res || (v_res = new p5HashRef({})))._hash_['to'], (p5pkg["Perlito5::Match"].flat([v_res], p5want) || (p5pkg["Perlito5::Match"].flat([v_res], p5want) = new p5HashRef({})))._hash_['exp']), 0)));
+				var v_p = null;
+				(v_p = (( p5bool(v_modifier) ? (v_modifier || (v_modifier = new p5HashRef({})))._hash_['to'] : (v_res || (v_res = new p5HashRef({})))._hash_['to'])));
+				var v_terminator = null;
+				(v_terminator = (p5pkg["Perlito5::Expression"].substr([v_str, v_p, 1], 0)));
+				if ( (((p5str(v_terminator) != ';') && (p5str(v_terminator) != '}')) && (p5str(v_terminator) != '')) ) {
+					p5pkg["Perlito5::Expression"].die([['Number or Bareword found where operator expected']], null);
+				};
 				if ( !( p5bool(v_modifier)) ) {
-					((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = (p5pkg["Perlito5::Match"].flat([v_res], p5want) || (p5pkg["Perlito5::Match"].flat([v_res], p5want) = new p5HashRef({})))._hash_['exp']);
+					((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']);
 					throw(p5context([v_res], p5want));
 				};
 				return (p5context([v_modifier], p5want));

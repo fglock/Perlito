@@ -49,9 +49,7 @@ TODO list for Perlito5
 -- bug: ' $$x [$y] '
     parses as ${$x}->[$y];
 
--- ' 123 456 ' should be a syntax error (parses as two statements)
 -- ' $# ' should be a syntax error (parses as $#{undef} )
--- ' $x->meth 123 ' should be a syntax error
 
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 

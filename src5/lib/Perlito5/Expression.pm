@@ -1274,10 +1274,18 @@ sub statement_parse {
 
     # say "# look for a statement modifier";
     my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res)->{exp});
+
+    my $p = $modifier ? $modifier->{to} : $res->{to};
+    my $terminator = substr($str, $p, 1);
+    die "Number or Bareword found where operator expected"
+        if $terminator ne ';'
+        && $terminator ne '}'
+        && $terminator ne '';
+
     if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
-        $res->{capture} = Perlito5::Match::flat($res)->{exp};
+        $res->{capture} = $res->{capture}{exp};
         return $res;
     }
     return $modifier;
