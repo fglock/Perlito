@@ -43,9 +43,6 @@ TODO list for Perlito5
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
--- bug: ' $$x [$y] '
-    parses as ${$x}->[$y];
-
 -- ' $# ' should be a syntax error (parses as $#{undef} )
 
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
@@ -70,6 +67,12 @@ TODO list for Perlito5
 -- deref inside double quotes:
     $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
     [$[object Object]]
+-- bug: ' $$x [$y] '
+    parses as ${$x}->[$y];
+
+    $ node perlito5.js -MO=Deparse -e ' " $v->{x} $$v{x} " ' 
+    (' ' . $v . '->{x} $' . $v{'x'} . ' ');
+
 
 -- add "print", "printf", "say" special parsing - note this is related to indirect object notation
 -- indirect object notation
