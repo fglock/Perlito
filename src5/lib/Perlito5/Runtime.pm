@@ -9,6 +9,8 @@ $Perlito5::WARNINGS   = 0;
 $Perlito5::UTF8       = 0;
 $Perlito5::BYTES      = 0;
 
+push @INC, $_
+    for split ":", ($ENV{PERL5LIB} || "");
 
 # the special variables list
 # obtained with:

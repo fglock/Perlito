@@ -3,12 +3,6 @@ TODO list for Perlito5
 
 * perlito5 command-line
 
--- search for modules in PERL5LIB
-   perlito5 own directories must be searched first (perlito5 defines it's own strict.pm)
-   maybe search PERLITO5LIB first
-   alternately, check $^H for strictness - such that perl's own strict.pm just works
-   and ${^WARNING_BITS} for warnings
-
 
 * libraries
 
@@ -31,6 +25,9 @@ TODO list for Perlito5
     Tie::Array
     Tie::Hash
     Tie::Scalar
+
+    alternately, check $^H for strictness - such that perl's own strict.pm just works
+    and ${^WARNING_BITS} for warnings
 
 
 * Parser

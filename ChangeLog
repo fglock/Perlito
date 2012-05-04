@@ -5,6 +5,7 @@ dev  2012-04-12
 -- option "-B" is now the default; this executes immediately:  perlito5 -e 'say "ok"'
 -- option "-MO=Deparse":
    $ node perlito5.js -Isrc5/lib -MO=Deparse -e ' while (1) { say "works" } '
+-- environment variable PERL5LIB=src5/lib now works
 
 - parser:
 

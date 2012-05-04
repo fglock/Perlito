@@ -376,6 +376,7 @@ CORE.split = function(List__) {
             }
             return res;
         }
+        return s.split(pattern);
     }
     CORE.die(["not implemented"]);
 };
