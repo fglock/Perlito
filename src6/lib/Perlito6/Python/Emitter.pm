@@ -461,28 +461,28 @@ class Call {
 
         if exists( %method_python{ $.method } ) {
             if ($.hyper) {
-                return Python::tab($level) ~ 'f_map(' ~ $invocant ~ ', lambda x: Main.' ~ $.method ~ '(x, ' ~ (@.arguments.>>emit_python).join(', ') ~ '))';
+                return Python::tab($level) ~ 'f_map(' ~ $invocant ~ ', lambda x: Main.' ~ $.method ~ '(x, ' ~ (@.arguments>>.emit_python).join(', ') ~ '))';
             }
             else {
-                return Python::tab($level) ~ "f_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+                return Python::tab($level) ~ "f_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
             }
         }
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
             return Python::tab($level) ~ 
-                $invocant ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+                $invocant ~ '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         }
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
         {
-            return Python::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return Python::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         }
         if $meth eq 'chars' {
             return Python::tab($level) ~ "len(" ~ $invocant ~ ")";
         }
         
-        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         if ($.hyper) {
             return Python::tab($level) ~ 'f_map(' ~ $invocant ~ ', lambda x: x.' ~ $call ~ ')';
         }
@@ -536,7 +536,7 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_python() ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return '(' ~ $.code.emit_python() ~ ').(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         };
 
         if $code eq 'self'       { return 'v_self'   };
@@ -545,33 +545,33 @@ class Apply {
         if $code eq 'False'      { return 'False'       };
         if $code eq 'True'       { return 'True'        };
 
-        if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')      ~ ']' };
+        if $code eq 'array'      { return '[' ~ (@.arguments>>.emit_python).join(' ')      ~ ']' };
 
         if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
         if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
 
-        if $code eq 'prefix:<~>' { return 'unicode('   ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
+        if $code eq 'prefix:<~>' { return 'unicode('   ~ (@.arguments>>.emit_python).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { 
-            return 'not mp6_to_bool('  ~ (@.arguments.>>emit_python).join(' ') ~ ')' 
+            return 'not mp6_to_bool('  ~ (@.arguments>>.emit_python).join(' ') ~ ')' 
         }
         if $code eq 'prefix:<?>' { 
-            return 'not (not mp6_to_bool('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' 
+            return 'not (not mp6_to_bool('  ~ (@.arguments>>.emit_python).join(' ')    ~ '))' 
         }
 
-        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
+        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments>>.emit_python).join(' ')    ~ ')' };
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments>>.emit_python).join(' ')    ~ ')' };
+        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments>>.emit_python).join(' ')    ~ '}' };
 
         if $code eq 'infix:<x>'  { 
             return     '(unicode(' ~ @.arguments[0].emit_python() ~ ')'
                 ~ ' * mp6_to_num(' ~ @.arguments[1].emit_python() ~ '))' 
         };
 
-        if $code eq 'list:<~>'   { return '(unicode('  ~ (@.arguments.>>emit_python).join(') + unicode(')  ~ '))' };
-        if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') + mp6_to_num(')  ~ '))' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_python).join(' - ')  ~ ')' };
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
+        if $code eq 'list:<~>'   { return '(unicode('  ~ (@.arguments>>.emit_python).join(') + unicode(')  ~ '))' };
+        if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') + mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments>>.emit_python).join(' - ')  ~ ')' };
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments>>.emit_python).join(' * ')  ~ ')' };
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments>>.emit_python).join(' / ')  ~ ')' };
         
         if   $code eq 'infix:<&&>' 
           || $code eq 'infix:<and>'
@@ -586,17 +586,17 @@ class Apply {
         if $code eq 'infix:<//>' { 
             return 'mp6_defined_or('  ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
-        if $code eq 'infix:<eq>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') == unicode(')  ~ '))' };
-        if $code eq 'infix:<ne>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') != unicode(')  ~ '))' };
-        if $code eq 'infix:<ge>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') >= unicode(')  ~ '))' };
-        if $code eq 'infix:<le>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') <= unicode(')  ~ '))' };
+        if $code eq 'infix:<eq>' { return '(unicode('  ~ (@.arguments>>.emit_python).join(') == unicode(')  ~ '))' };
+        if $code eq 'infix:<ne>' { return '(unicode('  ~ (@.arguments>>.emit_python).join(') != unicode(')  ~ '))' };
+        if $code eq 'infix:<ge>' { return '(unicode('  ~ (@.arguments>>.emit_python).join(') >= unicode(')  ~ '))' };
+        if $code eq 'infix:<le>' { return '(unicode('  ~ (@.arguments>>.emit_python).join(') <= unicode(')  ~ '))' };
 
-        if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') == mp6_to_num(') ~ '))' };
-        if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') != mp6_to_num(') ~ '))' };
-        if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') < mp6_to_num(')  ~ '))' };
-        if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') > mp6_to_num(')  ~ '))' };
-        if $code eq 'infix:<<=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') <= mp6_to_num(') ~ '))' };
-        if $code eq 'infix:<>=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') >= mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') == mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') != mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') < mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') > mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<<=>' { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') <= mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<>=>' { return '(mp6_to_num('  ~ (@.arguments>>.emit_python).join(') >= mp6_to_num(') ~ '))' };
         if $code eq 'infix:<..>' { 
             return 'mp6_Array(range('  ~ (@.arguments[0]).emit_python() ~ ', 1 + ' ~ (@.arguments[1]).emit_python() ~ '))' 
         }
@@ -624,13 +624,13 @@ class Apply {
             return $ast.emit_python;
         }
         if $code eq 'circumfix:<( )>' {
-            return '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' {
             return emit_python_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
-            return 'raise mp6_Return(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return 'raise mp6_Return(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         }
         
         if $code eq 'substr' { 
@@ -654,9 +654,9 @@ class Apply {
         if $code eq 'unshift' { return (@.arguments[0]).emit_python() ~ '.f_unshift(' ~ (@.arguments[1]).emit_python() ~ ')' } 
 
         if $.namespace {
-            return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
         }
-        'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        'f_' ~ $.code ~ '(' ~ (@.arguments>>.emit_python).join(', ') ~ ')';
     }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ self.emit_python 

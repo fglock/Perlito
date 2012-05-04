@@ -404,17 +404,17 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return $invocant ~ ".map \{|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
+            	return $invocant ~ ".map \{|x| x." ~ $.method ~ "(" ~ (@.arguments>>.emit_ruby).join(', ') ~ ")}";
             }
             else {
-                return "mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
+                return "mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments]>>.emit_ruby).join(', ') ~ ')';
             }
         };
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
             return Ruby::tab($level) ~ 
-                $invocant ~ '.call(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+                $invocant ~ '.call(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         }
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
@@ -424,7 +424,7 @@ class Call {
             || ( $meth eq 'concat' )
             || ( $meth eq 'join')
         {
-            return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         }
         if $meth eq 'chars' {
             return Ruby::tab($level) ~ $invocant ~ ".length";
@@ -433,7 +433,7 @@ class Call {
             return Ruby::tab($level) ~ $invocant ~ ".length";
         }
         
-        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         if ($.hyper) {
             Ruby::tab($level) ~ $invocant ~ ".map \{|x| x." ~ $call ~ "}";
         }
@@ -454,7 +454,7 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_ruby ~ ').(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '(' ~ $.code.emit_ruby ~ ').(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         };
 
         if $code eq 'self'       { return 'self' };
@@ -466,10 +466,10 @@ class Apply {
 
         if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) } 
         if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }
-        if $code eq 'warn'       { return '$stdout.puts('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
-        if $code eq 'return'     { return 'return('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
+        if $code eq 'warn'       { return '$stdout.puts('  ~ (@.arguments>>.emit_ruby).join(', ') ~ ')' }
+        if $code eq 'return'     { return 'return('  ~ (@.arguments>>.emit_ruby).join(', ') ~ ')' }
 
-        if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
+        if $code eq 'array'      { return '[' ~ (@.arguments>>.emit_ruby).join(' ')      ~ ']' };
 
         if $code eq 'Int'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_i' };
         if $code eq 'Num'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_f' };
@@ -478,9 +478,9 @@ class Apply {
         if $code eq 'prefix:<!>' { return '!'   ~ Ruby::to_bool(' && ', @.arguments)       };
         if $code eq 'prefix:<?>' { return '!(!' ~ Ruby::to_bool(' && ', @.arguments) ~ ')' };
 
-        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_ruby).join(' ')    ~ '}' };
+        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments>>.emit_ruby).join(' ')    ~ ')' };
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments>>.emit_ruby).join(' ')    ~ ')' };
+        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments>>.emit_ruby).join(' ')    ~ '}' };
 
         if $code eq 'list:<~>'   { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'infix:<+>'  { return Ruby::to_num(' + ', @.arguments) };
@@ -517,7 +517,7 @@ class Apply {
                     ~ (@.arguments[2]).emit_ruby ~ ')'
         }
         if $code eq 'circumfix:<( )>' {
-            return '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' {
             return emit_ruby_bind( @.arguments[0], @.arguments[1] );
@@ -540,9 +540,9 @@ class Apply {
         if $code eq 'elems'   { return (@.arguments[0]).emit_ruby ~ '.length()' } 
 
         if $.namespace {
-            return '$' ~ Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '$' ~ Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
         }
-        'namespace.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        'namespace.f_' ~ $.code ~ '(' ~ (@.arguments>>.emit_ruby).join(', ') ~ ')';
     }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ self.emit_ruby 

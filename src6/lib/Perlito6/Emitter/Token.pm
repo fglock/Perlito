@@ -104,21 +104,21 @@ class Rul::Or {
     method emit_perl6 {
         '(do { ' ~
             'my $pos1 = $MATCH.to; (do { ' ~ 
-            (@.or_list.>>emit_perl6).join('}) || (do { $MATCH.to = $pos1; ') ~
+            (@.or_list>>.emit_perl6).join('}) || (do { $MATCH.to = $pos1; ') ~
         '}) })';
     }
     method set_captures_to_array {
-        @.or_list.>>set_captures_to_array;
+        @.or_list>>.set_captures_to_array;
     }
 }
 
 class Rul::Concat {
     has @.concat;
     method emit_perl6 {
-        '(' ~ (@.concat.>>emit_perl6).join(' && ') ~ ')';
+        '(' ~ (@.concat>>.emit_perl6).join(' && ') ~ ')';
     }
     method set_captures_to_array {
-        @.concat.>>set_captures_to_array;
+        @.concat>>.set_captures_to_array;
     }
 }
 

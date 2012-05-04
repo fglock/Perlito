@@ -259,7 +259,7 @@ class Call {
 
         my $arguments = '';
         if @.arguments {
-            $arguments = (@.arguments.>>emit_clojure).join(' ');
+            $arguments = (@.arguments>>.emit_clojure).join(' ');
         }
 
         my $invocant = $.invocant.emit_clojure;
@@ -331,7 +331,7 @@ class Apply {
         my $code = $ns ~ $.code;
         my $args = '';
         if @.arguments {
-            $args = (@.arguments.>>emit_clojure).join(' ');
+            $args = (@.arguments>>.emit_clojure).join(' ');
         }
 
         if $code eq 'self'       { return 'sv-self' };

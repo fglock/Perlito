@@ -390,7 +390,7 @@ class Proto {
 class Call {
     method emit_lisp {
 
-        my $arguments = (@.arguments.>>emit_lisp).join(' ');
+        my $arguments = (@.arguments>>.emit_lisp).join(' ');
 
         my $invocant = $.invocant.emit_lisp;
         if $invocant eq '(proto-mp-self)' {
@@ -458,7 +458,7 @@ class Apply {
 
         my $args = '';
         if @.arguments {
-            $args = (@.arguments.>>emit_lisp).join(' ');
+            $args = (@.arguments>>.emit_lisp).join(' ');
         }
 
         if $code eq 'self'       { return 'sv-self' };

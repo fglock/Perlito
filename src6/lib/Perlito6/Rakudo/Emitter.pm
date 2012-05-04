@@ -5,7 +5,7 @@ class CompUnit {
     has %.methods;
     method emit {
         '# class ' ~ $.name ~ "; " ~ "\n" ~
-        (@.body.>>emit).join( "; " ) ~ "\n";
+        (@.body>>.emit).join( "; " ) ~ "\n";
     }
 }
 
@@ -27,7 +27,7 @@ class Val::Buf {
 
 class Lit::Array {
     method emit {
-        '[' ~ (@.array1.>>emit).join(', ') ~ ']';
+        '[' ~ (@.array1>>.emit).join(', ') ~ ']';
     }
 }
 
@@ -101,11 +101,11 @@ class Call {
         { 
             if ($.hyper) {
                 return 
-                    '[ map { &Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')' ~ ' } @( ' ~ $invocant ~ ' ) ]';
+                    '[ map { &Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments>>.emit).join(', ') ~ ')' ~ ' } @( ' ~ $invocant ~ ' ) ]';
             }
             else {
                 return
-                    '&Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')';
+                    '&Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments>>.emit).join(', ') ~ ')';
             }
         };
 
@@ -114,7 +114,7 @@ class Call {
              $meth = '';  
         };
         
-        my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        my $call = '.' ~ $meth ~ '(' ~ (@.arguments>>.emit).join(', ') ~ ')';
         if ($.hyper) {
             '[ map { $_' ~ $call ~ ' } @( ' ~ $invocant ~ ' ) ]';
         }
@@ -132,35 +132,35 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit ~ ').(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ $.code.emit ~ ').(' ~ (@.arguments>>.emit).join(', ') ~ ')';
         };
 
         if $code eq 'self'       { return '$self' };
 
-        if $code eq 'say'        { return 'say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'say'        { return 'say('   ~ (@.arguments>>.emit).join(', ') ~ ')' };
+        if $code eq 'print'      { return 'print(' ~ (@.arguments>>.emit).join(', ') ~ ')' };
 
-        if $code eq 'array'      { return '@(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };
+        if $code eq 'array'      { return '@(' ~ (@.arguments>>.emit).join(' ')    ~ ')' };
 
-        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ?? 0 !! 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ?? 1 !! 0)' };
+        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments>>.emit).join(' ') ~ ')' };
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments>>.emit).join(' ')    ~ ' ?? 0 !! 1)' };
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments>>.emit).join(' ')    ~ ' ?? 1 !! 0)' };
 
-        if $code eq 'prefix:<$>' { return '$(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '@(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };
-        if $code eq 'prefix:<%>' { return '%(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };
+        if $code eq 'prefix:<$>' { return '$(' ~ (@.arguments>>.emit).join(' ')    ~ ')' };
+        if $code eq 'prefix:<@>' { return '@(' ~ (@.arguments>>.emit).join(' ')    ~ ')' };
+        if $code eq 'prefix:<%>' { return '%(' ~ (@.arguments>>.emit).join(' ')    ~ ')' };
 
-        if $code eq 'infix:<~>'  { return '('  ~ (@.arguments.>>emit).join(' ~ ')  ~ ')' };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')  ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')  ~ ')' };
+        if $code eq 'infix:<~>'  { return '('  ~ (@.arguments>>.emit).join(' ~ ')  ~ ')' };
+        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments>>.emit).join(' + ')  ~ ')' };
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments>>.emit).join(' - ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ') ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ') ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ') ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ') ~ ')' };
+        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments>>.emit).join(' && ') ~ ')' };
+        if $code eq 'infix:<||>' { return '('  ~ (@.arguments>>.emit).join(' || ') ~ ')' };
+        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments>>.emit).join(' eq ') ~ ')' };
+        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments>>.emit).join(' ne ') ~ ')' };
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ') ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ') ~ ')' };
+        if $code eq 'infix:<==>' { return '('  ~ (@.arguments>>.emit).join(' == ') ~ ')' };
+        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments>>.emit).join(' != ') ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
             return '(' ~ (@.arguments[0]).emit ~
@@ -169,8 +169,8 @@ class Apply {
                   ')' };
         
         # TODO !!!
-        '' ~ $.code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
-        # '(' ~ $.code.emit ~ ').(' ~ @.arguments.>>emit.join(', ') ~ ')';
+        '' ~ $.code ~ '(' ~ (@.arguments>>.emit).join(', ') ~ ')';
+        # '(' ~ $.code.emit ~ ').(' ~ @.arguments>>.emit.join(', ') ~ ')';
     }
 }
 
@@ -182,7 +182,7 @@ class Return {
 
 class If {
     method emit {
-        'do { if (' ~ $.cond.emit ~ ') { ' ~ (@.body.>>emit).join(';') ~ ' } else { ' ~ (@.otherwise.>>emit).join(';') ~ ' } }';
+        'do { if (' ~ $.cond.emit ~ ') { ' ~ (@.body>>.emit).join(';') ~ ' } else { ' ~ (@.otherwise>>.emit).join(';') ~ ' } }';
     }
 }
 
@@ -194,7 +194,7 @@ class For {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'do { for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' ~ (@.body.>>emit).join(';') ~ ' } }';
+        'do { for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' ~ (@.body>>.emit).join(';') ~ ' } }';
     }
 }
 
@@ -221,7 +221,7 @@ class Method {
         };
 
         'method ' ~ $.name ~ '(' ~ $invocant.emit ~ ': ' ~ $str ~ ') { ' ~ 
-          (@.block.>>emit).join('; ') ~ 
+          (@.block>>.emit).join('; ') ~ 
         ' }'
     }
 }
@@ -242,12 +242,12 @@ class Sub {
         if $.name eq '' {
             return 
                 '(sub (' ~ $str ~ ') ' ~ ' { ' ~ 
-                (@.block.>>emit).join('; ') ~ 
+                (@.block>>.emit).join('; ') ~ 
                 ' })'
         }
     
         'sub ' ~ $.name ~ '(' ~ $str ~ ') ' ~ ' { ' ~ 
-          (@.block.>>emit).join('; ') ~ 
+          (@.block>>.emit).join('; ') ~ 
         ' }'
     }
 }
@@ -255,7 +255,7 @@ class Sub {
 class Do {
     method emit {
         'do { ' ~ 
-          (@.block.>>emit).join('; ') ~ 
+          (@.block>>.emit).join('; ') ~ 
         ' }'
     }
 }

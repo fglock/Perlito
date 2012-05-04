@@ -311,11 +311,11 @@ class Call {
         {
             if ($.hyper) {
                 return
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_parrot).join('') ~ ')' ~ ' } @{ ' ~ $.invocant.emit_parrot ~ ' } ]';
+                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments>>.emit_parrot).join('') ~ ')' ~ ' } @{ ' ~ $.invocant.emit_parrot ~ ' } ]';
             }
             else {
                 return
-                    'Main::' ~ $.method ~ '(' ~ $.invocant.emit_parrot ~ ', ' ~ (@.arguments.>>emit_parrot).join('') ~ ')';
+                    'Main::' ~ $.method ~ '(' ~ $.invocant.emit_parrot ~ ', ' ~ (@.arguments>>.emit_parrot).join('') ~ ')';
             }
         };
 
@@ -324,7 +324,7 @@ class Call {
              $meth = '';
         };
 
-        my $call = '->' ~ $meth ~ '(' ~ (@.arguments.>>emit_parrot).join('') ~ ')';
+        my $call = '->' ~ $meth ~ '(' ~ (@.arguments>>.emit_parrot).join('') ~ ')';
         if ($.hyper) {
             return '[ map { $_' ~ $call ~ ' } @{ ' ~ $.invocant.emit_parrot ~ ' } ]';
         };
@@ -379,13 +379,13 @@ class Apply {
 
         if $code eq 'say'        {
             return
-                (@.arguments.>>emit_parrot).join( '  print $P0' ~ "\n" ) ~
+                (@.arguments>>.emit_parrot).join( '  print $P0' ~ "\n" ) ~
                 '  print $P0' ~ "\n" ~
                 '  print ' ~ '"' ~ '\\' ~ 'n' ~ '"' ~ "\n"
         };
         if $code eq 'print'      {
             return
-                (@.arguments.>>emit_parrot).join( '  print $P0' ~ "\n" ) ~
+                (@.arguments>>.emit_parrot).join( '  print $P0' ~ "\n" ) ~
                 '  print $P0' ~ "\n" 
         };
         if $code eq 'array'      { 
@@ -567,7 +567,7 @@ class Apply {
                 '  $P0 = $S0'    ~ "\n";
         };
 
-        #(@.arguments.>>emit_parrot).join('') ~
+        #(@.arguments>>.emit_parrot).join('') ~
         #'  ' ~ $.code ~ '( $P0 )' ~ "\n";
         
         my @args = @.arguments;
@@ -615,10 +615,10 @@ class If {
         return
             $.cond.emit_parrot ~ 
             '  unless $P0 goto ifelse' ~ $id ~ "\n" ~
-                (@.body.>>emit_parrot).join('') ~ 
+                (@.body>>.emit_parrot).join('') ~ 
             '  goto ifend' ~ $id ~ "\n" ~
             'ifelse' ~ $id ~ ':' ~ "\n" ~
-                (@.otherwise.>>emit_parrot).join('') ~ 
+                (@.otherwise>>.emit_parrot).join('') ~ 
             'ifend'  ~ $id ~ ':'  ~ "\n";
     }
 }
@@ -644,7 +644,7 @@ class For {
             '  unless $P1 goto iter_done'  ~ $id ~ "\n" ~
             '  $P2 = shift $P1' ~ "\n" ~
             '  store_lex \'' ~ $.topic.full_name ~ '\', $P2' ~ "\n" ~
-            (@.body.>>emit_parrot).join('') ~
+            (@.body>>.emit_parrot).join('') ~
             '  goto test_iter'  ~ $id ~ "\n" ~
             ' iter_done'  ~ $id ~ ':' ~ "\n" ~
             '  restore $P2' ~ "\n" ~
@@ -686,7 +686,7 @@ class Method {
             '  .param pmc params  :slurpy'  ~ "\n" ~
             '  .lex \'' ~ $invocant.full_name ~ '\', self' ~ "\n" ~
             $str ~
-            (@.block.>>emit_parrot).join('') ~ 
+            (@.block>>.emit_parrot).join('') ~ 
             '.end' ~ "\n" ~ "\n";
     }
 }
@@ -710,7 +710,7 @@ class Sub {
                 ' :outer(' ~ '"' ~ '_class_vars_' ~ '"' ~ ')' ~ "\n" ~
             '  .param pmc params  :slurpy'  ~ "\n" ~
             $str ~
-            (@.block.>>emit_parrot).join('') ~ 
+            (@.block>>.emit_parrot).join('') ~ 
             '.end' ~ "\n" ~ "\n";
     }
 }
@@ -718,7 +718,7 @@ class Sub {
 class Do {
     method emit_parrot {
         # TODO - create a new lexical pad
-        (@.block.>>emit_parrot).join('') 
+        (@.block>>.emit_parrot).join('') 
     }
 }
 

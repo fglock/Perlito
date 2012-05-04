@@ -6743,7 +6743,7 @@ List_a.push((function () { var tmp = {v_decl: scalar((function () { if (v_MATCH 
 })()), function () { return 1; })); })));
 })()); }), function () { return ((function () { 
 (v_MATCH.v_to = v_pos1);
-    return((and(and(and((and(('.' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    return((and(and(and(((function () { 
     var v_m2 = null;
 
 (v_m2 = v_grammar.hyper_op(v_str, v_MATCH.to()));
@@ -6755,7 +6755,7 @@ List_a.push((function () { var tmp = {v_decl: scalar((function () { if (v_MATCH 
     else { return (function () {
         return(false);
     })(); };
-})()); }), function () { return ((function () { 
+})()), function () { return (and(('.' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return ((function () { 
     var v_m2 = null;
 
 (v_m2 = Perlito6$Grammar.ident(v_str, v_MATCH.to()));

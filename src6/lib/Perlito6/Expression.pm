@@ -407,7 +407,8 @@ class Perlito6::Expression {
             { make [ 'term', $$<Perlito6::Grammar.grammar> ] }
         | <Perlito6::Grammar.declarator> <.Perlito6::Grammar.ws> <Perlito6::Grammar.opt_type> <.Perlito6::Grammar.opt_ws> <Perlito6::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<Perlito6::Grammar.declarator>, type => $$<Perlito6::Grammar.opt_type>, var => $$<Perlito6::Grammar.var_ident> ) ] }
-        | '.' <hyper_op> <Perlito6::Grammar.ident> 
+
+        | <hyper_op> '.' <Perlito6::Grammar.ident> 
           [ ':' <.Perlito6::Grammar.ws>? <list_parse>   
             { make [ 'postfix_or_term', 'methcall',           ~$<Perlito6::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
           | '(' <paren_parse> ')'   
@@ -423,6 +424,7 @@ class Perlito6::Expression {
             }
           | { make [ 'postfix_or_term', 'methcall_no_params', ~$<Perlito6::Grammar.ident>, $$<hyper_op>                  ] }
           ]
+
         | <Perlito6::Grammar.optional_namespace_before_ident> <Perlito6::Grammar.ident> 
           [ <.Perlito6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'funcall',            

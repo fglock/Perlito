@@ -500,7 +500,7 @@ class Call {
             }
             else {
                 # ((*v_a).(function_er).f_function(Capture{}))
-                return '((*' ~ $invocant ~ ').(function_er).f_function( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_java).join(', ') ~ ' } } ))';
+                return '((*' ~ $invocant ~ ').(function_er).f_function( Capture{ p : []*Any{ ' ~ (@.arguments>>.emit_java).join(', ') ~ ' } } ))';
             }
         };
         
@@ -517,7 +517,7 @@ class Call {
         }
         return
             '(*' ~ $invocant ~ ').(' ~ $meth ~ '_er).f_' ~ $meth 
-                    ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_java).join(', ') ~ ' } } )';
+                    ~ '( Capture{ p : []*Any{ ' ~ (@.arguments>>.emit_java).join(', ') ~ ' } } )';
 
     }
     
@@ -538,7 +538,7 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_java ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ $.code.emit_java ~ ')->(' ~ (@.arguments>>.emit).join(', ') ~ ')';
         };
 
         if $code eq 'self'       { return 'v_self' };
@@ -547,7 +547,7 @@ class Apply {
         if $code eq 'make'       { 
             return 
                   'func () *Any { ' 
-                    ~ 'tmp := ' ~ (@.arguments.>>emit_java).join(', ') ~ '; '
+                    ~ 'tmp := ' ~ (@.arguments>>.emit_java).join(', ') ~ '; '
                     ~ '*(*v_MATCH).(capture_er).f_capture(Capture{}) = *tmp; '
                     ~ 'return tmp; '
                 ~ '}()';
@@ -560,47 +560,47 @@ class Apply {
                                     }
 
         if $code eq 'say'           { return 'System.out.println( '    
-                                                ~ (@.arguments.>>emit_java).join('.to_string() + ') 
+                                                ~ (@.arguments>>.emit_java).join('.to_string() + ') 
                                                 ~ '.to_string() )'
                                     }
         if $code eq 'print'         { return 'System.out.print( '  
-                                                ~ (@.arguments.>>emit_java).join('.to_string() ') 
+                                                ~ (@.arguments>>.emit_java).join('.to_string() ') 
                                                 ~ '.to_string() )' 
                                     }
         if $code eq 'warn'          { return 'f_print_stderr( Capture{ p : []*Any{ '   
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ', toStr("\n") } } )' 
                                     }
         if $code eq 'die'           { return 'f_die( Capture{ p : []*Any{ '   
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'defined'       { return 'f_defined( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'pop'           { return 'f_pop( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'push'          { return 'f_push( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'shift'         { return 'f_shift( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'index'         { return 'f_index( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )' 
                                     }
         if $code eq 'substr'        { return 'f_substr( Capture{ p : []*Any{ ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') 
+                                                ~ (@.arguments>>.emit_java).join(', ') 
                                                 ~ ' } } )'  
                                     }
         if $code eq 'scalar'        { return 'f_scalar( Capture{ p : []*Any{ ' 
-                                                ~ (@.arguments.>>emit_java).join(', ')    
+                                                ~ (@.arguments>>.emit_java).join(', ')    
                                                 ~ ' } } )' 
                                     }
         if $code eq 'Int'           { return 'toInt(' 
@@ -624,7 +624,7 @@ class Apply {
         if $code eq 'prefix:<!>'    { return 'toBool(!tobool(' ~ ( @.arguments[0]).emit_java ~ '))' };
         if $code eq 'prefix:<?>'    { return Call::emit_java_call( @.arguments[0], 'Bool') } 
         if $code eq 'prefix:<$>'    { return 'f_scalar( Capture{ p : []*Any{ ' 
-                                                ~ (@.arguments.>>emit_java).join(', ')    
+                                                ~ (@.arguments>>.emit_java).join(', ')    
                                                 ~ ' } } )' 
                                     }
         if $code eq 'prefix:<@>'    { return Call::emit_java_call( @.arguments[0], 'array' ) }
@@ -636,17 +636,17 @@ class Apply {
                                                 ~ ')' 
                                     }
         if $code eq 'infix:<+>'     { return 'f_add( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:<->'     { return 'f_sub( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:<*>'     { return 'f_mul( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:</>'     { return 'f_div( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:<>>'     { return 'f_greater( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:<<>'     { return 'f_smaller( ' 
-                                                ~ (@.arguments.>>emit_java).join(', ') ~ ')' }
+                                                ~ (@.arguments>>.emit_java).join(', ') ~ ')' }
         if $code eq 'infix:<>=>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_java ~ ') >= '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_java ~ ') '
@@ -712,7 +712,7 @@ class Apply {
         else {
             $code = 'this_namespace.' ~ $code;
         }
-        $code ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_java).join(', ') ~ ' } } )';
+        $code ~ '( Capture{ p : []*Any{ ' ~ (@.arguments>>.emit_java).join(', ') ~ ' } } )';
     }
 }
 

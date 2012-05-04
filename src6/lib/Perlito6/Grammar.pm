@@ -207,7 +207,7 @@ token val_buf {
                 make Apply.new( 
                     namespace => '',
                     code => 'list:<~>',
-                    arguments => ($<double_quoted_buf>).>>capture, 
+                    arguments => ($<double_quoted_buf>)>>.capture, 
                 )
             }
         }
@@ -226,7 +226,7 @@ token val_int {
 
 token exp_stmts {
     <Perlito6::Expression.delimited_statement>*
-    { make $<Perlito6::Expression.delimited_statement>.>>capture }
+    { make $<Perlito6::Expression.delimited_statement>>>.capture }
 }
 
 token opt_name {  <ident>?  }

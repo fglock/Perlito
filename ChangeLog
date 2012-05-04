@@ -28,6 +28,7 @@ dev  2012-04-12
 
 * Perlito6 (Perl 6 compiler):
 
+-- updated method hyper syntax to use >>. instead of .>>
 
 
 9.0  2012-04-11

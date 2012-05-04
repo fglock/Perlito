@@ -49,7 +49,7 @@ class Main {
     }
 
     sub lisp_dump_object ( $class_name, $data ) {
-        return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
+        return $class_name ~ '( ' ~ ($data>>.perl).join(', ') ~ ' )';
     }
 
 }

@@ -15,6 +15,6 @@ class Main {
 
     my $other = [ Other.new( a => 2 ), Other.new( a => 3 ) ];
 
-    my @r = $other.>>subr();
+    my @r = $other>>.subr();
     say '# [', @r, ']';
 }

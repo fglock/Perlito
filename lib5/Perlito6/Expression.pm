@@ -1217,7 +1217,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((do {
     ((my  $m2) = $grammar->hyper_op($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1227,7 +1227,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) && ((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = Perlito6::Grammar->ident($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
