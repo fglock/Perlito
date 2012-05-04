@@ -38,6 +38,17 @@ TODO list for Perlito6
 
 - any Perl6 should be able to execute Perlito6 directly. What do we need to fix?
 
+-- rakudo: replace .>> with >>.
+
+    [13:16] <fglock> r:  method emit_perl6 { @.or_list.>>emit_perl6() }
+    [13:16] <+p6eval> rakudo 2d2584: OUTPUT«===SORRY!===␤Unable to parse blockoid, couldn't find final '}'
+    [13:17] <jnthn> r: method emit_perl6 { @.or_list>>.emit_perl6() }
+    [13:17] <+p6eval> rakudo 2d2584: OUTPUT«Useless declaration of a has-scoped method in mainline␤»
+
+-- rakudo: use "augment" to add new methods to classes
+
+    [13:20] <jnthn> r: use MONKEY_TYPING; class Foo { ... }; augment class Foo { }
+
 
 * Perlito6 in Lisp
 
