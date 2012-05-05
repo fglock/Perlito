@@ -11,6 +11,7 @@ use Perlito5::Javascript::Emitter;
 use Perlito5::Javascript::Runtime;
 use Perlito5::Javascript::CORE;
 use Perlito5::Javascript::IO;
+use Perlito5::Javascript::Sprintf;
 use Perlito5::Macro;
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::Runtime;
@@ -215,6 +216,7 @@ if ($backend && @ARGV) {
                     print Perlito5::Javascript::Runtime->emit_javascript();
                     print Perlito5::Javascript::CORE->emit_javascript();
                     print Perlito5::Javascript::IO->emit_javascript();
+                    print Perlito5::Javascript::Sprintf->emit_javascript();
                 }
                 print Perlito5::AST::CompUnit::emit_javascript_program( $comp_units );
             }

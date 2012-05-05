@@ -193,7 +193,6 @@ TODO list for Perlito5
 -- finish "overload" implementation
 
 -- pack(), unpack()
--- sprintf()
 -- y()()
 
 -- BEGIN{} should execute in the environment of the program under compilation
