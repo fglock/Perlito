@@ -38,8 +38,9 @@ my $help_message = "
 perlito5 [switches] [programfile]
   switches:
     -h --help
-    -v --verbose
+    --verbose
     -V --version
+    -v
     -Idirectory     specify \@INC/include directory (several -I's allowed)
     -Ctarget        target backend: js, perl5, perl6
     -Cast-perl5     emits a dump of the abstract syntax tree
@@ -47,13 +48,25 @@ perlito5 [switches] [programfile]
                     expand 'use' statements at compile time
     -e program      one line of program (omit programfile)
 ";
+my $copyright_message = <<"EOT";
+This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
 
+The Perl language is Copyright 1987-2012, Larry Wall
+The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
+
+Perl may be copied only under the terms of either the Artistic License or the
+GNU General Public License, which may be found in the Perl 5 source kit.
+
+Complete documentation for Perl, including FAQ lists, should be found on
+this system using "man perl" or "perldoc perl".  If you have access to the
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.
+EOT
 
 while (substr($ARGV[0], 0, 1) eq '-'
     && substr($ARGV[0], 0, 2) ne '-e'
     )
 {
-    if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
+    if ($ARGV[0] eq '--verbose') {
         $verbose = 1;
         shift @ARGV;
     }
@@ -82,6 +95,11 @@ while (substr($ARGV[0], 0, 1) eq '-'
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
         $backend = '';
         say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+        shift @ARGV;
+    }
+    elsif ($ARGV[0] eq '-v') {
+        $backend = '';
+        say $copyright_message;
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-h' || $ARGV[0] eq '--help' || !@ARGV) {

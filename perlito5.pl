@@ -10200,11 +10200,12 @@ if ($verbose) {
     warn('// Perlito5 compiler');
     warn(('// ARGV: ' . join(' ', @ARGV)))
 };
-((my  $help_message) = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+((my  $help_message) = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    --verbose' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+((my  $copyright_message) = ((('This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.' . chr(10) . chr(10) . 'The Perl language is Copyright 1987-2012, Larry Wall' . chr(10) . 'The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . chr(10) . 'Perl may be copied only under the terms of either the Artistic License or the' . chr(10) . 'GNU General Public License, which may be found in the Perl 5 source kit.' . chr(10) . chr(10) . 'Complete documentation for Perl, including FAQ lists, should be found on' . chr(10) . 'this system using "man perl" or "perldoc perl".  If you have access to the' . chr(10) . 'Internet, point your browser at http://www.perl.org/, the Perl Home Page.') . chr(10))));
 for ( ; ((substr($ARGV[0], 0, 1) eq '-') && (substr($ARGV[0], 0, 2) ne '-e')); do {{
 
 }} ) {
-    if (((($ARGV[0] eq '-v')) || (($ARGV[0] eq '--verbose')))) {
+    if (($ARGV[0] eq '--verbose')) {
         ($verbose = 1);
         shift(@ARGV)
     }
@@ -10240,23 +10241,30 @@ for ( ; ((substr($ARGV[0], 0, 1) eq '-') && (substr($ARGV[0], 0, 2) ne '-e')); d
                             shift(@ARGV)
                         }
                         else {
-                            if (((($ARGV[0] eq '-h') || ($ARGV[0] eq '--help')) || !(@ARGV))) {
+                            if (($ARGV[0] eq '-v')) {
                                 ($backend = '');
-                                say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, $help_message);
+                                say($copyright_message);
                                 shift(@ARGV)
                             }
                             else {
-                                if (($ARGV[0] eq '--expand_use')) {
-                                    ($expand_use = 1);
+                                if (((($ARGV[0] eq '-h') || ($ARGV[0] eq '--help')) || !(@ARGV))) {
+                                    ($backend = '');
+                                    say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, $help_message);
                                     shift(@ARGV)
                                 }
                                 else {
-                                    if (($ARGV[0] eq '--noexpand_use')) {
-                                        ($expand_use = 0);
+                                    if (($ARGV[0] eq '--expand_use')) {
+                                        ($expand_use = 1);
                                         shift(@ARGV)
                                     }
                                     else {
-                                        die(('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10)))
+                                        if (($ARGV[0] eq '--noexpand_use')) {
+                                            ($expand_use = 0);
+                                            shift(@ARGV)
+                                        }
+                                        else {
+                                            die(('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10)))
+                                        }
                                     }
                                 }
                             }
