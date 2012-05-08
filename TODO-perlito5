@@ -133,6 +133,10 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: scalar assignment context:
+    $ node perlito5.js -Isrc5/lib -e ' @v = (4,7,9); $v = @v; print $v '
+    479
+
 -- "~~" operator not implemented; See also "when" implementation
 
 -- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
@@ -144,8 +148,6 @@ TODO list for Perlito5
    for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i
 
 -- bug: don't emit throw() in term position; javascript requires a function() wrapper because throw() is a statement
-
--- initialize @INC from $ENV{PERL5LIB}
 
 -- javascript errors don't show in the global error handler when running in node.js
 
