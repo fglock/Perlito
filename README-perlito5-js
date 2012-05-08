@@ -234,6 +234,75 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
     No regular expression comments. 
 
 
+
+* Compile-time / Run-time interleaving (TODO)
+
+    ---
+    $ perl -e ' use strict; { my $x = 3; sub z { 123 } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
+     123
+    3
+    ---
+
+    open anonymous block in the compiling environment
+    add incomplete block to the AST
+    add variable my $x to the AST
+    add variable my $x to the compiling environment
+    open named sub in the compiling environment
+    add incomplete sub to the AST
+    close named sub in the compiling environment
+    add sub to the AST
+    compile and run BEGIN block in the compiling environment
+    # add BEGIN side-effects to the AST
+    compile INIT block
+    add INIT block to the AST
+    compile print
+    add print to the AST
+    close anonymous block
+    add block to the AST
+
+    (sub {
+        my $x = 3;
+        $NAMESPACE::z = sub { 123 };  # named sub
+        push @COMPILING::RUN,  sub { 1 };        # BEGIN block result
+        push @COMPILING::INIT, sub { $x = 4 };   # INIT block
+        push @COMPILING::RUN,  sub { print "$x\n" };
+    })->();
+    $_->() for @COMPILING::INIT;
+    $_->() for @COMPILING::RUN;
+
+
+    ---
+    $ perl -e ' use strict; my $y = 123; sub x { my $x = 3; sub z { $y } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
+    ---
+
+    (sub {
+        my $y = 123;
+
+        (sub {
+            my $x = 3;
+            $NAMESPACE::z = sub { 123 };  # named sub
+            1;                            # BEGIN block result
+            push @COMPILING::INIT, sub { $x = 4 };   # INIT block
+        })->();
+
+        $NAMESPACE::x = sub {
+            my $x = 3;
+            1;                            # BEGIN block result
+            print "$x\n";
+        };
+
+    })->();
+    $_->() for @COMPILING::INIT;
+    $_->() for @COMPILING::RUN;
+
+
+
+- disambiguation between block and hash should not backtrack, because any internal special blocks would be compiled/run twice
+
+- anonymous blocks, named subroutines and variables must be instantiated at compile-time
+
+ 
+
 * Cell-based aliasing (TODO)
 
 
