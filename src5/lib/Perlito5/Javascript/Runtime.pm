@@ -241,6 +241,12 @@ function p5ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
+function p5GlobRef(o) {
+    this._scalar_ = o;
+    this._ref_ = "GLOB";
+    this.bool = function() { return 1 };
+}
+
 if (isNode) {
     var fs = require("fs");
     p5make_sub("Perlito5::IO", "slurp", function(List__) {
