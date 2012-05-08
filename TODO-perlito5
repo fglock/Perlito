@@ -186,6 +186,12 @@ TODO list for Perlito5
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
 -- add symbol tables for scalar, array and hash
+-- references to typeglobs:
+    $ perl -e ' print ref(\*main) '
+    GLOB
+-- aliasing between lexicals and globals
+    $ perl -e 'use strict; my $x = 3; *main::z = \$x; print $main::z; '
+    3
 
 -- string increment and string ranges
     See: p5str_inc()
