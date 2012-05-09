@@ -77,7 +77,7 @@ while (substr($ARGV[0], 0, 1) eq '-'
         unshift @INC, $lib;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
-        $lib = substr($ARGV[0], 2, 10);
+        $lib = substr($ARGV[0], 2);
         unshift @INC, $lib;
         shift @ARGV;
     }

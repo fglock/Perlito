@@ -10232,7 +10232,7 @@ for ( ; ((substr($ARGV[0], 0, 1) eq '-') && (substr($ARGV[0], 0, 2) ne '-e')); d
         }
         else {
             if ((substr($ARGV[0], 0, 2) eq '-I')) {
-                ($lib = substr($ARGV[0], 2, 10));
+                ($lib = substr($ARGV[0], 2));
                 unshift(@INC, $lib);
                 shift(@ARGV)
             }
