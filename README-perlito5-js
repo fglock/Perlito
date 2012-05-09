@@ -237,6 +237,14 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
 * Compile-time / Run-time interleaving (TODO)
 
+- See perlref:
+    named subroutines are created at compile time so their lexical variables
+    get assigned to the parent lexicals from the first execution of the parent
+    block. 
+    If a parent scope is entered a second time, its lexicals are created again,
+    while the nested subs still reference the old ones.
+
+
     ---
     $ perl -e ' use strict; { my $x = 3; sub z { 123 } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
      123
