@@ -20,10 +20,11 @@ dev  2012-04-12
 -- control functions: next, last, redo, break
 -- more functions: rand, printf, sprintf
 -- "continue" blocks
+-- GLOB references
 
 - perl5 backend:
 
--- require v5.10
+-- requires v5.10
 
 
 * Perlito6 (Perl 6 compiler):

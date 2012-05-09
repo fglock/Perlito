@@ -2952,6 +2952,9 @@ var p5100 = p5pkg['main'];
 								if ( (p5str(p5call(v_arg, "sigil", [], 0)) == '%') ) {
 									throw(p5context([('(new p5HashRef(' + p5str(p5call(v_arg, "emit_javascript", [v_level], 0)) + '))')], p5want));
 								};
+								if ( (p5str(p5call(v_arg, "sigil", [], 0)) == '*') ) {
+									throw(p5context([('(new p5GlobRef(' + p5str(p5call(v_arg, "emit_javascript", [v_level], 0)) + '))')], p5want));
+								};
 								if ( (p5str(p5call(v_arg, "sigil", [], 0)) == '&') ) {
 									if ( p5bool((v_arg || (v_arg = new p5HashRef({})))._hash_['namespace']) ) {
 										throw(p5context([('p5pkg["' + p5str((v_arg || (v_arg = new p5HashRef({})))._hash_['namespace']) + '"].' + p5str((v_arg || (v_arg = new p5HashRef({})))._hash_['name']))], p5want));

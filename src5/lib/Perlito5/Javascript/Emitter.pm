@@ -1250,6 +1250,9 @@ package Perlito5::AST::Apply;
                 if ( $arg->sigil eq '%' ) {
                     return '(new p5HashRef(' . $arg->emit_javascript($level) . '))';
                 }
+                if ( $arg->sigil eq '*' ) {
+                    return '(new p5GlobRef(' . $arg->emit_javascript($level) . '))';
+                }
                 if ( $arg->sigil eq '&' ) {
                     if ( $arg->{namespace} ) {
                         return 'p5pkg["' . $arg->{namespace} . '"].' . $arg->{name};
