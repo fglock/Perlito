@@ -3,6 +3,7 @@ package Perlito5::Grammar;
 use Perlito5::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
+use Perlito5::Grammar::Sigil;
 use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;

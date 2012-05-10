@@ -43,8 +43,6 @@ TODO list for Perlito5
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
--- ' $# ' should be a syntax error (parses as $#{undef} )
-
 -- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
@@ -67,8 +65,6 @@ TODO list for Perlito5
 -- deref inside double quotes:
     $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
     [$[object Object]]
--- bug: ' $$x [$y] '
-    parses as ${$x}->[$y];
 
     $ node perlito5.js -MO=Deparse -e ' " $v->{x} $$v{x} " ' 
     (' ' . $v . '->{x} $' . $v{'x'} . ' ');
@@ -130,8 +126,14 @@ TODO list for Perlito5
     t5/01-perlito/12-context.t fails because:
     " return (4, 5) " instead of " return 4, 5 "
 
+-- bug: ' $$x [$y] '
+    emits as ${$x}->[$y];
+
 
 * Javascript backend
+
+-- bug: ' $$x [$y] '
+    emits like ${$x}->[$y];
 
 -- bug: scalar assignment context:
     $ node perlito5.js -Isrc5/lib -e ' @v = (4,7,9); $v = @v; print $v '

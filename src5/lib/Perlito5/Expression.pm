@@ -564,6 +564,15 @@ token term_sigil {
                             )
                     ]
                 }
+        | <before '$'> <term_sigil>
+                { $MATCH->{capture} = [ 'term',  
+                        Perlito5::AST::Apply->new( 
+                                'arguments' => [ $MATCH->{term_sigil}{capture}[1] ],
+                                'code'      => 'prefix:<' . Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}) . '>', 
+                                'namespace' => ''
+                            )
+                    ] 
+                }
         ]
     | <term_special_var>
             { $MATCH->{capture} = $MATCH->{term_special_var}->{capture} }
