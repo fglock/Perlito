@@ -363,6 +363,7 @@ sub string_interpolation_parse {
         elsif ($c eq '\\') {
             if ($interpolate == 2) {
                 # regex
+                $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 2) ) }
             }
             elsif ($interpolate == 1) {
                 # double-quotes

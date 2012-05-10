@@ -8596,7 +8596,7 @@ var p5100 = p5pkg['main'];
 								else {
 									if ( (p5str(v_c) == String.fromCharCode(92)) ) {
 										if ( (p5num(v_interpolate) == 2) ) {
-											null;
+											(v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_p, 'to', (p5num(v_p) + 2), 'capture', p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 2], 1)], 1)))))));
 										}
 										else {
 											if ( (p5num(v_interpolate) == 1) ) {
