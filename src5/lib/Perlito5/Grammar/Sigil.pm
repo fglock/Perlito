@@ -129,80 +129,148 @@ sub term_special_var {
     return 0;
 }
 
-token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
+my %sigil = (
+    '$'  => 1,
+    '%'  => 1,
+    '@'  => 1,
+    '&'  => 1,
+    '*'  => 1,
+);
 
-token term_sigil {
-    <var_sigil_or_pseudo> <.Perlito5::Grammar::Space.opt_ws>
-        [ '{' <.Perlito5::Grammar::Space.opt_ws> 
-            [
-            | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> 
-                <.Perlito5::Grammar::Space.opt_ws>
+sub term_sigil {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
 
-                    {
-                        # we are parsing:  ${var}  ${var{index}}
-                        # create the 'Var' object
-                        $MATCH->{capture} = Perlito5::AST::Var->new(
-                            sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
-                            namespace   => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}),
-                            name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
-                        );
-                        # hijack some string interpolation code to parse the subscript
-                        $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH);
-                        $MATCH->{capture} = [ 'term', $MATCH->{capture} ];
-                    }
-                    <.Perlito5::Grammar::Space.opt_ws>
-                    '}'
+    my $c1 = substr($str, $pos, 1);
+    return unless exists $sigil{$c1};
 
+    my $p = $pos + 1;
+    my $sigil = $c1;
+    if (substr($str, $pos, 2) eq '$#') {
+        $sigil = '$#';
+        $p++;
+    }
 
-            | '^' <Perlito5::Grammar.var_name> '}'
-                    { $MATCH->{capture} = [ 'term', 
+    my $m = Perlito5::Grammar::Space->opt_ws($str, $p);
+    $p = $m->{to};
+
+    $c1 = substr($str, $p, 1);
+    my $q = $p + 1;
+    if ( $c1 eq '{' ) {
+        #  ${ ...
+        my $p = $q;
+        $m = Perlito5::Grammar::Space->opt_ws($str, $p);
+        $p = $m->{to};
+
+        $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+        if ($m) {
+            #  ${name  ...
+            my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
+            if ($n) {
+                my $spc = Perlito5::Grammar::Space->opt_ws($str, $n->{to});
+                # we are parsing:  ${var}  ${var{index}}
+                # create the 'Var' object
+                $m->{capture} = Perlito5::AST::Var->new(
+                    sigil       => $sigil,
+                    namespace   => Perlito5::Match::flat($m),
+                    name        => Perlito5::Match::flat($n),
+                );
+                $m->{to} = $spc->{to};
+                # hijack some string interpolation code to parse the subscript
+                $m = Perlito5::Grammar::String->double_quoted_var_with_subscript($m);
+                $m->{capture} = [ 'term', $m->{capture} ];
+                $spc = Perlito5::Grammar::Space->opt_ws($str, $m->{to});
+                my $p = $spc->{to};
+                if ( substr($str, $p, 1) eq '}' ) {
+                    $m->{to} = $p + 1;
+                    return $m;
+                }
+            }
+        }
+        if ( substr($str, $p, 1) eq '^' ) {
+            #  ${^ ...
+            $m = Perlito5::Grammar->var_name( $str, $p + 1 );
+            if ($m) {
+                my $p = $m->{to};
+                if ( substr($str, $p, 1) eq '}' ) {
+                    $m->{to} = $m->{to} + 1;
+                    $m->{capture} = [ 'term', 
                             Perlito5::AST::Var->new(
-                                    sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
+                                    sigil       => $sigil,
                                     namespace   => 'main',
-                                    name        => '^' . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
+                                    name        => '^' . Perlito5::Match::flat($m),
                                 )
-                        ]
-                    }
-            | <Perlito5::Expression.curly_parse>   '}'
-                { $MATCH->{capture} = [ 'term',  
+                        ];
+                    return $m;
+                }
+            }
+        }
+        $m = Perlito5::Expression->curly_parse( $str, $p );
+        if ($m) {
+            #  ${ ... }
+            my $p = $m->{to};
+            if ( substr($str, $p, 1) eq '}' ) {
+                $m->{to} = $m->{to} + 1;
+                $m->{capture} = [ 'term',  
                         Perlito5::AST::Apply->new( 
-                                'arguments' => [ Perlito5::Match::flat($MATCH->{"Perlito5::Expression.curly_parse"}) ],
-                                'code'      => 'prefix:<' . Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}) . '>', 
+                                'arguments' => [ $m->{capture} ],
+                                'code'      => 'prefix:<' . $sigil . '>', 
                                 'namespace' => ''
                             )
-                    ] 
-                }
-            ]
-        | '^' <Perlito5::Grammar.word>
-                { $MATCH->{capture} = [ 'term', 
+                    ];
+                return $m;
+            }
+        }
+    }
+    if ( $c1 eq '^' ) {
+        #  $^ ...
+        my $p = $q;
+        $m = Perlito5::Grammar->word( $str, $p );
+        if ($m) {
+            $m->{capture} = [ 'term',  
                         Perlito5::AST::Var->new(
-                                sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
+                                sigil       => $sigil,
                                 namespace   => 'main',
-                                name        => '^' . Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.word"}),
+                                name        => '^' . Perlito5::Match::flat($m),
                             )
-                    ]
-                }
-        | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
-                { $MATCH->{capture} = [ 'term', 
-                        Perlito5::AST::Var->new(
-                                sigil       => Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}),
-                                namespace   => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}),
-                                name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_name"}),
-                            )
-                    ]
-                }
-        | <before '$'> <term_sigil>
-                { $MATCH->{capture} = [ 'term',  
-                        Perlito5::AST::Apply->new( 
-                                'arguments' => [ $MATCH->{term_sigil}{capture}[1] ],
-                                'code'      => 'prefix:<' . Perlito5::Match::flat($MATCH->{var_sigil_or_pseudo}) . '>', 
-                                'namespace' => ''
-                            )
-                    ] 
-                }
-        ]
-    | <term_special_var>
-            { $MATCH->{capture} = $MATCH->{term_special_var}->{capture} }
+                    ];
+            return $m;
+        }
+    }
+    if ( $c1 eq '$' ) {
+        #  $$ ...
+        $m = $self->term_sigil( $str, $p );
+        if ($m) {
+            $m->{capture} = [ 'term',  
+                    Perlito5::AST::Apply->new( 
+                            'arguments' => [ $m->{capture}[1] ],
+                            'code'      => 'prefix:<' . $sigil . '>', 
+                            'namespace' => ''
+                        )
+                ];
+            return $m;
+        }
+    }
+
+    $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+    if ($m) {
+        #  $name ...
+        my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
+        if ($n) {
+            $n->{capture} = [ 'term', 
+                    Perlito5::AST::Var->new(
+                            sigil       => $sigil,
+                            namespace   => Perlito5::Match::flat($m),
+                            name        => Perlito5::Match::flat($n),
+                        )
+                ];
+            return $n;
+        }
+    }
+
+    #  $! ...
+    return $self->term_special_var( $str, $pos );
 };
 
 

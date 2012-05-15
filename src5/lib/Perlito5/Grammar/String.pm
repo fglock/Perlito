@@ -723,7 +723,7 @@ sub double_quoted_var_with_subscript {
                  || (  substr($str, $p+1, 1) eq '-'
                     && Perlito5::Expression->term_digit($str, $p+2)
                     )
-                 || Perlito5::Expression->term_sigil($str, $p+1);
+                 || Perlito5::Grammar::Sigil->term_sigil($str, $p+1);
             return $m_var unless $m;
             return $m_var unless substr($str, $m->{to}, 1) eq ']';
         }
@@ -767,7 +767,7 @@ sub double_quoted_var {
 
     if ($c eq '$' && substr($str, $pos+1, 1) eq '{')
     {
-        my $m = Perlito5::Expression->term_sigil($str, $pos);
+        my $m = Perlito5::Grammar::Sigil->term_sigil($str, $pos);
         return $m unless $m;
         my $var = Perlito5::Match::flat($m)->[1];
         $m->{capture} = $var;
@@ -778,7 +778,7 @@ sub double_quoted_var {
         # TODO - this only covers simple expressions
         # TODO - syntax errors are allowed here - this should backtrack
 
-        my $m = Perlito5::Expression->term_sigil($str, $pos);
+        my $m = Perlito5::Grammar::Sigil->term_sigil($str, $pos);
         return $m unless $m;
 
         $m->{capture} = $m->{capture}[1];
@@ -786,7 +786,7 @@ sub double_quoted_var {
     }
     elsif ($c eq '@' && substr($str, $pos+1, length($delimiter)) ne $delimiter)
     {
-        my $m = Perlito5::Expression->term_sigil($str, $pos);
+        my $m = Perlito5::Grammar::Sigil->term_sigil($str, $pos);
         return $m unless $m;
 
         $m->{capture} = $m->{capture}[1];
