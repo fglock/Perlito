@@ -132,9 +132,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- bug: ' $$x [$y] '
-    emits like ${$x}->[$y];
-
 -- bug: scalar assignment context:
     $ node perlito5.js -Isrc5/lib -e ' @v = (4,7,9); $v = @v; print $v '
     479

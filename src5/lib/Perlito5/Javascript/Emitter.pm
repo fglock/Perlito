@@ -754,6 +754,17 @@ package Perlito5::AST::Index;
                     . ')'
                 . ']';
         }
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # $$a[0] ==> $a->[0]
+            return Perlito5::AST::Call->new(
+                    method    => 'postcircumfix:<[ ]>',
+                    invocant  => $self->{obj}{arguments}[0],
+                    arguments => $self->{index_exp},
+                )->emit_javascript($level);
+        }
 
           Perlito5::Javascript::emit_javascript_autovivify( $self->{obj}, $level, 'array' ) . '._array_[' 
                     . 'p5idx(' 
@@ -778,6 +789,17 @@ package Perlito5::AST::Lookup;
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
             return $v->emit_javascript($level) . '[' . $self->autoquote($self->{index_exp})->emit_javascript($level) . ']';
+        }
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # $$a{0} ==> $a->{0}
+            return Perlito5::AST::Call->new(
+                    method    => 'postcircumfix:<{ }>',
+                    invocant  => $self->{obj}{arguments}[0],
+                    arguments => $self->{index_exp},
+                )->emit_javascript($level);
         }
 
           Perlito5::Javascript::emit_javascript_autovivify( $self->{obj}, $level, 'hash' )
