@@ -37,7 +37,7 @@ token term_use {
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
 
-            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"})->{exp};
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"});
             if ($list eq '*undef*') {
                 $list = undef
             }

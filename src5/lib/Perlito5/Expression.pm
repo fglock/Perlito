@@ -90,14 +90,14 @@ sub pop_term {
         }
         if ($v->[1] eq 'methcall') {
             # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
-            my $param_list = expand_list( ($v->[3]){exp} );
+            my $param_list = expand_list( ($v->[3]) );
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => $param_list );
             # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'funcall') {
             # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
-            my $param_list = expand_list( ($v->[4]){exp} );
+            my $param_list = expand_list( ($v->[4]) );
             $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
             # say "#     ", $v->perl;
             return $v;
@@ -170,7 +170,7 @@ sub reduce_postfix {
     }
     if ($v->[1] eq 'methcall') {
         # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
-        my $param_list = expand_list($v->[3]{exp});
+        my $param_list = expand_list($v->[3]);
         $v = Perlito5::AST::Call->new( invocant => $value, method => $v->[2], arguments => $param_list );
         return $v;
     }
@@ -348,9 +348,7 @@ token term_arrow {
                                namespace   => '',    # TODO - namespace
                                name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}),
                            ),
-                       { 
-                         exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
-                       },
+                       Perlito5::Match::flat($MATCH->{paren_parse}),
                      ]
               }
             | { $MATCH->{capture} = [ 'postfix_or_term',
@@ -370,9 +368,7 @@ token term_arrow {
               { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall',
                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),   # TODO - split namespace
-                       { 
-                         exp       => Perlito5::Match::flat($MATCH->{paren_parse}),
-                       },
+                       Perlito5::Match::flat($MATCH->{paren_parse}),
                      ]
               }
             | { $MATCH->{capture} = [ 'postfix_or_term',
@@ -436,7 +432,7 @@ token term_declarator {
 token term_return {
     'return' <.Perlito5::Grammar::Space.opt_ws> <list_parse>
         {
-            my $args = Perlito5::Match::flat($MATCH->{list_parse})->{exp};
+            my $args = Perlito5::Match::flat($MATCH->{list_parse});
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code      => 'return',
@@ -503,7 +499,7 @@ token term_map_or_sort {
                     code      => Perlito5::Match::flat($MATCH->{map_or_sort}),
                     arguments => [
                         Perlito5::AST::Lit::Block->new( stmts => $MATCH->{term_curly}{capture}[2] ),
-                        @{ expand_list($MATCH->{list_parse}{capture}{exp}) }
+                        @{ expand_list($MATCH->{list_parse}{capture}) }
                     ], 
                     namespace => ''
                  )
@@ -711,13 +707,13 @@ sub argument_parse {
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
-            capture => { exp => '*undef*' } 
+            capture => '*undef*' 
         };
     }
     my $result = pop_term($res);
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => { exp => $result } 
+        capture => $result
     };
 }
 
@@ -786,13 +782,13 @@ sub list_parse {
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
-            capture => { exp => '*undef*' }
+            capture => '*undef*'
         };
     }
     my $result = pop_term($res);
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => { exp => $result }
+        capture => $result
     };
 }
 
@@ -913,7 +909,7 @@ sub exp_parse {
     # say "# exp_parse result: ", $result->perl;
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
-        capture => { exp => $result }
+        capture => $result
     };
 }
 
@@ -997,7 +993,7 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
+                cond      => Perlito5::Match::flat($modifier_exp),
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) 
             ),
@@ -1007,7 +1003,7 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
+                cond      => Perlito5::Match::flat($modifier_exp),
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) 
             ),
@@ -1017,7 +1013,7 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::When->new(
-                cond      => Perlito5::Match::flat($modifier_exp)->{exp},
+                cond      => Perlito5::Match::flat($modifier_exp),
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
             ),
         };
@@ -1026,7 +1022,7 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
-                cond     => Perlito5::Match::flat($modifier_exp)->{exp},
+                cond     => Perlito5::Match::flat($modifier_exp),
                 body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
                 continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
             ) 
@@ -1039,7 +1035,7 @@ sub modifier {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::For->new(
-                cond     => Perlito5::Match::flat($modifier_exp)->{exp},
+                cond     => Perlito5::Match::flat($modifier_exp),
                 body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
                 continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
             ) 
@@ -1080,11 +1076,11 @@ sub statement_parse {
 
     # did we just see a label?
     if (  substr($str, $res->{to}, 1) eq ':'
-       && $res->{capture}{exp}->isa('Perlito5::AST::Apply')
-       && $res->{capture}{exp}{bareword}
+       && $res->{capture}->isa('Perlito5::AST::Apply')
+       && $res->{capture}{bareword}
        )
     {
-        my $label = $res->{capture}{exp}{code};
+        my $label = $res->{capture}{code};
         # say "label $label";
         my $ws   = Perlito5::Grammar::Space->opt_ws( $str, $res->{to} + 1 );
         my $stmt = $self->statement_parse( $str, $ws->{to} );
@@ -1103,7 +1099,7 @@ sub statement_parse {
     }
 
     # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res)->{exp});
+    my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res));
 
     my $p = $modifier ? $modifier->{to} : $res->{to};
     my $terminator = substr($str, $p, 1);
@@ -1115,7 +1111,6 @@ sub statement_parse {
     if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
-        $res->{capture} = $res->{capture}{exp};
         return $res;
     }
     return $modifier;

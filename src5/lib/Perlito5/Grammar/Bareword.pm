@@ -163,7 +163,7 @@ package Perlito5::Grammar::Bareword;
                 }
                 else {
                     $m = Perlito5::Expression->argument_parse( $str, $p );
-                    $arg = $m->{capture}{exp};
+                    $arg = $m->{capture};
                     if ( $arg eq '*undef*' ) {
                         $arg = undef;
                     }
@@ -237,7 +237,7 @@ package Perlito5::Grammar::Bareword;
 
         my $m_list = Perlito5::Expression->list_parse( $str, $p );
         my $list = $m_list->{capture};
-        if ($list->{exp} ne '*undef*') {
+        if ($list ne '*undef*') {
             $m_name->{capture} = [ 'postfix_or_term', 'funcall',
                     $namespace,
                     $name,

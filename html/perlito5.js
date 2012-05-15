@@ -4245,7 +4245,7 @@ var p5100 = p5pkg['main'];
 							}
 							else {
 								(v_m = (p5call(p5pkg["Perlito5::Expression"], "argument_parse", [v_str, v_p], 0)));
-								(v_arg = (((v_m || (v_m = new p5HashRef({})))._hash_['capture'] || ((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']));
+								(v_arg = ((v_m || (v_m = new p5HashRef({})))._hash_['capture']));
 								if ( (p5str(v_arg) == '*undef*') ) {
 									(v_arg = (null));
 								}
@@ -4300,7 +4300,7 @@ var p5100 = p5pkg['main'];
 				(v_m_list = (p5call(p5pkg["Perlito5::Expression"], "list_parse", [v_str, v_p], 0)));
 				var v_list = null;
 				(v_list = ((v_m_list || (v_m_list = new p5HashRef({})))._hash_['capture']));
-				if ( (p5str((v_list || (v_list = new p5HashRef({})))._hash_['exp']) != '*undef*') ) {
+				if ( (p5str(v_list) != '*undef*') ) {
 					((v_m_name || (v_m_name = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(['postfix_or_term', 'funcall', v_namespace, v_name, v_list])));
 					((v_m_name || (v_m_name = new p5HashRef({})))._hash_['to'] = (v_m_list || (v_m_list = new p5HashRef({})))._hash_['to']);
 					throw(p5context([v_m_name], p5want));
@@ -4423,7 +4423,7 @@ var p5100 = p5pkg['main'];
 					if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,1)]) == 'methcall') ) {
 						(function () {
 							var v_param_list = null;
-							(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((p5context([(v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)]], 0) || (p5context([(v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)]], 0) = new p5HashRef({})))._hash_['exp']), 0)));
+							(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)]), 0)));
 							(v_v = (p5call(p5pkg["Perlito5::AST::Call"], "new", p5list_to_a('invocant', null, 'method', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,2)], 'arguments', v_param_list), 0)));
 							throw(p5context([v_v], p5want));
 							})();
@@ -4431,7 +4431,7 @@ var p5100 = p5pkg['main'];
 					if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,1)]) == 'funcall') ) {
 						(function () {
 							var v_param_list = null;
-							(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((p5context([(v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,4)]], 0) || (p5context([(v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,4)]], 0) = new p5HashRef({})))._hash_['exp']), 0)));
+							(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,4)]), 0)));
 							(v_v = (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)], 'arguments', v_param_list, 'namespace', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,2)]), 0)));
 							throw(p5context([v_v], p5want));
 							})();
@@ -4504,7 +4504,7 @@ var p5100 = p5pkg['main'];
 				if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,1)]) == 'methcall') ) {
 					(function () {
 						var v_param_list = null;
-						(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a(((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)] || ((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)] = new p5HashRef({})))._hash_['exp']), 0)));
+						(v_param_list = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,3)]), 0)));
 						(v_v = (p5call(p5pkg["Perlito5::AST::Call"], "new", p5list_to_a('invocant', v_value, 'method', (v_v || (v_v = new p5ArrayRef([])))._array_[p5idx((v_v || (v_v = new p5ArrayRef([])))._array_,2)], 'arguments', v_param_list), 0)));
 						throw(p5context([v_v], p5want));
 						})();
@@ -4785,7 +4785,7 @@ var p5100 = p5pkg['main'];
 													return (p5context([0], p5want));
 												}
 											})()], p5want) }), function () { return p5context([p5and((')' == p5pkg["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (1 + p5num((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'])))], p5want) })], p5want) }), function () { return p5context([(function () {
-												((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('postfix_or_term', 'methcall', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', '$', 'namespace', '', 'name', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.ident']), 1)), 1), (new p5HashRef(p5a_to_h(p5list_to_a('exp', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['paren_parse']), 1)))))))));
+												((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('postfix_or_term', 'methcall', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', '$', 'namespace', '', 'name', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.ident']), 1)), 1), p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['paren_parse']), 1)))));
 												return (p5context([1], p5want));
 											})()], p5want) }));
 										})()], p5want), function () { return p5context([(function () {
@@ -4838,7 +4838,7 @@ var p5100 = p5pkg['main'];
 													return (p5context([0], p5want));
 												}
 											})()], p5want) }), function () { return p5context([p5and((')' == p5pkg["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (1 + p5num((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'])))], p5want) })], p5want) }), function () { return p5context([(function () {
-												((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('postfix_or_term', 'methcall', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.full_ident']), 1), (new p5HashRef(p5a_to_h(p5list_to_a('exp', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['paren_parse']), 1)))))))));
+												((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('postfix_or_term', 'methcall', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.full_ident']), 1), p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['paren_parse']), 1)))));
 												return (p5context([1], p5want));
 											})()], p5want) }));
 										})()], p5want), function () { return p5context([(function () {
@@ -5236,7 +5236,7 @@ var p5100 = p5pkg['main'];
 								}
 							})()], p5want) }), function () { return p5context([(function () {
 								var v_args = null;
-								(v_args = ((p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse']), p5want) || (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse']), p5want) = new p5HashRef({})))._hash_['exp']));
+								(v_args = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse']), 0)));
 								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'return', 'arguments', ( (p5str(v_args) == '*undef*') ? (new p5ArrayRef([])) : (new p5ArrayRef([v_args]))), 'namespace', ''), 1)))));
 								return (p5context([1], p5want));
 							})()], p5want) }));
@@ -5553,7 +5553,7 @@ var p5100 = p5pkg['main'];
 									return (p5context([0], p5want));
 								}
 							})()], p5want) }), function () { return p5context([(function () {
-								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['map_or_sort']), 1), 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_[p5idx((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_,2)]), 1), (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']), p5want) || (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']), p5want) = new p5ArrayRef([])))._array_))), 'namespace', ''), 1)))));
+								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['map_or_sort']), 1), 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_[p5idx((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['term_curly'] = new p5HashRef({})))._hash_['capture'] = new p5ArrayRef([])))._array_,2)]), 1), (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a(((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture']), p5want) || (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a(((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['list_parse'] = new p5HashRef({})))._hash_['capture']), p5want) = new p5ArrayRef([])))._array_))), 'namespace', ''), 1)))));
 								return (p5context([1], p5want));
 							})()], p5want) }));
 						})()], p5want));
@@ -5666,11 +5666,11 @@ var p5100 = p5pkg['main'];
 				var v_res = null;
 				(v_res = (p5call(v_prec, "precedence_parse", [], 0)));
 				if ( (p5num(((v_res || (v_res = new p5ArrayRef([])))._array_)) == 0) ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new p5HashRef({'exp' : '*undef*'})))))));
+					throw((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_last_pos, 'capture' : '*undef*'})));
 				};
 				var v_result = null;
 				(v_result = (p5pkg["Perlito5::Expression"].pop_term([v_res], 0)));
-				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new p5HashRef({'exp' : v_result})))))));
+				return ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_last_pos, 'capture' : v_result})));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5744,11 +5744,11 @@ var p5100 = p5pkg['main'];
 				var v_res = null;
 				(v_res = (p5call(v_prec, "precedence_parse", [], 0)));
 				if ( (p5num(((v_res || (v_res = new p5ArrayRef([])))._array_)) == 0) ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new p5HashRef({'exp' : '*undef*'})))))));
+					throw((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_last_pos, 'capture' : '*undef*'})));
 				};
 				var v_result = null;
 				(v_result = (p5pkg["Perlito5::Expression"].pop_term([v_res], 0)));
-				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new p5HashRef({'exp' : v_result})))))));
+				return ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_last_pos, 'capture' : v_result})));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5890,7 +5890,7 @@ var p5100 = p5pkg['main'];
 				};
 				var v_result = null;
 				(v_result = (p5pkg["Perlito5::Expression"].pop_term([v_res], 0)));
-				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new p5HashRef({'exp' : v_result})))))));
+				return ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_last_pos, 'capture' : v_result})));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -6012,19 +6012,19 @@ var p5100 = p5pkg['main'];
 					p5pkg["Perlito5::Expression"].die([p5list_to_a('Expected expression after ' + String.fromCharCode(39), p5pkg["Perlito5::Match"].flat([v_modifier], 1), String.fromCharCode(39))], null);
 				};
 				if ( (p5str(v_modifier) == 'if') ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::If"], "new", p5list_to_a('cond', (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) || (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) = new p5HashRef({})))._hash_['exp'], 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'otherwise', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
+					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::If"], "new", p5list_to_a('cond', p5pkg["Perlito5::Match"].flat([v_modifier_exp], 1), 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'otherwise', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
 				};
 				if ( (p5str(v_modifier) == 'unless') ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::If"], "new", p5list_to_a('cond', (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) || (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) = new p5HashRef({})))._hash_['exp'], 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1), 'otherwise', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1)), 1))))));
+					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::If"], "new", p5list_to_a('cond', p5pkg["Perlito5::Match"].flat([v_modifier_exp], 1), 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1), 'otherwise', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1)), 1))))));
 				};
 				if ( (p5str(v_modifier) == 'when') ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::When"], "new", p5list_to_a('cond', (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) || (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) = new p5HashRef({})))._hash_['exp'], 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1)), 1))))));
+					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::When"], "new", p5list_to_a('cond', p5pkg["Perlito5::Match"].flat([v_modifier_exp], 1), 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1)), 1))))));
 				};
 				if ( (p5str(v_modifier) == 'while') ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::While"], "new", p5list_to_a('cond', (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) || (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) = new p5HashRef({})))._hash_['exp'], 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'continue', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
+					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::While"], "new", p5list_to_a('cond', p5pkg["Perlito5::Match"].flat([v_modifier_exp], 1), 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'continue', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
 				};
 				if ( ((p5str(v_modifier) == 'for') || (p5str(v_modifier) == 'foreach')) ) {
-					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::For"], "new", p5list_to_a('cond', (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) || (p5pkg["Perlito5::Match"].flat([v_modifier_exp], p5want) = new p5HashRef({})))._hash_['exp'], 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'continue', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
+					throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (v_modifier_exp || (v_modifier_exp = new p5HashRef({})))._hash_['to'], 'capture', p5call(p5pkg["Perlito5::AST::For"], "new", p5list_to_a('cond', p5pkg["Perlito5::Match"].flat([v_modifier_exp], 1), 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([v_expression]))), 1), 'continue', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef([]))), 1)), 1))))));
 				};
 				return (p5pkg["Perlito5::Expression"].die([[('Unexpected statement modifier ' + String.fromCharCode(39) + p5str(v_modifier) + String.fromCharCode(39))]], p5want));
 			}
@@ -6160,10 +6160,10 @@ var p5100 = p5pkg['main'];
 				if ( !( p5bool(v_res)) ) {
 					throw(p5context([], p5want));
 				};
-				if ( (((p5pkg["Perlito5::Expression"].substr([v_str, (v_res || (v_res = new p5HashRef({})))._hash_['to'], 1], 0) == ':') && p5bool(p5call(((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'], "isa", ['Perlito5::AST::Apply'], 0))) && p5bool((((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'] || (((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'] = new p5HashRef({})))._hash_['bareword'])) ) {
+				if ( (((p5pkg["Perlito5::Expression"].substr([v_str, (v_res || (v_res = new p5HashRef({})))._hash_['to'], 1], 0) == ':') && p5bool(p5call((v_res || (v_res = new p5HashRef({})))._hash_['capture'], "isa", ['Perlito5::AST::Apply'], 0))) && p5bool(((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['bareword'])) ) {
 					(function () {
 						var v_label = null;
-						(v_label = ((((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'] || (((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'] = new p5HashRef({})))._hash_['code']));
+						(v_label = (((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['code']));
 						var v_ws = null;
 						(v_ws = (p5call(p5pkg["Perlito5::Grammar::Space"], "opt_ws", [v_str, (p5num((v_res || (v_res = new p5HashRef({})))._hash_['to']) + 1)], 0)));
 						var v_stmt = null;
@@ -6178,7 +6178,7 @@ var p5100 = p5pkg['main'];
 						})();
 				};
 				var v_modifier = null;
-				(v_modifier = (p5call(v_self, "statement_modifier", p5list_to_a(v_str, (v_res || (v_res = new p5HashRef({})))._hash_['to'], (p5pkg["Perlito5::Match"].flat([v_res], p5want) || (p5pkg["Perlito5::Match"].flat([v_res], p5want) = new p5HashRef({})))._hash_['exp']), 0)));
+				(v_modifier = (p5call(v_self, "statement_modifier", p5list_to_a(v_str, (v_res || (v_res = new p5HashRef({})))._hash_['to'], p5pkg["Perlito5::Match"].flat([v_res], 1)), 0)));
 				var v_p = null;
 				(v_p = (( p5bool(v_modifier) ? (v_modifier || (v_modifier = new p5HashRef({})))._hash_['to'] : (v_res || (v_res = new p5HashRef({})))._hash_['to'])));
 				var v_terminator = null;
@@ -6187,7 +6187,6 @@ var p5100 = p5pkg['main'];
 					p5pkg["Perlito5::Expression"].die([['Number or Bareword found where operator expected']], null);
 				};
 				if ( !( p5bool(v_modifier)) ) {
-					((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] || ((v_res || (v_res = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']);
 					throw(p5context([v_res], p5want));
 				};
 				return (p5context([v_modifier], p5want));
@@ -6935,10 +6934,10 @@ var p5100 = p5pkg['main'];
 									})()], p5want) }), function () { return p5context([(function () {
 										var v_header = null;
 										if ( p5bool((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['c_style_for']) ) {
-											(v_header = ((new p5ArrayRef(p5list_to_a((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'], (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'], (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp'])))));
+											(v_header = ((new p5ArrayRef(p5list_to_a(((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture'], ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp'] = new p5HashRef({})))._hash_['capture'], ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp2'] = new p5HashRef({})))._hash_['capture'])))));
 										}
 										else {
-											(v_header = ((((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture'] || (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']));
+											(v_header = (((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = new p5HashRef({})))._hash_['capture']));
 										};
 										((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = p5call(p5pkg["Perlito5::AST::For"], "new", p5list_to_a('cond', v_header, 'topic', null, 'body', p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Grammar.exp_stmts2']), 1), 'sig', null), 1), 'continue', ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['opt_continue_block'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['opt_continue_block'] = new p5HashRef({})))._hash_['capture']), p5want));
 										return (p5context([1], p5want));
@@ -8665,7 +8664,7 @@ var p5100 = p5pkg['main'];
 					if ( p5bool(v_m_index) ) {
 						(function () {
 							var v_exp = null;
-							(v_exp = (((v_m_index || (v_m_index = new p5HashRef({})))._hash_['capture'] || ((v_m_index || (v_m_index = new p5HashRef({})))._hash_['capture'] = new p5HashRef({})))._hash_['exp']));
+							(v_exp = ((v_m_index || (v_m_index = new p5HashRef({})))._hash_['capture']));
 							(v_p = ((v_m_index || (v_m_index = new p5HashRef({})))._hash_['to']));
 							if ( ((p5str(v_exp) != '*undef*') && (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0) == ']')) ) {
 								(v_p)++;
@@ -9128,7 +9127,7 @@ var p5100 = p5pkg['main'];
 										}
 									})()], p5want) }), function () { return p5context([(function () {
 										var v_list = null;
-										(v_list = ((p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.list_parse']), p5want) || (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.list_parse']), p5want) = new p5HashRef({})))._hash_['exp']));
+										(v_list = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['Perlito5::Expression.list_parse']), 0)));
 										if ( (p5str(v_list) == '*undef*') ) {
 											(v_list = (null));
 										}

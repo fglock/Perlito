@@ -732,7 +732,7 @@ sub double_quoted_var_with_subscript {
         $p++;
         $m_index = Perlito5::Expression->list_parse($str, $p);
         if ($m_index) {
-            my $exp = $m_index->{capture}{exp};
+            my $exp = $m_index->{capture};
             $p = $m_index->{to};
             if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
                 $p++;
