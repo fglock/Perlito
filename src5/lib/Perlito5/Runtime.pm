@@ -2,6 +2,8 @@ package Perlito5::Runtime;
 
 use Perlito5::strict;
 
+$] = 5.012003
+    unless $];
 
 $Perlito5::EXPAND_USE = 1;
 $Perlito5::STRICT     = 0;

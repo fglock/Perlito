@@ -5105,7 +5105,7 @@ Perlito5::Precedence::add_term('&', sub {
 Perlito5::Precedence::add_term('*', sub {
     Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1])
 });
-((my  %special_var) = ('$_', 1, '$&', 1, '$`', 1, '$' . chr(39), 1, '$+', 1, '@+', 1, '%+', 1, '$.', 1, '$/', 1, '$|', 1, '$,', 1, '$' . chr(92), 1, '$"', 1, '$;', 1, '$%', 1, '$=', 1, '$-', 1, '@-', 1, '%-', 1, '$~', 1, '$^', 1, '$:', 1, '$?', 1, '$!', 1, '%!', 1, '$@', 1, '$$', 1, '$<', 1, '$>', 1, '$(', 1, '$)', 1, '$[', 1, '$]', 1, '@_', 1, '$*', 1, '$#+', 1, '$#-', 1, '$#_', 1));
+((my  %special_var) = ('$_', '', '$&', '', '$`', '', '$' . chr(39), '', '$+', '', '@+', '', '%+', '', '$.', '', '$/', '', '$|', '', '$,', '', '$' . chr(92), '', '$"', '', '$;', '', '$%', '', '$=', '', '$-', '', '@-', '', '%-', '', '$~', '', '$^', '', '$:', '', '$?', '', '$!', '', '%!', '', '$@', '', '$$', '', '$<', '', '$>', '', '$(', '', '$)', '', '$[', '', '$]', 'main', '@_', '', '$*', '', '$#+', '', '$#-', '', '$#_', ''));
 sub Perlito5::Grammar::Sigil::term_special_var {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -5133,7 +5133,7 @@ sub Perlito5::Grammar::Sigil::term_special_var {
 
         }
         else {
-            return ({'str', $str, 'from', $pos, 'to', ($pos + $len), 'capture', ['term', Perlito5::AST::Var->new('sigil', substr($s, 0, ($len - 1)), 'namespace', '', 'name', substr($s, ($len - 1), 1))]})
+            return ({'str', $str, 'from', $pos, 'to', ($pos + $len), 'capture', ['term', Perlito5::AST::Var->new('sigil', substr($s, 0, ($len - 1)), 'namespace', $special_var{$s}, 'name', substr($s, ($len - 1), 1))]})
         }
     };
     return (0)
@@ -5504,15 +5504,15 @@ sub Perlito5::Grammar::Use::require {
         return ()
     };
     ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($INC{$filename}) . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
-    if ($@) {
+    if (${'@'}) {
         ($INC{$filename} = undef());
-        die($@)
+        die(${'@'})
     }
     else {
         if (!($result)) {
             delete($INC{$filename});
-            if ($@) {
-                warn($@)
+            if (${'@'}) {
+                warn(${'@'})
             };
             die(($filename . ' did not return true value'))
         }
@@ -9252,7 +9252,11 @@ do {{
                 ($ns = ($self->{'namespace'} . '::'))
             }
         };
-        return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . $ns . $self->{'name'}))
+        ((my  $c) = substr($self->{'name'}, 0, 1));
+        if (((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || (($c eq '_')))) {
+            return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . $ns . $self->{'name'}))
+        };
+        return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $self->{'name'} . chr(39) . '}'))
     }
 }};
 package Perlito5::AST::Proto;
@@ -10081,6 +10085,12 @@ package Perlito5::Runtime;
 
 # use Perlito5::strict
 ;
+if (${'main::]'}) {
+
+}
+else {
+    (${'main::]'} = 5.012003)
+};
 ($Perlito5::EXPAND_USE = 1);
 ($Perlito5::STRICT = 0);
 ($Perlito5::WARNINGS = 0);
@@ -10211,7 +10221,7 @@ if (($backend && @ARGV)) {
         (my  $ok);
         (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
         if (!($ok)) {
-            ((my  $error) = ($@ || 'Unknown error'));
+            ((my  $error) = (${'@'} || 'Unknown error'));
             warn($error);
             exit(255)
         }
@@ -10226,7 +10236,7 @@ if (($backend && @ARGV)) {
                 ($ok = 1)
             });
         if ((!($ok) || ($m->{'to'} != length($source)))) {
-            ((my  $error) = (($@ || ((($m->{'to'} != length($source)) && ('Syntax Error near ' . $m->{'to'})))) || 'Unknown error'));
+            ((my  $error) = ((${'@'} || ((($m->{'to'} != length($source)) && ('Syntax Error near ' . $m->{'to'})))) || 'Unknown error'));
             warn($error);
             exit(255)
         }
@@ -10266,7 +10276,7 @@ if (($backend && @ARGV)) {
             else {
                 if (($backend eq 'ast-pretty')) {
                     (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1' . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
-                    print($@)
+                    print(${'@'})
                 }
             }
         }

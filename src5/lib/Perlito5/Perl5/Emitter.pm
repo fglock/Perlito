@@ -193,7 +193,15 @@ package Perlito5::AST::Var;
                 $ns = $self->{namespace} . '::';
             }
         }
-        return Perlito5::Perl5::tab($level) . $self->{sigil} . $ns . $self->{name}
+        my $c = substr($self->{name}, 0, 1);
+        if (  ($c ge 'a' && $c le 'z')
+           || ($c ge 'A' && $c le 'Z')
+           || ($c eq '_')
+           ) 
+        {
+            return Perlito5::Perl5::tab($level) . $self->{sigil} . $ns . $self->{name}
+        }
+        return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $self->{name} . "'}"
     }
 }
 

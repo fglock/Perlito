@@ -8791,7 +8791,7 @@ var p5100 = p5pkg['main'];
 		return (p5call(p5pkg["Perlito5::Grammar::Sigil"], "term_sigil", p5list_to_a(List__[p5idx(List__,0)], List__[p5idx(List__,1)]), p5want));
 }], null);
 		var Hash_special_var = {};
-		(Hash_special_var = p5a_to_h(['$_', 1, '$&', 1, '$`', 1, '$' + String.fromCharCode(39), 1, '$+', 1, '@+', 1, '%+', 1, '$.', 1, '$/', 1, '$|', 1, '$,', 1, '$' + String.fromCharCode(92), 1, '$"', 1, '$;', 1, '$%', 1, '$=', 1, '$-', 1, '@-', 1, '%-', 1, '$~', 1, '$^', 1, '$:', 1, '$?', 1, '$!', 1, '%!', 1, '$@', 1, '$$', 1, '$<', 1, '$>', 1, '$(', 1, '$)', 1, '$[', 1, '$]', 1, '@_', 1, '$*', 1, '$#+', 1, '$#-', 1, '$#_', 1]));
+		(Hash_special_var = p5a_to_h(['$_', '', '$&', '', '$`', '', '$' + String.fromCharCode(39), '', '$+', '', '@+', '', '%+', '', '$.', '', '$/', '', '$|', '', '$,', '', '$' + String.fromCharCode(92), '', '$"', '', '$;', '', '$%', '', '$=', '', '$-', '', '@-', '', '%-', '', '$~', '', '$^', '', '$:', '', '$?', '', '$!', '', '%!', '', '$@', '', '$$', '', '$<', '', '$>', '', '$(', '', '$)', '', '$[', '', '$]', 'main', '@_', '', '$*', '', '$#+', '', '$#-', '', '$#_', '']));
 		p5make_sub("Perlito5::Grammar::Sigil", "term_special_var", function (List__, p5want) {
 			try {
 				var v_self = null;
@@ -8828,7 +8828,7 @@ var p5100 = p5pkg['main'];
 							null;
 						}
 						else {
-							throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + p5num(v_len)), 'capture', (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', p5pkg["Perlito5::Grammar::Sigil"].substr([v_s, 0, (p5num(v_len) - 1)], 1), 'namespace', '', 'name', p5pkg["Perlito5::Grammar::Sigil"].substr([v_s, (p5num(v_len) - 1), 1], 1)], 1)))))))));
+							throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', (p5num(v_pos) + p5num(v_len)), 'capture', (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', p5pkg["Perlito5::Grammar::Sigil"].substr([v_s, 0, (p5num(v_len) - 1)], 1), 'namespace', Hash_special_var[v_s], 'name', p5pkg["Perlito5::Grammar::Sigil"].substr([v_s, (p5num(v_len) - 1), 1], 1)), 1)))))))));
 						};
 						})();
 				};
@@ -11916,6 +11916,12 @@ return r;
 		var p5159 = p5make_package("Perlito5::Runtime");
 		// use Perlito5::strict
 ;
+		if ( p5bool(p5pkg["main"]["v_]"]) ) {
+			null;
+		}
+		else {
+			(p5pkg["main"]["v_]"] = (5.012003));
+		};
 		(p5pkg["Perlito5"]["v_EXPAND_USE"] = (1));
 		(p5pkg["Perlito5"]["v_STRICT"] = (0));
 		(p5pkg["Perlito5"]["v_WARNINGS"] = (0));
