@@ -10609,46 +10609,6 @@ return r;
 					})()], 0)], 0)));
 				return (( p5bool(v_tmp) ? v_MATCH : 0));
 		});
-		p5make_sub("Perlito5::Grammar", "opt_ident", function (List__, p5want) {
-				var v_grammar = null;
-				(v_grammar = (List__[p5idx(List__,0)]));
-				var v_str = null;
-				(v_str = (List__[p5idx(List__,1)]));
-				var v_pos = null;
-				(v_pos = (List__[p5idx(List__,2)]));
-				var v_MATCH = null;
-				(v_MATCH = ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_pos}))));
-				var v_tmp = null;
-				(v_tmp = (p5context([p5context([(function () {
-						var v_pos1 = null;
-						(v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-						return (p5or(p5context([(function () {
-							return (p5and(p5context([(function () {
-								var v_m2 = null;
-								(v_m2 = (p5call(v_grammar, "ident", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']), 0)));
-								if ( p5bool(v_m2) ) {
-									((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new p5HashRef({})))._hash_['to']);
-									((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['ident'] = v_m2);
-									return (p5context([1], p5want));
-								}
-								
-								else {
-									return (p5context([0], p5want));
-								}
-							})()], p5want), function () { return p5context([(function () {
-								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['ident']), p5want));
-								return (p5context([1], p5want));
-							})()], p5want) }));
-						})()], p5want), function () { return p5context([(function () {
-							((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = v_pos1);
-							return (p5context([p5and(1, function () { return p5context([(function () {
-								((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = 'postcircumfix:<( )>');
-								return (p5context([1], p5want));
-							})()], p5want) })], p5want));
-						})()], p5want) }));
-					})()], 0)], 0)));
-				return (( p5bool(v_tmp) ? v_MATCH : 0));
-		});
 		p5make_sub("Perlito5::Grammar", "opt_type", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[p5idx(List__,0)]));

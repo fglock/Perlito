@@ -6433,38 +6433,6 @@ sub Perlito5::Grammar::exp2 {
 }))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::opt_ident {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((do {
-    ((my  $m2) = $grammar->ident($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'ident'}));
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((1 && ((do {
-    ($MATCH->{'capture'} = 'postcircumfix:<( )>');
-    1
-}))))
-})))
-}))));
-    ($tmp ? $MATCH : 0)
-};
 sub Perlito5::Grammar::opt_type {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

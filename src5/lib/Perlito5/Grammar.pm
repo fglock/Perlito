@@ -76,11 +76,6 @@ token exp2 {
         { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.exp_parse"}) }
 };
 
-token opt_ident {
-    | <ident>  { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{ident}) }
-    | ''       { $MATCH->{capture} = 'postcircumfix:<( )>' }
-};
-
 token opt_type {
     |   '::'?  <full_ident>   { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{full_ident}) }
     |   ''                    { $MATCH->{capture} = '' }
