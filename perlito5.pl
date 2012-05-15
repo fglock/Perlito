@@ -4724,7 +4724,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                 else {
                     if (($c eq chr(92))) {
                         if (($interpolate == 2)) {
-
+                            ($m = {'str', $str, 'from', $p, 'to', ($p + 2), 'capture', Perlito5::AST::Val::Buf->new('buf', substr($str, $p, 2))})
                         }
                         else {
                             if (($interpolate == 1)) {
