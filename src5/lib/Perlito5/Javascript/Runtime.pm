@@ -416,6 +416,11 @@ p5cmp = function(a, b) {
     return a > b ? 1 : a < b ? -1 : 0 
 };
 
+p5complement = function(a) {
+    return a < 0 ? ~a : 4294967295 - a
+    // return a < 0 ? ~a : 18446744073709551615 - a
+};
+
 p5str_replicate = function(o, n) {
     n = p5num(n);
     return n ? Array(n + 1).join(o) : "";

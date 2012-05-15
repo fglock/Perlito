@@ -1180,7 +1180,7 @@ package Perlito5::AST::Apply;
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
-            '~( ' . Perlito5::Javascript::to_num( $self->{arguments}->[0] ) . ')';
+            'p5complement( ' . Perlito5::Javascript::to_num( $self->{arguments}->[0] ) . ')';
         },
         'prefix:<->' => sub {
             my $self      = shift;

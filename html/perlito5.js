@@ -410,6 +410,11 @@ p5cmp = function(a, b) {
     return a > b ? 1 : a < b ? -1 : 0 
 };
 
+p5complement = function(a) {
+    return a < 0 ? ~a : 4294967295 - a
+    // return a < 0 ? ~a : 18446744073709551615 - a
+};
+
 p5str_replicate = function(o, n) {
     n = p5num(n);
     return n ? Array(n + 1).join(o) : "";
@@ -2870,7 +2875,7 @@ var p5100 = p5pkg['main'];
 					}, 'prefix:<~>', function (List__, p5want) {
 							var v_self = null;
 							(v_self = (List__[p5idx(List__,0)]));
-							return (p5context([('~( ' + p5str(p5pkg["Perlito5::Javascript"].to_num(p5list_to_a(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[p5idx(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_,0)]), 0)) + ')')], p5want));
+							return (p5context([('p5complement( ' + p5str(p5pkg["Perlito5::Javascript"].to_num(p5list_to_a(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_[p5idx(((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = new p5ArrayRef([])))._array_,0)]), 0)) + ')')], p5want));
 					}, 'prefix:<->', function (List__, p5want) {
 							var v_self = null;
 							(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
