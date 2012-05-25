@@ -32,6 +32,8 @@ TODO list for Perlito5
 
 * Parser
 
+-- attributes - see: http://perldoc.perl.org/attributes.html
+
 -- create __DATA__ 
 
 -- "sub _" should be in package "main"
