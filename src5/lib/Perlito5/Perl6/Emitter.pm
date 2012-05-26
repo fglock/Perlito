@@ -207,7 +207,7 @@ package Perlito5::AST::CompUnit;
     sub emit_perl6_program {
         my $comp_units = shift;
         my $str = '';
-        $str .= "use Perlito5::Perl6::Runtime;\n";
+        # $str .= "use Perlito5::Perl6::Runtime;\n";
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_perl6() . "\n";
         }

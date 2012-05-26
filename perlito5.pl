@@ -9699,7 +9699,6 @@ do {{
     sub Perlito5::AST::CompUnit::emit_perl6_program {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
-        ($str = ($str . 'use Perlito5::Perl6::Runtime;' . chr(10)));
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_perl6() . chr(10)))
         };
