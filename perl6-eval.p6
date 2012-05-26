@@ -1,6 +1,7 @@
 use v6;
 
 multi eval($str, :$lang! where 'perl5') {
+    $lang;  # workaround for niecza: '$lang is declared but not used'
     my $inp_file = "tmp.p5";
     my $out_file = "tmp.p6";
     my $fh = open($inp_file, :w);
@@ -21,6 +22,14 @@ eval($p5_str, :lang<perl5>);
 
 
 =begin comments
+
+
+Note: to run niecza in osx you need:
+
+    $ export LD_LIBRARY_PATH=/opt/local/lib
+
+    Missing LD_LIBRARY_PATH gives the error:
+    "Unhandled exception: System.TypeInitializationException"
 
 
 Note: fixed in rakudo commit e756635b9e:
