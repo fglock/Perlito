@@ -22,6 +22,7 @@ eval($p5_str, :lang<perl5>);
 
 =begin comments
 
+
 If I define multi eval($str, :$lang! where 'perl5')
 then rakudo can't find eval :lang<perl6> anymore
 because eval is declared as an only sub
@@ -32,6 +33,19 @@ This is a workaround (by moritz++):
     multi sub eval($str) {
         $str.eval;
     }
+
+
+Accessing perl6 variables inside eval (explained by moritz++):
+
+    sub f { say OUTER::.keys }; { my $x = 3; f() }
+    # $! GLOBALish $=pod EXPORT !UNIT_MARKER $?PACKAGE ::?PACKAGE $_ &f $/
+
+    sub f { say CALLER::.keys }; { my $x = 3; f() }
+    # call_sig $x $_ $*DISPATCHER
+
+and you might need to walk the CALLER's OUTER
+this one just gives you the immediate caller's scope
+
 
 =end comments
 
