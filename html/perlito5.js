@@ -86,15 +86,15 @@ function p5make_package(pkg_name) {
     return p5pkg[pkg_name];
 }
 
-function p5code_lookup_by_name(package, sub_name) {
+function p5code_lookup_by_name(package_name, sub_name) {
     // sub_name can have an optional namespace
     var parts = sub_name.split(/::/);
     if (parts.length > 1) {
         sub_name = parts.pop();
-        package = parts.join("::");
+        package_name = parts.join("::");
     }
-    if (p5pkg.hasOwnProperty(package)) {
-        var c = p5pkg[package];
+    if (p5pkg.hasOwnProperty(package_name)) {
+        var c = p5pkg[package_name];
         if ( c.hasOwnProperty(sub_name) ) {
             return c[sub_name]
         }
