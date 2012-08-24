@@ -198,19 +198,21 @@ sub add_comp_unit {
     my $comp_units = [];
 
     for my $comp_unit (@$parse) {
-        if ($comp_unit->isa('Perlito5::AST::Use')) {
-            expand_use($comp_units, $comp_unit);
-        }
-        elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
-            # warn "parsed comp_unit: '", $comp_unit->name, "'";
-            for my $stmt (@{ $comp_unit->body }) {
-                if ($stmt->isa('Perlito5::AST::Use')) {
-                    expand_use($comp_units, $stmt);
+        if (defined $comp_unit) {
+            if ($comp_unit->isa('Perlito5::AST::Use')) {
+                expand_use($comp_units, $comp_unit);
+            }
+            elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
+                # warn "parsed comp_unit: '", $comp_unit->name, "'";
+                for my $stmt (@{ $comp_unit->body }) {
+                    if ($stmt->isa('Perlito5::AST::Use')) {
+                        expand_use($comp_units, $stmt);
+                    }
                 }
             }
+            push @$comp_units, $comp_unit;
+            # say "comp_unit done";
         }
-        push @$comp_units, $comp_unit;
-        # say "comp_unit done";
     }
     return $comp_units;
 }
