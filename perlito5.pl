@@ -5361,7 +5361,7 @@ sub Perlito5::Grammar::Use::term_use {
     else {
         ((my  $m) = $MATCH->{'Perlito5::Expression.list_parse'});
         ((my  $list_code) = substr($str, $m->{'from'}, ($m->{'to'} - $m->{'from'})));
-        ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     $list_code . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
+        ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts(    $list_code, 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
         ($list = \@list)
     };
     ((my  $ast) = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'arguments', $list));
@@ -5504,7 +5504,7 @@ sub Perlito5::Grammar::Use::require {
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };
-    ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($INC{$filename}) . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;}));
+    ($result = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
     if (${'@'}) {
         ($INC{$filename} = undef());
         die(${'@'})
@@ -5596,7 +5596,7 @@ sub Perlito5::Grammar::Block::term_block {
             };
             if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {
                 if (($block_name eq 'BEGIN')) {
-                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         substr($str, $block_start, ($m->{'to'} - $block_start)) . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
+                    (do { my $m = Perlito5::Grammar->exp_stmts(                        substr($str, $block_start, ($m->{'to'} - $block_start)), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;});
                     ($m->{'capture'} = Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', []))
                 }
                 else {
@@ -9212,6 +9212,24 @@ do {{
     sub Perlito5::AST::Var::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
+        ((my  $str_name) = $self->{'name'});
+        if (($str_name eq chr(92))) {
+            ($str_name = chr(92) . chr(92))
+        };
+        if (($str_name eq '"')) {
+            ($str_name = chr(92) . '"')
+        };
+        ((my  $perl5_name) = $self->perl5_name());
+        (my  $decl_type);
+        ((my  $decl) = $self->perl5_get_decl($perl5_name));
+        if ($decl) {
+            ($decl_type = $decl->{'decl'})
+        }
+        else {
+            if ((!($self->{'namespace'}) && ($self->{'sigil'} ne '*'))) {
+
+            }
+        };
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
             if ((($self->{'namespace'} eq 'main') && (substr($self->{'name'}, 0, 1) eq '^'))) {
@@ -9225,10 +9243,7 @@ do {{
         if (((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || (($c eq '_')))) {
             return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . $ns . $self->{'name'}))
         };
-        if (($self->{'name'} eq chr(92))) {
-            return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $self->{'name'} . chr(92) . chr(39) . '}'))
-        };
-        return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $self->{'name'} . chr(39) . '}'))
+        return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}'))
     }
 }};
 package Perlito5::AST::Proto;
@@ -9406,7 +9421,7 @@ do {{
                 ($eval = $arg->emit_perl5(($level + 1), $wantarray))
             }
             else {
-                ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . '"do {" . ' . $arg->emit_perl5(($level + 1), 'scalar') . ' . "}", 0);' . 'my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");' . 'eval $source;' . '})'))
+                ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . $arg->emit_perl5(($level + 1), 'scalar') . ', 0);' . 'my $source; ' . '$source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";' . chr(92) . 'n" ' . 'for @{ Perlito5::Match::flat($m) }; ' . 'eval $source;' . '})'))
             };
             return ((Perlito5::Perl5::tab($level) . $eval))
         };
@@ -9509,8 +9524,9 @@ do {{
 package Perlito5::AST::Use;
 do {{
     sub Perlito5::AST::Use::emit_perl5 {
-        ((my  $self) = $_[0]);
-        ((my  $level) = $_[1]);
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        Perlito5::Grammar::Use::emit_time_eval($self);
         return ((chr(10) . Perlito5::Perl5::tab($level) . '# ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)))
     }
 }};
@@ -10189,10 +10205,10 @@ if (($backend && @ARGV)) {
     ($Perlito5::PROTO = {});
     if ($execute) {
         ($Perlito5::EXPAND_USE = 1);
-        (my  $ok);
-        (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
-        if (!($ok)) {
-            ((my  $error) = (${'@'} || 'Unknown error'));
+        local(${'@'});
+        (do { my $m = Perlito5::Grammar->exp_stmts(            ('package main; no strict; ' . $source . '; $@ = undef'), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;});
+        if (${'@'}) {
+            ((my  $error) = ${'@'});
             warn($error);
             exit(255)
         }
@@ -10246,7 +10262,7 @@ if (($backend && @ARGV)) {
             }
             else {
                 if (($backend eq 'ast-pretty')) {
-                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1' . "}", 0);my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");eval $source;});
+                    (do { my $m = Perlito5::Grammar->exp_stmts(                        'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1', 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;});
                     print(${'@'})
                 }
             }

@@ -146,11 +146,10 @@ if ($backend && @ARGV) {
 
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
-        my $ok;
-        eval "package main; no strict; $source ; \$ok = 1";
-        if ( !$ok ) {
-            my $error = $@
-                || "Unknown error";
+        local $@;
+        eval "package main; no strict; $source; \$@ = undef";
+        if ( $@ ) {
+            my $error = $@;
             warn $error;
             exit(255);
         }

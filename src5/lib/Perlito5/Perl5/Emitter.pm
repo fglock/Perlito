@@ -181,7 +181,31 @@ package Perlito5::AST::Var;
     sub emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        
+
+        my $str_name = $self->{name};
+        $str_name = '\\\\' if $str_name eq '\\';   # escape $\
+        $str_name = '\\"' if $str_name eq '"';     # escape $"
+
+        my $perl5_name = $self->perl5_name;
+        # say "looking up $perl5_name";
+        my $decl_type;  # my, our, local
+        my $decl = $self->perl5_get_decl( $perl5_name );
+        if ( $decl ) {
+            # say "found ", $decl->{decl};
+            $decl_type = $decl->{decl};
+        }
+        else {
+            if ( !$self->{namespace}
+               && $self->{sigil} ne '*'
+               )
+            {
+                # TODO - track globals; see javascript emitter
+                # if ( $Perlito5::STRICT ) {
+                #    die "Global symbol \"$perl5_name\" requires explicit package name"
+                # }
+            }
+        }
+
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
@@ -201,9 +225,7 @@ package Perlito5::AST::Var;
         {
             return Perlito5::Perl5::tab($level) . $self->{sigil} . $ns . $self->{name}
         }
-        return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $self->{name} . "\\" ."'}"
-            if $self->{name} eq '\\';
-        return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $self->{name} . "'}"
+        return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $str_name . "'}"
     }
 }
 
@@ -465,8 +487,12 @@ package Perlito5::AST::Apply;
                 $eval = 
                     '(do { '
                     .   'my $m = Perlito5::Grammar->exp_stmts(' 
-                    .       '"do {" . ' . $arg->emit_perl5( $level + 1, 'scalar' ) . ' . "}", 0);'
-                    .   'my $source = Perlito5::Match::flat($m)->[0]->emit_perl5(0, "scalar");'
+                    .       $arg->emit_perl5( $level + 1, 'scalar' ) . ', 0);'
+
+                    .   'my $source; '
+                    .   '$source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" '
+                    .       'for @{ Perlito5::Match::flat($m) }; '
+
                     # .   'warn $source;'
                     .   'eval $source;'
                     . '})';
@@ -644,9 +670,10 @@ package Perlito5::AST::Do;
 package Perlito5::AST::Use;
 {
     sub emit_perl5 {
-        my $self = $_[0];
-        my $level = $_[1];
-        
+        my $self = shift;
+        my $level = shift;
+        Perlito5::Grammar::Use::emit_time_eval($self);
+
         return "\n"
             . Perlito5::Perl5::tab($level) . "# " . $self->{code} . " " . $self->{mod} . "\n"
     }
