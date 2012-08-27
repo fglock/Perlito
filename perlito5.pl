@@ -9225,6 +9225,9 @@ do {{
         if (((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || (($c eq '_')))) {
             return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . $ns . $self->{'name'}))
         };
+        if (($self->{'name'} eq chr(92))) {
+            return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $self->{'name'} . chr(92) . chr(39) . '}'))
+        };
         return ((Perlito5::Perl5::tab($level) . $self->{'sigil'} . '{' . chr(39) . $ns . $self->{'name'} . chr(39) . '}'))
     }
 }};

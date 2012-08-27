@@ -201,6 +201,8 @@ package Perlito5::AST::Var;
         {
             return Perlito5::Perl5::tab($level) . $self->{sigil} . $ns . $self->{name}
         }
+        return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $self->{name} . "\\" ."'}"
+            if $self->{name} eq '\\';
         return Perlito5::Perl5::tab($level) . $self->{sigil} . "{'" . $ns . $self->{name} . "'}"
     }
 }
