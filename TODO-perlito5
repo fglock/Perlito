@@ -97,6 +97,25 @@ TODO list for Perlito5
 -- lookup for existing subroutines:
    sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
 
+-- add globs for special variables:
+
+    wrong:
+    $ perl perlito5.pl -Cperl5 -e ' print *+ * 1'
+        (print() * +(*{'1'}));
+
+    right:
+    $ perl -MO=Deparse -e ' print *+ * 1'
+    use Tie::Hash::NamedCapture ();
+    print *+ * 1;
+    -e syntax OK
+    $ perl -MO=Deparse -e ' print *\ * 1'
+    print *\ * 1;
+    -e syntax OK
+    $ perl -MO=Deparse -e ' print */ * 1'
+    print */ * 1;
+    -e syntax OK
+
+
 -- add tests for fixed bugs:
 
     filetest operators special case:
