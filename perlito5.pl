@@ -5243,7 +5243,7 @@ Perlito5::Precedence::add_term('no', sub {
 Perlito5::Precedence::add_term('use', sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 });
-((my  %Perlito_internal_module) = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes'));
+((my  %Perlito_internal_module) = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding'));
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
