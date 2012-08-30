@@ -37,6 +37,11 @@ TODO list for Perlito5
 -- create __DATA__ 
 
 -- "sub _" should be in package "main"
+    $ perl -MO=Deparse -e ' package X; sub _ { 123 } '
+    package X;
+    sub main::_ {
+        123;
+    }
 
 -- "given" statement not implemented
 -- "default" statement not implemented
@@ -53,6 +58,7 @@ TODO list for Perlito5
    use Module $v;  # $v is not accessible at compile-time
 
 -- parse the regexes
+-- create an AST for regexes
 
 -- prototypes (signatures)
 --- done: "empty" _ $ ;$
@@ -74,6 +80,7 @@ TODO list for Perlito5
 
 -- add "print", "printf", "say" special parsing - note this is related to indirect object notation
 -- indirect object notation
+    http://lwn.net/Articles/451486/
     http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
     http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
     http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
@@ -96,24 +103,6 @@ TODO list for Perlito5
 
 -- lookup for existing subroutines:
    sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
-
--- add globs for special variables:
-
-    wrong:
-    $ perl perlito5.pl -Cperl5 -e ' print *+ * 1'
-        (print() * +(*{'1'}));
-
-    right:
-    $ perl -MO=Deparse -e ' print *+ * 1'
-    use Tie::Hash::NamedCapture ();
-    print *+ * 1;
-    -e syntax OK
-    $ perl -MO=Deparse -e ' print *\ * 1'
-    print *\ * 1;
-    -e syntax OK
-    $ perl -MO=Deparse -e ' print */ * 1'
-    print */ * 1;
-    -e syntax OK
 
 
 -- add tests for fixed bugs:
@@ -152,10 +141,6 @@ TODO list for Perlito5
 
 
 * Javascript backend
-
--- bug: scalar assignment context:
-    $ node perlito5.js -Isrc5/lib -e ' @v = (4,7,9); $v = @v; print $v '
-    479
 
 -- "~~" operator not implemented; See also "when" implementation
 

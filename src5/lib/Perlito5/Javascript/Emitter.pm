@@ -851,6 +851,9 @@ package Perlito5::AST::Var;
                 if ($sigil eq '@') {
                     $s = $s . ' || (' . $s . ' = [])';  # init
                     $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
+                    if ( $self->{sigil} eq '@' && $wantarray eq 'scalar' ) {
+                        $s .= '.length';
+                    }
                 }
                 elsif ($sigil eq '%') {
                     $s = $s . ' || (' . $s . ' = {})';  # init
