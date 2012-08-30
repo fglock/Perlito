@@ -10209,7 +10209,7 @@ if (($backend && @ARGV)) {
     if ($execute) {
         ($Perlito5::EXPAND_USE = 1);
         local(${'@'});
-        (do { my $m = Perlito5::Grammar->exp_stmts(            ('package main; no strict; ' . $source . '; $@ = undef'), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;});
+        (do { my $m = Perlito5::Grammar->exp_stmts(            ('package main; no strict; no warnings; ' . $source . '; $@ = undef'), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;});
         if (${'@'}) {
             ((my  $error) = ${'@'});
             warn($error);

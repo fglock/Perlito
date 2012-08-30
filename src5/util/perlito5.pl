@@ -147,7 +147,7 @@ if ($backend && @ARGV) {
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;
-        eval "package main; no strict; $source; \$@ = undef";
+        eval "package main; no strict; no warnings; $source; \$@ = undef";
         if ( $@ ) {
             my $error = $@;
             warn $error;
