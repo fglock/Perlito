@@ -164,6 +164,10 @@ sub expand_use {
         if $module_name eq 'strict'
         || $module_name eq 'warnings'
         || $module_name eq 'feature';
+
+    $module_name = $Perlito_internal_module{$module_name}
+        if exists $Perlito_internal_module{$module_name};
+
     my $filename = modulename_to_filename($module_name);
 
     return 

@@ -5461,6 +5461,9 @@ sub Perlito5::Grammar::Use::expand_use {
     if (((($module_name eq 'strict') || ($module_name eq 'warnings')) || ($module_name eq 'feature'))) {
         return ()
     };
+    if (exists($Perlito_internal_module{$module_name})) {
+        ($module_name = $Perlito_internal_module{$module_name})
+    };
     ((my  $filename) = modulename_to_filename($module_name));
     if ((filename_lookup($filename) eq 'done')) {
         return ()
@@ -10230,7 +10233,16 @@ if (($backend && @ARGV)) {
         else {
             (my  $comp_units);
             if ($expand_use) {
-                ($comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m)))
+                (my  $ok);
+                                    (do {
+                        ($comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m)));
+                        ($ok = 1)
+                    });
+                if (!($ok)) {
+                    ((my  $error) = (${'@'} || 'Unknown error loading a module'));
+                    warn($error);
+                    exit(255)
+                }
             }
             else {
                 ($comp_units = Perlito5::Match::flat($m))
