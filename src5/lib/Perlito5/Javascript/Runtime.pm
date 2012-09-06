@@ -184,6 +184,7 @@ function p5call(invocant, method, list) {
 
 p5make_package("main");
 p5pkg["main"]["v_@"] = [];      // $@
+p5pkg["main"]["v_|"] = 0;       // $|
 p5pkg["main"]["List_#"] = [];   // @#
 p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript";
 p5pkg["main"]["List_INC"] = [];

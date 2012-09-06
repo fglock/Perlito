@@ -648,6 +648,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
               '$@'    => { decl => 'our', namespace => 'main' },
+              '$|'    => { decl => 'our', namespace => 'main' },
               '$^O'   => { decl => 'our', namespace => 'main' },
               '%ENV'  => { decl => 'our', namespace => 'main' },
               '%INC'  => { decl => 'our', namespace => 'main' },
