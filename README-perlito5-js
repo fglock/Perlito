@@ -311,6 +311,18 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
  
 
+* Threads (TODO)
+
+
+
+* Reference counting (TODO)
+
+- add a new attribute _cnt_ to all references
+- lexicals, locals decrement the count when going out of scope
+- call DESTROY when count reaches zero
+
+
+
 * Cell-based aliasing (TODO)
 
 

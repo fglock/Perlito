@@ -8208,7 +8208,10 @@ do {{
                 ((my  $s) = ('p5pkg["' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'));
                 if (($sigil eq '@')) {
                     ($s = ($s . ' || (' . $s . ' = [])'));
-                    ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'))
+                    ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'));
+                    if ((($self->{'sigil'} eq '@') && ($wantarray eq 'scalar'))) {
+                        ($s = ($s . '.length'))
+                    }
                 }
                 else {
                     if (($sigil eq '%')) {
