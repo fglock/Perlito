@@ -1530,7 +1530,7 @@ package Perlito5::AST::Apply;
                     .        'p5pkg["main"]["v_@"] = err;' . "\n"
                     .    "}\n"
                     .    "else {\n"
-                    .        "throw(err);\n"   # return() value
+                    .        "return(err);\n" 
                     .    "}\n"
                     . "}\n"
                     . "return r;\n"
