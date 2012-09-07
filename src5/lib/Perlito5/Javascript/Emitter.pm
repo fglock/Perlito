@@ -1782,6 +1782,17 @@ package Perlito5::AST::Apply;
             }
         }
 
+        if (  ($self->{code} eq 'say' || $self->{code} eq 'print')
+           && !$self->{namespace} 
+           && $self->{bareword}
+           )
+        {
+            # print/say have no prototype; the default argument is $_
+            $self->{arguments} = [
+                Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+            ];
+        }
+
         if ($sig) {
             # warn "sig $effective_name $sig\n";
             my @out = ();

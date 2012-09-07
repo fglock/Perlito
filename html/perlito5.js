@@ -3459,6 +3459,9 @@ var p5100 = p5pkg['main'];
 									};
 								};
 							}, [0], false, "");
+						if ( ((((p5str((v_self || (v_self = new p5HashRef({})))._hash_['code']) == 'say') || (p5str((v_self || (v_self = new p5HashRef({})))._hash_['code']) == 'print')) && !( p5bool((v_self || (v_self = new p5HashRef({})))._hash_['namespace']))) && p5bool((v_self || (v_self = new p5HashRef({})))._hash_['bareword'])) ) {
+							((v_self || (v_self = new p5HashRef({})))._hash_['arguments'] = (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '$', 'namespace', '', 'name', '_'], 1)))));
+						};
 						if ( p5bool(v_sig) ) {
 							(function () {
 								var List_out = [];

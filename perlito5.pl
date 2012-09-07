@@ -8831,6 +8831,9 @@ do {{
                 }
             }
         }};
+        if (((((($self->{'code'} eq 'say') || ($self->{'code'} eq 'print'))) && !($self->{'namespace'})) && $self->{'bareword'})) {
+            ($self->{'arguments'} = [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_')])
+        };
         if ($sig) {
             ((my  @out) = ());
             ((my  @in) = @{($self->{'arguments'} || [])});
