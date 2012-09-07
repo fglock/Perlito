@@ -142,6 +142,29 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- verify "return" behaviour inside eval (Luciano Rocha++):
+
+    $ perl -le 'sub foo { my $x = eval { return "bar" }; return "baz-$x" }; my $bar = foo(); warn ( foo() )'
+    baz-bar at -e line 1.
+    $ perl -le 'sub foo { my $x = eval qq{ return "bar" }; return "baz-$x" }; my $bar = foo(); warn ( foo() )'
+    baz-bar at -e line 1.
+
+-- "or" has SCALAR context (Abigail++):
+
+    $ node perlito5.js -Isrc5/lib -e '
+    
+        eval {
+            my $result = wantarray ? "LIST" : defined wantarray ? "SCALAR" : "VOID";
+            say "Eval block: $result";
+            1;
+        } or do {warn "Oops"};
+    
+    
+    '
+    Eval block: VOID   # should be SCALAR
+
+    See: file "eval-test.pl"
+
 -- "~~" operator not implemented; See also "when" implementation
 
 -- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
