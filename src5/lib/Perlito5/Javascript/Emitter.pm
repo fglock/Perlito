@@ -450,6 +450,7 @@ package Perlito5::Javascript::LexicalBlock;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my @block;
         for (@{$self->{block}}) {
@@ -527,6 +528,9 @@ package Perlito5::Javascript::LexicalBlock;
                 push @str, $decl->emit_javascript($level, 'void') . ';';
             }
         }
+
+        # TODO - use the context information ($wantarray)
+
         if ($self->{needs_return} && $last_statement) {
 
             if ($last_statement->isa( 'Perlito5::AST::Decl' )) {
@@ -1498,9 +1502,13 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
+                # eval block
+
                 $eval = $arg->emit_javascript( $level + 1, $wantarray );
             }
             else {
+                # eval string
+
                 my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
                 # say "at eval: ", $var_env_perl5;
                 my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
@@ -1510,7 +1518,8 @@ package Perlito5::AST::Apply;
                 $eval ='eval(perl5_to_js(' 
                             . Perlito5::Javascript::to_str($arg) . ", "
                             . '"' . $Perlito5::PKG_NAME . '", '
-                            . $var_env_js
+                            . $var_env_js . ', '
+                            . '"' . $wantarray . '"'
                         . "))";
             }
 
@@ -1728,7 +1737,7 @@ package Perlito5::AST::Apply;
            )
         {
             return 'p5or' . '('
-                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->{arguments}->[0]->emit_javascript($level, 'scalar') . ', '
                 . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         }
@@ -2031,10 +2040,12 @@ package Perlito5::AST::Do;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
+
         my $block = $self->simplify->block;
         return
               '(function () {' . "\n"
-            .   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript( $level + 1 ) . "\n"
+            .   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript( $level + 1, $wantarray ) . "\n"
             . Perlito5::Javascript::tab($level) . '})()'
     }
 }

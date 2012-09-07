@@ -602,7 +602,7 @@ p5sort = function(namespace, func, args) {
     return out;
 };
 
-perl5_to_js = function( source, namespace, var_env_js ) {
+perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     // CORE.say(["source: [" + source + "]"]);
 
     var strict_old = p5pkg["Perlito5"].v_STRICT;
@@ -631,7 +631,7 @@ perl5_to_js = function( source, namespace, var_env_js ) {
     ]);
 
     // CORE.say(["ast: [" + ast + "]"]);
-    js_code = p5call(ast, "emit_javascript", []);
+    js_code = p5call(ast, "emit_javascript", [0, p5want]);
     // CORE.say(["js-source: [" + js_code + "]"]);
 
     p5pkg["Perlito5"].v_PKG_NAME = namespace_old;
