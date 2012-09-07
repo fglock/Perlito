@@ -1654,7 +1654,7 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             'p5defined_or' . '('
-                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->{arguments}->[0]->emit_javascript($level, 'scalar') . ', '
                 . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         },
@@ -1728,7 +1728,7 @@ package Perlito5::AST::Apply;
            )
         {
             return 'p5and' . '('
-                . $self->{arguments}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->{arguments}->[0]->emit_javascript($level, 'scalar') . ', '
                 . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         }
