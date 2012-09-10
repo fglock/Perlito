@@ -1,3 +1,17 @@
+Using make:
+
+    make
+        - builds perlito5.js (which runs in node.js)
+
+    make test
+        - tests perlito5.js using node.js
+
+    make build-5browser
+        - builds html/perlito5.js (which runs in the browser)
+
+-- See "Makefile" for more options
+
+
 Running the tests using "node.js":
 
     # this command will compile "perlito5.js"
