@@ -58,6 +58,19 @@ Bootstrap with node.js:
     time node perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
 
 
+Minifying the javascript output:
+
+    The "jsmin" compressor seems to work, it gives 20% compression:
+    
+      http://crockford.com/javascript/jsmin
+    
+    $ sudo port install jsmin   # osx
+    $ jsmin < perlito5.js > mini-perlito5.js
+    $ nice prove -r -e 'node mini-perlito5.js -I./src5/lib' t5
+    ...
+    All tests successful.
+
+
 TODO:
 
 Running the tests using perl6:
