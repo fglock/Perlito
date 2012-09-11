@@ -8374,7 +8374,7 @@ do {{
         };
         ((my  $invocant) = $self->{'invocant'}->emit_javascript());
         if (($meth eq 'postcircumfix:<( )>')) {
-            return (('(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')'))
+            return (('(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
         };
         if ((ref($meth) eq 'Perlito5::AST::Var')) {
             ($meth = $meth->emit_javascript())
@@ -8671,7 +8671,7 @@ do {{
         ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
         ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . '))'))
     };
-    ('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()')
+    ('(function (p5want) {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
 }, 'undef', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -8741,7 +8741,7 @@ do {{
     ((my  $self) = shift());
     ((my  $level) = shift());
     ((my  $wantarray) = shift());
-    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
+    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
 }, 'exists', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -8790,7 +8790,7 @@ do {{
             return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
         };
         if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
-            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
+            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
             return (('p5or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))

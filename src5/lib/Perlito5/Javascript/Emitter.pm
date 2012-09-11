@@ -1062,7 +1062,13 @@ package Perlito5::AST::Call;
 
         my $invocant = $self->{invocant}->emit_javascript;
         if  ($meth eq 'postcircumfix:<( )>')  {
-            return '(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{arguments}) . ')';
+            return '(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{arguments}) . ', '
+                         .   ($wantarray eq 'list'   ? '1' 
+                             :$wantarray eq 'scalar' ? '0' 
+                             :$wantarray eq 'void'   ? 'null'
+                             :                         'p5want'
+                             ) 
+                    . ')';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_javascript();
@@ -1525,7 +1531,7 @@ package Perlito5::AST::Apply;
 
             # TODO - test return() from inside eval
 
-                "(function () {\n"
+                "(function (p5want) {\n"
                     . "var r = null;\n"
                     . 'p5pkg["main"]["v_@"] = "";' . "\n"
                     . "try {\n"
@@ -1543,7 +1549,13 @@ package Perlito5::AST::Apply;
                     .    "}\n"
                     . "}\n"
                     . "return r;\n"
-                . "})()"
+                . "})(" 
+                    .   ($wantarray eq 'list'   ? '1' 
+                        :$wantarray eq 'scalar' ? '0' 
+                        :$wantarray eq 'void'   ? 'null'
+                        :                         'p5want'
+                        ) 
+                    . ")"
 
         },
 
