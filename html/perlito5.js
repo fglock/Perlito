@@ -11895,7 +11895,7 @@ return r;
 			null;
 		}
 		else {
-			(p5pkg["main"]["v_]"] = (5.012003));
+			(p5pkg["main"]["v_]"] = (5.014001));
 		};
 		(p5pkg["Perlito5"]["v_EXPAND_USE"] = (1));
 		(p5pkg["Perlito5"]["v_STRICT"] = (0));

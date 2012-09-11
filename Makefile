@@ -1,13 +1,18 @@
 # default actions
 
-make ::
-	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+all : build-5to5 build-5js build-5browser
 
-test ::
-	prove -r -e 'node perlito5.js -I./src5/lib' t5
+test-all : test-5to5 test-5js
+
+test : test-5js
+
+boot-all : boot-5to5 boot-5js build-5browser
 
 
 # more
+
+build-5to5 ::
+	perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
 
 build-5js ::
 	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
