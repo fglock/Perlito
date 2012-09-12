@@ -518,7 +518,7 @@ my $Argument_end_token = {
         '<' => 1,   
         '>' => 1,   
         '=' => 1,   
-        '&' => 1,   
+        # '&' => 1,    '&' is not a delimiter - example: defined &$sub
         '|' => 1,   
         '^' => 1,   
         '?' => 1,   

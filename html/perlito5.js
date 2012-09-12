@@ -5579,7 +5579,7 @@ var p5100 = p5pkg['main'];
 				return (( p5bool(v_tmp) ? v_MATCH : 0));
 		});
 		var v_Argument_end_token = null;
-		(v_Argument_end_token = ((new p5HashRef({':' : 1, ']' : 1, ')' : 1, '}' : 1, ';' : 1, ',' : 1, '<' : 1, '>' : 1, '=' : 1, '&' : 1, '|' : 1, '^' : 1, '?' : 1, 'or' : 1, 'if' : 1, '=>' : 1, 'lt' : 1, 'le' : 1, 'gt' : 1, 'ge' : 1, '<=' : 1, '>=' : 1, '==' : 1, '!=' : 1, 'ne' : 1, 'eq' : 1, '..' : 1, '~~' : 1, '&&' : 1, '||' : 1, '+=' : 1, '-=' : 1, '*=' : 1, '/=' : 1, 'x=' : 1, '|=' : 1, '&=' : 1, '.=' : 1, '^=' : 1, '%=' : 1, '//' : 1, 'for' : 1, 'and' : 1, 'xor' : 1, '...' : 1, '<=>' : 1, 'cmp' : 1, '<<=' : 1, '>>=' : 1, '||=' : 1, '&&=' : 1, '//=' : 1, '**=' : 1, 'when' : 1, 'while' : 1, 'unless' : 1, 'foreach' : 1}))));
+		(v_Argument_end_token = ((new p5HashRef({':' : 1, ']' : 1, ')' : 1, '}' : 1, ';' : 1, ',' : 1, '<' : 1, '>' : 1, '=' : 1, '|' : 1, '^' : 1, '?' : 1, 'or' : 1, 'if' : 1, '=>' : 1, 'lt' : 1, 'le' : 1, 'gt' : 1, 'ge' : 1, '<=' : 1, '>=' : 1, '==' : 1, '!=' : 1, 'ne' : 1, 'eq' : 1, '..' : 1, '~~' : 1, '&&' : 1, '||' : 1, '+=' : 1, '-=' : 1, '*=' : 1, '/=' : 1, 'x=' : 1, '|=' : 1, '&=' : 1, '.=' : 1, '^=' : 1, '%=' : 1, '//' : 1, 'for' : 1, 'and' : 1, 'xor' : 1, '...' : 1, '<=>' : 1, 'cmp' : 1, '<<=' : 1, '>>=' : 1, '||=' : 1, '&&=' : 1, '//=' : 1, '**=' : 1, 'when' : 1, 'while' : 1, 'unless' : 1, 'foreach' : 1}))));
 		var v_Argument_end_token_chars = null;
 		(v_Argument_end_token_chars = ((new p5ArrayRef([7, 6, 5, 4, 3, 2, 1]))));
 		var v_List_end_token = null;
@@ -9230,9 +9230,7 @@ return r;
 						p5pkg["Perlito5::Grammar::Use"]["require"]([p5str(v_filename), 0]);
 						if ( !( p5bool(v_skip_import)) ) {
 							if ( (p5str(v_use_or_not) == 'use') ) {
-								if ( p5bool((p5num((p5pkg["Perlito5::Grammar::Use"]["v__"] != null)) & p5num(p5for_lex(function () {
-		(p5str(v_module_name) + '::import');
-	}, [0], false, "")))) ) {
+								if ( (p5code_lookup_by_name("Perlito5::Grammar::Use", (p5str(v_module_name) + '::import')) != null) ) {
 									p5pkg["Perlito5::Grammar::Use"].unshift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_, p5list_to_a((new p5ArrayRef([p5pkg["Perlito5"]["v_PKG_NAME"]])))], null);
 									p5call(v_module_name, "import", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), null);
 									return (p5pkg["Perlito5::Grammar::Use"].shift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_]));
@@ -9245,9 +9243,7 @@ return r;
 							
 							else {
 								if ( (p5str(v_use_or_not) == 'no') ) {
-									if ( p5bool((p5num((p5pkg["Perlito5::Grammar::Use"]["v__"] != null)) & p5num(p5for_lex(function () {
-		(p5str(v_module_name) + '::unimport');
-	}, [0], false, "")))) ) {
+									if ( (p5code_lookup_by_name("Perlito5::Grammar::Use", (p5str(v_module_name) + '::unimport')) != null) ) {
 										p5pkg["Perlito5::Grammar::Use"].unshift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_, p5list_to_a((new p5ArrayRef([p5pkg["Perlito5"]["v_PKG_NAME"]])))], null);
 										p5call(v_module_name, "unimport", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), null);
 										return (p5pkg["Perlito5::Grammar::Use"].shift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_]));
