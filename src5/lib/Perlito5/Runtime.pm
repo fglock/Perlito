@@ -10,6 +10,8 @@ $Perlito5::STRICT     = 0;
 $Perlito5::WARNINGS   = 0;
 $Perlito5::UTF8       = 0;
 $Perlito5::BYTES      = 0;
+$Perlito5::CALLER     = [];
+$Perlito5::PKG_NAME   = '';
 
 push @INC, $_
     for split ":", ($ENV{PERL5LIB} || "");

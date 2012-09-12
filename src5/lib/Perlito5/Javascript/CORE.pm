@@ -84,6 +84,13 @@ CORE.bless = function(List__) {
     return o;
 };
 
+CORE.caller = function(List__, p5want) {
+    if (p5want) {
+        return p5pkg["Perlito5"]["CALLER"][0];
+    }
+    return p5pkg["Perlito5"]["CALLER"][0][0];
+};
+
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);

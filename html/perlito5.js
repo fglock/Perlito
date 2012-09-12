@@ -713,6 +713,13 @@ CORE.bless = function(List__) {
     return o;
 };
 
+CORE.caller = function(List__, p5want) {
+    if (p5want) {
+        return p5pkg["Perlito5"]["CALLER"][0];
+    }
+    return p5pkg["Perlito5"]["CALLER"][0][0];
+};
+
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);
@@ -9226,7 +9233,9 @@ return r;
 								if ( p5bool((p5num((p5pkg["Perlito5::Grammar::Use"]["v__"] != null)) & p5num(p5for_lex(function () {
 		(p5str(v_module_name) + '::import');
 	}, [0], false, "")))) ) {
-									return (p5call(v_module_name, "import", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), p5want));
+									p5pkg["Perlito5::Grammar::Use"].unshift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_, p5list_to_a((new p5ArrayRef([p5pkg["Perlito5"]["v_PKG_NAME"]])))], null);
+									p5call(v_module_name, "import", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), null);
+									return (p5pkg["Perlito5::Grammar::Use"].shift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_]));
 								}
 								
 								else {
@@ -9239,7 +9248,9 @@ return r;
 									if ( p5bool((p5num((p5pkg["Perlito5::Grammar::Use"]["v__"] != null)) & p5num(p5for_lex(function () {
 		(p5str(v_module_name) + '::unimport');
 	}, [0], false, "")))) ) {
-										return (p5call(v_module_name, "unimport", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), p5want));
+										p5pkg["Perlito5::Grammar::Use"].unshift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_, p5list_to_a((new p5ArrayRef([p5pkg["Perlito5"]["v_PKG_NAME"]])))], null);
+										p5call(v_module_name, "unimport", p5list_to_a((v_arguments || (v_arguments = new p5ArrayRef([])))._array_), null);
+										return (p5pkg["Perlito5::Grammar::Use"].shift([(p5pkg["Perlito5"]["v_CALLER"] || (p5pkg["Perlito5"]["v_CALLER"] = new p5ArrayRef([])))._array_]));
 									}
 									
 									else {
@@ -11902,6 +11913,8 @@ return r;
 		(p5pkg["Perlito5"]["v_WARNINGS"] = (0));
 		(p5pkg["Perlito5"]["v_UTF8"] = (0));
 		(p5pkg["Perlito5"]["v_BYTES"] = (0));
+		(p5pkg["Perlito5"]["v_CALLER"] = ((new p5ArrayRef([]))));
+		(p5pkg["Perlito5"]["v_PKG_NAME"] = (''));
 		p5for(p5pkg["Perlito5::Runtime"], function () {
 				p5pkg["Perlito5::Runtime"].push([p5pkg["main"]["List_INC"], [p5pkg["Perlito5::Runtime"]["v__"]]], null);
 			}, p5list_to_a(p5pkg["Perlito5::Runtime"].split(p5list_to_a(':', p5or(p5pkg["main"]["Hash_ENV"]['PERL5LIB'], function () { return '' })), 1)), false, "");

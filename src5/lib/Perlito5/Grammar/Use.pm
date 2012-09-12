@@ -97,18 +97,20 @@ sub parse_time_eval {
             require $filename;
 
             if (!$skip_import) {
-
-                # TODO - temporarily set caller() to the current module under compilation
-
                 # call import/unimport
                 if ($use_or_not eq 'use') {
                     if (defined &{$module_name . '::import'}) {
+                        # temporarily set caller() to the current module under compilation
+                        unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
                         $module_name->import(@$arguments);
+                        shift @{ $Perlito5::CALLER };
                     }
                 }
                 elsif ($use_or_not eq 'no') {
                     if (defined &{$module_name . '::unimport'}) {
+                        unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
                         $module_name->unimport(@$arguments);
+                        shift @{ $Perlito5::CALLER };
                     }
                 }
             }
