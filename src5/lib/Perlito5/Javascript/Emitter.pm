@@ -961,7 +961,11 @@ package Perlito5::AST::Decl;
                 # say "looking up $perl5_name";
                 my $decl_namespace = '';
                 my $decl = $self->{var}->perl5_get_decl( $perl5_name );
-                if ( $self->{decl} eq 'local' && $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
+                if (  $self->{decl} eq 'local' 
+                   && $decl 
+                   && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')
+                   )
+                {
                     # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
                     $decl_namespace = $decl->{namespace};
                 }
@@ -1232,6 +1236,11 @@ package Perlito5::AST::Apply;
         },
         'require' => sub {
             my $self = $_[0];
+            my $arg  = $self->{arguments}->[0];
+            if ($arg->isa('Perlito5::AST::Val::Num')) {
+                # "use 5.006" -- XXX this should be tested at parse time instead
+                return '1';
+            }
             'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
                 . Perlito5::Javascript::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
@@ -1358,7 +1367,15 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
 
-            # TODO - bug: this is a side-effect of my($x,$y)
+            # TODO - this is a side-effect of my($x,$y)
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+        },
+        'our' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            # TODO - this is a side-effect of our($x,$y)
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'local' => sub {
@@ -1366,7 +1383,7 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
 
-            # TODO - bug: this is a side-effect of local($x,$y)
+            # TODO - this is a side-effect of local($x,$y)
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
@@ -1384,7 +1401,22 @@ package Perlito5::AST::Apply;
             my $arguments  = $self->{arguments}->[1];
 
             if (   $parameters->isa( 'Perlito5::AST::Apply' )
-               &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
+               &&  $parameters->code eq 'prefix:<*>' 
+               )
+            {
+                # *{$callpkg."::import"} = \&import;
+                return 'p5set_glob('
+                        . $parameters->{arguments}->[0]->emit_javascript() . ', '
+                        . Perlito5::Javascript::to_scalar([$arguments], $level+1)
+                    . ')'
+            }
+
+            if (   $parameters->isa( 'Perlito5::AST::Apply' )
+               &&  (  $parameters->code eq 'my' 
+                   || $parameters->code eq 'our' 
+                   || $parameters->code eq 'local' 
+                   || $parameters->code eq 'circumfix:<( )>' 
+                   )
                )
             {
                 # my ($x, $y) = ...

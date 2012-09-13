@@ -208,6 +208,19 @@ function p5make_sub(pkg_name, sub_name, func) {
     p5pkg[pkg_name][sub_name] = func;
 }
 
+function p5set_glob(name, data) {
+    if ( name.indexOf("::") == -1 ) {
+        p5pkg[p5pkg["Perlito5"].v_PKG_NAME][name] = data;
+        return data;
+    }
+    var c = name.split("::");
+    s = c.pop(); 
+    var pkg = c.join("::");
+    p5make_package(pkg);
+    p5pkg[pkg][s] = data;
+    return data;
+}
+
 function p5set_local(namespace, name, sigil) {
     var v = name;
     if (sigil == "$") {
