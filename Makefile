@@ -11,6 +11,9 @@ boot-all : boot-5to5 boot-5js build-5browser
 
 # more
 
+minify ::
+	jsmin < html/perlito5.js > html/perlito5m.js
+
 build-5to5 ::
 	perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
 
