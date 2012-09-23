@@ -288,7 +288,7 @@ package Perlito5::Javascript3;
                     push @out, "$k : $v";
                 }
 
-                return 'new p5Hash({' . join(', ', @out) . '})'
+                return '{' . join(', ', @out) . '}'
                     if $printable;
 
             }

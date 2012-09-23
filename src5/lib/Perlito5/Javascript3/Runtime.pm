@@ -265,6 +265,9 @@ function p5HashRef(o) {
     this._href_ = o;
     this._ref_ = "HASH";
     this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "HASH(0x0000)";  // TODO
+    };
     this.hderef = function() {
         return this._href_;
     };
@@ -281,6 +284,9 @@ function p5ArrayRef(o) {
     this._aref_ = o;
     this._ref_ = "ARRAY";
     this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "ARRAY(0x0000)";  // TODO
+    };
     this.aderef = function() {
         return this._aref_;
     };
@@ -297,6 +303,9 @@ function p5ScalarRef(o) {
     this._scalar_ = o;
     this._ref_ = "SCALAR";
     this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "SCALAR(0x0000)";  // TODO
+    };
     this.sderef = function(i) {
         return this._scalar_;
     };
@@ -306,6 +315,9 @@ function p5GlobRef(o) {
     this._scalar_ = o;
     this._ref_ = "GLOB";
     this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "GLOB(0x0000)";  // TODO
+    };
 }
 
 function p5Array(o) {

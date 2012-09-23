@@ -23,6 +23,9 @@ build-5js ::
 build-5browser ::
 	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
 
+build-5js3 ::
+	perl perlito5.pl -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js
+
 boot-5js ::
 	time node perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
 
