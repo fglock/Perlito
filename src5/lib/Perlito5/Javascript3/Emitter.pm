@@ -1355,7 +1355,7 @@ package Perlito5::AST::Apply;
         'prefix:<$>' => sub {
             my $self = $_[0];
             my $arg  = $self->{arguments}->[0];
-            Perlito5::Javascript3::emit_javascript3_autovivify( $arg, $level, 'scalar' ) . '.._scalar_';
+            Perlito5::Javascript3::emit_javascript3_autovivify( $arg, $level, 'scalar' ) . '.sderef()';
         },
         'prefix:<@>' => sub {
             my $self  = $_[0];

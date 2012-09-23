@@ -226,12 +226,22 @@ function p5set_glob(name, data) {
     return data;
 }
 
+var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
+
 function p5set_local(namespace, name, sigil) {
-    var v = name;
-    if (sigil == "$") {
-        v = "v_"+name;
+    var vname = sigils[sigil] + name;
+    p5LOCAL.push([namespace, vname, namespace[vname]]);
+
+    if (sigil == '$') {
+        namespace[vname] = new p5Scalar(null);
     }
-    p5LOCAL.push([namespace, v, namespace[v]]);
+    else if (sigil == '@') {
+        namespace[vname] = new p5Array([]);
+    }
+    else if (sigil == '%') {
+        namespace[vname] = new p5Hash({});
+    }
+    return namespace[vname];
 }
 
 function p5cleanup_local(idx, value) {
@@ -242,23 +252,23 @@ function p5cleanup_local(idx, value) {
     return value;
 }
 
-var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
 function p5global(sigil, namespace, name) {
     // TODO - autovivify namespace
-    v = p5pkg[namespace][sigils[sigil] + name ];
+    var vname = sigils[sigil] + name;
+    var v = p5pkg[namespace][vname];
     if (v != null) {
         return v;
     }
     if (sigil == '$') {
-        p5pkg[namespace][sigils[sigil] + name ] = new p5Scalar(null);
+        p5pkg[namespace][vname] = new p5Scalar(null);
     }
     else if (sigil == '@') {
-        p5pkg[namespace][sigils[sigil] + name ] = new p5Array([]);
+        p5pkg[namespace][vname] = new p5Array([]);
     }
     else if (sigil == '%') {
-        p5pkg[namespace][sigils[sigil] + name ] = new p5Hash({});
+        p5pkg[namespace][vname] = new p5Hash({});
     }
-    return p5pkg[namespace][sigils[sigil] + name ];
+    return p5pkg[namespace][vname];
 }
 
 function p5HashRef(o) {
@@ -306,7 +316,7 @@ function p5ScalarRef(o) {
     this.p5string = function() {
         return "SCALAR(0x0000)";  // TODO
     };
-    this.sderef = function(i) {
+    this.sderef = function() {
         return this._scalar_;
     };
 }
@@ -435,7 +445,8 @@ function p5Scalar(o) {
 
     // be a scalar ref
     this.sderef = function(i) {
-        return this._v_.sderef;
+        // TODO - autovivify scalar (with proxy object?)
+        return this._v_.sderef();
     };
 
     // be an array ref
