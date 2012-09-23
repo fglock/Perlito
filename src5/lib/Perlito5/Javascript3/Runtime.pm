@@ -455,6 +455,28 @@ function p5Scalar(o) {
     this.p5code = function() {
         return p5code(this._v_);
     };
+    this.p5incr = function() {
+        // TODO - string increment with p5str_inc()
+        this._v_++;
+        return this._v_;
+    };
+    this.p5postincr = function() {
+        // TODO - string increment with p5str_inc()
+        var v = this._v_;
+        this._v_++;
+        return v;
+    };
+    this.p5decr = function() {
+        // TODO - numify before decrement
+        this._v_--;
+        return this._v_;
+    };
+    this.p5postdecr = function() {
+        // TODO - numify before decrement
+        var v = this._v_;
+        this._v_--;
+        return v;
+    };
 
     // be a scalar ref
     this.sderef = function(i) {

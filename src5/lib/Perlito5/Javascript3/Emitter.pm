@@ -1417,19 +1417,19 @@ package Perlito5::AST::Apply;
 
         'postfix:<++>' => sub {
             my $self = $_[0];
-            '(' . join( ' ', map( $_->emit_javascript3, @{ $self->{arguments} } ) ) . ')++';
+            $self->{arguments}[0]->emit_javascript3() . '.p5postincr()';
         },
         'postfix:<-->' => sub {
             my $self = $_[0];
-            '(' . join( ' ', map( $_->emit_javascript3, @{ $self->{arguments} } ) ) . ')--';
+            $self->{arguments}[0]->emit_javascript3() . '.p5postdecr()';
         },
         'prefix:<++>' => sub {
             my $self = $_[0];
-            '++(' . join( ' ', map( $_->emit_javascript3, @{ $self->{arguments} } ) ) . ')';
+            $self->{arguments}[0]->emit_javascript3() . '.p5incr()';
         },
         'prefix:<-->' => sub {
             my $self = $_[0];
-            '--(' . join( ' ', map( $_->emit_javascript3, @{ $self->{arguments} } ) ) . ')';
+            $self->{arguments}[0]->emit_javascript3() . '.p5decr()';
         },
 
         'infix:<x>' => sub {
