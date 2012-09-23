@@ -327,6 +327,12 @@ function p5Array(o) {
     this.p5bool = function() {
         return this._array_.length != 0
     };
+    this.p5string = function() {
+        return '' + this._array_.length;
+    };
+    this.p5num = function() {
+        return this._array_.length;
+    };
     this.aset = function(i, v) {
         this._array_[i >= 0 ? i : this._array_.length + i] = v;
         return v;
@@ -369,6 +375,16 @@ function p5Hash(o) {
             return true;
         }
         return false;
+    };
+    this.p5string = function() {
+        return '' + this.p5num() + '/8';
+    };
+    this.p5num = function() {
+        var out = 0;
+        for (var i in this._hash_) {
+            out++;
+        }
+        return out;
     };
     this.hset = function(i, v) {
         this._hash_[i] = v;
