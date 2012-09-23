@@ -279,19 +279,11 @@ CORE.splice = function(List__, p5want) {
 };
 
 CORE.pop = function(List__) {
-    var o = List__[0];
-    if (o._array_.length == null) {
-        return null;
-    }
-    return o._array_.pop();
+    return List__[0].POP();
 };
 
 CORE.shift = function(List__) {
-    var o = List__[0];
-    if (o._array_.length == null) {
-        return null;
-    }
-    return o._array_.shift();
+    return List__[0].SHIFT();
 };
 
 CORE.push = function(List__) {
@@ -299,12 +291,7 @@ CORE.push = function(List__) {
 };
 
 CORE.unshift = function(List__) {
-    var o = List__[0];
-    var v = List__[1];
-    for(var i = v._array_.length-1; i >= 0; i--) {
-        o._array_.unshift(v._array_[i]);
-    }
-    return o._array_.length;
+    return List__[0].UNSHIFT(List__[1]);
 };
 
 CORE.join = function(List__) {

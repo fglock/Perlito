@@ -386,11 +386,31 @@ function p5Array(o) {
         }
         return this;
     };
+
+    // operations that can be tie()
     this.PUSH = function(v) {
         for(var i = 0; i < v._array_.length; i++) {
             this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
         }
         return this._array_.length;
+    };
+    this.UNSHIFT = function(v) {
+        for(var i = v._array_.length-1; i >= 0; i--) {
+            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
+        }
+        return this._array_.length;
+    };
+    this.POP = function() {
+        if (this._array_.length == null) {
+            return null;
+        }
+        return this._array_.pop();
+    };
+    this.SHIFT = function(v) {
+        if (this._array_.length == null) {
+            return null;
+        }
+        return this._array_.shift();
     };
 }
 
