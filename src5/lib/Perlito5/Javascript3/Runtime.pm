@@ -494,6 +494,9 @@ p5list_to_a = function() {
         {
             res.push(o);
         }
+        else if (o instanceof p5Scalar) {
+            res.push(o._v_);
+        }
         else if (o instanceof p5Array) {
             // perl5 array
             for (j = 0; j < o._array_.length; j++) {
