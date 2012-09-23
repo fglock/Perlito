@@ -56,7 +56,7 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
-    p5pkg["main"]["v_@"] = "Died: " + s;
+    p5pkg["main"]["v_@"].assign("Died: " + s);
     throw(new p5_error("die", "Died: " + s));
 };
 
