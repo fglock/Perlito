@@ -6,19 +6,23 @@ package X; # XXX javascript bug - we don't autovivify packages yet
 
 package main;
 
-say '1..3';
+say '1..4';
 
 $X::v = 10;
 
 if (1) {
     print "not " if $X::v != 10;
     say "ok 1";
+
     local $X::v;
+    print "not " if defined $X::v;
+    say "ok 2";
+
     $X::v = 15;
     print "not " if $X::v != 15;
-    say "ok 2";
+    say "ok 3";
 }
 
 print "not " if $X::v != 10;
-say "ok 3";
+say "ok 4";
 
