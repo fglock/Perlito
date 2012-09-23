@@ -1,8 +1,8 @@
 use v5;
 
-package Perlito5::Javascript::Sprintf;
+package Perlito5::Javascript3::Sprintf;
 
-sub emit_javascript {
+sub emit_javascript3 {
 
     return <<'EOT';
 /**
@@ -213,7 +213,7 @@ CORE.printf = function(List__) {
 };
 
 EOT
-} # end of emit_javascript()
+} # end of emit_javascript3()
 
 1;
 

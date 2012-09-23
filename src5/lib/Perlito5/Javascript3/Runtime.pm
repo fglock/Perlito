@@ -1,14 +1,14 @@
 use v5;
 
-package Perlito5::Javascript::Runtime;
+package Perlito5::Javascript3::Runtime;
 
-sub emit_javascript {
+sub emit_javascript3 {
 
     return <<'EOT';
 //
-// lib/Perlito5/Javascript/Runtime.js
+// lib/Perlito5/Javascript3/Runtime.js
 //
-// Runtime for "Perlito" Perl5-in-Javascript
+// Runtime for "Perlito" Perl5-in-Javascript3
 //
 // AUTHORS
 //
@@ -83,11 +83,11 @@ function p5make_package(pkg_name) {
         p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak
 
         // TODO - add the other package global variables
-        p5pkg[pkg_name]["List_ISA"] = [];
-        p5pkg[pkg_name]["v_a"] = null;
-        p5pkg[pkg_name]["v_b"] = null;
-        p5pkg[pkg_name]["v__"] = null;
-        p5pkg[pkg_name]["v_AUTOLOAD"] = null;
+        p5pkg[pkg_name]["List_ISA"] = new p5Array([]);
+        p5pkg[pkg_name]["v_a"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v_b"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v__"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v_AUTOLOAD"] = new p5Scalar(null);
     }
     return p5pkg[pkg_name];
 }
@@ -139,6 +139,11 @@ function p5method_lookup(method, class_name, seen) {
 function p5call(invocant, method, list) {
     list.unshift(invocant);
 
+    if (invocant instanceof p5Scalar) {
+        // TODO - move p5call() to p5Scalar method
+        invocant = invocant._v_;
+    }
+
     if ( invocant.hasOwnProperty("_class_") ) {
 
         if ( invocant._class_.hasOwnProperty(method) ) {
@@ -183,20 +188,20 @@ function p5call(invocant, method, list) {
 }
 
 p5make_package("main");
-p5pkg["main"]["v_@"] = [];      // $@
-p5pkg["main"]["v_|"] = 0;       // $|
-p5pkg["main"]["List_#"] = [];   // @#
-p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript";
-p5pkg["main"]["List_INC"] = [];
+p5pkg["main"]["v_@"] = "";                   // $@
+p5pkg["main"]["v_|"] = 0;                    // $|
+p5pkg["main"]["List_#"] = new p5Array([]);   // @#
+p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript3";
+p5pkg["main"]["List_INC"] = new p5Array([]);
 p5pkg["main"]["Hash_INC"] = {};
-p5pkg["main"]["List_ARGV"] = [];
+p5pkg["main"]["List_ARGV"] = new p5Array([]);
 p5pkg["main"]["Hash_ENV"] = {};
 if (isNode) {
-    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
+    p5pkg["main"]["List_ARGV"] = new p5Array(process.argv.splice(2));
     p5pkg["main"]["Hash_ENV"]  = process.env;
     p5pkg["main"]["v_$"]       = process.pid;
 } else if (typeof arguments === "object") {
-    p5pkg["main"]["List_ARGV"] = arguments;
+    p5pkg["main"]["List_ARGV"] = new p5Array(arguments);
 }
 
 p5make_package("Perlito5");
@@ -237,29 +242,291 @@ function p5cleanup_local(idx, value) {
     return value;
 }
 
+var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
+function p5global(sigil, namespace, name) {
+    // TODO - autovivify namespace
+    v = p5pkg[namespace][sigils[sigil] + name ];
+    if (v != null) {
+        return v;
+    }
+    if (sigil == '$') {
+        p5pkg[namespace][sigils[sigil] + name ] = new p5Scalar(null);
+    }
+    else if (sigil == '@') {
+        p5pkg[namespace][sigils[sigil] + name ] = new p5Array([]);
+    }
+    else if (sigil == '%') {
+        p5pkg[namespace][sigils[sigil] + name ] = new p5Hash({});
+    }
+    return p5pkg[namespace][sigils[sigil] + name ];
+}
+
 function p5HashRef(o) {
-    this._hash_ = o;
+    this._href_ = o;
     this._ref_ = "HASH";
-    this.bool = function() { return 1 };
+    this.p5bool = function() { return 1 };
+    this.hderef = function() {
+        return this._href_;
+    };
+    this.hset = function(i, v) {
+        this._href_._hash_[i] = v;
+        return v;
+    };
+    this.hget = function(i, autoviv) {
+        return this._href_.hget(i, autoviv);
+    }
 }
 
 function p5ArrayRef(o) {
-    this._array_ = o;
+    this._aref_ = o;
     this._ref_ = "ARRAY";
-    this.bool = function() { return 1 };
+    this.p5bool = function() { return 1 };
+    this.aderef = function() {
+        return this._aref_;
+    };
+    this.aset = function(i, v) {
+        this._aref_._array_[i >= 0 ? i : this._aref_._array_.length + i] = v;
+        return v;
+    }
+    this.aget = function(i, autoviv) {
+        return this._aref_.aget(i, autoviv);
+    }
 }
 
 function p5ScalarRef(o) {
     this._scalar_ = o;
     this._ref_ = "SCALAR";
-    this.bool = function() { return 1 };
+    this.p5bool = function() { return 1 };
+    this.sderef = function(i) {
+        return this._scalar_;
+    };
 }
 
 function p5GlobRef(o) {
     this._scalar_ = o;
     this._ref_ = "GLOB";
-    this.bool = function() { return 1 };
+    this.p5bool = function() { return 1 };
 }
+
+function p5Array(o) {
+    // TODO - array slice
+    this._array_ = o;
+    this._ref_ = "";
+    this.p5bool = function() {
+        return this._array_.length != 0
+    };
+    this.aset = function(i, v) {
+        this._array_[i >= 0 ? i : this._array_.length + i] = v;
+        return v;
+    };
+    this.aget = function(i, autoviv) {
+        if (i < 0) {
+            i = this._array_.length + i;
+        }
+        var v = this._array_[i];
+        if (v != null) {
+            return v;
+        }
+        if (autoviv == 'array') {
+            this._array_[i] = new p5ArrayRef(new p5Array([]));
+        }
+        else if (autoviv == 'hash') {
+            this._array_[i] = new p5HashRef(new p5Hash({}));
+        }
+        return this._array_[i];
+    };
+    this.assign = function(a) {
+        if (a instanceof Array) {
+            // TODO - cleanup, this shouldn't happen
+            this._array_ = a;
+        }
+        else {
+            this._array_ = a._array_;
+        }
+        return this;
+    }
+}
+
+function p5Hash(o) {
+    // TODO - hash slice
+    this._hash_ = o;
+    this._ref_ = "";
+    this.p5bool = function() {
+        o = this._hash_;
+        for (var i in o) {
+            return true;
+        }
+        return false;
+    };
+    this.hset = function(i, v) {
+        this._hash_[i] = v;
+        return v;
+    };
+    this.hget = function(i, autoviv) {
+        var v = this._hash_[i];
+        if (v != null) {
+            return v;
+        }
+        if (autoviv == 'array') {
+            this._hash_[i] = new p5ArrayRef(new p5Array([]));
+        }
+        else if (autoviv == 'hash') {
+            this._hash_[i] = new p5HashRef(new p5Hash({}));
+        }
+        return this._hash_[i];
+    };
+    this.assign = function(h) {
+        if (h instanceof p5Hash) {
+            this._hash_ = h._hash_;
+        }
+        else {
+            // TODO - cleanup, this shouldn't happen
+            this._hash_ = h;
+        }
+        return this;
+    }
+}
+
+function p5Scalar(o) {
+    this._v_ = o;
+    this._ref_ = "";
+
+    // be a value
+    this.p5bool = function() {
+        return p5bool(this._v_);
+    };
+    this.p5string = function() {
+        return p5str(this._v_);
+    };
+    this.p5num = function() {
+        return p5num(this._v_);
+    };
+    this.p5code = function() {
+        return p5code(this._v_);
+    };
+
+    // be a scalar ref
+    this.sderef = function(i) {
+        return this._v_.sderef;
+    };
+
+    // be an array ref
+    this.aderef = function() {
+        // TODO - autovivify array (with proxy object?)
+        return this._v_.aderef();
+    };
+    this.aget = function(i, autoviv) {
+        // TODO - autovivify array (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5ArrayRef(new p5Array([]));
+        }
+        return this._v_.aget(i, autoviv);
+    };
+    this.aset = function(i, v) {
+        if (this._v_ == null) {
+            this._v_ = new p5ArrayRef(new p5Array([]));
+        }
+        return this._v_.aset(i, v);
+    };
+
+    // be a hash ref
+    this.hderef = function() {
+        // TODO - autovivify hash (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hderef();
+    };
+    this.hget = function(i, autoviv) {
+        // TODO - autovivify hash (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hget(i, autoviv);
+    }
+    this.hset = function(i, v) {
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hset(i, v);
+    }
+
+    // be a container
+    this.vset = function(v) {
+        this._v_ = v;
+        return v;
+    };
+    this.vget = function() {
+        return this._v_;
+    };
+    this.assign = function(v) {
+        if (v instanceof p5Scalar) {
+            this._v_ = v._v_;
+        }
+        else {
+            // TODO - cleanup, this shouldn't happen
+            this._v_ = v;
+        }
+        return this;
+    }
+}
+
+p5list_to_a = function() {
+    var res = [];
+    for (i = 0; i < arguments.length; i++) {
+        var o = arguments[i];
+        if  (  o == null
+            || o._class_    // perl5 blessed reference
+            || o._ref_      // perl5 un-blessed reference
+            )
+        {
+            res.push(o);
+        }
+        else if (o instanceof p5Array) {
+            // perl5 array
+            for (j = 0; j < o._array_.length; j++) {
+                res.push(o._array_[j]);
+            }
+        }
+        else if (o instanceof Array) {
+            // js array
+            for (j = 0; j < o.length; j++) {
+                res.push(o[j]);
+            }
+        }
+        else if (o instanceof p5Hash) {
+            // perl5 hash
+            for(var j in o._hash_) {
+                if (o._hash_.hasOwnProperty(j)) {
+                    res.push(j);
+                    res.push(o._hash_[j]);
+                }
+            }
+        }
+        else if (typeof o === "object") {
+            // perl5 hash
+            for(var j in o) {
+                if (o.hasOwnProperty(j)) {
+                    res.push(j);
+                    res.push(o[j]);
+                }
+            }
+        }
+        else {
+            // non-ref
+            res.push(o);
+        }
+    }
+    return res;
+};
+
+p5a_to_h = function(a) {
+    var res = {};
+    for (i = 0; i < a.length; i+=2) {
+        res[p5str(a[i])] = a[i+1];
+    }
+    return res;
+};
 
 if (isNode) {
     var fs = require("fs");
@@ -294,50 +561,11 @@ p5context = function(List__, p5want) {
     return o;
 }
 
-p5list_to_a = function() {
-    var res = [];
-    for (i = 0; i < arguments.length; i++) {
-        var o = arguments[i];
-        if  (  o == null
-            || o._class_    // perl5 blessed reference
-            || o._ref_      // perl5 un-blessed reference
-            )
-        {
-            res.push(o);
-        }
-        else if (o instanceof Array) {
-            // perl5 array
-            for (j = 0; j < o.length; j++) {
-                res.push(o[j]);
-            }
-        }
-        else if (typeof o === "object") {
-            // perl5 hash
-            for(var j in o) {
-                if (o.hasOwnProperty(j)) {
-                    res.push(j);
-                    res.push(o[j]);
-                }
-            }
-        }
-        else {
-            // non-ref
-            res.push(o);
-        }
+p5code = function(o) {
+    if (typeof o === "function") {
+        return o;
     }
-    return res;
-};
-
-p5a_to_h = function(a) {
-    var res = {};
-    for (i = 0; i < a.length; i+=2) {
-        res[p5str(a[i])] = a[i+1];
-    }
-    return res;
-};
-
-p5idx = function(a, i) {
-    return i >= 0 ? i : a.length + i
+    return o.p5code();
 };
 
 p5str = function(o) {
@@ -347,9 +575,9 @@ p5str = function(o) {
     if (typeof o === "object" && (o instanceof Array)) {
         return CORE.join(["", o]);
     }
-    // if (typeof o.string === "function") {
-    //     return o.string();
-    // }
+    if (typeof o.p5string === "function") {
+        return o.p5string();
+    }
     if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\d)$/,"e-0$1");
     }
@@ -369,9 +597,9 @@ p5num = function(o) {
     if (typeof o === "object" && (o instanceof Array)) {
         return o.length;
     }
-    // if (typeof o.num === "function") {
-    //     return o.num();
-    // }
+    if (typeof o.p5num === "function") {
+        return o.p5num();
+    }
     if (typeof o !== "number") {
         return parseFloat(p5str(o));
     }
@@ -389,9 +617,9 @@ p5bool = function(o) {
         if (typeof o === "string") {
             return o != "" && o != "0";
         }
-        // if (typeof o.bool === "function") {
-        //     return o.bool();
-        // }
+        if (typeof o.p5bool === "function") {
+            return o.p5bool();
+        }
         if (typeof o.length === "number") {
             return o.length;
         }
@@ -644,18 +872,18 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     ]);
 
     // CORE.say(["ast: [" + ast + "]"]);
-    js_code = p5call(ast, "emit_javascript", [0, p5want]);
+    js_code = p5call(ast, "emit_javascript3", [0, p5want]);
     // CORE.say(["js-source: [" + js_code + "]"]);
 
     p5pkg["Perlito5"].v_PKG_NAME = namespace_old;
     p5pkg["Perlito5"].v_VAR      = var_env_js_old;
-    p5pkg["Perlito5"].v_STRICT = strict_old;
+    p5pkg["Perlito5"].v_STRICT   = strict_old;
     return js_code;
 }
 
 EOT
 
-} # end of emit_javascript()
+} # end of emit_javascript3()
 
 1;
 

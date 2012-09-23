@@ -1,15 +1,15 @@
 use v5;
 
-package Perlito5::Javascript::CORE;
+package Perlito5::Javascript3::CORE;
 
-sub emit_javascript {
+sub emit_javascript3 {
 
     return <<'EOT'
 //
 //
-// lib/Perlito5/Javascript/CORE.js
+// lib/Perlito5/Javascript3/CORE.js
 //
-// CORE functions for "Perlito" Perl5-in-Javascript
+// CORE functions for "Perlito" Perl5-in-Javascript3
 //
 // AUTHORS
 //
@@ -72,6 +72,12 @@ CORE.warn = function(List__) {
 CORE.bless = function(List__) {
     var o        = List__[0];
     var pkg_name = List__[1];
+    if (o instanceof p5Scalar) {
+        o = o._v_;
+    }
+    if (pkg_name instanceof p5Scalar) {
+        pkg_name = pkg_name._v_;
+    }
     if (typeof pkg_name === "object") {
         // bless {}, Class
         o._class_ = pkg_name;
@@ -164,12 +170,16 @@ CORE.substr = function(List__) {
     return p5str(expr).substr(offset, length);
 };
 
+CORE.defined = function(List__) {
+    return (List__[0] instanceof p5Scalar) ? ( List__[0]._v_ != null ) : ( List__[0] != null )
+};
+
 CORE.values = function(List__, p5want) {
-    var o = List__[0];
+    var o = List__[0]._hash_;
     delete o["_each_"];
     if (p5want) {
         if (o == null) {
-            return [];
+            return new p5Array([]);
         };
         if (typeof o.values === "function") {
             return o.values();
@@ -178,17 +188,17 @@ CORE.values = function(List__, p5want) {
         for (var i in o) {
             out.push(o[i]);
         }
-        return out;
+        return new p5Array(out);
     }
     return CORE.keys(List__, p5want);
 };
 
 CORE.keys = function(List__, p5want) {
-    var o = List__[0];
+    var o = List__[0]._hash_;
     delete o["_each_"];
     if (p5want) {
         if (o == null) {
-            return [];
+            return new p5Array([]);
         }
         if (typeof o.keys === "function") {
             return o.keys();
@@ -197,7 +207,7 @@ CORE.keys = function(List__, p5want) {
         for (var i in o) {
             out.push(i);
         }
-        return out;
+        return new p5Array(out);
     }
     else {
         if (o == null) {
@@ -248,7 +258,7 @@ CORE.reverse = function(List__) {
 };
 
 CORE.splice = function(List__, p5want) {
-    var array  = List__.shift();
+    var array  = List__.shift()._array_;
     // CORE.say([ array ]);
     var offset = p5num(List__.shift());
     var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);
@@ -269,49 +279,47 @@ CORE.splice = function(List__, p5want) {
 
 CORE.pop = function(List__) {
     var o = List__[0];
-    if (o.length == null) {
+    if (o._array_.length == null) {
         return null;
     }
-    return o.pop();
+    return o._array_.pop();
 };
 
 CORE.shift = function(List__) {
     var o = List__[0];
-    if (o.length == null) {
+    if (o._array_.length == null) {
         return null;
     }
-    return o.shift();
+    return o._array_.shift();
 };
 
 CORE.push = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    for(var i = 0; i < v.length; i++) {
-        o.push(v[i]);
+    for(var i = 0; i < v._array_.length; i++) {
+        o._array_.push(v._array_[i]);
     }
-    return o.length;
+    return o._array_.length;
 };
 
 CORE.unshift = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    for(var i = v.length-1; i >= 0; i--) {
-        o.unshift(v[i]);
+    for(var i = v._array_.length-1; i >= 0; i--) {
+        o._array_.unshift(v._array_[i]);
     }
-    return o.length;
+    return o._array_.length;
 };
 
 CORE.join = function(List__) {
     var s = List__[0];
     var o = List__[1];
-    return o.join(s);
+    return o._array_.join(s);
 };
 
 CORE.index = function(List__) {
-    var o = List__[0];
-    var s = List__[1];
     try {
-        return o.indexOf(s, p5num(List__[2]));
+        return p5str(List__[0]).indexOf(p5str(List__[1]), p5num(List__[2]));
     }
     catch(err) {
         return -1;
@@ -339,10 +347,7 @@ CORE.rindex = function(List__) {
 };
 
 CORE.length = function(List__) {
-    var o = List__[0];
-    if (typeof o.string === "function") {
-        return o.string().length;
-    }
+    var o = p5str(List__[0]);
     return o.length;
 };
 
@@ -351,6 +356,9 @@ CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) 
 
 CORE.ref = function(List__) {
     var o = List__[0];
+    if (o instanceof p5Scalar) {
+        o = o._v_;
+    }
     if (o == null) {
         return "";
     }
@@ -395,7 +403,7 @@ CORE.prototype = function(List__, data) {
 };
 
 EOT
-} # end of emit_javascript()
+} # end of emit_javascript3()
 
 1;
 

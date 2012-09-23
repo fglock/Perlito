@@ -1,15 +1,15 @@
 use v5;
 
-package Perlito5::Javascript::IO;
+package Perlito5::Javascript3::IO;
 
-sub emit_javascript {
+sub emit_javascript3 {
 
     return <<'EOT';
 //
 //
-// lib/Perlito5/Javascript/IO.js
+// lib/Perlito5/Javascript3/IO.js
 //
-// I/O functions for "Perlito" Perl5-in-Javascript
+// I/O functions for "Perlito" Perl5-in-Javascript3
 //
 // AUTHORS
 //
@@ -135,7 +135,7 @@ if (isNode) {
 }
 
 EOT
-} # end of emit_javascript()
+} # end of emit_javascript3()
 
 1;
 

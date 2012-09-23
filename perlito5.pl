@@ -7713,1369 +7713,6 @@ undef();
 
 # use Perlito5::Dumper
 ;
-package Perlito5::Javascript;
-do {{
-    ((my  $label_count) = 100);
-    (my  %label);
-    sub Perlito5::Javascript::pkg {
-        ('p5pkg["' . $Perlito5::PKG_NAME . '"]')
-    };
-    sub Perlito5::Javascript::pkg_new_var {
-        ($label{$Perlito5::PKG_NAME} = ('p5' . ($label_count)++))
-    };
-    sub Perlito5::Javascript::get_label {
-        ($label_count)++
-    };
-    sub Perlito5::Javascript::tab {
-        ((my  $level) = shift());
-join("", chr(9) x $level)
-    };
-    ((our  %op_prefix_js_str) = ('prefix:<-A>', 'p5atime', 'prefix:<-C>', 'p5ctime', 'prefix:<-M>', 'p5mtime', 'prefix:<-d>', 'p5is_directory', 'prefix:<-e>', 'p5file_exists', 'prefix:<-f>', 'p5is_file', 'prefix:<-s>', 'p5size'));
-    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= '));
-    ((our  %op_infix_js_num) = ('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << '));
-    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
-    ((our  %op_to_str) = map(+(($_, 1)), ('substr', 'join', 'list:<.>', 'chr')));
-    ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>')));
-    ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
-    sub Perlito5::Javascript::escape_string {
-        ((my  $s) = shift());
-        (my  @out);
-        ((my  $tmp) = '');
-        if (($s eq '')) {
-            return (chr(39) . chr(39))
-        };
-        for my $i ((0 .. (length($s) - 1))) {
-            ((my  $c) = substr($s, $i, 1));
-            if ((((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || ((($c ge '0') && ($c le '9')))) || exists($safe_char{$c}))) {
-                ($tmp = ($tmp . $c))
-            }
-            else {
-                if (($tmp ne '')) {
-                    push(@out, (chr(39) . $tmp . chr(39)) )
-                };
-                push(@out, ('String.fromCharCode(' . ord($c) . ')') );
-                ($tmp = '')
-            }
-        };
-        if (($tmp ne '')) {
-            push(@out, (chr(39) . $tmp . chr(39)) )
-        };
-        return (join(' + ', @out))
-    };
-    sub Perlito5::Javascript::to_str {
-        ((my  $cond) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = 'scalar');
-        if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
-            return (to_str($cond->{'arguments'}->[0], $level))
-        };
-        if ((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))))) {
-            return ($cond->emit_javascript($level, $wantarray))
-        }
-        else {
-            return (('p5str(' . $cond->emit_javascript($level, $wantarray) . ')'))
-        }
-    };
-    sub Perlito5::Javascript::to_num {
-        ((my  $cond) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = 'scalar');
-        if ((($cond->isa('Perlito5::AST::Val::Int') || $cond->isa('Perlito5::AST::Val::Num')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_num{$cond->code()}))))) {
-            return ($cond->emit_javascript($level, $wantarray))
-        }
-        else {
-            return (('p5num(' . $cond->emit_javascript($level, $wantarray) . ')'))
-        }
-    };
-    sub Perlito5::Javascript::to_bool {
-        ((my  $cond) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = 'scalar');
-        if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
-            return (to_bool($cond->{'arguments'}->[0], $level))
-        };
-        if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<&&>') || ($cond->code() eq 'infix:<and>'))))) {
-            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' && ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
-        };
-        if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<||>') || ($cond->code() eq 'infix:<or>'))))) {
-            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' || ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
-        };
-        if (((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))))) {
-            return ($cond->emit_javascript($level, $wantarray))
-        }
-        else {
-            return (('p5bool(' . $cond->emit_javascript($level, $wantarray) . ')'))
-        }
-    };
-    sub Perlito5::Javascript::is_scalar {
-        (((((!($_[0]->isa('Perlito5::AST::Val::Int')) && !($_[0]->isa('Perlito5::AST::Val::Num'))) && !($_[0]->isa('Perlito5::AST::Val::Buf'))) && !($_[0]->isa('Perlito5::AST::Sub'))) && !((($_[0]->isa('Perlito5::AST::Var') && ($_[0]->{'sigil'} eq '$'))))) && !((($_[0]->isa('Perlito5::AST::Apply') && ((((exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}})) || exists($op_to_bool{$_[0]->{'code'}})) || ($_[0]->{'code'} eq 'prefix:<' . chr(92) . '>')))))))
-    };
-    sub Perlito5::Javascript::to_list {
-        ((my  $items) = to_list_preprocess($_[0]));
-        ((my  $level) = $_[1]);
-        ((my  $literal_type) = ($_[2] || 'array'));
-        ((my  $wantarray) = 'list');
-        ((my  $interpolate) = 0);
-        for (@{$items}) {
-            if (is_scalar($_)) {
-                ($interpolate = 1)
-            }
-        };
-        if (($literal_type eq 'hash')) {
-            if (!($interpolate)) {
-                (my  @out);
-                ((my  $printable) = 1);
-                ((my  @in) = @{$items});
-                for ( ; @in; do {{
-
-}} ) {
-                    ((my  $k) = shift(@in));
-                    ((my  $v) = shift(@in));
-                    ($k = $k->emit_javascript($level, 0));
-                    if (($k =~ m![ \[]!)) {
-                        ($printable = 0)
-                    };
-                    ($v = ($v ? $v->emit_javascript($level, 0) : 'null'));
-                    push(@out, ($k . ' : ' . $v) )
-                };
-                if ($printable) {
-                    return (('{' . join(', ', @out) . '}'))
-                }
-            };
-            return (('p5a_to_h(' . to_list($items, $level, 'array') . ')'))
-        };
-        ($interpolate ? (('p5list_to_a(' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ')')) : (('[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ']')))
-    };
-    sub Perlito5::Javascript::to_list_preprocess {
-        (my  @items);
-        for my $item (@{$_[0]}) {
-            if (($item->isa('Perlito5::AST::Apply') && (((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')) || ($item->code() eq 'infix:<=>>'))))) {
-                if (($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<=>>'))) {
-                    ($item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0]))
-                };
-                for my $arg (@{to_list_preprocess($item->arguments())}) {
-                    push(@items, $arg )
-                }
-            }
-            else {
-                push(@items, $item )
-            }
-        };
-        return (\@items)
-    };
-    sub Perlito5::Javascript::to_scalar {
-        ((my  $items) = to_scalar_preprocess($_[0]));
-        ((my  $level) = $_[1]);
-        ((my  $wantarray) = 'scalar');
-        (@{$items} ? ('(' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ')') : 'null')
-    };
-    sub Perlito5::Javascript::to_scalar_preprocess {
-        (my  @items);
-        for my $item (@{$_[0]}) {
-            if (($item->isa('Perlito5::AST::Apply') && ((($item->code() eq 'list:<,>') || ($item->code() eq 'infix:<=>>'))))) {
-                if (($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<=>>'))) {
-                    ($item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0]))
-                };
-                for my $arg (@{to_scalar_preprocess($item->arguments())}) {
-                    push(@items, $arg )
-                }
-            }
-            else {
-                push(@items, $item )
-            }
-        };
-        return (\@items)
-    };
-    sub Perlito5::Javascript::to_runtime_context {
-        ((my  $items) = to_scalar_preprocess($_[0]));
-        ((my  $level) = $_[1]);
-        ((my  $wantarray) = 'runtime');
-        if (((@{$items} == 1) && is_scalar($items->[0]))) {
-            return ($items->[0]->emit_javascript($level, $wantarray))
-        };
-        ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ']' . ', p5want)')
-    };
-    sub Perlito5::Javascript::emit_javascript_autovivify {
-        ((my  $obj) = shift());
-        ((my  $level) = shift());
-        ((my  $type) = shift());
-        ('(' . $obj->emit_javascript($level) . ' || (' . $obj->emit_javascript($level) . ' = ' . ((($type eq 'array') ? 'new p5ArrayRef([])' : (($type eq 'hash') ? 'new p5HashRef({})' : 'new p5ScalarRef(null)'))) . ')' . ')')
-    };
-    sub Perlito5::Javascript::emit_function_javascript {
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $argument) = shift());
-        if (($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return'))) {
-            return (('function () { ' . $argument->emit_javascript($level, $wantarray) . ' }'))
-        };
-        return (('function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }'))
-    }
-}};
-package Perlito5::Javascript::LexicalBlock;
-do {{
-    sub Perlito5::Javascript::LexicalBlock::new {
-        ((my  $class) = shift());
-        bless({@_}, $class)
-    };
-    sub Perlito5::Javascript::LexicalBlock::block {
-        $_[0]->{        'block'}
-    };
-    sub Perlito5::Javascript::LexicalBlock::needs_return {
-        $_[0]->{        'needs_return'}
-    };
-    sub Perlito5::Javascript::LexicalBlock::top_level {
-        $_[0]->{        'top_level'}
-    };
-    sub Perlito5::Javascript::LexicalBlock::has_decl {
-        ((my  $self) = $_[0]);
-        ((my  $type) = $_[1]);
-        for my $decl (@{$self->{'block'}}) {
-            if (defined($decl)) {
-                if ((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq $type)) || ($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq $type)))) {
-                    return (1)
-                };
-                if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<=>'))) {
-                    ((my  $var) = $decl->arguments()->[0]);
-                    if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq $type)) || ($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq $type)))) {
-                        return (1)
-                    }
-                }
-            }
-        };
-        return (0)
-    };
-    sub Perlito5::Javascript::LexicalBlock::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        (my  @block);
-        for (@{$self->{'block'}}) {
-            if (defined($_)) {
-                push(@block, $_ )
-            }
-        };
-        if (!(@block)) {
-            return ((Perlito5::Javascript::tab($level) . 'null;'))
-        };
-        ((my  $out) = '');
-        (my  @str);
-        ((my  $has_local) = $self->has_decl('local'));
-        ((my  $create_context) = ($self->{'create_context'} && $self->has_decl('my')));
-        ((my  $outer_pkg) = $Perlito5::PKG_NAME);
-        ((my  $outer_throw) = $Perlito5::THROW);
-        unshift(@{$Perlito5::VAR}, {});
-        if ($self->{'top_level'}) {
-            ($Perlito5::THROW = 0)
-        };
-        if ($has_local) {
-            ($out = ($out . (Perlito5::Javascript::tab($level) . 'var local_idx = p5LOCAL.length;' . chr(10))))
-        };
-        if ($self->{'top_level'}) {
-            ($level)++
-        };
-        if ($create_context) {
-            ($out = ($out . (Perlito5::Javascript::tab($level) . '(function () {' . chr(10))));
-            ($level)++
-        };
-        ((my  $tab) = Perlito5::Javascript::tab($level));
-        (my  $last_statement);
-        if ($self->{'needs_return'}) {
-            ($last_statement = pop(@block))
-        };
-        for my $decl (@block) {
-            if (((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package'))) {
-                ($Perlito5::PKG_NAME = $decl->{'namespace'});
-                ($Perlito5::VAR->[0]->{'$_'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
-                ($Perlito5::VAR->[0]->{'$a'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
-                ($Perlito5::VAR->[0]->{'$b'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
-                ($Perlito5::VAR->[0]->{'$AUTOLOAD'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME})
-            };
-            if ($decl->isa('Perlito5::AST::Decl')) {
-                push(@str, $decl->emit_javascript_init() )
-            };
-            if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'my'))) {
-                for (@{$decl->{'arguments'}}) {
-                    if ($_->isa('Perlito5::AST::Var')) {
-                        ((my  $d) = Perlito5::AST::Decl->new('decl', $decl->code(), 'var', $_));
-                        push(@str, $d->emit_javascript_init() )
-                    }
-                }
-            };
-            if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<=>'))) {
-                ((my  $arg) = $decl->{'arguments'}->[0]);
-                if ($arg->isa('Perlito5::AST::Decl')) {
-                    push(@str, $arg->emit_javascript_init() )
-                };
-                if (($arg->isa('Perlito5::AST::Apply') && ($arg->code() eq 'my'))) {
-                    for (@{$arg->{'arguments'}}) {
-                        if ($_->isa('Perlito5::AST::Var')) {
-                            ((my  $d) = Perlito5::AST::Decl->new('decl', $arg->code(), 'var', $_));
-                            push(@str, $d->emit_javascript_init() )
-                        }
-                    }
-                }
-            };
-            if (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my'))))) {
-                push(@str, ($decl->emit_javascript($level, 'void') . ';') )
-            }
-        };
-        if (($self->{'needs_return'} && $last_statement)) {
-            if ($last_statement->isa('Perlito5::AST::Decl')) {
-                push(@str, $last_statement->emit_javascript_init() )
-            };
-            if (($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'infix:<=>'))) {
-                if ($last_statement->{'arguments'}->[0]->isa('Perlito5::AST::Decl')) {
-                    push(@str, $last_statement->{'arguments'}->[0]->emit_javascript_init() )
-                }
-            };
-            if (((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')) && $self->{'top_level'}) && @{$last_statement->{'arguments'}})) {
-                ($last_statement = $last_statement->{'arguments'}->[0])
-            };
-            if ($last_statement->isa('Perlito5::AST::If')) {
-                ((my  $cond) = $last_statement->cond());
-                ((my  $body) = $last_statement->body());
-                ((my  $otherwise) = $last_statement->otherwise());
-                ($body = Perlito5::Javascript::LexicalBlock->new('block', $body->stmts(), 'needs_return', 1));
-                push(@str, ('if ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') );
-                if ($otherwise) {
-                    ($otherwise = Perlito5::Javascript::LexicalBlock->new('block', $otherwise->stmts(), 'needs_return', 1));
-                    push(@str, (chr(10) . Perlito5::Javascript::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') )
-                }
-            }
-            else {
-                if ($last_statement->isa('Perlito5::AST::Lit::Block')) {
-                    ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $last_statement->{'stmts'}, 'needs_return', 1));
-                    push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') )
-                }
-                else {
-                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
-                        push(@str, $last_statement->emit_javascript($level, 'runtime') )
-                    }
-                    else {
-                        if ($has_local) {
-                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . '));') )
-                        }
-                        else {
-                            push(@str, ('return (' . Perlito5::Javascript::to_runtime_context([$last_statement], $level) . ');') )
-                        }
-                    }
-                }
-            }
-        };
-        if ($has_local) {
-            push(@str, 'p5cleanup_local(local_idx, null);' )
-        };
-        if ($create_context) {
-            ($level)--;
-            push(@str, '})();' )
-        };
-        if (($self->{'top_level'} && $Perlito5::THROW)) {
-            ($level)--;
-            ($out = ($out . (Perlito5::Javascript::tab($level) . 'try {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript::tab($level) . '}' . chr(10) . Perlito5::Javascript::tab($level) . 'catch(err) {' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err);' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'else {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)')) . ';' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab($level) . '}')))
-        }
-        else {
-            ($out = ($out . join(chr(10), map(($tab . $_), @str))))
-        };
-        ($Perlito5::PKG_NAME = $outer_pkg);
-        if ($self->{'top_level'}) {
-            ($Perlito5::THROW = $outer_throw)
-        };
-        shift(@{$Perlito5::VAR});
-        return ($out)
-    }
-}};
-package Perlito5::AST::CompUnit;
-do {{
-    sub Perlito5::AST::CompUnit::emit_javascript {
-        ((my  $self) = $_[0]);
-        ((my  $level) = $_[1]);
-        ((my  $str) = ('(function () {' . chr(10) . Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}, 'needs_return', 0)->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '})()' . chr(10)));
-        return ($str)
-    };
-    sub Perlito5::AST::CompUnit::emit_javascript_program {
-        ((my  $comp_units) = shift());
-        ($Perlito5::PKG_NAME = 'main');
-        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
-        ($Perlito5::VAR = [{'@_', {'decl', 'my'}, '$@', {'decl', 'our', 'namespace', 'main'}, '$|', {'decl', 'our', 'namespace', 'main'}, '$^O', {'decl', 'our', 'namespace', 'main'}, '%ENV', {'decl', 'our', 'namespace', 'main'}, '%INC', {'decl', 'our', 'namespace', 'main'}, '@#', {'decl', 'our', 'namespace', 'main'}, '@ARGV', {'decl', 'our', 'namespace', 'main'}, '@INC', {'decl', 'our', 'namespace', 'main'}, '$_', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$a', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$b', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$AUTOLOAD', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}}]);
-        for my $comp_unit (@{$comp_units}) {
-            ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
-        };
-        return ($str)
-    }
-}};
-package Perlito5::AST::Val::Int;
-do {{
-    sub Perlito5::AST::Val::Int::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        $self->{        'int'}
-    }
-}};
-package Perlito5::AST::Val::Num;
-do {{
-    sub Perlito5::AST::Val::Num::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        $self->{        'num'}
-    }
-}};
-package Perlito5::AST::Val::Buf;
-do {{
-    sub Perlito5::AST::Val::Buf::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        Perlito5::Javascript::escape_string($self->{'buf'})
-    }
-}};
-package Perlito5::AST::Lit::Block;
-do {{
-    sub Perlito5::AST::Lit::Block::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $init) = '');
-        if (($self->{'name'} eq 'INIT')) {
-            ((my  $tmp) = ('p5pkg.main._tmp' . Perlito5::Javascript::get_label()));
-            ($init = (Perlito5::Javascript::tab(($level + 2)) . ('if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10))))
-        };
-        return (('p5for_lex(' . 'function () {' . chr(10) . $init . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . '[0], ' . $self->emit_javascript_continue($level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
-    };
-    sub Perlito5::AST::Lit::Block::emit_javascript_continue {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        if ((!($self->{'continue'}) || !(@{$self->{'continue'}->{'stmts'}}))) {
-            return ('false')
-        };
-        return (('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}'))
-    }
-}};
-package Perlito5::AST::Index;
-do {{
-    sub Perlito5::AST::Index::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
-            ((my  $v) = Perlito5::AST::Var->new('sigil', '@', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
-            return (($v->emit_javascript($level) . '[' . 'p5idx(' . $v->emit_javascript($level) . ',' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ')' . ']'))
-        };
-        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
-            return (Perlito5::AST::Call->new('method', 'postcircumfix:<[ ]>', 'invocant', $self->{'obj'}->{'arguments'}->[0], 'arguments', $self->{'index_exp'})->emit_javascript($level))
-        };
-        (Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '._array_[' . 'p5idx(' . Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '._array_,' . Perlito5::Javascript::to_num($self->{'index_exp'}, $level) . ')' . ']')
-    }
-}};
-package Perlito5::AST::Lookup;
-do {{
-    sub Perlito5::AST::Lookup::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
-            ((my  $v) = Perlito5::AST::Var->new('sigil', '%', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
-            return (($v->emit_javascript($level) . '[' . $self->autoquote($self->{'index_exp'})->emit_javascript($level) . ']'))
-        };
-        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
-            return (Perlito5::AST::Call->new('method', 'postcircumfix:<{ }>', 'invocant', $self->{'obj'}->{'arguments'}->[0], 'arguments', $self->{'index_exp'})->emit_javascript($level))
-        };
-        (Perlito5::Javascript::emit_javascript_autovivify($self->{'obj'}, $level, 'hash') . '._hash_[' . $self->autoquote($self->{'index_exp'})->emit_javascript($level) . ']')
-    }
-}};
-package Perlito5::AST::Var;
-do {{
-    ((my  $table) = {'$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''});
-    sub Perlito5::AST::Var::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $str_name) = $self->{'name'});
-        if (($str_name eq chr(92))) {
-            ($str_name = chr(92) . chr(92))
-        };
-        if (($str_name eq '"')) {
-            ($str_name = chr(92) . '"')
-        };
-        ((my  $perl5_name) = $self->perl5_name());
-        (my  $decl_type);
-        ((my  $decl) = $self->perl5_get_decl($perl5_name));
-        if ($decl) {
-            ($decl_type = $decl->{'decl'})
-        }
-        else {
-            if ((!($self->{'namespace'}) && ($self->{'sigil'} ne '*'))) {
-                if ($Perlito5::STRICT) {
-                    die(('Global symbol "' . $perl5_name . '" requires explicit package name'))
-                };
-                ($decl_type = 'our');
-                ($self->{'namespace'} = $Perlito5::PKG_NAME);
-                ((my  $sigil) = (($self->{'sigil'} eq '$#') ? '@' : $self->{'sigil'}));
-                ((my  $s) = ('p5pkg["' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'));
-                if (($sigil eq '@')) {
-                    ($s = ($s . ' || (' . $s . ' = [])'));
-                    ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'));
-                    if ((($self->{'sigil'} eq '@') && ($wantarray eq 'scalar'))) {
-                        ($s = ($s . '.length'))
-                    }
-                }
-                else {
-                    if (($sigil eq '%')) {
-                        ($s = ($s . ' || (' . $s . ' = {})'));
-                        ($s = ('p5pkg[' . $s . ', "' . $self->{'namespace'} . '"]["' . $table->{$sigil} . $str_name . '"]'))
-                    }
-                };
-                if (($self->{'sigil'} eq '$#')) {
-                    return (('(' . $s . '.length - 1)'))
-                };
-                return ($s)
-            }
-        };
-        if (($self->{'sigil'} eq '@')) {
-            if (($wantarray eq 'scalar')) {
-                return (($self->emit_javascript($level, 'list') . '.length'))
-            };
-            if (($wantarray eq 'runtime')) {
-                return (('(p5want' . ' ? ' . $self->emit_javascript($level, 'list') . ' : ' . $self->emit_javascript($level, 'list') . '.length' . ')'))
-            }
-        };
-        if (($self->{'sigil'} eq '&')) {
-            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
-        };
-        if (($self->{'sigil'} eq '*')) {
-            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
-        };
-        if (($decl_type eq 'our')) {
-            ((my  $sigil) = (($self->{'sigil'} eq '$#') ? '@' : $self->{'sigil'}));
-            ((my  $s) = ('p5pkg["' . (($self->{'namespace'} || $decl->{'namespace'})) . '"]["' . $table->{$sigil} . $str_name . '"]'));
-            if (($self->{'sigil'} eq '$#')) {
-                return (('(' . $s . '.length - 1)'))
-            };
-            return ($s)
-        };
-        ((my  $ns) = '');
-        if ($self->{'namespace'}) {
-            ($ns = ('p5pkg["' . $self->{'namespace'} . '"]'));
-            if (($self->{'sigil'} eq '$#')) {
-                return (('(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)'))
-            };
-            return (($ns . '["' . $table->{$self->{'sigil'}} . $str_name . '"]'))
-        };
-        if (($self->{'sigil'} eq '$#')) {
-            return (('(' . $ns . $table->{'@'} . $str_name . '.length - 1)'))
-        };
-        ($ns . $table->{$self->{'sigil'}} . $str_name)
-    };
-    sub Perlito5::AST::Var::perl5_name {
-        ((my  $self) = shift());
-        ((my  $sigil) = $self->{'sigil'});
-        if (($sigil eq '$#')) {
-            ($sigil = '@')
-        };
-        ($sigil . (($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $self->{'name'})
-    };
-    sub Perlito5::AST::Var::perl5_get_decl {
-        ((my  $self) = shift());
-        ((my  $perl5_name) = shift());
-        for (@{$Perlito5::VAR}) {
-            if (exists($_->{$perl5_name})) {
-                return ($_->{$perl5_name})
-            }
-        };
-        return (undef())
-    }
-}};
-package Perlito5::AST::Decl;
-do {{
-    sub Perlito5::AST::Decl::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        $self->{'var'}->emit_javascript($level)
-    };
-    sub Perlito5::AST::Decl::emit_javascript_init {
-        ((my  $self) = shift());
-        ((my  $env) = {'decl', $self->{'decl'}});
-        ((my  $perl5_name) = $self->{'var'}->perl5_name());
-        if (($self->{'decl'} ne 'my')) {
-            if ((($self->{'decl'} eq 'our') && $self->{'var'}->{'namespace'})) {
-                die(('No package name allowed for variable ' . $perl5_name . ' in "our"'))
-            };
-            if (($self->{'var'}->{'namespace'} eq '')) {
-                ((my  $decl_namespace) = '');
-                ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
-                if (((($self->{'decl'} eq 'local') && $decl) && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
-                    ($decl_namespace = $decl->{'namespace'})
-                };
-                ($env->{'namespace'} = ($decl_namespace || $Perlito5::PKG_NAME))
-            }
-        };
-        ($Perlito5::VAR->[0]->{$perl5_name} = $env);
-        if (($self->{'decl'} eq 'my')) {
-            ((my  $str) = '');
-            ($str = ($str . 'var ' . $self->{'var'}->emit_javascript() . ' = '));
-            if (($self->{'var'}->sigil() eq '%')) {
-                ($str = ($str . '{};'))
-            }
-            else {
-                if (($self->{'var'}->sigil() eq '@')) {
-                    ($str = ($str . '[];'))
-                }
-                else {
-                    ($str = ($str . 'null;'))
-                }
-            };
-            return ($str)
-        }
-        else {
-            if (($self->{'decl'} eq 'our')) {
-                return (('// our ' . $self->{'var'}->emit_javascript()))
-            }
-            else {
-                if (($self->{'decl'} eq 'local')) {
-                    ((my  $perl5_name) = $self->{'var'}->perl5_name());
-                    ((my  $decl_namespace) = '');
-                    ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
-                    if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
-                        ($decl_namespace = $decl->{'namespace'})
-                    };
-                    ((my  $ns) = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
-                    return (('p5set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); '))
-                }
-                else {
-                    if (($self->{'decl'} eq 'state')) {
-                        return (('// state ' . $self->{'var'}->emit_javascript()))
-                    }
-                    else {
-                        die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
-                    }
-                }
-            }
-        }
-    }
-}};
-package Perlito5::AST::Proto;
-do {{
-    sub Perlito5::AST::Proto::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        if (($self->{'name'} eq '__PACKAGE__')) {
-            return (Perlito5::Javascript::pkg())
-        };
-        ('p5pkg["' . $self->{'name'} . '"]')
-    }
-}};
-package Perlito5::AST::Call;
-do {{
-    sub Perlito5::AST::Call::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $meth) = $self->{'method'});
-        if (($meth eq 'postcircumfix:<[ ]>')) {
-            return ((Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '._array_[' . 'p5idx(' . Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '._array_,' . Perlito5::Javascript::to_num($self->{'arguments'}) . ')' . ']'))
-        };
-        if (($meth eq 'postcircumfix:<{ }>')) {
-            return ((Perlito5::Javascript::emit_javascript_autovivify($self->{'invocant'}, $level, 'hash') . '._hash_[' . Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_javascript($level, 'list') . ']'))
-        };
-        ((my  $invocant) = $self->{'invocant'}->emit_javascript());
-        if (($meth eq 'postcircumfix:<( )>')) {
-            return (('(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
-        };
-        if ((ref($meth) eq 'Perlito5::AST::Var')) {
-            ($meth = $meth->emit_javascript())
-        }
-        else {
-            ($meth = ('"' . $meth . '"'))
-        };
-        return (('p5call(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
-    }
-}};
-package Perlito5::AST::Apply;
-do {{
-    sub Perlito5::AST::Apply::emit_regex_javascript {
-        ((my  $op) = shift());
-        ((my  $var) = shift());
-        ((my  $regex) = shift());
-        if ($regex->isa('Perlito5::AST::Var')) {
-            ($regex = {'code', 'p5:m', 'arguments', [$regex, '']})
-        };
-        (my  $str);
-        ((my  $code) = $regex->{'code'});
-        ((my  $regex_args) = $regex->{'arguments'});
-        if (($code eq 'p5:s')) {
-            ($str = ($var->emit_javascript() . ' = p5str(' . $var->emit_javascript() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2] . ', ' . $regex_args->[1]->emit_javascript() . ')'))
-        }
-        else {
-            if (($code eq 'p5:m')) {
-                ((my  $ast) = $regex_args->[0]);
-                if ($ast->isa('Perlito5::AST::Val::Buf')) {
-                    ($str = ('(' . 'p5str(' . $var->emit_javascript() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1] . ')' . ' ? 1 : 0)'))
-                }
-                else {
-                    ($str = ('(new RegExp(' . $ast->emit_javascript() . ', ' . '"' . $regex_args->[1] . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript() . ')' . ')'))
-                }
-            }
-            else {
-                if (($code eq 'p5:tr')) {
-                    ($str = ('p5tr(' . $var->emit_javascript() . ', ' . $regex_args->[0]->emit_javascript() . ', ' . $regex_args->[1]->emit_javascript() . ')'))
-                }
-                else {
-                    die(('Error: regex emitter - unknown operator ' . $code))
-                }
-            }
-        };
-        if (($op eq '=~')) {
-            return ($str)
-        };
-        if (($op eq '!~')) {
-            return (('!(' . $str . ')'))
-        };
-        die('Error: regex emitter')
-    };
-    ((my  %emit_js) = ('infix:<=~>', sub {
-    ((my  $self) = $_[0]);
-    emit_regex_javascript('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
-}, 'infix:<!~>', sub {
-    ((my  $self) = $_[0]);
-    emit_regex_javascript('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
-}, 'p5:s', sub {
-    ((my  $self) = $_[0]);
-    emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
-}, 'p5:m', sub {
-    ((my  $self) = $_[0]);
-    emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
-}, 'p5:tr', sub {
-    ((my  $self) = $_[0]);
-    emit_regex_javascript('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
-}, '__PACKAGE__', sub {
-    ((my  $self) = $_[0]);
-    ('"' . $Perlito5::PKG_NAME . '"')
-}, 'wantarray', sub {
-    ((my  $self) = $_[0]);
-    'p5want'
-}, 'package', sub {
-    ((my  $self) = $_[0]);
-    ('var ' . Perlito5::Javascript::pkg_new_var() . ' = p5make_package("' . $self->{'namespace'} . '")')
-}, 'infix:<=>>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    (Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_javascript($level) . ', ' . $self->{'arguments'}->[1]->emit_javascript($level))
-}, 'infix:<cmp>', sub {
-    ((my  $self) = $_[0]);
-    ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')')
-}, 'infix:<<=>>', sub {
-    ((my  $self) = $_[0]);
-    ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
-}, 'infix:<**>', sub {
-    ((my  $self) = $_[0]);
-    ('Math.pow(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
-}, 'prefix:<!>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0], $level) . ')')
-}, 'prefix:<not>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0], $level) . ')')
-}, 'prefix:<~>', sub {
-    ((my  $self) = $_[0]);
-    ('p5complement( ' . Perlito5::Javascript::to_num($self->{'arguments'}->[0]) . ')')
-}, 'prefix:<->', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('-( ' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ')')
-}, 'prefix:<+>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ')')
-}, 'require', sub {
-    ((my  $self) = $_[0]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    if ($arg->isa('Perlito5::AST::Val::Num')) {
-        return ('1')
-    };
-    ('p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ', ' . (($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0)) . '])')
-}, 'prefix:<$>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    (Perlito5::Javascript::emit_javascript_autovivify($arg, $level, 'scalar') . '._scalar_')
-}, 'prefix:<@>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $level) = $_[1]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    (Perlito5::Javascript::emit_javascript_autovivify($arg, $level, 'array') . '._array_')
-}, 'prefix:<$#>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $level) = $_[1]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    ('(' . Perlito5::Javascript::emit_javascript_autovivify($arg, $level, 'array') . '._array_.length - 1)')
-}, 'prefix:<%>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $level) = $_[1]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    (Perlito5::Javascript::emit_javascript_autovivify($arg, $level, 'hash') . '._hash_')
-}, 'prefix:<&>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $level) = $_[1]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    ('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript($level) . ')')
-}, 'circumfix:<[ ]>', sub {
-    ((my  $self) = $_[0]);
-    ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($self->{'arguments'}) . '))')
-}, 'circumfix:<{ }>', sub {
-    ((my  $self) = $_[0]);
-    ('(new p5HashRef(' . Perlito5::Javascript::to_list($self->{'arguments'}, $level, 'hash') . '))')
-}, 'prefix:<' . chr(92) . '>', sub {
-    ((my  $self) = $_[0]);
-    ((my  $level) = $_[1]);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    if ($arg->isa('Perlito5::AST::Var')) {
-        if (($arg->sigil() eq '@')) {
-            return (('(new p5ArrayRef(' . $arg->emit_javascript($level) . '))'))
-        };
-        if (($arg->sigil() eq '%')) {
-            return (('(new p5HashRef(' . $arg->emit_javascript($level) . '))'))
-        };
-        if (($arg->sigil() eq '*')) {
-            return (('(new p5GlobRef(' . $arg->emit_javascript($level) . '))'))
-        };
-        if (($arg->sigil() eq '&')) {
-            if ($arg->{'namespace'}) {
-                return (('p5pkg["' . $arg->{'namespace'} . '"].' . $arg->{'name'}))
-            }
-            else {
-                return ((Perlito5::Javascript::pkg() . '.' . $arg->{'name'}))
-            }
-        }
-    };
-    return (('(new p5ScalarRef(' . $arg->emit_javascript($level) . '))'))
-}, 'postfix:<++>', sub {
-    ((my  $self) = $_[0]);
-    ('(' . join(' ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')++')
-}, 'postfix:<-->', sub {
-    ((my  $self) = $_[0]);
-    ('(' . join(' ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')--')
-}, 'prefix:<++>', sub {
-    ((my  $self) = $_[0]);
-    ('++(' . join(' ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')')
-}, 'prefix:<-->', sub {
-    ((my  $self) = $_[0]);
-    ('--(' . join(' ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')')
-}, 'infix:<x>', sub {
-    ((my  $self) = $_[0]);
-    ('p5str_replicate(' . join(', ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')')
-}, 'list:<.>', sub {
-    ((my  $self) = $_[0]);
-    ('(' . join(' + ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')')
-}, 'list:<,>', sub {
-    ((my  $self) = $_[0]);
-    Perlito5::Javascript::to_list($self->{'arguments'})
-}, 'infix:<..>', sub {
-    ((my  $self) = $_[0]);
-    ('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])')
-}, 'delete', sub {
-    ((my  $self) = $_[0]);
-    ('(delete ' . $self->{'arguments'}->[0]->emit_javascript() . ')')
-}, 'scalar', sub {
-    ((my  $self) = $_[0]);
-    Perlito5::Javascript::to_scalar($self->{'arguments'}, ($level + 1))
-}, 'ternary:<? :>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_javascript($level, $wantarray) . ')')
-}, 'my', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
-}, 'our', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
-}, 'local', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
-}, 'circumfix:<( )>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
-}, 'infix:<=>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  $parameters) = $self->{'arguments'}->[0]);
-    ((my  $arguments) = $self->{'arguments'}->[1]);
-    if (($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'prefix:<*>'))) {
-        return (('p5set_glob(' . $parameters->{'arguments'}->[0]->emit_javascript() . ', ' . Perlito5::Javascript::to_scalar([$arguments], ($level + 1)) . ')'))
-    };
-    if (($parameters->isa('Perlito5::AST::Apply') && ((((($parameters->code() eq 'my') || ($parameters->code() eq 'our')) || ($parameters->code() eq 'local')) || ($parameters->code() eq 'circumfix:<( )>'))))) {
-        ((my  $tmp) = ('tmp' . Perlito5::Javascript::get_label()));
-        ((my  $tmp2) = ('tmp' . Perlito5::Javascript::get_label()));
-        return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . '; ' . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); ' . join('; ', (map(+(((($_->isa('Perlito5::AST::Apply') && ($_->code() eq 'undef')) ? ($tmp . '.shift()') : (($_->sigil() eq '$') ? ($_->emit_javascript() . ' = ' . $tmp . '.shift()') : (($_->sigil() eq '@') ? ($_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []') : (($_->sigil() eq '%') ? ($_->emit_javascript() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []') : die('not implemented'))))))), @{$parameters->arguments()})),('return ' . $tmp2)) . ' })()'))
-    };
-    if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) {
-        return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments], ($level + 1)) . ')'))
-    };
-    if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '@')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '@')))) {
-        return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . ')'))
-    }
-    else {
-        if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '%')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '%')))) {
-            return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], ($level + 1), 'hash') . ')'))
-        }
-    };
-    ('(' . $parameters->emit_javascript($level) . ' = ' . $arguments->emit_javascript(($level + 1)) . ')')
-}, 'break', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ($Perlito5::THROW = 1);
-    'throw(new p5_error("break", ""))'
-}, 'next', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ($Perlito5::THROW = 1);
-    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
-    ('throw(new p5_error("next", "' . $label . '"))')
-}, 'last', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ($Perlito5::THROW = 1);
-    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
-    ('throw(new p5_error("last", "' . $label . '"))')
-}, 'redo', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ($Perlito5::THROW = 1);
-    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
-    ('throw(new p5_error("redo", "' . $label . '"))')
-}, 'return', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ($Perlito5::THROW = 1);
-    ('throw(' . Perlito5::Javascript::to_runtime_context($self->{'arguments'}, $level) . ')')
-}, 'goto', sub {
-    ((my  $self) = $_[0]);
-    ($Perlito5::THROW = 1);
-    ('throw((' . $self->{'arguments'}->[0]->emit_javascript() . ')([List__, p5want]))')
-}, 'do', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  $ast) = Perlito5::AST::Apply->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'slurp', 'namespace', 'Perlito5::IO', 'arguments', $self->{'arguments'})]));
-    $ast->emit_javascript($level)
-}, 'eval', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ($Perlito5::THROW = 1);
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    (my  $eval);
-    if ($arg->isa('Perlito5::AST::Do')) {
-        ($eval = $arg->emit_javascript(($level + 1), $wantarray))
-    }
-    else {
-        ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
-        ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
-        ($m = Perlito5::Expression::expand_list(Perlito5::Match::flat($m)->[2]));
-        ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
-        ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . '))'))
-    };
-    ('(function (p5want) {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
-}, 'undef', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
-        return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ' = null)'))
-    };
-    return ('null')
-}, 'defined', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('(' . join(' ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . ' != null)')
-}, 'shift', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
-        return ((Perlito5::Javascript::pkg() . '.shift([' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . '])'))
-    };
-    return ((Perlito5::Javascript::pkg() . '.shift([List__])'))
-}, 'map', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  @in) = @{$self->{'arguments'}});
-    ((my  $fun) = shift(@in));
-    ((my  $list) = Perlito5::Javascript::to_list(\@in));
-    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
-        ($fun = $fun->{'stmts'})
-    }
-    else {
-        ($fun = [$fun])
-    };
-    ('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $fun, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')')
-}, 'grep', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  @in) = @{$self->{'arguments'}});
-    ((my  $fun) = shift(@in));
-    ((my  $list) = Perlito5::Javascript::to_list(\@in));
-    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
-        ($fun = $fun->{'stmts'})
-    }
-    else {
-        ($fun = [$fun])
-    };
-    ('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $fun, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')')
-}, 'sort', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  @in) = @{$self->{'arguments'}});
-    (my  $fun);
-    (my  $list);
-    if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
-        ($fun = shift(@in));
-        ($fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $fun->{'stmts'}, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
-    }
-    else {
-        ($fun = 'null')
-    };
-    ($list = Perlito5::Javascript::to_list(\@in));
-    ('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list . ')')
-}, 'infix:<//>', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
-}, 'exists', sub {
-    ((my  $self) = shift());
-    ((my  $level) = shift());
-    ((my  $wantarray) = shift());
-    ((my  $arg) = $self->{'arguments'}->[0]);
-    if ($arg->isa('Perlito5::AST::Lookup')) {
-        ((my  $v) = $arg->obj());
-        if (($v->isa('Perlito5::AST::Var') && ($v->sigil() eq '$'))) {
-            ($v = Perlito5::AST::Var->new('sigil', '%', 'namespace', $v->namespace(), 'name', $v->name()));
-            return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . $arg->autoquote($arg->{'index_exp'})->emit_javascript($level) . ')'))
-        };
-        return (('(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->autoquote($arg->{'index_exp'})->emit_javascript($level) . ')'))
-    };
-    if ($arg->isa('Perlito5::AST::Call')) {
-        if (($arg->method() eq 'postcircumfix:<{ }>')) {
-            return (('(' . $arg->invocant()->emit_javascript() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{'arguments'})->emit_javascript($level) . ')'))
-        }
-    }
-}));
-    sub Perlito5::AST::Apply::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $apply) = $self->op_assign());
-        if ($apply) {
-            return ($apply->emit_javascript($level))
-        };
-        ((my  $code) = $self->{'code'});
-        if ((ref($code) ne '')) {
-            ((my  @args) = ());
-            for (@{$self->{'arguments'}}) {
-                push(@args, $_->emit_javascript() )
-            };
-            return (('(' . $self->{'code'}->emit_javascript($level) . ')(' . join(',', @args) . ')'))
-        };
-        if (exists($emit_js{$code})) {
-            return ($emit_js{$code}->($self, $level, $wantarray))
-        };
-        if (exists($Perlito5::Javascript::op_infix_js_str{$code})) {
-            return (('(' . join($Perlito5::Javascript::op_infix_js_str{$code}, map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
-        };
-        if (exists($Perlito5::Javascript::op_infix_js_num{$code})) {
-            return (('(' . join($Perlito5::Javascript::op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
-        };
-        if (exists($Perlito5::Javascript::op_prefix_js_str{$code})) {
-            return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
-        };
-        if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
-            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
-        };
-        if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
-            return (('p5or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ', ' . Perlito5::Javascript::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
-        };
-        if ($self->{'namespace'}) {
-            if ((($self->{'namespace'} eq 'JS') && ($code eq 'inline'))) {
-                if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Val::Buf')) {
-                    return ($self->{'arguments'}->[0]->{'buf'})
-                }
-                else {
-                    die('JS::inline needs a string constant')
-                }
-            };
-            ($code = ('p5pkg["' . $self->{'namespace'} . '"].' . $code))
-        }
-        else {
-            ($code = (Perlito5::Javascript::pkg() . '.' . $code))
-        };
-        (my  $sig);
-        do {{
-            ((my  $name) = $self->{'code'});
-            ((my  $namespace) = ($self->{'namespace'} || $Perlito5::PKG_NAME));
-            ((my  $effective_name) = ($namespace . '::' . $self->{'code'}));
-            if (exists($Perlito5::PROTO->{$effective_name})) {
-                ($sig = $Perlito5::PROTO->{$effective_name})
-            }
-            else {
-                if ((((!($self->{'namespace'}) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
-                    ($effective_name = ('CORE::' . $name));
-                    ($sig = $Perlito5::CORE_PROTO->{$effective_name})
-                }
-                else {
-                    if ($self->{'bareword'}) {
-                        if ($Perlito5::STRICT) {
-                            die(('Bareword "' . $name . '" not allowed while "strict subs" in use'))
-                        };
-                        return (Perlito5::Javascript::escape_string(((($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $name)))
-                    }
-                }
-            }
-        }};
-        if (((((($self->{'code'} eq 'say') || ($self->{'code'} eq 'print'))) && !($self->{'namespace'})) && $self->{'bareword'})) {
-            ($self->{'arguments'} = [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_')])
-        };
-        if ($sig) {
-            ((my  @out) = ());
-            ((my  @in) = @{($self->{'arguments'} || [])});
-            ((my  $optional) = 0);
-            for ( ; length($sig); do {{
-
-}} ) {
-                ((my  $c) = substr($sig, 0, 1));
-                if (($c eq ';')) {
-                    ($optional = 1)
-                }
-                else {
-                    if ((($c eq '$') || ($c eq '_'))) {
-                        if ((@in || !($optional))) {
-                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
-                        }
-                    }
-                    else {
-                        if (($c eq '@')) {
-                            if ((@in || !($optional))) {
-                                push(@out, Perlito5::Javascript::to_list(\@in) )
-                            };
-                            (@in = ())
-                        }
-                        else {
-                            if (($c eq '*')) {
-                                if ((@in || !($optional))) {
-                                    ((my  $arg) = shift(@in));
-                                    if ($arg->{'bareword'}) {
-                                        push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
-                                    }
-                                    else {
-                                        push(@out, $arg->emit_javascript($level, 'scalar') )
-                                    }
-                                }
-                            }
-                            else {
-                                if (($c eq chr(92))) {
-                                    if ((substr($sig, 0, 2) eq chr(92) . '$')) {
-                                        ($sig = substr($sig, 1));
-                                        if ((@in || !($optional))) {
-                                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
-                                        }
-                                    }
-                                    else {
-                                        if (((substr($sig, 0, 2) eq chr(92) . '@') || (substr($sig, 0, 2) eq chr(92) . '%'))) {
-                                            ($sig = substr($sig, 1));
-                                            if ((@in || !($optional))) {
-                                                push(@out, shift(@in)->emit_javascript($level, 'list') )
-                                            }
-                                        }
-                                        else {
-                                            if ((substr($sig, 0, 5) eq chr(92) . '[@%]')) {
-                                                ($sig = substr($sig, 4));
-                                                if ((@in || !($optional))) {
-                                                    push(@out, shift(@in)->emit_javascript($level, 'list') )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-                ($sig = substr($sig, 1))
-            };
-            return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
-        };
-        ((my  @args) = ());
-        ((my  $arg_list) = Perlito5::Javascript::to_list_preprocess($self->{'arguments'}));
-        for (@{$arg_list}) {
-            push(@args, $_->emit_javascript($level) )
-        };
-        ((my  $arg_code) = (($self->{'code'} eq 'scalar') ? ('[' . join(', ', @args) . ']') : Perlito5::Javascript::to_list($arg_list)));
-        ($code . '(' . $arg_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
-    }
-}};
-package Perlito5::AST::If;
-do {{
-    sub Perlito5::AST::If::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $cond) = $self->{'cond'});
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
-        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
-        if (@{$self->{'otherwise'}->stmts()}) {
-            ((my  $otherwise) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1));
-            ($s = ($s . chr(10) . Perlito5::Javascript::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
-        };
-        return ($s)
-    }
-}};
-package Perlito5::AST::When;
-do {{
-    sub Perlito5::AST::When::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $cond) = $self->{'cond'});
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
-        ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
-        ((my  $s) = ('if ( ' . Perlito5::Javascript::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::Javascript::tab($level) . '}'));
-        return ($s)
-    }
-}};
-package Perlito5::AST::While;
-do {{
-    sub Perlito5::AST::While::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $cond) = $self->{'cond'});
-        return (('p5while(' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . Perlito5::Javascript::emit_function_javascript($level, 0, $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
-    }
-}};
-package Perlito5::AST::For;
-do {{
-    sub Perlito5::AST::For::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        if ((ref($self->{'cond'}) eq 'ARRAY')) {
-            ((my  $body) = Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
-            return (('for ( ' . (($self->{'cond'}->[0] ? ($self->{'cond'}->[0]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[1] ? ($self->{'cond'}->[1]->emit_javascript(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[2] ? ($self->{'cond'}->[2]->emit_javascript(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
-        };
-        ((my  $cond) = Perlito5::Javascript::to_list([$self->{'cond'}], ($level + 1)));
-        if ($self->{'body'}->sig()) {
-            ((my  $v) = $self->{'body'}->sig());
-            ($Perlito5::VAR->[0]->{$v->perl5_name()} = {'decl', 'my'});
-            ((my  $sig) = $v->emit_javascript(($level + 1)));
-            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
-        }
-        else {
-            return (('p5for(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
-        }
-    }
-}};
-package Perlito5::AST::Sub;
-do {{
-    sub Perlito5::AST::Sub::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $s) = ('function (List__, p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $self->{'block'}, 'needs_return', 1, 'top_level', 1))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
-        if ($self->{'name'}) {
-            return (('p5make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
-        }
-        else {
-            return ($s)
-        }
-    }
-}};
-package Perlito5::AST::Do;
-do {{
-    sub Perlito5::AST::Do::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        ((my  $wantarray) = shift());
-        ((my  $block) = $self->simplify()->block());
-        return (('(function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new('block', $block, 'needs_return', 1))->emit_javascript(($level + 1), $wantarray) . chr(10) . Perlito5::Javascript::tab($level) . '})()'))
-    }
-}};
-package Perlito5::AST::Use;
-do {{
-    sub Perlito5::AST::Use::emit_javascript {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        Perlito5::Grammar::Use::emit_time_eval($self);
-        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
-    }
-}};
-
-;
-
-# use Perlito5::Javascript::Emitter
-;
-package main;
-undef();
-package Perlito5::Javascript::Runtime;
-sub Perlito5::Javascript::Runtime::emit_javascript {
-    return ((('//' . chr(10) . '// lib/Perlito5/Javascript/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-Javascript' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    p5pkg = {};' . chr(10) . '    p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        return List__[0]._class_._ref_ == List__[1]' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = List__[1];' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref__, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = [];' . chr(10) . '        p5pkg[pkg_name]["v_a"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_b"] = null;' . chr(10) . '        p5pkg[pkg_name]["v__"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = null;' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    for (var i = 0; i < isa.length; i++) {' . chr(10) . '        if (!seen[isa[i]]) {' . chr(10) . '            var m = p5get_class_for_method(method, isa[i]);' . chr(10) . '            if (m) {' . chr(10) . '                return m ' . chr(10) . '            }' . chr(10) . '            seen[isa[i]]++;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list) {' . chr(10) . '    list.unshift(invocant);' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list);' . chr(10) . '        }' . chr(10) . chr(10) . '        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);' . chr(10) . chr(10) . '    }' . chr(10) . chr(10) . '    // the invocant doesn' . chr(39) . 't have a class' . chr(10) . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        var aclass = p5make_package(invocant);' . chr(10) . '        return p5call(aclass, method, list);' . chr(10) . '    }' . chr(10) . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5pkg["main"]["v_@"] = [];      // $@' . chr(10) . 'p5pkg["main"]["v_|"] = 0;       // $|' . chr(10) . 'p5pkg["main"]["List_#"] = [];   // @#' . chr(10) . 'p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript";' . chr(10) . 'p5pkg["main"]["List_INC"] = [];' . chr(10) . 'p5pkg["main"]["Hash_INC"] = {};' . chr(10) . 'p5pkg["main"]["List_ARGV"] = [];' . chr(10) . 'p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);' . chr(10) . '    p5pkg["main"]["Hash_ENV"]  = process.env;' . chr(10) . '    p5pkg["main"]["v_$"]       = process.pid;' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = arguments;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'function p5make_sub(pkg_name, sub_name, func) {' . chr(10) . '    p5pkg[pkg_name][sub_name] = func;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_glob(name, data) {' . chr(10) . '    if ( name.indexOf("::") == -1 ) {' . chr(10) . '        p5pkg[p5pkg["Perlito5"].v_PKG_NAME][name] = data;' . chr(10) . '        return data;' . chr(10) . '    }' . chr(10) . '    var c = name.split("::");' . chr(10) . '    s = c.pop(); ' . chr(10) . '    var pkg = c.join("::");' . chr(10) . '    p5make_package(pkg);' . chr(10) . '    p5pkg[pkg][s] = data;' . chr(10) . '    return data;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_local(namespace, name, sigil) {' . chr(10) . '    var v = name;' . chr(10) . '    if (sigil == "$") {' . chr(10) . '        v = "v_"+name;' . chr(10) . '    }' . chr(10) . '    p5LOCAL.push([namespace, v, namespace[v]]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        l = p5LOCAL.pop();' . chr(10) . '        l[0][l[1]] = l[2];' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'if (isNode) {' . chr(10) . '    var fs = require("fs");' . chr(10) . '    p5make_sub("Perlito5::IO", "slurp", function(List__) {' . chr(10) . '        return fs.readFileSync(List__[0],"utf8");' . chr(10) . '    });' . chr(10) . '} else {' . chr(10) . '    p5make_sub("Perlito5::IO", "slurp", function(List__) {' . chr(10) . '        var filename = List__[0];' . chr(10) . '        if (typeof readFile == "function") {' . chr(10) . '            return readFile(filename);' . chr(10) . '        }' . chr(10) . '        if (typeof read == "function") {' . chr(10) . '            // v8' . chr(10) . '            return read(filename);' . chr(10) . '        }' . chr(10) . '        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);' . chr(10) . '    });' . chr(10) . '}' . chr(10) . chr(10) . 'p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a.apply(null, List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    while (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'p5list_to_a = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        var o = arguments[i];' . chr(10) . '        if  (  o == null' . chr(10) . '            || o._class_    // perl5 blessed reference' . chr(10) . '            || o._ref_      // perl5 un-blessed reference' . chr(10) . '            )' . chr(10) . '        {' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '        else if (o instanceof Array) {' . chr(10) . '            // perl5 array' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (typeof o === "object") {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o) {' . chr(10) . '                if (o.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-ref' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5idx = function(a, i) {' . chr(10) . '    return i >= 0 ? i : a.length + i' . chr(10) . '};' . chr(10) . chr(10) . 'p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return CORE.join(["", o]);' . chr(10) . '    }' . chr(10) . '    // if (typeof o.string === "function") {' . chr(10) . '    //     return o.string();' . chr(10) . '    // }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return o.length;' . chr(10) . '    }' . chr(10) . '    // if (typeof o.num === "function") {' . chr(10) . '    //     return o.num();' . chr(10) . '    // }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        return parseFloat(p5str(o));' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        // if (typeof o.bool === "function") {' . chr(10) . '        //     return o.bool();' . chr(10) . '        // }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_replicate = function(o, n) {' . chr(10) . '    n = p5num(n);' . chr(10) . '    return n ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_inc = function(s) {' . chr(10) . '    s = p5str(s);' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'p5for = function(namespace, func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '       }' . chr(10) . '   }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for_lex = function(func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        try {' . chr(10) . '            func(args[i])' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5while = function(func, cond, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    while (_redo || p5bool(cond())) {' . chr(10) . '        _redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        var o = p5list_to_a(func(1));' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"] = a;' . chr(10) . '                namespace["v_b"] = b;' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'perl5_to_js = function( source, namespace, var_env_js, p5want ) {' . chr(10) . '    // CORE.say(["source: [" + source + "]"]);' . chr(10) . chr(10) . '    var strict_old = p5pkg["Perlito5"].v_STRICT;' . chr(10) . '    var var_env_js_old = p5pkg["Perlito5"].v_VAR;' . chr(10) . '    p5pkg["Perlito5"].v_VAR = var_env_js;' . chr(10) . chr(10) . '    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME = namespace;' . chr(10) . chr(10) . '    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);' . chr(10) . chr(10) . '    if ( !match || match._hash_.to != source.length ) {' . chr(10) . '        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);' . chr(10) . '    }' . chr(10) . chr(10) . '    ast = p5pkg.CORE.bless([' . chr(10) . '        new p5HashRef({' . chr(10) . '            block:  p5pkg.CORE.bless([' . chr(10) . '                        new p5HashRef({' . chr(10) . '                            stmts:   p5pkg["Perlito5::Match"].flat([match])' . chr(10) . '                        }),' . chr(10) . '                        p5pkg["Perlito5::AST::Lit::Block"]' . chr(10) . '                    ])' . chr(10) . '        }),' . chr(10) . '        p5pkg["Perlito5::AST::Do"]' . chr(10) . '    ]);' . chr(10) . chr(10) . '    // CORE.say(["ast: [" + ast + "]"]);' . chr(10) . '    js_code = p5call(ast, "emit_javascript", [0, p5want]);' . chr(10) . '    // CORE.say(["js-source: [" + js_code + "]"]);' . chr(10) . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME = namespace_old;' . chr(10) . '    p5pkg["Perlito5"].v_VAR      = var_env_js_old;' . chr(10) . '    p5pkg["Perlito5"].v_STRICT = strict_old;' . chr(10) . '    return js_code;' . chr(10) . '}' . chr(10) . chr(10))))
-};
-1;
-
-;
-
-# use Perlito5::Javascript::Runtime
-;
-package main;
-undef();
-package Perlito5::Javascript::CORE;
-sub Perlito5::Javascript::CORE::emit_javascript {
-    return ((('//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/Javascript/CORE.js' . chr(10) . '//' . chr(10) . '// CORE functions for "Perlito" Perl5-in-Javascript' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var CORE = p5pkg.CORE;' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            process.stdout.write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    }' . chr(10) . '} else {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'CORE.say = function(List__) {' . chr(10) . '    CORE.print(List__);' . chr(10) . '    return CORE.print(["' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.die = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    p5pkg["main"]["v_@"] = "Died: " + s;' . chr(10) . '    throw(new p5_error("die", "Died: " + s));' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.warn = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    CORE.print(["Warning: " + s + "' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.bless = function(List__) {' . chr(10) . '    var o        = List__[0];' . chr(10) . '    var pkg_name = List__[1];' . chr(10) . '    if (typeof pkg_name === "object") {' . chr(10) . '        // bless {}, Class' . chr(10) . '        o._class_ = pkg_name;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        p5make_package(pkg_name);' . chr(10) . '    }' . chr(10) . '    o._class_ = p5pkg[pkg_name];' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.caller = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5pkg["Perlito5"]["CALLER"][0];' . chr(10) . '    }' . chr(10) . '    return p5pkg["Perlito5"]["CALLER"][0][0];' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.chr = function(List__) {' . chr(10) . '    var v = p5num(List__[0]);' . chr(10) . '    return String.fromCharCode(v >= 0 ? v : 65533);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ord = function(List__) {' . chr(10) . '    return p5str(List__[0]).charCodeAt(0);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.oct = function(List__) {' . chr(10) . '    var v = List__[0];' . chr(10) . '    var b = v.substr(0,2);' . chr(10) . '    v = v.replace("_", "");' . chr(10) . '    if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }' . chr(10) . '    if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }' . chr(10) . '    return parseInt(v, 8);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.abs   = function(List__) { return Math.abs(List__[0]) };' . chr(10) . 'CORE.exp   = function(List__) { return Math.exp(List__[0]) };' . chr(10) . 'CORE.log   = function(List__) { return Math.log(List__[0]) };' . chr(10) . 'CORE.cos   = function(List__) { return Math.cos(List__[0]) };' . chr(10) . 'CORE.sin   = function(List__) { return Math.sin(List__[0]) };' . chr(10) . 'CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };' . chr(10) . 'CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };' . chr(10) . 'CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };' . chr(10) . chr(10) . 'CORE.rand = function(List__) {' . chr(10) . '    var v = p5num(List__[0]) || 1;' . chr(10) . '    return Math.random() * v;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };' . chr(10) . 'CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };' . chr(10) . chr(10) . 'CORE.lcfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ucfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.quotemeta = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < s.length; i++) {' . chr(10) . '        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {' . chr(10) . '            out.push(String.fromCharCode(92));' . chr(10) . '        }' . chr(10) . '        out.push(s.substr(i, 1));' . chr(10) . '    }' . chr(10) . '    return out.join("");       ' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.substr = function(List__) {' . chr(10) . '    var expr        = List__[0];' . chr(10) . '    var offset      = List__[1];' . chr(10) . '    var length      = List__[2];' . chr(10) . '    var replacement = List__[3];' . chr(10) . '    if (length < 0) {' . chr(10) . '        var s = p5str(expr);' . chr(10) . '        length = s.length - offset + length;' . chr(10) . '    } ' . chr(10) . '    return p5str(expr).substr(offset, length);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.values = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return [];' . chr(10) . '        };' . chr(10) . '        if (typeof o.values === "function") {' . chr(10) . '            return o.values();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(o[i]);' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '    return CORE.keys(List__, p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.keys = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return [];' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return o.keys();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(i);' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        if (o == null) {' . chr(10) . '            return 0;' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return CORE.scalar([o.keys()]);' . chr(10) . '        }' . chr(10) . '        var out = 0;' . chr(10) . '        for (var i in o) {' . chr(10) . '            out++;' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.each = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.hasOwnProperty("_each_")) {' . chr(10) . '        return o._each_(p5want)' . chr(10) . '    }' . chr(10) . '    var keys = CORE.keys([o], 1);' . chr(10) . '    var i = 0;' . chr(10) . '    o._each_ = function () {' . chr(10) . '        if (i < keys.length) {' . chr(10) . '            i++;' . chr(10) . '            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];' . chr(10) . '        }' . chr(10) . '        i = 0;' . chr(10) . '        return p5want ? [] : null;' . chr(10) . '    };' . chr(10) . '    return o._each_(p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.reverse = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "string") {' . chr(10) . '        return o.split("").reverse().join("")' . chr(10) . '    }' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < o.length; i++) {' . chr(10) . '        out.unshift(o[i]);' . chr(10) . '    }' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.splice = function(List__, p5want) {' . chr(10) . '    var array  = List__.shift();' . chr(10) . '    // CORE.say([ array ]);' . chr(10) . '    var offset = p5num(List__.shift());' . chr(10) . '    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);' . chr(10) . chr(10) . '    if (limit < 0) {' . chr(10) . '        limit = array.length + limit - 1;' . chr(10) . '    }' . chr(10) . chr(10) . '    var list = [offset, limit];' . chr(10) . '    for(var i = 0; i < List__.length; i++) {' . chr(10) . '        list = p5list_to_a( list, List__[i]);' . chr(10) . '    }' . chr(10) . chr(10) . '    out = array.splice.apply(array, list);' . chr(10) . '    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);' . chr(10) . '    return p5want ? out : out.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pop = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.length == null) {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    return o.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.shift = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.length == null) {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    return o.shift();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.push = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var v = List__[1];' . chr(10) . '    for(var i = 0; i < v.length; i++) {' . chr(10) . '        o.push(v[i]);' . chr(10) . '    }' . chr(10) . '    return o.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.unshift = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var v = List__[1];' . chr(10) . '    for(var i = v.length-1; i >= 0; i--) {' . chr(10) . '        o.unshift(v[i]);' . chr(10) . '    }' . chr(10) . '    return o.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.join = function(List__) {' . chr(10) . '    var s = List__[0];' . chr(10) . '    var o = List__[1];' . chr(10) . '    return o.join(s);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.index = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        return o.indexOf(s, p5num(List__[2]));' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . 'CORE.rindex = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        if (List__.length > 2) {' . chr(10) . '            var i = p5num(List__[2]);' . chr(10) . '            if (i < 0) {' . chr(10) . '                if (s.length == 0) {' . chr(10) . '                    return 0;' . chr(10) . '                }' . chr(10) . '                return -1;' . chr(10) . '            }' . chr(10) . '            return o.lastIndexOf(s, i);' . chr(10) . '        }' . chr(10) . '        return o.lastIndexOf(s);' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.length = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (typeof o.string === "function") {' . chr(10) . '        return o.string().length;' . chr(10) . '    }' . chr(10) . '    return o.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };' . chr(10) . 'CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };' . chr(10) . chr(10) . 'CORE.ref = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '        // blessed reference' . chr(10) . '        return o._class_._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o._ref_ === "string") {' . chr(10) . '        // un-blessed reference' . chr(10) . '        return o._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return "CODE";' . chr(10) . '    }' . chr(10) . '    return "";' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.split = function(List__) {' . chr(10) . '    var pattern = List__[0];' . chr(10) . '    var s       = List__[1];' . chr(10) . '    var limit   = List__[2];' . chr(10) . '    if (typeof pattern === "string") {' . chr(10) . '        if (pattern == " ") {' . chr(10) . '            var res = [];' . chr(10) . '            for (var i_ = 0, a_ = s.split(/(?: |' . chr(92) . 'n)+/); i_ < a_.length ; i_++) {' . chr(10) . '                if (a_[i_] != "") {' . chr(10) . '                    res.push(a_[i_])' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        return s.split(pattern);' . chr(10) . '    }' . chr(10) . '    CORE.die(["not implemented"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.prototype = function(List__, data) {' . chr(10) . '    var name = List__[0];' . chr(10) . '    // TODO - fully qualify "name" using information from "data"' . chr(10) . '    // XXX - lookup in CORE::GLOBAL?' . chr(10) . '    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]' . chr(10) . '};' . chr(10) . chr(10))))
-};
-1;
-
-;
-
-# use Perlito5::Javascript::CORE
-;
-package main;
-undef();
-package Perlito5::Javascript::IO;
-sub Perlito5::Javascript::IO::emit_javascript {
-    return ((('//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/Javascript/IO.js' . chr(10) . '//' . chr(10) . '// I/O functions for "Perlito" Perl5-in-Javascript' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . chr(10) . '    var fs = require("fs");' . chr(10) . chr(10) . '    p5atime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["atime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5mtime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["mtime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5ctime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["ctime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5size = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["size"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_file = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_directory = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5file_exists = function(s) {' . chr(10) . '        return p5is_file(s) || p5is_directory(s);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.chdir = function(List__) {' . chr(10) . '        try {' . chr(10) . '            process.chdir(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.close = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.closeSync(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.exit = function(List__) {' . chr(10) . '        process.exit(List__[0]);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.rename = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.renameSync(p5str(List__[0]), p5str(List__[1]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.unlink = function(List__) {' . chr(10) . '        var count = 0;' . chr(10) . '        try {' . chr(10) . '            for(var i = 0; i < List__.length; i++) {' . chr(10) . '                fs.unlinkSync(p5str(List__[i]));' . chr(10) . '                count++;' . chr(10) . '            }' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '}' . chr(10) . chr(10))))
-};
-1;
-
-;
-
-# use Perlito5::Javascript::IO
-;
-package main;
-undef();
-package Perlito5::Javascript::Sprintf;
-sub Perlito5::Javascript::Sprintf::emit_javascript {
-    return ((('/**' . chr(10) . ' * Copyright (c) 2010 Jakob Westhoff' . chr(10) . ' *' . chr(10) . ' * Permission is hereby granted, free of charge, to any person obtaining a copy' . chr(10) . ' * of this software and associated documentation files (the "Software"), to deal' . chr(10) . ' * in the Software without restriction, including without limitation the rights' . chr(10) . ' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell' . chr(10) . ' * copies of the Software, and to permit persons to whom the Software is' . chr(10) . ' * furnished to do so, subject to the following conditions:' . chr(10) . ' * ' . chr(10) . ' * The above copyright notice and this permission notice shall be included in' . chr(10) . ' * all copies or substantial portions of the Software.' . chr(10) . ' * ' . chr(10) . ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR' . chr(10) . ' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,' . chr(10) . ' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE' . chr(10) . ' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER' . chr(10) . ' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,' . chr(10) . ' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN' . chr(10) . ' * THE SOFTWARE.' . chr(10) . ' */' . chr(10) . chr(10) . 'CORE.sprintf = function(List__) {' . chr(10) . '    var format = List__[0];' . chr(10) . '    var list = List__[1];' . chr(10) . chr(10) . '    // Check for format definition' . chr(10) . '    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {' . chr(10) . '        CORE.die(["sprintf: The first arguments need to be a valid format string."]);' . chr(10) . '    }' . chr(10) . '    ' . chr(10) . '    /**' . chr(10) . '     * Define the regex to match a formating string' . chr(10) . '     * The regex consists of the following parts:' . chr(10) . '     * percent sign to indicate the start' . chr(10) . '     * (optional) sign specifier' . chr(10) . '     * (optional) padding specifier' . chr(10) . '     * (optional) alignment specifier' . chr(10) . '     * (optional) width specifier' . chr(10) . '     * (optional) precision specifier' . chr(10) . '     * type specifier:' . chr(10) . '     *  % - literal percent sign' . chr(10) . '     *  b - binary number' . chr(10) . '     *  c - ASCII character represented by the given value' . chr(10) . '     *  d - signed decimal number' . chr(10) . '     *  f - floating point value' . chr(10) . '     *  o - octal number' . chr(10) . '     *  s - string' . chr(10) . '     *  x - hexadecimal number (lowercase characters)' . chr(10) . '     *  X - hexadecimal number (uppercase characters)' . chr(10) . '     */' . chr(10) . '    var r = new RegExp( /%(' . chr(92) . '+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(' . chr(92) . '.([0-9]+))?([%bcdfosxX])/g );' . chr(10) . chr(10) . '    /**' . chr(10) . '     * Each format string is splitted into the following parts:' . chr(10) . '     * 0: Full format string' . chr(10) . '     * 1: sign specifier (+)' . chr(10) . '     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)' . chr(10) . '     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real ' . chr(10) . '     *    padding character' . chr(10) . '     * 4: alignment specifier' . chr(10) . '     * 5: width specifier' . chr(10) . '     * 6: precision specifier including the dot' . chr(10) . '     * 7: precision specifier without the dot' . chr(10) . '     * 8: type specifier' . chr(10) . '     */' . chr(10) . '    var parts      = [];' . chr(10) . '    var paramIndex = 0;' . chr(10) . '    while ( part = r.exec( format ) ) {' . chr(10) . '        // Check if an input value has been provided, for the current' . chr(10) . '        // format string' . chr(10) . '        if ( paramIndex >= list.length ) {' . chr(10) . '            CORE.die(["sprintf: At least one argument was missing."]);' . chr(10) . '        }' . chr(10) . chr(10) . '        parts[parts.length] = {' . chr(10) . '            /* beginning of the part in the string */' . chr(10) . '            begin: part.index,' . chr(10) . '            /* end of the part in the string */' . chr(10) . '            end: part.index + part[0].length,' . chr(10) . '            /* force sign */' . chr(10) . '            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),' . chr(10) . '            /* is the given data negative */' . chr(10) . '            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,' . chr(10) . '            /* padding character (default: <space>) */' . chr(10) . '            padding: ( part[2] == undefined )' . chr(10) . '                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */' . chr(10) . '                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) ' . chr(10) . '                         ? ( part[3] ) /* use special char */' . chr(10) . '                         : ( part[2] ) /* use normal <space> or zero */' . chr(10) . '                       ),' . chr(10) . '            /* should the output be aligned left?*/' . chr(10) . '            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),' . chr(10) . '            /* width specifier (number or false) */' . chr(10) . '            width: ( part[5] != undefined ) ? part[5] : false,' . chr(10) . '            /* precision specifier (number or false) */' . chr(10) . '            precision: ( part[7] != undefined ) ? part[7] : false,' . chr(10) . '            /* type specifier */' . chr(10) . '            type: part[8],' . chr(10) . '            /* the given data associated with this part converted to a string */' . chr(10) . '            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false' . chr(10) . '        };' . chr(10) . '    }' . chr(10) . chr(10) . '    var newString = "";' . chr(10) . '    var start = 0;' . chr(10) . '    // Generate our new formated string' . chr(10) . '    for( var i=0; i<parts.length; ++i ) {' . chr(10) . '        // Add first unformated string part' . chr(10) . '        newString += format.substring( start, parts[i].begin );' . chr(10) . '        ' . chr(10) . '        // Mark the new string start' . chr(10) . '        start = parts[i].end;' . chr(10) . chr(10) . '        // Create the appropriate preformat substitution' . chr(10) . '        // This substitution is only the correct type conversion. All the' . chr(10) . '        // different options and flags haven' . chr(39) . 't been applied to it at this' . chr(10) . '        // point' . chr(10) . '        var preSubstitution = "";' . chr(10) . '        switch ( parts[i].type ) {' . chr(10) . '            case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                preSubstitution = "%";' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'd' . chr(39) . ':' . chr(10) . '                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'f' . chr(39) . ':' . chr(10) . '                preSubstitution = ( parts[i].precision == false )' . chr(10) . '                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )' . chr(10) . '                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'o' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'x' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();' . chr(10) . '            break;' . chr(10) . '            default:' . chr(10) . '                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';' . chr(10) . '        }' . chr(10) . chr(10) . '        // The % character is a special type and does not need further processing' . chr(10) . '        if ( parts[i].type ==  "%" ) {' . chr(10) . '            newString += preSubstitution;' . chr(10) . '            continue;' . chr(10) . '        }' . chr(10) . chr(10) . '        // Modify the preSubstitution by taking sign, padding and width' . chr(10) . '        // into account' . chr(10) . chr(10) . '        // Pad the string based on the given width' . chr(10) . '        if ( parts[i].width != false ) {' . chr(10) . '            // Padding needed?' . chr(10) . '            if ( parts[i].width > preSubstitution.length ) ' . chr(10) . '            {' . chr(10) . '                var origLength = preSubstitution.length;' . chr(10) . '                for( var j = 0; j < parts[i].width - origLength; ++j ) ' . chr(10) . '                {' . chr(10) . '                    preSubstitution = ( parts[i].alignLeft == true ) ' . chr(10) . '                                      ? ( preSubstitution + parts[i].padding )' . chr(10) . '                                      : ( parts[i].padding + preSubstitution );' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add a sign symbol if neccessary or enforced, but only if we are' . chr(10) . '        // not handling a string' . chr(10) . '        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {' . chr(10) . '            if ( parts[i].negative == true ) {' . chr(10) . '                preSubstitution = "-" + preSubstitution;' . chr(10) . '            }' . chr(10) . '            else if ( parts[i].sign == true ) {' . chr(10) . '                preSubstitution = "+" + preSubstitution;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add the substitution to the new string' . chr(10) . '        newString += preSubstitution;' . chr(10) . '    }' . chr(10) . chr(10) . '    // Add the last part of the given format string, which may still be there' . chr(10) . '    newString += format.substring( start, format.length );' . chr(10) . chr(10) . '    return newString;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.printf = function(List__) {' . chr(10) . '    return CORE.print([ CORE.sprintf(List__) ]);' . chr(10) . '};' . chr(10) . chr(10))))
-};
-1;
-
-;
-
-# use Perlito5::Javascript::Sprintf
-;
-package main;
-undef();
-
-# use Perlito5::AST
-;
-
-# use Perlito5::Dumper
-;
 package Perlito5::Javascript2;
 do {{
     ((my  $label_count) = 100);
@@ -10421,6 +9058,1415 @@ sub Perlito5::Javascript2::Sprintf::emit_javascript2 {
 ;
 package main;
 undef();
+
+# use Perlito5::AST
+;
+
+# use Perlito5::Dumper
+;
+package Perlito5::Javascript3;
+do {{
+    ((my  $label_count) = 100);
+    (my  %label);
+    sub Perlito5::Javascript3::pkg {
+        ('p5pkg["' . $Perlito5::PKG_NAME . '"]')
+    };
+    sub Perlito5::Javascript3::pkg_new_var {
+        ($label{$Perlito5::PKG_NAME} = ('p5' . ($label_count)++))
+    };
+    sub Perlito5::Javascript3::get_label {
+        ($label_count)++
+    };
+    sub Perlito5::Javascript3::tab {
+        ((my  $level) = shift());
+join("", chr(9) x $level)
+    };
+    ((our  %op_prefix_js_str) = ('prefix:<-A>', 'p5atime', 'prefix:<-C>', 'p5ctime', 'prefix:<-M>', 'p5mtime', 'prefix:<-d>', 'p5is_directory', 'prefix:<-e>', 'p5file_exists', 'prefix:<-f>', 'p5is_file', 'prefix:<-s>', 'p5size'));
+    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= '));
+    ((our  %op_infix_js_num) = ('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << '));
+    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
+    ((our  %op_to_str) = map(+(($_, 1)), ('substr', 'join', 'list:<.>', 'chr')));
+    ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>')));
+    ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
+    sub Perlito5::Javascript3::escape_string {
+        ((my  $s) = shift());
+        (my  @out);
+        ((my  $tmp) = '');
+        if (($s eq '')) {
+            return (chr(39) . chr(39))
+        };
+        for my $i ((0 .. (length($s) - 1))) {
+            ((my  $c) = substr($s, $i, 1));
+            if ((((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || ((($c ge '0') && ($c le '9')))) || exists($safe_char{$c}))) {
+                ($tmp = ($tmp . $c))
+            }
+            else {
+                if (($tmp ne '')) {
+                    push(@out, (chr(39) . $tmp . chr(39)) )
+                };
+                push(@out, ('String.fromCharCode(' . ord($c) . ')') );
+                ($tmp = '')
+            }
+        };
+        if (($tmp ne '')) {
+            push(@out, (chr(39) . $tmp . chr(39)) )
+        };
+        return (join(' + ', @out))
+    };
+    sub Perlito5::Javascript3::to_str {
+        ((my  $cond) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = 'scalar');
+        if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
+            return (to_str($cond->{'arguments'}->[0], $level))
+        };
+        if ((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))))) {
+            return ($cond->emit_javascript3($level, $wantarray))
+        }
+        else {
+            return (('p5str(' . $cond->emit_javascript3($level, $wantarray) . ')'))
+        }
+    };
+    sub Perlito5::Javascript3::to_num {
+        ((my  $cond) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = 'scalar');
+        if ((($cond->isa('Perlito5::AST::Val::Int') || $cond->isa('Perlito5::AST::Val::Num')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_num{$cond->code()}))))) {
+            return ($cond->emit_javascript3($level, $wantarray))
+        }
+        else {
+            return (('p5num(' . $cond->emit_javascript3($level, $wantarray) . ')'))
+        }
+    };
+    sub Perlito5::Javascript3::to_bool {
+        ((my  $cond) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = 'scalar');
+        if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
+            return (to_bool($cond->{'arguments'}->[0], $level))
+        };
+        if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<&&>') || ($cond->code() eq 'infix:<and>'))))) {
+            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' && ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
+        };
+        if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<||>') || ($cond->code() eq 'infix:<or>'))))) {
+            return (('(' . to_bool($cond->{'arguments'}->[0], $level) . ' || ' . to_bool($cond->{'arguments'}->[1], $level) . ')'))
+        };
+        if (((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))))) {
+            return ($cond->emit_javascript3($level, $wantarray))
+        }
+        else {
+            return (('p5bool(' . $cond->emit_javascript3($level, $wantarray) . ')'))
+        }
+    };
+    sub Perlito5::Javascript3::is_scalar {
+        (((((!($_[0]->isa('Perlito5::AST::Val::Int')) && !($_[0]->isa('Perlito5::AST::Val::Num'))) && !($_[0]->isa('Perlito5::AST::Val::Buf'))) && !($_[0]->isa('Perlito5::AST::Sub'))) && !((($_[0]->isa('Perlito5::AST::Var') && ($_[0]->{'sigil'} eq '$'))))) && !((($_[0]->isa('Perlito5::AST::Apply') && ((((exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}})) || exists($op_to_bool{$_[0]->{'code'}})) || ($_[0]->{'code'} eq 'prefix:<' . chr(92) . '>')))))))
+    };
+    sub Perlito5::Javascript3::to_list {
+        ((my  $items) = to_list_preprocess($_[0]));
+        ((my  $level) = $_[1]);
+        ((my  $literal_type) = ($_[2] || 'array'));
+        ((my  $wantarray) = 'list');
+        ((my  $interpolate) = 0);
+        for (@{$items}) {
+            if (is_scalar($_)) {
+                ($interpolate = 1)
+            }
+        };
+        if (($literal_type eq 'hash')) {
+            if (!($interpolate)) {
+                (my  @out);
+                ((my  $printable) = 1);
+                ((my  @in) = @{$items});
+                for ( ; @in; do {{
+
+}} ) {
+                    ((my  $k) = shift(@in));
+                    ((my  $v) = shift(@in));
+                    ($k = $k->emit_javascript3($level, 0));
+                    if (($k =~ m![ \[]!)) {
+                        ($printable = 0)
+                    };
+                    ($v = ($v ? $v->emit_javascript3($level, 0) : 'null'));
+                    push(@out, ($k . ' : ' . $v) )
+                };
+                if ($printable) {
+                    return (('new p5Hash({' . join(', ', @out) . '})'))
+                }
+            };
+            return (('p5a_to_h(' . to_list($items, $level, 'array') . ')'))
+        };
+        ($interpolate ? (('p5list_to_a(' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$items})) . ')')) : (('[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$items})) . ']')))
+    };
+    sub Perlito5::Javascript3::to_list_preprocess {
+        (my  @items);
+        for my $item (@{$_[0]}) {
+            if (($item->isa('Perlito5::AST::Apply') && (((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')) || ($item->code() eq 'infix:<=>>'))))) {
+                if (($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<=>>'))) {
+                    ($item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0]))
+                };
+                for my $arg (@{to_list_preprocess($item->arguments())}) {
+                    push(@items, $arg )
+                }
+            }
+            else {
+                push(@items, $item )
+            }
+        };
+        return (\@items)
+    };
+    sub Perlito5::Javascript3::to_scalar {
+        ((my  $items) = to_scalar_preprocess($_[0]));
+        ((my  $level) = $_[1]);
+        ((my  $wantarray) = 'scalar');
+        (@{$items} ? ('(' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$items})) . ')') : 'null')
+    };
+    sub Perlito5::Javascript3::to_scalar_preprocess {
+        (my  @items);
+        for my $item (@{$_[0]}) {
+            if (($item->isa('Perlito5::AST::Apply') && ((($item->code() eq 'list:<,>') || ($item->code() eq 'infix:<=>>'))))) {
+                if (($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<=>>'))) {
+                    ($item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0]))
+                };
+                for my $arg (@{to_scalar_preprocess($item->arguments())}) {
+                    push(@items, $arg )
+                }
+            }
+            else {
+                push(@items, $item )
+            }
+        };
+        return (\@items)
+    };
+    sub Perlito5::Javascript3::to_runtime_context {
+        ((my  $items) = to_scalar_preprocess($_[0]));
+        ((my  $level) = $_[1]);
+        ((my  $wantarray) = 'runtime');
+        if (((@{$items} == 1) && is_scalar($items->[0]))) {
+            return ($items->[0]->emit_javascript3($level, $wantarray))
+        };
+        ('p5context(' . '[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$items})) . ']' . ', p5want)')
+    };
+    sub Perlito5::Javascript3::autoquote {
+        ((my  $index) = shift());
+        ((my  $level) = shift());
+        if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
+            ($index = Perlito5::AST::Val::Buf->new('buf', ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'})))
+        };
+        return (to_str($index, $level))
+    };
+    sub Perlito5::Javascript3::emit_javascript3_autovivify {
+        ((my  $obj) = shift());
+        ((my  $level) = shift());
+        ((my  $type) = shift());
+        ((my  $wantarray) = 'scalar');
+        return ($obj->emit_javascript3($level, $wantarray, $type))
+    };
+    sub Perlito5::Javascript3::emit_function_javascript3 {
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $argument) = shift());
+        if (($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return'))) {
+            return (('function () { ' . $argument->emit_javascript3($level, $wantarray) . ' }'))
+        };
+        return (('function () { return ' . $argument->emit_javascript3($level, $wantarray) . ' }'))
+    }
+}};
+package Perlito5::Javascript3::LexicalBlock;
+do {{
+    sub Perlito5::Javascript3::LexicalBlock::new {
+        ((my  $class) = shift());
+        bless({@_}, $class)
+    };
+    sub Perlito5::Javascript3::LexicalBlock::block {
+        $_[0]->{        'block'}
+    };
+    sub Perlito5::Javascript3::LexicalBlock::needs_return {
+        $_[0]->{        'needs_return'}
+    };
+    sub Perlito5::Javascript3::LexicalBlock::top_level {
+        $_[0]->{        'top_level'}
+    };
+    sub Perlito5::Javascript3::LexicalBlock::has_decl {
+        ((my  $self) = $_[0]);
+        ((my  $type) = $_[1]);
+        for my $decl (@{$self->{'block'}}) {
+            if (defined($decl)) {
+                if ((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq $type)) || ($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq $type)))) {
+                    return (1)
+                };
+                if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<=>'))) {
+                    ((my  $var) = $decl->arguments()->[0]);
+                    if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq $type)) || ($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq $type)))) {
+                        return (1)
+                    }
+                }
+            }
+        };
+        return (0)
+    };
+    sub Perlito5::Javascript3::LexicalBlock::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        (my  @block);
+        for (@{$self->{'block'}}) {
+            if (defined($_)) {
+                push(@block, $_ )
+            }
+        };
+        if (!(@block)) {
+            return ((Perlito5::Javascript3::tab($level) . 'null;'))
+        };
+        ((my  $out) = '');
+        (my  @str);
+        ((my  $has_local) = $self->has_decl('local'));
+        ((my  $create_context) = ($self->{'create_context'} && $self->has_decl('my')));
+        ((my  $outer_pkg) = $Perlito5::PKG_NAME);
+        ((my  $outer_throw) = $Perlito5::THROW);
+        unshift(@{$Perlito5::VAR}, {});
+        if ($self->{'top_level'}) {
+            ($Perlito5::THROW = 0)
+        };
+        if ($has_local) {
+            ($out = ($out . (Perlito5::Javascript3::tab($level) . 'var local_idx = p5LOCAL.length;' . chr(10))))
+        };
+        if ($self->{'top_level'}) {
+            ($level)++
+        };
+        if ($create_context) {
+            ($out = ($out . (Perlito5::Javascript3::tab($level) . '(function () {' . chr(10))));
+            ($level)++
+        };
+        ((my  $tab) = Perlito5::Javascript3::tab($level));
+        (my  $last_statement);
+        if ($self->{'needs_return'}) {
+            ($last_statement = pop(@block))
+        };
+        for my $decl (@block) {
+            if (((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package'))) {
+                ($Perlito5::PKG_NAME = $decl->{'namespace'});
+                ($Perlito5::VAR->[0]->{'$_'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
+                ($Perlito5::VAR->[0]->{'$a'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
+                ($Perlito5::VAR->[0]->{'$b'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME});
+                ($Perlito5::VAR->[0]->{'$AUTOLOAD'} = {'decl', 'our', 'namespace', $Perlito5::PKG_NAME})
+            };
+            if ($decl->isa('Perlito5::AST::Decl')) {
+                push(@str, $decl->emit_javascript3_init() )
+            };
+            if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'my'))) {
+                for (@{$decl->{'arguments'}}) {
+                    if ($_->isa('Perlito5::AST::Var')) {
+                        ((my  $d) = Perlito5::AST::Decl->new('decl', $decl->code(), 'var', $_));
+                        push(@str, $d->emit_javascript3_init() )
+                    }
+                }
+            };
+            if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<=>'))) {
+                ((my  $arg) = $decl->{'arguments'}->[0]);
+                if ($arg->isa('Perlito5::AST::Decl')) {
+                    push(@str, $arg->emit_javascript3_init() )
+                };
+                if (($arg->isa('Perlito5::AST::Apply') && ($arg->code() eq 'my'))) {
+                    for (@{$arg->{'arguments'}}) {
+                        if ($_->isa('Perlito5::AST::Var')) {
+                            ((my  $d) = Perlito5::AST::Decl->new('decl', $arg->code(), 'var', $_));
+                            push(@str, $d->emit_javascript3_init() )
+                        }
+                    }
+                }
+            };
+            if (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my'))))) {
+                push(@str, ($decl->emit_javascript3($level, 'void') . ';') )
+            }
+        };
+        if (($self->{'needs_return'} && $last_statement)) {
+            if ($last_statement->isa('Perlito5::AST::Decl')) {
+                push(@str, $last_statement->emit_javascript3_init() )
+            };
+            if (($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'infix:<=>'))) {
+                if ($last_statement->{'arguments'}->[0]->isa('Perlito5::AST::Decl')) {
+                    push(@str, $last_statement->{'arguments'}->[0]->emit_javascript3_init() )
+                }
+            };
+            if (((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')) && $self->{'top_level'}) && @{$last_statement->{'arguments'}})) {
+                ($last_statement = $last_statement->{'arguments'}->[0])
+            };
+            if ($last_statement->isa('Perlito5::AST::If')) {
+                ((my  $cond) = $last_statement->cond());
+                ((my  $body) = $last_statement->body());
+                ((my  $otherwise) = $last_statement->otherwise());
+                ($body = Perlito5::Javascript3::LexicalBlock->new('block', $body->stmts(), 'needs_return', 1));
+                push(@str, ('if ( ' . Perlito5::Javascript3::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}') );
+                if ($otherwise) {
+                    ($otherwise = Perlito5::Javascript3::LexicalBlock->new('block', $otherwise->stmts(), 'needs_return', 1));
+                    push(@str, (chr(10) . Perlito5::Javascript3::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}') )
+                }
+            }
+            else {
+                if ($last_statement->isa('Perlito5::AST::Lit::Block')) {
+                    ((my  $body) = Perlito5::Javascript3::LexicalBlock->new('block', $last_statement->{'stmts'}, 'needs_return', 1));
+                    push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}') )
+                }
+                else {
+                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                        push(@str, $last_statement->emit_javascript3($level, 'runtime') )
+                    }
+                    else {
+                        if ($has_local) {
+                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript3::to_runtime_context([$last_statement], $level) . '));') )
+                        }
+                        else {
+                            push(@str, ('return (' . Perlito5::Javascript3::to_runtime_context([$last_statement], $level) . ');') )
+                        }
+                    }
+                }
+            }
+        };
+        if ($has_local) {
+            push(@str, 'p5cleanup_local(local_idx, null);' )
+        };
+        if ($create_context) {
+            ($level)--;
+            push(@str, '})();' )
+        };
+        if (($self->{'top_level'} && $Perlito5::THROW)) {
+            ($level)--;
+            ($out = ($out . (Perlito5::Javascript3::tab($level) . 'try {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript3::tab($level) . '}' . chr(10) . Perlito5::Javascript3::tab($level) . 'catch(err) {' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript3::tab(($level + 2)) . 'throw(err);' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'else {' . chr(10) . Perlito5::Javascript3::tab(($level + 2)) . (($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)')) . ';' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript3::tab($level) . '}')))
+        }
+        else {
+            ($out = ($out . join(chr(10), map(($tab . $_), @str))))
+        };
+        ($Perlito5::PKG_NAME = $outer_pkg);
+        if ($self->{'top_level'}) {
+            ($Perlito5::THROW = $outer_throw)
+        };
+        shift(@{$Perlito5::VAR});
+        return ($out)
+    }
+}};
+package Perlito5::AST::CompUnit;
+do {{
+    sub Perlito5::AST::CompUnit::emit_javascript3 {
+        ((my  $self) = $_[0]);
+        ((my  $level) = $_[1]);
+        ((my  $str) = ('(function () {' . chr(10) . Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}, 'needs_return', 0)->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '})()' . chr(10)));
+        return ($str)
+    };
+    sub Perlito5::AST::CompUnit::emit_javascript3_program {
+        ((my  $comp_units) = shift());
+        ($Perlito5::PKG_NAME = 'main');
+        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript3::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
+        ($Perlito5::VAR = [{'@_', {'decl', 'my'}, '$@', {'decl', 'our', 'namespace', 'main'}, '$|', {'decl', 'our', 'namespace', 'main'}, '$^O', {'decl', 'our', 'namespace', 'main'}, '%ENV', {'decl', 'our', 'namespace', 'main'}, '%INC', {'decl', 'our', 'namespace', 'main'}, '@#', {'decl', 'our', 'namespace', 'main'}, '@ARGV', {'decl', 'our', 'namespace', 'main'}, '@INC', {'decl', 'our', 'namespace', 'main'}, '$_', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$a', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$b', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$AUTOLOAD', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}}]);
+        for my $comp_unit (@{$comp_units}) {
+            ($str = ($str . $comp_unit->emit_javascript3() . chr(10)))
+        };
+        return ($str)
+    }
+}};
+package Perlito5::AST::Val::Int;
+do {{
+    sub Perlito5::AST::Val::Int::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        $self->{        'int'}
+    }
+}};
+package Perlito5::AST::Val::Num;
+do {{
+    sub Perlito5::AST::Val::Num::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        $self->{        'num'}
+    }
+}};
+package Perlito5::AST::Val::Buf;
+do {{
+    sub Perlito5::AST::Val::Buf::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        Perlito5::Javascript3::escape_string($self->{'buf'})
+    }
+}};
+package Perlito5::AST::Lit::Block;
+do {{
+    sub Perlito5::AST::Lit::Block::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $init) = '');
+        if (($self->{'name'} eq 'INIT')) {
+            ((my  $tmp) = ('p5pkg.main._tmp' . Perlito5::Javascript3::get_label()));
+            ($init = (Perlito5::Javascript3::tab(($level + 2)) . ('if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10))))
+        };
+        return (('p5for_lex(' . 'function () {' . chr(10) . $init . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'stmts'}, 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}, ' . '[0], ' . $self->emit_javascript3_continue($level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+    };
+    sub Perlito5::AST::Lit::Block::emit_javascript3_continue {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        if ((!($self->{'continue'}) || !(@{$self->{'continue'}->{'stmts'}}))) {
+            return ('false')
+        };
+        return (('function () {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'continue'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}'))
+    }
+}};
+package Perlito5::AST::Index;
+do {{
+    sub Perlito5::AST::Index::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $type) = shift());
+        ($type = ($type ? ('"' . $type . '"') : 'null'));
+        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
+            ((my  $v) = Perlito5::AST::Var->new('sigil', '@', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
+            return (($v->emit_javascript3($level) . '.aget(' . Perlito5::Javascript3::to_num($self->{'index_exp'}, $level) . ', ' . $type . ')'))
+        };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'array') . '.aget(' . Perlito5::Javascript3::to_num($self->{'index_exp'}) . ', ' . $type . ')'))
+        };
+        return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '.aget(' . Perlito5::Javascript3::to_num($self->{'index_exp'}, $level) . ', ' . $type . ')'))
+    };
+    sub Perlito5::AST::Index::emit_javascript3_set {
+        ((my  $self) = shift());
+        ((my  $arguments) = shift());
+        ((my  $level) = shift());
+        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
+            ((my  $v) = Perlito5::AST::Var->new('sigil', '@', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
+            return (($v->emit_javascript3($level) . '.aset(' . Perlito5::Javascript3::to_num($self->{'index_exp'}, ($level + 1)) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+        };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'array') . '.aset(' . Perlito5::Javascript3::to_num($self->{'index_exp'}) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+        };
+        return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}, $level, 'array') . '.aset(' . Perlito5::Javascript3::to_num($self->{'index_exp'}, ($level + 1)) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+    }
+}};
+package Perlito5::AST::Lookup;
+do {{
+    sub Perlito5::AST::Lookup::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $type) = shift());
+        ($type = ($type ? ('"' . $type . '"') : 'null'));
+        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
+            ((my  $v) = Perlito5::AST::Var->new('sigil', '%', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($v, $level, 'hash') . '.hget(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level) . ', ' . $type . ')'))
+        };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'hash') . '.hget(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level, 'list') . ', ' . $type . ')'))
+        };
+        (Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}, $level, 'hash') . '.hget(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level) . ', ' . $type . ')')
+    };
+    sub Perlito5::AST::Lookup::emit_javascript3_set {
+        ((my  $self) = shift());
+        ((my  $arguments) = shift());
+        ((my  $level) = shift());
+        if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
+            ((my  $v) = Perlito5::AST::Var->new('sigil', '%', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name()));
+            return (($v->emit_javascript3($level) . '.hset(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+        };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'hash') . '.hset(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level, 'list') . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+        };
+        (Perlito5::Javascript3::emit_javascript_autovivify($self->{'obj'}, $level, 'hash') . '.hset(' . Perlito5::Javascript3::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')')
+    }
+}};
+package Perlito5::AST::Var;
+do {{
+    ((my  $table) = {'$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''});
+    sub Perlito5::AST::Var::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $str_name) = $self->{'name'});
+        if (($str_name eq chr(92))) {
+            ($str_name = chr(92) . chr(92))
+        };
+        if (($str_name eq '"')) {
+            ($str_name = chr(92) . '"')
+        };
+        ((my  $perl5_name) = $self->perl5_name());
+        (my  $decl_type);
+        ((my  $decl) = $self->perl5_get_decl($perl5_name));
+        if ($decl) {
+            ($decl_type = $decl->{'decl'})
+        }
+        else {
+            if ((!($self->{'namespace'}) && ($self->{'sigil'} ne '*'))) {
+                if ($Perlito5::STRICT) {
+                    die(('Global symbol "' . $perl5_name . '" requires explicit package name'))
+                };
+                ($self->{'namespace'} = $Perlito5::PKG_NAME)
+            }
+        };
+        if (($self->{'sigil'} eq '@')) {
+            if (($wantarray eq 'scalar')) {
+                return (($self->emit_javascript3($level, 'list') . '._array_.length'))
+            };
+            if (($wantarray eq 'runtime')) {
+                return (('(p5want' . ' ? ' . $self->emit_javascript3($level, 'list') . ' : ' . $self->emit_javascript3($level, 'list') . '._array_.length' . ')'))
+            }
+        };
+        if (($self->{'sigil'} eq '&')) {
+            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
+        };
+        if (($self->{'sigil'} eq '*')) {
+            return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
+        };
+        if (($decl_type eq 'our')) {
+            ((my  $sigil) = (($self->{'sigil'} eq '$#') ? '@' : $self->{'sigil'}));
+            ((my  $s) = ('p5pkg["' . (($self->{'namespace'} || $decl->{'namespace'})) . '"]["' . $table->{$sigil} . $str_name . '"]'));
+            if (($self->{'sigil'} eq '$#')) {
+                return (('(' . $s . '._array_.length - 1)'))
+            };
+            return ($s)
+        };
+        ((my  $ns) = '');
+        if ($self->{'namespace'}) {
+            do {{
+                if (($self->{'sigil'} eq '$#')) {
+                    return (('(p5global("@", "' . $self->{'namespace'} . '", "' . $str_name . '")._array_.length - 1)'))
+                };
+                return (('p5global("' . $self->{'sigil'} . '", "' . $self->{'namespace'} . '", "' . $str_name . '")'))
+            }}
+        };
+        if (($self->{'sigil'} eq '$#')) {
+            return (('(' . $ns . $table->{'@'} . $str_name . '._array_.length - 1)'))
+        };
+        ($ns . $table->{$self->{'sigil'}} . $str_name)
+    };
+    sub Perlito5::AST::Var::perl5_name {
+        ((my  $self) = shift());
+        ((my  $sigil) = $self->{'sigil'});
+        if (($sigil eq '$#')) {
+            ($sigil = '@')
+        };
+        ($sigil . (($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $self->{'name'})
+    };
+    sub Perlito5::AST::Var::perl5_get_decl {
+        ((my  $self) = shift());
+        ((my  $perl5_name) = shift());
+        for (@{$Perlito5::VAR}) {
+            if (exists($_->{$perl5_name})) {
+                return ($_->{$perl5_name})
+            }
+        };
+        return (undef())
+    }
+}};
+package Perlito5::AST::Decl;
+do {{
+    sub Perlito5::AST::Decl::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        $self->{'var'}->emit_javascript3($level)
+    };
+    sub Perlito5::AST::Decl::emit_javascript3_init {
+        ((my  $self) = shift());
+        ((my  $env) = {'decl', $self->{'decl'}});
+        ((my  $perl5_name) = $self->{'var'}->perl5_name());
+        if (($self->{'decl'} ne 'my')) {
+            if ((($self->{'decl'} eq 'our') && $self->{'var'}->{'namespace'})) {
+                die(('No package name allowed for variable ' . $perl5_name . ' in "our"'))
+            };
+            if (($self->{'var'}->{'namespace'} eq '')) {
+                ((my  $decl_namespace) = '');
+                ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
+                if (((($self->{'decl'} eq 'local') && $decl) && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                    ($decl_namespace = $decl->{'namespace'})
+                };
+                ($env->{'namespace'} = ($decl_namespace || $Perlito5::PKG_NAME))
+            }
+        };
+        ($Perlito5::VAR->[0]->{$perl5_name} = $env);
+        if (($self->{'decl'} eq 'my')) {
+            ((my  $str) = '');
+            ($str = ($str . 'var ' . $self->{'var'}->emit_javascript3() . ' = '));
+            if (($self->{'var'}->sigil() eq '%')) {
+                ($str = ($str . 'new p5Hash({});'))
+            }
+            else {
+                if (($self->{'var'}->sigil() eq '@')) {
+                    ($str = ($str . 'new p5Array([]);'))
+                }
+                else {
+                    ($str = ($str . 'new p5Scalar(null);'))
+                }
+            };
+            return ($str)
+        }
+        else {
+            if (($self->{'decl'} eq 'our')) {
+                return (('// our ' . $self->{'var'}->emit_javascript3()))
+            }
+            else {
+                if (($self->{'decl'} eq 'local')) {
+                    ((my  $perl5_name) = $self->{'var'}->perl5_name());
+                    ((my  $decl_namespace) = '');
+                    ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
+                    if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                        ($decl_namespace = $decl->{'namespace'})
+                    };
+                    ((my  $ns) = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
+                    return (('p5set_local(' . $ns . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'sigil'}) . '); '))
+                }
+                else {
+                    if (($self->{'decl'} eq 'state')) {
+                        return (('// state ' . $self->{'var'}->emit_javascript3()))
+                    }
+                    else {
+                        die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
+                    }
+                }
+            }
+        }
+    }
+}};
+package Perlito5::AST::Proto;
+do {{
+    sub Perlito5::AST::Proto::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        if (($self->{'name'} eq '__PACKAGE__')) {
+            return (Perlito5::Javascript3::pkg())
+        };
+        ('p5pkg["' . $self->{'name'} . '"]')
+    }
+}};
+package Perlito5::AST::Call;
+do {{
+    sub Perlito5::AST::Call::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $type) = shift());
+        ($type = ($type ? ('"' . $type . '"') : 'null'));
+        ((my  $meth) = $self->{'method'});
+        if (($meth eq 'postcircumfix:<[ ]>')) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'invocant'}, $level, 'array') . '.aget(' . Perlito5::Javascript3::to_num($self->{'arguments'}) . ', ' . $type . ')'))
+        };
+        if (($meth eq 'postcircumfix:<{ }>')) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($self->{'invocant'}, $level, 'hash') . '.hget(' . Perlito5::Javascript3::autoquote($self->{'arguments'}, $level, 'list') . ', ' . $type . ')'))
+        };
+        ((my  $invocant) = $self->{'invocant'}->emit_javascript3());
+        if (($meth eq 'postcircumfix:<( )>')) {
+            return (('p5code(' . $invocant . ')(' . Perlito5::Javascript3::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
+        };
+        if ((ref($meth) eq 'Perlito5::AST::Var')) {
+            ($meth = $meth->emit_javascript3())
+        }
+        else {
+            ($meth = ('"' . $meth . '"'))
+        };
+        return (('p5call(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript3::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
+    }
+}};
+package Perlito5::AST::Apply;
+do {{
+    sub Perlito5::AST::Apply::emit_regex_javascript3 {
+        ((my  $op) = shift());
+        ((my  $var) = shift());
+        ((my  $regex) = shift());
+        if ($regex->isa('Perlito5::AST::Var')) {
+            ($regex = {'code', 'p5:m', 'arguments', [$regex, '']})
+        };
+        (my  $str);
+        ((my  $code) = $regex->{'code'});
+        ((my  $regex_args) = $regex->{'arguments'});
+        if (($code eq 'p5:s')) {
+            ($str = ($var->emit_javascript3() . ' = p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2] . ', ' . $regex_args->[1]->emit_javascript3() . ')'))
+        }
+        else {
+            if (($code eq 'p5:m')) {
+                ((my  $ast) = $regex_args->[0]);
+                if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                    ($str = ('(' . 'p5str(' . $var->emit_javascript3() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1] . ')' . ' ? 1 : 0)'))
+                }
+                else {
+                    ($str = ('(new RegExp(' . $ast->emit_javascript3() . ', ' . '"' . $regex_args->[1] . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript3() . ')' . ')'))
+                }
+            }
+            else {
+                if (($code eq 'p5:tr')) {
+                    ($str = ('p5tr(' . $var->emit_javascript3() . ', ' . $regex_args->[0]->emit_javascript() . ', ' . $regex_args->[1]->emit_javascript() . ')'))
+                }
+                else {
+                    die(('Error: regex emitter - unknown operator ' . $code))
+                }
+            }
+        };
+        if (($op eq '=~')) {
+            return ($str)
+        };
+        if (($op eq '!~')) {
+            return (('!(' . $str . ')'))
+        };
+        die('Error: regex emitter')
+    };
+    ((my  %emit_js) = ('infix:<=~>', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript3('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+}, 'infix:<!~>', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript3('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+}, 'p5:s', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript3('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
+}, 'p5:m', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript3('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
+}, 'p5:tr', sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript3('=~', Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $self)
+}, '__PACKAGE__', sub {
+    ((my  $self) = $_[0]);
+    ('"' . $Perlito5::PKG_NAME . '"')
+}, 'wantarray', sub {
+    ((my  $self) = $_[0]);
+    'p5want'
+}, 'package', sub {
+    ((my  $self) = $_[0]);
+    ('var ' . Perlito5::Javascript3::pkg_new_var() . ' = p5make_package("' . $self->{'namespace'} . '")')
+}, 'infix:<=>>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    (Perlito5::Javascript3::autoquote($self->{'arguments'}->[0], $level) . ', ' . $self->{'arguments'}->[1]->emit_javascript3($level))
+}, 'infix:<cmp>', sub {
+    ((my  $self) = $_[0]);
+    ('p5cmp(' . join(', ', map(Perlito5::Javascript3::to_str($_), @{$self->{'arguments'}})) . ')')
+}, 'infix:<<=>>', sub {
+    ((my  $self) = $_[0]);
+    ('p5cmp(' . join(', ', map(Perlito5::Javascript3::to_num($_), @{$self->{'arguments'}})) . ')')
+}, 'infix:<**>', sub {
+    ((my  $self) = $_[0]);
+    ('Math.pow(' . join(', ', map(Perlito5::Javascript3::to_num($_), @{$self->{'arguments'}})) . ')')
+}, 'prefix:<!>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ('!( ' . Perlito5::Javascript3::to_bool($self->{'arguments'}->[0], $level) . ')')
+}, 'prefix:<not>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ('!( ' . Perlito5::Javascript3::to_bool($self->{'arguments'}->[0], $level) . ')')
+}, 'prefix:<~>', sub {
+    ((my  $self) = $_[0]);
+    ('p5complement( ' . Perlito5::Javascript3::to_num($self->{'arguments'}->[0]) . ')')
+}, 'prefix:<->', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('-( ' . $self->{'arguments'}->[0]->emit_javascript3($level, 'scalar') . ')')
+}, 'prefix:<+>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('(' . $self->{'arguments'}->[0]->emit_javascript3($level, $wantarray) . ')')
+}, 'require', sub {
+    ((my  $self) = $_[0]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    if ($arg->isa('Perlito5::AST::Val::Num')) {
+        return ('1')
+    };
+    ('p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript3::to_str($self->{'arguments'}->[0]) . ', ' . (($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0)) . '])')
+}, 'prefix:<$>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    (Perlito5::Javascript3::emit_javascript_autovivify($arg, $level, 'scalar') . '.._scalar_')
+}, 'prefix:<@>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    (Perlito5::Javascript3::emit_javascript_autovivify($arg, $level, 'array') . '.aderef()')
+}, 'prefix:<$#>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    ('(' . Perlito5::Javascript3::emit_javascript_autovivify($arg, $level, 'array') . '.aderef()._array_.length - 1)')
+}, 'prefix:<%>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    (Perlito5::Javascript3::emit_javascript_autovivify($arg, $level, 'hash') . '.hderef()')
+}, 'prefix:<&>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    ('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript3($level) . ')')
+}, 'circumfix:<[ ]>', sub {
+    ((my  $self) = $_[0]);
+    ('(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list($self->{'arguments'}) . ')))')
+}, 'circumfix:<{ }>', sub {
+    ((my  $self) = $_[0]);
+    ('(new p5HashRef(new p5Hash(' . Perlito5::Javascript3::to_list($self->{'arguments'}, $level, 'hash') . ')))')
+}, 'prefix:<' . chr(92) . '>', sub {
+    ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    if ($arg->isa('Perlito5::AST::Var')) {
+        if (($arg->sigil() eq '@')) {
+            return (('(new p5ArrayRef(' . $arg->emit_javascript3($level) . '))'))
+        };
+        if (($arg->sigil() eq '%')) {
+            return (('(new p5HashRef(' . $arg->emit_javascript3($level) . '))'))
+        };
+        if (($arg->sigil() eq '*')) {
+            return (('(new p5GlobRef(' . $arg->emit_javascript3($level) . '))'))
+        };
+        if (($arg->sigil() eq '&')) {
+            if ($arg->{'namespace'}) {
+                return (('p5pkg["' . $arg->{'namespace'} . '"].' . $arg->{'name'}))
+            }
+            else {
+                return ((Perlito5::Javascript3::pkg() . '.' . $arg->{'name'}))
+            }
+        }
+    };
+    return (('(new p5ScalarRef(' . $arg->emit_javascript3($level) . '))'))
+}, 'postfix:<++>', sub {
+    ((my  $self) = $_[0]);
+    ('(' . join(' ', map($_->emit_javascript3(), @{$self->{'arguments'}})) . ')++')
+}, 'postfix:<-->', sub {
+    ((my  $self) = $_[0]);
+    ('(' . join(' ', map($_->emit_javascript3(), @{$self->{'arguments'}})) . ')--')
+}, 'prefix:<++>', sub {
+    ((my  $self) = $_[0]);
+    ('++(' . join(' ', map($_->emit_javascript3(), @{$self->{'arguments'}})) . ')')
+}, 'prefix:<-->', sub {
+    ((my  $self) = $_[0]);
+    ('--(' . join(' ', map($_->emit_javascript3(), @{$self->{'arguments'}})) . ')')
+}, 'infix:<x>', sub {
+    ((my  $self) = $_[0]);
+    ('p5str_replicate(' . join(', ', map($_->emit_javascript3(), @{$self->{'arguments'}})) . ')')
+}, 'list:<.>', sub {
+    ((my  $self) = $_[0]);
+    ('(' . join(' + ', map(Perlito5::Javascript3::to_str($_), @{$self->{'arguments'}})) . ')')
+}, 'list:<,>', sub {
+    ((my  $self) = $_[0]);
+    Perlito5::Javascript3::to_list($self->{'arguments'})
+}, 'infix:<..>', sub {
+    ((my  $self) = $_[0]);
+    ('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript3() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])')
+}, 'delete', sub {
+    ((my  $self) = $_[0]);
+    ('(delete ' . $self->{'arguments'}->[0]->emit_javascript3() . ')')
+}, 'scalar', sub {
+    ((my  $self) = $_[0]);
+    Perlito5::Javascript3::to_scalar($self->{'arguments'}, ($level + 1))
+}, 'ternary:<? :>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('( ' . Perlito5::Javascript3::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_javascript($level, $wantarray) . ')')
+}, 'my', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5context(' . '[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
+}, 'our', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5context(' . '[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
+}, 'local', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5context(' . '[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
+}, 'circumfix:<( )>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5context(' . '[' . join(', ', map($_->emit_javascript3($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')')
+}, 'infix:<=>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  $parameters) = $self->{'arguments'}->[0]);
+    ((my  $arguments) = $self->{'arguments'}->[1]);
+    if (($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'prefix:<*>'))) {
+        return (('p5set_glob(' . $parameters->{'arguments'}->[0]->emit_javascript3() . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+    };
+    if (($parameters->isa('Perlito5::AST::Apply') && ((((($parameters->code() eq 'my') || ($parameters->code() eq 'our')) || ($parameters->code() eq 'local')) || ($parameters->code() eq 'circumfix:<( )>'))))) {
+        ((my  $tmp) = ('tmp' . Perlito5::Javascript3::get_label()));
+        ((my  $tmp2) = ('tmp' . Perlito5::Javascript3::get_label()));
+        return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript3::to_list([$arguments], ($level + 1)) . '; ' . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); ' . join('; ', (map(+(((($_->isa('Perlito5::AST::Apply') && ($_->code() eq 'undef')) ? ($tmp . '.shift()') : (($_->sigil() eq '$') ? ($_->emit_javascript3() . '.assign(' . $tmp . '.shift())') : (($_->sigil() eq '@') ? ($_->emit_javascript3() . '.assign(' . $tmp . '); ' . $tmp . ' = []') : (($_->sigil() eq '%') ? ($_->emit_javascript3() . '.assign(p5a_to_h(' . $tmp . ')); ' . $tmp . ' = []') : die('not implemented'))))))), @{$parameters->arguments()})),('return ' . $tmp2)) . ' })()'))
+    };
+    if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) {
+        return (('' . $parameters->emit_javascript3() . '.assign(' . Perlito5::Javascript::to_scalar([$arguments], ($level + 1)) . ')'))
+    };
+    if (($parameters->isa('Perlito5::AST::Call') && ($parameters->{'method'} eq 'postcircumfix:<[ ]>'))) {
+        return ((Perlito5::Javascript3::emit_javascript_autovivify($parameters->{'invocant'}, $level, 'array') . '.aset(' . Perlito5::Javascript3::to_num($parameters->{'arguments'}) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+    }
+    else {
+        if (($parameters->isa('Perlito5::AST::Call') && ($parameters->{'method'} eq 'postcircumfix:<{ }>'))) {
+            return ((Perlito5::Javascript3::emit_javascript_autovivify($parameters->{'invocant'}, $level, 'hash') . '.hset(' . Perlito5::Javascript3::autoquote($parameters->{'arguments'}, $level) . ', ' . Perlito5::Javascript3::to_scalar([$arguments], ($level + 1)) . ')'))
+        }
+        else {
+            if ($parameters->isa('Perlito5::AST::Index')) {
+                return ($parameters->emit_javascript3_set($arguments, ($level + 1)))
+            }
+            else {
+                if ($parameters->isa('Perlito5::AST::Lookup')) {
+                    return ($parameters->emit_javascript3_set($arguments, ($level + 1)))
+                }
+            }
+        }
+    };
+    if (($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '@'))) {
+        return (($parameters->emit_javascript3() . '.assign(' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . ')'))
+    }
+    else {
+        if (($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '@'))) {
+            return (($parameters->var()->emit_javascript3() . '.assign(' . Perlito5::Javascript::to_list([$arguments], ($level + 1)) . ')'))
+        }
+        else {
+            if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '%')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '%')))) {
+                return (($parameters->emit_javascript3() . '.assign(' . Perlito5::Javascript::to_list([$arguments], ($level + 1), 'hash') . ')'))
+            }
+        }
+    };
+    if (($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '*'))) {
+        return (('(' . $parameters->emit_javascript3($level) . ' = ' . $arguments->emit_javascript(($level + 1)) . ')'))
+    };
+    say(Perlito5::Dumper::Dumper($parameters));
+    die('assignment: don' . chr(39) . 't know what to do with left side isa ', ref($parameters))
+}, 'break', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    'throw(new p5_error("break", ""))'
+}, 'next', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
+    ('throw(new p5_error("next", "' . $label . '"))')
+}, 'last', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
+    ('throw(new p5_error("last", "' . $label . '"))')
+}, 'redo', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $label) = ($self->{'arguments'}->[0]->{'code'} || ''));
+    ('throw(new p5_error("redo", "' . $label . '"))')
+}, 'return', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ($Perlito5::THROW = 1);
+    ('throw(' . Perlito5::Javascript3::to_runtime_context($self->{'arguments'}, $level) . ')')
+}, 'goto', sub {
+    ((my  $self) = $_[0]);
+    ($Perlito5::THROW = 1);
+    ('throw((' . $self->{'arguments'}->[0]->emit_javascript3() . ')([List__, p5want]))')
+}, 'do', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  $ast) = Perlito5::AST::Apply->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'slurp', 'namespace', 'Perlito5::IO', 'arguments', $self->{'arguments'})]));
+    $ast->emit_javascript3($level)
+}, 'eval', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    (my  $eval);
+    if ($arg->isa('Perlito5::AST::Do')) {
+        ($eval = $arg->emit_javascript3(($level + 1), $wantarray))
+    }
+    else {
+        ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
+        ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
+        ($m = Perlito5::Expression::expand_list(Perlito5::Match::flat($m)->[2]));
+        ((my  $var_env_js) = ('(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list($m) . ')))'));
+        ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript3::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . '))'))
+    };
+    ('(function (p5want) {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"].assign("");' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"].assign(err);' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"].assign(err);' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
+}, 'undef', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
+        return (('(' . $self->{'arguments'}->[0]->emit_javascript3() . ' = null)'))
+    };
+    return ('null')
+}, 'shift', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
+        return ((Perlito5::Javascript3::pkg() . '.shift([' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . '])'))
+    };
+    return ((Perlito5::Javascript3::pkg() . '.shift([List__])'))
+}, 'map', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    ((my  $fun) = shift(@in));
+    ((my  $list) = Perlito5::Javascript3::to_list(\@in));
+    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = $fun->{'stmts'})
+    }
+    else {
+        ($fun = [$fun])
+    };
+    ('p5map(' . Perlito5::Javascript3::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $fun, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}, ' . $list . ')')
+}, 'grep', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    ((my  $fun) = shift(@in));
+    ((my  $list) = Perlito5::Javascript3::to_list(\@in));
+    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = $fun->{'stmts'})
+    }
+    else {
+        ($fun = [$fun])
+    };
+    ('p5grep(' . Perlito5::Javascript3::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $fun, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}, ' . $list . ')')
+}, 'sort', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    (my  $fun);
+    (my  $list);
+    if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = shift(@in));
+        ($fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $fun->{'stmts'}, 'needs_return', 1, 'top_level', 0))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'))
+    }
+    else {
+        ($fun = 'null')
+    };
+    ($list = Perlito5::Javascript3::to_list(\@in));
+    ('p5sort(' . Perlito5::Javascript3::pkg() . ', ' . $fun . ', ' . $list . ')')
+}, 'infix:<//>', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('p5defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript3($level, 'scalar') . ', ' . Perlito5::Javascript3::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
+}, 'exists', sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    if ($arg->isa('Perlito5::AST::Lookup')) {
+        ((my  $v) = $arg->obj());
+        if (($v->isa('Perlito5::AST::Var') && ($v->sigil() eq '$'))) {
+            ($v = Perlito5::AST::Var->new('sigil', '%', 'namespace', $v->namespace(), 'name', $v->name()));
+            return (('(' . $v->emit_javascript3() . ').hasOwnProperty(' . Perlito5::Javascript::autoquote($arg->{'index_exp'}, $level) . ')'))
+        };
+        return (('(' . $v->emit_javascript3() . ').hderef().hasOwnProperty(' . Perlito5::Javascript::autoquote($arg->{'index_exp'}, $level) . ')'))
+    };
+    if ($arg->isa('Perlito5::AST::Call')) {
+        if (($arg->method() eq 'postcircumfix:<{ }>')) {
+            return (('(' . $arg->invocant()->emit_javascript3() . ').hderef().hasOwnProperty(' . Perlito5::Javascript::autoquote($arg->{'arguments'}, $level) . ')'))
+        }
+    }
+}));
+    sub Perlito5::AST::Apply::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $apply) = $self->op_assign());
+        if ($apply) {
+            return ($apply->emit_javascript3($level))
+        };
+        ((my  $code) = $self->{'code'});
+        if ((ref($code) ne '')) {
+            ((my  @args) = ());
+            for (@{$self->{'arguments'}}) {
+                push(@args, $_->emit_javascript3() )
+            };
+            return (('p5code(' . $self->{'code'}->emit_javascript3($level) . ')(' . join(',', @args) . ')'))
+        };
+        if (exists($emit_js{$code})) {
+            return ($emit_js{$code}->($self, $level, $wantarray))
+        };
+        if (exists($Perlito5::Javascript3::op_infix_js_str{$code})) {
+            return (('(' . join($Perlito5::Javascript3::op_infix_js_str{$code}, map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
+        };
+        if (exists($Perlito5::Javascript3::op_infix_js_num{$code})) {
+            return (('(' . join($Perlito5::Javascript3::op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
+        };
+        if (exists($Perlito5::Javascript3::op_prefix_js_str{$code})) {
+            return (($Perlito5::Javascript3::op_prefix_js_str{$code} . '(' . Perlito5::Javascript3::to_str($self->{'arguments'}->[0]) . ')'))
+        };
+        if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
+            return (('p5and' . '(' . $self->{'arguments'}->[0]->emit_javascript3($level, 'scalar') . ', ' . Perlito5::Javascript3::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
+        };
+        if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
+            return (('p5or' . '(' . $self->{'arguments'}->[0]->emit_javascript3($level, 'scalar') . ', ' . Perlito5::Javascript3::emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
+        };
+        if ($self->{'namespace'}) {
+            if ((($self->{'namespace'} eq 'JS') && ($code eq 'inline'))) {
+                if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Val::Buf')) {
+                    return ($self->{'arguments'}->[0]->{'buf'})
+                }
+                else {
+                    die('JS::inline needs a string constant')
+                }
+            };
+            ($code = ('p5pkg["' . $self->{'namespace'} . '"].' . $code))
+        }
+        else {
+            ($code = (Perlito5::Javascript3::pkg() . '.' . $code))
+        };
+        (my  $sig);
+        do {{
+            ((my  $name) = $self->{'code'});
+            ((my  $namespace) = ($self->{'namespace'} || $Perlito5::PKG_NAME));
+            ((my  $effective_name) = ($namespace . '::' . $self->{'code'}));
+            if (exists($Perlito5::PROTO->{$effective_name})) {
+                ($sig = $Perlito5::PROTO->{$effective_name})
+            }
+            else {
+                if ((((!($self->{'namespace'}) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
+                    ($effective_name = ('CORE::' . $name));
+                    ($sig = $Perlito5::CORE_PROTO->{$effective_name})
+                }
+                else {
+                    if ($self->{'bareword'}) {
+                        if ($Perlito5::STRICT) {
+                            die(('Bareword "' . $name . '" not allowed while "strict subs" in use'))
+                        };
+                        return (Perlito5::Javascript3::escape_string(((($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $name)))
+                    }
+                }
+            }
+        }};
+        if (((((($self->{'code'} eq 'say') || ($self->{'code'} eq 'print'))) && !($self->{'namespace'})) && $self->{'bareword'})) {
+            ($self->{'arguments'} = [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_')])
+        };
+        if ($sig) {
+            ((my  @out) = ());
+            ((my  @in) = @{($self->{'arguments'} || [])});
+            ((my  $optional) = 0);
+            for ( ; length($sig); do {{
+
+}} ) {
+                ((my  $c) = substr($sig, 0, 1));
+                if (($c eq ';')) {
+                    ($optional = 1)
+                }
+                else {
+                    if ((($c eq '$') || ($c eq '_'))) {
+                        if ((@in || !($optional))) {
+                            push(@out, shift(@in)->emit_javascript3($level, 'scalar') )
+                        }
+                    }
+                    else {
+                        if (($c eq '@')) {
+                            if ((@in || !($optional))) {
+                                push(@out, ('new p5Array(' . Perlito5::Javascript3::to_list(\@in) . ')') )
+                            };
+                            (@in = ())
+                        }
+                        else {
+                            if (($c eq '*')) {
+                                if ((@in || !($optional))) {
+                                    ((my  $arg) = shift(@in));
+                                    if ($arg->{'bareword'}) {
+                                        push(@out, ('p5pkg["' . (($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["f_' . $arg->{'code'} . '"]') )
+                                    }
+                                    else {
+                                        push(@out, $arg->emit_javascript3($level, 'scalar') )
+                                    }
+                                }
+                            }
+                            else {
+                                if (($c eq chr(92))) {
+                                    if ((substr($sig, 0, 2) eq chr(92) . '$')) {
+                                        ($sig = substr($sig, 1));
+                                        if ((@in || !($optional))) {
+                                            push(@out, shift(@in)->emit_javascript3($level, 'scalar') )
+                                        }
+                                    }
+                                    else {
+                                        if (((substr($sig, 0, 2) eq chr(92) . '@') || (substr($sig, 0, 2) eq chr(92) . '%'))) {
+                                            ($sig = substr($sig, 1));
+                                            if ((@in || !($optional))) {
+                                                push(@out, shift(@in)->emit_javascript3($level, 'list') )
+                                            }
+                                        }
+                                        else {
+                                            if ((substr($sig, 0, 5) eq chr(92) . '[@%]')) {
+                                                ($sig = substr($sig, 4));
+                                                if ((@in || !($optional))) {
+                                                    push(@out, shift(@in)->emit_javascript3($level, 'list') )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                ($sig = substr($sig, 1))
+            };
+            return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
+        };
+        ((my  @args) = ());
+        ((my  $arg_list) = Perlito5::Javascript3::to_list_preprocess($self->{'arguments'}));
+        for (@{$arg_list}) {
+            push(@args, $_->emit_javascript3($level) )
+        };
+        ((my  $arg_code) = (($self->{'code'} eq 'scalar') ? ('[' . join(', ', @args) . ']') : Perlito5::Javascript3::to_list($arg_list)));
+        ($code . '(' . $arg_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
+    }
+}};
+package Perlito5::AST::If;
+do {{
+    sub Perlito5::AST::If::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $cond) = $self->{'cond'});
+        ((my  $body) = Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
+        ((my  $s) = ('if ( ' . Perlito5::Javascript3::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'));
+        if (@{$self->{'otherwise'}->stmts()}) {
+            ((my  $otherwise) = Perlito5::Javascript3::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1));
+            ($s = ($s . chr(10) . Perlito5::Javascript3::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'))
+        };
+        return ($s)
+    }
+}};
+package Perlito5::AST::When;
+do {{
+    sub Perlito5::AST::When::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $cond) = $self->{'cond'});
+        ((my  $body) = Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
+        ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
+        ((my  $s) = ('if ( ' . Perlito5::Javascript3::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::Javascript3::tab($level) . '}'));
+        return ($s)
+    }
+}};
+package Perlito5::AST::While;
+do {{
+    sub Perlito5::AST::While::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $cond) = $self->{'cond'});
+        return (('p5while(' . 'function () {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}, ' . Perlito5::Javascript3::emit_function_javascript($level, 0, $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+    }
+}};
+package Perlito5::AST::For;
+do {{
+    sub Perlito5::AST::For::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        if ((ref($self->{'cond'}) eq 'ARRAY')) {
+            ((my  $body) = Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
+            return (('for ( ' . (($self->{'cond'}->[0] ? ($self->{'cond'}->[0]->emit_javascript3(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[1] ? ($self->{'cond'}->[1]->emit_javascript3(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[2] ? ($self->{'cond'}->[2]->emit_javascript3(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'))
+        };
+        ((my  $cond) = Perlito5::Javascript3::to_list([$self->{'cond'}], ($level + 1)));
+        if ($self->{'body'}->sig()) {
+            ((my  $v) = $self->{'body'}->sig());
+            ($Perlito5::VAR->[0]->{$v->perl5_name()} = {'decl', 'my'});
+            ((my  $sig) = $v->emit_javascript3(($level + 1)));
+            return (('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+        }
+        else {
+            return (('p5for(' . Perlito5::Javascript3::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript(($level + 2)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+        }
+    }
+}};
+package Perlito5::AST::Sub;
+do {{
+    sub Perlito5::AST::Sub::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $s) = ('function (List__, p5want) {' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'List__ = new p5Array(List__);' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'block'}, 'needs_return', 1, 'top_level', 1))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'));
+        if ($self->{'name'}) {
+            return (('p5make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
+        }
+        else {
+            return ($s)
+        }
+    }
+}};
+package Perlito5::AST::Do;
+do {{
+    sub Perlito5::AST::Do::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $block) = $self->simplify()->block());
+        return (('(function () {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $block, 'needs_return', 1))->emit_javascript(($level + 1), $wantarray) . chr(10) . Perlito5::Javascript3::tab($level) . '})()'))
+    }
+}};
+package Perlito5::AST::Use;
+do {{
+    sub Perlito5::AST::Use::emit_javascript3 {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        Perlito5::Grammar::Use::emit_time_eval($self);
+        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
+    }
+}};
+
+;
+
+# use Perlito5::Javascript3::Emitter
+;
+package main;
+undef();
+package Perlito5::Javascript3::Runtime;
+sub Perlito5::Javascript3::Runtime::emit_javascript3 {
+    return ((('//' . chr(10) . '// lib/Perlito5/Javascript3/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-Javascript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    p5pkg = {};' . chr(10) . '    p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        return List__[0]._class_._ref_ == List__[1]' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = List__[1];' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref__, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = new p5Array([]);' . chr(10) . '        p5pkg[pkg_name]["v_a"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v_b"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v__"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = new p5Scalar(null);' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    for (var i = 0; i < isa.length; i++) {' . chr(10) . '        if (!seen[isa[i]]) {' . chr(10) . '            var m = p5get_class_for_method(method, isa[i]);' . chr(10) . '            if (m) {' . chr(10) . '                return m ' . chr(10) . '            }' . chr(10) . '            seen[isa[i]]++;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list) {' . chr(10) . '    list.unshift(invocant);' . chr(10) . chr(10) . '    if (invocant instanceof p5Scalar) {' . chr(10) . '        // TODO - move p5call() to p5Scalar method' . chr(10) . '        invocant = invocant._v_;' . chr(10) . '    }' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list);' . chr(10) . '        }' . chr(10) . chr(10) . '        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);' . chr(10) . chr(10) . '    }' . chr(10) . chr(10) . '    // the invocant doesn' . chr(39) . 't have a class' . chr(10) . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        var aclass = p5make_package(invocant);' . chr(10) . '        return p5call(aclass, method, list);' . chr(10) . '    }' . chr(10) . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5pkg["main"]["v_@"] = "";                   // $@' . chr(10) . 'p5pkg["main"]["v_|"] = 0;                    // $|' . chr(10) . 'p5pkg["main"]["List_#"] = new p5Array([]);   // @#' . chr(10) . 'p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript3";' . chr(10) . 'p5pkg["main"]["List_INC"] = new p5Array([]);' . chr(10) . 'p5pkg["main"]["Hash_INC"] = {};' . chr(10) . 'p5pkg["main"]["List_ARGV"] = new p5Array([]);' . chr(10) . 'p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = new p5Array(process.argv.splice(2));' . chr(10) . '    p5pkg["main"]["Hash_ENV"]  = process.env;' . chr(10) . '    p5pkg["main"]["v_$"]       = process.pid;' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = new p5Array(arguments);' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'function p5make_sub(pkg_name, sub_name, func) {' . chr(10) . '    p5pkg[pkg_name][sub_name] = func;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_glob(name, data) {' . chr(10) . '    if ( name.indexOf("::") == -1 ) {' . chr(10) . '        p5pkg[p5pkg["Perlito5"].v_PKG_NAME][name] = data;' . chr(10) . '        return data;' . chr(10) . '    }' . chr(10) . '    var c = name.split("::");' . chr(10) . '    s = c.pop(); ' . chr(10) . '    var pkg = c.join("::");' . chr(10) . '    p5make_package(pkg);' . chr(10) . '    p5pkg[pkg][s] = data;' . chr(10) . '    return data;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_local(namespace, name, sigil) {' . chr(10) . '    var v = name;' . chr(10) . '    if (sigil == "$") {' . chr(10) . '        v = "v_"+name;' . chr(10) . '    }' . chr(10) . '    p5LOCAL.push([namespace, v, namespace[v]]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        l = p5LOCAL.pop();' . chr(10) . '        l[0][l[1]] = l[2];' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . 'var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ' };' . chr(10) . 'function p5global(sigil, namespace, name) {' . chr(10) . '    // TODO - autovivify namespace' . chr(10) . '    v = p5pkg[namespace][sigils[sigil] + name ];' . chr(10) . '    if (v != null) {' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    if (sigil == ' . chr(39) . '$' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][sigils[sigil] + name ] = new p5Scalar(null);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][sigils[sigil] + name ] = new p5Array([]);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][sigils[sigil] + name ] = new p5Hash({});' . chr(10) . '    }' . chr(10) . '    return p5pkg[namespace][sigils[sigil] + name ];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._href_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.hderef = function() {' . chr(10) . '        return this._href_;' . chr(10) . '    };' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        this._href_._hash_[i] = v;' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        return this._href_.hget(i, autoviv);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._aref_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.aderef = function() {' . chr(10) . '        return this._aref_;' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        this._aref_._array_[i >= 0 ? i : this._aref_._array_.length + i] = v;' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        return this._aref_.aget(i, autoviv);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.sderef = function(i) {' . chr(10) . '        return this._scalar_;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Array(o) {' . chr(10) . '    // TODO - array slice' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        return this._array_.length != 0' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        this._array_[i >= 0 ? i : this._array_.length + i] = v;' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        if (i < 0) {' . chr(10) . '            i = this._array_.length + i;' . chr(10) . '        }' . chr(10) . '        var v = this._array_[i];' . chr(10) . '        if (v != null) {' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '            this._array_[i] = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '            this._array_[i] = new p5HashRef(new p5Hash({}));' . chr(10) . '        }' . chr(10) . '        return this._array_[i];' . chr(10) . '    };' . chr(10) . '    this.assign = function(a) {' . chr(10) . '        if (a instanceof Array) {' . chr(10) . '            // TODO - cleanup, this shouldn' . chr(39) . 't happen' . chr(10) . '            this._array_ = a;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this._array_ = a._array_;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Hash(o) {' . chr(10) . '    // TODO - hash slice' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        o = this._hash_;' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        return false;' . chr(10) . '    };' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        this._hash_[i] = v;' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        var v = this._hash_[i];' . chr(10) . '        if (v != null) {' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '            this._hash_[i] = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '            this._hash_[i] = new p5HashRef(new p5Hash({}));' . chr(10) . '        }' . chr(10) . '        return this._hash_[i];' . chr(10) . '    };' . chr(10) . '    this.assign = function(h) {' . chr(10) . '        if (h instanceof p5Hash) {' . chr(10) . '            this._hash_ = h._hash_;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // TODO - cleanup, this shouldn' . chr(39) . 't happen' . chr(10) . '            this._hash_ = h;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Scalar(o) {' . chr(10) . '    this._v_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . chr(10) . '    // be a value' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        return p5bool(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return p5str(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5num = function() {' . chr(10) . '        return p5num(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5code = function() {' . chr(10) . '        return p5code(this._v_);' . chr(10) . '    };' . chr(10) . chr(10) . '    // be a scalar ref' . chr(10) . '    this.sderef = function(i) {' . chr(10) . '        return this._v_.sderef;' . chr(10) . '    };' . chr(10) . chr(10) . '    // be an array ref' . chr(10) . '    this.aderef = function() {' . chr(10) . '        // TODO - autovivify array (with proxy object?)' . chr(10) . '        return this._v_.aderef();' . chr(10) . '    };' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        // TODO - autovivify array (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.aget(i, autoviv);' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.aset(i, v);' . chr(10) . '    };' . chr(10) . chr(10) . '    // be a hash ref' . chr(10) . '    this.hderef = function() {' . chr(10) . '        // TODO - autovivify hash (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hderef();' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        // TODO - autovivify hash (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hget(i, autoviv);' . chr(10) . '    }' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hset(i, v);' . chr(10) . '    }' . chr(10) . chr(10) . '    // be a container' . chr(10) . '    this.vset = function(v) {' . chr(10) . '        this._v_ = v;' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.vget = function() {' . chr(10) . '        return this._v_;' . chr(10) . '    };' . chr(10) . '    this.assign = function(v) {' . chr(10) . '        if (v instanceof p5Scalar) {' . chr(10) . '            this._v_ = v._v_;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // TODO - cleanup, this shouldn' . chr(39) . 't happen' . chr(10) . '            this._v_ = v;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'p5list_to_a = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        var o = arguments[i];' . chr(10) . '        if  (  o == null' . chr(10) . '            || o._class_    // perl5 blessed reference' . chr(10) . '            || o._ref_      // perl5 un-blessed reference' . chr(10) . '            )' . chr(10) . '        {' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '        else if (o instanceof p5Array) {' . chr(10) . '            // perl5 array' . chr(10) . '            for (j = 0; j < o._array_.length; j++) {' . chr(10) . '                res.push(o._array_[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (o instanceof Array) {' . chr(10) . '            // js array' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (o instanceof p5Hash) {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o._hash_) {' . chr(10) . '                if (o._hash_.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o._hash_[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (typeof o === "object") {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o) {' . chr(10) . '                if (o.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-ref' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'if (isNode) {' . chr(10) . '    var fs = require("fs");' . chr(10) . '    p5make_sub("Perlito5::IO", "slurp", function(List__) {' . chr(10) . '        return fs.readFileSync(List__[0],"utf8");' . chr(10) . '    });' . chr(10) . '} else {' . chr(10) . '    p5make_sub("Perlito5::IO", "slurp", function(List__) {' . chr(10) . '        var filename = List__[0];' . chr(10) . '        if (typeof readFile == "function") {' . chr(10) . '            return readFile(filename);' . chr(10) . '        }' . chr(10) . '        if (typeof read == "function") {' . chr(10) . '            // v8' . chr(10) . '            return read(filename);' . chr(10) . '        }' . chr(10) . '        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);' . chr(10) . '    });' . chr(10) . '}' . chr(10) . chr(10) . 'p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a.apply(null, List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    while (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'p5code = function(o) {' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    return o.p5code();' . chr(10) . '};' . chr(10) . chr(10) . 'p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return CORE.join(["", o]);' . chr(10) . '    }' . chr(10) . '    if (typeof o.p5string === "function") {' . chr(10) . '        return o.p5string();' . chr(10) . '    }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return o.length;' . chr(10) . '    }' . chr(10) . '    if (typeof o.p5num === "function") {' . chr(10) . '        return o.p5num();' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        return parseFloat(p5str(o));' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        if (typeof o.p5bool === "function") {' . chr(10) . '            return o.p5bool();' . chr(10) . '        }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_replicate = function(o, n) {' . chr(10) . '    n = p5num(n);' . chr(10) . '    return n ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_inc = function(s) {' . chr(10) . '    s = p5str(s);' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'p5for = function(namespace, func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '       }' . chr(10) . '   }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for_lex = function(func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        try {' . chr(10) . '            func(args[i])' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5while = function(func, cond, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    while (_redo || p5bool(cond())) {' . chr(10) . '        _redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        var o = p5list_to_a(func(1));' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"] = a;' . chr(10) . '                namespace["v_b"] = b;' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'perl5_to_js = function( source, namespace, var_env_js, p5want ) {' . chr(10) . '    // CORE.say(["source: [" + source + "]"]);' . chr(10) . chr(10) . '    var strict_old = p5pkg["Perlito5"].v_STRICT;' . chr(10) . '    var var_env_js_old = p5pkg["Perlito5"].v_VAR;' . chr(10) . '    p5pkg["Perlito5"].v_VAR = var_env_js;' . chr(10) . chr(10) . '    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME = namespace;' . chr(10) . chr(10) . '    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);' . chr(10) . chr(10) . '    if ( !match || match._hash_.to != source.length ) {' . chr(10) . '        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);' . chr(10) . '    }' . chr(10) . chr(10) . '    ast = p5pkg.CORE.bless([' . chr(10) . '        new p5HashRef({' . chr(10) . '            block:  p5pkg.CORE.bless([' . chr(10) . '                        new p5HashRef({' . chr(10) . '                            stmts:   p5pkg["Perlito5::Match"].flat([match])' . chr(10) . '                        }),' . chr(10) . '                        p5pkg["Perlito5::AST::Lit::Block"]' . chr(10) . '                    ])' . chr(10) . '        }),' . chr(10) . '        p5pkg["Perlito5::AST::Do"]' . chr(10) . '    ]);' . chr(10) . chr(10) . '    // CORE.say(["ast: [" + ast + "]"]);' . chr(10) . '    js_code = p5call(ast, "emit_javascript3", [0, p5want]);' . chr(10) . '    // CORE.say(["js-source: [" + js_code + "]"]);' . chr(10) . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME = namespace_old;' . chr(10) . '    p5pkg["Perlito5"].v_VAR      = var_env_js_old;' . chr(10) . '    p5pkg["Perlito5"].v_STRICT   = strict_old;' . chr(10) . '    return js_code;' . chr(10) . '}' . chr(10) . chr(10))))
+};
+1;
+
+;
+
+# use Perlito5::Javascript3::Runtime
+;
+package main;
+undef();
+package Perlito5::Javascript3::CORE;
+sub Perlito5::Javascript3::CORE::emit_javascript3 {
+    return ((('//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/Javascript3/CORE.js' . chr(10) . '//' . chr(10) . '// CORE functions for "Perlito" Perl5-in-Javascript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var CORE = p5pkg.CORE;' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            process.stdout.write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    }' . chr(10) . '} else {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'CORE.say = function(List__) {' . chr(10) . '    CORE.print(List__);' . chr(10) . '    return CORE.print(["' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.die = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    p5pkg["main"]["v_@"] = "Died: " + s;' . chr(10) . '    throw(new p5_error("die", "Died: " + s));' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.warn = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    CORE.print(["Warning: " + s + "' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.bless = function(List__) {' . chr(10) . '    var o        = List__[0];' . chr(10) . '    var pkg_name = List__[1];' . chr(10) . '    if (o instanceof p5Scalar) {' . chr(10) . '        o = o._v_;' . chr(10) . '    }' . chr(10) . '    if (pkg_name instanceof p5Scalar) {' . chr(10) . '        pkg_name = pkg_name._v_;' . chr(10) . '    }' . chr(10) . '    if (typeof pkg_name === "object") {' . chr(10) . '        // bless {}, Class' . chr(10) . '        o._class_ = pkg_name;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        p5make_package(pkg_name);' . chr(10) . '    }' . chr(10) . '    o._class_ = p5pkg[pkg_name];' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.caller = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5pkg["Perlito5"]["CALLER"][0];' . chr(10) . '    }' . chr(10) . '    return p5pkg["Perlito5"]["CALLER"][0][0];' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.chr = function(List__) {' . chr(10) . '    var v = p5num(List__[0]);' . chr(10) . '    return String.fromCharCode(v >= 0 ? v : 65533);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ord = function(List__) {' . chr(10) . '    return p5str(List__[0]).charCodeAt(0);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.oct = function(List__) {' . chr(10) . '    var v = List__[0];' . chr(10) . '    var b = v.substr(0,2);' . chr(10) . '    v = v.replace("_", "");' . chr(10) . '    if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }' . chr(10) . '    if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }' . chr(10) . '    return parseInt(v, 8);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.abs   = function(List__) { return Math.abs(List__[0]) };' . chr(10) . 'CORE.exp   = function(List__) { return Math.exp(List__[0]) };' . chr(10) . 'CORE.log   = function(List__) { return Math.log(List__[0]) };' . chr(10) . 'CORE.cos   = function(List__) { return Math.cos(List__[0]) };' . chr(10) . 'CORE.sin   = function(List__) { return Math.sin(List__[0]) };' . chr(10) . 'CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };' . chr(10) . 'CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };' . chr(10) . 'CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };' . chr(10) . chr(10) . 'CORE.rand = function(List__) {' . chr(10) . '    var v = p5num(List__[0]) || 1;' . chr(10) . '    return Math.random() * v;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };' . chr(10) . 'CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };' . chr(10) . chr(10) . 'CORE.lcfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ucfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.quotemeta = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < s.length; i++) {' . chr(10) . '        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {' . chr(10) . '            out.push(String.fromCharCode(92));' . chr(10) . '        }' . chr(10) . '        out.push(s.substr(i, 1));' . chr(10) . '    }' . chr(10) . '    return out.join("");       ' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.substr = function(List__) {' . chr(10) . '    var expr        = List__[0];' . chr(10) . '    var offset      = List__[1];' . chr(10) . '    var length      = List__[2];' . chr(10) . '    var replacement = List__[3];' . chr(10) . '    if (length < 0) {' . chr(10) . '        var s = p5str(expr);' . chr(10) . '        length = s.length - offset + length;' . chr(10) . '    } ' . chr(10) . '    return p5str(expr).substr(offset, length);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.defined = function(List__) {' . chr(10) . '    return (List__[0] instanceof p5Scalar) ? ( List__[0]._v_ != null ) : ( List__[0] != null )' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.values = function(List__, p5want) {' . chr(10) . '    var o = List__[0]._hash_;' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return new p5Array([]);' . chr(10) . '        };' . chr(10) . '        if (typeof o.values === "function") {' . chr(10) . '            return o.values();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(o[i]);' . chr(10) . '        }' . chr(10) . '        return new p5Array(out);' . chr(10) . '    }' . chr(10) . '    return CORE.keys(List__, p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.keys = function(List__, p5want) {' . chr(10) . '    var o = List__[0]._hash_;' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return new p5Array([]);' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return o.keys();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(i);' . chr(10) . '        }' . chr(10) . '        return new p5Array(out);' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        if (o == null) {' . chr(10) . '            return 0;' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return CORE.scalar([o.keys()]);' . chr(10) . '        }' . chr(10) . '        var out = 0;' . chr(10) . '        for (var i in o) {' . chr(10) . '            out++;' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.each = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.hasOwnProperty("_each_")) {' . chr(10) . '        return o._each_(p5want)' . chr(10) . '    }' . chr(10) . '    var keys = CORE.keys([o], 1);' . chr(10) . '    var i = 0;' . chr(10) . '    o._each_ = function () {' . chr(10) . '        if (i < keys.length) {' . chr(10) . '            i++;' . chr(10) . '            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];' . chr(10) . '        }' . chr(10) . '        i = 0;' . chr(10) . '        return p5want ? [] : null;' . chr(10) . '    };' . chr(10) . '    return o._each_(p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.reverse = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "string") {' . chr(10) . '        return o.split("").reverse().join("")' . chr(10) . '    }' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < o.length; i++) {' . chr(10) . '        out.unshift(o[i]);' . chr(10) . '    }' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.splice = function(List__, p5want) {' . chr(10) . '    var array  = List__.shift()._array_;' . chr(10) . '    // CORE.say([ array ]);' . chr(10) . '    var offset = p5num(List__.shift());' . chr(10) . '    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);' . chr(10) . chr(10) . '    if (limit < 0) {' . chr(10) . '        limit = array.length + limit - 1;' . chr(10) . '    }' . chr(10) . chr(10) . '    var list = [offset, limit];' . chr(10) . '    for(var i = 0; i < List__.length; i++) {' . chr(10) . '        list = p5list_to_a( list, List__[i]);' . chr(10) . '    }' . chr(10) . chr(10) . '    out = array.splice.apply(array, list);' . chr(10) . '    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);' . chr(10) . '    return p5want ? out : out.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pop = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o._array_.length == null) {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    return o._array_.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.shift = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o._array_.length == null) {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    return o._array_.shift();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.push = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var v = List__[1];' . chr(10) . '    for(var i = 0; i < v._array_.length; i++) {' . chr(10) . '        o._array_.push(v._array_[i]);' . chr(10) . '    }' . chr(10) . '    return o._array_.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.unshift = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var v = List__[1];' . chr(10) . '    for(var i = v._array_.length-1; i >= 0; i--) {' . chr(10) . '        o._array_.unshift(v._array_[i]);' . chr(10) . '    }' . chr(10) . '    return o._array_.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.join = function(List__) {' . chr(10) . '    var s = List__[0];' . chr(10) . '    var o = List__[1];' . chr(10) . '    return o._array_.join(s);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.index = function(List__) {' . chr(10) . '    try {' . chr(10) . '        return p5str(List__[0]).indexOf(p5str(List__[1]), p5num(List__[2]));' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . 'CORE.rindex = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        if (List__.length > 2) {' . chr(10) . '            var i = p5num(List__[2]);' . chr(10) . '            if (i < 0) {' . chr(10) . '                if (s.length == 0) {' . chr(10) . '                    return 0;' . chr(10) . '                }' . chr(10) . '                return -1;' . chr(10) . '            }' . chr(10) . '            return o.lastIndexOf(s, i);' . chr(10) . '        }' . chr(10) . '        return o.lastIndexOf(s);' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.length = function(List__) {' . chr(10) . '    var o = p5str(List__[0]);' . chr(10) . '    return o.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };' . chr(10) . 'CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };' . chr(10) . chr(10) . 'CORE.ref = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o instanceof p5Scalar) {' . chr(10) . '        o = o._v_;' . chr(10) . '    }' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '        // blessed reference' . chr(10) . '        return o._class_._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o._ref_ === "string") {' . chr(10) . '        // un-blessed reference' . chr(10) . '        return o._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return "CODE";' . chr(10) . '    }' . chr(10) . '    return "";' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.split = function(List__) {' . chr(10) . '    var pattern = List__[0];' . chr(10) . '    var s       = List__[1];' . chr(10) . '    var limit   = List__[2];' . chr(10) . '    if (typeof pattern === "string") {' . chr(10) . '        if (pattern == " ") {' . chr(10) . '            var res = [];' . chr(10) . '            for (var i_ = 0, a_ = s.split(/(?: |' . chr(92) . 'n)+/); i_ < a_.length ; i_++) {' . chr(10) . '                if (a_[i_] != "") {' . chr(10) . '                    res.push(a_[i_])' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        return s.split(pattern);' . chr(10) . '    }' . chr(10) . '    CORE.die(["not implemented"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.prototype = function(List__, data) {' . chr(10) . '    var name = List__[0];' . chr(10) . '    // TODO - fully qualify "name" using information from "data"' . chr(10) . '    // XXX - lookup in CORE::GLOBAL?' . chr(10) . '    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]' . chr(10) . '};' . chr(10) . chr(10))))
+};
+1;
+
+;
+
+# use Perlito5::Javascript3::CORE
+;
+package main;
+undef();
+package Perlito5::Javascript3::IO;
+sub Perlito5::Javascript3::IO::emit_javascript3 {
+    return ((('//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/Javascript3/IO.js' . chr(10) . '//' . chr(10) . '// I/O functions for "Perlito" Perl5-in-Javascript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . chr(10) . '    var fs = require("fs");' . chr(10) . chr(10) . '    p5atime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["atime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5mtime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["mtime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5ctime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["ctime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5size = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["size"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_file = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_directory = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5file_exists = function(s) {' . chr(10) . '        return p5is_file(s) || p5is_directory(s);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.chdir = function(List__) {' . chr(10) . '        try {' . chr(10) . '            process.chdir(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.close = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.closeSync(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.exit = function(List__) {' . chr(10) . '        process.exit(List__[0]);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.rename = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.renameSync(p5str(List__[0]), p5str(List__[1]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.unlink = function(List__) {' . chr(10) . '        var count = 0;' . chr(10) . '        try {' . chr(10) . '            for(var i = 0; i < List__.length; i++) {' . chr(10) . '                fs.unlinkSync(p5str(List__[i]));' . chr(10) . '                count++;' . chr(10) . '            }' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '}' . chr(10) . chr(10))))
+};
+1;
+
+;
+
+# use Perlito5::Javascript3::IO
+;
+package main;
+undef();
+package Perlito5::Javascript3::Sprintf;
+sub Perlito5::Javascript3::Sprintf::emit_javascript3 {
+    return ((('/**' . chr(10) . ' * Copyright (c) 2010 Jakob Westhoff' . chr(10) . ' *' . chr(10) . ' * Permission is hereby granted, free of charge, to any person obtaining a copy' . chr(10) . ' * of this software and associated documentation files (the "Software"), to deal' . chr(10) . ' * in the Software without restriction, including without limitation the rights' . chr(10) . ' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell' . chr(10) . ' * copies of the Software, and to permit persons to whom the Software is' . chr(10) . ' * furnished to do so, subject to the following conditions:' . chr(10) . ' * ' . chr(10) . ' * The above copyright notice and this permission notice shall be included in' . chr(10) . ' * all copies or substantial portions of the Software.' . chr(10) . ' * ' . chr(10) . ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR' . chr(10) . ' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,' . chr(10) . ' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE' . chr(10) . ' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER' . chr(10) . ' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,' . chr(10) . ' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN' . chr(10) . ' * THE SOFTWARE.' . chr(10) . ' */' . chr(10) . chr(10) . 'CORE.sprintf = function(List__) {' . chr(10) . '    var format = List__[0];' . chr(10) . '    var list = List__[1];' . chr(10) . chr(10) . '    // Check for format definition' . chr(10) . '    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {' . chr(10) . '        CORE.die(["sprintf: The first arguments need to be a valid format string."]);' . chr(10) . '    }' . chr(10) . '    ' . chr(10) . '    /**' . chr(10) . '     * Define the regex to match a formating string' . chr(10) . '     * The regex consists of the following parts:' . chr(10) . '     * percent sign to indicate the start' . chr(10) . '     * (optional) sign specifier' . chr(10) . '     * (optional) padding specifier' . chr(10) . '     * (optional) alignment specifier' . chr(10) . '     * (optional) width specifier' . chr(10) . '     * (optional) precision specifier' . chr(10) . '     * type specifier:' . chr(10) . '     *  % - literal percent sign' . chr(10) . '     *  b - binary number' . chr(10) . '     *  c - ASCII character represented by the given value' . chr(10) . '     *  d - signed decimal number' . chr(10) . '     *  f - floating point value' . chr(10) . '     *  o - octal number' . chr(10) . '     *  s - string' . chr(10) . '     *  x - hexadecimal number (lowercase characters)' . chr(10) . '     *  X - hexadecimal number (uppercase characters)' . chr(10) . '     */' . chr(10) . '    var r = new RegExp( /%(' . chr(92) . '+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(' . chr(92) . '.([0-9]+))?([%bcdfosxX])/g );' . chr(10) . chr(10) . '    /**' . chr(10) . '     * Each format string is splitted into the following parts:' . chr(10) . '     * 0: Full format string' . chr(10) . '     * 1: sign specifier (+)' . chr(10) . '     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)' . chr(10) . '     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real ' . chr(10) . '     *    padding character' . chr(10) . '     * 4: alignment specifier' . chr(10) . '     * 5: width specifier' . chr(10) . '     * 6: precision specifier including the dot' . chr(10) . '     * 7: precision specifier without the dot' . chr(10) . '     * 8: type specifier' . chr(10) . '     */' . chr(10) . '    var parts      = [];' . chr(10) . '    var paramIndex = 0;' . chr(10) . '    while ( part = r.exec( format ) ) {' . chr(10) . '        // Check if an input value has been provided, for the current' . chr(10) . '        // format string' . chr(10) . '        if ( paramIndex >= list.length ) {' . chr(10) . '            CORE.die(["sprintf: At least one argument was missing."]);' . chr(10) . '        }' . chr(10) . chr(10) . '        parts[parts.length] = {' . chr(10) . '            /* beginning of the part in the string */' . chr(10) . '            begin: part.index,' . chr(10) . '            /* end of the part in the string */' . chr(10) . '            end: part.index + part[0].length,' . chr(10) . '            /* force sign */' . chr(10) . '            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),' . chr(10) . '            /* is the given data negative */' . chr(10) . '            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,' . chr(10) . '            /* padding character (default: <space>) */' . chr(10) . '            padding: ( part[2] == undefined )' . chr(10) . '                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */' . chr(10) . '                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) ' . chr(10) . '                         ? ( part[3] ) /* use special char */' . chr(10) . '                         : ( part[2] ) /* use normal <space> or zero */' . chr(10) . '                       ),' . chr(10) . '            /* should the output be aligned left?*/' . chr(10) . '            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),' . chr(10) . '            /* width specifier (number or false) */' . chr(10) . '            width: ( part[5] != undefined ) ? part[5] : false,' . chr(10) . '            /* precision specifier (number or false) */' . chr(10) . '            precision: ( part[7] != undefined ) ? part[7] : false,' . chr(10) . '            /* type specifier */' . chr(10) . '            type: part[8],' . chr(10) . '            /* the given data associated with this part converted to a string */' . chr(10) . '            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false' . chr(10) . '        };' . chr(10) . '    }' . chr(10) . chr(10) . '    var newString = "";' . chr(10) . '    var start = 0;' . chr(10) . '    // Generate our new formated string' . chr(10) . '    for( var i=0; i<parts.length; ++i ) {' . chr(10) . '        // Add first unformated string part' . chr(10) . '        newString += format.substring( start, parts[i].begin );' . chr(10) . '        ' . chr(10) . '        // Mark the new string start' . chr(10) . '        start = parts[i].end;' . chr(10) . chr(10) . '        // Create the appropriate preformat substitution' . chr(10) . '        // This substitution is only the correct type conversion. All the' . chr(10) . '        // different options and flags haven' . chr(39) . 't been applied to it at this' . chr(10) . '        // point' . chr(10) . '        var preSubstitution = "";' . chr(10) . '        switch ( parts[i].type ) {' . chr(10) . '            case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                preSubstitution = "%";' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'd' . chr(39) . ':' . chr(10) . '                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'f' . chr(39) . ':' . chr(10) . '                preSubstitution = ( parts[i].precision == false )' . chr(10) . '                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )' . chr(10) . '                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'o' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'x' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();' . chr(10) . '            break;' . chr(10) . '            default:' . chr(10) . '                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';' . chr(10) . '        }' . chr(10) . chr(10) . '        // The % character is a special type and does not need further processing' . chr(10) . '        if ( parts[i].type ==  "%" ) {' . chr(10) . '            newString += preSubstitution;' . chr(10) . '            continue;' . chr(10) . '        }' . chr(10) . chr(10) . '        // Modify the preSubstitution by taking sign, padding and width' . chr(10) . '        // into account' . chr(10) . chr(10) . '        // Pad the string based on the given width' . chr(10) . '        if ( parts[i].width != false ) {' . chr(10) . '            // Padding needed?' . chr(10) . '            if ( parts[i].width > preSubstitution.length ) ' . chr(10) . '            {' . chr(10) . '                var origLength = preSubstitution.length;' . chr(10) . '                for( var j = 0; j < parts[i].width - origLength; ++j ) ' . chr(10) . '                {' . chr(10) . '                    preSubstitution = ( parts[i].alignLeft == true ) ' . chr(10) . '                                      ? ( preSubstitution + parts[i].padding )' . chr(10) . '                                      : ( parts[i].padding + preSubstitution );' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add a sign symbol if neccessary or enforced, but only if we are' . chr(10) . '        // not handling a string' . chr(10) . '        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {' . chr(10) . '            if ( parts[i].negative == true ) {' . chr(10) . '                preSubstitution = "-" + preSubstitution;' . chr(10) . '            }' . chr(10) . '            else if ( parts[i].sign == true ) {' . chr(10) . '                preSubstitution = "+" + preSubstitution;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add the substitution to the new string' . chr(10) . '        newString += preSubstitution;' . chr(10) . '    }' . chr(10) . chr(10) . '    // Add the last part of the given format string, which may still be there' . chr(10) . '    newString += format.substring( start, format.length );' . chr(10) . chr(10) . '    return newString;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.printf = function(List__) {' . chr(10) . '    return CORE.print([ CORE.sprintf(List__) ]);' . chr(10) . '};' . chr(10) . chr(10))))
+};
+1;
+
+;
+
+# use Perlito5::Javascript3::Sprintf
+;
+package main;
+undef();
 package Perlito5::AST::Apply;
 ((my  %op) = ('infix:<+=>', 'infix:<+>', 'infix:<-=>', 'infix:<->', 'infix:<*=>', 'infix:<*>', 'infix:</=>', 'infix:</>', 'infix:<||=>', 'infix:<||>', 'infix:<&&=>', 'infix:<&&>', 'infix:<|=>', 'infix:<|>', 'infix:<&=>', 'infix:<&>', 'infix:<//=>', 'infix:<//>', 'infix:<.=>', 'list:<.>'));
 sub Perlito5::AST::Apply::op_assign {
@@ -11635,22 +11681,22 @@ if (($backend && @ARGV)) {
             if (($backend eq 'js')) {
                 say('// Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
                 if ($expand_use) {
-                    print(Perlito5::Javascript::Runtime->emit_javascript());
-                    print(Perlito5::Javascript::CORE->emit_javascript());
-                    print(Perlito5::Javascript::IO->emit_javascript());
-                    print(Perlito5::Javascript::Sprintf->emit_javascript())
-                };
-                print(Perlito5::AST::CompUnit::emit_javascript_program($comp_units))
-            };
-            if (($backend eq 'js2')) {
-                say('// Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
-                if ($expand_use) {
                     print(Perlito5::Javascript2::Runtime->emit_javascript2());
                     print(Perlito5::Javascript2::CORE->emit_javascript2());
                     print(Perlito5::Javascript2::IO->emit_javascript2());
                     print(Perlito5::Javascript2::Sprintf->emit_javascript2())
                 };
                 print(Perlito5::AST::CompUnit::emit_javascript2_program($comp_units))
+            };
+            if (($backend eq 'js3')) {
+                say('// Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
+                if ($expand_use) {
+                    print(Perlito5::Javascript3::Runtime->emit_javascript3());
+                    print(Perlito5::Javascript3::CORE->emit_javascript3());
+                    print(Perlito5::Javascript3::IO->emit_javascript3());
+                    print(Perlito5::Javascript3::Sprintf->emit_javascript3())
+                };
+                print(Perlito5::AST::CompUnit::emit_javascript3_program($comp_units))
             };
             if (($backend eq 'ast-perl5')) {
                 say(Perlito5::Dumper::Dumper($comp_units))
