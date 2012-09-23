@@ -188,18 +188,18 @@ function p5call(invocant, method, list) {
 }
 
 p5make_package("main");
-p5pkg["main"]["v_@"] = "";                   // $@
-p5pkg["main"]["v_|"] = 0;                    // $|
-p5pkg["main"]["List_#"] = new p5Array([]);   // @#
-p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript3";
-p5pkg["main"]["List_INC"] = new p5Array([]);
-p5pkg["main"]["Hash_INC"] = {};
+p5pkg["main"]["v_@"]       = new p5Scalar("");  // $@
+p5pkg["main"]["v_|"]       = new p5Scalar(0);   // $|
+p5pkg["main"]["List_#"]    = new p5Array([]);   // @#
+p5pkg["main"]["v_^O"]      = new p5Scalar(isNode ? "node.js" : "javascript3");
+p5pkg["main"]["List_INC"]  = new p5Array([]);
+p5pkg["main"]["Hash_INC"]  = new p5Hash({});
 p5pkg["main"]["List_ARGV"] = new p5Array([]);
-p5pkg["main"]["Hash_ENV"] = {};
+p5pkg["main"]["Hash_ENV"]  = new p5Hash({});
 if (isNode) {
     p5pkg["main"]["List_ARGV"] = new p5Array(process.argv.splice(2));
-    p5pkg["main"]["Hash_ENV"]  = process.env;
-    p5pkg["main"]["v_$"]       = process.pid;
+    p5pkg["main"]["Hash_ENV"]  = new p5Hash(process.env);
+    p5pkg["main"]["v_$"]       = new p5Scalar(process.pid);
 } else if (typeof arguments === "object") {
     p5pkg["main"]["List_ARGV"] = new p5Array(arguments);
 }

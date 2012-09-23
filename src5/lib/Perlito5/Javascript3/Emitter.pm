@@ -1091,8 +1091,15 @@ package Perlito5::AST::Decl;
             return $str;
         }
         elsif ($self->{decl} eq 'our') {
-            # TODO
-            return '// our ' . $self->{var}->emit_javascript3();
+
+            my $str_name = $self->{var}->{name};
+            $str_name = '\\\\' if $str_name eq '\\';   # escape $\
+            $str_name = '\\"' if $str_name eq '"';     # escape $"
+
+            return 'p5global("' . $self->{var}->{sigil} . '", ' 
+                . '"'. ($self->{var}->{namespace} || $Perlito5::PKG_NAME) . '", ' 
+                . '"'. $str_name . '")';
+
         }
         elsif ($self->{decl} eq 'local') {
             # TODO - add grammar support
