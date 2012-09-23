@@ -61,10 +61,11 @@ CORE.die = function(List__) {
 };
 
 CORE.warn = function(List__) {
+    var o = List__[0]._array_;   // prototype is '@'
     var i;
     var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
+    for (i = 0; i < o.length; i++) {
+        s = s + p5str(o[i]);
     }
     CORE.print(["Warning: " + s + "\n"]);
 };
