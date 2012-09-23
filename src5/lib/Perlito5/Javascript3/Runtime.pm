@@ -351,7 +351,12 @@ function p5Array(o) {
             this._array_[i].assign(v);
         }
         else {
-            this._array_[i] = v;
+            if (v instanceof p5Scalar) {
+                this._array_[i] = v._v_;
+            }
+            else {
+                this._array_[i] = v;
+            }
         }
         return v;
     };
@@ -380,7 +385,13 @@ function p5Array(o) {
             this._array_ = a._array_;
         }
         return this;
-    }
+    };
+    this.PUSH = function(v) {
+        for(var i = 0; i < v._array_.length; i++) {
+            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
+        }
+        return this._array_.length;
+    };
 }
 
 function p5Hash(o) {
@@ -409,7 +420,12 @@ function p5Hash(o) {
             this._hash_[i].assign(v);
         }
         else {
-            this._hash_[i] = v;
+            if (v instanceof p5Scalar) {
+                this._hash_[i] = v._v_;
+            }
+            else {
+                this._hash_[i] = v;
+            }
         }
         return v;
     };

@@ -1581,16 +1581,16 @@ package Perlito5::AST::Apply;
                 return $parameters->emit_javascript3_set($arguments, $level+1);
             }
             if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@' ) {
-                return $parameters->emit_javascript3() . '.assign(' . Perlito5::Javascript3::to_list([$arguments], $level+1) . ')'
+                return $parameters->emit_javascript3() . '.assign(new p5Array(' . Perlito5::Javascript3::to_list([$arguments], $level+1) . '))'
             }
             elsif  ( $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@' ) {
-                return $parameters->var->emit_javascript3() . '.assign(' . Perlito5::Javascript3::to_list([$arguments], $level+1) . ')'
+                return $parameters->var->emit_javascript3() . '.assign(new p5Array(' . Perlito5::Javascript3::to_list([$arguments], $level+1) . '))'
             }
             elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
                 ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
                 )
             {
-                return $parameters->emit_javascript3() . '.assign(' . Perlito5::Javascript3::to_list([$arguments], $level+1, 'hash') . ')' 
+                return $parameters->emit_javascript3() . '.assign(new p5Hash(' . Perlito5::Javascript3::to_list([$arguments], $level+1, 'hash') . '))' 
             }
 
             if ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '*' ) {

@@ -295,12 +295,7 @@ CORE.shift = function(List__) {
 };
 
 CORE.push = function(List__) {
-    var o = List__[0];
-    var v = List__[1];
-    for(var i = 0; i < v._array_.length; i++) {
-        o._array_.push(v._array_[i]);
-    }
-    return o._array_.length;
+    return List__[0].PUSH(List__[1]);
 };
 
 CORE.unshift = function(List__) {
