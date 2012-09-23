@@ -4,7 +4,7 @@ use feature 'say';
 
 package Main;
     
-say '1..3';
+say '1..5';
 
 sub subr {
     my $v1 = shift;
@@ -39,4 +39,30 @@ if ($x != 3) {
     print 'not '
 };
 say 'ok 3 - ', $x;
+
+
+sub subr4 {
+    $_[0] = 3;
+}
+
+$x = 4;
+subr4($x);
+if ($x != 3) {
+    print 'not '
+};
+say 'ok 4 - ', $x;
+
+
+sub subr5 {
+    my $v = shift;
+    $v = 3;
+}
+
+$x = 4;
+subr5($x);
+if ($x != 4) {
+    print 'not '
+};
+say 'ok 5 - ', $x;
+
 

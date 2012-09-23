@@ -344,7 +344,15 @@ function p5Array(o) {
         return this._array_.length;
     };
     this.aset = function(i, v) {
-        this._array_[i >= 0 ? i : this._array_.length + i] = v;
+        if (i < 0) {
+            i = this._array_.length + i;
+        }
+        if (this._array_[i] instanceof p5Scalar) {
+            this._array_[i].assign(v);
+        }
+        else {
+            this._array_[i] = v;
+        }
         return v;
     };
     this.aget = function(i, autoviv) {
@@ -397,7 +405,12 @@ function p5Hash(o) {
         return out;
     };
     this.hset = function(i, v) {
-        this._hash_[i] = v;
+        if (this._hash_[i] instanceof p5Scalar) {
+            this._hash_[i].assign(v);
+        }
+        else {
+            this._hash_[i] = v;
+        }
         return v;
     };
     this.hget = function(i, autoviv) {
