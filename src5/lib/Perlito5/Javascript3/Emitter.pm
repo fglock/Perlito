@@ -409,7 +409,7 @@ package Perlito5::Javascript3;
     sub emit_javascript3_autovivify {
         my $obj = shift;
         my $level = shift;
-        my $type = shift;  # 'array'/'hash'
+        my $type = shift;  # 'array'/'hash'/'lvalue'
         my $wantarray = 'scalar';
 
         return $obj->emit_javascript3($level, $wantarray, $type);
@@ -1417,19 +1417,23 @@ package Perlito5::AST::Apply;
 
         'postfix:<++>' => sub {
             my $self = $_[0];
-            $self->{arguments}[0]->emit_javascript3() . '.p5postincr()';
+            Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
+                . '.p5postincr()';
         },
         'postfix:<-->' => sub {
             my $self = $_[0];
-            $self->{arguments}[0]->emit_javascript3() . '.p5postdecr()';
+            Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
+                . '.p5postdecr()';
         },
         'prefix:<++>' => sub {
             my $self = $_[0];
-            $self->{arguments}[0]->emit_javascript3() . '.p5incr()';
+            Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
+                . '.p5incr()';
         },
         'prefix:<-->' => sub {
             my $self = $_[0];
-            $self->{arguments}[0]->emit_javascript3() . '.p5decr()';
+            Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
+                . '.p5decr()';
         },
 
         'infix:<x>' => sub {
