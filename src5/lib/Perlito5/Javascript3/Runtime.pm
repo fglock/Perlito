@@ -285,8 +285,8 @@ function p5HashRef(o) {
         this._href_._hash_[i] = v;
         return v;
     };
-    this.hget = function(i, autoviv) {
-        return this._href_.hget(i, autoviv);
+    this.hget = function(i) {
+        return this._href_.hget(i);
     }
 }
 
@@ -304,8 +304,8 @@ function p5ArrayRef(o) {
         this._aref_._array_[i >= 0 ? i : this._aref_._array_.length + i] = v;
         return v;
     }
-    this.aget = function(i, autoviv) {
-        return this._aref_.aget(i, autoviv);
+    this.aget = function(i) {
+        return this._aref_.aget(i);
     }
 }
 
@@ -350,32 +350,20 @@ function p5Array(o) {
         if (this._array_[i] instanceof p5Scalar) {
             this._array_[i].assign(v);
         }
+        else if (v instanceof p5Scalar) {
+            this._array_[i] = new p5Scalar(v._v_);
+        }
         else {
-            if (v instanceof p5Scalar) {
-                this._array_[i] = new p5Scalar(v._v_);
-            }
-            else {
-                this._array_[i] = new p5Scalar(v);
-            }
+            this._array_[i] = new p5Scalar(v);
         }
         return this._array_[i];
     };
-    this.aget = function(i, autoviv) {
+    this.aget = function(i) {
         if (i < 0) {
             i = this._array_.length + i;
         }
-        var v = this._array_[i];
-        if (v != null) {
-            return v;
-        }
-        if (autoviv == 'array') {
-            this._array_[i] = new p5ArrayRef(new p5Array([]));
-        }
-        else if (autoviv == 'hash') {
-            this._array_[i] = new p5HashRef(new p5Hash({}));
-        }
-        else {
-            this._array_[i] = new p5Scalar(null);
+        if (!(this._array_[i] instanceof p5Scalar)) {
+            this._array_[i] = new p5Scalar(this._array_[i]);
         }
         return this._array_[i];
     };
@@ -442,30 +430,17 @@ function p5Hash(o) {
         if (this._hash_[i] instanceof p5Scalar) {
             this._hash_[i].assign(v);
         }
+        else if (v instanceof p5Scalar) {
+            this._hash_[i] = new p5Scalar(v._v_);
+        }
         else {
-            if (v instanceof p5Scalar) {
-                this._hash_[i] = new p5Scalar(v._v_);
-            }
-            else {
-                this._hash_[i] = new p5Scalar(v);
-            }
+            this._hash_[i] = new p5Scalar(v);
         }
         return this._hash_[i];
     };
-    this.hget = function(i, autoviv) {
-        if (this._hash_[i] instanceof p5Scalar) {
-        }
-        else if (this._hash_[i] != null) {
+    this.hget = function(i) {
+        if (!(this._hash_[i] instanceof p5Scalar)) {
             this._hash_[i] = new p5Scalar(this._hash_[i]);
-        }
-        else if (autoviv == 'array') {
-            this._hash_[i] = new p5ArrayRef(new p5Array([]));
-        }
-        else if (autoviv == 'hash') {
-            this._hash_[i] = new p5HashRef(new p5Hash({}));
-        }
-        else {
-            this._hash_[i] = new p5Scalar(null);
         }
         return this._hash_[i];
     };
@@ -532,12 +507,12 @@ function p5Scalar(o) {
         // TODO - autovivify array (with proxy object?)
         return this._v_.aderef();
     };
-    this.aget = function(i, autoviv) {
+    this.aget = function(i) {
         // TODO - autovivify array (with proxy object?)
         if (this._v_ == null) {
             this._v_ = new p5ArrayRef(new p5Array([]));
         }
-        return this._v_.aget(i, autoviv);
+        return this._v_.aget(i);
     };
     this.aset = function(i, v) {
         if (this._v_ == null) {
@@ -554,12 +529,12 @@ function p5Scalar(o) {
         }
         return this._v_.hderef();
     };
-    this.hget = function(i, autoviv) {
+    this.hget = function(i) {
         // TODO - autovivify hash (with proxy object?)
         if (this._v_ == null) {
             this._v_ = new p5HashRef(new p5Hash([]));
         }
-        return this._v_.hget(i, autoviv);
+        return this._v_.hget(i);
     }
     this.hset = function(i, v) {
         if (this._v_ == null) {
