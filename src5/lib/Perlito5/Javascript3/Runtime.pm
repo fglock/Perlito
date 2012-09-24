@@ -453,11 +453,12 @@ function p5Hash(o) {
         return this._hash_[i];
     };
     this.hget = function(i, autoviv) {
-        var v = this._hash_[i];
-        if (v != null) {
-            return v;
+        if (this._hash_[i] instanceof p5Scalar) {
         }
-        if (autoviv == 'array') {
+        else if (this._hash_[i] != null) {
+            this._hash_[i] = new p5Scalar(this._hash_[i]);
+        }
+        else if (autoviv == 'array') {
             this._hash_[i] = new p5ArrayRef(new p5Array([]));
         }
         else if (autoviv == 'hash') {
