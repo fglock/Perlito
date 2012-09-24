@@ -366,6 +366,13 @@ function p5Array(o) {
         }
         if (autoviv) {
             if (autoviv == 'lvalue') {
+                if (this._array_.length < i) {
+                    // don't vivify yet; create a proxy object
+                    // attach a _proxy_ to the scalar
+                    var v = new p5Scalar(null);
+                    v._proxy_ = { _arrayobj_ : this, _key_ : i };
+                    return v;
+                }
                 if (!(this._array_[i] instanceof p5Scalar)) {
                     this._array_[i] = new p5Scalar(this._array_[i]);
                 }
@@ -459,6 +466,13 @@ function p5Hash(o) {
     this.hget = function(i, autoviv) {
         if (autoviv) {
             if (autoviv == 'lvalue') {
+                if (! this._hash_.hasOwnProperty(i)) {
+                    // don't autovivify yet; create a proxy object
+                    // attach a _proxy_ key to the scalar
+                    var v = new p5Scalar(null);
+                    v._proxy_ = { _hashobj_ : this, _key_ : i };
+                    return v;
+                }
                 if (!(this._hash_[i] instanceof p5Scalar)) {
                     this._hash_[i] = new p5Scalar(this._hash_[i]);
                 }
@@ -572,14 +586,20 @@ function p5Scalar(o) {
     }
 
     // be a container
-    this.vset = function(v) {
-        this._v_ = v;
-        return v;
-    };
     this.vget = function() {
         return this._v_;
     };
     this.assign = function(v) {
+        if (this._proxy_) {
+            // this scalar is a proxy to some other container
+            // write-through
+            if (this._proxy_._arrayobj_) {
+                this._proxy_._arrayobj_.aset(this._proxy_._key_, v);
+            }
+            else {
+                this._proxy_._hashobj_.hset(this._proxy_._key_, v);
+            }
+        }
         if (v instanceof p5Scalar) {
             this._v_ = v._v_;
         }
