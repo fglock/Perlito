@@ -1,0 +1,207 @@
+pX/Common/iterator_engine_README - fglock
+
+Experimental implementation of:
+- a parser engine (iterator_engine.pl)
+- a Perl6 'rule' parser and perl5 emitter (iterator_engine_p6rule.pl)
+- a 'Perl6' parser and perl5 emitter (iterator_engine_p6compiler.pl)
+- a Perl6 'grammar' grammar (iterator_engine_p6prelude.p6)
+
+Tests:
+(paste this in the command line to run all tests)
+perl iterator_engine.t
+perl iterator_engine_p6rule.t
+perl iterator_engine_p6rule_variables.t
+perl iterator_engine_p6compiler.pl iterator_engine_p6sample.p6
+perl iterator_engine_p6compiler.pl iterator_engine_p6compiler.p6t
+
+Latest changes:
+2006-03-05:
+- 'if' implemented using Perl 6 macro
+  (XXX - slow; non-reentrant yet; redefines subroutines to emulate anon-subs)
+- fixed $() syntax
+2006-03-04:
+- detailed TODO list
+- macros 
+  * macro compile time:
+    - compile macro expander to AST
+    - emit AST to Perl5
+    - insert the new term in the grammar 
+  * macro expander run time:
+    - parse macro 'tail'
+    - bind macro parameters to macro body using source filter 
+      (only named parameters - TODO: $0, $1)
+    - compile macro body to AST 
+    - emit AST to Perl5
+    - execute Perl5 and get the resulting Perl6 source-code
+    - compile the result to AST (TODO: if the result was AST, don't compile)
+  XXX - re: source filter - parameters should be passed to the precompiled macro body, 
+        but subroutines don't support named parameters yet.
+        Optionally, the arguments could be bound to the AST of the macro body.
+  XXX - is string interpolation in macros different? does (') interpolate?
+- aliasing in rules
+  - fixed $<$name> to $<name> when using alias
+  XXX - is $<name> supposed to be $(name) ?
+- new iterator_engine op - ruleop::wrap() can be used to insert tracing and debug messages
+  in the parser
+2006-03-01:
+- precompiled Prelude - loads in < 1s
+2006-02-26:
+- working Perl 6 compiler - about 100 lines of code are now written in perl6
+- started a Prelude
+    say 'compiling Prelude';
+    sub infix:<+> { eval(' $_[0] + $_[1] ', :lang<perl5>); }
+- optimized rules - use Text::Balanced for implementing <literal> and <code>
+- 124 tests for p6rule.pl
+- note: spec change '$<>' to '$()' not applied yet
+
+Special thanks for the brainstorming sessions in #perl6:
+- putter
+- audreyt
+- TimToady 
+- pmurias
+
+Bootstrapping:
+- core rule engine - backtracking, function composition - in Perl 5
+- Perl 6 rules in Perl 5 - reuse to write itself
+- Perl 6 grammar in Perl 5 - reuse to write itself
+- Perl 6 to Perl 5 translator (parse p6, emit p5) - reuse to write itself
+- Perl 6 compiler written in p6
+
+Plan sketch:
+- rewrite the compiler in p6, and emit the whole compiler to p5
+- try to reuse pugs tests
+
+Current tasks:
+- implement 'macro' and '<%hash>', in order to define 'if' as in S04-Statement parsing
+- organize grammar categories: statement_control, prefix, infix
+- implement operator precedence
+- migrate primitives from http://svn.openfoundry.org/pugs/src/Pugs/Prim.hs
+- find out more about grammar bootstrapping and the parse/compile/run cycle and BEGIN/CHECK/INIT
+- see TODO and XXX notes everywhere
+- split Prelude into base-syntax and primitives
+- fix Perl 6 syntax errors in Prelude - usage of $<>, ...
+
+More tasks:
+- implement syntax options:
+  - default parser for macros
+  - short operator names infix:<+> === +
+- use putter's Match.pm
+- bind special variables $0, ...
+- see also the 'not implemented' rule list below
+- optimize infix:<+> to 'native +' when possible
+- mixing boxed/unboxed types (there are several tools available - which one to use?)
+- Perl 6 OO - which tools to use? - talk to stevan
+- un-source-filter rule return blocks
+- un-source-filter macro variable binding
+- coroutines
+
+Other interesting things to do (low priority):
+- reimplement iterator_engine.pl in 
+  - Javascript - I like the 'run in the browser' idea very much
+  - Perl 6 - Perl 6 version could be started with a source filter, since the syntax used is very simple
+  - Parrot - not so useful - Parrot already has PGE
+- test the compiler in Perl 5.5x
+- try out Smart::Comments
+- move project to a new subdir and give it a name?
+- Extract 'Changes' and 'TODO' from README (extract old Changes from svn)
+- make rule/grammar a pluggable module (pack for CPAN?)
+  how about "Perl6::Grammar", and reuse Parse::RecDescent API?
+- make grammars inherit from Grammar; make grammars inheritable
+- write an emitter that generates perl5 regexes (or dies)
+- implement "Rule|Str" with caching in <$var> rule
+- pluggable emitters
+- emit Pugs-compatible YAML 
+- import Pugs-generated YAML precompiled code
+- regex options :w :perl5 ...
+
+Possible difficult problems to fix (all untested):
+- package-wide lexical variables (incremental compilation and execution doesn't work with lexicals)
+- modifying the grammar from inside a block (incremental compilation is currently disabled inside blocks)
+- clonable closures (needed for proper working lazy lists)
+
+Namespaces:
+  Grammar - the base grammar - defines <ws>, <digit> 
+  RuleGrammar - the pattern matching grammar (or ???)
+  Perl6Grammar - the Perl6 grammar (or Perl6 ???)
+
+Perl6 Grammar implemented:
+  
+  grammar  <name>;
+  rule     <name> {...}   
+    -- return block is source filtered
+    -- operators are being implemented on demand
+  say print warn die <list>;
+  my our local    <var>;
+    -- untested
+  {...}
+  eval( '1+1', :lang<perl5> );
+  sub <name> {...}   
+    -- need more work on fixity and precedence, parameter binding
+  push unshift       
+    -- bootstrapped with source filter
+  macro <name> ( *@args ) {...}   
+    -- argument binding is source filtered
+  if (cond) {block}
+    -- macro needs to be rewritten with anon-subs
+    
+Rules Grammar implemented:
+
+ . ? * + *? +? ??
+ \char <ws> <word> literal
+ $variable @variable
+ <'literal'>
+ [] 
+ ()     
+ <subrule>
+ <namespace::subrule>
+ <?subrule>
+ <!subrule>
+ |
+ <@var>    - special-cased for array-of-rule (but not Rule|Str)
+ {code}    - non-capturing closure
+           - bootstrapped with source-filter
+           - $/ doesn't work yet
+ { return code } - capturing closure
+           - bootstrapped with source filter
+           - $/ works
+ $var := (capture)  - capture aliasing
+ $<> $/<>  - special variables can't be used inside a match, yet
+ $/ 
+ $<0> $<1>
+
+- implemented but untested:
+ <$var>
+
+- not implemented:
+ $/<0> $/<1>
+ $/0 $/1
+ $0 $1
+ <"literal">
+ ^ ^^ $ $$
+ <unicode-class> <+unicode-class> <+unicode-class+unicode-class>
+ <&var> 
+ <%var>
+ **{n..m}
+ : :: :::   (commit)
+ $var := [non-capture]
+ $var := <rule>
+ <(closure-assertion)> <{code-returns-rule}>
+ <<character-class>> <[character-class]>
+ :flag :flag() :flag[]
+ lookahead lookbehind
+ #comment\n
+ \x0a \0123 ...
+ <?ws>  -- optional whitespace ???
+ &    
+ <!abc> -- is this !<abc> or !abc ?
+ \n \N
+
+- not sure if specified:
+ 'literal' "literal"
+ <!n,m>  -- <!{n..m}> ???
+
+See also:
+
+- some existing Perl6 'grammar' grammars:
+  ../../Grammars/rx_grammar.pm
+  http://svn.perl.org/parrot/trunk/compilers/pge/P6Rule.grammar

@@ -1,0 +1,116 @@
+pX/Common/iterator_engine_TALK - fglock
+
+This is a sketch for a talk, to be presented on YAPC::Brasil::2006 in april
+or YAPC::SouthAmerica::2006 in september.
+(work in progress - write comments like this - comments welcome! - fglock)
+
+(todo - ask in the Brasil-PM list if they want a p6 intro or a technical talk)
+
+(todo - keep this short - 20min talk - or is it 40?)
+
+(todo? - talk about infinite lists and how I got into the Pugs project; 
+say something about previous Perl 5 projects Set::Infinite, DateTime, Inline::Parrot)
+
+- Title --?
+
+- Perl 6 intro
+-- (reuse some text - not technical)
+
+- Synopsis are not 'compiler specifications'
+(specifications may be the wrong word - check this - see audreyt blog on perl6doc)
+(general idea - there is room for multiple implementations, since the specification is general enough)
+-- synopsis describe the behaviour of the language
+-- specifications describe the specific implementations
+-- the documentation is in CPAN - Perl6::Bible 
+(what is the name of perl6doc?)
+
+- Pugs
+(keep this short - there is too much to talk here)
+-- Pugs the language implementation
+--- Featherweight Perl 6
+--- Haskell
+-- Pugs the project
+--- Anarchyst place (check Audreyt talks)
+--- Multiple Backends
+--- Multiple Implementations
+--- Many Experiments
+-- Parrot
+--- Traditional Project
+--- Some people joining Pugs - better projects integration
+
+- P6 on P5
+-- Early experiments
+--- Perl6::* in CPAN
+(check history)
+-- pilRun
+--- an emitter and library
+-- Piln
+--- low level (bytecode) Perl 5
+(how is this going on - what are the current ideas)
+-- pX
+--- (write about putter's goals)
+--- Iterator engine
+
+- Iterator engine
+-- backtracking implemented using an infinite list of match states?
+(rephrase this in a simple way people can undesrtand, or remove it)
+--- backtracking primitives implemented in 100 lines of Perl 5
+--- higher-order functions
+----- other ops were implemented reusing the primitives 
+----- very short program, single point of failure ( = testable)
+----- not really slow
+
+- Rules
+-- very easy to implement - the primitives hide _all_ the backtracking complexity
+-- base rule grammar implemented in 100 lines of code
+-- after implementing basic rules, new rules can be compiles using... rules!
+-- many tests - rules are _too_ important in this implementation
+
+- Perl 6 grammar
+-- Perl 6 was meant to be specified using it's own Grammar syntax
+-- 'Grammar' only takes 10 lines of code!
+-- TimToady and audreyt introduce a way to build AST from inside the Grammar - just in the right time!
+-- Text::Balanced implements the slow parts - so I don't have to care with performance right now
+
+(this is the main part of the talk - take some time here)
+  source text => (example)
+  Grammar that matched the text => (example)
+  compiled Grammar => (show)
+  Grammar generates AST => (example)
+  emitter generates code => (example)
+
+- Current work
+(this will change until april - move done things to new sections)
+- How can it change the syntax before the grammar compilation is finished?
+(example - define the 'sub' keyword and then declare a 'sub')
+-- Parse-compile cycle needs more integration - TODO!
+--- something to do with BEGIN and CHECK blocks - find out
+
+(the talk may end here, depends on what will be done until there)
+
+- Implementing Perl 6
+
+- Syntax tables
+-- statements
+-- functions
+
+- Operator precedence and fixity
+
+- Prelude
+-- part of the library that is implemented using Perl 6
+--- near 100% !
+    sub infix:<+> { eval(' $_[0] + $_[1] ', :lang<perl5>); }
+
+- Plan
+-- execute Pugs tests
+-- optimize
+- p6compiler written in p6
+
+References
+- http://svn ... misc/pX/Common/
+- point to other talks in Pugs svn
+- some existing Perl6 'grammar' grammars:
+  ../../Grammars/rx_grammar.pm
+  http://svn.perl.org/parrot/trunk/compilers/pge/P6Rule.grammar
+- existing Perl 6 grammars:
+  ???
