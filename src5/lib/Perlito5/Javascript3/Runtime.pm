@@ -352,13 +352,13 @@ function p5Array(o) {
         }
         else {
             if (v instanceof p5Scalar) {
-                this._array_[i] = new p5Scalar(v._v_);
+                this._array_[i] = v._v_;
             }
             else {
-                this._array_[i] = new p5Scalar(v);
+                this._array_[i] = v;
             }
         }
-        return this._array_[i];
+        return v;
     };
     this.aget = function(i, autoviv) {
         if (i < 0) {
@@ -373,9 +373,6 @@ function p5Array(o) {
         }
         else if (autoviv == 'hash') {
             this._array_[i] = new p5HashRef(new p5Hash({}));
-        }
-        else {
-            this._array_[i] = new p5Scalar(null);
         }
         return this._array_[i];
     };
@@ -393,13 +390,13 @@ function p5Array(o) {
     // operations that can be tie()
     this.PUSH = function(v) {
         for(var i = 0; i < v._array_.length; i++) {
-            this._array_.push(new p5Scalar(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]));
+            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
         }
         return this._array_.length;
     };
     this.UNSHIFT = function(v) {
         for(var i = v._array_.length-1; i >= 0; i--) {
-            this._array_.unshift(new p5Scalar(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]));
+            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
         }
         return this._array_.length;
     };
@@ -444,13 +441,13 @@ function p5Hash(o) {
         }
         else {
             if (v instanceof p5Scalar) {
-                this._hash_[i] = new p5Scalar(v._v_);
+                this._hash_[i] = v._v_;
             }
             else {
-                this._hash_[i] = new p5Scalar(v);
+                this._hash_[i] = v;
             }
         }
-        return this._hash_[i];
+        return v;
     };
     this.hget = function(i, autoviv) {
         var v = this._hash_[i];
@@ -462,9 +459,6 @@ function p5Hash(o) {
         }
         else if (autoviv == 'hash') {
             this._hash_[i] = new p5HashRef(new p5Hash({}));
-        }
-        else {
-            this._hash_[i] = new p5Scalar(null);
         }
         return this._hash_[i];
     };
