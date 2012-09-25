@@ -282,8 +282,7 @@ function p5HashRef(o) {
         return this._href_;
     };
     this.hset = function(i, v) {
-        this._href_._hash_[i] = v;
-        return v;
+        return this._href_.hset(i, v);
     };
     this.hget = function(i, autoviv) {
         return this._href_.hget(i, autoviv);
@@ -301,8 +300,7 @@ function p5ArrayRef(o) {
         return this._aref_;
     };
     this.aset = function(i, v) {
-        this._aref_._array_[i >= 0 ? i : this._aref_._array_.length + i] = v;
-        return v;
+        return this._aref_.aset(i, v);
     }
     this.aget = function(i, autoviv) {
         return this._aref_.aget(i, autoviv);
