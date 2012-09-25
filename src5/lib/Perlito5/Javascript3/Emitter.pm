@@ -2051,7 +2051,9 @@ package Perlito5::AST::Apply;
         my $arg_code = 
             $self->{code} eq 'scalar'      # scalar() is special
             ? '[' . join(', ', @args) . ']'
-            : Perlito5::Javascript3::to_list($arg_list);
+            : 'p5param_list('
+              .   join(', ', map( $_->emit_javascript3($level, "list", "lvalue"), @$arg_list) )
+              . ')';
 
         $code . '('
                 . $arg_code . ', '

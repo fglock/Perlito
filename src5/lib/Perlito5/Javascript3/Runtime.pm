@@ -390,6 +390,13 @@ function p5Array(o) {
         }
         return this._array_[i];
     };
+    this.get_lvalues = function(o) {
+        // add a native list of lvalues to the param
+        for(var i = 0; i < this._array_.length; i++) {
+            o.push(this._array_[i] instanceof p5Scalar ? this._array_[i] : this.aget(i, "lvalue"));
+        }
+        return o;
+    };
     this.assign = function(a) {
         if (a instanceof Array) {
             // TODO - cleanup, this shouldn't happen
@@ -490,6 +497,14 @@ function p5Hash(o) {
         }
         return this._hash_[i];
     };
+    this.get_lvalues = function(o) {
+        // add a native list of lvalues to the param
+        for (var i in this._hash_) {
+            o.push(i);
+            o.push(this._hash_[i] instanceof p5Scalar ? this._hash_[i] : this.hget(i, "lvalue"));
+        }
+        return o;
+    };
     this.assign = function(h) {
         if (h instanceof p5Hash) {
             this._hash_ = h._hash_;
@@ -586,8 +601,10 @@ function p5Scalar(o) {
     }
 
     // be a container
-    this.vget = function() {
-        return this._v_;
+    this.get_lvalues = function(o) {
+        // add a native list of lvalues to the param
+        o.push(this);
+        return o;
     };
     this.assign = function(v) {
         if (this._proxy_) {
@@ -610,6 +627,24 @@ function p5Scalar(o) {
         return this;
     }
 }
+
+p5param_list = function() {
+    this.get_lvalues
+    var res = [];
+    for (i = 0; i < arguments.length; i++) {
+        if (arguments[i] == null) {
+            res.push(null)
+        }
+        else if (arguments[i].hasOwnProperty("get_lvalues")) {
+            arguments[i].get_lvalues(res);
+        }
+        else {
+            // non-container
+            res.push(arguments[i]);
+        }
+    }
+    return res;
+};
 
 p5list_to_a = function() {
     var res = [];
