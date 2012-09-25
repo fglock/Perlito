@@ -2037,6 +2037,12 @@ package Perlito5::AST::Apply;
                 . ')';
         }
 
+        # TODO - make a list of 'lvalue' (do not use to_list_preprocess)
+        #      - also when there is a $sig
+        #      - see t5/01-perlito/17-hash-autovivify.t
+
+        # TODO - find out which internals are overridable; the ones that are not overridable can be optimized
+
         my @args = ();
         my $arg_list = Perlito5::Javascript3::to_list_preprocess( $self->{arguments} );
         push @args, $_->emit_javascript3( $level )
