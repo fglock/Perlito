@@ -2206,7 +2206,7 @@ package Perlito5::AST::Sub;
         my $s =
           'function (List__, p5want) {' . "\n"
         . Perlito5::Javascript3::tab($level+1) . 'List__ = new p5Array(List__);' . "\n"
-        .   (Perlito5::Javascript3::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript3( $level + 1 ) . "\n"
+        .   (Perlito5::Javascript3::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript3( $level ) . "\n"
         . Perlito5::Javascript3::tab($level) . '}';
 
         if ( $self->{name} ) {

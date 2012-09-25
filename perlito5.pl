@@ -10391,7 +10391,7 @@ do {{
     sub Perlito5::AST::Sub::emit_javascript3 {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = ('function (List__, p5want) {' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'List__ = new p5Array(List__);' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'block'}, 'needs_return', 1, 'top_level', 1))->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab($level) . '}'));
+        ((my  $s) = ('function (List__, p5want) {' . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'List__ = new p5Array(List__);' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block', $self->{'block'}, 'needs_return', 1, 'top_level', 1))->emit_javascript3($level) . chr(10) . Perlito5::Javascript3::tab($level) . '}'));
         if ($self->{'name'}) {
             return (('p5make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
         }
