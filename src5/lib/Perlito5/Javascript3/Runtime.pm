@@ -376,12 +376,16 @@ function p5Array(o) {
                 }
             }
             else if (autoviv == 'array') {
-                if (!(this._array_[i] instanceof p5ArrayRef)) {
+                if (!(this._array_[i] instanceof p5ArrayRef) &&
+                    !(this._array_[i] instanceof p5Scalar))
+                {
                     this._array_[i] = new p5ArrayRef(new p5Array([]));
                 }
             }
             else if (autoviv == 'hash') {
-                if (!(this._array_[i] instanceof p5HashRef)) {
+                if (!(this._array_[i] instanceof p5HashRef) &&
+                    !(this._array_[i] instanceof p5Scalar))
+                {
                     this._array_[i] = new p5HashRef(new p5Hash({}));
                 }
             }
@@ -490,12 +494,16 @@ function p5Hash(o) {
                 }
             }
             else if (autoviv == 'array') {
-                if (!(this._hash_[i] instanceof p5ArrayRef)) {
+                if (!(this._hash_[i] instanceof p5ArrayRef) &&
+                    !(this._hash_[i] instanceof p5Scalar))
+                {
                     this._hash_[i] = new p5ArrayRef(new p5Array([]));
                 }
             }
             else if (autoviv == 'hash') {
-                if (!(this._hash_[i] instanceof p5HashRef)) {
+                if (!(this._hash_[i] instanceof p5HashRef) &&
+                    !(this._hash_[i] instanceof p5Scalar))
+                {
                     this._hash_[i] = new p5HashRef(new p5Hash({}));
                 }
             }
