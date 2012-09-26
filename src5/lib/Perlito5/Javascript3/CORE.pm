@@ -296,8 +296,12 @@ CORE.unshift = function(List__) {
 
 CORE.join = function(List__) {
     var s = List__[0];
-    var o = List__[1];
-    return o._array_.join(s);
+    var o = List__[1]._array_;
+    var a = [];
+    for (i = 0; i < o.length; i++) {
+        a.push( p5str(o[i]) );
+    }
+    return a.join(s);
 };
 
 CORE.index = function(List__) {
