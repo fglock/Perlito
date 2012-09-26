@@ -1844,13 +1844,13 @@ package Perlito5::AST::Apply;
                    )
                 {
                     $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
-                    return '(' . $v->emit_javascript3() . ').hasOwnProperty(' . Perlito5::Javascript3::autoquote($arg->{index_exp}, $level) . ')';
+                    return '(' . $v->emit_javascript3() . ').exists(' . Perlito5::Javascript3::autoquote($arg->{index_exp}, $level) . ')';
                 }
-                return '(' . $v->emit_javascript3() . ').hderef().hasOwnProperty(' . Perlito5::Javascript3::autoquote($arg->{index_exp}, $level) . ')';
+                return '(' . $v->emit_javascript3() . ').hderef().exists(' . Perlito5::Javascript3::autoquote($arg->{index_exp}, $level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_javascript3() . ').hderef().hasOwnProperty(' . Perlito5::Javascript3::autoquote($arg->{arguments}, $level) . ')';
+                    return '(' . $arg->invocant->emit_javascript3() . ').hderef().exists(' . Perlito5::Javascript3::autoquote($arg->{arguments}, $level) . ')';
                 }
             }
         },

@@ -465,6 +465,9 @@ function p5Hash(o) {
         }
         return out;
     };
+    this.exists = function(i) {
+        return this._hash_.hasOwnProperty(i);
+    };
     this.hset = function(i, v) {
         if (this._hash_[i] instanceof p5Scalar) {
             this._hash_[i].assign(v);
