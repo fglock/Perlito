@@ -418,6 +418,9 @@ function p5Array(o) {
     };
 
     // operations that can be tie()
+    this.FETCHSIZE = function() {
+        return this._array_.length;
+    };
     this.PUSH = function(v) {
         for(var i = 0; i < v._array_.length; i++) {
             this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);

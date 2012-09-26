@@ -948,7 +948,7 @@ package Perlito5::AST::Var;
                 #     $s = $s . ' || (' . $s . ' = new p5Array([]))';  # init
                 #     $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
                 #     if ( $self->{sigil} eq '@' && $wantarray eq 'scalar' ) {
-                #         $s .= '._array_.length';
+                #         $s .= '.FETCHSIZE()';
                 #     }
                 # }
                 # elsif ($sigil eq '%') {
@@ -957,7 +957,7 @@ package Perlito5::AST::Var;
                 # }
 
                 # if ($self->{sigil} eq '$#') {
-                #     return '(' . $s . '._array_.length - 1)';
+                #     return '(' . $s . '.FETCHSIZE() - 1)';
                 # }
                 # return $s;
             }
@@ -965,12 +965,12 @@ package Perlito5::AST::Var;
 
         if ( $self->{sigil} eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
-                return $self->emit_javascript3($level, 'list') . '._array_.length';
+                return $self->emit_javascript3($level, 'list') . '.FETCHSIZE()';
             }
             if ( $wantarray eq 'runtime' ) {
                 return '(p5want'
                     . ' ? ' . $self->emit_javascript3($level, 'list')
-                    . ' : ' . $self->emit_javascript3($level, 'list') . '._array_.length'
+                    . ' : ' . $self->emit_javascript3($level, 'list') . '.FETCHSIZE()'
                     . ')';
             }
         }
@@ -987,7 +987,7 @@ package Perlito5::AST::Var;
             my $s = 'p5pkg["' . ($self->{namespace} || $decl->{namespace}) . '"]["' . $table->{$sigil} . $str_name . '"]';
 
             if ($self->{sigil} eq '$#') {
-                return '(' . $s . '._array_.length - 1)';
+                return '(' . $s . '.FETCHSIZE() - 1)';
             }
             return $s;
         }
@@ -999,7 +999,7 @@ package Perlito5::AST::Var;
             {
                 # this is an undeclared global
                 if ($self->{sigil} eq '$#') {
-                    return '(p5global("@", "' . $self->{namespace} . '", "' . $str_name . '")._array_.length - 1)';
+                    return '(p5global("@", "' . $self->{namespace} . '", "' . $str_name . '").FETCHSIZE() - 1)';
                 }
                 return 'p5global("' . $self->{sigil} . '", "' . $self->{namespace} . '", "' . $str_name . '")';
             }
@@ -1012,7 +1012,7 @@ package Perlito5::AST::Var;
         }
 
         if ($self->{sigil} eq '$#') {
-            return '(' . $ns . $table->{'@'} . $str_name . '._array_.length - 1)';
+            return '(' . $ns . $table->{'@'} . $str_name . '.FETCHSIZE() - 1)';
         }
 
         $ns . $table->{$self->{sigil}} . $str_name
@@ -1367,7 +1367,7 @@ package Perlito5::AST::Apply;
             my $self  = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-            '(' . Perlito5::Javascript3::emit_javascript3_autovivify( $arg, $level, 'array' ) . '.aderef()._array_.length - 1)';
+            '(' . Perlito5::Javascript3::emit_javascript3_autovivify( $arg, $level, 'array' ) . '.aderef().FETCHSIZE() - 1)';
         },
         'prefix:<%>' => sub {
             my $self  = $_[0];
