@@ -425,15 +425,6 @@ package Perlito5::Javascript3;
         my $wantarray = 'scalar';
 
         return $obj->emit_javascript3($level, $wantarray, $type);
-
-        #   '(' .  $obj->emit_javascript3($level)
-        # .   ' || (' . $obj->emit_javascript3($level) . ' = ' 
-        #             . ( $type eq 'array' ? 'new p5ArrayRef(new p5Array([]))' 
-        #               : $type eq 'hash'  ? 'new p5HashRef(new p5Hash({}))'
-        #               :                    'new p5ScalarRef(null)'
-        #               )
-        #       . ')'
-        # . ')'
     }
 
     sub emit_function_javascript3 {
@@ -1227,8 +1218,8 @@ package Perlito5::AST::Apply;
         my $regex_args = $regex->{arguments};
         if ($code eq 'p5:s') {
             $str = $var->emit_javascript3() 
-                 . ' = p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2] . ', '
-                 .  $regex_args->[1]->emit_javascript3() . ')';
+                 . '.assign(p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2] . ', '
+                 .  $regex_args->[1]->emit_javascript3() . '))';
         }
         elsif ($code eq 'p5:m') {
 
@@ -1744,7 +1735,7 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
-                return '(' . $self->{arguments}->[0]->emit_javascript3 . ' = null)'
+                return $self->{arguments}->[0]->emit_javascript3 . '.assign(null)'
             }
             return 'null'
         },
