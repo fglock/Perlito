@@ -161,14 +161,15 @@ CORE.quotemeta = function(List__) {
 
 CORE.substr = function(List__) {
     var expr        = List__[0];
-    var offset      = List__[1];
-    var length      = List__[2];
+    var offset      = p5num(List__[1]);
+    var length      = p5num(List__[2]);
     var replacement = List__[3];
+
+    var s = p5str(expr);
     if (length < 0) {
-        var s = p5str(expr);
         length = s.length - offset + length;
-    } 
-    return p5str(expr).substr(offset, length);
+    }
+    return s.substr(offset, length);
 };
 
 CORE.defined = function(List__) {
