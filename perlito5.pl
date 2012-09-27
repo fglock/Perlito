@@ -694,6 +694,13 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     };
     ((my  $has_paren) = 0);
     if (defined($sig)) {
+        if ((substr($sig, 0, 1) eq ';')) {
+            if ((substr($str, $p, 2) eq '//')) {
+                ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', [], 'bareword', 1)]);
+                ($m_name->{'to'} = $p);
+                return ($m_name)
+            }
+        };
         if (($sig eq '')) {
             if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;

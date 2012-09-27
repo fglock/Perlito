@@ -119,6 +119,27 @@ package Perlito5::Grammar::Bareword;
         my $has_paren = 0;
         if ( defined $sig ) {
 
+            if ( substr($sig, 0, 1) eq ';' ) {
+                # argument is optional - shift(), pop()
+
+                if ( substr($str, $p, 2) eq '//' ) {
+                    # special case - see test t5/01-perlito/25-syntax-defined-or.t
+                    # we don't want '//' to be an argument (match) but an operator (defined-or)
+                    # so we return 'bareword'
+
+                    $m_name->{capture} = [ 'term', 
+                            Perlito5::AST::Apply->new(
+                                code      => $name,
+                                namespace => $namespace,
+                                arguments => [],
+                                bareword  => 1,
+                            )
+                        ];
+                    $m_name->{to} = $p;
+                    return $m_name;
+                }
+            }
+
             if ( $sig eq '' ) {
                 # empty sig - we allow (), but only if it is empty
                 if ( substr($str, $p, 1) eq '(' ) {
