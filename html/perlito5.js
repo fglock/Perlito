@@ -4212,6 +4212,13 @@ var p5100 = p5pkg['main'];
 				var v_has_paren = null;
 				(v_has_paren = (0));
 				if ( (v_sig != null) ) {
+					if ( (p5pkg["Perlito5::Grammar::Bareword"].substr([v_sig, 0, 1], 0) == ';') ) {
+						if ( (p5pkg["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 2], 0) == '//') ) {
+							((v_m_name || (v_m_name = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', v_name, 'namespace', v_namespace, 'arguments', (new p5ArrayRef([])), 'bareword', 1), 1)))));
+							((v_m_name || (v_m_name = new p5HashRef({})))._hash_['to'] = v_p);
+							throw(p5context([v_m_name], p5want));
+						};
+					};
 					if ( (p5str(v_sig) == '') ) {
 						if ( (p5pkg["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 1], 0) == '(') ) {
 							(function () {
