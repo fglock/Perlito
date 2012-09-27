@@ -160,12 +160,14 @@ CORE.quotemeta = function(List__) {
 };
 
 CORE.substr = function(List__) {
-    var expr        = List__[0];
+
+    // TODO - lvalue substr()
+
+    var s           = p5str(List__[0]);
     var offset      = p5num(List__[1]);
-    var length      = p5num(List__[2]);
+    var length      = List__.length > 2 ? p5num(List__[2]) : s.length;
     var replacement = List__[3];
 
-    var s = p5str(expr);
     if (length < 0) {
         length = s.length - offset + length;
     }

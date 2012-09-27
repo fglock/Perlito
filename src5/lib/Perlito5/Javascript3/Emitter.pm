@@ -254,6 +254,20 @@ package Perlito5::Javascript3;
              )
     }
 
+    sub to_value {
+        # change "lvalues" to "values"
+        my $v         = shift;
+        my $level     = shift;
+        my $wantarray = shift;
+
+        return
+             !$v
+             ? 'null'                                           # null - this shouldn't happen!
+             : $v->isa('Perlito5::AST::Var') && $v->sigil eq '$'
+             ? $v->emit_javascript3($level, $wantarray) . '.FETCH()'     # no lvalues here
+             : $v->emit_javascript3($level, $wantarray);
+    }
+
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
@@ -280,11 +294,9 @@ package Perlito5::Javascript3;
                     $k = $k->emit_javascript3($level, 0);
 
                     $printable = 0
-                        if $k =~ /[ \[]/;
+                        if $k =~ /[ \[]/;   # ???
 
-                    $v = $v
-                         ? $v->emit_javascript3($level, 0)
-                         : 'null';
+                    $v = to_value($v, $level, $wantarray);
                     push @out, "$k : $v";
                 }
 
@@ -301,7 +313,7 @@ package Perlito5::Javascript3;
           . ')'
           )
         : ( '['
-          .   join(', ', map( $_->emit_javascript3($level, $wantarray), @$items ))
+          .   join(', ', map( to_value($_, $level, $wantarray), @$items ))
           . ']'
           )
     }

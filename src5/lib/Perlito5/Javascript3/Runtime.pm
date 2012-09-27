@@ -38,7 +38,7 @@ if (typeof p5pkg !== "object") {
     };
     p5pkg.UNIVERSAL.can = function (List__) {
         var o = List__[0];
-        var s = List__[1];
+        var s = p5str(List__[1]);
         if ( s.indexOf("::") == -1 ) {
             return p5method_lookup(s, o._class_._ref__, {})
         }
@@ -629,7 +629,7 @@ function p5Scalar(o) {
 
     // be a container
     this.get_values = function(o) {
-        // add a native list of lvalues to the param
+        // add a native list of values to the param
         o.push(this);
         return o;
     };
@@ -657,7 +657,13 @@ function p5Scalar(o) {
             this._v_ = v;
         }
         return this;
-    }
+    };
+
+    // operations that can be tie()
+    this.FETCH = function() {
+        // not an lvalue
+        return this._v_;
+    };
 }
 
 p5param_list = function() {
@@ -900,9 +906,12 @@ p5str_inc = function(s) {
 
 p5for = function(namespace, func, args, cont, label) {
     var _redo = false;
+
     var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        namespace["v__"].assign(args[i]);   // ??? - should this be a bind?
         try {
             func()
         }
@@ -930,8 +939,8 @@ p5for = function(namespace, func, args, cont, label) {
                     throw(err)
                 }
             }
-       }
-   }
+        }
+    }
     namespace["v__"] = v_old;
 };
 
@@ -1006,9 +1015,11 @@ p5while = function(func, cond, cont, label) {
 
 p5map = function(namespace, func, args) {
     var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
     var out = [];
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        namespace["v__"].assign(args[i]);
         var o = p5list_to_a(func(1));
         for(var j = 0; j < o.length; j++) {
             out.push(o[j]);
@@ -1020,9 +1031,11 @@ p5map = function(namespace, func, args) {
 
 p5grep = function(namespace, func, args) {
     var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
     var out = [];
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        namespace["v__"].assign(args[i]);
         if (p5bool(func(0))) {
             out.push(args[i])
         }
@@ -1034,13 +1047,16 @@ p5grep = function(namespace, func, args) {
 p5sort = function(namespace, func, args) {
     var a_old = namespace["v_a"];
     var b_old = namespace["v_b"];
+    namespace["v_a"] = new p5Scalar(null);
+    namespace["v_b"] = new p5Scalar(null);
+
     var out = 
         func == null
         ? args.sort()
         : args.sort(
             function(a, b) {
-                namespace["v_a"] = a;
-                namespace["v_b"] = b;
+                namespace["v_a"].assign(a);
+                namespace["v_b"].assign(b);
                 return func(0);
             }
         );

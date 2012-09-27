@@ -34,17 +34,19 @@ my $end    = substr $s, 14;        # climbed the green tree
 my $tail   = substr $s, -4;        # tree
 my $z      = substr $s, -4, 2;     # tr
 
+say "# $s";
+
 print 'not ' if $color ne 'black';
-say 'ok 6';
+say "ok 6  # $color";
 
 print 'not ' if $middle ne 'black cat climbed the';
 say "ok 7  # $middle";
 
 print 'not ' if $end ne 'climbed the green tree';
-say 'ok 8';
+say "ok 8  # $end";
 
 print 'not ' if $tail ne 'tree';
-say 'ok 9';
+say "ok 9  # $tail";
 
 print 'not ' if $z ne 'tr';
 say 'ok 10';
