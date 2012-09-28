@@ -34,11 +34,19 @@ if (typeof p5pkg !== "object") {
     p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";
     p5pkg.UNIVERSAL.isa = function (List__) {
         // TODO - use @ISA
-        return List__[0]._class_._ref_ == List__[1]
+        var o = List__[0];
+        var s = p5str(List__[1]);
+        if (o instanceof p5Scalar) {
+            o = o.FETCH();
+        }
+        return o._class_._ref_ == s
     };
     p5pkg.UNIVERSAL.can = function (List__) {
         var o = List__[0];
         var s = p5str(List__[1]);
+        if (o instanceof p5Scalar) {
+            o = o.FETCH();
+        }
         if ( s.indexOf("::") == -1 ) {
             return p5method_lookup(s, o._class_._ref__, {})
         }
@@ -946,9 +954,11 @@ p5for = function(namespace, func, args, cont, label) {
 
 p5for_lex = function(func, args, cont, label) {
     var _redo = false;
+    var _arg  = new p5Scalar(null);
     for(var i = 0; i < args.length; i++) {
         try {
-            func(args[i])
+            _arg.assign(args[i]);
+            func(_arg)
         }
         catch(err) {
             if (err instanceof p5_error && err.v == label) {
