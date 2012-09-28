@@ -223,7 +223,7 @@ function p5make_sub(pkg_name, sub_name, func) {
 
 function p5set_glob(name, data) {
     if ( name.indexOf("::") == -1 ) {
-        p5pkg[p5pkg["Perlito5"].v_PKG_NAME][name] = data;
+        p5pkg[ p5pkg["Perlito5"].v_PKG_NAME.FETCH() ][name] = data;
         return data;
     }
     var c = name.split("::");
@@ -1078,28 +1078,28 @@ p5sort = function(namespace, func, args) {
 perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     // CORE.say(["source: [" + source + "]"]);
 
-    var strict_old = p5pkg["Perlito5"].v_STRICT;
-    var var_env_js_old = p5pkg["Perlito5"].v_VAR;
-    p5pkg["Perlito5"].v_VAR = var_env_js;
+    var strict_old = p5pkg["Perlito5"].v_STRICT.FETCH();
+    var var_env_js_old = p5pkg["Perlito5"].v_VAR.FETCH();
+    p5pkg["Perlito5"].v_VAR.assign(var_env_js);
 
-    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME;
-    p5pkg["Perlito5"].v_PKG_NAME = namespace;
+    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME.FETCH();
+    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace);
 
     match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
-    if ( !match || match._hash_.to != source.length ) {
-        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
+    if ( !p5bool(match) || p5str(match.hget("to")) != source.length ) {
+        CORE.die(["Syntax error in eval near pos ", match.hget("to") ]);
     }
 
     ast = p5pkg.CORE.bless([
-        new p5HashRef({
+        new p5HashRef(new p5Hash({
             block:  p5pkg.CORE.bless([
-                        new p5HashRef({
+                        new p5HashRef(new p5Hash({
                             stmts:   p5pkg["Perlito5::Match"].flat([match])
-                        }),
+                        })),
                         p5pkg["Perlito5::AST::Lit::Block"]
                     ])
-        }),
+        })),
         p5pkg["Perlito5::AST::Do"]
     ]);
 
@@ -1107,9 +1107,9 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     js_code = p5call(ast, "emit_javascript3", [0, p5want]);
     // CORE.say(["js-source: [" + js_code + "]"]);
 
-    p5pkg["Perlito5"].v_PKG_NAME = namespace_old;
-    p5pkg["Perlito5"].v_VAR      = var_env_js_old;
-    p5pkg["Perlito5"].v_STRICT   = strict_old;
+    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace_old);
+    p5pkg["Perlito5"].v_VAR.assign(var_env_js_old);
+    p5pkg["Perlito5"].v_STRICT.assign(strict_old);
     return js_code;
 }
 
