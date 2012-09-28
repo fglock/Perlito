@@ -61,6 +61,20 @@ $Perlito5::SPECIAL_VAR = {
           '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'
         };
 
+# These builtins can be user-redefined using plain subs.
+# No other builtins can be redefined (the ones in $Perlito5::CORE_PROTO).
+# The other builtins can still be used for method names.
+
+$Perlito5::CORE_OVERRIDABLE = {
+          'say'     => 1,
+          'break'   => 1,
+          'given'   => 1,
+          'when'    => 1,
+          'default' => 1,
+          'state'   => 1,
+          'lock'    => 1,
+};
+
 # the CORE prototype list
 # obtained with:
 # $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{"CORE::$_"} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } ' > ~/tmp/core.pm
