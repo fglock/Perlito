@@ -149,7 +149,7 @@ function p5call(invocant, method, list) {
 
     if (invocant instanceof p5Scalar) {
         // TODO - move p5call() to p5Scalar method
-        invocant = invocant._v_;
+        invocant = invocant.FETCH();
     }
 
     if ( invocant.hasOwnProperty("_class_") ) {
@@ -358,7 +358,7 @@ function p5Array(o) {
         }
         else {
             if (v instanceof p5Scalar) {
-                this._array_[i] = v._v_;
+                this._array_[i] = v.FETCH();
             }
             else {
                 this._array_[i] = v;
@@ -431,13 +431,13 @@ function p5Array(o) {
     };
     this.PUSH = function(v) {
         for(var i = 0; i < v._array_.length; i++) {
-            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
+            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);
         }
         return this._array_.length;
     };
     this.UNSHIFT = function(v) {
         for(var i = v._array_.length-1; i >= 0; i--) {
-            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i]._v_ :  v._array_[i]);
+            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);
         }
         return this._array_.length;
     };
@@ -485,7 +485,7 @@ function p5Hash(o) {
         }
         else {
             if (v instanceof p5Scalar) {
-                this._hash_[i] = v._v_;
+                this._hash_[i] = v.FETCH();
             }
             else {
                 this._hash_[i] = v;
@@ -658,7 +658,7 @@ function p5Scalar(o) {
             }
         }
         if (v instanceof p5Scalar) {
-            this._v_ = v._v_;
+            this._v_ = v.FETCH();
         }
         else {
             // TODO - cleanup, this shouldn't happen
