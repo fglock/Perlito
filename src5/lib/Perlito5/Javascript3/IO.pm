@@ -30,6 +30,7 @@ if (isNode) {
     var fs = require("fs");
 
     p5atime = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat["atime"];
         }
@@ -38,6 +39,7 @@ if (isNode) {
         }
     };
     p5mtime = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat["mtime"];
         }
@@ -46,6 +48,7 @@ if (isNode) {
         }
     };
     p5ctime = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat["ctime"];
         }
@@ -54,6 +57,7 @@ if (isNode) {
         }
     };
     p5size = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat["size"];
         }
@@ -62,6 +66,7 @@ if (isNode) {
         }
     };
     p5is_file = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
         }
@@ -70,6 +75,7 @@ if (isNode) {
         }
     };
     p5is_directory = function(s) {
+        s = p5str(s);
         try {
             var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
         }
@@ -78,6 +84,7 @@ if (isNode) {
         }
     };
     p5file_exists = function(s) {
+        s = p5str(s);
         return p5is_file(s) || p5is_directory(s);
     };
 

@@ -51,11 +51,16 @@ CORE.say = function(List__) {
 };
 
 CORE.die = function(List__) {
+    var o = List__[0]._array_;   // prototype is '@'
     var i;
     var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
+    for (i = 0; i < o.length; i++) {
+        s = s + p5str(o[i]);
     }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
     p5pkg["main"]["v_@"].assign("Died: " + s);
     throw(new p5_error("die", "Died: " + s));
 };
