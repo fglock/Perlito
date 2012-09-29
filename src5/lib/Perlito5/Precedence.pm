@@ -33,6 +33,10 @@ sub is_term {
     ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term') || ($token->[0] eq 'postfix')
 }
 
+sub is_num {
+    $_[0] ge '0' && $_[0] le '9'
+}
+
 sub is_ident_middle {
     my $c = shift;
        ($c ge 'a' && $c le 'z')
@@ -125,8 +129,12 @@ sub op_parse {
         for my $len ( @Term_chars ) {
             my $term = substr($str, $pos, $len);
             if (exists($Term{$term})) {
-                my $m = $Term{$term}->($str, $pos);
-                return $m if $m;
+                my $c1 = substr($str, $pos + length($term) - 1, 1);
+                my $c2 = substr($str, $pos + length($term), 1);
+                if ( is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
+                    my $m = $Term{$term}->($str, $pos);
+                    return $m if $m;
+                }
             }
         }
     }

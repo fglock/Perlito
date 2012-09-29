@@ -72,6 +72,10 @@ CORE.warn = function(List__) {
     for (i = 0; i < o.length; i++) {
         s = s + p5str(o[i]);
     }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
     CORE.print(["Warning: " + s + "\n"]);
 };
 

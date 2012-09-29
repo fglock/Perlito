@@ -33,12 +33,24 @@ TODO list for Perlito5
 * Parser
 
 -- defined-or vs. m//  (2012/9/25 Конрад Боровски <notifications@github.com>)
+    Note: fixed; see test t5/01-perlito/25-syntax-defined-or.t
 
     $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift // 2 '
     Number or Bareword found where operator expected
 
     $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift / 2 '
     Can't find string terminator '/' anywhere before EOF
+
+-- quotes vs. hash lookups:
+
+    $ perl -e '  q}} '
+    # ok
+
+    $ perl -e ' $x{ q}} } '
+    Unmatched right curly bracket at -e line 1, at end of line
+
+    $ perl -e ' $x{ q]] } '
+    # ok
 
 -- attributes - see: http://perldoc.perl.org/attributes.html
 
