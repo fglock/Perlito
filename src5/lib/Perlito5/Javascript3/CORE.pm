@@ -83,10 +83,10 @@ CORE.bless = function(List__) {
     var o        = List__[0];
     var pkg_name = List__[1];
     if (o instanceof p5Scalar) {
-        o = o._v_;
+        o = o.FETCH();
     }
     if (pkg_name instanceof p5Scalar) {
-        pkg_name = pkg_name._v_;
+        pkg_name = pkg_name.FETCH();
     }
     if (typeof pkg_name === "object") {
         // bless {}, Class
@@ -187,7 +187,7 @@ CORE.substr = function(List__) {
 };
 
 CORE.defined = function(List__) {
-    return (List__[0] instanceof p5Scalar) ? ( List__[0]._v_ != null ) : ( List__[0] != null )
+    return (List__[0] instanceof p5Scalar) ? ( List__[0].FETCH() != null ) : ( List__[0] != null )
 };
 
 CORE.values = function(List__, p5want) {
@@ -260,6 +260,9 @@ CORE.each = function(List__, p5want) {
 
 CORE.reverse = function(List__) {
     var o = List__[0];
+    if (o instanceof p5Scalar) {
+        o = o.FETCH();
+    }
     if (o == null) {
         return "";
     }
@@ -359,7 +362,7 @@ CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) 
 CORE.ref = function(List__) {
     var o = List__[0];
     if (o instanceof p5Scalar) {
-        o = o._v_;
+        o = o.FETCH();
     }
     if (o == null) {
         return "";
@@ -380,7 +383,7 @@ CORE.ref = function(List__) {
 
 CORE.split = function(List__) {
     var pattern = List__[0];
-    var s       = List__[1];
+    var s       = p5str(List__[1]);
     var limit   = List__[2];
     if (typeof pattern === "string") {
         if (pattern == " ") {
