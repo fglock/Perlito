@@ -117,7 +117,7 @@ CORE.ord = function(List__) {
 };
 
 CORE.oct = function(List__) {
-    var v = List__[0];
+    var v = p5str(List__[0]);
     var b = v.substr(0,2);
     v = v.replace("_", "");
     if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }
@@ -125,14 +125,17 @@ CORE.oct = function(List__) {
     return parseInt(v, 8);
 };
 
-CORE.abs   = function(List__) { return Math.abs(List__[0]) };
-CORE.exp   = function(List__) { return Math.exp(List__[0]) };
-CORE.log   = function(List__) { return Math.log(List__[0]) };
-CORE.cos   = function(List__) { return Math.cos(List__[0]) };
-CORE.sin   = function(List__) { return Math.sin(List__[0]) };
-CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
-CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
-CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
+CORE.abs   = function(List__) { return Math.abs(p5num(List__[0])) };
+CORE.exp   = function(List__) { return Math.exp(p5num(List__[0])) };
+CORE.log   = function(List__) { return Math.log(p5num(List__[0])) };
+CORE.cos   = function(List__) { return Math.cos(p5num(List__[0])) };
+CORE.sin   = function(List__) { return Math.sin(p5num(List__[0])) };
+CORE.sqrt  = function(List__) { return Math.sqrt(p5num(List__[0])) };
+CORE.atan2 = function(List__) { return Math.atan2(p5num(List__[0]), p5num(List__[1])) };
+CORE.int   = function(List__) { 
+    var v = p5num(List__[0]);
+    return v > 0 ? Math.floor(v) : Math.ceil(v)
+};
 
 CORE.rand = function(List__) {
     var v = p5num(List__[0]) || 1;
