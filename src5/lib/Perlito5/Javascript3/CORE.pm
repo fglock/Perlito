@@ -325,7 +325,7 @@ CORE.index = function(List__) {
     }
 };
 CORE.rindex = function(List__) {
-    var o = List__[0];
+    var o = p5str(List__[0]);
     var s = List__[1];
     try {
         if (List__.length > 2) {
