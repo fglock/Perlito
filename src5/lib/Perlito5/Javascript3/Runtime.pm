@@ -737,11 +737,12 @@ p5a_to_h = function(a) {
 if (isNode) {
     var fs = require("fs");
     p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        return fs.readFileSync(List__[0],"utf8");
+        var filename = p5str(List__[0]);
+        return fs.readFileSync(filename, "utf8");
     });
 } else {
     p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        var filename = List__[0];
+        var filename = p5str(List__[0]);
         if (typeof readFile == "function") {
             return readFile(filename);
         }

@@ -1349,7 +1349,7 @@ package Perlito5::AST::Apply;
                 # "use 5.006" -- XXX this should be tested at parse time instead
                 return '1';
             }
-            'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
+            'p5pkg["Perlito5::Grammar::Use"].require([' 
                 . Perlito5::Javascript3::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
             . '])';
