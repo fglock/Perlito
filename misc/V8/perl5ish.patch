@@ -1,0 +1,106 @@
+Index: src/v8natives.js
+===================================================================
+--- src/v8natives.js	(revision 12644)
++++ src/v8natives.js	(working copy)
+@@ -1331,7 +1331,7 @@
+     }
+     b = %_ValueOf(b);
+   }
+-  return b ? 'true' : 'false';
++  return b ? '1' : '';
+ }
+ 
+ 
+Index: src/runtime.js
+===================================================================
+--- src/runtime.js	(revision 12644)
++++ src/runtime.js	(working copy)
+@@ -550,14 +550,14 @@
+ function ToString(x) {
+   if (IS_STRING(x)) return x;
+   if (IS_NUMBER(x)) return %_NumberToString(x);
+-  if (IS_BOOLEAN(x)) return x ? 'true' : 'false';
++  if (IS_BOOLEAN(x)) return x ? '1' : '';
+   if (IS_UNDEFINED(x)) return 'undefined';
+   return (IS_NULL(x)) ? 'null' : %ToString(%DefaultString(x));
+ }
+ 
+ function NonStringToString(x) {
+   if (IS_NUMBER(x)) return %_NumberToString(x);
+-  if (IS_BOOLEAN(x)) return x ? 'true' : 'false';
++  if (IS_BOOLEAN(x)) return x ? '1' : '';
+   if (IS_UNDEFINED(x)) return 'undefined';
+   return (IS_NULL(x)) ? 'null' : %ToString(%DefaultString(x));
+ }
+Index: src/array.js
+===================================================================
+--- src/array.js	(revision 12644)
++++ src/array.js	(working copy)
+@@ -195,7 +195,7 @@
+ function ConvertToString(x) {
+   // Assumes x is a non-string.
+   if (IS_NUMBER(x)) return %_NumberToString(x);
+-  if (IS_BOOLEAN(x)) return x ? 'true' : 'false';
++  if (IS_BOOLEAN(x)) return x ? '1' : '';
+   return (IS_NULL_OR_UNDEFINED(x)) ? '' : %ToString(%DefaultString(x));
+ }
+ 
+@@ -426,6 +426,36 @@
+ }
+ 
+ 
++function ArrayP5Get(index) {
++  if (IS_NULL_OR_UNDEFINED(this) && !IS_UNDETECTABLE(this)) {
++    throw MakeTypeError("called_on_null_or_undefined",
++                        ["Array.prototype.p5aget"]);
++  }
++
++  var i = TO_INT32(index);
++  var n = TO_UINT32(this.length);
++  if (i < 0) {
++    i = i + n;
++  }
++  return this[i];
++}
++
++function ArrayP5Set(index, value) {
++  if (IS_NULL_OR_UNDEFINED(this) && !IS_UNDETECTABLE(this)) {
++    throw MakeTypeError("called_on_null_or_undefined",
++                        ["Array.prototype.p5aget"]);
++  }
++
++  var i = TO_INT32(index);
++  var n = TO_UINT32(this.length);
++  if (i < 0) {
++    i = i + n;
++  }
++  this[i] = value;
++  return this[i];
++}
++
++
+ // Removes the last element from the array and returns it. See
+ // ECMA-262, section 15.4.4.6.
+ function ArrayPop() {
+@@ -1520,6 +1550,8 @@
+   // Manipulate the length of some of the functions to meet
+   // expectations set by ECMA-262 or Mozilla.
+   InstallFunctions($Array.prototype, DONT_ENUM, $Array(
++    "p5aget", getFunction("p5aget", ArrayP5Get, 1),
++    "p5aset", getFunction("p5aset", ArrayP5Set, 2),
+     "toString", getFunction("toString", ArrayToString),
+     "toLocaleString", getFunction("toLocaleString", ArrayToLocaleString),
+     "join", getFunction("join", ArrayJoin),
+Index: src/mirror-debugger.js
+===================================================================
+--- src/mirror-debugger.js	(revision 12644)
++++ src/mirror-debugger.js	(working copy)
+@@ -521,7 +521,7 @@
+ 
+ 
+ BooleanMirror.prototype.toText = function() {
+-  return this.value_ ? 'true' : 'false';
++  return this.value_ ? '1' : '';
+ };
+ 
+ 
