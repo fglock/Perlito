@@ -425,3 +425,31 @@ workaround: access variables from the outer scope directly, without using inheri
 This can be complicated by statements like { my $v = 0 if $x } 
 which create lexicals dynamically - but the behaviour in this case is undefined anyway.
 
+defineProperty() can be used to provide accessors to non-tied containers:
+
+    Object.defineProperty( Array.prototype, "p5aget", {
+        enumerable : false,
+        value : function (i) { return this[i] }
+    });
+    Object.defineProperty( Array.prototype, "p5aset", {
+        enumerable : false,
+        value : function (i, v) { this[i] = v; return this[i] }
+    });
+    
+    Object.defineProperty( Object.prototype, "p5hget", {
+        enumerable : false,
+        value : function (i) { return this[i] }
+    });
+    Object.defineProperty( Object.prototype, "p5hset", {
+        enumerable : false,
+        value : function (i, v) { this[i] = v; return this[i] }
+    });
+    
+    b = [5,6,8];
+    b.p5aset(2, 13);
+    process.stdout.write( " " + b.p5aget(2) + "\n" );
+    
+    h = { x : 4, y : 7 };
+    h.p5hset("x", 13);
+    process.stdout.write( " " + h.p5hget("x") + "\n" );
+    
