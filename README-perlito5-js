@@ -364,3 +364,57 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
 
 - alternately, the loop can be run at the subroutine itself, but this creates other problems
 
+
+
+* "js3" virtual machine
+
+
+- possible implementation of lexical variables
+
+This allows better control over memory allocation (for example, to implement destructors and aliasing)
+
+    // lexical variables
+    function p5env_001 () {};
+    var p5env = p5env_001;
+    p5env.a = 3;
+    
+    function myfun () {
+        var p5env_002 = function () {};
+        p5env_002.prototype = p5env_001;
+    
+        var p5env = new p5env_002();
+        p5env.b = 4;
+        process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
+        p5env.a = 5;
+        process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
+    }
+    
+    myfun();
+    process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
+    
+@_ is special:
+$_[n] lvalue can be represented by
+
+    at_env[n][at_var[n]] = ...
+
+subroutine call:
+
+    mysub( [
+            env,         "var", // a variable
+            env.arr,     0,     // a subscript
+            [ 123 ],     0      // a value
+        ], context );
+
+lvalue subroutine call:
+
+    ??? - maybe use 'context' to force return of a settable object
+
+tied containers:
+Tie::Scalar magic can be implemented with getters/setters in env
+
+    p5env.b = 4;    // call b setter if there is a setter
+
+Tie::Array, Tie::Hash
+
+    p5env.b[0] = 4; // ???
+
