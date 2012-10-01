@@ -416,5 +416,12 @@ Tie::Scalar magic can be implemented with getters/setters in env
 
 Tie::Array, Tie::Hash
 
-    p5env.b[0] = 4; // ???
+    p5env.list_b[0] = 4; // ??? - but this works if we use a method to get/set the variable
+
+problem: tie'ing a variable in the outer scope (p5env_001) using defineProperty() would be
+inherited by the inner scope (p5env_002 in the example above).
+
+workaround: access variables from the outer scope directly, without using inheritance.
+This can be complicated by statements like { my $v = 0 if $x } 
+which create lexicals dynamically - but the behaviour in this case is undefined anyway.
 
