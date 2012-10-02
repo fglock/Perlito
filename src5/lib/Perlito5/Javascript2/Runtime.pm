@@ -193,7 +193,10 @@ p5pkg["main"]["List_ARGV"] = [];
 p5pkg["main"]["Hash_ENV"] = {};
 if (isNode) {
     p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
-    p5pkg["main"]["Hash_ENV"]  = process.env;
+
+    p5pkg["main"]["Hash_ENV"] = {};
+    for (e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];
+
     p5pkg["main"]["v_$"]       = process.pid;
 } else if (typeof arguments === "object") {
     p5pkg["main"]["List_ARGV"] = arguments;
@@ -247,6 +250,62 @@ function p5GlobRef(o) {
     this._ref_ = "GLOB";
     this.bool = function() { return 1 };
 }
+
+
+Object.defineProperty( Array.prototype, "p5aget", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        return this[i] 
+    }
+});
+Object.defineProperty( Array.prototype, "p5aset", {
+    enumerable : false,
+    value : function (i, v) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = v;
+        return this[i]
+    }
+});
+Object.defineProperty( Array.prototype, "p5aget_array", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this[i] == null) { this[i] = new p5ArrayRef([]) }
+        return this[i]
+    }
+});
+Object.defineProperty( Array.prototype, "p5aget_hash", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this[i] == null) { this[i] = new p5HashRef({}) }
+        return this[i]
+    }
+});
+
+Object.defineProperty( Object.prototype, "p5hget", {
+    enumerable : false,
+    value : function (i) { return this[i] }
+});
+Object.defineProperty( Object.prototype, "p5hset", {
+    enumerable : false,
+    value : function (i, v) { this[i] = v; return this[i] }
+});
+Object.defineProperty( Object.prototype, "p5hget_array", {
+    enumerable : false,
+    value : function (i) {
+        if (this[i] == null) { this[i] = new p5ArrayRef([]) }
+        return this[i]
+    }
+});
+Object.defineProperty( Object.prototype, "p5hget_hash", {
+    enumerable : false,
+    value : function (i) {
+        if (this[i] == null) { this[i] = new p5HashRef({}) }
+        return this[i]
+    }
+});
 
 if (isNode) {
     var fs = require("fs");
