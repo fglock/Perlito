@@ -369,6 +369,20 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
 * "js3" virtual machine
 
 
+- "js3" milestones (TODO list)
+
+    - timely destruction (depends on reference counting); weaken()
+    
+    - tie()
+    
+    - Overload
+    
+    - variable aliasing ($_[0], for-loop, map)
+    
+    - variable redeclaration
+
+
+
 - possible implementation of lexical variables
 
 This allows better control over memory allocation (for example, to implement destructors and aliasing)
