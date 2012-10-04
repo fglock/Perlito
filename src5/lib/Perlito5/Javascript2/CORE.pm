@@ -94,16 +94,37 @@ CORE.bless = function(List__) {
 
 CORE.tie = function(List__) {
     var v = List__[0];
-    var classname = List__[1];
+    var pkg_name = List__[1];
     var args = List__[2];
 
     // array, scalar, hash, ... ??? -- could use some help from the emitter here
+    if (v instanceof Array) {
 
-    // call classname->new(args)
+        var res = p5call(pkg_name, 'TIEARRAY', args, null);
+    
+        // TODO
+    
+        //  A class implementing an ordinary array should have the following methods:
+        //      TIEARRAY pkg_name, LIST
+        //      FETCH this, key
+        //      STORE this, key, value
+        //      FETCHSIZE this
+        //      STORESIZE this, count
+        //      CLEAR this
+        //      PUSH this, LIST
+        //      POP this
+        //      SHIFT this
+        //      UNSHIFT this, LIST
+        //      SPLICE this, offset, length, LIST
+        //      EXTEND this, count
+        //      DESTROY this
+        //      UNTIE this
+    
+        return res;
+    }
 
-    // TODO
+    CORE.die("don't know how to tie() this");
 
-    CORE.die("tie() not implemented");
 };
 
 CORE.chr = function(List__) {
