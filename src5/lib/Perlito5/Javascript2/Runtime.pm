@@ -139,6 +139,10 @@ function p5method_lookup(method, class_name, seen) {
 function p5call(invocant, method, list) {
     list.unshift(invocant);
 
+    if (typeof invocant === "string") {
+        invocant = p5make_package(invocant);
+    }
+
     if ( invocant.hasOwnProperty("_class_") ) {
 
         if ( invocant._class_.hasOwnProperty(method) ) {
@@ -169,13 +173,6 @@ function p5call(invocant, method, list) {
 
         p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);
 
-    }
-
-    // the invocant doesn't have a class
-
-    if (typeof invocant === "string") {
-        var aclass = p5make_package(invocant);
-        return p5call(aclass, method, list);
     }
 
     p5pkg.CORE.die(["Can't call method ", method, " on unblessed reference"]);
@@ -355,6 +352,75 @@ p5tie_array = function(v, List__) {
     //      DESTROY this
     //      UNTIE this
     
+    Object.defineProperty( v, "p5aget", {
+        enumerable : false,
+        value : function (i) {
+            return p5call(res, 'FETCH', [i]);
+        }
+    });
+    Object.defineProperty( v, "p5aset", {
+        enumerable : false,
+        value : function (i, value) {
+            p5call(res, 'STORE', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5incr", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5incr(p5call(res, 'FETCH', [i]));
+            p5call(res, 'STORE', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5postincr", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5call(res, 'FETCH', [i]);
+            p5call(res, 'STORE', [i, p5incr(value)]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5decr", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5decr(p5call(res, 'FETCH', [i]));
+            p5call(res, 'STORE', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5postdecr", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5call(res, 'FETCH', [i]);
+            p5call(res, 'STORE', [i, p5decr(value)]);
+            return value;
+        }
+    });
+    
+    Object.defineProperty( v, "p5aget_array", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5call(res, 'FETCH', [i]);
+            if (value == null) {
+                value = new p5ArrayRef([]);
+                p5call(res, 'STORE', [i, value]);
+            }
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5aget_hash", {
+        enumerable : false,
+        value : function (i) {
+            var value = p5call(res, 'FETCH', [i]);
+            if (value == null) {
+                value = new p5HashRef({});
+                p5call(res, 'STORE', [i, value]);
+            }
+            return value;
+        }
+    });
+
     return res;
 };
 

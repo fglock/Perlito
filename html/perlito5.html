@@ -48,19 +48,21 @@ my $str = ' say("this was compiled at $time") ';
 $time = 'Run-time';
 eval $str;
 
-package BasePrinter;
+{ package BasePrinter;
     sub new { 
         bless {}, $_[0] 
     }
+}
 
-package Printer;
+{ package Printer;
     our @ISA = qw/ BasePrinter /;
     sub out { 
         JS::inline('document.getElementById("print-result").value') = 
         JS::inline('document.getElementById("print-result").value') . $_[1];
     }
+}
 
-package Main;
+{ package Main;
 
 my $printer = Printer->new;
 $printer->out( "Using my 'Printer' object\n" );
@@ -70,6 +72,30 @@ $s =~ s {will be} {was};
 say $s;
 say "oops - it was not" if $s !~ /was/;
 say "it was indeed" if $s =~ /was/;
+
+}
+
+{ package TheArray;
+    sub TIEARRAY {
+        my $class = shift;
+        bless { @_ }, $class
+    }
+    sub FETCH {
+        my ($self, $i) = @_;
+        say "# fetch";
+        return $self->{stuff};
+    }
+    sub STORE {
+        my ($self, $i, $v) = @_;
+        say "# store";
+        $self->{stuff} = $v;
+    }
+}
+
+my @v;
+tie @v, 'TheArray';
+$v[2] = 'hi tie!';
+say $v[3];
 
 </textarea><br/>
 	<input type="button" value="Execute" onclick="execute()"/>
