@@ -25,6 +25,10 @@
 
 - Some regex operators.
 
+- Tie array.
+
+- String increment.
+
 
 
 * Perlito5-in-Javascript differences from "perl"
@@ -42,8 +46,6 @@
   DESTROY will not work;
   weaken() will be a no-op.
 
-- Tie is not implemented yet.
-
 - Overload is not implemented yet.
 
 - AUTOLOAD is not implemented yet for function calls; but AUTOLOAD should work for method calls
@@ -54,8 +56,6 @@
   modifying $_ or $_[0] doesn't change the original variable.
 
 - Variable redeclaration is not implemented yet.
-
-- String increment is not implemented yet.
 
 - Unicode is not implemented yet.
 
@@ -74,6 +74,7 @@
 
 - Typeglobs are partially implemented.
 
+- tie() is partially implemented.
 
 
 * Perlito5 compiler globals

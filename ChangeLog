@@ -15,6 +15,8 @@ dev  2012-04-12
 
 - javascript backend:
 
+-- tie() - TIEARRAY, STORE, FETCH
+-- string increment
 -- negative index in array
 -- more file and process operations: chdir, unlink, close, exit
 -- control functions: next, last, redo, break
