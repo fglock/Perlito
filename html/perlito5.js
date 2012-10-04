@@ -326,6 +326,31 @@ Object.defineProperty( Array.prototype, "p5aget_hash", {
     }
 });
 
+p5tie_array = function(v, List__) {
+    var pkg_name = p5str(List__.shift());
+
+    var res = p5call(pkg_name, 'TIEARRAY', List__, null);
+    
+    // TODO
+    
+    //  A class implementing an ordinary array should have the following methods:
+    //      TIEARRAY pkg_name, LIST
+    //      FETCH this, key
+    //      STORE this, key, value
+    //      FETCHSIZE this
+    //      STORESIZE this, count
+    //      CLEAR this
+    //      PUSH this, LIST
+    //      POP this
+    //      SHIFT this
+    //      UNSHIFT this, LIST
+    //      SPLICE this, offset, length, LIST
+    //      EXTEND this, count
+    //      DESTROY this
+    //      UNTIE this
+    
+    return res;
+};
 
 //-------- Hash 
 
@@ -878,41 +903,6 @@ CORE.bless = function(List__) {
     }
     o._class_ = p5pkg[pkg_name];
     return o;
-};
-
-CORE.tie = function(List__) {
-    var v = List__[0];
-    var pkg_name = List__[1];
-    var args = List__[2];
-
-    // array, scalar, hash, ... ??? -- could use some help from the emitter here
-    if (v instanceof Array) {
-
-        var res = p5call(pkg_name, 'TIEARRAY', args, null);
-    
-        // TODO
-    
-        //  A class implementing an ordinary array should have the following methods:
-        //      TIEARRAY pkg_name, LIST
-        //      FETCH this, key
-        //      STORE this, key, value
-        //      FETCHSIZE this
-        //      STORESIZE this, count
-        //      CLEAR this
-        //      PUSH this, LIST
-        //      POP this
-        //      SHIFT this
-        //      UNSHIFT this, LIST
-        //      SPLICE this, offset, length, LIST
-        //      EXTEND this, count
-        //      DESTROY this
-        //      UNTIE this
-    
-        return res;
-    }
-
-    CORE.die("don't know how to tie() this");
-
 };
 
 CORE.chr = function(List__) {
@@ -3716,6 +3706,35 @@ var p5100 = p5pkg['main'];
 									return(err);
 								}
 							}
+						}, 'tie', function (List__, p5want) {
+								var v_self = null;
+								(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var v_level = null;
+								(v_level = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var v_wantarray = null;
+								(v_wantarray = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var List_arguments = [];
+								(List_arguments = p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_));
+								var v_v = null;
+								(v_v = (p5pkg["Perlito5::AST::Apply"].shift([List_arguments])));
+								var v_meth = null;
+								if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '%')) ) {
+									(v_meth = ('hash'));
+								}
+								else {
+									if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '@')) ) {
+										(v_meth = ('array'));
+									}
+									else {
+										if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '$')) ) {
+											(v_meth = ('scalar'));
+										}
+										else {
+											p5pkg["Perlito5::AST::Apply"].die([p5list_to_a('tie ' + String.fromCharCode(39), p5pkg["Perlito5::AST::Apply"].ref([v_v], 1), String.fromCharCode(39) + ' not implemented')], null);
+										};
+									};
+								};
+								return (p5context([('p5tie_' + p5str(v_meth) + '(' + p5str(p5call(v_v, "emit_javascript2", [v_level], 0)) + ', ' + p5str(p5pkg["Perlito5::Javascript2"].to_list([(new p5ArrayRef(List_arguments))], 0)) + ')')], p5want));
 						}, 'map', function (List__, p5want) {
 								var v_self = null;
 								(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));

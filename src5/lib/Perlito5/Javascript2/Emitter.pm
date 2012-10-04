@@ -1788,6 +1788,30 @@ package Perlito5::AST::Apply;
             return Perlito5::Javascript2::pkg() . '.shift([List__])'
         },
 
+        'tie' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            my @arguments = @{$self->{arguments}};
+            my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
+
+            my $meth;
+            if ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '%' ) {
+                $meth = 'hash';
+            }
+            elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '@' ) {
+                $meth = 'array';
+            }
+            elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '$' ) {
+                $meth = 'scalar';
+            }
+            else {
+                die "tie '", ref($v), "' not implemented";
+            }
+            return 'p5tie_' . $meth . '(' . $v->emit_javascript2( $level ) . ', ' . Perlito5::Javascript2::to_list(\@arguments) . ')';
+        },
+
         'map' => sub {
             my $self      = shift;
             my $level     = shift;

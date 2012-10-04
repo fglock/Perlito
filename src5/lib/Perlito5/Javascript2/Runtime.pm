@@ -332,6 +332,31 @@ Object.defineProperty( Array.prototype, "p5aget_hash", {
     }
 });
 
+p5tie_array = function(v, List__) {
+    var pkg_name = p5str(List__.shift());
+
+    var res = p5call(pkg_name, 'TIEARRAY', List__, null);
+    
+    // TODO
+    
+    //  A class implementing an ordinary array should have the following methods:
+    //      TIEARRAY pkg_name, LIST
+    //      FETCH this, key
+    //      STORE this, key, value
+    //      FETCHSIZE this
+    //      STORESIZE this, count
+    //      CLEAR this
+    //      PUSH this, LIST
+    //      POP this
+    //      SHIFT this
+    //      UNSHIFT this, LIST
+    //      SPLICE this, offset, length, LIST
+    //      EXTEND this, count
+    //      DESTROY this
+    //      UNTIE this
+    
+    return res;
+};
 
 //-------- Hash 
 

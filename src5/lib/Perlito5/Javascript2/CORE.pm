@@ -92,41 +92,6 @@ CORE.bless = function(List__) {
     return o;
 };
 
-CORE.tie = function(List__) {
-    var v = List__[0];
-    var pkg_name = List__[1];
-    var args = List__[2];
-
-    // array, scalar, hash, ... ??? -- could use some help from the emitter here
-    if (v instanceof Array) {
-
-        var res = p5call(pkg_name, 'TIEARRAY', args, null);
-    
-        // TODO
-    
-        //  A class implementing an ordinary array should have the following methods:
-        //      TIEARRAY pkg_name, LIST
-        //      FETCH this, key
-        //      STORE this, key, value
-        //      FETCHSIZE this
-        //      STORESIZE this, count
-        //      CLEAR this
-        //      PUSH this, LIST
-        //      POP this
-        //      SHIFT this
-        //      UNSHIFT this, LIST
-        //      SPLICE this, offset, length, LIST
-        //      EXTEND this, count
-        //      DESTROY this
-        //      UNTIE this
-    
-        return res;
-    }
-
-    CORE.die("don't know how to tie() this");
-
-};
-
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);
