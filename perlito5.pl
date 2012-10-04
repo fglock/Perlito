@@ -10695,6 +10695,9 @@ do {{
             ((my  $v) = $self->{'obj'});
             return (($v->emit_perl5($level) . '[' . $self->{'index_exp'}->emit_perl5() . ']'))
         };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return (($self->{'obj'}->{'arguments'}->[0]->emit_perl5($level) . '->[' . $self->{'index_exp'}->emit_perl5($level) . ']'))
+        };
         ($self->{'obj'}->emit_perl5($level) . '->[' . $self->{'index_exp'}->emit_perl5() . ']')
     }
 }};
@@ -10706,6 +10709,9 @@ do {{
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = $self->{'obj'});
             return (($v->emit_perl5($level) . '{' . $self->autoquote($self->{'index_exp'})->emit_perl5($level) . '}'))
+        };
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
+            return (($self->{'obj'}->{'arguments'}->[0]->emit_perl5($level) . '->{' . $self->autoquote($self->{'index_exp'})->emit_perl5($level) . '}'))
         };
         ($self->{'obj'}->emit_perl5($level) . '->{' . $self->autoquote($self->{'index_exp'})->emit_perl5($level) . '}')
     }
