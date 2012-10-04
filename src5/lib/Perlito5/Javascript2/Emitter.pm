@@ -2064,6 +2064,10 @@ package Perlito5::AST::Apply;
                         $sig = substr($sig, 4);
                         push @out, shift(@in)->emit_javascript2( $level, 'list' ) if @in || !$optional;
                     }
+                    elsif (substr($sig, 0, 6) eq '\\[$@%]') {
+                        $sig = substr($sig, 5);
+                        push @out, shift(@in)->emit_javascript2( $level, 'list' ) if @in || !$optional;
+                    }
                 }
                 $sig = substr($sig, 1);
             }

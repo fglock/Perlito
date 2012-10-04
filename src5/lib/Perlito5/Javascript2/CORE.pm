@@ -92,6 +92,20 @@ CORE.bless = function(List__) {
     return o;
 };
 
+CORE.tie = function(List__) {
+    var v = List__[0];
+    var classname = List__[1];
+    var args = List__[2];
+
+    // array, scalar, hash, ... ??? -- could use some help from the emitter here
+
+    // call classname->new(args)
+
+    // TODO
+
+    CORE.die("tie() not implemented");
+};
+
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);
