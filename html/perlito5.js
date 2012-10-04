@@ -348,12 +348,14 @@ p5tie_array = function(v, List__) {
     
     Object.defineProperty( v, "p5aget", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             return p5call(res, 'FETCH', [i]);
         }
     });
     Object.defineProperty( v, "p5aset", {
         enumerable : false,
+        configurable : true,
         value : function (i, value) {
             p5call(res, 'STORE', [i, value]);
             return value;
@@ -361,6 +363,7 @@ p5tie_array = function(v, List__) {
     });
     Object.defineProperty( v, "p5incr", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5incr(p5call(res, 'FETCH', [i]));
             p5call(res, 'STORE', [i, value]);
@@ -369,6 +372,7 @@ p5tie_array = function(v, List__) {
     });
     Object.defineProperty( v, "p5postincr", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
             p5call(res, 'STORE', [i, p5incr(value)]);
@@ -377,6 +381,7 @@ p5tie_array = function(v, List__) {
     });
     Object.defineProperty( v, "p5decr", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5decr(p5call(res, 'FETCH', [i]));
             p5call(res, 'STORE', [i, value]);
@@ -385,6 +390,7 @@ p5tie_array = function(v, List__) {
     });
     Object.defineProperty( v, "p5postdecr", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
             p5call(res, 'STORE', [i, p5decr(value)]);
@@ -394,6 +400,7 @@ p5tie_array = function(v, List__) {
     
     Object.defineProperty( v, "p5aget_array", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
             if (value == null) {
@@ -405,6 +412,7 @@ p5tie_array = function(v, List__) {
     });
     Object.defineProperty( v, "p5aget_hash", {
         enumerable : false,
+        configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
             if (value == null) {
@@ -414,8 +422,34 @@ p5tie_array = function(v, List__) {
             return value;
         }
     });
+    Object.defineProperty( v, "p5untie", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            return p5call(res, 'UNTIE', []);
+        }
+    });
 
     return res;
+};
+
+p5untie_array = function(v) {
+    if (v.hasOwnProperty('p5untie')) {
+        var res = v.p5untie();  // call UNTIE
+        delete v.p5aget;
+        delete v.p5aset;
+        delete v.p5incr;
+        delete v.p5postincr;
+        delete v.p5decr;
+        delete v.p5postdecr;
+        delete v.p5aget_array;
+        delete v.p5aget_hash;
+        delete v.p5untie;
+        return res;
+    }
+    else {
+        return null;
+    }
 };
 
 //-------- Hash 
@@ -3801,6 +3835,35 @@ var p5100 = p5pkg['main'];
 									};
 								};
 								return (p5context([('p5tie_' + p5str(v_meth) + '(' + p5str(p5call(v_v, "emit_javascript2", [v_level], 0)) + ', ' + p5str(p5pkg["Perlito5::Javascript2"].to_list([(new p5ArrayRef(List_arguments))], 0)) + ')')], p5want));
+						}, 'untie', function (List__, p5want) {
+								var v_self = null;
+								(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var v_level = null;
+								(v_level = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var v_wantarray = null;
+								(v_wantarray = (p5pkg["Perlito5::AST::Apply"].shift([List__])));
+								var List_arguments = [];
+								(List_arguments = p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_));
+								var v_v = null;
+								(v_v = (p5pkg["Perlito5::AST::Apply"].shift([List_arguments])));
+								var v_meth = null;
+								if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '%')) ) {
+									(v_meth = ('hash'));
+								}
+								else {
+									if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '@')) ) {
+										(v_meth = ('array'));
+									}
+									else {
+										if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '$')) ) {
+											(v_meth = ('scalar'));
+										}
+										else {
+											p5pkg["Perlito5::AST::Apply"].die([p5list_to_a('tie ' + String.fromCharCode(39), p5pkg["Perlito5::AST::Apply"].ref([v_v], 1), String.fromCharCode(39) + ' not implemented')], null);
+										};
+									};
+								};
+								return (p5context([('p5untie_' + p5str(v_meth) + '(' + p5str(p5call(v_v, "emit_javascript2", [v_level], 0)) + ')')], p5want));
 						}, 'map', function (List__, p5want) {
 								var v_self = null;
 								(v_self = (p5pkg["Perlito5::AST::Apply"].shift([List__])));

@@ -34,6 +34,10 @@ use feature 'say';
             return;
         }
     }
+
+    sub UNTIE {
+        say "# UNTIE";
+    }
 }
 
 say '1..2';
@@ -50,4 +54,6 @@ if ($list[0] ne 'first') {
 say 'ok 1 # ', $list[0];
 
 $list[1] = 'ok 2 # whatever';
+
+untie @list;
 

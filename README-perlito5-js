@@ -27,8 +27,6 @@
 
 - Tie array.
 
-- String increment.
-
 
 
 * Perlito5-in-Javascript differences from "perl"
@@ -75,6 +73,8 @@
 - Typeglobs are partially implemented.
 
 - tie() is partially implemented.
+
+- String increment partially implemented - array and hash lookups; not in scalars.
 
 
 * Perlito5 compiler globals
@@ -123,13 +123,16 @@ subroutine call
 - "this" is not used.
 
 Hash
-- native {}
+- native {} with perl5-specific getters and setters
 
 Array
-- native []
+- native [] with perl5-specific getters and setters
 
 Scalar
 - native value
+
+Tied containers
+- javascript object with perl5-specific getters and setters
 
 HashRef
 - native {} wrapped in a "HashRef" object
