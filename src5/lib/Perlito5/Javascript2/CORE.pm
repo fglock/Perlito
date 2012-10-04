@@ -56,6 +56,10 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
     p5pkg["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("die", "Died: " + s));
 };
@@ -66,6 +70,10 @@ CORE.warn = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
     CORE.print(["Warning: " + s + "\n"]);
 };
 

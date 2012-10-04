@@ -413,10 +413,13 @@ package Perlito5::Javascript2;
 
         if (  $obj->isa( 'Perlito5::AST::Index' )
            || $obj->isa( 'Perlito5::AST::Lookup' )
+           || $obj->isa( 'Perlito5::AST::Call' )
            )
         {
-            return $obj->emit_javascript2($level, $type);
+            return $obj->emit_javascript2($level, 0, $type);
         }
+
+        # TODO - Perlito5::AST::Var
 
           '(' .  $obj->emit_javascript2($level)
         .   ' || (' . $obj->emit_javascript2($level) . ' = ' 
@@ -774,9 +777,10 @@ package Perlito5::AST::Index;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
         my $autovivification_type = shift;   # array, hash
 
-        my $method = 'p5aget';
+        my $method = $autovivification_type || 'p5aget';
         $method = 'p5aget_array' if $autovivification_type eq 'array';
         $method = 'p5aget_hash'  if $autovivification_type eq 'hash';
 
@@ -849,9 +853,10 @@ package Perlito5::AST::Lookup;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
         my $autovivification_type = shift;   # array, hash
 
-        my $method = 'p5hget';
+        my $method = $autovivification_type || 'p5hget';
         $method = 'p5hget_array' if $autovivification_type eq 'array';
         $method = 'p5hget_hash'  if $autovivification_type eq 'hash';
 
@@ -1018,6 +1023,28 @@ package Perlito5::AST::Var;
 
         $ns . $table->{$self->{sigil}} . $str_name
     }
+
+    sub emit_javascript2_set {
+        my $self      = shift;
+        my $arguments = shift;
+        my $level     = shift;
+
+        if ( $self->sigil eq '$' ) {
+            return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . ')'
+        }
+        if ( $self->sigil eq '@' ) {
+            return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ')'
+        }
+        if ( $self->sigil eq '%' ) {
+            return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1, 'hash') . ')' 
+        }
+        if ( $self->sigil eq '*' ) {
+            return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . ')'
+        }
+
+        die "don't know how to assign to variable ", $self->sigil, $self->name;
+    }
+
     sub perl5_name_javascript2 {
         my $self = shift;
 
@@ -1125,6 +1152,13 @@ package Perlito5::AST::Decl;
             die "not implemented: Perlito5::AST::Decl '" . $self->{decl} . "'";
         }
     }
+    sub emit_javascript2_set {
+        my $self      = shift;
+        my $arguments = shift;
+        my $level     = shift;
+
+        $self->var->emit_javascript2_set($arguments, $level);
+    }
 }
 
 package Perlito5::AST::Proto;
@@ -1144,22 +1178,25 @@ package Perlito5::AST::Call;
         my $self = shift;
         my $level = shift;
         my $wantarray = shift;
+        my $autovivification_type = shift;  # autovivify to 'array'/'hash'
 
         my $meth = $self->{method};
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
-            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' ) . '._array_[' 
-                    . 'p5idx(' 
-                        . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' ) . '._array_,'    
-                        . Perlito5::Javascript2::to_num($self->{arguments}) 
-                    . ')'
-                . ']';
-                # TODO - array slice
-                # . '._array_[' . $self->{arguments}->emit_javascript2($level, 'list') . ']';
+            my $method = $autovivification_type || 'p5aget';
+            $method = 'p5aget_array' if $autovivification_type eq 'array';
+            $method = 'p5aget_hash'  if $autovivification_type eq 'hash';
+            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' )
+                . '._array_.' . $method . '(' . Perlito5::Javascript2::to_num($self->{arguments}, $level+1)
+                . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
+            my $method = $autovivification_type || 'p5hget';
+            $method = 'p5hget_array' if $autovivification_type eq 'array';
+            $method = 'p5hget_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'hash' )
-                . '._hash_[' . Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_javascript2($level, 'list') . ']';
+                . '._hash_.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{arguments}, $level+1, 'list')
+                . ')';
         }
 
         my $invocant = $self->{invocant}->emit_javascript2;
@@ -1188,6 +1225,29 @@ package Perlito5::AST::Call;
                              ) 
                   . ')'
     }
+
+    sub emit_javascript2_set {
+        my $self      = shift;
+        my $arguments = shift;
+        my $level     = shift;
+
+        if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
+            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' )
+                    . '._array_.p5aset(' 
+                        . Perlito5::Javascript2::to_num($self->{arguments}, $level+1) . ', ' 
+                        . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                    . ')';
+        }
+        if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
+            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'hash' )
+                    . '._hash_.p5hset(' 
+                        . Perlito5::Javascript2::autoquote($self->{arguments}, $level+1, 'list') . ', '
+                        . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                    . ')';
+        }
+        die "don't know how to assign to method ", $self->{method};
+    }
+
 }
 
 package Perlito5::AST::Apply;
@@ -1405,18 +1465,62 @@ package Perlito5::AST::Apply;
 
         'postfix:<++>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{arguments}->[0];
+
+            if  (   $arg->isa( 'Perlito5::AST::Index')
+                ||  $arg->isa( 'Perlito5::AST::Lookup') 
+                ||  $arg->isa( 'Perlito5::AST::Call') 
+                )
+            {
+                return $arg->emit_javascript2($level+1, 0, 'p5postincr');
+            }
+
             '(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')++';
         },
         'postfix:<-->' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{arguments}->[0];
+
+            if  (   $arg->isa( 'Perlito5::AST::Index')
+                ||  $arg->isa( 'Perlito5::AST::Lookup') 
+                ||  $arg->isa( 'Perlito5::AST::Call') 
+                )
+            {
+                return $arg->emit_javascript2($level+1, 0, 'p5postdecr');
+            }
+
             '(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')--';
         },
         'prefix:<++>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{arguments}->[0];
+
+            if  (   $arg->isa( 'Perlito5::AST::Index')
+                ||  $arg->isa( 'Perlito5::AST::Lookup') 
+                ||  $arg->isa( 'Perlito5::AST::Call') 
+                )
+            {
+                return $arg->emit_javascript2($level+1, 0, 'p5incr');
+            }
+
             '++(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<-->' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{arguments}->[0];
+
+            if  (   $arg->isa( 'Perlito5::AST::Index')
+                ||  $arg->isa( 'Perlito5::AST::Lookup') 
+                ||  $arg->isa( 'Perlito5::AST::Call') 
+                )
+            {
+                return $arg->emit_javascript2($level+1, 0, 'p5decr');
+            }
+
             '--(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
         },
 
@@ -1520,30 +1624,14 @@ package Perlito5::AST::Apply;
 
             if  (   $parameters->isa( 'Perlito5::AST::Index')
                 ||  $parameters->isa( 'Perlito5::AST::Lookup') 
+                ||  $parameters->isa( 'Perlito5::AST::Call') 
+                ||  $parameters->isa( 'Perlito5::AST::Var') 
+                ||  $parameters->isa( 'Perlito5::AST::Decl') 
                 )
             {
                 return $parameters->emit_javascript2_set($arguments, $level+1);
             }
 
-            if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
-               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
-               )
-            {
-                return '(' . $parameters->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . ')'
-            }
-
-            if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
-                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
-                )
-            {
-                return '(' . $parameters->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ')'
-            }
-            elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
-                ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
-                )
-            {
-                return '(' . $parameters->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1, 'hash') . ')' 
-            }
             '(' . $parameters->emit_javascript2( $level ) . ' = ' . $arguments->emit_javascript2( $level+1 ) . ')';
 
         },
@@ -1647,11 +1735,16 @@ package Perlito5::AST::Apply;
                         . 'r = ' . $eval . "\n"
                     . "}\n"
                     . "catch(err) {\n"
-                    .    "if ( err instanceof p5_error ) {\n"
+                    .    "if ( err instanceof p5_error || err instanceof Error ) {\n"
                     .        'p5pkg["main"]["v_@"] = err;' . "\n"
-                    .    "}\n"
-                    .    "else if ( err instanceof Error ) {\n"
-                    .        'p5pkg["main"]["v_@"] = err;' . "\n"
+
+                            # try to add a stack trace
+
+                    .        'try {' . "\n"
+                    .        '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\n" + err.stack;' . "\n"
+                    .        '}' . "\n"
+                    .        'catch(err) { }' . "\n"
+
                     .    "}\n"
                     .    "else {\n"
                     .        "return(err);\n" 

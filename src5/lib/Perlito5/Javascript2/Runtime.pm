@@ -211,12 +211,22 @@ function p5make_sub(pkg_name, sub_name, func) {
     p5pkg[pkg_name][sub_name] = func;
 }
 
+var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
+
 function p5set_local(namespace, name, sigil) {
-    var v = name;
-    if (sigil == "$") {
-        v = "v_"+name;
+    var vname = sigils[sigil] + name;
+    p5LOCAL.push([namespace, vname, namespace[vname]]);
+
+    if (sigil == '$') {
+        namespace[vname] = null;
     }
-    p5LOCAL.push([namespace, v, namespace[v]]);
+    else if (sigil == '@') {
+        namespace[vname] = new p5Array([]);
+    }
+    else if (sigil == '%') {
+        namespace[vname] = new p5Hash({});
+    }
+    return namespace[vname];
 }
 
 function p5cleanup_local(idx, value) {
@@ -252,6 +262,8 @@ function p5GlobRef(o) {
 }
 
 
+//-------- Array 
+
 Object.defineProperty( Array.prototype, "p5aget", {
     enumerable : false,
     value : function (i) {
@@ -267,6 +279,42 @@ Object.defineProperty( Array.prototype, "p5aset", {
         return this[i]
     }
 });
+
+Object.defineProperty( Array.prototype, "p5incr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = p5incr(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Array.prototype, "p5postincr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this[i];
+        this[i] = p5incr(this[i]);
+        return v;
+    }
+});
+Object.defineProperty( Array.prototype, "p5decr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = p5decr(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Array.prototype, "p5postdecr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this[i];
+        this[i] = p5decr(this[i]);
+        return v;
+    }
+});
+
 Object.defineProperty( Array.prototype, "p5aget_array", {
     enumerable : false,
     value : function (i) {
@@ -284,6 +332,9 @@ Object.defineProperty( Array.prototype, "p5aget_hash", {
     }
 });
 
+
+//-------- Hash 
+
 Object.defineProperty( Object.prototype, "p5hget", {
     enumerable : false,
     value : function (i) { return this[i] }
@@ -292,6 +343,38 @@ Object.defineProperty( Object.prototype, "p5hset", {
     enumerable : false,
     value : function (i, v) { this[i] = v; return this[i] }
 });
+
+Object.defineProperty( Object.prototype, "p5incr", {
+    enumerable : false,
+    value : function (i) {
+        this[i] = p5incr(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Object.prototype, "p5postincr", {
+    enumerable : false,
+    value : function (i) {
+        var v = this[i];
+        this[i] = p5incr(this[i]);
+        return v;
+    }
+});
+Object.defineProperty( Object.prototype, "p5decr", {
+    enumerable : false,
+    value : function (i) {
+        this[i] = p5decr(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Object.prototype, "p5postdecr", {
+    enumerable : false,
+    value : function (i) {
+        var v = this[i];
+        this[i] = p5decr(this[i]);
+        return v;
+    }
+});
+
 Object.defineProperty( Object.prototype, "p5hget_array", {
     enumerable : false,
     value : function (i) {
@@ -306,6 +389,9 @@ Object.defineProperty( Object.prototype, "p5hget_hash", {
         return this[i]
     }
 });
+
+//-------
+
 
 if (isNode) {
     var fs = require("fs");
@@ -449,6 +535,20 @@ p5bool = function(o) {
         }
     }
     return false;
+};
+
+p5incr = function(o) {
+    if (typeof o === "number") {
+        return o + 1;
+    }
+    return p5str_inc(p5str(o));
+};
+
+p5decr = function(o) {
+    if (typeof o === "number") {
+        return o - 1;
+    }
+    return p5num(o) - 1;
 };
 
 p5and = function(a, fb) {
