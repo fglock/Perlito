@@ -328,6 +328,26 @@ Object.defineProperty( Array.prototype, "p5aget_hash", {
         return this[i]
     }
 });
+Object.defineProperty( Array.prototype, "p5unshift", {
+    enumerable : false,
+    configurable : true,
+    value : function (args) { 
+        for(var i = args.length-1; i >= 0; i--) {
+            this.unshift(args[i]);
+        }
+        return this.length; 
+    }
+});
+Object.defineProperty( Array.prototype, "p5push", {
+    enumerable : false,
+    configurable : true,
+    value : function (args) { 
+        for(var i = 0; i < args.length; i++) {
+            this.push(args[i]);
+        }
+        return this.length; 
+    }
+});
 
 p5tie_array = function(v, List__) {
     var pkg_name = p5str(List__.shift());
@@ -431,8 +451,36 @@ p5tie_array = function(v, List__) {
     Object.defineProperty( v, "p5untie", {
         enumerable : false,
         configurable : true,
-        value : function (i) {
-            return p5call(res, 'UNTIE', []);
+        value : function (i) { return p5call(res, 'UNTIE', []) }
+    });
+    Object.defineProperty( v, "shift", {
+        enumerable : false,
+        configurable : true,
+        value : function () { return p5call(res, 'SHIFT', []) }
+    });
+    Object.defineProperty( v, "pop", {
+        enumerable : false,
+        configurable : true,
+        value : function () { return p5call(res, 'POP', []) }
+    });
+    Object.defineProperty( v, "p5unshift", {
+        enumerable : false,
+        configurable : true,
+        value : function (args) { 
+            for(var i = args.length-1; i >= 0; i--) {
+                p5call(res, 'UNSHIFT', [args[i]]);
+            }
+            return p5call(res, 'FETCHSIZE', []); 
+        }
+    });
+    Object.defineProperty( v, "p5push", {
+        enumerable : false,
+        configurable : true,
+        value : function (args) { 
+            for(var i = 0; i < args.length; i++) {
+                p5call(res, 'PUSH', [args[i]]);
+            }
+            return p5call(res, 'FETCHSIZE', []); 
         }
     });
 
@@ -451,6 +499,10 @@ p5untie_array = function(v) {
         delete v.p5aget_array;
         delete v.p5aget_hash;
         delete v.p5untie;
+        delete v.shift;
+        delete v.pop;
+        delete v.p5unshift;
+        delete v.p5push;
         return res;
     }
     else {

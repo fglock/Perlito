@@ -1783,9 +1783,41 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
-                return Perlito5::Javascript2::pkg() . '.shift([' . join(', ', map( $_->emit_javascript2( $level ), @{$self->{arguments}} )) . '])'
+                return $self->{arguments}[0]->emit_javascript2( $level ) . '.shift()'
             }
-            return Perlito5::Javascript2::pkg() . '.shift([List__])'
+            return 'List__.shift()'
+        },
+
+        'pop' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            if ( $self->{arguments} && @{$self->{arguments}} ) {
+                return $self->{arguments}[0]->emit_javascript2( $level ) . '.pop()'
+            }
+            return 'List__.pop()'
+        },
+
+        'unshift' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            my @arguments = @{$self->{arguments}};
+            my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
+
+            return $v->emit_javascript2( $level ) . '.p5unshift(' . Perlito5::Javascript2::to_list(\@arguments) . ')';
+        },
+
+        'push' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            my @arguments = @{$self->{arguments}};
+            my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
+
+            return $v->emit_javascript2( $level ) . '.p5push(' . Perlito5::Javascript2::to_list(\@arguments) . ')';
         },
 
         'tie' => sub {

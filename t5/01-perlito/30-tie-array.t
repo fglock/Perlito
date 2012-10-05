@@ -35,12 +35,20 @@ use feature 'say';
         }
     }
 
+    sub SHIFT {
+        return "shift ok";
+    }
+
     sub UNTIE {
         say "# UNTIE";
     }
 }
 
-say '1..2';
+sub shift               { say "not ok 100 # PKG::shift()" }
+sub CORE::shift         { say "not ok 101 # CORE::shift()" }
+sub CORE::GLOBAL::shift { say "not ok 102 # CORE::GLOBAL::shift()" }
+
+say '1..3';
 
 my @list;
 
@@ -55,5 +63,11 @@ say 'ok 1 # ', $list[0];
 
 $list[1] = 'ok 2 # whatever';
 
+my $v = shift @list;
+print "not " unless $v eq 'shift ok';
+say "ok 3 # shift $v";
+
 untie @list;
+
+shift @list;
 
