@@ -8120,7 +8120,7 @@ do {{
     sub Perlito5::AST::CompUnit::emit_javascript2_program {
         ((my  $comp_units) = shift());
         ($Perlito5::PKG_NAME = 'main');
-        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript2::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
+        ((my  $str) = ('' . 'var p5want;' . chr(10) . 'var ' . Perlito5::Javascript2::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
         ($Perlito5::VAR = [{'@_', {'decl', 'my'}, '$@', {'decl', 'our', 'namespace', 'main'}, '$|', {'decl', 'our', 'namespace', 'main'}, '$^O', {'decl', 'our', 'namespace', 'main'}, '%ENV', {'decl', 'our', 'namespace', 'main'}, '%INC', {'decl', 'our', 'namespace', 'main'}, '@#', {'decl', 'our', 'namespace', 'main'}, '@ARGV', {'decl', 'our', 'namespace', 'main'}, '@INC', {'decl', 'our', 'namespace', 'main'}, '$_', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$a', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$b', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}, '$AUTOLOAD', {'decl', 'our', 'namespace', $Perlito5::PKG_NAME}}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript2() . chr(10)))
@@ -8394,16 +8394,16 @@ do {{
         ($Perlito5::VAR->[0]->{$perl5_name} = $env);
         if (($self->{'decl'} eq 'my')) {
             ((my  $str) = '');
-            ($str = ($str . 'var ' . $self->{'var'}->emit_javascript2() . ' = '));
+            ($str = ($str . 'var ' . $self->{'var'}->emit_javascript2()));
             if (($self->{'var'}->sigil() eq '%')) {
-                ($str = ($str . '{};'))
+                ($str = ($str . ' = {};'))
             }
             else {
                 if (($self->{'var'}->sigil() eq '@')) {
-                    ($str = ($str . '[];'))
+                    ($str = ($str . '= [];'))
                 }
                 else {
-                    ($str = ($str . 'null;'))
+                    ($str = ($str . ';'))
                 }
             };
             return ($str)
@@ -8803,7 +8803,7 @@ do {{
         ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))'));
         ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript2::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . '))'))
     };
-    ('(function (p5want) {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error || err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . 'try {' . chr(10) . '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack;' . chr(10) . '}' . chr(10) . 'catch(err) { }' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
+    ('(function (p5want) {' . chr(10) . 'var r;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error || err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . 'try {' . chr(10) . '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack;' . chr(10) . '}' . chr(10) . 'catch(err) { }' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
 }, 'undef', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

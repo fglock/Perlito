@@ -678,7 +678,7 @@ package Perlito5::AST::CompUnit;
         my $comp_units = shift;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
-                .  "var p5want = null;\n"
+                .  "var p5want;\n"
                 .  "var " . Perlito5::Javascript2::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
@@ -1102,15 +1102,15 @@ package Perlito5::AST::Decl;
 
         if ($self->{decl} eq 'my') {
             my $str = "";
-            $str = $str . 'var ' . $self->{var}->emit_javascript2() . ' = ';
+            $str = $str . 'var ' . $self->{var}->emit_javascript2();
             if ($self->{var}->sigil eq '%') {
-                $str = $str . '{};';
+                $str = $str . ' = {};';
             }
             elsif ($self->{var}->sigil eq '@') {
-                $str = $str . '[];';
+                $str = $str . '= [];';
             }
             else {
-                $str = $str . 'null;';
+                $str = $str . ';';
             }
             return $str;
         }
@@ -1729,7 +1729,7 @@ package Perlito5::AST::Apply;
             # TODO - test return() from inside eval
 
                 "(function (p5want) {\n"
-                    . "var r = null;\n"
+                    . "var r;\n"
                     . 'p5pkg["main"]["v_@"] = "";' . "\n"
                     . "try {\n"
                         . 'r = ' . $eval . "\n"
