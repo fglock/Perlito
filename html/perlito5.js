@@ -1061,11 +1061,15 @@ function p5ArrayOfAlias(o) {
         }
         return this._array_.length / 2; 
     }
-
-    // TODO - shift()
-
-    // TODO - pop()
-
+    this.shift = function () { 
+        var v0 = this._array_.shift();
+        return v0[this._array_.shift()];
+    }
+    this.pop = function () { 
+        var v1 = this._array_.pop();
+        var v0 = this._array_.pop();
+        return v0[v1];
+    }
 }
 
 
