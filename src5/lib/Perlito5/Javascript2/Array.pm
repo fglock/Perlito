@@ -289,48 +289,48 @@ function p5ArrayOfAlias(o) {
 
     this.p5aget = function (i) {
         if (i < 0) { i =  this.length + i };
-        return this._array_[i+i][this._array_[i+i]+1]; 
+        return this._array_[i+i][this._array_[i+i+1]]; 
     }
     this.p5aset = function (i, v) {
         if (i < 0) { i =  this.length + i };
-        this._array_[i+i][this._array_[i+i]+1] = v;
-        return this._array_[i+i][this._array_[i+i]+1]
+        this._array_[i+i][this._array_[i+i+1]] = v;
+        return this._array_[i+i][this._array_[i+i+1]]
     }
     this.p5incr = function (i) {
         if (i < 0) { i =  this.length + i };
-        this._array_[i+i][this._array_[i+i]+1] = p5incr(this._array_[i+i][this._array_[i+i]+1]);
-        return this._array_[i+i][this._array_[i+i]+1];
+        this._array_[i+i][this._array_[i+i+1]] = p5incr(this._array_[i+i][this._array_[i+i+1]]);
+        return this._array_[i+i][this._array_[i+i+1]];
     }
     this.p5postincr = function (i) {
         if (i < 0) { i =  this.length + i };
-        var v = this._array_[i+i][this._array_[i+i]+1];
-        this._array_[i+i][this._array_[i+i]+1] = p5incr(this._array_[i+i][this._array_[i+i]+1]);
+        var v = this._array_[i+i][this._array_[i+i+1]];
+        this._array_[i+i][this._array_[i+i+1]] = p5incr(this._array_[i+i][this._array_[i+i+1]]);
         return v;
     }
     this.p5decr = function (i) {
         if (i < 0) { i =  this.length + i };
-        this._array_[i+i][this._array_[i+i]+1] = p5decr(this._array_[i+i][this._array_[i+i]+1]);
-        return this._array_[i+i][this._array_[i+i]+1];
+        this._array_[i+i][this._array_[i+i+1]] = p5decr(this._array_[i+i][this._array_[i+i+1]]);
+        return this._array_[i+i][this._array_[i+i+1]];
     }
     this.p5postdecr = function (i) {
         if (i < 0) { i =  this.length + i };
-        var v = this._array_[i+i][this._array_[i+i]+1];
-        this._array_[i+i][this._array_[i+i]+1] = p5decr(this._array_[i+i][this._array_[i+i]+1]);
+        var v = this._array_[i+i][this._array_[i+i+1]];
+        this._array_[i+i][this._array_[i+i+1]] = p5decr(this._array_[i+i][this._array_[i+i+1]]);
         return v;
     }
     this.p5aget_array = function (i) {
         if (i < 0) { i =  this.length + i };
-        if (this._array_[i+i][this._array_[i+i]+1] == null) {
-            this._array_[i+i][this._array_[i+i]+1] = new p5ArrayRef([])
+        if (this._array_[i+i][this._array_[i+i+1]] == null) {
+            this._array_[i+i][this._array_[i+i+1]] = new p5ArrayRef([])
         }
-        return this._array_[i+i][this._array_[i+i]+1]
+        return this._array_[i+i][this._array_[i+i+1]]
     }
     this.p5aget_hash = function (i) {
         if (i < 0) { i =  this.length + i };
-        if (this._array_[i+i][this._array_[i+i]+1] == null) {
-            this._array_[i+i][this._array_[i+i]+1] = new p5HashRef({})
+        if (this._array_[i+i][this._array_[i+i+1]] == null) {
+            this._array_[i+i][this._array_[i+i+1]] = new p5HashRef({})
         }
-        return this._array_[i+i][this._array_[i+i]+1]
+        return this._array_[i+i][this._array_[i+i+1]]
     }
     this.p5unshift = function (args) { 
         for(var i = args.length-1; i >= 0; i--) {
