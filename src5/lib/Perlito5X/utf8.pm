@@ -1,4 +1,4 @@
-package Perlito5::utf8;
+package utf8;
 
 sub import {
     $Perlito5::UTF8 = 1;

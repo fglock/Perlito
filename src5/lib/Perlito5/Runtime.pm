@@ -1,6 +1,6 @@
 package Perlito5::Runtime;
 
-use Perlito5::strict;
+use strict;
 
 $] = 5.014001
     unless $];

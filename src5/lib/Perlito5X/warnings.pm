@@ -1,4 +1,4 @@
-package Perlito5::warnings;
+package warnings;
 
 sub import {
     $Perlito5::WARNINGS = 1;

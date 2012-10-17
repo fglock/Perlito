@@ -5257,7 +5257,6 @@ Perlito5::Precedence::add_term('no', sub {
 Perlito5::Precedence::add_term('use', sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 });
-((my  %Perlito_internal_module) = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding'));
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -5407,9 +5406,6 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     }
     else {
         if ($Perlito5::EXPAND_USE) {
-            if (exists($Perlito_internal_module{$module_name})) {
-                ($module_name = $Perlito_internal_module{$module_name})
-            };
             ((my  $filename) = modulename_to_filename($module_name));
 Perlito5::Grammar::Use::require($filename);
             if (!($skip_import)) {
@@ -5437,11 +5433,11 @@ sub Perlito5::Grammar::Use::emit_time_eval {
     ((my  $self) = shift());
     if (($self->mod() eq 'strict')) {
         if (($self->code() eq 'use')) {
-            Perlito5::strict->import()
+            strict->import()
         }
         else {
             if (($self->code() eq 'no')) {
-                Perlito5::strict->unimport()
+                strict->unimport()
             }
         }
     }
@@ -5460,6 +5456,13 @@ sub Perlito5::Grammar::Use::filename_lookup {
         die('Compilation failed in require')
     };
     for my $prefix ((@INC, '.')) {
+        ((my  $realfilename) = ($prefix . '/Perlito5X/' . $filename));
+        if (-f($realfilename)) {
+            ($INC{$filename} = $realfilename);
+            return ('todo')
+        }
+    };
+    for my $prefix ((@INC, '.')) {
         ((my  $realfilename) = ($prefix . '/' . $filename));
         if (-f($realfilename)) {
             ($INC{$filename} = $realfilename);
@@ -5472,11 +5475,8 @@ sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
     ((my  $stmt) = shift());
     ((my  $module_name) = $stmt->mod());
-    if (((($module_name eq 'strict') || ($module_name eq 'warnings')) || ($module_name eq 'feature'))) {
+    if (($module_name eq 'feature')) {
         return ()
-    };
-    if (exists($Perlito_internal_module{$module_name})) {
-        ($module_name = $Perlito_internal_module{$module_name})
     };
     ((my  $filename) = modulename_to_filename($module_name));
     if ((filename_lookup($filename) eq 'done')) {
@@ -11718,20 +11718,9 @@ do {{
 # use Perlito5::Precedence
 ;
 package main;
-package Perlito5::strict;
-sub Perlito5::strict::import {
-    ($Perlito5::STRICT = 1)
-};
-sub Perlito5::strict::unimport {
-    ($Perlito5::STRICT = 0)
-};
-1;
-
-;
-package main;
 package Perlito5::Runtime;
 
-# use Perlito5::strict
+# use strict
 ;
 if (${'main::]'}) {
 
