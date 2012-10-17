@@ -385,6 +385,10 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
     
     - variable redeclaration
 
+    - make perlito usable for CPAN smoke tests:
+
+        node perlito5.js Makefile.PL
+        make test
 
 
 - possible implementation of lexical variables
