@@ -1,4 +1,4 @@
-package bytes;
+package Perlito5::bytes;
 
 sub import {
     $Perlito5::BYTES = 1;

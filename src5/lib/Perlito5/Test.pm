@@ -1,4 +1,4 @@
-package Test;
+package Perlito5::Test;
 
 ### GLOBALS
 
@@ -26,7 +26,7 @@ sub ok {
     my $desc    = shift;
     my $todo    = shift;
     my $depends = shift;
-    Test::proclaim( $cond, 'ok! ' . $desc, $todo, $depends );
+    Perlito5::Test::proclaim( $cond, 'ok! ' . $desc, $todo, $depends );
 }
 
 sub is {
@@ -37,7 +37,7 @@ sub is {
     my $depends  = shift;
 
     my $test = $got eq $expected;
-    Test::proclaim( $test, 'is! ' . $desc, $todo, $got, $expected, $depends );
+    Perlito5::Test::proclaim( $test, 'is! ' . $desc, $todo, $got, $expected, $depends );
 }
 
 sub is_deeply {
@@ -52,7 +52,7 @@ sub is_deeply {
     my $expected_perl = $expected;
     my $test          = ( $got_perl eq $expected_perl );
 
-    Test::proclaim( $test, "is deeply! $desc", $todo, $got_perl, $expected_perl, $depends );
+    Perlito5::Test::proclaim( $test, "is deeply! $desc", $todo, $got_perl, $expected_perl, $depends );
 }
 
 sub isnt {
@@ -63,7 +63,7 @@ sub isnt {
     my $depends  = shift;
 
     my $test = !( $got eq $expected );
-    Test::proclaim( $test, "isnt! $desc", $todo, $got, $expected, $depends, { negate => 1 } );
+    Perlito5::Test::proclaim( $test, "isnt! $desc", $todo, $got, $expected, $depends, { negate => 1 } );
 }
 
 sub cmp_ok {
@@ -74,39 +74,39 @@ sub cmp_ok {
     my $todo         = shift;
     my $depends      = shift;
 
-    say "### Test::cmp_ok not implemented";
+    say "### Perlito5::Test::cmp_ok not implemented";
 }
 
 sub like {
-    say "### Test::like not implemented";
+    say "### Perlito5::Test::like not implemented";
 }
 
 sub unlike {
-    say "### Test::unlike not implemented";
+    say "### Perlito5::Test::unlike not implemented";
 }
 
 sub eval_dies_ok {
-    say "### Test::eval_dies_ok not implemented";
+    say "### Perlito5::Test::eval_dies_ok not implemented";
 }
 
 sub isa_ok {
-    say "### Test::isa_ok not implemented";
+    say "### Perlito5::Test::isa_ok not implemented";
 }
 
 sub use_ok {
-    say "### Test::use_ok not implemented";
+    say "### Perlito5::Test::use_ok not implemented";
 }
 
 sub throws_ok {
-    say "### Test::throws_ok not implemented";
+    say "### Perlito5::Test::throws_ok not implemented";
 }
 
 sub dies_ok {
-    say "### Test::dies_ok not implemented";
+    say "### Perlito5::Test::dies_ok not implemented";
 }
 
 sub lives_ok {
-    say "### Test::lives_ok not implemented";
+    say "### Perlito5::Test::lives_ok not implemented";
 }
 
 ## misc. test utilities
@@ -114,12 +114,12 @@ sub lives_ok {
 sub skip {
     my $reason  = shift;
     my $depends = shift;
-    Test::proclaim( 1, '', "skip " . $reason, $depends );
+    Perlito5::Test::proclaim( 1, '', "skip " . $reason, $depends );
 }
 
 sub pass {
     my $desc = shift;
-    Test::proclaim( 1, 'pass! ' . $desc );
+    Perlito5::Test::proclaim( 1, 'pass! ' . $desc );
 }
 
 sub flunk {
@@ -127,7 +127,7 @@ sub flunk {
     my $todo    = shift;
     my $depends = shift;
 
-    Test::proclaim( 0, 'flunk! ' . $desc, $todo, $depends );
+    Perlito5::Test::proclaim( 0, 'flunk! ' . $desc, $todo, $depends );
 }
 
 ## 'private' subs
@@ -149,7 +149,7 @@ sub proclaim {
     }
     else {
         say "not ok ", $num_of_tests_run;
-        Test::report_failure( $todo, $got, $expected, $negate );
+        Perlito5::Test::report_failure( $todo, $got, $expected, $negate );
     }
 
     return $cond;
@@ -161,7 +161,7 @@ sub report_failure {
     my $expected = shift;
     my $negate   = shift;
 
-    say "### Test::report_failure not implemented";
+    say "### Perlito5::Test::report_failure not implemented";
 }
 
 sub test_ends {

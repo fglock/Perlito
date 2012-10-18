@@ -1,5 +1,4 @@
-use Test;
+use Perlito5::Test;
 
-Test::plan 1;
-Test::ok( 1==1, "Test.pm works");
-
+Perlito5::Test::plan 1;
+Perlito5::Test::ok( 1==1, "Perlito::Test works");

@@ -1770,30 +1770,30 @@ var p5100 = p5pkg['main'];
 (function () {
 	var p5101 = p5make_package("Perlito5");
 	(function () {
-		var p5102 = p5make_package("strict");
-		p5make_sub("strict", "import", function (List__, p5want) {
+		var p5102 = p5make_package("Perlito5::strict");
+		p5make_sub("Perlito5::strict", "import", function (List__, p5want) {
 				return ((p5pkg["Perlito5"]["v_STRICT"] = (1)));
 		});
-		p5make_sub("strict", "unimport", function (List__, p5want) {
+		p5make_sub("Perlito5::strict", "unimport", function (List__, p5want) {
 				return ((p5pkg["Perlito5"]["v_STRICT"] = (0)));
 		});
 		1;
 	})()
 ;
-	// use strict
+	// use Perlito5::strict
 ;
 	(function () {
-		var p5103 = p5make_package("warnings");
-		p5make_sub("warnings", "import", function (List__, p5want) {
+		var p5103 = p5make_package("Perlito5::warnings");
+		p5make_sub("Perlito5::warnings", "import", function (List__, p5want) {
 				return ((p5pkg["Perlito5"]["v_WARNINGS"] = (1)));
 		});
-		p5make_sub("warnings", "unimport", function (List__, p5want) {
+		p5make_sub("Perlito5::warnings", "unimport", function (List__, p5want) {
 				return ((p5pkg["Perlito5"]["v_WARNINGS"] = (0)));
 		});
 		1;
 	})()
 ;
-	// use warnings
+	// use Perlito5::warnings
 ;
 	(function () {
 		null;
@@ -9790,6 +9790,8 @@ var p5100 = p5pkg['main'];
 		p5pkg["Perlito5::Precedence"].add_term(['use', function (List__, p5want) {
 		return (p5call(p5pkg["Perlito5::Grammar::Use"], "term_use", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
 }], null);
+		var Hash_Perlito_internal_module = {};
+		(Hash_Perlito_internal_module = {'strict' : 'Perlito5::strict', 'warnings' : 'Perlito5::warnings', 'utf8' : 'Perlito5::utf8', 'bytes' : 'Perlito5::bytes', 'encoding' : 'Perlito5::encoding'});
 		p5make_sub("Perlito5::Grammar::Use", "use_decl", function (List__, p5want) {
 				var v_grammar;
 				(v_grammar = (List__.p5aget(0)));
@@ -9943,7 +9945,7 @@ var p5100 = p5pkg['main'];
 var r;
 p5pkg["main"]["v_@"] = "";
 try {
-r = eval(perl5_to_js(p5str(v_list_code), "Perlito5::Grammar::Use", (new p5ArrayRef(p5list_to_a((new p5HashRef(p5a_to_h(p5list_to_a('$list_code', (new p5HashRef({'decl' : 'my'})), '$m', (new p5HashRef({'decl' : 'my'})), '@list', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$list', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef({})), (new p5HashRef(p5a_to_h(p5list_to_a('$pos1', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef({})), (new p5HashRef(p5a_to_h(p5list_to_a('$pos1', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$MATCH', (new p5HashRef({'decl' : 'my'})), '$grammar', (new p5HashRef({'decl' : 'my'})), '$pos', (new p5HashRef({'decl' : 'my'})), '$str', (new p5HashRef({'decl' : 'my'})), '$tmp', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$|', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@_', (new p5HashRef({'decl' : 'my'}))))))))), "list"))
+r = eval(perl5_to_js(p5str(v_list_code), "Perlito5::Grammar::Use", (new p5ArrayRef(p5list_to_a((new p5HashRef(p5a_to_h(p5list_to_a('$list_code', (new p5HashRef({'decl' : 'my'})), '$m', (new p5HashRef({'decl' : 'my'})), '@list', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$list', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef({})), (new p5HashRef(p5a_to_h(p5list_to_a('$pos1', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef({})), (new p5HashRef(p5a_to_h(p5list_to_a('$pos1', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$MATCH', (new p5HashRef({'decl' : 'my'})), '$grammar', (new p5HashRef({'decl' : 'my'})), '$pos', (new p5HashRef({'decl' : 'my'})), '$str', (new p5HashRef({'decl' : 'my'})), '$tmp', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '%Perlito_internal_module', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$|', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@_', (new p5HashRef({'decl' : 'my'}))))))))), "list"))
 }
 catch(err) {
 if ( err instanceof p5_error || err instanceof Error ) {
@@ -10006,6 +10008,9 @@ return r;
 				
 				else {
 					if ( p5bool(p5pkg["Perlito5"]["v_EXPAND_USE"]) ) {
+						if ( (Hash_Perlito_internal_module).hasOwnProperty(v_module_name) ) {
+							(v_module_name = (Hash_Perlito_internal_module.p5hget(p5str(v_module_name))));
+						};
 						var v_filename;
 						(v_filename = (p5pkg["Perlito5::Grammar::Use"].modulename_to_filename([v_module_name], 0)));
 						p5pkg["Perlito5::Grammar::Use"]["require"]([p5str(v_filename), 0]);
@@ -10056,12 +10061,12 @@ return r;
 				(v_self = (List__.shift()));
 				if ( (p5str(p5call(v_self, "mod", [], 0)) == 'strict') ) {
 					if ( (p5str(p5call(v_self, "code", [], 0)) == 'use') ) {
-						return (p5call(p5pkg["strict"], "import", [], p5want));
+						return (p5call(p5pkg["Perlito5::strict"], "import", [], p5want));
 					}
 					
 					else {
 						if ( (p5str(p5call(v_self, "code", [], 0)) == 'no') ) {
-							return (p5call(p5pkg["strict"], "unimport", [], p5want));
+							return (p5call(p5pkg["Perlito5::strict"], "unimport", [], p5want));
 						}
 						
 						else {
@@ -10092,14 +10097,6 @@ return r;
 				};
 				p5for_lex(function (v_prefix) {
 						var v_realfilename;
-						(v_realfilename = ((p5str(v_prefix) + '/Perlito5X/' + p5str(v_filename))));
-						if ( p5bool(p5is_file(p5str(v_realfilename))) ) {
-							p5pkg["main"]["Hash_INC"].p5hset(p5str(v_filename), (v_realfilename));
-							throw(p5context(['todo'], p5want));
-						};
-					}, p5list_to_a(p5pkg["main"]["List_INC"], '.'), false, "");
-				p5for_lex(function (v_prefix) {
-						var v_realfilename;
 						(v_realfilename = ((p5str(v_prefix) + '/' + p5str(v_filename))));
 						if ( p5bool(p5is_file(p5str(v_realfilename))) ) {
 							p5pkg["main"]["Hash_INC"].p5hset(p5str(v_filename), (v_realfilename));
@@ -10125,8 +10122,11 @@ return r;
 				(v_stmt = (List__.shift()));
 				var v_module_name;
 				(v_module_name = (p5call(v_stmt, "mod", [], 0)));
-				if ( (p5str(v_module_name) == 'feature') ) {
+				if ( (((p5str(v_module_name) == 'strict') || (p5str(v_module_name) == 'warnings')) || (p5str(v_module_name) == 'feature')) ) {
 					throw(p5context([], p5want));
+				};
+				if ( (Hash_Perlito_internal_module).hasOwnProperty(v_module_name) ) {
+					(v_module_name = (Hash_Perlito_internal_module.p5hget(p5str(v_module_name))));
 				};
 				var v_filename;
 				(v_filename = (p5pkg["Perlito5::Grammar::Use"].modulename_to_filename([v_module_name], 0)));
@@ -10193,7 +10193,7 @@ return r;
 var r;
 p5pkg["main"]["v_@"] = "";
 try {
-r = eval(perl5_to_js(p5str(p5pkg["Perlito5::IO"].slurp(p5list_to_a(p5pkg["main"]["Hash_INC"].p5hget(p5str(v_filename))), 0)), "Perlito5::Grammar::Use", (new p5ArrayRef(p5list_to_a((new p5HashRef(p5a_to_h(p5list_to_a('$filename', (new p5HashRef({'decl' : 'my'})), '$is_bareword', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$|', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@_', (new p5HashRef({'decl' : 'my'}))))))))), ""))
+r = eval(perl5_to_js(p5str(p5pkg["Perlito5::IO"].slurp(p5list_to_a(p5pkg["main"]["Hash_INC"].p5hget(p5str(v_filename))), 0)), "Perlito5::Grammar::Use", (new p5ArrayRef(p5list_to_a((new p5HashRef(p5a_to_h(p5list_to_a('$filename', (new p5HashRef({'decl' : 'my'})), '$is_bareword', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5::Grammar::Use'})), '%Perlito_internal_module', (new p5HashRef({'decl' : 'my'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'Perlito5'})))))), (new p5HashRef(p5a_to_h(p5list_to_a('$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$|', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@_', (new p5HashRef({'decl' : 'my'}))))))))), ""))
 }
 catch(err) {
 if ( err instanceof p5_error || err instanceof Error ) {
@@ -12684,7 +12684,7 @@ return r;
 ;
 	(function () {
 		var p5159 = p5make_package("Perlito5::Runtime");
-		// use strict
+		// use Perlito5::strict
 ;
 		if ( p5bool(p5pkg["main"]["v_]"]) ) {
 			null;

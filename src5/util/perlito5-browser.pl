@@ -1,7 +1,7 @@
 package Perlito5;
 
-use strict ();
-use warnings ();
+use Perlito5::strict ();
+use Perlito5::warnings ();
 
 use Perlito5::Match;
 use Perlito5::Javascript2::Emitter;

@@ -1,4 +1,4 @@
-package encoding;
+package Perlito5::encoding;
 
 sub import {
     $Perlito5::ENCODING = undef;

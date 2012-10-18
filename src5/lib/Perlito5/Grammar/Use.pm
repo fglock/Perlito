@@ -7,6 +7,16 @@ use Perlito5::Grammar;
 Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 
+
+my %Perlito_internal_module = (
+    strict   => 'Perlito5::strict',
+    warnings => 'Perlito5::warnings',
+    utf8     => 'Perlito5::utf8',
+    bytes    => 'Perlito5::bytes',
+    encoding => 'Perlito5::encoding',
+);
+
+
 token use_decl { 'use' | 'no' };
 
 token term_use {
@@ -78,6 +88,9 @@ sub parse_time_eval {
         if ( $Perlito5::EXPAND_USE ) {
             # normal "use" is not disabled, go for it
 
+            $module_name = $Perlito_internal_module{$module_name}
+                if exists $Perlito_internal_module{$module_name};
+
             # "require" the module
             my $filename = modulename_to_filename($module_name);
             # warn "# require $filename\n";
@@ -112,10 +125,10 @@ sub emit_time_eval {
 
     if ($self->mod eq 'strict') {
         if ($self->code eq 'use') {
-            strict->import();
+            Perlito5::strict->import();
         }
         elsif ($self->code eq 'no') {
-            strict->unimport();
+            Perlito5::strict->unimport();
         }
     }
 }
@@ -135,14 +148,6 @@ sub filename_lookup {
     }
 
     for my $prefix (@INC, '.') {
-        my $realfilename = "$prefix/Perlito5X/$filename";
-        if (-f $realfilename) {
-            $INC{$filename} = $realfilename;
-            return "todo";
-        }
-    }
-
-    for my $prefix (@INC, '.') {
         my $realfilename = "$prefix/$filename";
         if (-f $realfilename) {
             $INC{$filename} = $realfilename;
@@ -157,10 +162,13 @@ sub expand_use {
     my $stmt = shift;
 
     my $module_name = $stmt->mod;
-
-    # TODO - support 'use feature'
     return
-        if $module_name eq 'feature';
+        if $module_name eq 'strict'
+        || $module_name eq 'warnings'
+        || $module_name eq 'feature';
+
+    $module_name = $Perlito_internal_module{$module_name}
+        if exists $Perlito_internal_module{$module_name};
 
     my $filename = modulename_to_filename($module_name);
 
