@@ -475,3 +475,21 @@ defineProperty() can be used to provide accessors to non-tied containers:
     h.p5hset("x", 13);
     process.stdout.write( " " + h.p5hget("x") + "\n" );
     
+
+- Alternative implementation for lvalue @_ and tail calls
+
+    // calling function x() 
+    // the variables (a,b,c) are lexicals aliased to $_[0], $_[1], $_[2]
+    // .mod signals that @_ was modified
+    // .at  returns @_
+    // .res is the funtion result
+    // .tail is a tail-call result flag
+    function(){ 
+        r = x([a,b,c], want); 
+        if (r.mod) { a=r.at[0]; b=r.at[1]; c=r.at[2] }; 
+        while (r.tail) {
+            // do tail calls
+        }
+        return r.res 
+    }()
+
