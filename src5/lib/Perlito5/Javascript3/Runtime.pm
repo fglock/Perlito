@@ -125,7 +125,7 @@ function p5get_class_for_method(method, class_name, seen) {
     var isa = p5pkg[class_name].List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
-            var m = p5get_class_for_method(method, isa[i]);
+            var m = p5get_class_for_method(method, isa[i], seen);
             if (m) {
                 return m 
             }
