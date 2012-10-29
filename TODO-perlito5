@@ -162,6 +162,15 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- delete() in the middle of an array turns exists() off:
+
+    $ perl -e ' @a = (3..7); delete $a[2]; print "exists ", (exists $a[$_] ? 1 : 0), "\n" for 0 .. $#a '
+    exists 1
+    exists 1
+    exists 0
+    exists 1
+    exists 1
+
 -- "or" has SCALAR context (Abigail++):
     See: t5/01-perlito/23-eval.t
 
