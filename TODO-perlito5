@@ -50,12 +50,6 @@ TODO list for Perlito5
 -- "given" statement not implemented
 -- "default" statement not implemented
 
--- clean up:
-    the several "end_tables" in Expression.pm are duplicating the function of 
-    $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
-
--- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
-
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
    my $v;
    BEGIN { $v = "123" }
@@ -65,10 +59,10 @@ TODO list for Perlito5
 -- create an AST for regexes
 
 -- prototypes (signatures)
---- done: "empty" _ $ ;$
 --- check that undeclared barewords give the right error
 --- *foo = sub () { ... }   # does prototype work here?
 --- check signature in sort()
+--- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
 -- check that \(@a) and \@a have different meanings
 
@@ -108,9 +102,15 @@ TODO list for Perlito5
 -- lookup for existing subroutines:
    sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
 
+-- clean up:
+    the several "end_tables" in Expression.pm are duplicating the function of 
+    $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
 -- add tests for fixed bugs:
 
+    add tests for signatures: "empty" _ $ ;$
+
+    ---
     add test for "sub _" should be in package "main"
     $ perl -MO=Deparse -e ' package X; sub _ { 123 } '
     package X;
