@@ -5721,11 +5721,8 @@ sub Perlito5::Grammar::Block::named_sub_def {
     };
     ((my  $namespace) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
     if ($name) {
-        if ($namespace) {
-
-        }
-        else {
-            ($namespace = $Perlito5::PKG_NAME)
+        if (!($namespace)) {
+            ($namespace = (($name eq '_') ? 'main' : $Perlito5::PKG_NAME))
         };
         ((my  $full_name) = ($namespace . '::' . $name));
         if (exists($Perlito5::PROTO->{$full_name})) {

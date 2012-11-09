@@ -111,7 +111,7 @@ function p5get_class_for_method(method, class_name, seen) {
     var isa = p5pkg[class_name].List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
-            var m = p5get_class_for_method(method, isa[i]);
+            var m = p5get_class_for_method(method, isa[i], seen);
             if (m) {
                 return m 
             }
@@ -10491,11 +10491,8 @@ return r;
 									(v_namespace = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('Perlito5::Grammar.optional_namespace_before_ident')), 0)));
 									if ( p5bool(v_name) ) {
 										(function () {
-											if ( p5bool(v_namespace) ) {
-												null;
-											}
-											else {
-												(v_namespace = (p5pkg["Perlito5"]["v_PKG_NAME"]));
+											if ( !( p5bool(v_namespace)) ) {
+												(v_namespace = (( (p5str(v_name) == '_') ? 'main' : p5pkg["Perlito5"]["v_PKG_NAME"])));
 											};
 											var v_full_name;
 											(v_full_name = ((p5str(v_namespace) + '::' + p5str(v_name))));

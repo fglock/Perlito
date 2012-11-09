@@ -32,15 +32,6 @@ TODO list for Perlito5
 
 * Parser
 
--- defined-or vs. m//  (2012/9/25 Конрад Боровски <notifications@github.com>)
-    Note: fixed; see test t5/01-perlito/25-syntax-defined-or.t
-
-    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift // 2 '
-    Number or Bareword found where operator expected
-
-    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift / 2 '
-    Can't find string terminator '/' anywhere before EOF
-
 -- quotes vs. hash lookups:
 
     $ perl -e '  q}} '
@@ -55,13 +46,6 @@ TODO list for Perlito5
 -- attributes - see: http://perldoc.perl.org/attributes.html
 
 -- create __DATA__ 
-
--- "sub _" should be in package "main"
-    $ perl -MO=Deparse -e ' package X; sub _ { 123 } '
-    package X;
-    sub main::_ {
-        123;
-    }
 
 -- "given" statement not implemented
 -- "default" statement not implemented
@@ -127,7 +111,25 @@ TODO list for Perlito5
 
 -- add tests for fixed bugs:
 
-    filetest operators special case:
+    add test for "sub _" should be in package "main"
+    $ perl -MO=Deparse -e ' package X; sub _ { 123 } '
+    package X;
+    sub main::_ {
+        123;
+    }
+
+    ---
+    add test for defined-or vs. m//  (2012/9/25 Конрад Боровски <notifications@github.com>)
+    Note: fixed; see test t5/01-perlito/25-syntax-defined-or.t
+
+    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift // 2 '
+    Number or Bareword found where operator expected
+
+    $ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' shift / 2 '
+    Can't find string terminator '/' anywhere before EOF
+
+    ---
+    add test for filetest operators special case:
     ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
     parses as -(f($file)).".bak" 
     but: ' -f ($file).".bak" '

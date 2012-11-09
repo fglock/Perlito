@@ -107,7 +107,12 @@ token named_sub_def {
         my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"});
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
-            $namespace = $Perlito5::PKG_NAME unless $namespace;
+            if (!$namespace) {
+                #  perl -MO=Deparse -e ' package X; sub _ { 123 } '  # sub main::_
+                $namespace = $name eq '_'
+                            ? 'main'
+                            : $Perlito5::PKG_NAME;
+            }
 
             my $full_name = "${namespace}::$name";
             warn "Subroutine $full_name redefined"
