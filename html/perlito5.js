@@ -5272,10 +5272,6 @@ var p5100 = p5pkg['main'];
 						(v_v = (p5call(p5pkg["Perlito5::AST::Lookup"], "new", p5list_to_a('obj', null, 'index_exp', (v_v || (v_v = new p5ArrayRef([])))._array_.p5aget(2)), 0)));
 						throw(p5context([v_v], p5want));
 					};
-					if ( ((p5str(p5pkg["Perlito5::Expression"].ref([(v_v || (v_v = new p5ArrayRef([])))._array_.p5aget(1)], 0)) == 'ARRAY') && (p5num(((v_v || (v_v = new p5ArrayRef([])))._array_.p5aget(1))) == 2)) ) {
-						(v_v = (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'pair', 'arguments', (v_v || (v_v = new p5ArrayRef([])))._array_.p5aget(1), 'namespace', ''), 0)));
-						throw(p5context([v_v], p5want));
-					};
 					throw((v_v || (v_v = new p5ArrayRef([])))._array_.p5aget(1));
 				};
 				return (p5context([v_v], p5want));

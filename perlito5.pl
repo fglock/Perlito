@@ -911,10 +911,6 @@ sub Perlito5::Expression::pop_term {
             ($v = Perlito5::AST::Lookup->new('obj', undef(), 'index_exp', $v->[2]));
             return ($v)
         };
-        if (((ref($v->[1]) eq 'ARRAY') && (scalar($v->[1]) == 2))) {
-            ($v = Perlito5::AST::Apply->new('code', 'pair', 'arguments', $v->[1], 'namespace', ''));
-            return ($v)
-        };
         return ($v->[1])
     };
     return ($v)

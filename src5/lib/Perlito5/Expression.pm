@@ -141,13 +141,6 @@ sub pop_term {
             # say "#     ", $v->perl;
             return $v;
         }
-        if (ref($v->[1]) eq 'ARRAY' && scalar($v->[1]) == 2) {
-            # say "#   old style Pair ", $v->perl;
-            #   old style Pair - wrap it into a subroutine for now
-            $v = Perlito5::AST::Apply->new( code => 'pair', arguments => $v->[1], namespace => '' );
-            # say "#     ", $v->perl;
-            return $v;
-        }
         return $v->[1];
     }
     return $v;
