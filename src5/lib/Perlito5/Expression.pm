@@ -910,11 +910,11 @@ sub exp_parse {
 my @Statement_chars = (9, 8, 7, 6, 5, 4, 3, 2, 1);
 my %Statement = (
     'if'     => sub { Perlito5::Grammar->if($_[0], $_[1]) },
-    'unless' => sub { Perlito5::Grammar->unless($_[0], $_[1]) }, 
-    'when'   => sub { Perlito5::Grammar->when($_[0], $_[1]) },
     'for'    => sub { Perlito5::Grammar->for($_[0], $_[1]) },
-    'while'  => sub { Perlito5::Grammar->while($_[0], $_[1]) },
     'when'   => sub { Perlito5::Grammar->when($_[0], $_[1]) },
+    'while'  => sub { Perlito5::Grammar->while($_[0], $_[1]) },
+    'given'  => sub { Perlito5::Grammar->given($_[0], $_[1]) },
+    'unless' => sub { Perlito5::Grammar->unless($_[0], $_[1]) }, 
 );
 
 sub add_statement {

@@ -178,6 +178,21 @@ token while {
         }
 };
 
+token given {
+    given <.opt_ws> '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}' <.opt_ws>
+        {
+            $MATCH->{capture} = Perlito5::AST::Given->new( 
+                    cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) ),
+                 )
+        }
+};
+
+
 token opt_continue_block {
         'continue' <.opt_ws>
             '{' <.opt_ws>

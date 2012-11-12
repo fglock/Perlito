@@ -137,6 +137,13 @@ sub body { $_[0]->{body} }
 
 
 
+package Perlito5::AST::Given;
+sub new { my $class = shift; bless {@_}, $class }
+sub cond { $_[0]->{cond} }
+sub body { $_[0]->{body} }
+
+
+
 package Perlito5::AST::Decl;
 sub new { my $class = shift; bless {@_}, $class }
 sub decl { $_[0]->{decl} }

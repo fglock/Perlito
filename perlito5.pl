@@ -1950,16 +1950,16 @@ sub Perlito5::Expression::exp_parse {
 ((my  @Statement_chars) = (9, 8, 7, 6, 5, 4, 3, 2, 1));
 ((my  %Statement) = ('if', sub {
     Perlito5::Grammar->if($_[0], $_[1])
-}, 'unless', sub {
-    Perlito5::Grammar->unless($_[0], $_[1])
-}, 'when', sub {
-    Perlito5::Grammar->when($_[0], $_[1])
 }, 'for', sub {
     Perlito5::Grammar->for($_[0], $_[1])
-}, 'while', sub {
-    Perlito5::Grammar->while($_[0], $_[1])
 }, 'when', sub {
     Perlito5::Grammar->when($_[0], $_[1])
+}, 'while', sub {
+    Perlito5::Grammar->while($_[0], $_[1])
+}, 'given', sub {
+    Perlito5::Grammar->given($_[0], $_[1])
+}, 'unless', sub {
+    Perlito5::Grammar->unless($_[0], $_[1])
 }));
 sub Perlito5::Expression::add_statement {
     ((my  $name) = shift());
@@ -2853,6 +2853,87 @@ sub Perlito5::Grammar::while {
     }
 }))) && ((do {
     ($MATCH->{'capture'} = Perlito5::AST::While->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}), 'body', Perlito5::AST::Lit::Block->new('stmts', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig', undef()), 'continue', $MATCH->{'opt_continue_block'}->{'capture'}));
+    1
+})))
+}))
+}))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::given {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
+    ((my  $tmp) = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((((((((((((((((((('g' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((('i' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('v' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('e' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((('n' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('(' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = Perlito5::Expression->paren_parse($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Expression.paren_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.exp_stmts'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = Perlito5::AST::Given->new('cond', Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}), 'body', Perlito5::AST::Lit::Block->new('stmts', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'}))));
     1
 })))
 }))
@@ -7624,6 +7705,17 @@ sub Perlito5::AST::For::continue {
     $_[0]->{    'continue'}
 };
 sub Perlito5::AST::For::body {
+    $_[0]->{    'body'}
+};
+package Perlito5::AST::Given;
+sub Perlito5::AST::Given::new {
+    ((my  $class) = shift());
+    bless({@_}, $class)
+};
+sub Perlito5::AST::Given::cond {
+    $_[0]->{    'cond'}
+};
+sub Perlito5::AST::Given::body {
     $_[0]->{    'body'}
 };
 package Perlito5::AST::Decl;
