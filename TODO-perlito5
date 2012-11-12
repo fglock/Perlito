@@ -64,8 +64,6 @@ TODO list for Perlito5
 --- check signature in sort()
 --- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
--- check that \(@a) and \@a have different meanings
-
 -- $v{x::y} autoquotes the index when x::y() exists
 -- $v->{x} doesn't interpolate inside double quotes
 -- deref inside double quotes:
@@ -148,6 +146,8 @@ TODO list for Perlito5
 
 * Perl5 backend
 
+-- check that \(@a) and \@a have different meanings
+
 -- ${^NAME} needs curly-escaping
 
 - fix regex delimiters, or escape the regexes 
@@ -163,6 +163,8 @@ TODO list for Perlito5
 
 
 * Javascript backend
+
+-- check that \(@a) and \@a have different meanings
 
 -- delete() in the middle of an array turns exists() off:
 
