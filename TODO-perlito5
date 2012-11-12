@@ -47,8 +47,6 @@ TODO list for Perlito5
 
 -- create __DATA__ 
 
--- "default" statement not implemented
-
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
    my $v;
    BEGIN { $v = "123" }
@@ -146,6 +144,7 @@ TODO list for Perlito5
 * Perl5 backend
 
 -- "given" statement not implemented
+-- "default" statement not implemented
 
 -- check that \(@a) and \@a have different meanings
 
@@ -181,9 +180,8 @@ TODO list for Perlito5
 
 -- "~~" operator not implemented; See also "when" implementation
 
--- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
-
 -- "given" statement not implemented
+-- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
 -- "default" statement not implemented
 
 -- bug: some declarations are not "seen":
