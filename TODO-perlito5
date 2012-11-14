@@ -84,9 +84,6 @@ TODO list for Perlito5
     my $t = Class::->new # this works
     my $u = new Class::; # this also works (even with sub main in the current package)
 
--- lookup for existing subroutines:
-   sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
-
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
