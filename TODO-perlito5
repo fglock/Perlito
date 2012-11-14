@@ -32,17 +32,6 @@ TODO list for Perlito5
 
 * Parser
 
--- quotes vs. hash lookups:
-
-    $ perl -e '  q}} '
-    # ok
-
-    $ perl -e ' $x{ q}} } '
-    Unmatched right curly bracket at -e line 1, at end of line
-
-    $ perl -e ' $x{ q]] } '
-    # ok
-
 -- attributes - see: http://perldoc.perl.org/attributes.html
 
 -- create __DATA__ 
@@ -87,6 +76,24 @@ TODO list for Perlito5
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
+
+-- things that work in perlito5, but which are errors in 'perl'
+
+    quotes vs. hash lookups:
+    
+        $ perl -e '  q}} '
+        # ok
+    
+        $ perl -e ' $x{ q}} } '
+        Unmatched right curly bracket at -e line 1, at end of line
+    
+        $ perl -e ' $x{ q]] } '
+        # ok
+    
+    string interpolation with nested quotes of the same type:
+    
+        $ perl -e ' " $x{"x"} " '
+        String found where operator expected at -e line 1, near "x"} ""
 
 -- add tests for fixed bugs:
 
