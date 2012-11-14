@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..11';
+say '1..15';
 my %a;
 say 'ok 1 - create hash';
 $a{abc} = 3;
@@ -53,4 +53,21 @@ $c1->{c} = 4;
 print 'not ' if !defined $c1->{c};
 say "ok 11 - defined item";
 
+
+# autoquote
+
+my %v;
+sub x1 () { 1230 } $v{x1()} = 120;        # '1230'     => 120
+sub x2 () { 1231 } $v{x2} = 121;          # 'x2'       => 121
+sub x3 () { 1232 } $v{main::x3} = 122;    # '1232'     => 122
+
+{
+    no strict 'subs';
+    $v{main::x4} = 123;                       # 'main::x4' => 123
+}
+
+print 'not ' if $v{'1230'}     != 120; say "ok 12 - no autoquote for function call with parenthesis";
+print 'not ' if $v{'x2'}       != 121; say "ok 13 - autoquote for bareword without colons";
+print 'not ' if $v{'1232'}     != 122; say "ok 14 - no autoquote for function call without parenthesis";
+print 'not ' if $v{'main::x4'} != 123; say "ok 15 - autoquote for bareword with colons";
 

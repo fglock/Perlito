@@ -7590,7 +7590,10 @@ sub Perlito5::AST::Lookup::autoquote {
     ((my  $self) = shift());
     ((my  $index) = shift());
     if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-        return (Perlito5::AST::Val::Buf->new('buf', ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'})))
+        ((my  $full_name) = ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'}));
+        if (!(exists($Perlito5::PROTO->{$full_name}))) {
+            return (Perlito5::AST::Val::Buf->new('buf', $full_name))
+        }
     };
     $index
 };
@@ -7998,7 +8001,10 @@ join("", chr(9) x $level)
         ((my  $index) = shift());
         ((my  $level) = shift());
         if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-            ($index = Perlito5::AST::Val::Buf->new('buf', ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'})))
+            ((my  $full_name) = ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'}));
+            if (!(exists($Perlito5::PROTO->{$full_name}))) {
+                ($index = Perlito5::AST::Val::Buf->new('buf', $full_name))
+            }
         };
         return (to_str($index, $level))
     };
@@ -9563,7 +9569,10 @@ join("", chr(9) x $level)
         ((my  $index) = shift());
         ((my  $level) = shift());
         if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-            ($index = Perlito5::AST::Val::Buf->new('buf', ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'})))
+            ((my  $full_name) = ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'}));
+            if (!(exists($Perlito5::PROTO->{$full_name}))) {
+                ($index = Perlito5::AST::Val::Buf->new('buf', $full_name))
+            }
         };
         return (to_str($index, $level))
     };

@@ -410,11 +410,14 @@ package Perlito5::Javascript3;
            && $index->{bareword}
            )
         {
-            $index = Perlito5::AST::Val::Buf->new( 
-                buf => ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code} 
-            );
+            my $full_name = ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code};
+            if ( !exists $Perlito5::PROTO->{$full_name} ) {
+                $index = Perlito5::AST::Val::Buf->new( 
+                    buf => $full_name
+                );
+            }
         }
-    
+   
         return to_str($index, $level);
     }
 

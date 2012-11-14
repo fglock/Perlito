@@ -1892,7 +1892,13 @@ var p5100 = p5pkg['main'];
 				var v_index;
 				(v_index = (List__.shift()));
 				if ( (p5bool(p5call(v_index, "isa", ['Perlito5::AST::Apply'], 0)) && p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('bareword'))) ) {
-					throw(p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', (p5str(( p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) ? (p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) + '::') : '')) + p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('code')))], p5want));
+					(function () {
+						var v_full_name;
+						(v_full_name = ((p5str(( p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) ? (p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) + '::') : '')) + p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('code')))));
+						if ( !( (p5pkg["Perlito5"]["v_PROTO"])._hash_.hasOwnProperty(v_full_name)) ) {
+							throw(p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_full_name], p5want));
+						};
+						})();
 				};
 				return (p5context([v_index], p5want));
 			}
@@ -2468,7 +2474,13 @@ var p5100 = p5pkg['main'];
 						var v_level;
 						(v_level = (List__.shift()));
 						if ( (p5bool(p5call(v_index, "isa", ['Perlito5::AST::Apply'], 0)) && p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('bareword'))) ) {
-							(v_index = (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', (p5str(( p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) ? (p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) + '::') : '')) + p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('code')))], 0)));
+							(function () {
+								var v_full_name;
+								(v_full_name = ((p5str(( p5bool((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) ? (p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('namespace')) + '::') : '')) + p5str((v_index || (v_index = new p5HashRef({})))._hash_.p5hget('code')))));
+								if ( !( (p5pkg["Perlito5"]["v_PROTO"])._hash_.hasOwnProperty(v_full_name)) ) {
+									(v_index = (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', v_full_name], 0)));
+								};
+								})();
 						};
 						return (p5pkg["Perlito5::Javascript2"].to_str([v_index, v_level], p5want));
 				});
