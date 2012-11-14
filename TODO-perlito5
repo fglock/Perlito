@@ -61,14 +61,6 @@ TODO list for Perlito5
 --- check signature in sort()
 --- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
--- deref inside double quotes:
-    $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
-    [$[object Object]]
-
-    $ node perlito5.js -MO=Deparse -e ' " $v->{x} $$v{x} " ' 
-    (' ' . $v . '->{x} $' . $v{'x'} . ' ');
-
-
 -- add "print", "printf", "say" special parsing - note this is related to indirect object notation
 -- indirect object notation
     http://lwn.net/Articles/451486/
