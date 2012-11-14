@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..10';
+say '1..18';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -50,4 +50,53 @@ say "ok 9  # $tail";
 
 print 'not ' if $z ne 'tr';
 say 'ok 10';
+
+
+# interpolation
+
+my $v = 123;
+my $r = "-$v-";
+print 'not ' if $r ne '-123-';  say 'ok 11 - scalar interpolation';
+
+my @v = (234, 567);
+$r = "-$v[1]-";
+print 'not ' if $r ne '-567-';  say 'ok 12 - array element interpolation';
+
+$r = "-${v[1]}-";
+print 'not ' if $r ne '-567-';  say 'ok 13 - array element interpolation';
+
+$r = "-@v-";
+print 'not ' if $r ne '-234 567-';  say 'ok 14 - array interpolation';
+
+my %v = (xyz => 234, abc => 567);
+$r = "-$v{xyz}-";
+print 'not ' if $r ne '-234-';  say 'ok 15 - hash element interpolation';
+
+$r = "-${v{xyz}}-";
+print 'not ' if $r ne '-234-';  say 'ok 16 - hash element interpolation';
+
+$v = { xyz => 123, abc => 567 };
+$r = "-$v->{xyz}-";
+print 'not ' if $r ne '-123-';  say "ok 17 - hash deref interpolation - $r";
+
+# {
+#     no strict 'refs';
+#     # Can't use bareword ("v") as a HASH ref while "strict refs" in use 
+#     # Global symbol "%v" requires explicit package name 
+#     $r = "-${v->{xyz}}-";
+#     print 'not ' if $r ne '-234-';  say 'ok 18 - hash deref interpolation';
+# }
+
+$v = [ 123, 567, 890 ];
+$r = "-$v->[2]-";
+print 'not ' if $r ne '-890-';  say "ok 18 - array deref interpolation - $r";
+
+# {
+#     no strict 'refs';
+#     # Can't use bareword ("v") as a HASH ref while "strict refs" in use 
+#     # Global symbol "@v" requires explicit package name 
+#     $r = "-${v->[2]}-";
+#     print 'not ' if $r ne '-890-';  say 'ok 18 - array deref interpolation';
+# }
+
 
