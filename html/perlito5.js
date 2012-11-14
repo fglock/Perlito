@@ -9564,6 +9564,40 @@ var p5100 = p5pkg['main'];
 				var v_p;
 				(v_p = (v_pos));
 				var v_m_index;
+				if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 3], 0) == '->[') ) {
+					(function () {
+						(v_p = ((p5num(v_p) + 3)));
+						(v_m_index = (p5call(p5pkg["Perlito5::Expression"], "list_parse", [v_str, v_p], 0)));
+						if ( p5bool(v_m_index) ) {
+							null;
+						}
+						else {
+							p5pkg["Perlito5::Grammar::String"].die([['syntax error']], null);
+						};
+						var v_exp;
+						(v_exp = ((v_m_index || (v_m_index = new p5HashRef({})))._hash_.p5hget('capture')));
+						(v_p = ((v_m_index || (v_m_index = new p5HashRef({})))._hash_.p5hget('to')));
+						if ( ((p5str(v_exp) == '*undef*') || (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0) != ']')) ) {
+							p5pkg["Perlito5::Grammar::String"].die([['syntax error']], null);
+						};
+						(v_p)++;
+						(v_m_index || (v_m_index = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Call"], "new", p5list_to_a('method', 'postcircumfix:<[ ]>', 'invocant', (v_m_var || (v_m_var = new p5HashRef({})))._hash_.p5hget('capture'), 'arguments', v_exp), 0)));
+						(v_m_index || (v_m_index = new p5HashRef({})))._hash_.p5hset('to', (v_p));
+						throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index, v_interpolate], p5want));
+						})();
+				};
+				if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 3], 0) == '->{') ) {
+					(v_pos = ((p5num(v_pos) + 2)));
+					(v_m_index = (p5call(p5pkg["Perlito5::Expression"], "term_curly", [v_str, v_pos], 0)));
+					if ( p5bool(v_m_index) ) {
+						null;
+					}
+					else {
+						p5pkg["Perlito5::Grammar::String"].die([['syntax error']], null);
+					};
+					(v_m_index || (v_m_index = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Call"], "new", p5list_to_a('method', 'postcircumfix:<{ }>', 'invocant', (v_m_var || (v_m_var = new p5HashRef({})))._hash_.p5hget('capture'), 'arguments', (p5pkg["Perlito5::Match"].flat([v_m_index], p5want) || (p5pkg["Perlito5::Match"].flat([v_m_index], p5want) = new p5ArrayRef([])))._array_.p5aget_array(2)._array_.p5aget(0)), 0)));
+					throw(p5call(v_self, "double_quoted_var_with_subscript", [v_m_index, v_interpolate], p5want));
+				};
 				if ( (p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0) == '[') ) {
 					if ( (p5num(v_interpolate) == 2) ) {
 						(function () {

@@ -5086,6 +5086,37 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     ((my  $pos) = $m_var->{'to'});
     ((my  $p) = $pos);
     (my  $m_index);
+    if ((substr($str, $p, 3) eq '->[')) {
+        ($p = ($p + 3));
+        ($m_index = Perlito5::Expression->list_parse($str, $p));
+        if ($m_index) {
+
+        }
+        else {
+            die('syntax error')
+        };
+        ((my  $exp) = $m_index->{'capture'});
+        ($p = $m_index->{'to'});
+        if ((($exp eq '*undef*') || (substr($str, $p, 1) ne ']'))) {
+            die('syntax error')
+        };
+        ($p)++;
+        ($m_index->{'capture'} = Perlito5::AST::Call->new('method', 'postcircumfix:<[ ]>', 'invocant', $m_var->{'capture'}, 'arguments', $exp));
+        ($m_index->{'to'} = $p);
+        return ($self->double_quoted_var_with_subscript($m_index, $interpolate))
+    };
+    if ((substr($str, $p, 3) eq '->{')) {
+        ($pos = ($pos + 2));
+        ($m_index = Perlito5::Expression->term_curly($str, $pos));
+        if ($m_index) {
+
+        }
+        else {
+            die('syntax error')
+        };
+        ($m_index->{'capture'} = Perlito5::AST::Call->new('method', 'postcircumfix:<{ }>', 'invocant', $m_var->{'capture'}, 'arguments', Perlito5::Match::flat($m_index)->[2]->[0]));
+        return ($self->double_quoted_var_with_subscript($m_index, $interpolate))
+    };
     if ((substr($str, $p, 1) eq '[')) {
         if (($interpolate == 2)) {
             ((my  $m) = ((Perlito5::Expression->term_digit($str, ($p + 1)) || (((substr($str, ($p + 1), 1) eq '-') && Perlito5::Expression->term_digit($str, ($p + 2))))) || Perlito5::Grammar::Sigil->term_sigil($str, ($p + 1))));

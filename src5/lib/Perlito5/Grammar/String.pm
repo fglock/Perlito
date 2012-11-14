@@ -715,6 +715,33 @@ sub double_quoted_var_with_subscript {
     my $pos = $m_var->{to};
     my $p = $pos;
     my $m_index;
+    if (substr($str, $p, 3) eq '->[') {
+        $p += 3;
+        $m_index = Perlito5::Expression->list_parse($str, $p);
+        die "syntax error" unless $m_index;
+        my $exp = $m_index->{capture};
+        $p = $m_index->{to};
+        die "syntax error" if $exp eq '*undef*' || substr($str, $p, 1) ne ']';
+        $p++;
+        $m_index->{capture} = Perlito5::AST::Call->new(
+                method    => 'postcircumfix:<[ ]>',
+                invocant  => $m_var->{capture},
+                arguments => $exp,
+            );
+        $m_index->{to} = $p;
+        return $self->double_quoted_var_with_subscript($m_index, $interpolate);
+    }
+    if (substr($str, $p, 3) eq '->{') {
+        $pos += 2;
+        $m_index = Perlito5::Expression->term_curly($str, $pos);
+        die "syntax error" unless $m_index;
+        $m_index->{capture} = Perlito5::AST::Call->new(
+                method    => 'postcircumfix:<{ }>',
+                invocant  => $m_var->{capture},
+                arguments => Perlito5::Match::flat($m_index)->[2][0],
+            );
+        return $self->double_quoted_var_with_subscript($m_index, $interpolate);
+    }
     if (substr($str, $p, 1) eq '[') {
 
         if ($interpolate == 2) {
