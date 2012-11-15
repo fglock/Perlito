@@ -3387,8 +3387,6 @@ var p5100 = p5pkg['main'];
 			}, [0], false, "");
 		var p5140 = p5make_package("Perlito5::AST::Apply");
 		p5for_lex(function () {
-				// no strict
-;
 				p5make_sub("Perlito5::AST::Apply", "emit_regex_javascript2", function (List__, p5want) {
 					try {
 						var v_op;

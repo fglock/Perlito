@@ -1428,21 +1428,25 @@ package Perlito5::AST::Apply;
 
         'postfix:<++>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
                 . '.p5postincr()';
         },
         'postfix:<-->' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
                 . '.p5postdecr()';
         },
         'prefix:<++>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
                 . '.p5incr()';
         },
         'prefix:<-->' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript3::emit_javascript3_autovivify( $self->{arguments}[0], $level, 'lvalue' )
                 . '.p5decr()';
         },
@@ -1473,6 +1477,7 @@ package Perlito5::AST::Apply;
 
         'scalar' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript3::to_scalar($self->{arguments}, $level+1);
         },
 
@@ -2122,6 +2127,8 @@ package Perlito5::AST::When;
         );
 
         # TODO - use a "next" exception inside a "for", but use a "break" exception inside a "given"
+
+        my $label = '';  # TODO
 
         my $s = 'if ( ' . Perlito5::Javascript3::to_bool($expr, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript3( $level + 1 ) . "\n"

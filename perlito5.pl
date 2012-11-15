@@ -8651,9 +8651,6 @@ do {{
 }};
 package Perlito5::AST::Apply;
 do {{
-
-    # no strict
-;
     sub Perlito5::AST::Apply::emit_regex_javascript2 {
         ((my  $op) = shift());
         ((my  $var) = shift());
@@ -10324,15 +10321,19 @@ do {{
     return (('(new p5ScalarRef(' . $arg->emit_javascript3($level) . '))'))
 }, 'postfix:<++>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     (Perlito5::Javascript3::emit_javascript3_autovivify($self->{'arguments'}->[0], $level, 'lvalue') . '.p5postincr()')
 }, 'postfix:<-->', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     (Perlito5::Javascript3::emit_javascript3_autovivify($self->{'arguments'}->[0], $level, 'lvalue') . '.p5postdecr()')
 }, 'prefix:<++>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     (Perlito5::Javascript3::emit_javascript3_autovivify($self->{'arguments'}->[0], $level, 'lvalue') . '.p5incr()')
 }, 'prefix:<-->', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     (Perlito5::Javascript3::emit_javascript3_autovivify($self->{'arguments'}->[0], $level, 'lvalue') . '.p5decr()')
 }, 'infix:<x>', sub {
     ((my  $self) = $_[0]);
@@ -10351,6 +10352,7 @@ do {{
     ('(delete ' . $self->{'arguments'}->[0]->emit_javascript3() . ')')
 }, 'scalar', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     Perlito5::Javascript3::to_scalar($self->{'arguments'}, ($level + 1))
 }, 'ternary:<? :>', sub {
     ((my  $self) = shift());
@@ -10745,6 +10747,7 @@ do {{
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Javascript3::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
         ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
+        ((my  $label) = '');
         ((my  $s) = ('if ( ' . Perlito5::Javascript3::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript3(($level + 1)) . chr(10) . Perlito5::Javascript3::tab(($level + 1)) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::Javascript3::tab($level) . '}'));
         return ($s)
     }

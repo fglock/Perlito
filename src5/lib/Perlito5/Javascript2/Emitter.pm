@@ -1256,10 +1256,6 @@ package Perlito5::AST::Call;
 
 package Perlito5::AST::Apply;
 {
-    no strict;  # TODO - FIXME:
-                # Global symbol "$level" requires explicit package name
-                # make: *** [build-5js]
-
     sub emit_regex_javascript2 {
         my $op = shift;
         my $var = shift;
