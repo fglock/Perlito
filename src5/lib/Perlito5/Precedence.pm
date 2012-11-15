@@ -1,6 +1,8 @@
 
 package Perlito5::Precedence;
 
+use feature 'say';
+
 # Perlito5::Precedence attributes:
 #   get_token - code ref
 #   reduce    - code ref
@@ -419,7 +421,7 @@ sub precedence_parse {
             $token->[0] = 'prefix';
             unshift( @$op_stack, $token);
         }
-        elsif ( ($Operator->{postfix}){$token->[1]} && $last_is_term )
+        elsif ( $Operator->{postfix}{$token->[1]} && $last_is_term )
         {
             my $pr = $Precedence->{$token->[1]};
             while (scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] })) {

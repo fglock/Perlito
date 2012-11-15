@@ -127,7 +127,7 @@ package Perlito5::Perl6::LexicalBlock;
                 push @str, Perlito5::Perl6::tab($level) . $decl->emit_perl6_init;
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                my $var = $decl->arguments[0];
+                my $var = $decl->arguments->[0];
                 if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     push @str, Perlito5::Perl6::tab($level) . $var->emit_perl6_init;
                 }
@@ -182,7 +182,7 @@ package Perlito5::AST::CompUnit;
                 $str = $str . '  ' . $decl->emit_perl6_init;
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                my $var = $decl->arguments[0];
+                my $var = $decl->arguments->[0];
                 if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     $str = $str . '  ' . $var->emit_perl6_init;
                 }

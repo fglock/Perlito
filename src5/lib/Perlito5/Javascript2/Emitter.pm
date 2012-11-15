@@ -2,6 +2,7 @@ use v5;
 
 use Perlito5::AST;
 use Perlito5::Dumper;
+use strict;
 
 package Perlito5::Javascript2;
 {
@@ -467,7 +468,7 @@ package Perlito5::Javascript2::LexicalBlock;
                     return 1;
                 }
                 if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                    my $var = $decl->arguments[0];
+                    my $var = $decl->arguments()->[0];
                     if (  $var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq $type
                        || $decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq $type
                        ) 
@@ -1255,6 +1256,9 @@ package Perlito5::AST::Call;
 
 package Perlito5::AST::Apply;
 {
+    no strict;  # TODO - FIXME:
+                # Global symbol "$level" requires explicit package name
+                # make: *** [build-5js]
 
     sub emit_regex_javascript2 {
         my $op = shift;
@@ -1314,7 +1318,6 @@ package Perlito5::AST::Apply;
         }
         die "Error: regex emitter";
     }
-
 
 
     my %emit_js = (
@@ -1397,6 +1400,7 @@ package Perlito5::AST::Apply;
         },
         'require' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
                 . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
@@ -1405,6 +1409,7 @@ package Perlito5::AST::Apply;
 
         'prefix:<$>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
             Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . '._scalar_';
         },
@@ -1434,10 +1439,12 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<[ ]>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(new p5ArrayRef(' . Perlito5::Javascript2::to_list( $self->{arguments} ) . '))';
         },
         'circumfix:<{ }>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(new p5HashRef(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level, 'hash' ) . '))';
         },
         'prefix:<\\>' => sub {
@@ -1543,16 +1550,19 @@ package Perlito5::AST::Apply;
 
         'infix:<..>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(function (a) { ' . 'for (var i=' . $self->{arguments}->[0]->emit_javascript2() . ', l=' . $self->{arguments}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])';
         },
 
         'delete' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(delete ' . $self->{arguments}[0]->emit_javascript2() . ')';
         },
 
         'scalar' => sub {
-            my $self = $_[0];
+            my $self  = $_[0];
+            my $level = $_[1];
             Perlito5::Javascript2::to_scalar($self->{arguments}, $level+1);
         },
 
@@ -1981,7 +1991,6 @@ package Perlito5::AST::Apply;
 
     );
 
-
     sub emit_javascript2 {
         my $self  = shift;
         my $level = shift;
@@ -2230,6 +2239,8 @@ package Perlito5::AST::When;
         );
 
         # TODO - use a "next" exception inside a "for", but use a "break" exception inside a "given"
+
+        my $label = '';  # TODO
 
         my $s = 'if ( ' . Perlito5::Javascript2::to_bool($expr, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript2( $level + 1 ) . "\n"

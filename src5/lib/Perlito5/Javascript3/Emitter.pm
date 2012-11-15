@@ -2,6 +2,7 @@ use v5;
 
 use Perlito5::AST;
 use Perlito5::Dumper;
+use feature 'say';
 
 package Perlito5::Javascript3;
 {
@@ -463,7 +464,7 @@ package Perlito5::Javascript3::LexicalBlock;
                     return 1;
                 }
                 if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                    my $var = $decl->arguments[0];
+                    my $var = $decl->arguments()->[0];
                     if (  $var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq $type
                        || $decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq $type
                        ) 
@@ -1347,6 +1348,7 @@ package Perlito5::AST::Apply;
         },
         'require' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
             if ($arg->isa('Perlito5::AST::Val::Num')) {
                 # "use 5.006" -- XXX this should be tested at parse time instead
@@ -1360,6 +1362,7 @@ package Perlito5::AST::Apply;
 
         'prefix:<$>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
             Perlito5::Javascript3::emit_javascript3_autovivify( $arg, $level, 'scalar' ) . '.sderef()';
         },
@@ -1389,10 +1392,12 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<[ ]>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list( $self->{arguments} ) . ')))';
         },
         'circumfix:<{ }>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
             '(new p5HashRef(new p5Hash(' . Perlito5::Javascript3::to_list( $self->{arguments}, $level, 'hash' ) . ')))';
         },
         'prefix:<\\>' => sub {

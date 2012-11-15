@@ -88,6 +88,9 @@ TODO list for Perlito5
     $ perl -e ' use strict; my $x = X; print $x '
     Bareword "X" not allowed while "strict subs" in use 
 
+    $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
+    join("", ::{'main::X::'} x main::y);
+
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.

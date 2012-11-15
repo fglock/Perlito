@@ -2,6 +2,7 @@
 package Perlito5::Grammar::Block;
 
 use Perlito5::Expression;
+use strict;
 
 our %Named_block = (
     BEGIN     => 1,
@@ -139,7 +140,7 @@ sub named_sub {
     my $ws = Perlito5::Grammar::Space->ws( $str, $pos + 3 );
     return
         unless $ws;
-    $p = $ws->{to};
+    my $p = $ws->{to};
 
     my $m_name = Perlito5::Grammar->ident( $str, $p );
     return

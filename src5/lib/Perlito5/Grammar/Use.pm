@@ -3,6 +3,7 @@ package Perlito5::Grammar::Use;
 
 use Perlito5::Precedence;
 use Perlito5::Grammar;
+use strict;
 
 Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
@@ -234,7 +235,7 @@ sub require {
     return 
         if filename_lookup($filename) eq "done";
 
-    $result = do $INC{$filename};
+    my $result = do $INC{$filename};
 
     if ($@) {
         $INC{$filename} = undef;

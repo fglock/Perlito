@@ -180,7 +180,7 @@ sub new { my $class = shift; bless {@_}, $class }
 sub mod { $_[0]->{mod} }
 sub code { $_[0]->{code} }
 
-
+1;
 
 =begin
 

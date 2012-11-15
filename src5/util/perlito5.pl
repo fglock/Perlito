@@ -31,6 +31,8 @@ use Perlito5::Precedence;
 use Perlito5::Runtime;
 use Perlito5::Dumper;
 
+use strict;
+
 my $_V5_COMPILER_NAME    = 'Perlito5';
 my $_V5_COMPILER_VERSION = '9.0';
 my $source      = '';
@@ -82,11 +84,11 @@ while (substr($ARGV[0], 0, 1) eq '-'
     }
     elsif ($ARGV[0] eq '-I') {
         shift @ARGV;
-        $lib = shift @ARGV;
+        my $lib = shift @ARGV;
         unshift @INC, $lib;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
-        $lib = substr($ARGV[0], 2);
+        my $lib = substr($ARGV[0], 2);
         unshift @INC, $lib;
         shift @ARGV;
     }

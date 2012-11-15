@@ -1,5 +1,6 @@
 
 package Perlito5::Grammar::Bareword;
+use strict;
 
     sub term_bareword {
         my $self = $_[0];
@@ -27,9 +28,22 @@ package Perlito5::Grammar::Bareword;
             return;
         }
 
+        my $name = Perlito5::Match::flat($m_name);
         $p = $m_name->{to};
 
-        my $name = Perlito5::Match::flat($m_name);
+        if ( substr( $str, $p, 2) eq '::' ) {
+            # ::X::y::
+            $m_name->{to} = $p + 2;
+            $m_name->{capture} = [ 'term', 
+                        Perlito5::AST::Var->new(
+                            sigil => '::',
+                            name  => '',
+                            namespace => $namespace . '::' . $name,
+                        )
+                    ];
+            return $m_name;
+        }
+
         my $full_name = $name;
         $full_name = $namespace . '::' . $name if $namespace;
 

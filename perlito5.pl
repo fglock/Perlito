@@ -270,6 +270,9 @@ sub Rul::NotBefore::set_captures_to_array {
 ;
 package main;
 package Perlito5::Precedence;
+
+# use feature
+;
 sub Perlito5::Precedence::new {
     ((my  $class) = shift());
     bless({@_}, $class)
@@ -572,7 +575,7 @@ sub Perlito5::Precedence::precedence_parse {
             unshift(@{$op_stack}, $token)
         }
         else {
-            if ((($Operator->{'postfix'})->{$token->[1]} && $last_is_term)) {
+            if (($Operator->{'postfix'}->{$token->[1]} && $last_is_term)) {
                 ((my  $pr) = $Precedence->{$token->[1]});
                 for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))); do {{
 
@@ -650,6 +653,9 @@ sub Perlito5::Precedence::precedence_parse {
 ;
 package main;
 package Perlito5::Grammar::Bareword;
+
+# use strict
+;
 sub Perlito5::Grammar::Bareword::term_bareword {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -666,8 +672,13 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         };
         return ()
     };
-    ($p = $m_name->{'to'});
     ((my  $name) = Perlito5::Match::flat($m_name));
+    ($p = $m_name->{'to'});
+    if ((substr($str, $p, 2) eq '::')) {
+        ($m_name->{'to'} = ($p + 2));
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', ($namespace . '::' . $name))]);
+        return ($m_name)
+    };
     ((my  $full_name) = $name);
     if ($namespace) {
         ($full_name = ($namespace . '::' . $name))
@@ -5360,6 +5371,9 @@ package Perlito5::Grammar::Use;
 
 # use Perlito5::Grammar
 ;
+
+# use strict
+;
 Perlito5::Precedence::add_term('no', sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 });
@@ -5630,7 +5644,7 @@ sub Perlito5::Grammar::Use::require {
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };
-    ($result = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
+    ((my  $result) = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
     if (${'@'}) {
         ($INC{$filename} = undef());
         die(${'@'})
@@ -5655,6 +5669,9 @@ package main;
 package Perlito5::Grammar::Block;
 
 # use Perlito5::Expression
+;
+
+# use strict
 ;
 ((our  %Named_block) = ('BEGIN', 1, 'UNITCHECK', 1, 'CHECK', 1, 'INIT', 1, 'END', 1));
 Perlito5::Expression::add_statement('{', sub {
@@ -5863,7 +5880,7 @@ sub Perlito5::Grammar::Block::named_sub {
     else {
         return ()
     };
-    ($p = $ws->{'to'});
+    ((my  $p) = $ws->{'to'});
     ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
     if ($m_name) {
 
@@ -7808,6 +7825,7 @@ sub Perlito5::AST::Use::mod {
 sub Perlito5::AST::Use::code {
     $_[0]->{    'code'}
 };
+1;
 
 ;
 package main;
@@ -7846,6 +7864,9 @@ undef();
 ;
 
 # use Perlito5::Dumper
+;
+
+# use strict
 ;
 package Perlito5::Javascript2;
 do {{
@@ -8630,6 +8651,9 @@ do {{
 }};
 package Perlito5::AST::Apply;
 do {{
+
+    # no strict
+;
     sub Perlito5::AST::Apply::emit_regex_javascript2 {
         ((my  $op) = shift());
         ((my  $var) = shift());
@@ -8731,9 +8755,11 @@ do {{
     ('(' . $self->{'arguments'}->[0]->emit_javascript2($level, $wantarray) . ')')
 }, 'require', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . (($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0)) . '])')
 }, 'prefix:<$>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
     (Perlito5::Javascript2::emit_javascript2_autovivify($arg, $level, 'scalar') . '._scalar_')
 }, 'prefix:<@>', sub {
@@ -8758,9 +8784,11 @@ do {{
     ('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript2($level) . ')')
 }, 'circumfix:<[ ]>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(new p5ArrayRef(' . Perlito5::Javascript2::to_list($self->{'arguments'}) . '))')
 }, 'circumfix:<{ }>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(new p5HashRef(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level, 'hash') . '))')
 }, 'prefix:<' . chr(92) . '>', sub {
     ((my  $self) = $_[0]);
@@ -8829,12 +8857,15 @@ do {{
     Perlito5::Javascript2::to_list($self->{'arguments'})
 }, 'infix:<..>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript2() . ', l=' . $self->{'arguments'}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])')
 }, 'delete', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(delete ' . $self->{'arguments'}->[0]->emit_javascript2() . ')')
 }, 'scalar', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     Perlito5::Javascript2::to_scalar($self->{'arguments'}, ($level + 1))
 }, 'ternary:<? :>', sub {
     ((my  $self) = shift());
@@ -9269,6 +9300,7 @@ do {{
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1));
         ((my  $expr) = Perlito5::AST::Apply->new('code', 'infix:<==>', 'arguments', [Perlito5::AST::Var->new('sigil', '$', 'namespace', '', 'name', '_'), $cond]));
+        ((my  $label) = '');
         ((my  $s) = ('if ( ' . Perlito5::Javascript2::to_bool($expr, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::Javascript2::tab($level) . '}'));
         return ($s)
     }
@@ -9408,6 +9440,9 @@ undef();
 ;
 
 # use Perlito5::Dumper
+;
+
+# use feature
 ;
 package Perlito5::Javascript3;
 do {{
@@ -10224,6 +10259,7 @@ do {{
     ('(' . $self->{'arguments'}->[0]->emit_javascript3($level, $wantarray) . ')')
 }, 'require', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
     if ($arg->isa('Perlito5::AST::Val::Num')) {
         return ('1')
@@ -10231,6 +10267,7 @@ do {{
     ('p5pkg["Perlito5::Grammar::Use"].require([' . Perlito5::Javascript3::to_str($self->{'arguments'}->[0]) . ', ' . (($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0)) . '])')
 }, 'prefix:<$>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
     (Perlito5::Javascript3::emit_javascript3_autovivify($arg, $level, 'scalar') . '.sderef()')
 }, 'prefix:<@>', sub {
@@ -10255,9 +10292,11 @@ do {{
     ('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript3($level) . ')')
 }, 'circumfix:<[ ]>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list($self->{'arguments'}) . ')))')
 }, 'circumfix:<{ }>', sub {
     ((my  $self) = $_[0]);
+    ((my  $level) = $_[1]);
     ('(new p5HashRef(new p5Hash(' . Perlito5::Javascript3::to_list($self->{'arguments'}, $level, 'hash') . ')))')
 }, 'prefix:<' . chr(92) . '>', sub {
     ((my  $self) = $_[0]);
@@ -11205,7 +11244,7 @@ do {{
             ((my  $arg) = $self->{'arguments'}->[0]);
             (my  $eval);
             if ($arg->isa('Perlito5::AST::Do')) {
-                ($eval = $arg->emit_perl5(($level + 1), $wantarray))
+                ($eval = $arg->emit_perl5(($level + 1)))
             }
             else {
                 ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . $arg->emit_perl5(($level + 1), 'scalar') . ', 0);' . 'my $source; ' . '$source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";' . chr(92) . 'n" ' . 'for @{ Perlito5::Match::flat($m) }; ' . 'eval $source;' . '})'))
@@ -11887,6 +11926,9 @@ for (split(':', (($ENV{'PERL5LIB'} || '')))) {
 
 # use Perlito5::Dumper
 ;
+
+# use strict
+;
 ((my  $_V5_COMPILER_NAME) = 'Perlito5');
 ((my  $_V5_COMPILER_VERSION) = '9.0');
 ((my  $source) = '');
@@ -11910,12 +11952,12 @@ for ( ; ((substr($ARGV[0], 0, 1) eq '-') && (substr($ARGV[0], 0, 2) ne '-e')); d
     else {
         if (($ARGV[0] eq '-I')) {
             shift(@ARGV);
-            ($lib = shift(@ARGV));
+            ((my  $lib) = shift(@ARGV));
             unshift(@INC, $lib)
         }
         else {
             if ((substr($ARGV[0], 0, 2) eq '-I')) {
-                ($lib = substr($ARGV[0], 2));
+                ((my  $lib) = substr($ARGV[0], 2));
                 unshift(@INC, $lib);
                 shift(@ARGV)
             }
