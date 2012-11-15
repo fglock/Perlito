@@ -73,6 +73,8 @@ TODO list for Perlito5
     my $t = Class::->new # this works
     my $u = new Class::; # this also works (even with sub main in the current package)
 
+-- "namespace" parsing
+
     $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
     Not a GLOB reference at -e line 1.
 
@@ -90,6 +92,13 @@ TODO list for Perlito5
 
     $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
     join("", ::{'main::X::'} x main::y);
+
+    $ perl -MO=Deparse -e ' ::X '
+    '???';
+
+    $ perl -MO=Deparse -e ' sub X {} ::X '
+    sub X { }
+    X;
 
 -- strict and warnings: create options like 'subs', 'refs'
 
