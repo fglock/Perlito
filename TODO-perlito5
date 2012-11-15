@@ -91,6 +91,8 @@ TODO list for Perlito5
     $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
     join("", ::{'main::X::'} x main::y);
 
+-- strict and warnings: create options like 'subs', 'refs'
+
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
