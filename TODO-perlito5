@@ -73,6 +73,21 @@ TODO list for Perlito5
     my $t = Class::->new # this works
     my $u = new Class::; # this also works (even with sub main in the current package)
 
+    $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
+    Not a GLOB reference at -e line 1.
+
+    $ perl -e ' { package X; sub printx { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; printx $x "xxx" '
+    >xxx<
+
+    $ perl -MO=Deparse -e ' print X:: "xxx" '
+    print X 'xxx';
+
+    $ perl -e ' use strict; my $x = X::; print $x '
+    X
+
+    $ perl -e ' use strict; my $x = X; print $x '
+    Bareword "X" not allowed while "strict subs" in use 
+
 -- clean up:
     the several "end_tables" in Expression.pm are duplicating the function of 
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.

@@ -4969,20 +4969,21 @@ var p5100 = p5pkg['main'];
 				(v_p = (v_pos));
 				var v_m_namespace;
 				(v_m_namespace = (p5call(p5pkg["Perlito5::Grammar"], "optional_namespace_before_ident", [v_str, v_p], 0)));
+				var v_namespace;
+				(v_namespace = (p5pkg["Perlito5::Match"].flat([v_m_namespace], 0)));
 				(v_p = ((v_m_namespace || (v_m_namespace = new p5HashRef({})))._hash_.p5hget('to')));
 				var v_m_name;
 				(v_m_name = (p5call(p5pkg["Perlito5::Grammar"], "ident", [v_str, v_p], 0)));
-				if ( p5bool(v_m_name) ) {
-					null;
-				}
-				else {
-					throw(p5context([v_m_name], p5want));
+				if ( !( p5bool(v_m_name)) ) {
+					if ( p5bool(v_namespace) ) {
+						(v_m_namespace || (v_m_namespace = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', '::', 'name', '', 'namespace', v_namespace], 1))))));
+						throw(p5context([v_m_namespace], p5want));
+					};
+					throw(p5context([], p5want));
 				};
 				(v_p = ((v_m_name || (v_m_name = new p5HashRef({})))._hash_.p5hget('to')));
 				var v_name;
 				(v_name = (p5pkg["Perlito5::Match"].flat([v_m_name], 0)));
-				var v_namespace;
-				(v_namespace = (p5pkg["Perlito5::Match"].flat([v_m_namespace], 0)));
 				var v_full_name;
 				(v_full_name = (v_name));
 				if ( p5bool(v_namespace) ) {

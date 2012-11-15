@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..19';
+say '1..20';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -100,12 +100,12 @@ print 'not ' if $r ne '-890-';  say "ok 18 - array deref interpolation - $r";
 # }
 
 $r = "-$$v[2]-";
-print 'not ' if $r ne '-890-';  say "ok 18 - array deref interpolation - $r";
+print 'not ' if $r ne '-890-';  say "ok 19 - array deref interpolation - $r";
 
 {
     my $x = "123"; 
     my $y = \$x; 
     $r = "[$$y]";
-    print 'not ' if $r ne '[123]';  say "ok 19 - scalar deref interpolation - $r";
+    print 'not ' if $r ne '[123]';  say "ok 20 - scalar deref interpolation - $r";
 }
 

@@ -656,17 +656,18 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     ((my  $pos) = $_[2]);
     ((my  $p) = $pos);
     ((my  $m_namespace) = Perlito5::Grammar->optional_namespace_before_ident($str, $p));
+    ((my  $namespace) = Perlito5::Match::flat($m_namespace));
     ($p = $m_namespace->{'to'});
     ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
-    if ($m_name) {
-
-    }
-    else {
-        return ($m_name)
+    if (!($m_name)) {
+        if ($namespace) {
+            ($m_namespace->{'capture'} = ['term', Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', $namespace)]);
+            return ($m_namespace)
+        };
+        return ()
     };
     ($p = $m_name->{'to'});
     ((my  $name) = Perlito5::Match::flat($m_name));
-    ((my  $namespace) = Perlito5::Match::flat($m_namespace));
     ((my  $full_name) = $name);
     if ($namespace) {
         ($full_name = ($namespace . '::' . $name))
