@@ -1,6 +1,6 @@
 use feature 'say';
 
-print "1..6\n";
+print "1..9\n";
 
 # TODO:
 #
@@ -58,7 +58,7 @@ my $x;
 
 {
     use strict;
-    my $r = eval   "
+    $r = eval   "
                 $x = D;
                 $v = '>' . $x . '<';
                 1; "
@@ -68,9 +68,34 @@ my $x;
 }
 
 {
-    my $x = ::E; 
+    no strict;
+
+    $x = ::E; 
     $r = ">$x<";
     print "not " if $r ne ">::E<";
     say "ok 6 - double-colon before # ::E $x ";    # E
 }
+
+{
+    use strict;
+
+    $F'x = 9;
+    $r = ">$F'x<";
+    print "not " if $r ne ">9<";
+    say "ok 7 - tick instead of double-colon # \$F'x $r ";
+
+    $r = ">$F::x<";
+    print "not " if $r ne ">9<";
+    say "ok 8 - double-colon instead of tick # \$F::x $r ";
+}
+
+{
+    no strict;
+
+    $x = ::G'a; 
+    $r = ">$x<";
+    print "not " if $r ne ">::G::a<";
+    say "ok 9 - tick in constant # ::G'a $x ";
+}
+
 
