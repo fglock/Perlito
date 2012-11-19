@@ -32,26 +32,33 @@ TODO list for Perlito5
 
 * Parser
 
--- attributes - see: http://perldoc.perl.org/attributes.html
+-- attributes
+    http://perldoc.perl.org/attributes.html
 
--- create __DATA__ 
+-- create __DATA__
+    http://perldoc.perl.org/SelfLoader.html#The-__DATA__-token
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
-   my $v;
-   BEGIN { $v = "123" }
-   use Module $v;  # $v is not accessible at compile-time
+    see README-perlito5-js near "Compile-time / Run-time interleaving"
+
+    my $v;
+    BEGIN { $v = "123" }
+    use Module $v;  # $v is not accessible at compile-time
 
 -- parse the regexes
--- create an AST for regexes
+    create an AST for regexes
 
 -- prototypes (signatures)
---- check that undeclared barewords give the right error
---- *foo = sub () { ... }   # does prototype work here?
---- check signature in sort()
---- fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
+    http://perldoc.perl.org/perlsub.html#Prototypes
+
+    check that undeclared barewords give the right error
+    *foo = sub () { ... }   # does prototype work here?
+    check signature in sort()
+    fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
 -- add "print", "printf", "say" special parsing - note this is related to indirect object notation
--- indirect object notation
+
+    indirect object notation
     http://lwn.net/Articles/451486/
     http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
     http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
@@ -74,6 +81,7 @@ TODO list for Perlito5
     my $u = new Class::; # this also works (even with sub main in the current package)
 
 -- "namespace" parsing
+    tests: t5/01-perlito/26-syntax-namespace.t
 
     $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
     Not a GLOB reference at -e line 1.
