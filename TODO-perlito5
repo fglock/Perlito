@@ -280,7 +280,7 @@ TODO list for Perlito5
 
 -- AUTOLOAD
     AUTOLOAD is implemented for method lookups, but not for normal subroutines
-
+    see: p5call_sub()
 
 
 * Nice to Have

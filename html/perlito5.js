@@ -173,6 +173,16 @@ function p5call(invocant, method, list) {
 
 }
 
+function p5call_sub(namespace, name, list) {
+    if(p5pkg[namespace].hasOwnProperty(name)) {
+        // TODO
+    }
+    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
+        // TODO
+    }
+    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
+}
+
 p5make_package("main");
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|
