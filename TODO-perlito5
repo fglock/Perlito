@@ -278,9 +278,11 @@ TODO list for Perlito5
 -- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
     even if the closure was never created or used in the first place
 
--- AUTOLOAD
-    AUTOLOAD is implemented for method lookups, but not for normal subroutines
-    see: p5call_sub()
+-- bug - method call context is disabled, because it breaks bootstrap.
+    in Runtime.pm:
+    function p5call(invocant, method, list, p5want) {
+        list.unshift(invocant);
+        p5want = 0;  // TODO BUG - workaround for broken bootstrap
 
 
 * Nice to Have

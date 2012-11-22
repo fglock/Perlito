@@ -16,6 +16,7 @@ dev  2012-04-12
 
 - javascript backend:
 
+-- AUTOLOAD
 -- tie() - TIEARRAY, STORE, FETCH
 -- string increment
 -- negative index in array

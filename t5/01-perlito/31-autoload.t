@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..4";
+say "1..5";
 
 {
 
@@ -39,5 +39,11 @@ say "1..4";
     print "not " if $x[0] != 6 || $x[1] != 7;
     say "ok 4";
 
+    {
+        no strict;
+        my $v = XYZ;
+        print "not " if $v == 456;
+        say "ok 5 # bareword doesn't call AUTOLOAD";
+    }
 }
 

@@ -2066,6 +2066,7 @@ package Perlito5::AST::Apply;
         }
 
         my $sig;
+        my $may_need_autoload;
         {
             my $name = $self->{code};
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
@@ -2086,10 +2087,12 @@ package Perlito5::AST::Apply;
                     if ( $Perlito5::STRICT ) {
                         die 'Bareword "' . $name . '" not allowed while "strict subs" in use';
                     }
+                    # bareword doesn't call AUTOLOAD
                     return Perlito5::Javascript2::escape_string( 
                             ($self->{namespace} ? $self->{namespace} . '::' : "") . $name 
                         );
                 }
+                $may_need_autoload = 1;
             }
         }
 
@@ -2178,6 +2181,24 @@ package Perlito5::AST::Apply;
             $self->{code} eq 'scalar'      # scalar() is special
             ? '[' . join(', ', @args) . ']'
             : Perlito5::Javascript2::to_list($arg_list);
+
+
+        if ( $may_need_autoload ) {
+            # p5call_sub(namespace, name, list, p5want)
+            my $name = $self->{code};
+            my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
+            return 'p5call_sub('
+                    . '"' . $namespace . '", '
+                    . '"' . $name . '", '
+                    . $arg_code . ', '
+                    .   ($wantarray eq 'list'   ? '1' 
+                        :$wantarray eq 'scalar' ? '0' 
+                        :$wantarray eq 'void'   ? 'null'
+                        :                         'p5want'
+                        ) 
+                 . ')';
+
+        }
 
         $code . '('
                 . $arg_code . ', '

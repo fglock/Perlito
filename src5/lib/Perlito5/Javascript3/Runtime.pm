@@ -147,6 +147,8 @@ function p5method_lookup(method, class_name, seen) {
 function p5call(invocant, method, list, p5want) {
     list.unshift(invocant);
 
+    p5want = 0;  // TODO BUG - workaround for broken bootstrap
+
     if (invocant instanceof p5Scalar) {
         // TODO - move p5call() to p5Scalar method
         invocant = invocant.FETCH();
@@ -197,10 +199,11 @@ function p5call(invocant, method, list, p5want) {
 
 function p5call_sub(namespace, name, list, p5want) {
     if(p5pkg[namespace].hasOwnProperty(name)) {
-        // TODO
+        return p5pkg[namespace][name](list, p5want)
     }
     if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
-        // TODO
+        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;
+        return p5pkg[namespace]["AUTOLOAD"](list, p5want)
     }
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
 }
