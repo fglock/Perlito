@@ -136,7 +136,7 @@ function p5method_lookup(method, class_name, seen) {
     }
 }
 
-function p5call(invocant, method, list) {
+function p5call(invocant, method, list, p5want) {
     list.unshift(invocant);
 
     if (typeof invocant === "string") {
@@ -146,11 +146,11 @@ function p5call(invocant, method, list) {
     if ( invocant.hasOwnProperty("_class_") ) {
 
         if ( invocant._class_.hasOwnProperty(method) ) {
-            return invocant._class_[method](list)
+            return invocant._class_[method](list, p5want)
         }
         var m = p5method_lookup(method, invocant._class_._ref_, {});
         if (m) {
-            return m(list)
+            return m(list, p5want)
         }
 
         // method can have an optional namespace
@@ -160,7 +160,7 @@ function p5call(invocant, method, list) {
             pkg_name = pkg_name.join("::");
             m = p5method_lookup(name, pkg_name, {});
             if (m) {
-                return m(list)
+                return m(list, p5want)
             }
             p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
         }
@@ -168,7 +168,7 @@ function p5call(invocant, method, list) {
         pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', "UNIVERSAL", {});
         if (pkg_name) {
             p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
-            return p5pkg[pkg_name]["AUTOLOAD"](list);
+            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
         }
 
         p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);
@@ -179,7 +179,7 @@ function p5call(invocant, method, list) {
 
 }
 
-function p5call_sub(namespace, name, list) {
+function p5call_sub(namespace, name, list, p5want) {
     if(p5pkg[namespace].hasOwnProperty(name)) {
         // TODO
     }
