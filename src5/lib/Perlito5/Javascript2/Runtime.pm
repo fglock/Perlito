@@ -139,8 +139,6 @@ function p5method_lookup(method, class_name, seen) {
 function p5call(invocant, method, list, p5want) {
     list.unshift(invocant);
 
-    p5want = 0;  // TODO BUG - workaround for broken bootstrap
-
     if (typeof invocant === "string") {
         invocant = p5make_package(invocant);
     }

@@ -1176,7 +1176,7 @@ package Perlito5::AST::Call;
                 . '.hget(' . Perlito5::Javascript3::autoquote($self->{arguments}, $level, 'list') . ', ' . $type . ')';
         }
 
-        my $invocant = $self->{invocant}->emit_javascript3;
+        my $invocant = $self->{invocant}->emit_javascript3($level, 'scalar');
         if  ($meth eq 'postcircumfix:<( )>')  {
             return 'p5code(' . $invocant . ')(' . Perlito5::Javascript3::to_list($self->{arguments}) . ', '
                          .   ($wantarray eq 'list'   ? '1' 
@@ -1187,7 +1187,7 @@ package Perlito5::AST::Call;
                     . ')';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
-            $meth = $meth->emit_javascript3();
+            $meth = $meth->emit_javascript3($level, 'scalar');
         }
         else {
             $meth = '"' . $meth . '"';

@@ -1203,7 +1203,7 @@ package Perlito5::AST::Call;
                 . ')';
         }
 
-        my $invocant = $self->{invocant}->emit_javascript2;
+        my $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
         if  ($meth eq 'postcircumfix:<( )>')  {
             return '(' . $invocant . ')(' . Perlito5::Javascript2::to_list($self->{arguments}) . ', '
                          .   ($wantarray eq 'list'   ? '1' 
@@ -1214,7 +1214,7 @@ package Perlito5::AST::Call;
                     . ')';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
-            $meth = $meth->emit_javascript2();
+            $meth = $meth->emit_javascript2($level, 'scalar');
         }
         else {
             $meth = '"' . $meth . '"';
