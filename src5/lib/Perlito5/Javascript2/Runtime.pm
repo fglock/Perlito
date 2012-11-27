@@ -203,8 +203,6 @@ function p5scalar_deref(v) {
         var c = v.charCodeAt(0);
         if (c < 27) {
             v = '^' + String.fromCharCode(c + 64) + v.substr(1);
-        }
-        if (v.substr(0, 1) == '^' ) {
             pkg_name = 'main';
         }
         return p5pkg[pkg_name]["v_"+v];
@@ -225,8 +223,6 @@ function p5scalar_deref_set(v, n) {
         var c = v.charCodeAt(0);
         if (c < 27) {
             v = '^' + String.fromCharCode(c + 64) + v.substr(1);
-        }
-        if (v.substr(0, 1) == '^' ) {
             pkg_name = 'main';
         }
         p5pkg[pkg_name]["v_"+v] = n;
