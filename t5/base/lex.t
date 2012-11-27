@@ -1,7 +1,7 @@
 #!./perl
 
 #print "1..57\n";
-print "1..37\n";
+print "1..40\n";
 
 $x = 'x';
 
@@ -122,12 +122,12 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 ## # MJD 19990227
 ## 
 {
-##   my $CX = "\cX";
-##   my $CXY  ="\cXY";
-##   $ {$CX} = 17;
-##   $ {$CXY} = 23;
-##   if ($ {^XY} != 23) { print "not "  }
-##   print "ok 31\n";
+   my $CX = "\cX";
+   my $CXY  ="\cXY";
+   $ {$CX} = 17;
+   $ {$CXY} = 23;
+   if ($ {^XY} != 23) { print "not "  }
+   print "ok 30\n";
 ##  
 ## # Does the syntax where we use the literal control character still work?
 ##   if (eval "\$ {\cX}" != 17 or $@) { print "not "  }
@@ -139,17 +139,17 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 ##   if ($^Q != 24) {  print "not "  }  # Control character escape sequence
 ##   print "ok 34\n";
 ## 
-## # Does the old UNBRACED syntax still do what it used to?
-##   if ("$^XY" ne "17Y") { print "not " }
-##   print "ok 35\n";
-## 
-##   sub XX () { 6 }
-##   $ {"\cQ\cXX"} = 119; 
-##   $^Q = 5; #  This should be an unused ^Var.
-##   $N = 5;
-##   # The second caret here should be interpreted as an xor
-##   if (($^Q^XX) != 3) { print "not " } 
-##   print "ok 36\n";
+ # Does the old UNBRACED syntax still do what it used to?
+   if ("$^XY" ne "17Y") { print "not " }
+   print "ok 31\n";
+ 
+   sub XX () { 6 }
+   $ {"\cQ\cXX"} = 119; 
+   $^Q = 5; #  This should be an unused ^Var.
+   $N = 5;
+   # The second caret here should be interpreted as an xor
+   if (($^Q^XX) != 3) { print "not " } 
+   print "ok 32\n";
 ## #  if (($N  ^  XX()) != 3) { print "not " } 
 ## #  print "ok 32\n";
 ## 
@@ -174,11 +174,11 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
   $ {^M} = 'Someother 3';
   package main;
   print "not " unless $^Q eq 'Someother';
-  print "ok 30\n";
+  print "ok 33\n";
   print "not " unless $ {^Quixote} eq 'Someother 2';
-  print "ok 31\n";
+  print "ok 34\n";
   print "not " unless $ {^M} eq 'Someother 3';
-  print "ok 32\n";
+  print "ok 35\n";
 
   
 }
@@ -215,7 +215,7 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # arrays now *always* interpolate into "..." strings.
 # 20000522 MJD (mjd@plover.com)
 {
-  my $test = 33;
+  my $test = 36;
   eval(q(">@nosuch<" eq "><")) || print "# $@", "not ";
   print "ok $test\n";
   ++$test;
@@ -274,4 +274,4 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # Is "[~" scanned correctly?
 @a = (1,2,3);
 print "not " unless($a[~~2] == 3);
-print "ok 37\n";
+print "ok 40\n";

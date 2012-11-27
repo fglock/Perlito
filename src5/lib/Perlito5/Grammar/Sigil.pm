@@ -227,14 +227,18 @@ sub term_sigil {
             if ($m) {
                 my $p = $m->{to};
                 if ( substr($str, $p, 1) eq '}' ) {
-                    $m->{to} = $m->{to} + 1;
                     $m->{capture} = [ 'term', 
-                            Perlito5::AST::Var->new(
-                                    sigil       => $sigil,
-                                    namespace   => 'main',
-                                    name        => '^' . Perlito5::Match::flat($m),
-                                )
+                            Perlito5::AST::Apply->new(
+                                'arguments' => [
+                                    Perlito5::AST::Val::Buf->new(
+                                        'buf' => '^' . Perlito5::Match::flat($m),
+                                    )
+                                ],
+                                'code' => 'prefix:<' . $sigil . '>',
+                                'namespace' => '',
+                            )
                         ];
+                    $m->{to} = $m->{to} + 1;
                     return $m;
                 }
             }
@@ -262,11 +266,15 @@ sub term_sigil {
         $m = Perlito5::Grammar->word( $str, $p );
         if ($m) {
             $m->{capture} = [ 'term',  
-                        Perlito5::AST::Var->new(
-                                sigil       => $sigil,
-                                namespace   => 'main',
-                                name        => '^' . Perlito5::Match::flat($m),
-                            )
+                        Perlito5::AST::Apply->new(
+                            'arguments' => [
+                                Perlito5::AST::Val::Buf->new(
+                                    'buf' => '^' . Perlito5::Match::flat($m),
+                                )
+                            ],
+                            'code' => 'prefix:<' . $sigil . '>',
+                            'namespace' => '',
+                        )
                     ];
             return $m;
         }

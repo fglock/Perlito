@@ -194,11 +194,20 @@ function p5scalar_deref(v) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
-            var name = pkg_name.pop();
+            v = pkg_name.pop();
             pkg_name = pkg_name.join("::");
-            return p5pkg[pkg_name]["v_"+name];
         }
-        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = '^' + String.fromCharCode(c + 64) + v.substr(1);
+        }
+        if (v.substr(0, 1) == '^' ) {
+            pkg_name = 'main';
+        }
+        return p5pkg[pkg_name]["v_"+v];
     }
     return v._scalar_;
 }
@@ -207,13 +216,21 @@ function p5scalar_deref_set(v, n) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
-            var name = pkg_name.pop();
+            v = pkg_name.pop();
             pkg_name = pkg_name.join("::");
-            p5pkg[pkg_name]["v_"+name] = n;
-            return p5pkg[pkg_name]["v_"+name];
         }
-        p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v] = n;
-        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = '^' + String.fromCharCode(c + 64) + v.substr(1);
+        }
+        if (v.substr(0, 1) == '^' ) {
+            pkg_name = 'main';
+        }
+        p5pkg[pkg_name]["v_"+v] = n;
+        return p5pkg[pkg_name]["v_"+v];
     }
     v._scalar_ = n;
     return v._scalar_;
