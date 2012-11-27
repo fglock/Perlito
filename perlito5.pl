@@ -5319,7 +5319,9 @@ sub Perlito5::Grammar::Sigil::term_sigil {
             if ($m) {
                 ((my  $p) = $m->{'to'});
                 if ((substr($str, $p, 1) eq '}')) {
-                    ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Buf->new('buf', ('^' . Perlito5::Match::flat($m)))], 'code', ('prefix:<' . $sigil . '>'), 'namespace', '')]);
+                    ((my  $name) = Perlito5::Match::flat($m));
+                    ((my  $c1) = chr(((ord(substr($name, 0, 1)) - ord('A')) + 1)));
+                    ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Buf->new('buf', ($c1 . substr($name, 1)))], 'code', ('prefix:<' . $sigil . '>'), 'namespace', '')]);
                     ($m->{'to'} = ($m->{'to'} + 1));
                     return ($m)
                 }
@@ -5339,7 +5341,9 @@ sub Perlito5::Grammar::Sigil::term_sigil {
         ((my  $p) = $q);
         ($m = Perlito5::Grammar->word($str, $p));
         if ($m) {
-            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Buf->new('buf', ('^' . Perlito5::Match::flat($m)))], 'code', ('prefix:<' . $sigil . '>'), 'namespace', '')]);
+            ((my  $name) = Perlito5::Match::flat($m));
+            ((my  $c1) = chr(((ord(substr($name, 0, 1)) - ord('A')) + 1)));
+            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments', [Perlito5::AST::Val::Buf->new('buf', ($c1 . substr($name, 1)))], 'code', ('prefix:<' . $sigil . '>'), 'namespace', '')]);
             return ($m)
         }
     };
@@ -11959,7 +11963,7 @@ for (split(':', (($ENV{'PERL5LIB'} || '')))) {
 ((my  $_V5_COMPILER_NAME) = 'Perlito5');
 ((my  $_V5_COMPILER_VERSION) = '9.0');
 ((my  $source) = '');
-((my  $backend) = ${'^O'});
+((my  $backend) = ${chr(15)});
 ((my  $execute) = 1);
 ((my  $verbose) = 0);
 ((my  $expand_use) = 1);

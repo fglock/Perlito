@@ -223,15 +223,18 @@ sub term_sigil {
         }
         if ( substr($str, $p, 1) eq '^' ) {
             #  ${^ ...
+            # TODO - make sure ^ is followed by an ASCII uppercase letter
             $m = Perlito5::Grammar->var_name( $str, $p + 1 );
             if ($m) {
                 my $p = $m->{to};
                 if ( substr($str, $p, 1) eq '}' ) {
+                    my $name = Perlito5::Match::flat($m);
+                    my $c1 = chr( ord(substr($name, 0, 1)) - ord("A") + 1 );
                     $m->{capture} = [ 'term', 
                             Perlito5::AST::Apply->new(
                                 'arguments' => [
                                     Perlito5::AST::Val::Buf->new(
-                                        'buf' => '^' . Perlito5::Match::flat($m),
+                                        'buf' => $c1 . substr($name, 1),
                                     )
                                 ],
                                 'code' => 'prefix:<' . $sigil . '>',
@@ -262,14 +265,17 @@ sub term_sigil {
     }
     if ( $c1 eq '^' ) {
         #  $^ ...
+        # TODO - make sure ^ is followed by an ASCII uppercase letter
         my $p = $q;
         $m = Perlito5::Grammar->word( $str, $p );
         if ($m) {
+            my $name = Perlito5::Match::flat($m);
+            my $c1 = chr( ord(substr($name, 0, 1)) - ord("A") + 1 );
             $m->{capture} = [ 'term',  
                         Perlito5::AST::Apply->new(
                             'arguments' => [
                                 Perlito5::AST::Val::Buf->new(
-                                    'buf' => '^' . Perlito5::Match::flat($m),
+                                    'buf' => $c1 . substr($name, 1),
                                 )
                             ],
                             'code' => 'prefix:<' . $sigil . '>',
