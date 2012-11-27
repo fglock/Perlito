@@ -190,6 +190,35 @@ function p5call_sub(namespace, name, list, p5want) {
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
 }
 
+function p5scalar_deref(v) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            return p5pkg[pkg_name]["v_"+name];
+        }
+        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+    }
+    return v._scalar_;
+}
+
+function p5scalar_deref_set(v, n) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            p5pkg[pkg_name]["v_"+name] = n;
+            return p5pkg[pkg_name]["v_"+name];
+        }
+        p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v] = n;
+        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+    }
+    v._scalar_ = n;
+    return v._scalar_;
+}
+
 p5make_package("main");
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|

@@ -184,6 +184,35 @@ function p5call_sub(namespace, name, list, p5want) {
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
 }
 
+function p5scalar_deref(v) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            return p5pkg[pkg_name]["v_"+name];
+        }
+        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+    }
+    return v._scalar_;
+}
+
+function p5scalar_deref_set(v, n) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            p5pkg[pkg_name]["v_"+name] = n;
+            return p5pkg[pkg_name]["v_"+name];
+        }
+        p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v] = n;
+        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+    }
+    v._scalar_ = n;
+    return v._scalar_;
+}
+
 p5make_package("main");
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|
@@ -3456,6 +3485,30 @@ var p5100 = p5pkg['main'];
 						}
 					}
 				});
+				p5make_sub("Perlito5::AST::Apply", "emit_javascript2_set", function (List__, p5want) {
+					try {
+						var v_self;
+						(v_self = (List__.shift()));
+						var v_arguments;
+						(v_arguments = (List__.shift()));
+						var v_level;
+						(v_level = (List__.shift()));
+						var v_code;
+						(v_code = ((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('code')));
+						if ( (p5str(v_code) == 'prefix:<$>') ) {
+							throw(p5context([('p5scalar_deref_set(' + p5str(p5pkg["Perlito5::Javascript2"].emit_javascript2_autovivify(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0), (p5num(v_level) + 1), 'scalar'), 0)) + ', ' + p5str(p5pkg["Perlito5::Javascript2"].to_scalar(p5list_to_a((new p5ArrayRef([v_arguments])), (p5num(v_level) + 1)), 0)) + ')')], p5want));
+						};
+						return (p5context([('(' + p5str(p5call(v_self, "emit_javascript2", [(p5num(v_level) + 1)], 0)) + ' = ' + p5str(p5call(v_arguments, "emit_javascript2", [(p5num(v_level) + 1)], 0)) + ')')], p5want));
+					}
+					catch(err) {
+						if ( err instanceof Error ) {
+							throw(err);
+						}
+						else {
+							return(err);
+						}
+					}
+				});
 				var Hash_emit_js = {};
 				(Hash_emit_js = p5a_to_h(['infix:<=~>', function (List__, p5want) {
 								var v_self;
@@ -3560,7 +3613,7 @@ var p5100 = p5pkg['main'];
 								(v_level = (List__.p5aget(1)));
 								var v_arg;
 								(v_arg = ((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0)));
-								return (p5context([(p5str(p5pkg["Perlito5::Javascript2"].emit_javascript2_autovivify([v_arg, v_level, 'scalar'], 0)) + '._scalar_')], p5want));
+								return (p5context([('p5scalar_deref(' + p5str(p5pkg["Perlito5::Javascript2"].emit_javascript2_autovivify([v_arg, v_level, 'scalar'], 0)) + ')')], p5want));
 						}, 'prefix:<@>', function (List__, p5want) {
 								var v_self;
 								(v_self = (List__.p5aget(0)));
@@ -3829,7 +3882,7 @@ var p5100 = p5pkg['main'];
 }, p5list_to_a(p5call(v_parameters, "arguments", [], p5want)._array_)), ('return ' + p5str(v_tmp2)))], 0) + ' })()')], p5want));
 										})();
 								};
-								if ( ((((p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Index'], 0)) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Lookup'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Call'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Var'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Decl'], 0))) ) {
+								if ( (((((p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Index'], 0)) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Lookup'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Call'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Var'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Decl'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Apply'], 0))) ) {
 									throw(p5call(v_parameters, "emit_javascript2_set", [v_arguments, (p5num(v_level) + 1)], p5want));
 								};
 								return (p5context([('(' + p5str(p5call(v_parameters, "emit_javascript2", [v_level], 0)) + ' = ' + p5str(p5call(v_arguments, "emit_javascript2", [(p5num(v_level) + 1)], 0)) + ')')], p5want));

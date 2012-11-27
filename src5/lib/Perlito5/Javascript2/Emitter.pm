@@ -1315,6 +1315,22 @@ package Perlito5::AST::Apply;
         die "Error: regex emitter";
     }
 
+    sub emit_javascript2_set {
+        my $self      = shift;
+        my $arguments = shift;
+        my $level     = shift;
+
+        my $code = $self->{code};
+
+        if ($code eq 'prefix:<$>') {
+            return 'p5scalar_deref_set(' 
+                . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . ')';
+        }
+
+        '(' . $self->emit_javascript2( $level+1 ) . ' = ' . $arguments->emit_javascript2( $level+1 ) . ')';
+    }
 
     my %emit_js = (
         'infix:<=~>' => sub {
@@ -1407,7 +1423,7 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
-            Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . '._scalar_';
+            return 'p5scalar_deref(' . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ')';
         },
         'prefix:<@>' => sub {
             my $self  = $_[0];
@@ -1636,6 +1652,7 @@ package Perlito5::AST::Apply;
                 ||  $parameters->isa( 'Perlito5::AST::Call') 
                 ||  $parameters->isa( 'Perlito5::AST::Var') 
                 ||  $parameters->isa( 'Perlito5::AST::Decl') 
+                ||  $parameters->isa( 'Perlito5::AST::Apply') 
                 )
             {
                 return $parameters->emit_javascript2_set($arguments, $level+1);
