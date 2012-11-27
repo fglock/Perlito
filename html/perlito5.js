@@ -2211,7 +2211,47 @@ var p5100 = p5pkg['main'];
 						};
 					};
 				};
-				return (p5context([(String.fromCharCode(39) + p5str(v_obj) + String.fromCharCode(39))], p5want));
+				return (p5pkg["Perlito5::Dumper"].escape_string([v_obj], p5want));
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		var Hash_safe_char = {};
+		(Hash_safe_char = p5a_to_h([' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1]));
+		p5make_sub("Perlito5::Dumper", "escape_string", function (List__, p5want) {
+			try {
+				var v_s;
+				(v_s = (List__.shift()));
+				var List_out= [];
+				var v_tmp;
+				(v_tmp = (''));
+				if ( (p5str(v_s) == '') ) {
+					throw(p5context([String.fromCharCode(39) + String.fromCharCode(39)], p5want));
+				};
+				p5for_lex(function (v_i) {
+						var v_c;
+						(v_c = (p5pkg["Perlito5::Dumper"].substr([v_s, v_i, 1], 0)));
+						if ( (((((p5str(v_c) >= 'a') && (p5str(v_c) <= 'z')) || ((p5str(v_c) >= 'A') && (p5str(v_c) <= 'Z'))) || ((p5str(v_c) >= '0') && (p5str(v_c) <= '9'))) || (Hash_safe_char).hasOwnProperty(v_c)) ) {
+							(v_tmp = ((p5str(v_tmp) + p5str(v_c))));
+						}
+						else {
+							if ( (p5str(v_tmp) != '') ) {
+								List_out.p5push([(String.fromCharCode(39) + p5str(v_tmp) + String.fromCharCode(39))]);
+							};
+							List_out.p5push([('chr(' + p5str(p5pkg["Perlito5::Dumper"].ord([v_c], 0)) + ')')]);
+							(v_tmp = (''));
+						};
+					}, p5list_to_a((function (a) { for (var i=0, l=(p5pkg["Perlito5::Dumper"].length([v_s], 0) - 1); i<=l; ++i){ a.push(i) }; return a })([])), false, "");
+				if ( (p5str(v_tmp) != '') ) {
+					List_out.p5push([(String.fromCharCode(39) + p5str(v_tmp) + String.fromCharCode(39))]);
+				};
+				return (p5context([p5pkg["Perlito5::Dumper"].join([' . ', p5list_to_a(List_out)], p5want)], p5want));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
