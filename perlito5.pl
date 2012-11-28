@@ -7916,9 +7916,9 @@ do {{
 join("", chr(9) x $level)
     };
     ((our  %op_prefix_js_str) = ('prefix:<-A>', 'p5atime', 'prefix:<-C>', 'p5ctime', 'prefix:<-M>', 'p5mtime', 'prefix:<-d>', 'p5is_directory', 'prefix:<-e>', 'p5file_exists', 'prefix:<-f>', 'p5is_file', 'prefix:<-s>', 'p5size'));
-    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= '));
+    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= ', 'infix:<lt>', ' < ', 'infix:<gt>', ' > '));
     ((our  %op_infix_js_num) = ('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << '));
-    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
+    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined')));
     ((our  %op_to_str) = map(+(($_, 1)), ('substr', 'join', 'list:<.>', 'chr')));
     ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>')));
     ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
@@ -9506,9 +9506,9 @@ do {{
 join("", chr(9) x $level)
     };
     ((our  %op_prefix_js_str) = ('prefix:<-A>', 'p5atime', 'prefix:<-C>', 'p5ctime', 'prefix:<-M>', 'p5mtime', 'prefix:<-d>', 'p5is_directory', 'prefix:<-e>', 'p5file_exists', 'prefix:<-f>', 'p5is_file', 'prefix:<-s>', 'p5size'));
-    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= '));
+    ((our  %op_infix_js_str) = ('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= ', 'infix:<lt>', ' < ', 'infix:<gt>', ' > '));
     ((our  %op_infix_js_num) = ('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << '));
-    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined')));
+    ((our  %op_to_bool) = map(+(($_, 1)), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined')));
     ((our  %op_to_str) = map(+(($_, 1)), ('substr', 'join', 'list:<.>', 'chr')));
     ((our  %op_to_num) = map(+(($_, 1)), ('length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>')));
     ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
@@ -11139,7 +11139,7 @@ do {{
 package Perlito5::AST::Apply;
 do {{
     ((my  %op_prefix_perl5) = ('say', 'say', 'print', 'print', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not', 'prefix:<~>', '~'));
-    ((my  %op_infix_perl5) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
+    ((my  %op_infix_perl5) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<lt>', ' lt ', 'infix:<gt>', ' gt ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
     sub Perlito5::AST::Apply::emit_perl5 {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);

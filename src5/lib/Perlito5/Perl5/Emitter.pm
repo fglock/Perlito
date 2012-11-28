@@ -271,6 +271,8 @@ package Perlito5::AST::Apply;
         'infix:<ne>' => ' ne ',
         'infix:<le>' => ' le ',
         'infix:<ge>' => ' ge ',
+        'infix:<lt>' => ' lt ',
+        'infix:<gt>' => ' gt ',
 
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',

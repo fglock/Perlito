@@ -2292,13 +2292,13 @@ var p5100 = p5pkg['main'];
 				// our p5pkg["Perlito5::Javascript2"]["Hash_op_prefix_js_str"]
 				(p5pkg["Perlito5::Javascript2"]["Hash_op_prefix_js_str"] = {'prefix:<-A>' : 'p5atime', 'prefix:<-C>' : 'p5ctime', 'prefix:<-M>' : 'p5mtime', 'prefix:<-d>' : 'p5is_directory', 'prefix:<-e>' : 'p5file_exists', 'prefix:<-f>' : 'p5is_file', 'prefix:<-s>' : 'p5size'});
 				// our p5pkg["Perlito5::Javascript2"]["Hash_op_infix_js_str"]
-				(p5pkg["Perlito5::Javascript2"]["Hash_op_infix_js_str"] = {'infix:<eq>' : ' == ', 'infix:<ne>' : ' != ', 'infix:<le>' : ' <= ', 'infix:<ge>' : ' >= '});
+				(p5pkg["Perlito5::Javascript2"]["Hash_op_infix_js_str"] = {'infix:<eq>' : ' == ', 'infix:<ne>' : ' != ', 'infix:<le>' : ' <= ', 'infix:<ge>' : ' >= ', 'infix:<lt>' : ' < ', 'infix:<gt>' : ' > '});
 				// our p5pkg["Perlito5::Javascript2"]["Hash_op_infix_js_num"]
 				(p5pkg["Perlito5::Javascript2"]["Hash_op_infix_js_num"] = {'infix:<==>' : ' == ', 'infix:<!=>' : ' != ', 'infix:<+>' : ' + ', 'infix:<->' : ' - ', 'infix:<*>' : ' * ', 'infix:</>' : ' / ', 'infix:<%>' : ' % ', 'infix:<>>' : ' > ', 'infix:<<>' : ' < ', 'infix:<>=>' : ' >= ', 'infix:<<=>' : ' <= ', 'infix:<&>' : ' & ', 'infix:<|>' : ' | ', 'infix:<^>' : ' ^ ', 'infix:<>>>' : ' >>> ', 'infix:<<<>' : ' << '});
 				// our p5pkg["Perlito5::Javascript2"]["Hash_op_to_bool"]
 				(p5pkg["Perlito5::Javascript2"]["Hash_op_to_bool"] = p5a_to_h(p5list_to_a(p5map(p5pkg["Perlito5::Javascript2"], function (p5want) {
 							return ((p5context([p5pkg["Perlito5::Javascript2"]["v__"], 1], p5want)));
-						}, ['prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'prefix:<not>', 'exists', 'defined']))));
+						}, ['prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined']))));
 				// our p5pkg["Perlito5::Javascript2"]["Hash_op_to_str"]
 				(p5pkg["Perlito5::Javascript2"]["Hash_op_to_str"] = p5a_to_h(p5list_to_a(p5map(p5pkg["Perlito5::Javascript2"], function (p5want) {
 							return ((p5context([p5pkg["Perlito5::Javascript2"]["v__"], 1], p5want)));

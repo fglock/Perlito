@@ -43,6 +43,8 @@ package Perlito5::Javascript2;
         'infix:<ne>' => ' != ',
         'infix:<le>' => ' <= ',
         'infix:<ge>' => ' >= ',
+        'infix:<lt>' => ' < ',
+        'infix:<gt>' => ' > ',
     );
     # these operators need 2 "num" parameters
     our %op_infix_js_num = (
@@ -76,6 +78,8 @@ package Perlito5::Javascript2;
         infix:<ne>
         infix:<ge>
         infix:<le>
+        infix:<gt>
+        infix:<lt>
         prefix:<not>
         exists
         defined
