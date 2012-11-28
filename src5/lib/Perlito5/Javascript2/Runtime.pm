@@ -202,7 +202,7 @@ function p5scalar_deref(v) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = '^' + String.fromCharCode(c + 64) + v.substr(1);
+            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         return p5pkg[pkg_name]["v_"+v];
@@ -222,7 +222,7 @@ function p5scalar_deref_set(v, n) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = '^' + String.fromCharCode(c + 64) + v.substr(1);
+            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         p5pkg[pkg_name]["v_"+v] = n;
@@ -233,10 +233,12 @@ function p5scalar_deref_set(v, n) {
 }
 
 p5make_package("main");
+p5make_package("Perlito5");
+p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|
 p5pkg["main"]["List_#"] = [];   // @#
-p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript2";
+p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
 p5pkg["main"]["List_INC"] = [];
 p5pkg["main"]["Hash_INC"] = {};
 p5pkg["main"]["List_ARGV"] = [];
@@ -252,7 +254,6 @@ if (isNode) {
     p5pkg["main"]["List_ARGV"] = arguments;
 }
 
-p5make_package("Perlito5");
 p5make_package("Perlito5::IO");
 p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");

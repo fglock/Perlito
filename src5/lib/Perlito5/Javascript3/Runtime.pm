@@ -210,11 +210,18 @@ function p5scalar_deref(v) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
-            var name = pkg_name.pop();
+            v = pkg_name.pop();
             pkg_name = pkg_name.join("::");
-            return p5pkg[pkg_name]["v_"+name];
         }
-        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = String.fromCharCode(c + 64) + v.substr(1);
+            pkg_name = 'main';
+        }
+        return p5pkg[pkg_name]["v_"+v];
     }
     return v._scalar_;
 }
@@ -223,23 +230,31 @@ function p5scalar_deref_set(v, n) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
-            var name = pkg_name.pop();
+            v = pkg_name.pop();
             pkg_name = pkg_name.join("::");
-            p5pkg[pkg_name]["v_"+name] = n;
-            return p5pkg[pkg_name]["v_"+name];
         }
-        p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v] = n;
-        return p5pkg[p5pkg["Perlito5"].v_PKG_NAME]["v_"+v];
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = String.fromCharCode(c + 64) + v.substr(1);
+            pkg_name = 'main';
+        }
+        p5pkg[pkg_name]["v_"+v] = n;
+        return p5pkg[pkg_name]["v_"+v];
     }
     v._scalar_ = n;
     return v._scalar_;
 }
 
 p5make_package("main");
+p5make_package("Perlito5");
+p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5pkg["main"]["v_@"]       = new p5Scalar("");  // $@
 p5pkg["main"]["v_|"]       = new p5Scalar(0);   // $|
 p5pkg["main"]["List_#"]    = new p5Array([]);   // @#
-p5pkg["main"]["v_^O"]      = new p5Scalar(isNode ? "node.js" : "javascript3");
+p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
 p5pkg["main"]["List_INC"]  = new p5Array([]);
 p5pkg["main"]["Hash_INC"]  = new p5Hash({});
 p5pkg["main"]["List_ARGV"] = new p5Array([]);
@@ -252,7 +267,6 @@ if (isNode) {
     p5pkg["main"]["List_ARGV"] = new p5Array(arguments);
 }
 
-p5make_package("Perlito5");
 p5make_package("Perlito5::IO");
 p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
