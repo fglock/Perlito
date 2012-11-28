@@ -42,6 +42,27 @@ sub ident {
     $m;
 }
 
+sub caret_char {
+    my $c = substr( $_[1], $_[2], 1 );
+    my $pos = $_[2];
+    if ($c eq '^') {
+        $pos++;
+        $c = substr( $_[1], $pos, 1 );
+        return 0 if $c lt 'A' || $c gt 'Z';
+        $c = chr( ord($c) - ord("A") + 1 );
+    }
+    elsif ( $_[0]->ws($_[1], $pos) ) {
+        return 0;
+    }
+    return 0 if $c lt "\cA" || $c gt "\cZ";
+    return {
+             str  => $_[1],
+             from => $_[2],
+             to   => $pos + 1,
+             capture => $c,
+           }
+}
+
 token full_ident {
     <.ident>  [ '::' <.ident> ]*
 };

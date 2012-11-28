@@ -221,29 +221,30 @@ sub term_sigil {
                 }
             }
         }
-        if ( substr($str, $p, 1) eq '^' ) {
+        my $caret = Perlito5::Grammar->caret_char( $str, $p );
+        if ( $caret ) {
             #  ${^ ...
-            # TODO - make sure ^ is followed by an ASCII uppercase letter
-            $m = Perlito5::Grammar->var_name( $str, $p + 1 );
+            my $p = $caret->{to};
+            my $name = Perlito5::Match::flat($caret);
+            $m = Perlito5::Grammar->var_name($str, $p);
             if ($m) {
-                my $p = $m->{to};
-                if ( substr($str, $p, 1) eq '}' ) {
-                    my $name = Perlito5::Match::flat($m);
-                    my $c1 = chr( ord(substr($name, 0, 1)) - ord("A") + 1 );
-                    $m->{capture} = [ 'term', 
-                            Perlito5::AST::Apply->new(
-                                'arguments' => [
-                                    Perlito5::AST::Val::Buf->new(
-                                        'buf' => $c1 . substr($name, 1),
-                                    )
-                                ],
-                                'code' => 'prefix:<' . $sigil . '>',
-                                'namespace' => '',
-                            )
-                        ];
-                    $m->{to} = $m->{to} + 1;
-                    return $m;
-                }
+                $name = $name . Perlito5::Match::flat($m);
+                $p = $m->{to};
+            }
+            if ( substr($str, $p, 1) eq '}' ) {
+                $caret->{capture} = [ 'term', 
+                        Perlito5::AST::Apply->new(
+                            'arguments' => [
+                                Perlito5::AST::Val::Buf->new(
+                                    'buf' => $name,
+                                )
+                            ],
+                            'code' => 'prefix:<' . $sigil . '>',
+                            'namespace' => '',
+                        )
+                    ];
+                $caret->{to} = $p + 1;
+                return $caret;
             }
         }
         $m = Perlito5::Expression->curly_parse( $str, $p );
@@ -263,27 +264,22 @@ sub term_sigil {
             }
         }
     }
-    if ( $c1 eq '^' ) {
+    my $caret = Perlito5::Grammar->caret_char( $str, $p );
+    if ( $caret ) {
         #  $^ ...
-        # TODO - make sure ^ is followed by an ASCII uppercase letter
-        my $p = $q;
-        $m = Perlito5::Grammar->word( $str, $p );
-        if ($m) {
-            my $name = Perlito5::Match::flat($m);
-            my $c1 = chr( ord(substr($name, 0, 1)) - ord("A") + 1 );
-            $m->{capture} = [ 'term',  
-                        Perlito5::AST::Apply->new(
-                            'arguments' => [
-                                Perlito5::AST::Val::Buf->new(
-                                    'buf' => $c1 . substr($name, 1),
-                                )
-                            ],
-                            'code' => 'prefix:<' . $sigil . '>',
-                            'namespace' => '',
-                        )
-                    ];
-            return $m;
-        }
+        my $name = Perlito5::Match::flat($caret);
+        $caret->{capture} = [ 'term',  
+                    Perlito5::AST::Apply->new(
+                        'arguments' => [
+                            Perlito5::AST::Val::Buf->new(
+                                'buf' => $name,
+                            )
+                        ],
+                        'code' => 'prefix:<' . $sigil . '>',
+                        'namespace' => '',
+                    )
+                ];
+        return $caret;
     }
     if ( $c1 eq '$' ) {
         #  $$ ...
