@@ -1,7 +1,7 @@
 #!./perl
 
 #print "1..57\n";
-print "1..43\n";
+print "1..46\n";
 
 $x = 'x';
 
@@ -249,21 +249,21 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 ##  ++$test;
 }
 ## 
-## # Tests 52-54
-## # => should only quote foo::bar if it isn't a real sub. AMS, 20010621
-## 
-## sub xyz::foo { "bar" }
-## my %str = (
-##     foo      => 1,
-##     xyz::foo => 1,
-##     xyz::bar => 1,
-## );
-## 
-## my $test = 52;
-## print ((exists $str{foo}      ? "" : "not ")."ok $test\n"); ++$test;
-## print ((exists $str{bar}      ? "" : "not ")."ok $test\n"); ++$test;
-## print ((exists $str{xyz::bar} ? "" : "not ")."ok $test\n"); ++$test;
-## 
+ # Tests 52-54
+ # => should only quote foo::bar if it isn't a real sub. AMS, 20010621
+ 
+ sub xyz::foo { "bar" }
+ my %str = (
+     foo      => 1,
+     xyz::foo => 1,
+     xyz::bar => 1,
+ );
+ 
+ my $test = 43;
+ print ((exists $str{foo}      ? "" : "not ")."ok $test\n"); ++$test;
+ print ((exists $str{bar}      ? "" : "not ")."ok $test\n"); ++$test;
+ print ((exists $str{xyz::bar} ? "" : "not ")."ok $test\n"); ++$test;
+ 
 ## sub foo::::::bar { print "ok $test\n"; $test++ }
 ## foo::::::bar;
 ## 
@@ -274,4 +274,4 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # Is "[~" scanned correctly?
 @a = (1,2,3);
 print "not " unless($a[~~2] == 3);
-print "ok 43\n";
+print "ok 46\n";

@@ -272,6 +272,7 @@ p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
 
 function p5make_sub(pkg_name, sub_name, func) {
+    p5make_package(pkg_name);
     p5pkg[pkg_name][sub_name] = func;
 }
 
