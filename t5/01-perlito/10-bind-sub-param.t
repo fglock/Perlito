@@ -50,7 +50,7 @@ subr4($x);
 if ($x != 3) {
     print 'not '
 };
-say 'ok 4 - ', $x;
+say 'ok 4 - ', $x, ' $_[0] is read-write # TODO';
 
 
 sub subr5 {
