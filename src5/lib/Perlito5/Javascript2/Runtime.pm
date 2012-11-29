@@ -533,6 +533,17 @@ p5decr = function(o) {
     return p5num(o) - 1;
 };
 
+p5modulo = function(o, k) {
+    var m = o % k;
+    if ( k < 0 && m > 0 ) {
+        m = m + k;
+    }
+    else if ( k > 0 && m < 0 ) {
+        m = m + k;
+    }
+    return m;
+};
+
 p5shift_left = function(o, k) {
     return k < 31 ? o << k : o * Math.pow(2, k);
 };

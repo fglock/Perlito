@@ -5,7 +5,7 @@ BEGIN {
     @INC = '../lib';
 }
 
-print "1..145\n";
+print "1..144\n";
 
 sub try ($$) {
    print +($_[1] ? "ok" : "not ok"), " $_[0]\n";

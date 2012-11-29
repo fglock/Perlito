@@ -14,9 +14,10 @@ sub new {
     bless {@_}, $class
 }
 
-my $Operator = {};
-my $Precedence = {};    # integer 0..100
-my $Assoc = {};         # right, left, list
+my $Operator         = {};
+my $Precedence       = {};  # integer 0..100
+my $PrefixPrecedence = {};  # integer 0..100; 'prefix' operations
+my $Assoc            = {};  # right, left, list
 
 sub is_assoc_type {
     my $assoc_type = shift;
@@ -201,6 +202,7 @@ sub add_op {
     my $assoc = $param->{assoc} || 'left';
     $Operator->{$fixity}{$name} = 1;
     $Precedence->{$name}        = $precedence;
+    $PrefixPrecedence->{$name}  = $precedence if $fixity eq 'prefix';
     $Assoc->{$assoc}{$name}     = 1;
     $Op{$name}                  = 1;
 }
@@ -381,6 +383,14 @@ $prec = $prec - 1;
 add_op( 'infix',    '*start*', $prec );
 
 
+sub get_token_precedence {
+    my $token = $_[0];
+    if ( $token->[0] eq 'prefix' ) {
+        return $PrefixPrecedence->{ $token->[1] }
+    }
+    return $Precedence->{ $token->[1] }
+}
+
 sub precedence_parse {
 
     # this routine implements operator precedence
@@ -427,7 +437,7 @@ sub precedence_parse {
         elsif ( $Operator->{postfix}{$token->[1]} && $last_is_term )
         {
             my $pr = $Precedence->{$token->[1]};
-            while (scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] })) {
+            while (scalar(@$op_stack) && ($pr <= get_token_precedence($op_stack->[0]))) {
                 $reduce->($op_stack, $num_stack);
             }
             if ($token->[0] ne 'postfix_or_term') {
@@ -450,12 +460,12 @@ sub precedence_parse {
         elsif ($Precedence->{$token->[1]}) {
             my $pr = $Precedence->{$token->[1]};
             if ($Assoc->{right}{$token->[1]}) {
-                while (scalar(@$op_stack) && ( $pr < $Precedence->{ ($op_stack->[0])[1] } )) {
+                while (scalar(@$op_stack) && ( $pr < get_token_precedence($op_stack->[0]))) {
                     $reduce->($op_stack, $num_stack);
                 }
             }
             else {
-                while (scalar(@$op_stack) && ( $pr <= $Precedence->{ ($op_stack->[0])[1] } )) {
+                while (scalar(@$op_stack) && ( $pr <= get_token_precedence($op_stack->[0]))) {
                     $reduce->($op_stack, $num_stack);
                 }
             }
