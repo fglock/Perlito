@@ -533,6 +533,10 @@ p5decr = function(o) {
     return p5num(o) - 1;
 };
 
+p5shift_left = function(o, k) {
+    return k < 31 ? o << k : o * Math.pow(2, k);
+};
+
 p5and = function(a, fb) {
     if (p5bool(a)) {
         return fb();

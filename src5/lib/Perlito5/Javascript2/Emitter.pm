@@ -63,7 +63,7 @@ package Perlito5::Javascript2;
         'infix:<|>'  => ' | ',
         'infix:<^>'  => ' ^ ',
         'infix:<>>>' => ' >>> ',
-        'infix:<<<>' => ' << ',
+        # 'infix:<<<>' => ' << ',
     );
     # these operators always return "bool"
     our %op_to_bool = map +($_ => 1), qw(
@@ -1387,6 +1387,10 @@ package Perlito5::AST::Apply;
         'infix:<**>' => sub {
             my $self = $_[0];
             'Math.pow(' . join( ', ', map( Perlito5::Javascript2::to_num($_), @{ $self->{arguments} } ) ) . ')';
+        },
+        'infix:<<<>' => sub {
+            my $self = $_[0];
+            'p5shift_left(' . join( ', ', map( Perlito5::Javascript2::to_num($_), @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<!>' => sub {
             my $self      = shift;
