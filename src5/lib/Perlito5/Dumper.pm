@@ -25,6 +25,9 @@ sub Dumper {
                   )
             . $tab . '}';
     }
+    elsif ($ref eq 'SCALAR') {
+        return "\\" . Dumper($$obj);
+    }
     elsif ($ref) {
         # TODO find out what kind of reference this is (ARRAY, HASH, ...)
         # local $@;

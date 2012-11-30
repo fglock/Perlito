@@ -1451,11 +1451,7 @@ CORE.rindex = function(List__) {
 };
 
 CORE.length = function(List__) {
-    var o = List__[0];
-    if (typeof o.string === "function") {
-        return o.string().length;
-    }
-    return o.length;
+    return p5str(List__[0]).length;
 };
 
 CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
@@ -2224,10 +2220,15 @@ var p5100 = p5pkg['main'];
 }, p5list_to_a(p5sort(p5pkg["Perlito5::Dumper"], null, p5list_to_a(p5pkg["Perlito5::Dumper"].keys([(v_obj || (v_obj = new p5HashRef({})))._hash_], 1))))))], 0) + p5str(v_tab) + '}')], p5want));
 					}
 					else {
-						if ( p5bool(v_ref) ) {
-							throw(p5context([('bless({' + String.fromCharCode(10) + p5pkg["Perlito5::Dumper"].join(['', p5list_to_a(p5map(p5pkg["Perlito5::Dumper"], function (p5want) {
+						if ( (p5str(v_ref) == 'SCALAR') ) {
+							throw(p5context([(String.fromCharCode(92) + p5str(p5pkg["Perlito5::Dumper"].Dumper(p5list_to_a(p5scalar_deref((v_obj || (v_obj = new p5ScalarRef(null))))), 0)))], p5want));
+						}
+						else {
+							if ( p5bool(v_ref) ) {
+								throw(p5context([('bless({' + String.fromCharCode(10) + p5pkg["Perlito5::Dumper"].join(['', p5list_to_a(p5map(p5pkg["Perlito5::Dumper"], function (p5want) {
 	return (p5context([(p5str(v_tab1) + (String.fromCharCode(39) + p5str(p5pkg["Perlito5::Dumper"]["v__"]) + String.fromCharCode(39) + ' => ') + p5str(p5pkg["Perlito5::Dumper"].Dumper(p5list_to_a((v_obj || (v_obj = new p5HashRef({})))._hash_.p5hget(p5str(p5pkg["Perlito5::Dumper"]["v__"])), (p5num(v_level) + 1)), 0)) + ',' + String.fromCharCode(10))], p5want));
 }, p5list_to_a(p5sort(p5pkg["Perlito5::Dumper"], null, p5list_to_a(p5pkg["Perlito5::Dumper"].keys([(v_obj || (v_obj = new p5HashRef({})))._hash_], 1))))))], 0) + p5str(v_tab) + ('}, ' + String.fromCharCode(39) + p5str(v_ref) + String.fromCharCode(39) + ')'))], p5want));
+							};
 						};
 					};
 				};

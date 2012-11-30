@@ -306,11 +306,7 @@ CORE.rindex = function(List__) {
 };
 
 CORE.length = function(List__) {
-    var o = List__[0];
-    if (typeof o.string === "function") {
-        return o.string().length;
-    }
-    return o.length;
+    return p5str(List__[0]).length;
 };
 
 CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
