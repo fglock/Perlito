@@ -108,9 +108,12 @@ TODO list for Perlito5
     sub X { }
     X;
 
-    $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
     $ perl -e ' $::X::::X = 3; print $main::X::::X '        # 3
+    $ perl -e ' $::X::::X = 3; print $main::main::X::::X '  # 3
+    $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
     $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
+    $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
+
 
 -- strict and warnings: create options like 'subs', 'refs'
 
