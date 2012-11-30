@@ -73,8 +73,12 @@ token namespace_before_ident {
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'*
         { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{namespace_before_ident}) }
-    | '::'
-        { $MATCH->{capture} = 'main' }
+    | '::' <optional_namespace_before_ident>
+        { 
+            my $name = Perlito5::Match::flat($MATCH->{optional_namespace_before_ident});
+            $MATCH->{capture} = 'main';
+            $MATCH->{capture} .= '::' . $name if $name ne '';
+        }
     | ''
         { $MATCH->{capture} = '' }
 };

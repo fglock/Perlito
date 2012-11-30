@@ -6470,8 +6470,23 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    (((((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'optional_namespace_before_ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $name) = Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'}));
     ($MATCH->{'capture'} = 'main');
+    if (($name ne '')) {
+        ($MATCH->{'capture'} = ($MATCH->{'capture'} . ('::' . $name)))
+    };
+;
     1
 }))))
 }))) || ((do {
