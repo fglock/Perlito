@@ -45,7 +45,7 @@ my $x;
     eval ' $x = B:: '; 
     $r = ">$x<";
     print "not " if $r ne ">B<";
-    say "ok 3 - double-colon after - B:: $x # TODO Parser bug";    # B
+    say "ok 3 - double-colon after - B:: $x";    # B
 }
 
 {

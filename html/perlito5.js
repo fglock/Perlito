@@ -3182,6 +3182,9 @@ var p5100 = p5pkg['main'];
 								throw(p5context([('(p5want' + ' ? ' + p5str(p5call(v_self, "emit_javascript2", [v_level, 'list'], 0)) + ' : ' + p5str(p5call(v_self, "emit_javascript2", [v_level, 'list'], 0)) + '.length' + ')')], p5want));
 							};
 						};
+						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('sigil')) == '::') ) {
+							throw(p5pkg["Perlito5::Javascript2"].escape_string(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('namespace')), p5want));
+						};
 						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('sigil')) == '&') ) {
 							throw(p5context([('p5pkg["' + p5str(p5or((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('namespace'), function () { return p5pkg["Perlito5"]["v_PKG_NAME"] })) + '"]["' + p5str(v_str_name) + '"]')], p5want));
 						};

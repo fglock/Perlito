@@ -8527,6 +8527,9 @@ do {{
                 return (('(p5want' . ' ? ' . $self->emit_javascript2($level, 'list') . ' : ' . $self->emit_javascript2($level, 'list') . '.length' . ')'))
             }
         };
+        if (($self->{'sigil'} eq '::')) {
+            return (Perlito5::Javascript2::escape_string($self->{'namespace'}))
+        };
         if (($self->{'sigil'} eq '&')) {
             return (('p5pkg["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $str_name . '"]'))
         };
