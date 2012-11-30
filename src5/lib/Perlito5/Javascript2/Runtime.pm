@@ -81,6 +81,7 @@ function p5make_package(pkg_name) {
         p5pkg[pkg_name] = new tmp();
         p5pkg[pkg_name]._ref_ = pkg_name;
         p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak
+        p5pkg[pkg_name]._is_package_ = 1;
 
         // TODO - add the other package global variables
         p5pkg[pkg_name]["List_ISA"] = [];
@@ -137,10 +138,16 @@ function p5method_lookup(method, class_name, seen) {
 }
 
 function p5call(invocant, method, list, p5want) {
-    list.unshift(invocant);
 
     if (typeof invocant === "string") {
+        list.unshift(invocant);
         invocant = p5make_package(invocant);
+    }
+    else if ( invocant.hasOwnProperty("_is_package_") ) {
+        list.unshift(invocant._ref_);   // invocant is a "package" object
+    }
+    else {
+        list.unshift(invocant);
     }
 
     if ( invocant.hasOwnProperty("_class_") ) {

@@ -12,7 +12,7 @@ say "1..5";
     sub AUTOLOAD {
         say "# A::AUTOLOAD @_";
         print "not " if $_[0] ne 'A';
-        say "ok 1  # TODO package stringification bug";
+        say "ok 1";
         print "not " if $_[1] != 123;
         say "ok 2";
         say "# $AUTOLOAD";
