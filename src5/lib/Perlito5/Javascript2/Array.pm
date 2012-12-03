@@ -45,7 +45,7 @@ Object.defineProperty( Array.prototype, "p5incr", {
     enumerable : false,
     value : function (i) {
         if (i < 0) { i =  this.length + i };
-        this[i] = p5incr(this[i]);
+        this[i] = p5incr_(this[i]);
         return this[i];
     }
 });
@@ -54,7 +54,7 @@ Object.defineProperty( Array.prototype, "p5postincr", {
     value : function (i) {
         if (i < 0) { i =  this.length + i };
         var v = this[i];
-        this[i] = p5incr(this[i]);
+        this[i] = p5incr_(this[i]);
         return v;
     }
 });
@@ -62,7 +62,7 @@ Object.defineProperty( Array.prototype, "p5decr", {
     enumerable : false,
     value : function (i) {
         if (i < 0) { i =  this.length + i };
-        this[i] = p5decr(this[i]);
+        this[i] = p5decr_(this[i]);
         return this[i];
     }
 });
@@ -71,7 +71,7 @@ Object.defineProperty( Array.prototype, "p5postdecr", {
     value : function (i) {
         if (i < 0) { i =  this.length + i };
         var v = this[i];
-        this[i] = p5decr(this[i]);
+        this[i] = p5decr_(this[i]);
         return v;
     }
 });
@@ -155,7 +155,7 @@ p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5incr(p5call(res, 'FETCH', [i]));
+            var value = p5incr_(p5call(res, 'FETCH', [i]));
             p5call(res, 'STORE', [i, value]);
             return value;
         }
@@ -165,7 +165,7 @@ p5tie_array = function(v, List__) {
         configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
-            p5call(res, 'STORE', [i, p5incr(value)]);
+            p5call(res, 'STORE', [i, p5incr_(value)]);
             return value;
         }
     });
@@ -173,7 +173,7 @@ p5tie_array = function(v, List__) {
         enumerable : false,
         configurable : true,
         value : function (i) {
-            var value = p5decr(p5call(res, 'FETCH', [i]));
+            var value = p5decr_(p5call(res, 'FETCH', [i]));
             p5call(res, 'STORE', [i, value]);
             return value;
         }
@@ -183,7 +183,7 @@ p5tie_array = function(v, List__) {
         configurable : true,
         value : function (i) {
             var value = p5call(res, 'FETCH', [i]);
-            p5call(res, 'STORE', [i, p5decr(value)]);
+            p5call(res, 'STORE', [i, p5decr_(value)]);
             return value;
         }
     });
@@ -298,24 +298,24 @@ function p5ArrayOfAlias(o) {
     }
     this.p5incr = function (i) {
         if (i < 0) { i =  this.length + i };
-        this._array_[i+i][this._array_[i+i+1]] = p5incr(this._array_[i+i][this._array_[i+i+1]]);
+        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);
         return this._array_[i+i][this._array_[i+i+1]];
     }
     this.p5postincr = function (i) {
         if (i < 0) { i =  this.length + i };
         var v = this._array_[i+i][this._array_[i+i+1]];
-        this._array_[i+i][this._array_[i+i+1]] = p5incr(this._array_[i+i][this._array_[i+i+1]]);
+        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);
         return v;
     }
     this.p5decr = function (i) {
         if (i < 0) { i =  this.length + i };
-        this._array_[i+i][this._array_[i+i+1]] = p5decr(this._array_[i+i][this._array_[i+i+1]]);
+        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);
         return this._array_[i+i][this._array_[i+i+1]];
     }
     this.p5postdecr = function (i) {
         if (i < 0) { i =  this.length + i };
         var v = this._array_[i+i][this._array_[i+i+1]];
-        this._array_[i+i][this._array_[i+i+1]] = p5decr(this._array_[i+i][this._array_[i+i+1]]);
+        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);
         return v;
     }
     this.p5aget_array = function (i) {

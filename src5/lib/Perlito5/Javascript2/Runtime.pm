@@ -336,7 +336,7 @@ Object.defineProperty( Object.prototype, "p5hset", {
 Object.defineProperty( Object.prototype, "p5incr", {
     enumerable : false,
     value : function (i) {
-        this[i] = p5incr(this[i]);
+        this[i] = p5incr_(this[i]);
         return this[i];
     }
 });
@@ -344,14 +344,14 @@ Object.defineProperty( Object.prototype, "p5postincr", {
     enumerable : false,
     value : function (i) {
         var v = this[i];
-        this[i] = p5incr(this[i]);
+        this[i] = p5incr_(this[i]);
         return v;
     }
 });
 Object.defineProperty( Object.prototype, "p5decr", {
     enumerable : false,
     value : function (i) {
-        this[i] = p5decr(this[i]);
+        this[i] = p5decr_(this[i]);
         return this[i];
     }
 });
@@ -359,7 +359,7 @@ Object.defineProperty( Object.prototype, "p5postdecr", {
     enumerable : false,
     value : function (i) {
         var v = this[i];
-        this[i] = p5decr(this[i]);
+        this[i] = p5decr_(this[i]);
         return v;
     }
 });
@@ -526,14 +526,14 @@ p5bool = function(o) {
     return false;
 };
 
-p5incr = function(o) {
+p5incr_ = function(o) {
     if (typeof o === "number") {
         return o + 1;
     }
     return p5str_inc(p5str(o));
 };
 
-p5decr = function(o) {
+p5decr_ = function(o) {
     if (typeof o === "number") {
         return o - 1;
     }
