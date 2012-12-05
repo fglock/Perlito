@@ -222,6 +222,8 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
 * Regex
 
+- regex extension library: http://xregexp.com
+
 - modifiers: g i m
 
 - slashes must be escaped
