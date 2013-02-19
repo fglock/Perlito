@@ -80,6 +80,9 @@ TODO list for Perlito5
     my $t = Class::->new # this works
     my $u = new Class::; # this also works (even with sub main in the current package)
 
+    sbertrang++ noted this is also valid:
+    print( STDERR "123" )
+
 -- "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
