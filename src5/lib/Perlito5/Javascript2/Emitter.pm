@@ -1759,12 +1759,12 @@ package Perlito5::AST::Apply;
                 $m = Perlito5::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
                 # say Perlito5::Dumper::Dumper( $m );
                 my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
-                $eval ='eval(perl5_to_js(' 
+                $eval ='eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' 
                             . Perlito5::Javascript2::to_str($arg) . ", "
                             . '"' . $Perlito5::PKG_NAME . '", '
                             . $var_env_js . ', '
                             . '"' . $wantarray . '"'
-                        . "))";
+                        . "]))";
             }
 
             # TODO - test return() from inside eval

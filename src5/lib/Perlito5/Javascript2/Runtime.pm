@@ -2,6 +2,46 @@ use v5;
 
 package Perlito5::Javascript2::Runtime;
 
+sub perl5_to_js {
+    my ($source, $namespace, $var_env_js) = @_;
+
+    # say "source: [" . $source . "]";
+
+    my $strict_old      = $Perlito5::STRICT;
+    my $var_env_js_old  = $Perlito5::VAR;
+    $Perlito5::VAR      = $var_env_js;
+
+    my $namespace_old   = $Perlito5::PKG_NAME;
+    $Perlito5::PKG_NAME = $namespace;
+
+    my $match = Perlito5::Grammar->exp_stmts( $source, 0 );
+
+    if ( !$match || $match->{to} != length($source) ) {
+        die "Syntax error in eval near pos ", $match->{to};
+    }
+
+    my $ast = bless( 
+        {
+            block => bless(
+                        {
+                            stmts => $match->{capture},
+                        },
+                        "Perlito5::AST::Lit::Block"
+                     )
+        },
+        "Perlito5::AST::Do"
+    );
+
+    # say "ast: [" . ast . "]";
+    my $js_code = $ast->emit_javascript2(0);
+    # say "js-source: [" . $js_code . "]";
+
+    $Perlito5::PKG_NAME = $namespace_old;
+    $Perlito5::VAR      = $var_env_js_old;
+    $Perlito5::STRICT   = $strict_old;
+    return $js_code;
+}
+
 sub emit_javascript2 {
 
     return <<'EOT';
@@ -764,44 +804,6 @@ p5sort = function(namespace, func, args) {
     namespace["v_b"] = b_old;
     return out;
 };
-
-perl5_to_js = function( source, namespace, var_env_js, p5want ) {
-    // CORE.say(["source: [" + source + "]"]);
-
-    var strict_old = p5pkg["Perlito5"].v_STRICT;
-    var var_env_js_old = p5pkg["Perlito5"].v_VAR;
-    p5pkg["Perlito5"].v_VAR = var_env_js;
-
-    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME;
-    p5pkg["Perlito5"].v_PKG_NAME = namespace;
-
-    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);
-
-    if ( !match || match._hash_.to != source.length ) {
-        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
-    }
-
-    ast = p5pkg.CORE.bless([
-        new p5HashRef({
-            block:  p5pkg.CORE.bless([
-                        new p5HashRef({
-                            stmts:   p5pkg["Perlito5::Match"].flat([match])
-                        }),
-                        p5pkg["Perlito5::AST::Lit::Block"]
-                    ])
-        }),
-        p5pkg["Perlito5::AST::Do"]
-    ]);
-
-    // CORE.say(["ast: [" + ast + "]"]);
-    js_code = p5call(ast, "emit_javascript2", [0, p5want]);
-    // CORE.say(["js-source: [" + js_code + "]"]);
-
-    p5pkg["Perlito5"].v_PKG_NAME = namespace_old;
-    p5pkg["Perlito5"].v_VAR      = var_env_js_old;
-    p5pkg["Perlito5"].v_STRICT = strict_old;
-    return js_code;
-}
 
 EOT
 
