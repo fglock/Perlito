@@ -1,0 +1,22 @@
+
+steps for the jit backend:
+
+- dynamic loadable runtime
+    - eventually replaced by plain jitted code
+    - written in C/C++/asm (or Java)
+
+- binary executable emitter
+    - emits ELF/.jar
+    - needed for bootstrapping or ahead-of-time compilation
+    - written in Perl
+
+- dynamic loader and eval()
+    - this is only needed for cross compiling or bootstrapping
+      from perl/node.js
+    - loads the runtime and run the jitted code
+    - written in Perl + native code
+
+- jit emitter
+    - in the simplest case, emit subroutine-threaded code
+    - written in Perl
+
