@@ -56,6 +56,16 @@ TODO list for Perlito5
     check signature in sort()
     fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
+-- add additional variants of "for"
+
+    # "our" with localization
+    $ perl -e ' use strict; our $x = 123; for our $x (1,2,3) { 2 } print "$x\n" '
+    123
+
+    # variable in scope with localization
+    $ perl -e ' use strict; my $x = 123; for $x (1,2,3) { 2 } print "$x\n" '123
+    123
+
 -- add "print", "printf", "say" special parsing - note this is related to indirect object notation
 
     indirect object notation
