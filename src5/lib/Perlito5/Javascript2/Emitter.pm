@@ -2350,17 +2350,20 @@ package Perlito5::AST::For;
             # TODO - for without "my"
 
             # mark the variable as "declared"
+            unshift @{ $Perlito5::VAR }, {};
             my $v = $self->{body}->sig;
             $Perlito5::VAR->[0]{ $v->perl5_name_javascript2 } = { decl => 'my' };
             my $sig = $v->emit_javascript2( $level + 1 );
-            return 'p5for_lex('
+            my $s = 'p5for_lex('
                     . "function ($sig) {\n"
                     .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     .   $cond . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
-                    . ')'
+                    . ')';
+            shift @{ $Perlito5::VAR };
+            return $s;
         }
         else {
             # use $_
