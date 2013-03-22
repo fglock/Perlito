@@ -1,3 +1,7 @@
+
+PERL5_INC := -I./lib5
+
+
 # default actions
 
 all : build-5to5 build-5js build-5browser
@@ -39,49 +43,49 @@ build-6to5 ::
 	
 	cp src6/lib/Perlito6/Perl5/Runtime.pm lib5-new/Perlito6/Perl5/Runtime.pm
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Test.pm			  > lib5-new/Perlito6/Test.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Test.pm			  > lib5-new/Perlito6/Test.pm
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/AST.pm			  > lib5-new/Perlito6/AST.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Emitter/Token.pm   > lib5-new/Perlito6/Emitter/Token.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Eval.pm			  > lib5-new/Perlito6/Eval.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Expression.pm	  > lib5-new/Perlito6/Expression.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar.pm		  > lib5-new/Perlito6/Grammar.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar/Control.pm > lib5-new/Perlito6/Grammar/Control.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar/Regex.pm   > lib5-new/Perlito6/Grammar/Regex.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Macro.pm			  > lib5-new/Perlito6/Macro.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Precedence.pm	  > lib5-new/Perlito6/Precedence.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/AST.pm			  > lib5-new/Perlito6/AST.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Emitter/Token.pm   > lib5-new/Perlito6/Emitter/Token.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Eval.pm			  > lib5-new/Perlito6/Eval.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Expression.pm	  > lib5-new/Perlito6/Expression.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar.pm		  > lib5-new/Perlito6/Grammar.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar/Control.pm > lib5-new/Perlito6/Grammar/Control.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Grammar/Regex.pm   > lib5-new/Perlito6/Grammar/Regex.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Macro.pm			  > lib5-new/Perlito6/Macro.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Precedence.pm	  > lib5-new/Perlito6/Precedence.pm
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Go/Emitter.pm	  > lib5-new/Perlito6/Go/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Java/Emitter.pm	  > lib5-new/Perlito6/Java/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Emitter.pm > lib5-new/Perlito6/Javascript/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Lisp/Emitter.pm	  > lib5-new/Perlito6/Lisp/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Parrot/Emitter.pm  > lib5-new/Perlito6/Parrot/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Python/Emitter.pm  > lib5-new/Perlito6/Python/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Ruby/Emitter.pm	  > lib5-new/Perlito6/Ruby/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Go/Emitter.pm	  > lib5-new/Perlito6/Go/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Java/Emitter.pm	  > lib5-new/Perlito6/Java/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Emitter.pm > lib5-new/Perlito6/Javascript/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Lisp/Emitter.pm	  > lib5-new/Perlito6/Lisp/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Parrot/Emitter.pm  > lib5-new/Perlito6/Parrot/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Python/Emitter.pm  > lib5-new/Perlito6/Python/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Ruby/Emitter.pm	  > lib5-new/Perlito6/Ruby/Emitter.pm
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Perl5/Emitter.pm   > lib5-new/Perlito6/Perl5/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Perl5/Prelude.pm   > lib5-new/Perlito6/Perl5/Prelude.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Runtime.pm		  > lib5-new/Perlito6/Runtime.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Perl5/Emitter.pm   > lib5-new/Perlito6/Perl5/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Perl5/Prelude.pm   > lib5-new/Perlito6/Perl5/Prelude.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Runtime.pm		  > lib5-new/Perlito6/Runtime.pm
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/util/perlito6.pl				  > ./perlito6-new.pl
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/util/perlito6.pl				  > ./perlito6-new.pl
 	
 	# other files we use for cross-compilation
 	
 	cp src6/lib/Perlito6/Javascript/Runtime.js lib5-new/Perlito6/Javascript/Runtime.js
 	cp src6/lib/Perlito6/Python/Runtime.py	   lib5-new/Perlito6/Python/Runtime.py
 	
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Prelude.pm   > lib5-new/Perlito6/Javascript/Prelude.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Prelude.pm   > lib5-new/Perlito6/Javascript/Prelude.pm
 	
 	# older backends we want to keep around for now
 	
 	cp src6/lib/Perlito6/Go/Runtime.go		   lib5-new/Perlito6/Go/Runtime.go
 	cp src6/lib/Perlito6/Lisp/Runtime.lisp	   lib5-new/Perlito6/Lisp/Runtime.lisp
 
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Clojure/Emitter.pm  > lib5-new/Perlito6/Clojure/Emitter.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Go/Prelude.pm	   > lib5-new/Perlito6/Go/Prelude.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Lisp/Prelude.pm	   > lib5-new/Perlito6/Lisp/Prelude.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Parrot/Match.pm	   > lib5-new/Perlito6/Parrot/Match.pm
-	perl -I./lib5 perlito6.pl -Cperl5 src6/lib/Perlito6/Rakudo/Emitter.pm   > lib5-new/Perlito6/Rakudo/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Clojure/Emitter.pm  > lib5-new/Perlito6/Clojure/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Go/Prelude.pm	   > lib5-new/Perlito6/Go/Prelude.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Lisp/Prelude.pm	   > lib5-new/Perlito6/Lisp/Prelude.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Parrot/Match.pm	   > lib5-new/Perlito6/Parrot/Match.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Rakudo/Emitter.pm   > lib5-new/Perlito6/Rakudo/Emitter.pm
 
 	# clean up
 
@@ -93,6 +97,39 @@ build-6to5 ::
 	mv perlito6.pl perlito6-old.pl
 	mv perlito6-new.pl perlito6.pl
 
+
+build-6py ::
+	rm -rf libpy/
+ 
+	mkdir libpy
+	touch libpy/__init__.py
+   
+	cp src6/lib/Perlito6/Python/Runtime.py libpy/Perlito6__Python__Runtime.py
+   
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/AST.pm			 > libpy/Perlito6__AST.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Python/Prelude.pm  > libpy/Perlito6__Python__Prelude.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Precedence.pm	  > libpy/Perlito6__Precedence.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Expression.pm	  > libpy/Perlito6__Expression.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Macro.pm		   > libpy/Perlito6__Macro.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Test.pm			> libpy/Perlito6__Test.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Grammar.pm		 > libpy/Perlito6__Grammar.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Grammar/Control.pm > libpy/Perlito6__Grammar__Control.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Grammar/Regex.pm   > libpy/Perlito6__Grammar__Regex.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Emitter/Token.pm   > libpy/Perlito6__Emitter__Token.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Eval.pm			> libpy/Perlito6__Eval.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Runtime.pm		 > libpy/Perlito6__Runtime.py
+   
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Javascript/Emitter.pm > libpy/Perlito6__Javascript__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Lisp/Emitter.pm	> libpy/Perlito6__Lisp__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Perl5/Emitter.pm   > libpy/Perlito6__Perl5__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Go/Emitter.pm	  > libpy/Perlito6__Go__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Parrot/Emitter.pm  > libpy/Perlito6__Parrot__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Python/Emitter.pm  > libpy/Perlito6__Python__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Ruby/Emitter.pm	> libpy/Perlito6__Ruby__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Java/Emitter.pm	> libpy/Perlito6__Java__Emitter.py
+   
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/util/perlito6.pl					> ./perlito6.py
+   
 
 # Perl 5
 
