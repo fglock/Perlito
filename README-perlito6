@@ -70,6 +70,10 @@ Using the Perl 5 backend
     export PERL5LIB=lib5
     perl perlito6.pl -Cperl5 src6/util/perlito6.pl > perlito-perl5.pl 
 
+    Alternately:
+
+    make build-6to5
+
 Using the Python backend
 
     # initialize "./libpy" and compile "perlito6.py"
