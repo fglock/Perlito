@@ -77,7 +77,7 @@ Using the Perl 5 backend
 Using the Python backend
 
     # initialize "./libpy" and compile "perlito6.py"
-    . util-python/build-perlito6-python.sh
+    make build-6py
 
     # using the perlito6.py compiler
     export PYTHONPATH=libpy
