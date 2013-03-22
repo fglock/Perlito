@@ -11,6 +11,11 @@ boot-all : boot-5to5 boot-5js build-5browser
 
 # Perl 6
 
+# TODO - convert this test to use 'prove'
+test-6to5 ::
+	set -x
+	find t6/*.t | perl -ne ' chomp; print "# $$_\n" . ` perl -I./lib5 perlito6.pl -Cperl5 $$_ | perl -I./lib5 ` '
+
 build-6to5 ::
 	set -x
 
