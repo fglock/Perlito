@@ -1,17 +1,38 @@
 use strict;
 use warnings;
 
-package Perlito6::X64::Assembler;
+package Perlito5::X64::Assembler;
+
+my @buffer;
+my @hex_char = qw( 0 1 2 3 4 5 6 7 8 9 A B C D E F );
 
 sub new {
     my $class = shift;
+    @buffer = ();
     bless {@_}, $class;
 }
 
 sub to_hex {
-    my $self = $_[0];
-    my $text = $_[1];
-    return '';
+    return join(' ',
+               map( $hex_char[int($_ / 16)] . $hex_char[$_ % 16], @buffer ) );
+}
+
+sub emit {
+    push @buffer, $_[0];
+}
+
+#---
+
+sub ret {
+    my ( $self, $imm16 ) = @_;
+    if ( $imm16 == 0 ) {
+        emit(0xC3);
+    }
+    else {
+        emit(0xC2);
+        emit( $imm16 & 0xFF );
+        emit( ( $imm16 >> 8 ) & 0xFF );
+    }
 }
 
 1;
@@ -29,6 +50,12 @@ The Perlito5 x64 backend
     use Perlito5::X64::Assembler;
     my $asm = Perlito6::X64::Assembler->new();
     say $asm->to_hex();
+
+=head1 References
+
+- V8 Javascript Compiler
+
+    src/x64/assembler-x64.cc
 
 =cut
 
