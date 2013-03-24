@@ -17,6 +17,10 @@ sub bind {
     $_[0]->{pos} = $_[1];
 }
 
+sub is_bound {
+    return defined( $_[0]->{pos} );
+}
+
 
 package Perlito5::X64::Register;
 
@@ -232,6 +236,15 @@ sub label {
     return Perlito5::X64::Label->new();
 }
 
+sub pc_offset {
+    return scalar( @buffer );
+}
+
+sub predictable_code_size {
+    print "# TODO - 'predictable_code_size'\n";
+    0;
+}
+
 #--- instructions
 
 # bind the current address to a label
@@ -240,6 +253,30 @@ sub _bind {
     die "bind: expecting a label"
         if ref($label) ne 'Perlito5::X64::Label';
     $label->bind( scalar(@buffer) );
+}
+
+sub _jmp {
+    my ( $label, $distance ) = @_;
+
+    my $short_size = 1;  # sizeof(int8_t);
+    my $long_size  = 4;  # sizeof(int32_t);
+    if ( $label->is_bound() ) {
+        my $offs = $label->pos() - pc_offset() - 1;
+        die if ( $offs > 0 );
+        if ( is_int8( $offs - $short_size ) && !predictable_code_size() ) {
+            # 1110 1011    #8-bit disp.
+            emit(0xEB);
+            emit( ( $offs - $short_size ) & 0xFF );
+        }
+        else {
+            # 1110 1001    #32-bit disp.
+            emit(0xE9);
+            emitl( $offs - $long_size );
+        }
+    }
+    else {
+        die "jmp: don't know what to do with @_";
+    }
 }
 
 sub _movl {
@@ -444,9 +481,38 @@ The Perlito5 x64 backend
 
 =head1 References
 
-- V8 Javascript Compiler
+The API follows approximately the V8 Javascript compiler assembler:
 
     src/x64/assembler-x64.cc
+
+This is the copyright message from V8:
+
+    Copyright 2012 the V8 project authors. All rights reserved.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+          copyright notice, this list of conditions and the following
+          disclaimer in the documentation and/or other materials provided
+          with the distribution.
+        * Neither the name of Google Inc. nor the names of its
+          contributors may be used to endorse or promote products derived
+          from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
