@@ -1,11 +1,32 @@
 use strict;
 use warnings;
 
+
+package Perlito5::X64::Label;
+
+sub new {
+    my $class = shift;
+    bless {@_}, $class;
+}
+
+sub pos {
+    return $_[0]->{pos} 
+}
+
+sub bind {
+    $_[0]->{pos} = $_[1];
+}
+
+
 package Perlito5::X64::Register;
 
 sub new {
     my $class = shift;
     bless {@_}, $class;
+}
+
+sub code {
+    return $_[0]->{code} 
 }
 
 sub is {
@@ -172,8 +193,19 @@ sub is_uint16 {
     return 0 <= $_[0] && $_[0] < 65536;
 }
 
+sub label {
+    return Perlito5::X64::Label->new();
+}
 
 #--- instructions
+
+# bind the current address to a label
+sub _bind {
+    my ($label) = @_;
+    die "bind: expecting a label"
+        if ref($label) ne 'Perlito5::X64::Label';
+    $label->bind( scalar(@buffer) );
+}
 
 sub _movl {
     my ( $dst, $src ) = @_;
@@ -367,6 +399,13 @@ The Perlito5 x64 backend
     package Perlito5::X64::Assembler;
     _ret();
     say to_hex();   # C3
+
+    asm_reset();
+    my $here = label;
+    _xchg( rax, rcx );
+    _bind($here);
+    say "# xchg " . to_hex();
+    say "# label pos=", $here->pos();
 
 =head1 References
 

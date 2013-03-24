@@ -56,7 +56,10 @@ say "1..4";
     say "# shld " . to_hex();
 
     asm_reset();
+    my $here = label;
     _xchg( rax, rcx );
+    _bind($here);
     say "# xchg " . to_hex();
+    say "# label pos=", $here->pos();
 }
 
