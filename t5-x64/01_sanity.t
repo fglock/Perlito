@@ -25,13 +25,17 @@ say "1..4";
         print "not " if $out;
         say "ok # !is_register";
 
-    ret();
+    _ret();
         $out = to_hex();
         print "not " if $out ne 'C3';
         say "ok # $out";
-    ret(10);
+    _ret(10);
         $out = to_hex();
         print "not " if $out ne 'C3 C2 0A 00';
         say "ok # $out";
+
+    _push( rax );
+    _push( r14 );
+    say "# " . to_hex();
 }
 

@@ -9,6 +9,25 @@ sub new {
 }
 
 
+# Return the high bit of the register code as a 0 or 1.  Used often when constructing the REX prefix byte.
+sub high_bit {
+    my ($reg) = @_;
+    return $reg->{code} >> 3;
+}
+
+# Return the 3 low bits of the register code.  Used when encoding registers in modR/M, SIB, and opcode bytes.
+sub low_bits {
+    my ($reg) = @_;
+    return $reg->{code} & 0x7;
+}
+
+# emit REX if needed
+sub emit_optional_rex_32 {
+    my ($reg) = @_;
+    Perlito5::X64::Assembler::emit(0x41) if $reg->high_bit();
+}
+
+
 package Perlito5::X64::Assembler;
 
 my @buffer;
@@ -94,11 +113,33 @@ sub is_uint16 {
 
 #--- instructions
 
-sub nop {
+sub _nop {
     emit(0x90);
 }
 
-sub ret {
+sub _pop {
+    my ( $dst ) = @_;
+    if ( is_register($dst) ) {
+        $dst->emit_optional_rex_32();
+        emit(0x58 | $dst->low_bits());
+    }
+    else {
+        die "push: don't know what to do with $dst";
+    }
+}
+
+sub _push {
+    my ( $src ) = @_;
+    if ( is_register($src) ) {
+        $src->emit_optional_rex_32();
+        emit(0x50 | $src->low_bits());
+    }
+    else {
+        die "push: don't know what to do with $src";
+    }
+}
+
+sub _ret {
     my ( $imm16 ) = @_;
     if ( !$imm16 ) {
         emit(0xC3);
@@ -125,7 +166,7 @@ The Perlito5 x64 backend
     use Perlito5::X64::Assembler;
 
     package Perlito5::X64::Assembler;
-    ret();
+    _ret();
     say to_hex();   # C3
 
 =head1 References
