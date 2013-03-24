@@ -115,7 +115,11 @@ sub emitl {
 
 sub emit_rex_64 {
     my ($reg, $rm_reg) = @_;
-    if ( is_register($reg) && is_register($rm_reg) ) {
+    if ( !@_ ) {
+        # Emit a REX prefix that only sets REX.W to choose a 64-bit operand size.
+        emit(0x48);
+    }
+    elsif ( is_register($reg) && is_register($rm_reg) ) {
         emit(0x48 | $reg->high_bit() << 2 | $rm_reg->high_bit());
     }
     else {
@@ -209,6 +213,28 @@ sub _movsxlq {
     else {
         die "movsxlq: don't know what to do with $dst, $src";
     }
+}
+
+sub repmovsb() {
+    emit(0xF3);
+    emit(0xA4);
+}
+
+sub repmovsw() {
+    emit(0x66);    # Operand size override.
+    emit(0xF3);
+    emit(0xA4);
+}
+
+sub repmovsl() {
+    emit(0xF3);
+    emit(0xA5);
+}
+
+sub repmovsq() {
+    emit(0xF3);
+    emit_rex_64();
+    emit(0xA5);
 }
 
 sub _nop {
