@@ -12,11 +12,18 @@ use warnings;
 use feature 'say';
 use Perlito5::X64::Assembler;
 
-say "1..2";
+say "1..4";
 
 {
     package Perlito5::X64::Assembler;
     my $out;
+
+    $out = is_register( rax );
+        print "not " if !$out;
+        say "ok # is_register";
+    $out = is_register( 0x0A );
+        print "not " if $out;
+        say "ok # !is_register";
 
     ret();
         $out = to_hex();
