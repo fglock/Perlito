@@ -25,6 +25,7 @@ say "1..4";
         print "not " if $out;
         say "ok # !is_register";
 
+    asm_reset();
     _ret();
         $out = to_hex();
         print "not " if $out ne 'C3';
@@ -34,8 +35,16 @@ say "1..4";
         print "not " if $out ne 'C3 C2 0A 00';
         say "ok # $out";
 
+    asm_reset();
     _push( rax );
     _push( r14 );
-    say "# " . to_hex();
+    _push( 120 );
+    # TODO - test negative numbers
+    say "# push " . to_hex();
+
+    asm_reset();
+    _pop( rax );
+    _pop( r14 );
+    say "# pop " . to_hex();
 }
 

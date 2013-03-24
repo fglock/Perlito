@@ -82,8 +82,26 @@ sub to_hex {
                map( $hex_char[int($_ / 16)] . $hex_char[$_ % 16], @buffer ) );
 }
 
+sub asm_reset {
+    @buffer = ();
+}
+
 sub emit {
     push @buffer, $_[0];
+}
+
+sub emitw {
+    my ($v) = @_;
+    emit( $v & 0xFF );
+    emit( ( $v >> 8 ) & 0xFF );
+}
+
+sub emitl {
+    my ($v) = @_;
+    emit( $v & 0xFF );
+    emit( ( $v >> 8  ) & 0xFF );
+    emit( ( $v >> 16 ) & 0xFF );
+    emit( ( $v >> 24 ) & 0xFF );
 }
 
 sub is_register {
@@ -124,8 +142,12 @@ sub _pop {
         emit(0x58 | $dst->low_bits());
     }
     else {
-        die "push: don't know what to do with $dst";
+        die "pop: don't know what to do with $dst";
     }
+}
+
+sub _popfq {
+    emit(0x9D);
 }
 
 sub _push {
@@ -134,9 +156,21 @@ sub _push {
         $src->emit_optional_rex_32();
         emit(0x50 | $src->low_bits());
     }
+    elsif (is_int8($src)) {
+        emit(0x6A);
+        emit($src);     # Emit low byte of value.
+    }
+    elsif (!ref($src)) {
+        emit(0x68);
+        emitl($src);    # int32
+    }
     else {
         die "push: don't know what to do with $src";
     }
+}
+
+sub _pushfq {
+    emit(0x9C);
 }
 
 sub _ret {
