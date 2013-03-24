@@ -55,5 +55,8 @@ say "1..4";
     _shld( rax, rcx );
     say "# shld " . to_hex();
 
+    asm_reset();
+    _xchg( rax, rcx );
+    say "# xchg " . to_hex();
 }
 

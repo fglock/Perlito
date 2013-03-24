@@ -8,6 +8,9 @@ sub new {
     bless {@_}, $class;
 }
 
+sub is {
+    return $_[0]->{code} == $_[1]->{code};
+}
 
 # Return the high bit of the register code as a 0 or 1.  Used often when constructing the REX prefix byte.
 sub high_bit {
@@ -52,31 +55,31 @@ my $r_r13 = Perlito5::X64::Register->new( code => 13 );
 my $r_r14 = Perlito5::X64::Register->new( code => 14 );
 my $r_r15 = Perlito5::X64::Register->new( code => 15 );
 
-sub rax { $r_rax } 
-sub rcx { $r_rcx }
-sub rdx { $r_rdx }
-sub rbx { $r_rbx }
-sub rsp { $r_rsp }
-sub rbp { $r_rbp }
-sub rsi { $r_rsi }
-sub rdi { $r_rdi }
-sub r8  { $r_r8  }
-sub r9  { $r_r9  }
-sub r10 { $r_r10 }
-sub r11 { $r_r11 }
-sub r12 { $r_r12 }
-sub r13 { $r_r13 }
-sub r14 { $r_r14 }
-sub r15 { $r_r15 }
+sub rax () { $r_rax } 
+sub rcx () { $r_rcx }
+sub rdx () { $r_rdx }
+sub rbx () { $r_rbx }
+sub rsp () { $r_rsp }
+sub rbp () { $r_rbp }
+sub rsi () { $r_rsi }
+sub rdi () { $r_rdi }
+sub r8  () { $r_r8  }
+sub r9  () { $r_r9  }
+sub r10 () { $r_r10 }
+sub r11 () { $r_r11 }
+sub r12 () { $r_r12 }
+sub r13 () { $r_r13 }
+sub r14 () { $r_r14 }
+sub r15 () { $r_r15 }
 
 #--- scale factors for operands
 
-sub times_1 { 0 }
-sub times_2 { 1 }
-sub times_4 { 2 }
-sub times_8 { 3 }
-sub times_int_size     { times_4 }
-sub times_pointer_size { times_8 }
+sub times_1 () { 0 }
+sub times_2 () { 1 }
+sub times_4 () { 2 }
+sub times_8 () { 3 }
+sub times_int_size     () { times_4 }
+sub times_pointer_size () { times_8 }
 
 #--- general
 
@@ -115,9 +118,16 @@ sub emitl {
 
 sub emit_rex_64 {
     my ($reg, $rm_reg) = @_;
-    if ( !@_ ) {
+    if ( @_ == 0 ) {
         # Emit a REX prefix that only sets REX.W to choose a 64-bit operand size.
         emit(0x48);
+    }
+    elsif ( @_ == 1 ) {
+        # Emits a REX prefix that encodes a 64-bit operand size and
+        # the top bit of the register code.
+        # The high bit of register is used for REX.B.
+        # REX.W is set and REX.R and REX.X are clear.
+        emit(0x48 | $reg->high_bit());
     }
     elsif ( is_register($reg) && is_register($rm_reg) ) {
         emit(0x48 | $reg->high_bit() << 2 | $rm_reg->high_bit());
@@ -318,6 +328,26 @@ sub _shrd {
     emit(0x0F);
     emit(0xAD);
     emit_modrm($src, $dst);
+}
+
+sub _xchg {
+    my ( $dst, $src ) = @_;
+    if ( $src->is(rax) || $dst->is(rax) ) {
+        # Single-byte encoding
+        my $other = $src->is(rax) ? $dst : $src;
+        emit_rex_64($other);
+        emit( 0x90 | $other->low_bits() );
+    }
+    elsif ( $dst->low_bits() == 4 ) {
+        emit_rex_64( $dst, $src );
+        emit(0x87);
+        emit_modrm( $dst, $src );
+    }
+    else {
+        emit_rex_64( $src, $dst );
+        emit(0x87);
+        emit_modrm( $src, $dst );
+    }
 }
 
 1;
