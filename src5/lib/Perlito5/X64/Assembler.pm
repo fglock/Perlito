@@ -113,6 +113,27 @@ sub emitl {
     emit( ( $v >> 24 ) & 0xFF );
 }
 
+sub emit_rex_64 {
+    my ($reg, $rm_reg) = @_;
+    if ( is_register($reg) && is_register($rm_reg) ) {
+        emit(0x48 | $reg->high_bit() << 2 | $rm_reg->high_bit());
+    }
+    else {
+        die "emit_rex_64: don't know what to do with $reg, $rm_reg";
+    }
+}
+
+# Emit a ModR/M byte with registers coded in the reg and rm_reg fields.
+sub emit_modrm {
+    my ($reg, $rm_reg) = @_;
+    if ( is_register($reg) && is_register($rm_reg) ) {
+        emit(0xC0 | $reg->low_bits() << 3 | $rm_reg->low_bits());
+    }
+    else {
+        die "emit_modrm: don't know what to do with $reg, $rm_reg";
+    }
+}
+
 sub is_register {
     ref($_[0]) eq 'Perlito5::X64::Register'
 }
@@ -139,6 +160,56 @@ sub is_uint16 {
 
 
 #--- instructions
+
+sub _movl {
+    my ( $dst, $src ) = @_;
+    if ( is_register($dst) && is_register($src) ) {
+        if ($src->low_bits() == 4) {
+            emit_optional_rex_32($src, $dst);
+            emit(0x89);
+            emit_modrm($src, $dst);
+        }
+        else {
+            emit_optional_rex_32($dst, $src);
+            emit(0x8B);
+            emit_modrm($dst, $src);
+        }
+    }
+    else {
+        die "movl: don't know what to do with $dst, $src";
+    }
+}
+
+sub _movq {
+    my ( $dst, $src ) = @_;
+    if ( is_register($dst) && is_register($src) ) {
+        if ($src->low_bits() == 4) {
+            emit_rex_64($src, $dst);
+            emit(0x89);
+            emit_modrm($src, $dst);
+        }
+        else {
+            emit_rex_64($dst, $src);
+            emit(0x8B);
+            emit_modrm($dst, $src);
+        }
+    }
+    else {
+        die "movq: don't know what to do with $dst, $src";
+    }
+}
+
+sub _movsxlq {
+    my ( $dst, $src ) = @_;
+    if ( is_register($dst) && is_register($src) ) {
+        emit_rex_64($src, $dst);
+        emit(0x63);
+        emit_modrm($src, $dst);
+    }
+    else {
+        die "movsxlq: don't know what to do with $dst, $src";
+    }
+}
 
 sub _nop {
     emit(0x90);

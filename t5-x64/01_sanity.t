@@ -46,5 +46,9 @@ say "1..4";
     _pop( rax );
     _pop( r14 );
     say "# pop " . to_hex();
+
+    asm_reset();
+    _movq( rax, rcx );
+    say "# movq " . to_hex();
 }
 
