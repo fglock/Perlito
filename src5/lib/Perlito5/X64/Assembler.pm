@@ -69,6 +69,15 @@ sub r13 { $r_r13 }
 sub r14 { $r_r14 }
 sub r15 { $r_r15 }
 
+#--- scale factors for operands
+
+sub times_1 { 0 }
+sub times_2 { 1 }
+sub times_4 { 2 }
+sub times_8 { 3 }
+sub times_int_size     { times_4 }
+sub times_pointer_size { times_8 }
+
 #--- general
 
 sub new {
@@ -167,6 +176,14 @@ sub _push {
     else {
         die "push: don't know what to do with $src";
     }
+}
+
+# Push a 32 bit integer, and guarantee that it is actually pushed as a
+# 32 bit value, the normal push will optimize the 8 bit case.
+sub _push_imm32 {
+    my ( $src ) = @_;
+    emit(0x68);
+    emitl($src);    # int32
 }
 
 sub _pushfq {
