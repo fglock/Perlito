@@ -102,6 +102,41 @@ sub times_8 () { 3 }
 sub times_int_size     () { times_4 }
 sub times_pointer_size () { times_8 }
 
+#--- conditions
+
+  # # any value < 0 is considered no_condition
+  # no_condition  = -1,
+
+sub overflow      () {  0 }
+sub no_overflow   () {  1 }
+sub below         () {  2 }
+sub above_equal   () {  3 }
+sub equal         () {  4 }
+sub not_equal     () {  5 }
+sub below_equal   () {  6 }
+sub above         () {  7 }
+sub negative      () {  8 }
+sub positive      () {  9 }
+sub parity_even   () { 10 }
+sub parity_odd    () { 11 }
+sub less          () { 12 }
+sub greater_equal () { 13 }
+sub less_equal    () { 14 }
+sub greater       () { 15 }
+
+  # # Fake conditions that are handled by the
+  # # opcodes using them.
+  # always        = 16,
+  # never         = 17,
+  # # aliases
+  # carry         = below,
+  # not_carry     = above_equal,
+  # zero          = equal,
+  # not_zero      = not_equal,
+  # sign          = negative,
+  # not_sign      = positive,
+  # last_condition = greater
+
 #--- general
 
 sub new {
