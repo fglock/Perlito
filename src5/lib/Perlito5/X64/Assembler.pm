@@ -197,11 +197,17 @@ sub emit_rex_64 {
     }
 }
 
-# Emit a ModR/M byte with registers coded in the reg and rm_reg fields.
 sub emit_modrm {
     my ($reg, $rm_reg) = @_;
     if ( is_register($reg) && is_register($rm_reg) ) {
+        # Emit a ModR/M byte with registers coded in the reg and rm_reg fields.
         emit(0xC0 | $reg->low_bits() << 3 | $rm_reg->low_bits());
+    }
+    elsif ( is_register($rm_reg) ) {
+        # Emit a ModR/M byte with an operation subcode in the reg field and
+        # a register in the rm_reg field.
+        my ($code, $rm_reg) = @_;
+        emit(0xC0 | $code << 3 | $rm_reg->low_bits());
     }
     else {
         die "emit_modrm: don't know what to do with $reg, $rm_reg";
@@ -255,6 +261,24 @@ sub _bind {
     $label->bind( scalar(@buffer) );
 }
 
+sub _cpuid {
+    emit(0x0F);
+    emit(0xA2);
+}
+
+sub _cqo {
+    emit_rex_64();
+    emit(0x99);
+}
+
+sub _hlt {
+    emit(0xF4);
+}
+
+sub _int3 {
+    emit(0xCC);
+}
+
 sub _jmp {
     my ( $label, $distance ) = @_;
 
@@ -277,6 +301,10 @@ sub _jmp {
     else {
         die "jmp: don't know what to do with @_";
     }
+}
+
+sub _leave {
+    emit(0xC9);
 }
 
 sub _movl {
@@ -349,6 +377,27 @@ sub _repmovsq() {
     emit(0xF3);
     emit_rex_64();
     emit(0xA5);
+}
+
+sub _mul {
+    my ($src) = @_;
+    emit_rex_64($src);
+    emit(0xF7);
+    emit_modrm( 0x4, $src );
+}
+
+sub _neg {
+    my ($dst) = @_;
+    emit_rex_64($dst);
+    emit(0xF7);
+    emit_modrm( 0x3, $dst );
+}
+
+sub _negl {
+    my ($dst) = @_;
+    emit_optional_rex_32($dst);
+    emit(0xF7);
+    emit_modrm( 0x3, $dst );
 }
 
 sub _nop {

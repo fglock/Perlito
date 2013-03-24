@@ -59,6 +59,7 @@ say "1..4";
     my $here = label;
     _xchg( rax, rcx );
     _bind($here);
+    _neg( rbx );
     _jmp($here);
     say "# xchg " . to_hex();
     say "# label pos=", $here->pos();
