@@ -25,7 +25,7 @@ sub emit {
 
 sub ret {
     my ( $self, $imm16 ) = @_;
-    if ( $imm16 == 0 ) {
+    if ( !$imm16 ) {
         emit(0xC3);
     }
     else {

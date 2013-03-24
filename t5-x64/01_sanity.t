@@ -1,7 +1,16 @@
+#
+# this test can be run with:
+#
+#   perl -Isrc5/lib t5-x64/01_sanity.t
+#
+#   node perlito5.js -Isrc5/lib t5-x64/01_sanity.t
+#
+
+
 use strict;
 use warnings;
+use feature 'say';
 use Perlito5::X64::Assembler;
-use Perlito5::Test;
 
 say "1..1";
 
