@@ -215,23 +215,23 @@ sub _movsxlq {
     }
 }
 
-sub repmovsb() {
+sub _repmovsb() {
     emit(0xF3);
     emit(0xA4);
 }
 
-sub repmovsw() {
+sub _repmovsw() {
     emit(0x66);    # Operand size override.
     emit(0xF3);
     emit(0xA4);
 }
 
-sub repmovsl() {
+sub _repmovsl() {
     emit(0xF3);
     emit(0xA5);
 }
 
-sub repmovsq() {
+sub _repmovsq() {
     emit(0xF3);
     emit_rex_64();
     emit(0xA5);
@@ -287,6 +287,11 @@ sub _pushfq {
     emit(0x9C);
 }
 
+sub _rdtsc {
+    emit(0x0F);
+    emit(0x31);
+}
+
 sub _ret {
     my ( $imm16 ) = @_;
     if ( !$imm16 ) {
@@ -297,6 +302,22 @@ sub _ret {
         emit( $imm16 & 0xFF );
         emit( ( $imm16 >> 8 ) & 0xFF );
     }
+}
+
+sub _shld {
+    my ( $dst, $src ) = @_;
+    emit_rex_64($src, $dst);
+    emit(0x0F);
+    emit(0xA5);
+    emit_modrm($src, $dst);
+}
+
+sub _shrd {
+    my ( $dst, $src ) = @_;
+    emit_rex_64($src, $dst);
+    emit(0x0F);
+    emit(0xAD);
+    emit_modrm($src, $dst);
 }
 
 1;

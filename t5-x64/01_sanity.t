@@ -50,5 +50,10 @@ say "1..4";
     asm_reset();
     _movq( rax, rcx );
     say "# movq " . to_hex();
+
+    asm_reset();
+    _shld( rax, rcx );
+    say "# shld " . to_hex();
+
 }
 
