@@ -12,17 +12,19 @@ use warnings;
 use feature 'say';
 use Perlito5::X64::Assembler;
 
-say "1..1";
-
-my $asm = Perlito5::X64::Assembler->new();
+say "1..2";
 
 {
     package Perlito5::X64::Assembler;
+    my $out;
 
     ret();
-    my $out = to_hex();
-
-    print "not " if $out ne 'C3';
-    say "ok # $out";
+        $out = to_hex();
+        print "not " if $out ne 'C3';
+        say "ok # $out";
+    ret(10);
+        $out = to_hex();
+        print "not " if $out ne 'C3 C2 0A 00';
+        say "ok # $out";
 }
 

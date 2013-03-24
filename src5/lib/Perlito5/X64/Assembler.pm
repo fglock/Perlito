@@ -21,10 +21,36 @@ sub emit {
     push @buffer, $_[0];
 }
 
+
+sub is_zero { 
+    return $_[0] == 0;
+}
+
+sub is_int8 {
+    return -128 <= $_[0] && $_[0] < 128;
+}
+
+sub is_int16 {
+    return -32768 <= $_[0] && $_[0] < 32768;
+}
+
+sub is_uint8 {
+    return 0 <= $_[0] && $_[0] < 256;
+}
+
+sub is_uint16 {
+    return 0 <= $_[0] && $_[0] < 65536;
+}
+
+
 #---
 
+sub nop {
+    emit(0x90);
+}
+
 sub ret {
-    my ( $self, $imm16 ) = @_;
+    my ( $imm16 ) = @_;
     if ( !$imm16 ) {
         emit(0xC3);
     }
