@@ -49,12 +49,6 @@ sub low_bits {
     return $reg->{code} & 0x7;
 }
 
-# emit REX if needed
-sub emit_optional_rex_32 {
-    my ($reg) = @_;
-    Perlito5::X64::Assembler::emit(0x41) if $reg->high_bit();
-}
-
 
 package Perlito5::X64::Assembler;
 
@@ -178,13 +172,24 @@ sub emitl {
     emit( ( $v >> 24 ) & 0xFF );
 }
 
+# emit REX if needed
+sub emit_optional_rex_32 {
+    my ($reg) = @_;
+    if ( @_ == 1 && is_register($reg) ) {
+        Perlito5::X64::Assembler::emit(0x41) if $reg->high_bit();
+    }
+    else {
+        die "emit_optional_rex_32: don't know what to do with @_";
+    }
+}
+
 sub emit_rex_64 {
     my ($reg, $rm_reg) = @_;
     if ( @_ == 0 ) {
         # Emit a REX prefix that only sets REX.W to choose a 64-bit operand size.
         emit(0x48);
     }
-    elsif ( @_ == 1 ) {
+    elsif ( @_ == 1 && is_register($reg) ) {
         # Emits a REX prefix that encodes a 64-bit operand size and
         # the top bit of the register code.
         # The high bit of register is used for REX.B.
@@ -214,6 +219,10 @@ sub emit_modrm {
     else {
         die "emit_modrm: don't know what to do with $reg, $rm_reg";
     }
+}
+
+sub is_label {
+    ref($_[0]) eq 'Perlito5::X64::Label'
 }
 
 sub is_register {
@@ -331,7 +340,7 @@ sub _jmp {
 
     my $short_size = 1;  # sizeof(int8_t);
     my $long_size  = 4;  # sizeof(int32_t);
-    if ( $label->is_bound() ) {
+    if ( is_label($label) && $label->is_bound() ) {
         my $offs = $label->pos() - pc_offset() - 1;
         die if ( $offs > 0 );
         if ( is_int8( $offs - $short_size ) && !predictable_code_size() ) {
@@ -344,6 +353,13 @@ sub _jmp {
             emit(0xE9);
             emitl( $offs - $long_size );
         }
+    }
+    elsif ( is_register($label) ) {
+        my $target = $label; 
+        # Opcode FF/4 r64.
+        emit_optional_rex_32($target);
+        emit(0xFF);
+        emit_modrm(0x4, $target);
     }
     else {
         die "jmp: don't know what to do with @_";
@@ -454,7 +470,7 @@ sub _nop {
 sub _pop {
     my ( $dst ) = @_;
     if ( is_register($dst) ) {
-        $dst->emit_optional_rex_32();
+        emit_optional_rex_32($dst);
         emit(0x58 | $dst->low_bits());
     }
     else {
@@ -469,7 +485,7 @@ sub _popfq {
 sub _push {
     my ( $src ) = @_;
     if ( is_register($src) ) {
-        $src->emit_optional_rex_32();
+        emit_optional_rex_32($src);
         emit(0x50 | $src->low_bits());
     }
     elsif (is_int8($src)) {
