@@ -556,11 +556,13 @@ __END__
 
 =pod
 
-=head1 Perlito5::X64::Assembler
 
-The Perlito5 x64 backend
+=head1 NAME
 
-=head1 Synopsis
+Perlito5::X64::Assembler - x64 code generator for Perlito
+
+
+=head1 SYNOPSIS
 
     use Perlito5::X64::Assembler;
 
@@ -575,7 +577,13 @@ The Perlito5 x64 backend
     say "# xchg " . to_hex();
     say "# label pos=", $here->pos();
 
-=head1 References
+
+=head1 DESCRIPTION
+
+This module generates "x64 native machine code" for the Perlito compiler.
+
+
+=head1 REFERENCES
 
 The API follows approximately the V8 Javascript compiler assembler:
 
@@ -610,6 +618,21 @@ This is the copyright message from V8:
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-=cut
 
+=head1 AUTHORS
+
+Flavio Soibelmann Glock <fglock@gmail.com>.
+
+
+=head1 COPYRIGHT
+
+Copyright 2013 by Flavio Soibelmann Glock.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See L<http://www.perl.com/perl/misc/Artistic.html>
+
+
+=cut
 
