@@ -60,6 +60,7 @@ package Perlito5::X64::Assembler;
 
 my @buffer;
 my @hex_char = qw( 0 1 2 3 4 5 6 7 8 9 A B C D E F );
+my $predictable_code_size = 1;
 
 #--- registers
 
@@ -128,10 +129,11 @@ sub greater_equal () { 13 }
 sub less_equal    () { 14 }
 sub greater       () { 15 }
 
-  # # Fake conditions that are handled by the
-  # # opcodes using them.
-  # always        = 16,
-  # never         = 17,
+# Fake conditions that are handled by the
+# opcodes using them.
+sub always        () { 16 }
+sub never         () { 17 }
+
   # # aliases
   # carry         = below,
   # not_carry     = above_equal,
@@ -230,6 +232,10 @@ sub is_int16 {
     return -32768 <= $_[0] && $_[0] < 32768;
 }
 
+sub is_uint4 {
+    return 0 <= $_[0] && $_[0] < 16;
+}
+
 sub is_uint8 {
     return 0 <= $_[0] && $_[0] < 256;
 }
@@ -247,8 +253,7 @@ sub pc_offset {
 }
 
 sub predictable_code_size {
-    print "# TODO - 'predictable_code_size'\n";
-    0;
+    return $predictable_code_size;
 }
 
 #--- instructions
@@ -277,6 +282,48 @@ sub _hlt {
 
 sub _int3 {
     emit(0xCC);
+}
+
+sub _j {
+    my ( $condition, $label, $distance ) = @_;
+
+    if ($condition == always) {
+        _jmp($label);
+        return;
+    } 
+    elsif ($condition == never) {
+        return;
+    }
+    die if !is_uint4($condition);
+
+    if ( $label->is_bound() ) {
+        my $short_size = 2;
+        my $long_size  = 6;
+        my $offs = $label->pos() - pc_offset();
+        die if !($offs <= 0);
+        # Determine whether we can use 1-byte offsets for backwards branches,
+        # which have a max range of 128 bytes.
+
+        # We also need to check predictable_code_size() flag here, because on x64,
+        # when the full code generator recompiles code for debugging, some places
+        # need to be padded out to a certain size. The debugger is keeping track of
+        # how often it did this so that it can adjust return addresses on the
+        # stack, but if the size of jump instructions can also change, that's not
+        # enough and the calculated offsets would be incorrect.
+        if ( is_int8( $offs - $short_size ) && !predictable_code_size() ) {
+          # 0111 tttn #8-bit disp.
+          emit(0x70 | $condition);
+          emit(($offs - $short_size) & 0xFF);
+        } else {
+          # 0000 1111 1000 tttn #32-bit disp.
+          emit(0x0F);
+          emit(0x80 | $condition);
+          emitl($offs - $long_size);
+        }
+    }
+    else {
+        die "j: don't know what to do with @_";
+    }
 }
 
 sub _jmp {
