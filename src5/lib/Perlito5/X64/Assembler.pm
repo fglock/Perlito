@@ -403,6 +403,14 @@ sub _movq {
             emit_modrm($dst, $src);
         }
     }
+    elsif ( @_ == 2 && is_register($dst) && !ref($src) ) {
+        # Immediate value
+        my $value = $src;
+        emit_rex_64($dst);
+        emit(0xC7);
+        emit_modrm(0x0, $dst);
+        emit($value);  # Only 32-bit immediates are possible, not 8-bit immediates.
+    }
     else {
         die "movq: don't know what to do with $dst, $src";
     }
@@ -544,6 +552,11 @@ sub _shrd {
     emit(0x0F);
     emit(0xAD);
     emit_modrm($src, $dst);
+}
+
+sub _syscall {
+    emit(0x0F);
+    emit(0x05);
 }
 
 sub _xchg {
