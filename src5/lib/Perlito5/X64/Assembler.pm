@@ -273,7 +273,40 @@ sub emit_rex_64 {
         emit(0x48 | $reg->high_bit() << 2 | $rm_reg->high_bit());
     }
     else {
-        die "emit_rex_64: don't know what to do with $reg, $rm_reg";
+        die "emit_rex_64: don't know what to do with @_";
+    }
+}
+
+sub emit_operand {
+    my ($reg, $op) = @_;
+    if ( is_register($reg) && is_operand($op) ) {
+        # Emit the ModR/M byte, and optionally the SIB byte and
+        # 1- or 4-byte offset for a memory operand.  Also encodes
+        # the second operand of the operation, a register or operation
+        # subcode, into the reg field of the ModR/M byte.
+        emit_operand($reg->low_bits(), $op);
+    }
+    elsif ( !ref($reg) && is_operand($op) ) {
+        # Emit the ModR/M byte, and optionally the SIB byte and
+        # 1- or 4-byte offset for a memory operand.  Also used to encode
+        # a three-bit opcode extension into the ModR/M byte.
+
+        # ASSERT(is_uint3(code));
+        # const unsigned length = adr.len_;
+        # ASSERT(length > 0);
+        #
+        # # Emit updated ModR/M byte containing the given register.
+        # ASSERT((adr.buf_[0] & 0x38) == 0);
+        # pc_[0] = adr.buf_[0] | code << 3;
+        #
+        # # Emit the rest of the encoded operand.
+        # for (unsigned i = 1; i < length; i++) pc_[i] = adr.buf_[i];
+        # pc_ += length;
+
+        die "TODO";
+    }
+    else {
+        die "emit_operand: don't know what to do with @_";
     }
 }
 
@@ -290,7 +323,7 @@ sub emit_modrm {
         emit(0xC0 | $code << 3 | $rm_reg->low_bits());
     }
     else {
-        die "emit_modrm: don't know what to do with $reg, $rm_reg";
+        die "emit_modrm: don't know what to do with @_";
     }
 }
 
