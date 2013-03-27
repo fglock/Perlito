@@ -58,6 +58,19 @@ sub new {
 }
 
 
+package Perlito5::X64::Operand;
+
+sub new {
+    # Register    base,
+    # Register    index,
+    # ScaleFactor scale,
+    # int32_t     disp
+
+    my $class = shift;
+    bless {@_}, $class;
+}
+
+
 package Perlito5::X64::Assembler;
 
 my @buffer;
@@ -246,6 +259,10 @@ sub is_immediate {
     ref($_[0]) eq 'Perlito5::X64::Immediate'
 }
 
+sub is_operand {
+    ref($_[0]) eq 'Perlito5::X64::Operand'
+}
+
 sub is_zero { 
     return $_[0] == 0;
 }
@@ -276,6 +293,43 @@ sub label {
 
 sub Immediate {
     return Perlito5::X64::Immediate->new( value => $_[0] );
+}
+
+sub Operand {
+    # Register    base,
+    # Register    index,
+    # ScaleFactor scale,
+    # int32_t     disp
+
+    if ( @_ == 2 ) {
+        #  [base + disp/r]
+        # Operand(Register base, int32_t disp);
+        return Perlito5::X64::Operand->( base => $_[0], disp => $_[1] );
+    }
+    elsif ( @_ == 3 ) {
+        #  [index*scale + disp/r]
+        # Operand(Register index,
+        #         ScaleFactor scale,
+        #         int32_t disp);
+        return Perlito5::X64::Operand->( index => $_[0], scale => $_[1], disp => $_[2] );
+    }
+    elsif ( @_ == 4 ) {
+        #  [base + index*scale + disp/r]
+        # Operand(Register base,
+        #         Register index,
+        #         ScaleFactor scale,
+        #         int32_t disp);
+        return Perlito5::X64::Operand->( base => $_[0], index => $_[1], scale => $_[2], disp => $_[3] );
+    }
+    else {
+        # TODO:
+        #  Offset from existing memory operand.
+        #  Offset is added to existing displacement as 32-bit signed values and
+        #  this must not overflow.
+        # Operand(const Operand& base, int32_t offset);
+
+        die "Operand: don't know what to do with @_";
+    }
 }
 
 sub pc_offset {
@@ -391,6 +445,21 @@ sub _leave {
     emit(0xC9);
 }
 
+sub _movb {
+    my ( $dst, $src ) = @_;
+    if ( @_ == 2 && is_register($dst) && is_immediate($src) ) {
+        # Immediate value
+        if (!$dst->is_byte_register()) {
+          emit_rex_32($dst);
+        }
+        emit(0xB0 + $dst->low_bits());
+        emit($src->{value});
+    }
+    else {
+        die "movb: don't know what to do with $dst, $src";
+    }
+}
+
 sub _movl {
     my ( $dst, $src ) = @_;
     if ( is_register($dst) && is_register($src) ) {
@@ -404,6 +473,13 @@ sub _movl {
             emit(0x8B);
             emit_modrm($dst, $src);
         }
+    }
+    elsif ( @_ == 2 && is_register($dst) && is_immediate($src) ) {
+        # Immediate value
+        my $value = $src;
+        emit_optional_rex_32($dst);
+        emit(0xB8 + $dst->low_bits());
+        emit($value);
     }
     else {
         die "movl: don't know what to do with $dst, $src";
