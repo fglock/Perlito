@@ -66,9 +66,56 @@ sub new {
     # ScaleFactor scale,
     # int32_t     disp
 
+    # byte rex_;
+    # byte buf_[6];
+    # byte len_   #  The number of bytes of buf_ in use.
+
     my $class = shift;
     bless {@_}, $class;
 }
+
+sub rsp () { Perlito5::X64::Assembler::rsp } 
+sub r12 () { Perlito5::X64::Assembler::r12 } 
+
+sub set_modrm { 
+    my ($op, $mod, $rm_reg) = @_;
+    die unless (is_uint2($mod)); 
+    $op->{buf_}[0] = $mod << 6 | $rm_reg->low_bits(); 
+    # Set REX.B to the high bit of rm.code(). 
+    $op->{rex_} |= $rm_reg->high_bit(); 
+} 
+ 
+ 
+sub set_sib { 
+    my ($op, $scale, $index, $base) = @_;
+    die unless ($op->{len_} == 1); 
+    die unless (is_uint2($scale)); 
+    # Use SIB with no index register only for base rsp or r12. Otherwise we 
+    # would skip the SIB byte entirely. 
+    die unless (!$index->is(rsp) || $base->is(rsp) || $base->is(r12)); 
+    $op->{buf_}[1] = ($scale << 6) | ($index->low_bits() << 3) | $base->low_bits(); 
+    $op->{rex_} |= $index->high_bit() << 1 | $base->high_bit(); 
+    $op->{len_} = 2; 
+} 
+ 
+sub set_disp8 { 
+    my ($op, $disp) = @_;
+    die "TODO";
+    # die unless (is_int8(disp)); 
+    # die unless ($op->{len_} == 1 || $op->{len_} == 2); 
+    # int8_t* p = reinterpret_cast<int8_t*>(&buf_[$op->{len_}]); 
+    # *p = disp; 
+    # $op->{len_} += sizeof(int8_t); 
+} 
+ 
+sub set_disp32 { 
+    my ($op, $disp) = @_;
+    die unless ($op->{len_} == 1 || $op->{len_} == 2); 
+    die "TODO";
+    # int32_t* p = reinterpret_cast<int32_t*>(&buf_[$op->{len_}]); 
+    # *p = disp; 
+    # $op->{len_} += sizeof(int32_t); 
+} 
 
 
 package Perlito5::X64::Assembler;
@@ -301,16 +348,44 @@ sub Operand {
     # ScaleFactor scale,
     # int32_t     disp
 
+    # byte rex_;
+    # byte buf_[6];
+    # byte len_   #  The number of bytes of buf_ in use.
+
     if ( @_ == 2 ) {
         #  [base + disp/r]
         # Operand(Register base, int32_t disp);
-        return Perlito5::X64::Operand->( base => $_[0], disp => $_[1] );
+
+        my $op = Perlito5::X64::Operand->( base => $_[0], disp => $_[1] );
+
+        $op->{rex_} = 0;
+        $op->{len_} = 1;
+        if ($op->{base}->is(rsp) || $op->{base}->is(r12)) {
+            # SIB byte is needed to encode (rsp + offset) or (r12 + offset).
+            $op->set_sib(times_1, rsp, $op->{base});
+        }
+
+        if ($op->{disp} == 0 && !$op->{base}->is(rbp) && !$op->{base}->is(r13)) {
+            $op->set_modrm(0, $op->{base});
+        }
+        elsif (is_int8($op->{disp})) {
+            $op->set_modrm(1, $op->{base});
+            $op->set_disp8($op->{disp});
+        } 
+        else {
+            $op->set_modrm(2, $op->{base});
+            $op->set_disp32($op->{disp});
+        }
+
+        return $op;
     }
     elsif ( @_ == 3 ) {
         #  [index*scale + disp/r]
         # Operand(Register index,
         #         ScaleFactor scale,
         #         int32_t disp);
+
+        die "TODO";
         return Perlito5::X64::Operand->( index => $_[0], scale => $_[1], disp => $_[2] );
     }
     elsif ( @_ == 4 ) {
@@ -319,6 +394,8 @@ sub Operand {
         #         Register index,
         #         ScaleFactor scale,
         #         int32_t disp);
+
+        die "TODO";
         return Perlito5::X64::Operand->( base => $_[0], index => $_[1], scale => $_[2], disp => $_[3] );
     }
     else {
@@ -328,6 +405,7 @@ sub Operand {
         #  this must not overflow.
         # Operand(const Operand& base, int32_t offset);
 
+        die "TODO";
         die "Operand: don't know what to do with @_";
     }
 }
