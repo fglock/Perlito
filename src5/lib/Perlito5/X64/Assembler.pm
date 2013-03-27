@@ -50,6 +50,14 @@ sub low_bits {
 }
 
 
+package Perlito5::X64::Immediate;
+
+sub new {
+    my $class = shift;
+    bless {@_}, $class;
+}
+
+
 package Perlito5::X64::Assembler;
 
 my @buffer;
@@ -155,7 +163,12 @@ sub asm_reset {
 }
 
 sub emit {
-    push @buffer, $_[0];
+    if ( ref($_[0]) eq 'Perlito5::X64::Immediate' ) {
+        emitl($_[0]->{value});
+    }
+    else {
+        push @buffer, $_[0];
+    }
 }
 
 sub emitw {
@@ -229,6 +242,10 @@ sub is_register {
     ref($_[0]) eq 'Perlito5::X64::Register'
 }
 
+sub is_immediate {
+    ref($_[0]) eq 'Perlito5::X64::Immediate'
+}
+
 sub is_zero { 
     return $_[0] == 0;
 }
@@ -255,6 +272,10 @@ sub is_uint16 {
 
 sub label {
     return Perlito5::X64::Label->new();
+}
+
+sub Immediate {
+    return Perlito5::X64::Immediate->new( value => $_[0] );
 }
 
 sub pc_offset {
@@ -403,13 +424,13 @@ sub _movq {
             emit_modrm($dst, $src);
         }
     }
-    elsif ( @_ == 2 && is_register($dst) && !ref($src) ) {
+    elsif ( @_ == 2 && is_register($dst) && is_immediate($src) ) {
         # Immediate value
         my $value = $src;
         emit_rex_64($dst);
         emit(0xC7);
         emit_modrm(0x0, $dst);
-        emitl($value);  # Only 32-bit immediates are possible, not 8-bit immediates.
+        emit($src);  # Only 32-bit immediates are possible, not 8-bit immediates.
     }
     else {
         die "movq: don't know what to do with $dst, $src";

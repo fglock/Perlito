@@ -73,14 +73,14 @@ say "1..4";
     my $message = 0x1000; # point to the string
     my $length  = 0;
     # sys_write(stdout, message, length)
-    _movq rax, 1        ; # sys_write
-    _movq rdi, 1        ; # stdout
-    _movq rsi, $message ; # message address
-    _movq rdx, $length  ; # message string length
+    _movq rax, Immediate(1)        ; # sys_write
+    _movq rdi, Immediate(1)        ; # stdout
+    _movq rsi, Immediate($message) ; # message address
+    _movq rdx, Immediate($length)  ; # message string length
     _syscall           ;
     # sys_exit(return_code)
-    _movq rax, 60       ; # sys_exit
-    _movq rdi, 0        ; # return 0 (success)
+    _movq rax, Immediate(60)       ; # sys_exit
+    _movq rdi, Immediate(0)        ; # return 0 (success)
     _syscall            ;
     say "# hello world: " . to_hex();
 
