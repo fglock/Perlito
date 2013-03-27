@@ -409,7 +409,7 @@ sub _movq {
         emit_rex_64($dst);
         emit(0xC7);
         emit_modrm(0x0, $dst);
-        emit($value);  # Only 32-bit immediates are possible, not 8-bit immediates.
+        emitl($value);  # Only 32-bit immediates are possible, not 8-bit immediates.
     }
     else {
         die "movq: don't know what to do with $dst, $src";
