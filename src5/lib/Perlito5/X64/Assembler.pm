@@ -100,21 +100,20 @@ sub set_sib {
  
 sub set_disp8 { 
     my ($op, $disp) = @_;
-    die "TODO";
-    # die unless (is_int8(disp)); 
-    # die unless ($op->{len_} == 1 || $op->{len_} == 2); 
-    # int8_t* p = reinterpret_cast<int8_t*>(&buf_[$op->{len_}]); 
-    # *p = disp; 
-    # $op->{len_} += sizeof(int8_t); 
+    die unless (is_int8($disp)); 
+    die unless ($op->{len_} == 1 || $op->{len_} == 2); 
+    $op->{buf_}[$op->{len_}] = $disp;
+    $op->{len_}++;
 } 
  
 sub set_disp32 { 
     my ($op, $disp) = @_;
     die unless ($op->{len_} == 1 || $op->{len_} == 2); 
-    die "TODO";
-    # int32_t* p = reinterpret_cast<int32_t*>(&buf_[$op->{len_}]); 
-    # *p = disp; 
-    # $op->{len_} += sizeof(int32_t); 
+    $op->{buf_}[$op->{len_} + 0] = ( $disp & 0xFF );
+    $op->{buf_}[$op->{len_} + 1] = ( ( $disp >> 8  ) & 0xFF );
+    $op->{buf_}[$op->{len_} + 2] = ( ( $disp >> 16 ) & 0xFF );
+    $op->{buf_}[$op->{len_} + 3] = ( ( $disp >> 24 ) & 0xFF );
+    $op->{len_} += 4;
 } 
 
 
