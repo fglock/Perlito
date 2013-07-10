@@ -169,10 +169,12 @@ $code = 'my $x = this {$object} (123); 1';
 $expect = 'syntax error';
 show();
 
+$code = 'this { a => 123, b => 456 }';
+$expect = '';
+show();
 
 #----- object in parentheses
 
-# Number found where operator expected
 $code = 'this ($object); 1';
 $expect = '';
 show();
@@ -187,6 +189,33 @@ show();
 # $expect = 'syntax error';
 # show();
 
+
+#----- unknown sub with scalar
+
+$code = 'not_exist { a => 123, b => 456 }';
+$expect = 'Can\'t locate object method "not_exist" via package "a"';
+show();
+
+$code = 'not_exist {(a => 123, b => 456)}';
+$expect = 'Can\'t locate object method "not_exist" via package "a"';
+show();
+
+# # Number found where operator expected
+# $code = 'not_exist 123';
+# $expect = '';
+# show();
+
+$code = 'not_exist $object';
+$expect = 'Can\'t locate object method "not_exist" via package "This"';
+show();
+
+$code = 'not_exist $object 123';
+$expect = 'Can\'t locate object method "not_exist" via package "This"';
+show();
+
+$code = 'not_exist $object (123)';
+$expect = 'Can\'t locate object method "not_exist" via package "This"';
+show();
 
 
 __END__
