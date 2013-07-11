@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..39";
+say "1..43";
 
 {
     package Exists; 
@@ -253,6 +253,27 @@ show();
 # $code = 'my $x = this (STDOUT 123); 1';
 # $expect = 'syntax error';
 # show();
+
+
+
+#----- print and say
+
+$code = 'print STDOUT; 1';
+$expect = '';
+show;
+
+$code = 'say STDOUT "# 123"; 1';
+$expect = '';
+show;
+
+$code = 'say STDOUT "# 123"; 1';
+$expect = '';
+show;
+
+$code = 'my $x = say STDOUT "# 123"; 1';
+$expect = '';
+show;
+
 
 
 #----- special syntax for print and say
