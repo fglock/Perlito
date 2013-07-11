@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..25";
+say "1..39";
 
 {
     package Exists; 
@@ -218,5 +218,61 @@ $expect = 'Can\'t locate object method "not_exist" via package "This"';
 show();
 
 
-__END__
 
+#----- glob 
+
+$code = 'this STDOUT; 1';
+$expect = 'Can\'t locate object method "this" via package "IO::File"';
+show();
+
+# Number found where operator expected
+$code = 'this STDOUT 123; 1';
+$expect = 'Can\'t locate object method "this" via package "IO::File"';
+show();
+
+# Number found where operator expected
+$code = 'my $x = this STDOUT 123; 1';
+$expect = 'Can\'t locate object method "this" via package "IO::File"';
+show();
+
+
+
+
+#----- glob with parentheses
+
+$code = 'this (STDOUT); 1';
+$expect = 'Bareword "STDOUT" not allowed while "strict subs" in use';
+show();
+
+# # Number found where operator expected
+# $code = 'this (STDOUT 123); 1';
+# $expect = 'syntax error';
+# show();
+# 
+# # Number found where operator expected
+# $code = 'my $x = this (STDOUT 123); 1';
+# $expect = 'syntax error';
+# show();
+
+
+#----- special syntax for print and say
+
+$code = 'print (STDOUT); 1';
+$expect = '';
+show();
+
+$code = 'say STDOUT "# 123"; 1';
+$expect = '';
+show();
+
+$code = 'say (STDOUT "# 123"); 1';
+$expect = '';
+show();
+
+$code = 'my $x = say (STDOUT "# 123"); 1';
+$expect = '';
+show();
+
+
+__END__
+ 
