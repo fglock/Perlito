@@ -5,16 +5,16 @@ say "1..43";
 
 {
     package Exists; 
-    sub exists { 123 }      # bultin name
+    sub exists { 'called Exists::exists' }      # bultin name
 }
 
 {
     package Exists2; 
-    sub exists2 { 123 }      # not a bultin name
+    sub exists2 { 'called Exists2::exists2' }      # not a bultin name
 }
 
 package This;
-sub this { 123 }
+sub this { 'called This::this' }
 
 my $code;
 my $expect;
@@ -23,20 +23,23 @@ my $object  = bless {}, 'This';
 my $count   = 1;
 
 sub show {
-    my $v = eval $code || 'fail';
-    print "# $v \n";
+    my $result = '';
+    my $v = eval(' $result = ' . $code . '; 1 ') || 'fail';
     if ( $v eq 'fail' ) {
         my $err = $@;
         chomp $err;
-        print "# << $code >>\n";
-        print "# $err\n";
-        print "# $expect\n";
+        print "# code:   <<  $code  >>\n";
+        print "# result: $result\n" if $result;
+        print "# expect: $expect\n";
         if (!$expect || substr($err, 0, length($expect)) ne $expect) {
+            print "# $err\n";
             print "not ";
         }
         say "ok $count";
     }
     else {
+        print "# code:   <<  $code  >>\n";
+        print "# result: $result\n";
         if ($expect) {
             print "not ";
         }
@@ -48,38 +51,38 @@ sub show {
 
 #----- package outside this scope
 
-$code = 'exists2 Exists2; 1';
+$code = 'exists2 Exists2';
 $expect = '';
 show();
 
-$code = 'exists2 Exists2 123; 1';
+$code = 'exists2 Exists2 123';
 $expect = '';
 show();
 
-$code = 'exists2 Exists2::; 1';
+$code = 'exists2 Exists2::';
 $expect = '';
 show();
 
-$code = 'my $x = exists2 Exists2(123); 1';
+$code = 'exists2 Exists2(123)';
 $expect = '';
 show();
 
 
 #----- package does not exist
 
-$code = 'exists2 NotExist; 1';
+$code = 'exists2 NotExist';
 $expect = 'Can\'t locate object method "exists2" via package "NotExist" (perhaps you forgot to load "NotExist"?)';
 show();
 
-$code = 'exists2 NotExist 123; 1';
+$code = 'exists2 NotExist 123';
 $expect = 'Can\'t locate object method "exists2" via package "NotExist" (perhaps you forgot to load "NotExist"?)';
 show();
 
-$code = 'exists2 NotExist::; 1';
+$code = 'exists2 NotExist::';
 $expect = 'Can\'t locate object method "exists2" via package "NotExist" (perhaps you forgot to load "NotExist"?)';
 show();
 
-$code = 'my $x = exists2 NotExist(123); 1';
+$code = 'exists2 NotExist(123)';
 $expect = 'Can\'t locate object method "exists2" via package "NotExist" (perhaps you forgot to load "NotExist"?)';
 show();
 
@@ -87,20 +90,20 @@ show();
 
 #----- package outside this scope, method is a builtin name
 
-$code = 'exists Exists; 1';
+$code = 'exists Exists';
 $expect = 'exists argument is not a HASH or ARRAY element or a subroutine';
 show();
 
 # # Number found where operator expected
-# $code = 'exists Exists 123; 1';
+# $code = 'exists Exists 123';
 # $expect = 'exists argument is not a HASH or ARRAY element or a subroutine';
 # show();
 
-$code = 'exists Exists::; 1';
+$code = 'exists Exists::';
 $expect = 'exists argument is not a HASH or ARRAY element or a subroutine';
 show();
 
-$code = 'my $x = exists Exists(123); 1';
+$code = 'exists Exists(123)';
 $expect = 'exists argument is not a subroutine name';
 show();
 
@@ -108,64 +111,64 @@ show();
 #----- package inside this scope
 
 
-$code = 'this This; 1';
+$code = 'this This';
 $expect = '';
 show();
 
-$code = 'this This 123; 1';
+$code = 'this This 123';
 $expect = '';
 show();
 
-$code = 'this This::; 1';
+$code = 'this This::';
 $expect = '';
 show();
 
-$code = 'my $x = this This(123); 1';
+$code = 'this This(123)';
 $expect = '';
 show();
 
 
 #----- package in a variable
 
-$code = 'this $package; 1';
+$code = 'this $package';
 $expect = '';
 show();
 
-$code = 'this $package 123; 1';
+$code = 'this $package 123';
 $expect = 'syntax error';
 show();
 
-$code = 'my $x = this $package (123); 1';
+$code = 'this $package (123)';
 $expect = 'syntax error';
 show();
 
 
 #----- object in a variable
 
-$code = 'this $object; 1';
+$code = 'this $object';
 $expect = '';
 show();
 
-$code = 'this $object 123; 1';
+$code = 'this $object 123';
 $expect = 'syntax error';
 show();
 
-$code = 'my $x = this $object (123); 1';
+$code = 'this $object (123)';
 $expect = 'syntax error';
 show();
 
 
 #----- object in a block
 
-$code = 'this {$object}; 1';
+$code = 'this {$object}';
 $expect = '';
 show();
 
-$code = 'this {$object} 123; 1';
+$code = 'this {$object} 123';
 $expect = 'syntax error';
 show();
 
-$code = 'my $x = this {$object} (123); 1';
+$code = 'this {$object} (123)';
 $expect = 'syntax error';
 show();
 
@@ -175,17 +178,17 @@ show();
 
 #----- object in parentheses
 
-$code = 'this ($object); 1';
+$code = 'this ($object)';
 $expect = '';
 show();
 
 # # Number found where operator expected
-# $code = 'this ($object 123); 1';
+# $code = 'this ($object 123)';
 # $expect = 'syntax error';
 # show();
 
 # # Number found where operator expected
-# $code = 'my $x = this ($object 123); 1';
+# $code = 'this ($object 123)';
 # $expect = 'syntax error';
 # show();
 
@@ -221,17 +224,17 @@ show();
 
 #----- glob 
 
-$code = 'this STDOUT; 1';
+$code = 'this STDOUT';
 $expect = 'Can\'t locate object method "this" via package "IO::File"';
 show();
 
 # Number found where operator expected
-$code = 'this STDOUT 123; 1';
+$code = 'this STDOUT 123';
 $expect = 'Can\'t locate object method "this" via package "IO::File"';
 show();
 
 # Number found where operator expected
-$code = 'my $x = this STDOUT 123; 1';
+$code = 'this STDOUT 123';
 $expect = 'Can\'t locate object method "this" via package "IO::File"';
 show();
 
@@ -240,17 +243,17 @@ show();
 
 #----- glob with parentheses
 
-$code = 'this (STDOUT); 1';
+$code = 'this (STDOUT)';
 $expect = 'Bareword "STDOUT" not allowed while "strict subs" in use';
 show();
 
 # # Number found where operator expected
-# $code = 'this (STDOUT 123); 1';
+# $code = 'this (STDOUT 123)';
 # $expect = 'syntax error';
 # show();
 # 
 # # Number found where operator expected
-# $code = 'my $x = this (STDOUT 123); 1';
+# $code = 'this (STDOUT 123)';
 # $expect = 'syntax error';
 # show();
 
@@ -258,19 +261,19 @@ show();
 
 #----- print and say
 
-$code = 'print STDOUT; 1';
+$code = 'print STDOUT';
 $expect = '';
 show;
 
-$code = 'say STDOUT "# 123"; 1';
+$code = 'say STDOUT "# 123"';
 $expect = '';
 show;
 
-$code = 'say STDOUT "# 123"; 1';
+$code = 'say STDOUT "# 123"';
 $expect = '';
 show;
 
-$code = 'my $x = say STDOUT "# 123"; 1';
+$code = 'say STDOUT "# 123"';
 $expect = '';
 show;
 
@@ -278,19 +281,19 @@ show;
 
 #----- special syntax for print and say
 
-$code = 'print (STDOUT); 1';
+$code = 'print (STDOUT)';
 $expect = '';
 show();
 
-$code = 'say STDOUT "# 123"; 1';
+$code = 'say STDOUT "# 123"';
 $expect = '';
 show();
 
-$code = 'say (STDOUT "# 123"); 1';
+$code = 'say (STDOUT "# 123")';
 $expect = '';
 show();
 
-$code = 'my $x = say (STDOUT "# 123"); 1';
+$code = 'say (STDOUT "# 123")';
 $expect = '';
 show();
 
