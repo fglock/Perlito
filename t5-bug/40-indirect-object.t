@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..50";
+say "1..52";
 
 {
     package Exists; 
@@ -277,6 +277,9 @@ $code = 'say STDOUT "# 123"';
 $expect = '';
 show;
 
+$code = 'say STDERR, "# 123"';
+$expect = 'No comma allowed after filehandle'; 
+show;
 
 
 #----- special syntax for print and say
@@ -296,6 +299,10 @@ show();
 $code = 'say (STDOUT "# 123")';
 $expect = '';
 show();
+
+$code = 'say (STDERR, "# 123")';
+$expect = 'No comma allowed after filehandle'; 
+show;
 
 
 #----- print and say with scalar
