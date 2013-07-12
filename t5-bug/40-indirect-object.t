@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..43";
+say "1..50";
 
 {
     package Exists; 
@@ -296,6 +296,71 @@ show();
 $code = 'say (STDOUT "# 123")';
 $expect = '';
 show();
+
+
+#----- print and say with scalar
+
+# # prints the object
+# $code = 'print $object';
+# $expect = '';
+# show;
+
+$code = 'say $object "# 123"';
+$expect = 'Not a GLOB reference';
+show;
+
+$code = 'say $object "# 123"';
+$expect = 'Not a GLOB reference';
+show;
+
+$code = 'say $object "# 123"';
+$expect = 'Not a GLOB reference';
+show;
+
+
+#----- print and say with structure
+
+# # prints the object
+# $code = 'print $object';
+# $expect = '';
+# show;
+
+# # String found where operator expected
+# $code = 'say $object->[0] "# 123"';
+# $expect = '';
+# show;
+ 
+# # String found where operator expected
+# $code = 'say $object->[0] "# 123"';
+# $expect = '';
+# show;
+ 
+# # String found where operator expected
+# $code = 'say $object->[0] "# 123"';
+# $expect = '';
+# show;
+
+
+#----- print and say with block
+
+# prints the object
+$code = 'print {$object->[0]}';
+$expect = 'syntax error';
+show;
+
+# String found where operator expected
+$code = 'say {$object->[0]} "# 123"';
+$expect = 'Not an ARRAY reference';
+show;
+
+$code = 'say {$object->[0]} "# 123"';
+$expect = 'Not an ARRAY reference';
+show;
+
+$code = 'say {$object->[0]} "# 123"';
+$expect = 'Not an ARRAY reference';
+show;
+
 
 
 __END__
