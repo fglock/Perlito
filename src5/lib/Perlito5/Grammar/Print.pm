@@ -4,6 +4,7 @@ package Perlito5::Grammar::Print;
 use strict;
 
 Perlito5::Precedence::add_term( 'print'  => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'printf' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'exec'   => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'system' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
@@ -13,6 +14,8 @@ token print_decl { 'print' | 'say' | 'exec' | 'system' };
 token the_object {
     [
         <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
+            <.Perlito5::Grammar::Space.opt_ws>
+            <!before ','>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
             }
@@ -45,11 +48,15 @@ token the_object {
         #     ]
     |
         '{' <Perlito5::Expression.curly_parse> '}'
+            <.Perlito5::Grammar::Space.opt_ws>
+            <!before ','>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'});
             }
     |
         <typeglob>
+            <.Perlito5::Grammar::Space.opt_ws>
+            <!before ','>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'typeglob'});
             }
@@ -138,12 +145,15 @@ token term_print {
             <Perlito5::Expression.paren_parse>
         ')'
 
-        { $MATCH->{capture} = [
+        { 
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'});
+            return if !ref($list);
+            $MATCH->{capture} = [
                 'term',
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}),
+                    $list,
                 ),
             ]
         }
@@ -151,12 +161,15 @@ token term_print {
         <the_object>
         <Perlito5::Expression.list_parse>
 
-        { $MATCH->{capture} = [
+        { 
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'});
+            return if !ref($list);
+            $MATCH->{capture} = [
                 'term',
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'}),
+                    $list,
                 ),
             ]
         }
