@@ -9,7 +9,7 @@ Perlito5::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term
 Perlito5::Precedence::add_term( 'exec'   => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'system' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 
-token print_decl { 'print' | 'say' | 'exec' | 'system' };
+token print_decl { 'print' | 'printf' | 'say' | 'exec' | 'system' };
 
 token the_object {
     [
