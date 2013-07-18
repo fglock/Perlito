@@ -290,6 +290,16 @@ $Perlito5::CORE_PROTO = {
           'CORE::symlink' => '$$',
           'CORE::exists' => '$',      # original 'undef',
           'CORE::printf' => '$@',      # original 'undef',
+
+          'CORE::m'  => undef, 
+          'CORE::q'  => undef,
+          'CORE::qq' => undef,
+          'CORE::qw' => undef,
+          'CORE::qx' => undef,
+          'CORE::qr' => undef,
+          'CORE::s'  => undef,
+          'CORE::tr' => undef,
+          'CORE::y'  => undef,
         };
 1;
 
