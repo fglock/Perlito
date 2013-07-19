@@ -7,6 +7,7 @@ use Perlito5::Grammar::Sigil;
 use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;
+use Perlito5::Grammar::Print;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/

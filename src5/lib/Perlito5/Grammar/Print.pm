@@ -15,40 +15,51 @@ token the_object {
     [
         <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
             <!before '+'>
-            <.Perlito5::Grammar::Space.opt_ws>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
             }
     |
         '{' <Perlito5::Expression.curly_parse> '}'
-            <.Perlito5::Grammar::Space.opt_ws>
-            <!before ','>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'});
             }
     |
         <typeglob>
-            <.Perlito5::Grammar::Space.opt_ws>
-            <!before ','>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'typeglob'});
             }
     ]
 
     {
-        my $s = substr($MATCH->{str}, $MATCH->{to}, 1);
-        if ( $s eq ',' ) {
+        my $pos = $MATCH->{to};
+        my $m = Perlito5::Grammar::Space->ws($MATCH->{str}, $pos);
+        $pos = $m->{to} if $m;
+
+        my $s = substr($MATCH->{str}, $pos, 1);
+        my $s2 = substr($MATCH->{str}, $pos, 2);
+
+        # print Perlito5::Dumper::Dumper $MATCH;
+        # print "after: $MATCH->{capture} $pos '$MATCH->{str}' '$s' '$s2'\n";
+
+        if (  $s eq ',' 
+           || $s eq '?'
+           || $s2 eq '->' 
+           || $s eq '[' 
+           || $s eq '{' 
+           || $s eq '(' 
+           ) 
+        {
             return
         }
         if ( $s eq '+' ) {
-            my $m = Perlito5::Grammar::Space->ws($MATCH->{str}, $MATCH->{to} + 1);
+            my $m = Perlito5::Grammar::Space->ws($MATCH->{str}, $pos + 1);
             if ($m) {
                 return 
             }
             # print "space + non-space\n";
         }
         else {
-            my $m = Perlito5::Precedence->op_parse($MATCH->{str}, $MATCH->{to}, 1);
+            my $m = Perlito5::Precedence->op_parse($MATCH->{str}, $pos, 1);
             my $next_op = $m ? Perlito5::Match::flat($m)->[1] : '';
             my $is_infix = Perlito5::Precedence::is_fixity_type('infix', $next_op);
             # print "is_infix $is_infix '$next_op'\n";

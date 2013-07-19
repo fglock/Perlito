@@ -264,7 +264,10 @@ sub closure { $_[0]->{closure} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '(do { ' . $self->{closure} . '; 1 })'
+    '(do { ' 
+        . '$MATCH->{str} = $str; '
+        . $self->{closure} 
+        . '; 1 })'
 }
 sub set_captures_to_array {
     my $self = $_[0];
