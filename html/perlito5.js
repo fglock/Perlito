@@ -376,25 +376,6 @@ Object.defineProperty( Object.prototype, "p5hget_hash", {
 //-------
 
 
-if (isNode) {
-    var fs = require("fs");
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        return fs.readFileSync(List__[0],"utf8");
-    });
-} else {
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        var filename = List__[0];
-        if (typeof readFile == "function") {
-            return readFile(filename);
-        }
-        if (typeof read == "function") {
-            // v8
-            return read(filename);
-        }
-        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
-    });
-}
-
 p5context = function(List__, p5want) {
     if (p5want) {
         return p5list_to_a.apply(null, List__);
@@ -1134,55 +1115,6 @@ function p5ArrayOfAlias(o) {
 var CORE = p5pkg.CORE;
 
 var isNode = typeof require != "undefined";
-if (isNode) {
-    CORE.print = function(List__) {
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            process.stdout.write(p5str(List__[i]));
-        }
-        return 1;
-    }
-} else {
-    CORE.print = function(List__) {
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            write(p5str(List__[i]));
-        }
-        return 1;
-    };
-}
-
-CORE.say = function(List__) {
-    CORE.print(List__);
-    return CORE.print(["\n"]);
-};
-
-CORE.die = function(List__) {
-    var i;
-    var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
-    }
-    try {
-        s = s + "\n" + new Error().stack;
-    }
-    catch(err) { }
-    p5pkg["main"]["v_@"] = "Died: " + s;
-    throw(new p5_error("die", "Died: " + s));
-};
-
-CORE.warn = function(List__) {
-    var i;
-    var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
-    }
-    try {
-        s = s + "\n" + new Error().stack;
-    }
-    catch(err) { }
-    CORE.print(["Warning: " + s + "\n"]);
-};
 
 CORE.bless = function(List__) {
     var o        = List__[0];
@@ -1488,6 +1420,15 @@ if (isNode) {
 
     var fs = require("fs");
 
+    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+        var i;
+        List__.shift(); // TODO - use IO::FILE
+        for (i = 0; i < List__.length; i++) {
+            process.stdout.write(p5str(List__[i]));
+        }
+        return 1;
+    } );
+
     p5atime = function(s) {
         try {
             var stat = fs.statSync(s); return stat["atime"];
@@ -1591,7 +1532,73 @@ if (isNode) {
         }
     };
 
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+        return fs.readFileSync(List__[0],"utf8");
+    });
+
+} else {
+    // not running in node.js
+    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+        var i;
+        List__.shift(); // TODO - use IO::FILE
+        for (i = 0; i < List__.length; i++) {
+            write(p5str(List__[i]));
+        }
+        return 1;
+    });
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+        var filename = List__[0];
+        if (typeof readFile == "function") {
+            return readFile(filename);
+        }
+        if (typeof read == "function") {
+            // v8
+            return read(filename);
+        }
+        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+    });
 }
+
+CORE.die = function(List__) {
+    var i;
+    var s = "";
+    for (i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
+    p5pkg["main"]["v_@"] = "Died: " + s;
+    throw(new p5_error("die", "Died: " + s));
+};
+
+CORE.say = function(List__) {
+    CORE.print(List__);
+    return CORE.print(["\n"]);
+};
+
+CORE.print = function(List__) {
+    var i;
+    for (i = 0; i < List__.length; i++) {
+        p5pkg['Perlito5::IO'].print([ 'STDOUT', List__[i] ]);
+    }
+    return 1;
+};
+
+CORE.warn = function(List__) {
+    var i;
+    var s = "";
+    for (i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
+    p5pkg['Perlito5::IO'].print([ 'STDERR', "Warning: " + s + "\n"]);
+};
+
 
 /**
  * Copyright (c) 2010 Jakob Westhoff
@@ -11656,7 +11663,7 @@ return r;
 				var v_the_object;
 				var v_expr;
 				(function () { var tmp158 = p5list_to_a(List__); var tmp159 = tmp158.slice(0); v_decl = tmp158.shift(); v_the_object = tmp158.shift(); v_expr = tmp158.shift(); return tmp159 })();
-				return (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('namespace', 'Perlito5', 'code', v_decl, 'arguments', (new p5ArrayRef([v_the_object, v_expr]))), p5want));
+				return (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('namespace', 'Perlito5::IO', 'code', v_decl, 'arguments', (new p5ArrayRef([v_the_object, v_expr]))), p5want));
 		});
 		p5make_sub("Perlito5::Grammar::Print", "term_print", function (List__, p5want) {
 			try {
