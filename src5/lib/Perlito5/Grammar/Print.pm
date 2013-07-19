@@ -25,6 +25,7 @@ token the_object {
             }
     |
         <typeglob>
+            <!before '('>
             {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'typeglob'});
             }
@@ -46,7 +47,6 @@ token the_object {
            || $s2 eq '->' 
            || $s eq '[' 
            || $s eq '{' 
-           || $s eq '(' 
            ) 
         {
             return
