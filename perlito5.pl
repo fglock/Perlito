@@ -6420,7 +6420,7 @@ sub Perlito5::Grammar::Print::the_object {
 }))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((do {
+    (((((do {
     ((my  $m2) = $grammar->typeglob($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -6431,6 +6431,16 @@ sub Perlito5::Grammar::Print::the_object {
         0
     }
 })) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
+    ((my  $res) = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (('(' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})));
+    ($MATCH = ($res ? 0 : $tmp))
+}))) && ((do {
     ($MATCH->{'str'} = $str);
     ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'typeglob'}));
 ;
@@ -6446,7 +6456,7 @@ sub Perlito5::Grammar::Print::the_object {
     };
     ((my  $s) = substr($MATCH->{'str'}, $pos, 1));
     ((my  $s2) = substr($MATCH->{'str'}, $pos, 2));
-    if ((((((($s eq ',') || ($s eq '?')) || ($s2 eq '->')) || ($s eq '[')) || ($s eq '{')) || ($s eq '('))) {
+    if (((((($s eq ',') || ($s eq '?')) || ($s2 eq '->')) || ($s eq '[')) || ($s eq '{'))) {
         return ()
     };
     if (($s eq '+')) {
