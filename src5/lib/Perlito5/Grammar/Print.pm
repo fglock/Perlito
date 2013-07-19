@@ -132,7 +132,7 @@ sub typeglob {
 sub print_ast {
     my ($decl, $the_object, $expr) = @_;
     Perlito5::AST::Apply->new( 
-        'namespace' => 'Perlito5',
+        'namespace' => 'Perlito5::IO',
         'code'      => $decl,
         'arguments' => [
             $the_object,

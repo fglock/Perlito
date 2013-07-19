@@ -422,25 +422,6 @@ Object.defineProperty( Object.prototype, "p5hget_hash", {
 //-------
 
 
-if (isNode) {
-    var fs = require("fs");
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        return fs.readFileSync(List__[0],"utf8");
-    });
-} else {
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
-        var filename = List__[0];
-        if (typeof readFile == "function") {
-            return readFile(filename);
-        }
-        if (typeof read == "function") {
-            // v8
-            return read(filename);
-        }
-        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
-    });
-}
-
 p5context = function(List__, p5want) {
     if (p5want) {
         return p5list_to_a.apply(null, List__);

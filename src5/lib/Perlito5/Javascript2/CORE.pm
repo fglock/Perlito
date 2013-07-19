@@ -27,55 +27,6 @@ sub emit_javascript2 {
 var CORE = p5pkg.CORE;
 
 var isNode = typeof require != "undefined";
-if (isNode) {
-    CORE.print = function(List__) {
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            process.stdout.write(p5str(List__[i]));
-        }
-        return 1;
-    }
-} else {
-    CORE.print = function(List__) {
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            write(p5str(List__[i]));
-        }
-        return 1;
-    };
-}
-
-CORE.say = function(List__) {
-    CORE.print(List__);
-    return CORE.print(["\n"]);
-};
-
-CORE.die = function(List__) {
-    var i;
-    var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
-    }
-    try {
-        s = s + "\n" + new Error().stack;
-    }
-    catch(err) { }
-    p5pkg["main"]["v_@"] = "Died: " + s;
-    throw(new p5_error("die", "Died: " + s));
-};
-
-CORE.warn = function(List__) {
-    var i;
-    var s = "";
-    for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
-    }
-    try {
-        s = s + "\n" + new Error().stack;
-    }
-    catch(err) { }
-    CORE.print(["Warning: " + s + "\n"]);
-};
 
 CORE.bless = function(List__) {
     var o        = List__[0];

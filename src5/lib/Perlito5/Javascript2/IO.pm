@@ -29,6 +29,15 @@ if (isNode) {
 
     var fs = require("fs");
 
+    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+        var i;
+        List__.shift(); // TODO - use IO::FILE
+        for (i = 0; i < List__.length; i++) {
+            process.stdout.write(p5str(List__[i]));
+        }
+        return 1;
+    } );
+
     p5atime = function(s) {
         try {
             var stat = fs.statSync(s); return stat["atime"];
@@ -132,7 +141,73 @@ if (isNode) {
         }
     };
 
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+        return fs.readFileSync(List__[0],"utf8");
+    });
+
+} else {
+    // not running in node.js
+    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+        var i;
+        List__.shift(); // TODO - use IO::FILE
+        for (i = 0; i < List__.length; i++) {
+            write(p5str(List__[i]));
+        }
+        return 1;
+    });
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+        var filename = List__[0];
+        if (typeof readFile == "function") {
+            return readFile(filename);
+        }
+        if (typeof read == "function") {
+            // v8
+            return read(filename);
+        }
+        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+    });
 }
+
+CORE.die = function(List__) {
+    var i;
+    var s = "";
+    for (i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
+    p5pkg["main"]["v_@"] = "Died: " + s;
+    throw(new p5_error("die", "Died: " + s));
+};
+
+CORE.say = function(List__) {
+    CORE.print(List__);
+    return CORE.print(["\n"]);
+};
+
+CORE.print = function(List__) {
+    var i;
+    for (i = 0; i < List__.length; i++) {
+        p5pkg['Perlito5::IO'].print([ 'STDOUT', List__[i] ]);
+    }
+    return 1;
+};
+
+CORE.warn = function(List__) {
+    var i;
+    var s = "";
+    for (i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    try {
+        s = s + "\n" + new Error().stack;
+    }
+    catch(err) { }
+    p5pkg['Perlito5::IO'].print([ 'STDERR', "Warning: " + s + "\n"]);
+};
+
 
 EOT
 } # end of emit_javascript2()
