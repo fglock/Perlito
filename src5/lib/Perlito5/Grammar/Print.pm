@@ -108,7 +108,6 @@ sub typeglob {
     }
 
     my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
-    my $sig;
     if ( exists $Perlito5::PROTO->{$effective_name} ) {
         # subroutine was predeclared
         return;

@@ -2,6 +2,24 @@
 package Perlito5::Grammar::Bareword;
 use strict;
 
+
+token the_object {
+        <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
+            {
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
+            }
+    |
+        '{' <Perlito5::Expression.curly_parse> '}'
+            {
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'});
+            }
+    |
+        <Perlito5::Grammar::Print.typeglob>
+            {
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Print.typeglob'});
+            }
+};
+
     sub term_bareword {
         my $self = $_[0];
         my $str = $_[1];
@@ -56,6 +74,56 @@ use strict;
             $p = $m->{to};
         }
 
+        # check for indirect-object
+        my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
+        if (  exists( $Perlito5::PROTO->{$effective_name} )       # subroutine was predeclared
+           || ( (!$namespace || $namespace eq 'CORE')
+                && exists $Perlito5::CORE_PROTO->{"CORE::$name"}  # subroutine comes from CORE
+              )
+           )
+        {
+            # first term is a subroutine name
+        }
+        else {
+            my $invocant = Perlito5::Grammar::Bareword->the_object( $str, $p );
+            if ($invocant) {
+                # indirect-object
+                $p = $invocant->{to};
+
+                # read the parameter list
+                my $arg = [];
+                $m = Perlito5::Grammar::Space->ws( $str, $p );
+                $p = $m->{to} if $m;
+                if ( substr($str, $p, 2) eq '->' ) {
+                }
+                elsif ( substr($str, $p, 1) eq '(' ) {
+                    my $m = Perlito5::Expression->term_paren( $str, $p );
+                    if ( $m ) {
+                        $arg = $m->{capture}[2];
+                        $p   = $m->{to};
+                        $arg = Perlito5::Expression::expand_list( $arg );
+                    }
+                }
+                else {
+                    my $m = Perlito5::Expression->list_parse( $str, $p );
+                    if ($m->{capture} ne '*undef*') {
+                        $arg = $m->{capture};
+                        $p   = $m->{to};
+                    }
+                }
+                $m_name->{capture} = [ 
+                    'term', 
+                    Perlito5::AST::Call->new(
+                        'method'    => $full_name,
+                        'invocant'  => Perlito5::Match::flat($invocant), 
+                        'arguments' => $arg,
+                    ),
+                ];
+                $m_name->{to} = $p;
+                return $m_name;
+            }
+        }
+
         if ( substr( $str, $p, 2 ) eq '=>' ) {
             # autoquote bareword
             $m_name->{capture} = [ 'term', 
@@ -104,7 +172,6 @@ use strict;
         #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
 
 
-        my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
         my $sig;
         if ( exists $Perlito5::PROTO->{$effective_name} ) {
             # subroutine was predeclared
