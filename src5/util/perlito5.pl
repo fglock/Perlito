@@ -1,6 +1,6 @@
 use v5;
 
-package Perlito;
+package Perlito5;
 use Perlito5::Match;
 use Perlito5::Emitter::Token;
 use Perlito5::Expression;

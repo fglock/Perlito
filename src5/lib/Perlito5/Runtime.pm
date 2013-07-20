@@ -11,7 +11,24 @@ $Perlito5::WARNINGS   = 0;
 $Perlito5::UTF8       = 0;
 $Perlito5::BYTES      = 0;
 $Perlito5::CALLER     = [];
-$Perlito5::PKG_NAME   = '';
+$Perlito5::PKG_NAME   = '';     # current package being parsed
+
+# list of packages that "exist" - this is used by the indirect-object parser
+$Perlito5::PACKAGES = {
+    STDERR       => 1,
+    STDOUT       => 1,
+    STDIN        => 1,
+    main         => 1,
+    strict       => 1,
+    warnings     => 1,
+    utf8         => 1,
+    bytes        => 1,
+    encoding     => 1,
+    UNIVERSAL    => 1,
+    CORE         => 1,
+    CORE::GLOBAL => 1,
+    Perlito5::IO => 1,
+};
 
 push @INC, $_
     for split ":", ($ENV{PERL5LIB} || "");

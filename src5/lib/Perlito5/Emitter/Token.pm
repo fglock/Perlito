@@ -1,7 +1,7 @@
 use v5;
 
 
-package Rul;
+package Perlito5::Rul;
 sub new { my $class = shift; bless {@_}, $class }
 
 sub constant {
@@ -25,7 +25,7 @@ sub constant {
 
 
 
-package Rul::Quantifier;
+package Perlito5::Rul::Quantifier;
 sub new { my $class = shift; bless {@_}, $class }
 sub term { $_[0]->{term} }
 sub quant { $_[0]->{quant} }
@@ -97,7 +97,7 @@ sub emit_perl5 {
             . '})';
     }
 
-    warn "Rul::Quantifier:  not implemented";
+    warn "Perlito5::Rul::Quantifier:  not implemented";
     $self->{term}->emit_perl5;
 }
 sub set_captures_to_array {
@@ -108,7 +108,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Or;
+package Perlito5::Rul::Or;
 sub new { my $class = shift; bless {@_}, $class }
 sub or_list { $_[0]->{or_list} }
 sub emit_perl5 {
@@ -129,7 +129,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Concat;
+package Perlito5::Rul::Concat;
 sub new { my $class = shift; bless {@_}, $class }
 sub concat { $_[0]->{concat} }
 sub emit_perl5 {
@@ -149,7 +149,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Perlito5::AST::Subrule;
+package Perlito5::Rul::Subrule;
 sub new { my $class = shift; bless {@_}, $class }
 sub metasyntax { $_[0]->{metasyntax} }
 sub captures { $_[0]->{captures} }
@@ -198,14 +198,14 @@ sub set_captures_to_array {
 
 
 
-package Rul::Constant;
+package Perlito5::Rul::Constant;
 sub new { my $class = shift; bless {@_}, $class }
 sub constant { $_[0]->{constant} }
 sub emit_perl5 {
     my $self = $_[0];
 
     my $str = $self->{constant};
-    Rul::constant( $str );
+    Perlito5::Rul::constant( $str );
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -213,7 +213,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Perlito5::AST::Dot;
+package Perlito5::Rul::Dot;
 sub new { my $class = shift; bless {@_}, $class }
 sub emit_perl5 {
     my $self = $_[0];
@@ -228,7 +228,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::SpecialChar;
+package Perlito5::Rul::SpecialChar;
 sub new { my $class = shift; bless {@_}, $class }
 sub char { $_[0]->{char} }
 sub emit_perl5 {
@@ -236,21 +236,21 @@ sub emit_perl5 {
 
     my $char = $self->{char};
     if ($char eq 'n') {
-        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
+        return Perlito5::Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
     }
     if ($char eq 'N') {
-        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl5;
+        return Perlito5::Rul::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl5;
     }
     if ($char eq 'd') {
-        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl5;
+        return Perlito5::Rul::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl5;
     }
     if ($char eq 's') {
-        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl5;
+        return Perlito5::Rul::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl5;
     }
     if ($char eq 't') {
-        return Rul::constant( chr(9) );
+        return Perlito5::Rul::constant( chr(9) );
     }
-    return Rul::constant( $char );
+    return Perlito5::Rul::constant( $char );
 }
 sub set_captures_to_array {
     my $self = $_[0];
@@ -258,7 +258,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Block;
+package Perlito5::Rul::Block;
 sub new { my $class = shift; bless {@_}, $class }
 sub closure { $_[0]->{closure} }
 sub emit_perl5 {
@@ -275,7 +275,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Before;
+package Perlito5::Rul::Before;
 sub new { my $class = shift; bless {@_}, $class }
 sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {
@@ -296,7 +296,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::NotBefore;
+package Perlito5::Rul::NotBefore;
 sub new { my $class = shift; bless {@_}, $class }
 sub rule_exp { $_[0]->{rule_exp} }
 sub emit_perl5 {

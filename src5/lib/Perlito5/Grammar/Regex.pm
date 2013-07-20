@@ -89,37 +89,37 @@ token parsed_code {
 token rule_terms {
     |   '<before'
         <.Perlito5::Grammar::Space.ws> <rule> \>
-        { $MATCH->{capture} = Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+        { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   '<!before'
         <.Perlito5::Grammar::Space.ws> <rule> \>
-        { $MATCH->{capture} = Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+        { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   \'
         <literal> \'
-        { $MATCH->{capture} = Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{literal}) ) }
+        { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{literal}) ) }
     |   \<
         [
             \.
             <metasyntax_exp>  \>
-            { $MATCH->{capture} = Rul::Perlito5::AST::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{metasyntax_exp}), captures => 0 ) }
+            { $MATCH->{capture} = Perlito5::Rul::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{metasyntax_exp}), captures => 0 ) }
         |
             <metasyntax_exp>  \>
-            { $MATCH->{capture} = Rul::Perlito5::AST::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{metasyntax_exp}), captures => 1 ) }
+            { $MATCH->{capture} = Perlito5::Rul::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{metasyntax_exp}), captures => 1 ) }
         ]
     |   \{
         <parsed_code>  \}
-        { $MATCH->{capture} = Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
+        { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
     |   \\
         [
         | c \[ <Perlito5::Grammar.digits> \]
-          { $MATCH->{capture} = Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
+          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
         | c <Perlito5::Grammar.digits>
-          { $MATCH->{capture} = Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
+          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
         | <any>
           #  \e  \E
-          { $MATCH->{capture} = Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
+          { $MATCH->{capture} = Perlito5::Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
         ]
     |   \.
-        { $MATCH->{capture} = Rul::Perlito5::AST::Dot->new() }
+        { $MATCH->{capture} = Perlito5::Rul::Dot->new() }
     |   '['
         <rule> ']'
         { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
@@ -134,7 +134,7 @@ token rule_term {
             $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule_terms})
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { $MATCH->{capture} = Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
+        { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
 };
 
 token quant_exp  {   \? | \* | \+  };
@@ -148,7 +148,7 @@ token quantifier {
     [
         <quant_exp> <greedy_exp>
         <Perlito5::Grammar::Space.opt_ws>
-        { $MATCH->{capture} = Rul::Quantifier->new(
+        { $MATCH->{capture} = Perlito5::Rul::Quantifier->new(
                 term    => Perlito5::Match::flat($MATCH->{rule_term}),
                 quant   => Perlito5::Match::flat($MATCH->{quant_exp}),
                 greedy  => Perlito5::Match::flat($MATCH->{greedy_exp}),
@@ -173,7 +173,7 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { $MATCH->{capture} = Rul::Concat->new( concat => Perlito5::Match::flat($MATCH->{concat_list}) ) }
+    { $MATCH->{capture} = Perlito5::Rul::Concat->new( concat => Perlito5::Match::flat($MATCH->{concat_list}) ) }
 };
 
 token or_list_exp {
@@ -191,11 +191,11 @@ token or_list_exp {
 
 token rule {
     [ <.Perlito5::Grammar::Space.ws>? '|' | '' ]
-    # { say 'trying M::G::Rule on ', $s }
+    # { say 'trying M::G::Perlito5::Rule on ', $s }
     <or_list_exp>
     {
-        # say 'found Rule';
-        $MATCH->{capture} = Rul::Or->new( or_list => Perlito5::Match::flat($MATCH->{or_list_exp}) )
+        # say 'found Perlito5::Rule';
+        $MATCH->{capture} = Perlito5::Rul::Or->new( or_list => Perlito5::Match::flat($MATCH->{or_list_exp}) )
     }
 };
 

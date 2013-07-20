@@ -15,7 +15,7 @@ sub slurp {
 use v5.10;
 package main;
 undef();
-package Perlito;
+package Perlito5;
 package main;
 undef();
 package Perlito5::Match;
@@ -31,12 +31,12 @@ sub Perlito5::Match::flat {
 ;
 package main;
 undef();
-package Rul;
-sub Rul::new {
+package Perlito5::Rul;
+sub Perlito5::Rul::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::constant {
+sub Perlito5::Rul::constant {
     ((my  $str) = shift());
     ((my  $len) = length($str));
     if (($str eq chr(92))) {
@@ -52,21 +52,21 @@ sub Rul::constant {
         return ('1')
     }
 };
-package Rul::Quantifier;
-sub Rul::Quantifier::new {
+package Perlito5::Rul::Quantifier;
+sub Perlito5::Rul::Quantifier::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Quantifier::term {
+sub Perlito5::Rul::Quantifier::term {
     $_[0]->{    'term'}
 };
-sub Rul::Quantifier::quant {
+sub Perlito5::Rul::Quantifier::quant {
     $_[0]->{    'quant'}
 };
-sub Rul::Quantifier::greedy {
+sub Perlito5::Rul::Quantifier::greedy {
     $_[0]->{    'greedy'}
 };
-sub Rul::Quantifier::emit_perl5 {
+sub Perlito5::Rul::Quantifier::emit_perl5 {
     ((my  $self) = $_[0]);
     if ((($self->{'quant'} eq '') && ($self->{'greedy'} eq ''))) {
         return ($self->{'term'}->emit_perl5())
@@ -83,57 +83,57 @@ sub Rul::Quantifier::emit_perl5 {
         $self->{'term'}->set_captures_to_array();
         return (('(do { ' . 'my $m = $MATCH; ' . 'if (!(do {' . $self->{'term'}->emit_perl5() . '})) ' . '{ ' . '$MATCH = $m; ' . '}; ' . '1 ' . '})'))
     };
-    warn('Rul::Quantifier:  not implemented');
+    warn('Perlito5::Rul::Quantifier:  not implemented');
     $self->{'term'}->emit_perl5()
 };
-sub Rul::Quantifier::set_captures_to_array {
+sub Perlito5::Rul::Quantifier::set_captures_to_array {
     ((my  $self) = $_[0]);
     $self->{'term'}->set_captures_to_array()
 };
-package Rul::Or;
-sub Rul::Or::new {
+package Perlito5::Rul::Or;
+sub Perlito5::Rul::Or::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Or::or_list {
+sub Perlito5::Rul::Or::or_list {
     $_[0]->{    'or_list'}
 };
-sub Rul::Or::emit_perl5 {
+sub Perlito5::Rul::Or::emit_perl5 {
     ((my  $self) = $_[0]);
     ('(do { ' . 'my $pos1 = $MATCH->{to}; (do { ' . join('}) || (do { $MATCH->{to} = $pos1; ', map($_->emit_perl5(), @{$self->{'or_list'}})) . '}) })')
 };
-sub Rul::Or::set_captures_to_array {
+sub Perlito5::Rul::Or::set_captures_to_array {
     ((my  $self) = $_[0]);
     map($_->set_captures_to_array(), @{$self->{'or_list'}})
 };
-package Rul::Concat;
-sub Rul::Concat::new {
+package Perlito5::Rul::Concat;
+sub Perlito5::Rul::Concat::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Concat::concat {
+sub Perlito5::Rul::Concat::concat {
     $_[0]->{    'concat'}
 };
-sub Rul::Concat::emit_perl5 {
+sub Perlito5::Rul::Concat::emit_perl5 {
     ((my  $self) = $_[0]);
     ('(' . join(' && ', map($_->emit_perl5(), @{$self->{'concat'}})) . ')')
 };
-sub Rul::Concat::set_captures_to_array {
+sub Perlito5::Rul::Concat::set_captures_to_array {
     ((my  $self) = $_[0]);
     map($_->set_captures_to_array(), @{$self->{'concat'}})
 };
-package Rul::Perlito5::AST::Subrule;
-sub Rul::Perlito5::AST::Subrule::new {
+package Perlito5::Rul::Subrule;
+sub Perlito5::Rul::Subrule::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Perlito5::AST::Subrule::metasyntax {
+sub Perlito5::Rul::Subrule::metasyntax {
     $_[0]->{    'metasyntax'}
 };
-sub Rul::Perlito5::AST::Subrule::captures {
+sub Perlito5::Rul::Subrule::captures {
     $_[0]->{    'captures'}
 };
-sub Rul::Perlito5::AST::Subrule::emit_perl5 {
+sub Perlito5::Rul::Subrule::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $s) = $self->{'metasyntax'});
     ($s =~ s!\.!->!g);
@@ -152,114 +152,114 @@ sub Rul::Perlito5::AST::Subrule::emit_perl5 {
     };
     ('(do { ' . 'my $m2 = ' . $meth . '($str, $MATCH->{to}); ' . $code . '})')
 };
-sub Rul::Perlito5::AST::Subrule::set_captures_to_array {
+sub Perlito5::Rul::Subrule::set_captures_to_array {
     ((my  $self) = $_[0]);
     if (($self->{'captures'} > 0)) {
         ($self->{'captures'} = ($self->{'captures'} + 1))
     }
 };
-package Rul::Constant;
-sub Rul::Constant::new {
+package Perlito5::Rul::Constant;
+sub Perlito5::Rul::Constant::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Constant::constant {
+sub Perlito5::Rul::Constant::constant {
     $_[0]->{    'constant'}
 };
-sub Rul::Constant::emit_perl5 {
+sub Perlito5::Rul::Constant::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $str) = $self->{'constant'});
-    Rul::constant($str)
+    Perlito5::Rul::constant($str)
 };
-sub Rul::Constant::set_captures_to_array {
+sub Perlito5::Rul::Constant::set_captures_to_array {
     ((my  $self) = $_[0])
 };
-package Rul::Perlito5::AST::Dot;
-sub Rul::Perlito5::AST::Dot::new {
+package Perlito5::Rul::Dot;
+sub Perlito5::Rul::Dot::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Perlito5::AST::Dot::emit_perl5 {
+sub Perlito5::Rul::Dot::emit_perl5 {
     ((my  $self) = $_[0]);
     ('( ' . chr(39) . chr(39) . ' ne substr( $str, $MATCH->{to}, 1 ) ' . '&& ($MATCH->{to} = 1 + $MATCH->{to})' . ')')
 };
-sub Rul::Perlito5::AST::Dot::set_captures_to_array {
+sub Perlito5::Rul::Dot::set_captures_to_array {
     ((my  $self) = $_[0])
 };
-package Rul::SpecialChar;
-sub Rul::SpecialChar::new {
+package Perlito5::Rul::SpecialChar;
+sub Perlito5::Rul::SpecialChar::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::SpecialChar::char {
+sub Perlito5::Rul::SpecialChar::char {
     $_[0]->{    'char'}
 };
-sub Rul::SpecialChar::emit_perl5 {
+sub Perlito5::Rul::SpecialChar::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $char) = $self->{'char'});
     if (($char eq 'n')) {
-        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'is_newline', 'captures', 0)->emit_perl5())
+        return (Perlito5::Rul::Subrule->new('metasyntax', 'is_newline', 'captures', 0)->emit_perl5())
     };
     if (($char eq 'N')) {
-        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'not_newline', 'captures', 0)->emit_perl5())
+        return (Perlito5::Rul::Subrule->new('metasyntax', 'not_newline', 'captures', 0)->emit_perl5())
     };
     if (($char eq 'd')) {
-        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'digit', 'captures', 0)->emit_perl5())
+        return (Perlito5::Rul::Subrule->new('metasyntax', 'digit', 'captures', 0)->emit_perl5())
     };
     if (($char eq 's')) {
-        return (Rul::Perlito5::AST::Subrule->new('metasyntax', 'space', 'captures', 0)->emit_perl5())
+        return (Perlito5::Rul::Subrule->new('metasyntax', 'space', 'captures', 0)->emit_perl5())
     };
     if (($char eq 't')) {
-        return (Rul::constant(chr(9)))
+        return (Perlito5::Rul::constant(chr(9)))
     };
-    return (Rul::constant($char))
+    return (Perlito5::Rul::constant($char))
 };
-sub Rul::SpecialChar::set_captures_to_array {
+sub Perlito5::Rul::SpecialChar::set_captures_to_array {
     ((my  $self) = $_[0])
 };
-package Rul::Block;
-sub Rul::Block::new {
+package Perlito5::Rul::Block;
+sub Perlito5::Rul::Block::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Block::closure {
+sub Perlito5::Rul::Block::closure {
     $_[0]->{    'closure'}
 };
-sub Rul::Block::emit_perl5 {
+sub Perlito5::Rul::Block::emit_perl5 {
     ((my  $self) = $_[0]);
     ('(do { ' . '$MATCH->{str} = $str; ' . $self->{'closure'} . '; 1 })')
 };
-sub Rul::Block::set_captures_to_array {
+sub Perlito5::Rul::Block::set_captures_to_array {
     ((my  $self) = $_[0])
 };
-package Rul::Before;
-sub Rul::Before::new {
+package Perlito5::Rul::Before;
+sub Perlito5::Rul::Before::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::Before::rule_exp {
+sub Perlito5::Rul::Before::rule_exp {
     $_[0]->{    'rule_exp'}
 };
-sub Rul::Before::emit_perl5 {
+sub Perlito5::Rul::Before::emit_perl5 {
     ((my  $self) = $_[0]);
     ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? $tmp : 0; ' . '})')
 };
-sub Rul::Before::set_captures_to_array {
+sub Perlito5::Rul::Before::set_captures_to_array {
     ((my  $self) = $_[0])
 };
-package Rul::NotBefore;
-sub Rul::NotBefore::new {
+package Perlito5::Rul::NotBefore;
+sub Perlito5::Rul::NotBefore::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Rul::NotBefore::rule_exp {
+sub Perlito5::Rul::NotBefore::rule_exp {
     $_[0]->{    'rule_exp'}
 };
-sub Rul::NotBefore::emit_perl5 {
+sub Perlito5::Rul::NotBefore::emit_perl5 {
     ((my  $self) = $_[0]);
     ('(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $res ? 0 : $tmp; ' . '})')
 };
-sub Rul::NotBefore::set_captures_to_array {
+sub Perlito5::Rul::NotBefore::set_captures_to_array {
     ((my  $self) = $_[0])
 };
 1;
@@ -1658,6 +1658,7 @@ sub Perlito5::Expression::term_package {
 }))) && ((do {
     ($MATCH->{'str'} = $str);
     ((my  $name) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}));
+    ($Perlito5::PACKAGES->{$name} = 1);
     ($Perlito5::PKG_NAME = $name);
     ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name)]);
     1
@@ -3430,7 +3431,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Before->new('rule_exp', Perlito5::Match::flat($MATCH->{'rule'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Before->new('rule_exp', Perlito5::Match::flat($MATCH->{'rule'})));
     1
 })))
 })) || ((do {
@@ -3456,7 +3457,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::NotBefore->new('rule_exp', Perlito5::Match::flat($MATCH->{'rule'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::NotBefore->new('rule_exp', Perlito5::Match::flat($MATCH->{'rule'})));
     1
 }))))
 }))) || ((do {
@@ -3473,7 +3474,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && (((chr(39) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Constant->new('constant', Perlito5::Match::flat($MATCH->{'literal'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', Perlito5::Match::flat($MATCH->{'literal'})));
     1
 }))))
 }))) || ((do {
@@ -3493,7 +3494,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new('metasyntax', Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures', 0));
+    ($MATCH->{'capture'} = Perlito5::Rul::Subrule->new('metasyntax', Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures', 0));
     1
 })))
 })) || ((do {
@@ -3510,7 +3511,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 })) && ((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Perlito5::AST::Subrule->new('metasyntax', Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures', 1));
+    ($MATCH->{'capture'} = Perlito5::Rul::Subrule->new('metasyntax', Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures', 1));
     1
 }))))
 })))
@@ -3529,7 +3530,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Block->new('closure', Perlito5::Match::flat($MATCH->{'parsed_code'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Block->new('closure', Perlito5::Match::flat($MATCH->{'parsed_code'})));
     1
 }))))
 }))) || ((do {
@@ -3549,7 +3550,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'}))));
+    ($MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'}))));
     1
 })))
 })) || ((do {
@@ -3566,7 +3567,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 }))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'}))));
+    ($MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'}))));
     1
 }))))
 }))) || ((do {
@@ -3583,7 +3584,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     }
 })) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::SpecialChar->new('char', Perlito5::Match::flat($MATCH->{'any'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::SpecialChar->new('char', Perlito5::Match::flat($MATCH->{'any'})));
     1
 }))))
 })))
@@ -3592,7 +3593,7 @@ sub Perlito5::Grammar::Regex::rule_terms {
     ($MATCH->{'to'} = $pos1);
     ((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Perlito5::AST::Dot->new());
+    ($MATCH->{'capture'} = Perlito5::Rul::Dot->new());
     1
 }))))
 }))) || ((do {
@@ -3693,7 +3694,7 @@ sub Perlito5::Grammar::Regex::rule_term {
     }
 }))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Constant->new('constant', Perlito5::Match::flat($MATCH->{'any'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', Perlito5::Match::flat($MATCH->{'any'})));
     1
 }))))
 })))
@@ -3811,7 +3812,7 @@ sub Perlito5::Grammar::Regex::quantifier {
     }
 }))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Quantifier->new('term', Perlito5::Match::flat($MATCH->{'rule_term'}), 'quant', Perlito5::Match::flat($MATCH->{'quant_exp'}), 'greedy', Perlito5::Match::flat($MATCH->{'greedy_exp'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Quantifier->new('term', Perlito5::Match::flat($MATCH->{'rule_term'}), 'quant', Perlito5::Match::flat($MATCH->{'quant_exp'}), 'greedy', Perlito5::Match::flat($MATCH->{'greedy_exp'})));
     1
 })))
 })) || ((do {
@@ -3903,7 +3904,7 @@ sub Perlito5::Grammar::Regex::concat_exp {
     }
 })) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Concat->new('concat', Perlito5::Match::flat($MATCH->{'concat_list'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Concat->new('concat', Perlito5::Match::flat($MATCH->{'concat_list'})));
     1
 })))
 }))
@@ -4009,7 +4010,7 @@ sub Perlito5::Grammar::Regex::rule {
     }
 }))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Rul::Or->new('or_list', Perlito5::Match::flat($MATCH->{'or_list_exp'})));
+    ($MATCH->{'capture'} = Perlito5::Rul::Or->new('or_list', Perlito5::Match::flat($MATCH->{'or_list_exp'})));
     1
 })))
 }))
@@ -5585,7 +5586,9 @@ sub Perlito5::Grammar::Use::term_use {
         ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts(    $list_code, 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
         ($list = \@list)
     };
-    ((my  $ast) = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'arguments', $list));
+    ((my  $full_ident) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}));
+    ($Perlito5::PACKAGES->{$full_ident} = 1);
+    ((my  $ast) = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', $full_ident, 'arguments', $list));
     parse_time_eval($ast);
     ($MATCH->{'capture'} = ['term', $ast]);
 ;
@@ -5723,6 +5726,7 @@ sub Perlito5::Grammar::Use::require {
     ((my  $filename) = shift());
     ((my  $is_bareword) = shift());
     if ($is_bareword) {
+        ($Perlito5::PACKAGES->{$filename} = 1);
         ($filename = modulename_to_filename($filename))
     };
     if ((filename_lookup($filename) eq 'done')) {
@@ -12437,6 +12441,7 @@ else {
 ($Perlito5::BYTES = 0);
 ($Perlito5::CALLER = []);
 ($Perlito5::PKG_NAME = '');
+($Perlito5::PACKAGES = {'STDERR', 1, 'STDOUT', 1, 'STDIN', 1, 'main', 1, 'strict', 1, 'warnings', 1, 'utf8', 1, 'bytes', 1, 'encoding', 1, 'UNIVERSAL', 1, 'CORE', 1, 'CORE::GLOBAL', 1, 'Perlito5::IO', 1});
 for (split(':', (($ENV{'PERL5LIB'} || '')))) {
     push(@INC, $_ )
 };

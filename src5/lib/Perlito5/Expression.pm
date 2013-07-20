@@ -451,6 +451,7 @@ token term_package {
     'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
         {
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(

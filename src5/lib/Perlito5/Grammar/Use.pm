@@ -53,9 +53,12 @@ token term_use {
                 $list = \@list;
             }
 
+            my $full_ident = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            $Perlito5::PACKAGES->{$full_ident} = 1;
+
             my $ast = Perlito5::AST::Use->new(
                     code      => Perlito5::Match::flat($MATCH->{use_decl}),
-                    mod       => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),
+                    mod       => $full_ident,
                     arguments => $list
                 );
 
@@ -229,8 +232,10 @@ sub require {
     my $filename = shift;
     my $is_bareword = shift;
 
-    $filename = modulename_to_filename($filename)
-        if $is_bareword;
+    if ($is_bareword) {
+        $Perlito5::PACKAGES->{$filename} = 1;
+        $filename = modulename_to_filename($filename);
+    }
 
     return 
         if filename_lookup($filename) eq "done";
