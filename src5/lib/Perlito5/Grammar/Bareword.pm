@@ -83,6 +83,9 @@ token the_object {
            )
         {
             # first term is a subroutine name
+
+            # TODO this can be an indirect-object
+            #      if the next term is a bareword ending with '::'
         }
         else {
             my $invocant = Perlito5::Grammar::Bareword->the_object( $str, $p );
