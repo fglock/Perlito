@@ -772,43 +772,44 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     if ($m) {
         ($p = $m->{'to'})
     };
+    (my  $invocant);
     ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
     if ((exists($Perlito5::PROTO->{$effective_name}) || ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))))) {
 
     }
     else {
-        ((my  $invocant) = Perlito5::Grammar::Bareword->the_object($str, $p));
-        if ($invocant) {
-            ($p = $invocant->{'to'});
-            ((my  $arg) = []);
-            ($m = Perlito5::Grammar::Space->ws($str, $p));
-            if ($m) {
-                ($p = $m->{'to'})
-            };
-            if ((substr($str, $p, 2) eq '->')) {
+        ($invocant = Perlito5::Grammar::Bareword->the_object($str, $p))
+    };
+    if ($invocant) {
+        ($p = $invocant->{'to'});
+        ((my  $arg) = []);
+        ($m = Perlito5::Grammar::Space->ws($str, $p));
+        if ($m) {
+            ($p = $m->{'to'})
+        };
+        if ((substr($str, $p, 2) eq '->')) {
 
+        }
+        else {
+            if ((substr($str, $p, 1) eq '(')) {
+                ((my  $m) = Perlito5::Expression->term_paren($str, $p));
+                if ($m) {
+                    ($arg = $m->{'capture'}->[2]);
+                    ($p = $m->{'to'});
+                    ($arg = Perlito5::Expression::expand_list($arg))
+                }
             }
             else {
-                if ((substr($str, $p, 1) eq '(')) {
-                    ((my  $m) = Perlito5::Expression->term_paren($str, $p));
-                    if ($m) {
-                        ($arg = $m->{'capture'}->[2]);
-                        ($p = $m->{'to'});
-                        ($arg = Perlito5::Expression::expand_list($arg))
-                    }
+                ((my  $m) = Perlito5::Expression->list_parse($str, $p));
+                if (($m->{'capture'} ne '*undef*')) {
+                    ($arg = $m->{'capture'});
+                    ($p = $m->{'to'})
                 }
-                else {
-                    ((my  $m) = Perlito5::Expression->list_parse($str, $p));
-                    if (($m->{'capture'} ne '*undef*')) {
-                        ($arg = $m->{'capture'});
-                        ($p = $m->{'to'})
-                    }
-                }
-            };
-            ($m_name->{'capture'} = ['term', Perlito5::AST::Call->new('method', $full_name, 'invocant', Perlito5::Match::flat($invocant), 'arguments', $arg)]);
-            ($m_name->{'to'} = $p);
-            return ($m_name)
-        }
+            }
+        };
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Call->new('method', $full_name, 'invocant', Perlito5::Match::flat($invocant), 'arguments', $arg)]);
+        ($m_name->{'to'} = $p);
+        return ($m_name)
     };
     if ((substr($str, $p, 2) eq '=>')) {
         ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code', $name, 'namespace', $namespace, 'arguments', [], 'bareword', 1)]);
@@ -6625,7 +6626,11 @@ sub Perlito5::Grammar::Print::typeglob {
     if ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
         return ()
     };
-    ($m_name->{'capture'} = Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', ($namespace . '::' . $name)));
+    ((my  $full_name) = $name);
+    if ($namespace) {
+        ($full_name = ($namespace . '::' . $name))
+    };
+    ($m_name->{'capture'} = Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', $full_name));
     return ($m_name)
 };
 sub Perlito5::Grammar::Print::print_ast {

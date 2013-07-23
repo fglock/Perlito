@@ -75,6 +75,7 @@ token the_object {
         }
 
         # check for indirect-object
+        my $invocant;
         my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
         if (  exists( $Perlito5::PROTO->{$effective_name} )       # subroutine was predeclared
            || ( (!$namespace || $namespace eq 'CORE')
@@ -82,49 +83,72 @@ token the_object {
               )
            )
         {
-            # first term is a subroutine name
+            # first term is a subroutine name;
+            # this can be an indirect-object if the next term is a bareword ending with '::'
 
-            # TODO this can be an indirect-object
-            #      if the next term is a bareword ending with '::'
+            # TODO
+
+            # $invocant = Perlito5::Grammar->full_ident( $str, $p );
+            # my $package = Perlito5::Match::flat($invocant);
+            # if ( $package ) {
+            #     $invocant->{capture} = Perlito5::AST::Var->new(
+            #                              sigil => '::',
+            #                              name  => '',
+            #                              namespace => $package,
+            #                          );
+            #     if ( substr( $str, $invocant->{to}, 2) eq '::' ) {
+            #         # ::X::y::
+            #         $invocant->{to} = $invocant->{to} + 2;
+            #     }
+            #     else {
+            #         # is this a known package name?
+            #         if ( ! $Perlito5::PACKAGES->{ $package } ) {
+            #             # not a known package name
+            #             $invocant = undef;
+            #         }
+            #     }
+            # }
+
         }
         else {
-            my $invocant = Perlito5::Grammar::Bareword->the_object( $str, $p );
-            if ($invocant) {
-                # indirect-object
-                $p = $invocant->{to};
+            $invocant = Perlito5::Grammar::Bareword->the_object( $str, $p );
+        }
 
-                # read the parameter list
-                my $arg = [];
-                $m = Perlito5::Grammar::Space->ws( $str, $p );
-                $p = $m->{to} if $m;
-                if ( substr($str, $p, 2) eq '->' ) {
-                }
-                elsif ( substr($str, $p, 1) eq '(' ) {
-                    my $m = Perlito5::Expression->term_paren( $str, $p );
-                    if ( $m ) {
-                        $arg = $m->{capture}[2];
-                        $p   = $m->{to};
-                        $arg = Perlito5::Expression::expand_list( $arg );
-                    }
-                }
-                else {
-                    my $m = Perlito5::Expression->list_parse( $str, $p );
-                    if ($m->{capture} ne '*undef*') {
-                        $arg = $m->{capture};
-                        $p   = $m->{to};
-                    }
-                }
-                $m_name->{capture} = [ 
-                    'term', 
-                    Perlito5::AST::Call->new(
-                        'method'    => $full_name,
-                        'invocant'  => Perlito5::Match::flat($invocant), 
-                        'arguments' => $arg,
-                    ),
-                ];
-                $m_name->{to} = $p;
-                return $m_name;
+        if ($invocant) {
+            # indirect-object
+            $p = $invocant->{to};
+
+            # read the parameter list
+            my $arg = [];
+            $m = Perlito5::Grammar::Space->ws( $str, $p );
+            $p = $m->{to} if $m;
+            if ( substr($str, $p, 2) eq '->' ) {
             }
+            elsif ( substr($str, $p, 1) eq '(' ) {
+                my $m = Perlito5::Expression->term_paren( $str, $p );
+                if ( $m ) {
+                    $arg = $m->{capture}[2];
+                    $p   = $m->{to};
+                    $arg = Perlito5::Expression::expand_list( $arg );
+                }
+            }
+            else {
+                my $m = Perlito5::Expression->list_parse( $str, $p );
+                if ($m->{capture} ne '*undef*') {
+                    $arg = $m->{capture};
+                    $p   = $m->{to};
+                }
+            }
+            $m_name->{capture} = [ 
+                'term', 
+                Perlito5::AST::Call->new(
+                    'method'    => $full_name,
+                    'invocant'  => Perlito5::Match::flat($invocant), 
+                    'arguments' => $arg,
+                ),
+            ];
+            $m_name->{to} = $p;
+            return $m_name;
         }
 
         if ( substr( $str, $p, 2 ) eq '=>' ) {
