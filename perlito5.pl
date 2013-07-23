@@ -775,7 +775,17 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     (my  $invocant);
     ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
     if ((exists($Perlito5::PROTO->{$effective_name}) || ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))))) {
-
+        ($invocant = Perlito5::Grammar->full_ident($str, $p));
+        ((my  $package) = Perlito5::Match::flat($invocant));
+        if ($package) {
+            ($invocant->{'capture'} = Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', $package));
+            if ((substr($str, $invocant->{'to'}, 2) eq '::')) {
+                ($invocant->{'to'} = ($invocant->{'to'} + 2))
+            }
+            else {
+                ($invocant = undef())
+            }
+        }
     }
     else {
         ($invocant = Perlito5::Grammar::Bareword->the_object($str, $p))

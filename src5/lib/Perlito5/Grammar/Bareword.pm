@@ -88,26 +88,26 @@ token the_object {
 
             # TODO
 
-            # $invocant = Perlito5::Grammar->full_ident( $str, $p );
-            # my $package = Perlito5::Match::flat($invocant);
-            # if ( $package ) {
-            #     $invocant->{capture} = Perlito5::AST::Var->new(
-            #                              sigil => '::',
-            #                              name  => '',
-            #                              namespace => $package,
-            #                          );
-            #     if ( substr( $str, $invocant->{to}, 2) eq '::' ) {
-            #         # ::X::y::
-            #         $invocant->{to} = $invocant->{to} + 2;
-            #     }
-            #     else {
-            #         # is this a known package name?
-            #         if ( ! $Perlito5::PACKAGES->{ $package } ) {
-            #             # not a known package name
-            #             $invocant = undef;
-            #         }
-            #     }
-            # }
+            $invocant = Perlito5::Grammar->full_ident( $str, $p );
+            my $package = Perlito5::Match::flat($invocant);
+            if ( $package ) {
+                $invocant->{capture} = Perlito5::AST::Var->new(
+                                         sigil => '::',
+                                         name  => '',
+                                         namespace => $package,
+                                     );
+                if ( substr( $str, $invocant->{to}, 2) eq '::' ) {
+                    # ::X::y::
+                    $invocant->{to} = $invocant->{to} + 2;
+                }
+                else {
+                    # is this a known package name?
+                    # if ( ! $Perlito5::PACKAGES->{ $package } ) {
+                        # not a known package name
+                        $invocant = undef;
+                    # }
+                }
+            }
 
         }
         else {

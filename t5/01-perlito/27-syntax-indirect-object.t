@@ -54,34 +54,34 @@ my $e;
     $r = 3;
     $e = eval 'A Q::; 1';  # Can't locate object method "A"
     print "not " if $r != 3;
-    say "ok 10 - runtime error - $r # TODO - strict";    
+    say "ok 10 - runtime error - $r";    
     print "not " if $e;
-    say "ok 11 - runtime error - $e " . ($@ ? substr($@, 0, 30) : '') . " # TODO - strict";    
+    say "ok 11 - runtime error - $e " . ($@ ? substr($@, 0, 30) : '') . " ";    
 
     $r = 3;
-    $e = eval 'A M; 1';  # Bareword "M" not allowed
+    $e = eval 'A M; 1'; 
     print "not " if $r != 12;
     say "ok 12 - method in other package - $r # TODO - strict";    
     print "not " if !$e;
-    say "ok 13 - method in other package - $e " . ($@ ? substr($@, 0, 30) : '') . " # TODO - strict";    
+    say "ok 13 - method in other package - $e " . ($@ ? substr($@, 0, 30) : '') . "";    
 
     $r = 3;
-    $e = eval 'A M::; 1';  # Can't locate object method "A"
+    $e = eval 'A M::; 1'; 
     print "not " if $r != 12;
-    say "ok 14 - method in other package - $r # TODO - strict";    
+    say "ok 14 - method in other package - $r ";    
     print "not " if !$e;
     say "ok 15 - method in other package - $e " . ($@ ? substr($@, 0, 30) : '') . " ";    
 
 
     $v = 3;
-    $e = eval 'C M; 1';  # Bareword "M" not allowed
+    $e = eval 'C M; 1'; 
     print "not " if $v != 13;
     say "ok 16 - method in other package - $v";    
     print "not " if !$e;
     say "ok 17 - method in other package - $e " . ($@ ? substr($@, 0, 30) : '') . " ";    
 
     $v = 3;
-    $e = eval 'C M::; 1';  # Can't locate object method "C"
+    $e = eval 'C M::; 1';  
     print "not " if $v != 13;
     say "ok 18 - method in other package - $v ";    
     print "not " if !$e;
