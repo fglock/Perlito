@@ -3,6 +3,14 @@ package Perlito5::Grammar::Print;
 
 use strict;
 
+our %Print = (
+    print  => 1,
+    printf => 1,
+    say    => 1,
+    exec   => 1,
+    system => 1,
+);
+
 Perlito5::Precedence::add_term( 'print'  => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'printf' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );

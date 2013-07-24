@@ -1,6 +1,6 @@
 use feature 'say';
 
-say "1..21";
+say "1..20";
 
 my $v = 0;
 my $r = 1;
@@ -38,56 +38,53 @@ my $e;
 
     $r = 3;
 
-    # TODO - 'A P' without eval;
-    $e = eval 'A P; 1';
+    A P;
     print "not " if $r != 4;
     say "ok 5 - method call - $r # TODO";
     print "not " if !$x;
     say "ok 6 - method call # $x";
-    print "not " if !$e;
-    say "ok 7 - syntax ok - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " # TODO";
 
     $r = 3;
     $e = eval 'A Q; 1';    # Bareword "Q" not allowed
     print "not " if $r != 3;
-    say "ok 8 - syntax error - $r ";
+    say "ok 7 - syntax error - $r ";
     print "not " if $e;
-    say "ok 9 - syntax error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . "";
+    say "ok 8 - syntax error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . "";
 
     $r = 3;
     $e = eval 'A Q::; 1';    # Can't locate object method "A"
     print "not " if $r != 3;
-    say "ok 10 - runtime error - $r";
+    say "ok 9  - runtime error - $r";
     print "not " if $e;
-    say "ok 11 - runtime error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
+    say "ok 10 - runtime error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
 
     $r = 3;
     $e = eval 'A M; 1';
     print "not " if $r != 12;
-    say "ok 12 - method in other package - $r # TODO - strict";
+    say "ok 11 - method in other package - $r ";
     print "not " if !$e;
-    say "ok 13 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " # TODO";
+    say "ok 12 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
 
     $r = 3;
     $e = eval 'A M::; 1';
     print "not " if $r != 12;
-    say "ok 14 - method in other package - $r ";
+    say "ok 13 - method in other package - $r ";
     print "not " if !$e;
-    say "ok 15 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
+    say "ok 14 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
 
     $v = 3;
     $e = eval 'C M; 1';
     print "not " if $v != 13;
-    say "ok 16 - method in other package - $v";
+    say "ok 15 - method in other package - $v";
     print "not " if !$e;
-    say "ok 17 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
+    say "ok 16 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
 
     $v = 3;
     $e = eval 'C M::; 1';
     print "not " if $v != 13;
-    say "ok 18 - method in other package - $v ";
+    say "ok 17 - method in other package - $v ";
     print "not " if !$e;
-    say "ok 19 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
+    say "ok 18 - method in other package - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " ";
 
 }
 
@@ -99,8 +96,8 @@ my $e;
     $r = 3;
     $e = eval 'A Q; 1';    # this would be an error: Bareword "Q" not allowed
     print "not " if $r != 3;
-    say "ok 20 - bareword not a syntax error under no strict # $r";
+    say "ok 19 - bareword not a syntax error under no strict # $r";
     print "not " if $e;
-    say "ok 21 - bareword; runtime error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " #";
+    say "ok 20 - bareword; runtime error - $e " . ( $@ ? substr( $@, 0, 30 ) : '' ) . " #";
 }
 

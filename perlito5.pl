@@ -774,21 +774,28 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     };
     (my  $invocant);
     ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
-    if ((exists($Perlito5::PROTO->{$effective_name}) || ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))))) {
-        ($invocant = Perlito5::Grammar->full_ident($str, $p));
-        ((my  $package) = Perlito5::Match::flat($invocant));
-        if ($package) {
-            ($invocant->{'capture'} = Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', $package));
-            if ((substr($str, $invocant->{'to'}, 2) eq '::')) {
-                ($invocant->{'to'} = ($invocant->{'to'} + 2))
-            }
-            else {
-                ($invocant = undef())
-            }
-        }
+    if (exists($Perlito5::Grammar::Print::Print{$name})) {
+        ($invocant = undef())
     }
     else {
-        ($invocant = Perlito5::Grammar::Bareword->the_object($str, $p))
+        if ((exists($Perlito5::PROTO->{$effective_name}) || ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))))) {
+            ($invocant = Perlito5::Grammar->full_ident($str, $p));
+            ((my  $package) = Perlito5::Match::flat($invocant));
+            if ($package) {
+                ($invocant->{'capture'} = Perlito5::AST::Var->new('sigil', '::', 'name', '', 'namespace', $package));
+                if ((substr($str, $invocant->{'to'}, 2) eq '::')) {
+                    ($invocant->{'to'} = ($invocant->{'to'} + 2))
+                }
+                else {
+                    if (!($Perlito5::PACKAGES->{$package})) {
+                        ($invocant = undef())
+                    }
+                }
+            }
+        }
+        else {
+            ($invocant = Perlito5::Grammar::Bareword->the_object($str, $p))
+        }
     };
     if ($invocant) {
         ($p = $invocant->{'to'});
@@ -6445,6 +6452,7 @@ package Perlito5::Grammar::Print;
 
 # use strict
 ;
+((our  %Print) = ('print', 1, 'printf', 1, 'say', 1, 'exec', 1, 'system', 1));
 Perlito5::Precedence::add_term('print', sub {
     Perlito5::Grammar::Print->term_print($_[0], $_[1])
 });

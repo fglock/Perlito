@@ -77,16 +77,17 @@ token the_object {
         # check for indirect-object
         my $invocant;
         my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
-        if (  exists( $Perlito5::PROTO->{$effective_name} )       # subroutine was predeclared
-           || ( (!$namespace || $namespace eq 'CORE')
-                && exists $Perlito5::CORE_PROTO->{"CORE::$name"}  # subroutine comes from CORE
-              )
-           )
+        if ( exists( $Perlito5::Grammar::Print::Print{$name} ) ) {
+            $invocant = undef;
+        }
+        elsif (  exists( $Perlito5::PROTO->{$effective_name} )       # subroutine was predeclared
+               || ( (!$namespace || $namespace eq 'CORE')
+                   && exists $Perlito5::CORE_PROTO->{"CORE::$name"}  # subroutine comes from CORE
+                 )
+               )
         {
             # first term is a subroutine name;
             # this can be an indirect-object if the next term is a bareword ending with '::'
-
-            # TODO
 
             $invocant = Perlito5::Grammar->full_ident( $str, $p );
             my $package = Perlito5::Match::flat($invocant);
@@ -102,10 +103,13 @@ token the_object {
                 }
                 else {
                     # is this a known package name?
-                    # if ( ! $Perlito5::PACKAGES->{ $package } ) {
+                    if ( ! $Perlito5::PACKAGES->{ $package } ) {
                         # not a known package name
                         $invocant = undef;
-                    # }
+                    }
+                    else {
+                        # valid package name - this is indirect-object
+                    }
                 }
             }
 
