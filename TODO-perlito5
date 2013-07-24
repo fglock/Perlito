@@ -127,6 +127,17 @@ TODO list for Perlito5
     $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
     $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
 
+-- CORE:: namespace can be used with operators:
+
+    $ perl -MO=Deparse -e ' $x CORE::and $v '
+    $v if $x;
+
+    $ perl -MO=Deparse -e ' @v = CORE::qw/ a b c / '
+    @v = ('a', 'b', 'c');
+
+    $ perl -MO=Deparse -e ' $x CORE::+ $v '
+    CORE:: is not a keyword
+
 
 -- strict and warnings: create options like 'subs', 'refs'
 
