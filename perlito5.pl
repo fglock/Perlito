@@ -5854,7 +5854,13 @@ sub Perlito5::Grammar::Use::require {
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };
-    ((my  $result) = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
+    (my  $result);
+    do {{
+
+        # no strict
+;
+        ($result = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}))
+    }};
     if (${'@'}) {
         ($INC{$filename} = undef());
         die(${'@'})
@@ -9594,7 +9600,7 @@ do {{
         ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))'));
         ($eval = ('eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . ']))'))
     };
-    ('(function (p5want) {' . chr(10) . 'var r;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error || err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . 'try {' . chr(10) . '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack;' . chr(10) . '}' . chr(10) . 'catch(err) { }' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
+    ('(function (p5want) {' . chr(10) . 'var r;' . chr(10) . 'p5pkg["main"]["v_@"] = "";' . chr(10) . 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error || err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"] = err;' . chr(10) . 'try {' . chr(10) . '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack;' . chr(10) . '}' . chr(10) . 'catch(err) { }' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
 }, 'undef', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

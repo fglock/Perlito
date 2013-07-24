@@ -1772,6 +1772,7 @@ package Perlito5::AST::Apply;
                 "(function (p5want) {\n"
                     . "var r;\n"
                     . 'p5pkg["main"]["v_@"] = "";' . "\n"
+                    . 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';' . "\n"
                     . "try {\n"
                         . 'r = ' . $eval . "\n"
                     . "}\n"
