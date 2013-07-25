@@ -5861,13 +5861,7 @@ sub Perlito5::Grammar::Use::require {
     if ((filename_lookup($filename) eq 'done')) {
         return ()
     };
-    (my  $result);
-    do {{
-
-        # no strict
-;
-        ($result = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}))
-    }};
+    ((my  $result) = (do { my $m = Perlito5::Grammar->exp_stmts(    Perlito5::IO::slurp($INC{$filename}), 0);my $source; $source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" for @{ Perlito5::Match::flat($m) }; eval $source;}));
     if (${'@'}) {
         ($INC{$filename} = undef());
         die(${'@'})
@@ -9589,8 +9583,12 @@ do {{
     ((my  $self) = shift());
     ((my  $level) = shift());
     ((my  $wantarray) = shift());
+    ((my  $tmp_strict) = $Perlito5::STRICT);
+    ($Perlito5::STRICT = 0);
     ((my  $ast) = Perlito5::AST::Apply->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'slurp', 'namespace', 'Perlito5::IO', 'arguments', $self->{'arguments'})]));
-    $ast->emit_javascript2($level)
+    ((my  $js) = $ast->emit_javascript2($level));
+    ($Perlito5::STRICT = $tmp_strict);
+    return ($js)
 }, 'eval', sub {
     ((my  $self) = shift());
     ((my  $level) = shift());

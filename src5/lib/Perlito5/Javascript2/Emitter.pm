@@ -1722,6 +1722,8 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
+            my $tmp_strict = $Perlito5::STRICT;
+            $Perlito5::STRICT = 0;
             my $ast =
                 Perlito5::AST::Apply->new(
                     code => 'eval',
@@ -1734,7 +1736,9 @@ package Perlito5::AST::Apply;
                         )
                     ]
                 );
-            $ast->emit_javascript2( $level );
+            my $js = $ast->emit_javascript2( $level );
+            $Perlito5::STRICT = $tmp_strict;
+            return $js;
         },
 
         'eval' => sub {

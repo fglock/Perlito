@@ -240,11 +240,7 @@ sub require {
     return 
         if filename_lookup($filename) eq "done";
 
-    my $result;
-    {
-        no strict;
-        $result = do $INC{$filename};
-    }
+    my $result = do $INC{$filename};
 
     if ($@) {
         $INC{$filename} = undef;
