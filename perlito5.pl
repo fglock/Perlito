@@ -773,12 +773,14 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($p = $m->{'to'})
     };
     (my  $invocant);
+    (my  $is_subroutine_name);
     ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
     if (exists($Perlito5::Grammar::Print::Print{$name})) {
         ($invocant = undef())
     }
     else {
         if ((exists($Perlito5::PROTO->{$effective_name}) || ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))))) {
+            ($is_subroutine_name = 1);
             ($invocant = Perlito5::Grammar->full_ident($str, $p));
             ((my  $package) = Perlito5::Match::flat($invocant));
             if ($package) {
@@ -834,7 +836,12 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         return ($m_name)
     };
     if ((substr($str, $p, 2) eq '->')) {
-        ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new('name', $full_name)]);
+        if ($is_subroutine_name) {
+            ($m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments', [], 'code', $name, 'namespace', $namespace)])
+        }
+        else {
+            ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new('name', $full_name)])
+        };
         ($m_name->{'to'} = $p);
         return ($m_name)
     };

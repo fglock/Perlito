@@ -76,6 +76,7 @@ token the_object {
 
         # check for indirect-object
         my $invocant;
+        my $is_subroutine_name;
         my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
         if ( exists( $Perlito5::Grammar::Print::Print{$name} ) ) {
             $invocant = undef;
@@ -87,6 +88,8 @@ token the_object {
                )
         {
             # first term is a subroutine name;
+            $is_subroutine_name = 1;
+
             # this can be an indirect-object if the next term is a bareword ending with '::'
 
             $invocant = Perlito5::Grammar->full_ident( $str, $p );
@@ -169,8 +172,20 @@ token the_object {
             return $m_name;
         }
         if ( substr( $str, $p, 2 ) eq '->' ) {
-            # class-method call
-            $m_name->{capture} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
+            if ( $is_subroutine_name ) {
+                # call()->method call
+                $m_name->{capture} = [ 'term', 
+                                       Perlito5::AST::Apply->new(
+                                           'arguments' => [],
+                                           'code'      => $name,
+                                           'namespace' => $namespace,
+                                       )
+                                     ];
+            }
+            else {
+                # class->method call
+                $m_name->{capture} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
+            }
             $m_name->{to} = $p;
             return $m_name;
         }

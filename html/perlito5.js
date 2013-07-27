@@ -5284,6 +5284,7 @@ var p5100 = p5pkg['main'];
 					(v_p = ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')));
 				};
 				var v_invocant;
+				var v_is_subroutine_name;
 				var v_effective_name;
 				(v_effective_name = ((p5str(p5or(v_namespace, function () { return p5make_package("Perlito5")["v_PKG_NAME"] })) + '::' + p5str(v_name))));
 				if ( (p5make_package("Perlito5::Grammar::Print")["Hash_Print"]).hasOwnProperty(v_name) ) {
@@ -5292,6 +5293,7 @@ var p5100 = p5pkg['main'];
 				else {
 					if ( ((p5make_package("Perlito5")["v_PROTO"])._hash_.hasOwnProperty(v_effective_name) || ((!( p5bool(v_namespace)) || (p5str(v_namespace) == 'CORE')) && (p5make_package("Perlito5")["v_CORE_PROTO"])._hash_.hasOwnProperty(('CORE::' + p5str(v_name))))) ) {
 						(function () {
+							(v_is_subroutine_name = (1));
 							(v_invocant = (p5call(p5pkg["Perlito5::Grammar"], "full_ident", [v_str, v_p], 0)));
 							var v_package;
 							(v_package = (p5pkg["Perlito5::Match"].flat([v_invocant], 0)));
@@ -5358,7 +5360,12 @@ var p5100 = p5pkg['main'];
 					throw(p5context([v_m_name], p5want));
 				};
 				if ( (p5pkg["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 2], 0) == '->') ) {
-					(v_m_name || (v_m_name = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Proto"], "new", ['name', v_full_name], 1))))));
+					if ( p5bool(v_is_subroutine_name) ) {
+						(v_m_name || (v_m_name = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('arguments', (new p5ArrayRef([])), 'code', v_name, 'namespace', v_namespace), 1))))));
+					}
+					else {
+						(v_m_name || (v_m_name = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Proto"], "new", ['name', v_full_name], 1))))));
+					};
 					(v_m_name || (v_m_name = new p5HashRef({})))._hash_.p5hset('to', (v_p));
 					throw(p5context([v_m_name], p5want));
 				};
