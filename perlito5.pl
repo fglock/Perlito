@@ -9173,7 +9173,7 @@ do {{
         };
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
-            ($ns = ('p5pkg["' . $self->{'namespace'} . '"]'));
+            ($ns = ('p5make_package("' . $self->{'namespace'} . '")'));
             if (($self->{'sigil'} eq '$#')) {
                 return (('(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)'))
             };
@@ -10068,26 +10068,27 @@ do {{
             ($decl = $v->{'decl'});
             ($v = $v->{'var'})
         };
+        ((my  $namespace) = ($v->{'namespace'} || $Perlito5::PKG_NAME));
         ((my  $perl5_name) = $v->perl5_name_javascript2());
         ((my  $pre_declaration) = $v->perl5_get_decl_javascript2($perl5_name));
         if ($pre_declaration) {
             ($decl = $pre_declaration->{'decl'})
         };
-        if (!($decl)) {
+        if ((!($decl) && !($v->{'namespace'}))) {
             if ($Perlito5::STRICT) {
                 die(('Global symbol "' . $perl5_name . '" requires explicit package name'))
             };
-            ($decl = 'my')
+            ($decl = 'our')
         };
         unshift(@{$Perlito5::VAR}, {});
-        ($Perlito5::VAR->[0]->{$perl5_name} = {'decl', $decl, 'namespace', $Perlito5::PKG_NAME});
+        ($Perlito5::VAR->[0]->{$perl5_name} = {'decl', $decl, 'namespace', $namespace});
         (my  $s);
         if ((($decl eq 'my') || ($decl eq 'state'))) {
             ((my  $sig) = $v->emit_javascript2(($level + 1)));
             ($s = ('p5for_lex(' . ('function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript2(($level + 2)) . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         }
         else {
-            ($s = ('p5for(' . Perlito5::Javascript2::pkg() . ', ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . (Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript2(($level + 2)) . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
+            ($s = ('p5for(' . 'p5make_package("' . $namespace . '"), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . (Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'top_level', 0))->emit_javascript2(($level + 2)) . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')'))
         };
         shift(@{$Perlito5::VAR});
         return ($s)

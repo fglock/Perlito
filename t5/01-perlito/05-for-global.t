@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say '1..6';
+say '1..9';
 
 {
     my $v;
@@ -23,5 +23,15 @@ say '1..6';
     }
     print "not " if $v != 8;
     print "ok 6 - leave loop\n";
+}
+
+{
+    $NEW::v = 12;
+    my @a = ( 7, 8 );
+    for $NEW::v (@a) {
+        say 'ok ' . $NEW::v . ' - loop';
+    }
+    print "not " if $NEW::v != 12;
+    print "ok 9 - leave loop\n";
 }
 

@@ -1021,7 +1021,7 @@ package Perlito5::AST::Var;
 
         my $ns = '';
         if ($self->{namespace}) {
-            $ns = 'p5pkg["' . $self->{namespace} . '"]';
+            $ns = 'p5make_package("' . $self->{namespace} . '")';
             if ($self->{sigil} eq '$#') {
                 return '(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)';
             }
@@ -2366,6 +2366,7 @@ package Perlito5::AST::For;
             $decl = $v->{decl};
             $v    = $v->{var};
         }
+        my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
 
         my $perl5_name = $v->perl5_name_javascript2;
         my $pre_declaration = $v->perl5_get_decl_javascript2( $perl5_name );
@@ -2373,16 +2374,16 @@ package Perlito5::AST::For;
             # say "found ", $pre_declaration->{decl};
             $decl = $pre_declaration->{decl};
         }
-        if (!$decl) {
+        if ( !$decl && !$v->{namespace} ) {
             if ( $Perlito5::STRICT ) {
                 die "Global symbol \"$perl5_name\" requires explicit package name"
             }
-            $decl = 'my';
+            $decl = 'our';
         }
 
         # mark the variable as "declared"
         unshift @{ $Perlito5::VAR }, {};
-        $Perlito5::VAR->[0]{ $perl5_name } = { decl => $decl, namespace => $Perlito5::PKG_NAME };
+        $Perlito5::VAR->[0]{ $perl5_name } = { decl => $decl, namespace => $namespace };
 
         my $s;
 
@@ -2399,7 +2400,8 @@ package Perlito5::AST::For;
         }
         else {
             # use global variable or $_
-            $s =   'p5for(' . Perlito5::Javascript2::pkg() . ', '
+            $s =   'p5for(' 
+                    . 'p5make_package("' . $namespace . '"), '
                     . '"v_' . $v->{name} . '", '
                     . 'function () {' . "\n"
                     .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
