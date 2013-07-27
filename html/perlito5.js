@@ -5343,7 +5343,7 @@ var p5100 = p5pkg['main'];
 									var v_m;
 									(v_m = (p5call(p5pkg["Perlito5::Expression"], "list_parse", [v_str, v_p], 0)));
 									if ( (p5str((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')) != '*undef*') ) {
-										(v_arg = ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')));
+										(v_arg = (p5pkg["Perlito5::Expression"].expand_list(p5list_to_a((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')), 0)));
 										(v_p = ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')));
 									};
 									})();

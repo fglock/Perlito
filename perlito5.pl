@@ -821,7 +821,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             else {
                 ((my  $m) = Perlito5::Expression->list_parse($str, $p));
                 if (($m->{'capture'} ne '*undef*')) {
-                    ($arg = $m->{'capture'});
+                    ($arg = Perlito5::Expression::expand_list($m->{'capture'}));
                     ($p = $m->{'to'})
                 }
             }
