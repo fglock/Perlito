@@ -356,7 +356,7 @@ sub Perlito5::Precedence::is_ident_middle {
 }, 'state', sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }, 'local', sub {
-    Perlito5::Expression->term_declarator($_[0], $_[1])
+    Perlito5::Expression->term_local($_[0], $_[1])
 }, 'return', sub {
     Perlito5::Expression->term_return($_[0], $_[1])
 }, 'package', sub {
@@ -1551,7 +1551,7 @@ sub Perlito5::Expression::declarator {
     ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((((do {
+    ((((do {
     (('my' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
@@ -1559,9 +1559,6 @@ sub Perlito5::Expression::declarator {
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((('our' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('local' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))))
 })))
 }))));
     ($tmp ? $MATCH : 0)
@@ -1627,10 +1624,65 @@ sub Perlito5::Expression::term_declarator {
     ((my  $decl) = Perlito5::Match::flat($MATCH->{'declarator'}));
     ((my  $type) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}));
     ((my  $var) = $MATCH->{'Perlito5::Grammar.var_ident'}->{'capture'});
-    if (($decl eq 'local')) {
-        ($MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{'Perlito5::Grammar.var_ident'}));
-        ($var = $MATCH->{'capture'})
-    };
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var)]);
+    1
+})))
+}))
+}))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Expression::term_local {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
+    ((my  $tmp) = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((((('local' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_type($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.opt_type'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->var_ident($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.var_ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'str'} = $str);
+    ((my  $decl) = 'local');
+    ((my  $type) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}));
+    ($MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{'Perlito5::Grammar.var_ident'}));
+    ((my  $var) = $MATCH->{'capture'});
     ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var)]);
     1
 })))

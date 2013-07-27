@@ -399,7 +399,7 @@ token term_curly {
 
 
 token declarator {
-     'my' | 'state' | 'our' | 'local'
+     'my' | 'state' | 'our' 
 };
 
 token term_declarator {
@@ -408,11 +408,25 @@ token term_declarator {
             my $decl = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
             my $var  = $MATCH->{"Perlito5::Grammar.var_ident"}{capture};
-            if ($decl eq 'local') {
-                # hijack some string interpolation code to parse the possible subscript
-                $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{"Perlito5::Grammar.var_ident"});
-                $var = $MATCH->{capture};
-            }
+            $MATCH->{capture} = [ 'term', 
+                Perlito5::AST::Decl->new(
+                    decl => $decl,
+                    type => $type,
+                    var  => $var
+                ) ]
+        }
+};
+
+token term_local {
+    'local' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # local Int $variable  ???
+        {
+            my $decl = 'local';
+            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
+
+            # hijack some string interpolation code to parse the possible subscript
+            $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{"Perlito5::Grammar.var_ident"});
+            my $var = $MATCH->{capture};
+
             $MATCH->{capture} = [ 'term', 
                 Perlito5::AST::Decl->new(
                     decl => $decl,
