@@ -635,11 +635,11 @@ p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
-p5for = function(namespace, func, args, cont, label) {
+p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
-    var v_old = namespace["v__"];
+    var v_old = namespace[var_name];
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        namespace[var_name] = args[i];
         try {
             func()
         }
@@ -669,7 +669,7 @@ p5for = function(namespace, func, args, cont, label) {
             }
        }
    }
-    namespace["v__"] = v_old;
+    namespace[var_name] = v_old;
 };
 
 p5for_lex = function(func, args, cont, label) {

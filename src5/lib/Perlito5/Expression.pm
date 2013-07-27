@@ -403,7 +403,11 @@ token declarator {
 };
 
 token term_declarator {
-    <declarator> <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
+    <declarator> 
+    [ <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> 
+    | ''
+    ]
+    <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
         {
             my $decl = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
@@ -418,10 +422,10 @@ token term_declarator {
 };
 
 token term_local {
-    'local' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # local Int $variable  ???
+    'local' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>
         {
             my $decl = 'local';
-            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
+            my $type = '';
 
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{"Perlito5::Grammar.var_ident"});

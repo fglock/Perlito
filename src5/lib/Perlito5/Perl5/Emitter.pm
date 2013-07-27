@@ -576,9 +576,16 @@ package Perlito5::AST::For;
             $cond = $self->{cond}->emit_perl5()
         }
 
-        my $sig;
-        if ($self->{body}->sig()) {
-            $sig = 'my ' . $self->{body}->sig->emit_perl5() . ' ';
+        my $sig = '';
+        my $sig_ast = $self->{body}->sig();
+        if (!$sig_ast) {
+            # $_
+        }
+        elsif ($sig_ast->{decl}) {
+            $sig = $sig_ast->{decl} . ' ' . $sig_ast->{type} . ' ' . $sig_ast->{var}->emit_perl5() . ' ';
+        }
+        else {
+            $sig = $sig_ast->emit_perl5() . ' ';
         }
         return  Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond . ') {' . "\n"
              .   join(";\n", map( $_->emit_perl5( $level + 1 ), @{ $self->{body}->stmts } )) . "\n"

@@ -116,7 +116,12 @@ token when {
 token for {
     for 'each'?
     [
-        <.ws> my <.opt_ws> <Perlito5::Grammar.var_ident> <.opt_ws> 
+        <.ws> [ <Perlito5::Expression.term_declarator>
+                { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_declarator"})->[1] }
+              | <Perlito5::Grammar.var_ident>
+                { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) }
+              ]
+        <.opt_ws> 
             '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
             '{' <.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
@@ -127,7 +132,10 @@ token for {
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Expression.paren_parse"}), 
                     topic => undef, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) ),
+                    body  => Perlito5::AST::Lit::Block->new( 
+                                stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), 
+                                sig   => $MATCH->{_tmp} 
+                             ),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
