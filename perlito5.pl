@@ -2120,24 +2120,17 @@ sub Perlito5::Expression::exp_parse {
     ((my  $result) = pop_term($res));
     return ({'str', $str, 'from', $pos, 'to', $last_pos, 'capture', $result})
 };
-((my  @Statement_chars) = (9, 8, 7, 6, 5, 4, 3, 2, 1));
-((my  %Statement) = ('if', sub {
-    Perlito5::Grammar->if($_[0], $_[1])
-}, 'for', sub {
-    Perlito5::Grammar->for($_[0], $_[1])
-}, 'when', sub {
-    Perlito5::Grammar->when($_[0], $_[1])
-}, 'while', sub {
-    Perlito5::Grammar->while($_[0], $_[1])
-}, 'given', sub {
-    Perlito5::Grammar->given($_[0], $_[1])
-}, 'unless', sub {
-    Perlito5::Grammar->unless($_[0], $_[1])
-}));
+(my  @Statement_chars);
+(my  %Statement);
 sub Perlito5::Expression::add_statement {
     ((my  $name) = shift());
     ((my  $param) = shift());
-    ($Statement{$name} = $param)
+    ($Statement{$name} = $param);
+    for ( ; (@Statement_chars < length($name)); do {{
+
+}} ) {
+        unshift(@Statement_chars, (scalar(@Statement_chars) + 1))
+    }
 };
 sub Perlito5::Expression::exp_stmt {
     ((my  $self) = $_[0]);
@@ -2155,7 +2148,7 @@ sub Perlito5::Expression::exp_stmt {
     return (0)
 };
 ((my  @Modifier_chars) = (7, 6, 5, 4, 3, 2));
-((my  %Modifier) = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1, 'when', 1));
+((my  %Modifier) = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1, 'given', 1));
 sub Perlito5::Expression::statement_modifier {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -2330,6 +2323,33 @@ sub Perlito5::Expression::statement_parse {
 ;
 package main;
 package Perlito5::Grammar;
+
+# use strict
+;
+
+# use Perlito5::Expression
+;
+Perlito5::Expression::add_statement('if', sub {
+    Perlito5::Grammar->if($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('for', sub {
+    Perlito5::Grammar->for($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('foreach', sub {
+    Perlito5::Grammar->for($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('when', sub {
+    Perlito5::Grammar->when($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('while', sub {
+    Perlito5::Grammar->while($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('given', sub {
+    Perlito5::Grammar->given($_[0], $_[1])
+});
+Perlito5::Expression::add_statement('unless', sub {
+    Perlito5::Grammar->unless($_[0], $_[1])
+});
 sub Perlito5::Grammar::unless {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

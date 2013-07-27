@@ -40,7 +40,7 @@ my $e;
 
     A P;
     print "not " if $r != 4;
-    say "ok 5 - method call - $r # TODO";
+    say "ok 5 - method call - $r ";
     print "not " if !$x;
     say "ok 6 - method call # $x";
 

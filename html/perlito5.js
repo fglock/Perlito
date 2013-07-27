@@ -7076,27 +7076,16 @@ var p5100 = p5pkg['main'];
 			}
 		});
 		var List_Statement_chars= [];
-		(List_Statement_chars = [9, 8, 7, 6, 5, 4, 3, 2, 1]);
 		var Hash_Statement = {};
-		(Hash_Statement = {'if' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "if", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}, 'for' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "for", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}, 'when' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "when", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}, 'while' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "while", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}, 'given' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "given", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}, 'unless' : function (List__, p5want) {
-						return (p5call(p5pkg["Perlito5::Grammar"], "unless", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
-				}});
 		p5make_sub("Perlito5::Expression", "add_statement", function (List__, p5want) {
 				var v_name;
 				(v_name = (List__.shift()));
 				var v_param;
 				(v_param = (List__.shift()));
-				return (Hash_Statement.p5hset(p5str(v_name), (v_param)));
+				Hash_Statement.p5hset(p5str(v_name), (v_param));
+				p5while(function () {
+						List_Statement_chars.p5unshift([(p5num((List_Statement_chars.length)) + 1)]);
+					}, function () { return (p5num(List_Statement_chars.length) < p5pkg["Perlito5::Expression"].length([v_name], 0)) }, false, "")
 		});
 		p5make_sub("Perlito5::Expression", "exp_stmt", function (List__, p5want) {
 			try {
@@ -7133,7 +7122,7 @@ var p5100 = p5pkg['main'];
 		var List_Modifier_chars= [];
 		(List_Modifier_chars = [7, 6, 5, 4, 3, 2]);
 		var Hash_Modifier = {};
-		(Hash_Modifier = {'if' : 1, 'unless' : 1, 'when' : 1, 'for' : 1, 'foreach' : 1, 'while' : 1, 'when' : 1});
+		(Hash_Modifier = {'if' : 1, 'unless' : 1, 'when' : 1, 'for' : 1, 'foreach' : 1, 'while' : 1, 'given' : 1});
 		p5make_sub("Perlito5::Expression", "statement_modifier", function (List__, p5want) {
 			try {
 				var v_self;
@@ -7380,6 +7369,31 @@ var p5100 = p5pkg['main'];
 ;
 	(function () {
 		var p5149 = p5make_package("Perlito5::Grammar");
+		// use strict
+;
+		// use Perlito5::Expression
+;
+		p5pkg["Perlito5::Expression"].add_statement(['if', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "if", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['for', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "for", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['foreach', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "for", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['when', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "when", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['while', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "while", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['given', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "given", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
+		p5pkg["Perlito5::Expression"].add_statement(['unless', function (List__, p5want) {
+		return (p5call(p5pkg["Perlito5::Grammar"], "unless", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
 		p5make_sub("Perlito5::Grammar", "unless", function (List__, p5want) {
 				var v_grammar;
 				(v_grammar = (List__.p5aget(0)));
