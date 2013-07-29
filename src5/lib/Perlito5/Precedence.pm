@@ -58,46 +58,15 @@ my %Parsed_op = (
         '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
 );
 
-my @Term_chars = (7, 6, 5, 4, 3, 2, 1);
-my %Term = (
-        '.'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '0'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '1'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '2'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '3'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '4'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '5'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '6'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '7'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '8'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-        '9'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
-
-        'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-        'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
-
-        'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-        'sub' => sub { Perlito5::Expression->term_anon_sub($_[0], $_[1]) },
-        'map' => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
-
-        'eval'  => sub { Perlito5::Expression->term_eval($_[0], $_[1]) },
-        'sort'  => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
-        'grep'  => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
-
-        'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-        'local' => sub { Perlito5::Expression->term_local($_[0], $_[1]) },
-
-        'return' => sub { Perlito5::Expression->term_return($_[0], $_[1]) },
-
-        'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
-);
-
+my @Term_chars;
+my %Term;
 sub add_term {
     my $name = shift;
     my $param = shift;
 
-    # XXX this fails unless the length is registered in @Term_chars
-
     $Term{$name} = $param;
+    unshift @Term_chars, scalar(@Term_chars) + 1
+        while @Term_chars < length($name);
 }
 
 my $End_token;
@@ -205,16 +174,10 @@ sub add_op {
     $PrefixPrecedence->{$name}  = $precedence if $fixity eq 'prefix';
     $Assoc->{$assoc}{$name}     = 1;
     $Op{$name}                  = 1;
+    # unshift @Op_chars, scalar(@Op_chars) + 1
+    #     while @Op_chars < length($name);
 }
 
-
-# - no space allowed before postfix ops
-# - if there is both an infix and a postfix with the same name, then the infix requires space before
-# - $a[] inside string interpolation
-# - parentheses vs. Parcel (x) (x,)
-# - pair vs. block, hash vs. closure
-# - function call without parentheses
-# - '|' in prefix position
 
 # left        terms and list operators (leftward)
 # left        ->

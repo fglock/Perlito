@@ -3,6 +3,31 @@ package Perlito5::Expression;
 use Perlito5::Precedence;
 use Perlito5::Grammar::Bareword;
 
+Perlito5::Precedence::add_term( '.'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '0'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '1'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '2'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '3'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '4'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '5'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '6'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '7'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '8'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( '9'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'my'    => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'do'    => sub { Perlito5::Expression->term_do( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'our'   => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'sub'   => sub { Perlito5::Expression->term_anon_sub( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'map'   => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'eval'  => sub { Perlito5::Expression->term_eval( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'sort'  => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'grep'  => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'state' => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'local' => sub { Perlito5::Expression->term_local( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'return' => sub { Perlito5::Expression->term_return( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'package' => sub { Perlito5::Expression->term_package( $_[0], $_[1] ) } );
+
+
 sub expand_list {
     my $param_list = shift;
     # say "# expand_list: ", $param_list->perl;
