@@ -56,43 +56,6 @@ TODO list for Perlito5
     check signature in sort()
     fix the prototype for 'stat(*)' (see t/test.pl in the perl test suite)
 
--- add additional variants of "for"
-
-    # "our" with localization
-    $ perl -e ' use strict; our $x = 123; for our $x (1,2,3) { 2 } print "$x\n" '
-    123
-
-    # variable in scope with localization
-    $ perl -e ' use strict; my $x = 123; for $x (1,2,3) { 2 } print "$x\n" '123
-    123
-
--- add "print", "printf", "say" special parsing - note this is related to indirect object notation
-
-    indirect object notation
-    http://lwn.net/Articles/451486/
-    http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
-    http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
-    http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
-
-    method Module $param;
-    new Class( arg => $value );
-    new Class::($args);
-    say $config->{output} "This is a diagnostic message!";  # indirect call
-    say {$config->{output}} "This is a diagnostic message!"; # say to filehandle
-
-    use Class;
-    sub Class {
-    warn 'Called Class sub not Class package';
-    'Class'
-    }
-    my $q = Class->new; # calls the Class sub above
-    my $s = new Class; # throws a 'Bareword found where operator expected' error
-    my $t = Class::->new # this works
-    my $u = new Class::; # this also works (even with sub main in the current package)
-
-    sbertrang++ noted this is also valid:
-    print( STDERR "123" )
-
 -- "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
@@ -163,8 +126,52 @@ TODO list for Perlito5
         $ perl -e ' " $x{"x"} " '
         String found where operator expected at -e line 1, near "x"} ""
 
--- add tests for fixed bugs:
 
+* Add tests for fixed bugs:
+
+
+    ---
+    add additional variants of "for"
+
+    # "our" with localization
+    $ perl -e ' use strict; our $x = 123; for our $x (1,2,3) { 2 } print "$x\n" '
+    123
+
+    # variable in scope with localization
+    $ perl -e ' use strict; my $x = 123; for $x (1,2,3) { 2 } print "$x\n" '123
+    123
+
+
+    ---
+    add "print", "printf", "say" special parsing - note this is related to indirect object notation
+
+    indirect object notation
+    http://lwn.net/Articles/451486/
+    http://www.modernperlbooks.com/mt/2009/08/the-problems-with-indirect-object-notation.html
+    http://shadow.cat/blog/matt-s-trout/indirect-but-still-fatal/
+    http://perlbuzz.com/mechanix/2008/02/the-perils-of-perl-5s-indirect.html
+
+    method Module $param;
+    new Class( arg => $value );
+    new Class::($args);
+    say $config->{output} "This is a diagnostic message!";  # indirect call
+    say {$config->{output}} "This is a diagnostic message!"; # say to filehandle
+
+    use Class;
+    sub Class {
+    warn 'Called Class sub not Class package';
+    'Class'
+    }
+    my $q = Class->new; # calls the Class sub above
+    my $s = new Class; # throws a 'Bareword found where operator expected' error
+    my $t = Class::->new # this works
+    my $u = new Class::; # this also works (even with sub main in the current package)
+
+    sbertrang++ noted this is also valid:
+    print( STDERR "123" )
+
+
+    ---
     add tests for signatures: "empty" _ $ ;$
 
     ---
