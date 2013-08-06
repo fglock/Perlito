@@ -921,12 +921,61 @@ sub Perlito5::Grammar::Bareword::term_bareword {
 
 ;
 package main;
+undef();
+package Perlito5::Grammar::Attribute;
+sub Perlito5::Grammar::Attribute::opt_attribute {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    (my  @attributes);
+    ((my  $ws) = Perlito5::Grammar::Space->opt_ws($str, $pos));
+    if ((substr($str, $ws->{'to'}, 1) ne ':')) {
+        return ({'to', $pos, 'capture', []})
+    };
+    ($ws = Perlito5::Grammar::Space->opt_ws($str, ($ws->{'to'} + 1)));
+    ((my  $p) = $ws->{'to'});
+    ((my  $m) = Perlito5::Grammar->ident($str, $p));
+    if (!($m)) {
+        die('syntax error')
+    };
+    (my  $to);
+    for ( ; 1; do {{
+
+}} ) {
+        ($to = $m->{'to'});
+        ((my  $delimiter) = substr($str, $to, 1));
+        if (($delimiter eq '(')) {
+            ((my  $params) = Perlito5::Grammar::String->string_interpolation_parse($str, ($m->{'to'} + 1), '(', ')', 0));
+            if (!($params)) {
+                die('syntax error')
+            };
+            ($to = $params->{'to'})
+        };
+        push(@attributes, substr($str, $p, ($to - $p)) );
+        ($ws = Perlito5::Grammar::Space->opt_ws($str, $to));
+        if ((substr($str, $ws->{'to'}, 1) eq ':')) {
+            ($ws = Perlito5::Grammar::Space->opt_ws($str, ($ws->{'to'} + 1)))
+        };
+        ($p = $ws->{'to'});
+        ($m = Perlito5::Grammar->ident($str, $p));
+        if (!($m)) {
+            return ({'to', $to, 'capture', \@attributes})
+        }
+    }
+};
+1;
+
+;
+package main;
 package Perlito5::Expression;
 
 # use Perlito5::Precedence
 ;
 
 # use Perlito5::Grammar::Bareword
+;
+
+# use Perlito5::Grammar::Attribute
 ;
 Perlito5::Precedence::add_term('.', sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
@@ -1606,7 +1655,7 @@ sub Perlito5::Expression::term_declarator {
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    ((((((do {
+    (((((((do {
     ((my  $m2) = $grammar->declarator($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1663,6 +1712,16 @@ sub Perlito5::Expression::term_declarator {
         0
     }
 }))) && ((do {
+    ((my  $m2) = Perlito5::Grammar::Attribute->opt_attribute($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar::Attribute.opt_attribute'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ($MATCH->{'str'} = $str);
     ((my  $decl) = Perlito5::Match::flat($MATCH->{'declarator'}));
     ((my  $type) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}));
@@ -1670,7 +1729,7 @@ sub Perlito5::Expression::term_declarator {
         die(('No such class ' . $type))
     };
     ((my  $var) = $MATCH->{'Perlito5::Grammar.var_ident'}->{'capture'});
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var)]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var, 'attributes', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute.opt_attribute'}))]);
     1
 })))
 }))
@@ -8497,6 +8556,9 @@ sub Perlito5::AST::Decl::type {
 };
 sub Perlito5::AST::Decl::var {
     $_[0]->{    'var'}
+};
+sub Perlito5::AST::Decl::attributes {
+    $_[0]->{    'attributes'}
 };
 package Perlito5::AST::Sig;
 sub Perlito5::AST::Sig::new {

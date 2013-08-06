@@ -152,6 +152,7 @@ sub new { my $class = shift; bless {@_}, $class }
 sub decl { $_[0]->{decl} }
 sub type { $_[0]->{type} }
 sub var { $_[0]->{var} }
+sub attributes { $_[0]->{attributes} }
 
 
 

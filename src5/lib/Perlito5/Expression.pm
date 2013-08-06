@@ -2,6 +2,7 @@
 package Perlito5::Expression;
 use Perlito5::Precedence;
 use Perlito5::Grammar::Bareword;
+use Perlito5::Grammar::Attribute;
 
 Perlito5::Precedence::add_term( '.'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( '0'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
@@ -433,6 +434,7 @@ token term_declarator {
     | ''
     ]
     <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
+    <Perlito5::Grammar::Attribute.opt_attribute>
         {
             my $decl = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
@@ -445,7 +447,8 @@ token term_declarator {
                 Perlito5::AST::Decl->new(
                     decl => $decl,
                     type => $type,
-                    var  => $var
+                    var  => $var,
+                    attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
                 ) ]
         }
 };
