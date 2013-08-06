@@ -99,7 +99,13 @@ sub term_block {
 }
 
 token named_sub_def {
-    <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident> <Perlito5::Grammar.prototype> <.Perlito5::Grammar.opt_ws> \{ <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
+    <Perlito5::Grammar.prototype> <.Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
+    \{
+        <.Perlito5::Grammar.opt_ws>
+        <Perlito5::Grammar.exp_stmts>
+        <.Perlito5::Grammar.opt_ws>
     [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
     {
         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
@@ -125,7 +131,8 @@ token named_sub_def {
             name  => $name, 
             namespace => $namespace,
             sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) 
+            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}),
+            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
         ) 
     }
 };

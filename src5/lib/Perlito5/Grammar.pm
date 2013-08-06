@@ -8,6 +8,7 @@ use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;
 use Perlito5::Grammar::Print;
+use Perlito5::Grammar::Attribute;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/
@@ -183,7 +184,12 @@ token prototype {
 };
 
 token anon_sub_def {
-    <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
+    <prototype> <.opt_ws> 
+    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
+    \{ 
+        <.opt_ws> 
+        <exp_stmts> 
+        <.opt_ws>
     [   \}     | { die 'Syntax Error in anon sub' } ]
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype});
@@ -192,7 +198,8 @@ token anon_sub_def {
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{exp_stmts}) 
+            block => Perlito5::Match::flat($MATCH->{exp_stmts}),
+            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
         ) 
     }
 };

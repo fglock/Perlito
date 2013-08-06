@@ -34,6 +34,7 @@ TODO list for Perlito5
 
 -- attributes
     http://perldoc.perl.org/attributes.html
+    missing MODIFY_CODE_ATTRIBUTES handlers
 
 -- create __DATA__
     http://perldoc.perl.org/SelfLoader.html#The-__DATA__-token

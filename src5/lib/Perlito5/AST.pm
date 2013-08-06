@@ -167,6 +167,7 @@ sub new { my $class = shift; bless {@_}, $class }
 sub name { $_[0]->{name} }
 sub sig { $_[0]->{sig} }
 sub block { $_[0]->{block} }
+sub attributes { $_[0]->{attributes} }
 
 
 
