@@ -1011,7 +1011,13 @@ package Perlito5::AST::Var;
             return Perlito5::Javascript2::escape_string( $self->{namespace} );
         }
         if ( $self->{sigil} eq '&' ) {
-            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]';
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]([], '
+                         .   ($wantarray eq 'list'   ? '1' 
+                             :$wantarray eq 'scalar' ? '0' 
+                             :$wantarray eq 'void'   ? 'null'
+                             :                         'p5want'
+                             ) 
+                    . ')';
         }
         if ( $self->{sigil} eq '*' ) {
             return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]';
@@ -1080,6 +1086,11 @@ package Perlito5::AST::Var;
     sub perl5_get_decl_javascript2 {
         my $self = shift;
         my $perl5_name = shift;
+
+        # subroutines are never 'my' (but they may be in later versions of Perl5)
+        return { decl => 'our' }
+            if substr($perl5_name, 0, 1) eq '&';
+
         for ( @{ $Perlito5::VAR } ) {
             return $_->{$perl5_name}
                 if exists $_->{$perl5_name}
@@ -1217,9 +1228,19 @@ package Perlito5::AST::Call;
                 . '._hash_.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';
         }
-
-        my $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
         if  ($meth eq 'postcircumfix:<( )>')  {
+
+            my $invocant;
+            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
+               && $self->{invocant}{sigil} eq '&'
+               )
+            {
+                $invocant = 'p5pkg["' . ($self->{invocant}{namespace} || $Perlito5::PKG_NAME) . '"]["' . $self->{invocant}{name} . '"]';
+            }
+            else {
+                $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
+            }
+
             return '(' . $invocant . ')(' . Perlito5::Javascript2::to_list($self->{arguments}) . ', '
                          .   ($wantarray eq 'list'   ? '1' 
                              :$wantarray eq 'scalar' ? '0' 
@@ -1228,6 +1249,8 @@ package Perlito5::AST::Call;
                              ) 
                     . ')';
         }
+
+        my $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_javascript2($level, 'scalar');
         }
