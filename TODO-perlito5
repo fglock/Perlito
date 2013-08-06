@@ -39,6 +39,10 @@ TODO list for Perlito5
 -- create __DATA__
     http://perldoc.perl.org/SelfLoader.html#The-__DATA__-token
 
+    In package 'main', __END__ behaves like __DATA__.
+    In other packages, __END__ is really the end.
+    Only the last __DATA__ in each package use()-ed is accessible.
+
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"
 
