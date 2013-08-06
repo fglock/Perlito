@@ -2,8 +2,20 @@ package Perlito5::Runtime;
 
 use Perlito5::strict;
 
-$] = 5.014001
-    unless $];
+$^O = 'perlito5'    unless defined $^O;
+$]  = 5.014001      unless $];      # $] is defined(), but ${"main::]"} is not
+$/  = chr(10)       unless defined $/;
+$"  = ' '           unless defined $";
+$,  = undef         unless defined $,;
+$!  = ''            unless defined $!;
+$;  = chr(28)       unless defined $;;
+$?  = 0             unless defined $?;
+$[  = 0             unless defined $[;
+$^V = bless( { 'original' => 'v5.14.1',
+               'qv'       => 1,
+               'version'  => [ 5, 14, 1 ]
+             }, 'version' )
+                    unless defined $^V;
 
 $Perlito5::EXPAND_USE = 1;
 $Perlito5::STRICT     = 0;

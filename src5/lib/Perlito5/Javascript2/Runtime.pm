@@ -284,6 +284,8 @@ p5make_package("Perlito5");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|
+p5pkg["main"]["v_/"] = "\n";    // $/
+p5pkg["main"]['v_"'] = " ";     // $"
 p5pkg["main"]["List_#"] = [];   // @#
 p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
 p5pkg["main"]["List_INC"] = [];
