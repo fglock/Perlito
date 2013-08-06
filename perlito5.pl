@@ -1666,6 +1666,9 @@ sub Perlito5::Expression::term_declarator {
     ($MATCH->{'str'} = $str);
     ((my  $decl) = Perlito5::Match::flat($MATCH->{'declarator'}));
     ((my  $type) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'}));
+    if (($type && !($Perlito5::PACKAGES->{$type}))) {
+        die(('No such class ' . $type))
+    };
     ((my  $var) = $MATCH->{'Perlito5::Grammar.var_ident'}->{'capture'});
     ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl', $decl, 'type', $type, 'var', $var)]);
     1

@@ -436,6 +436,10 @@ token term_declarator {
         {
             my $decl = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
+
+            die "No such class $type"
+                if $type && ! $Perlito5::PACKAGES->{$type};
+
             my $var  = $MATCH->{"Perlito5::Grammar.var_ident"}{capture};
             $MATCH->{capture} = [ 'term', 
                 Perlito5::AST::Decl->new(
