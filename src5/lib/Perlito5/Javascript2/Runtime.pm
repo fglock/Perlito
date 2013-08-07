@@ -134,6 +134,10 @@ function p5make_package(pkg_name) {
 }
 
 function p5code_lookup_by_name(package_name, sub_name) {
+    // sub_name can be a function already
+    if (typeof sub_name === "function") {
+        return sub_name;
+    }
     // sub_name can have an optional namespace
     var parts = sub_name.split(/::/);
     if (parts.length > 1) {

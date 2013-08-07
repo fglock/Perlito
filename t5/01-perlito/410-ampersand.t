@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..15";
+say "1..21";
 
 my $v = 0;
 my $r = 0;
@@ -94,5 +94,37 @@ print "not " if $v != 3;
 print "ok 14 - with_proto $v\n";
 print "not " if $r != 0;
 print "ok 15 - with_proto $r\n";
+
+
+# ampersand reference
+
+$v = 3;
+$r = \&with_proto;
+$r = &$r(4);
+print "not " if $v != 7;
+print "ok 16 - with_proto $v\n";
+print "not " if $r != 7;
+print "ok 17 - with_proto $r\n";
+
+# ampersand reference, no parenthesis
+
+$v = 3;
+$r = \&with_proto;
+$r = &$r;
+print "not " if $v != 11;
+print "ok 18 - with_proto $v\n";
+print "not " if $r != 11;
+print "ok 19 - with_proto $r\n";
+
+
+# ampersand reference, call with arrow
+
+$v = 3;
+$r = \&with_proto;
+$r = $r->(4);
+print "not " if $v != 7;
+print "ok 20 - with_proto $v\n";
+print "not " if $r != 7;
+print "ok 21 - with_proto $r\n";
 
 

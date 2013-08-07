@@ -1231,7 +1231,14 @@ package Perlito5::AST::Call;
         if  ($meth eq 'postcircumfix:<( )>')  {
 
             my $invocant;
-            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
+            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Apply' 
+               && $self->{invocant}{code} eq 'prefix:<&>'
+               )
+            {
+                my $arg   = $self->{invocant}{arguments}->[0];
+                $invocant = 'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript2($level) . ')';
+            }
+            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '&'
                )
             {
@@ -1493,7 +1500,7 @@ package Perlito5::AST::Apply;
             my $self  = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-            'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript2($level) . ')';
+            'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript2($level) . ')([])';
         },
         'circumfix:<[ ]>' => sub {
             my $self = $_[0];
@@ -1852,7 +1859,25 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '('  . join(' ', map( $_->emit_javascript2( $level ), @{$self->{arguments}} ))    . ' != null)' 
+            my $arg = $self->{arguments}[0];
+            my $invocant;
+            if (  ref( $arg ) eq 'Perlito5::AST::Apply' 
+               && $arg->{code} eq 'prefix:<&>'
+               )
+            {
+                my $arg2   = $arg->{arguments}->[0];
+                $invocant = 'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg2->emit_javascript2($level) . ')';
+            }
+            elsif (  ref( $arg ) eq 'Perlito5::AST::Var' 
+               && $arg->{sigil} eq '&'
+               )
+            {
+                $invocant = 'p5pkg["' . ($arg->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $arg->{name} . '"]';
+            }
+            else {
+                $invocant = $arg->emit_javascript2($level, 'scalar');
+            }
+            '(' . $invocant . ' != null)' 
         },
 
         'shift' => sub {
