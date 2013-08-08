@@ -19,10 +19,7 @@ Perlito5::Precedence::add_term( 'my'    => sub { Perlito5::Expression->term_decl
 Perlito5::Precedence::add_term( 'do'    => sub { Perlito5::Expression->term_do( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'our'   => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'sub'   => sub { Perlito5::Expression->term_anon_sub( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'map'   => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'eval'  => sub { Perlito5::Expression->term_eval( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'sort'  => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'grep'  => sub { Perlito5::Expression->term_map_or_sort( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'state' => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'local' => sub { Perlito5::Expression->term_local( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'return' => sub { Perlito5::Expression->term_return( $_[0], $_[1] ) } );
@@ -524,26 +521,6 @@ token term_eval {
                         Perlito5::AST::Do->new(
                             block => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
                         )
-                    ], 
-                    namespace => ''
-                 )
-               ]
-        }
-};
-
-token map_or_sort { 'map' | 'sort' | 'grep' };
-
-token term_map_or_sort {
-    # Note: this is map-block; map-expr is parsed as a normal subroutine
-    <map_or_sort> <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly> 
-        <list_parse>
-        {
-            $MATCH->{capture} = [ 'term',
-                 Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{map_or_sort}),
-                    arguments => [
-                        Perlito5::AST::Lit::Block->new( stmts => $MATCH->{term_curly}{capture}[2] ),
-                        @{ expand_list($MATCH->{list_parse}{capture}) }
                     ], 
                     namespace => ''
                  )

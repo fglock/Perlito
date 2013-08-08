@@ -8,6 +8,7 @@ use Perlito5::Grammar::Use;
 use Perlito5::Grammar::Block;
 use Perlito5::Grammar::Space;
 use Perlito5::Grammar::Print;
+use Perlito5::Grammar::Map;
 use Perlito5::Grammar::Attribute;
 
 sub word {
