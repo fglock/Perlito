@@ -6257,12 +6257,44 @@ sub Perlito5::Grammar::Space::term_space {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
-        return ({'str', $str, 'from', $pos, 'to', length($str)})
+        return (term_end($str, $p))
     };
     return ({'str', $str, 'from', $pos, 'to', $p, 'capture', ['space', ' ']})
 };
 sub Perlito5::Grammar::Space::term_end {
-    return ({'str', $_[0], 'from', $_[1], 'to', length($_[0]), 'capture', ['space', ' ']})
+    ((my  $str) = $_[0]);
+    ((my  $p) = $_[1]);
+    ((my  $is_data) = 0);
+    if (((substr($str, $_[1], 7) eq '__END__') && ($Perlito5::PKG_NAME eq 'main'))) {
+        ($p = ($p + 7));
+        ($is_data = 1)
+    }
+    else {
+        if ((substr($str, $_[1], 8) eq '__DATA__')) {
+            ($p = ($p + 8));
+            ($is_data = 1)
+        }
+    };
+    ((my  $m) = Perlito5::Grammar::Space->to_eol($str, $p));
+    ($p = $m->{'to'});
+    if ((substr($str, $p, 1) eq chr(10))) {
+        ($p)++;
+        if ((substr($str, $p, 1) eq chr(13))) {
+            ($p)++
+        }
+    }
+    else {
+        if ((substr($str, $p, 1) eq chr(13))) {
+            ($p)++;
+            if ((substr($str, $p, 1) eq chr(10))) {
+                ($p)++
+            }
+        }
+    };
+    if ($is_data) {
+        ($Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = substr($_[0], $p))
+    };
+    return ({'str', $str, 'from', $_[1], 'to', length($_[0]), 'capture', ['space', ' ']})
 };
 Perlito5::Precedence::add_term('#', \&term_space);
 Perlito5::Precedence::add_term(chr(9), \&term_space);
@@ -6516,7 +6548,7 @@ sub Perlito5::Grammar::Space::ws {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
-        return ({'str', $str, 'from', $pos, 'to', length($str)})
+        return (term_end($str, $p))
     };
     if (($p == $pos)) {
         return (0)
@@ -6534,7 +6566,7 @@ sub Perlito5::Grammar::Space::opt_ws {
         ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
     };
     if (((substr($str, $p, 7) eq '__END__') || (substr($str, $p, 8) eq '__DATA__'))) {
-        return ({'str', $str, 'from', $pos, 'to', length($str)})
+        return (term_end($str, $p))
     };
     return ({'str', $str, 'from', $pos, 'to', $p})
 };
@@ -12929,7 +12961,7 @@ sub Perlito5::strict::unimport {
 
 ;
 package main;
-package Perlito5::Runtime;
+package Perlito5;
 
 # use Perlito5::strict
 ;
@@ -12993,20 +13025,21 @@ if (defined(${chr(22)})) {
 else {
     (${chr(22)} = bless({'original', 'v5.14.1', 'qv', 1, 'version', [5, 14, 1]}, 'version'))
 };
-($Perlito5::EXPAND_USE = 1);
-($Perlito5::STRICT = 0);
-($Perlito5::WARNINGS = 0);
-($Perlito5::UTF8 = 0);
-($Perlito5::BYTES = 0);
-($Perlito5::CALLER = []);
-($Perlito5::PKG_NAME = '');
-($Perlito5::PACKAGES = {'STDERR', 1, 'STDOUT', 1, 'STDIN', 1, 'main', 1, 'strict', 1, 'warnings', 1, 'utf8', 1, 'bytes', 1, 'encoding', 1, 'UNIVERSAL', 1, 'CORE', 1, 'CORE::GLOBAL', 1, 'Perlito5::IO', 1});
+((our  $EXPAND_USE) = 1);
+((our  $STRICT) = 0);
+((our  $WARNINGS) = 0);
+((our  $UTF8) = 0);
+((our  $BYTES) = 0);
+((our  $CALLER) = []);
+((our  $PKG_NAME) = '');
+((our  %DATA_SECTION) = ());
+((our  $PACKAGES) = {'STDERR', 1, 'STDOUT', 1, 'STDIN', 1, 'main', 1, 'strict', 1, 'warnings', 1, 'utf8', 1, 'bytes', 1, 'encoding', 1, 'UNIVERSAL', 1, 'CORE', 1, 'CORE::GLOBAL', 1, 'Perlito5::IO', 1});
 for (split(':', (($ENV{'PERL5LIB'} || '')))) {
     push(@INC, $_ )
 };
-($Perlito5::SPECIAL_VAR = {'$_', 'ARG', '$&', '$MATCH', '$`', '$PREMATCH', '$' . chr(39), '$POSTMATCH', '$+', '$LAST_PAREN_MATCH', '@+', '@LAST_MATCH_END', '%+', '%LAST_PAREN_MATCH', '@-', '@LAST_MATCH_START', '$|', 'autoflush', '$/', '$RS', '@_', '@ARG', '< $', '$EUID', '$.', '$NR', '< $< ', '$UID', '$(', '$GID', '$#', undef(), '$@', '$EVAL_ERROR', '$=', '$FORMAT_LINES_PER_PAGE', '$,', '$OFS', '$?', '$CHILD_ERROR', '$*', undef(), '$[', undef(), '$$', '$PID', '%-', undef(), '$~', '$FORMAT_NAME', '$-', '$FORMAT_LINES_LEFT', '$&', '$MATCH', '$%', '$FORMAT_PAGE_NUMBER', '$)', '$EGID', '$]', undef(), '$!', '$ERRNO', '$;', '$SUBSEP', '$' . chr(92), '$ORS', '%!', undef(), '$"', '$LIST_SEPARATOR', '$_', '$ARG', '$:', 'FORMAT_LINE_BREAK_CHARACTERS'});
-($Perlito5::CORE_OVERRIDABLE = {'say', 1, 'break', 1, 'given', 1, 'when', 1, 'default', 1, 'state', 1, 'lock', 1});
-($Perlito5::CORE_PROTO = {'CORE::shutdown', '*$', 'CORE::chop', undef(), 'CORE::lstat', '*', 'CORE::rename', '$$', 'CORE::lock', chr(92) . '$', 'CORE::rand', ';$', 'CORE::gmtime', ';$', 'CORE::gethostbyname', '$', 'CORE::each', chr(92) . '[@%]', 'CORE::ref', '_', 'CORE::syswrite', '*$;$$', 'CORE::msgctl', '$$$', 'CORE::getnetbyname', '$', 'CORE::write', ';*', 'CORE::alarm', '_', 'CORE::print', undef(), 'CORE::getnetent', '', 'CORE::semget', '$$$', 'CORE::use', undef(), 'CORE::abs', '_', 'CORE::break', '', 'CORE::undef', undef(), 'CORE::no', undef(), 'CORE::eval', '_', 'CORE::split', undef(), 'CORE::localtime', ';$', 'CORE::sort', undef(), 'CORE::chown', '@', 'CORE::endpwent', '', 'CORE::getpwent', '', 'CORE::pos', undef(), 'CORE::lcfirst', '_', 'CORE::kill', '@', 'CORE::send', '*$$;$', 'CORE::endprotoent', '', 'CORE::semctl', '$$$$', 'CORE::waitpid', '$$', 'CORE::utime', '@', 'CORE::dbmclose', chr(92) . '%', 'CORE::getpwnam', '$', 'CORE::substr', '$$;$$', 'CORE::listen', '*$', 'CORE::getprotoent', '', 'CORE::shmget', '$$$', 'CORE::our', undef(), 'CORE::readlink', '_', 'CORE::shmwrite', '$$$$', 'CORE::times', '', 'CORE::package', undef(), 'CORE::map', undef(), 'CORE::join', '$@', 'CORE::rmdir', '_', 'CORE::shmread', '$$$$', 'CORE::uc', '_', 'CORE::bless', '$;$', 'CORE::closedir', '*', 'CORE::getppid', '', 'CORE::tie', chr(92) . '[$@%]$;@', 'CORE::readdir', '*', 'CORE::gethostent', '', 'CORE::getlogin', '', 'CORE::last', undef(), 'CORE::gethostbyaddr', '$$', 'CORE::accept', '**', 'CORE::log', '_', 'CORE::tell', ';*', 'CORE::readline', ';*', 'CORE::tied', undef(), 'CORE::socket', '*$$$', 'CORE::umask', ';$', 'CORE::sysread', '*' . chr(92) . '$$;$', 'CORE::syscall', '$@', 'CORE::quotemeta', '_', 'CORE::dump', '', 'CORE::opendir', '*$', 'CORE::untie', undef(), 'CORE::truncate', '$$', 'CORE::select', ';*', 'CORE::sleep', ';$', 'CORE::seek', '*$$', 'CORE::read', '*' . chr(92) . '$$;$', 'CORE::rewinddir', '*', 'CORE::scalar', undef(), 'CORE::wantarray', '', 'CORE::oct', '_', 'CORE::bind', '*$', 'CORE::stat', '*', 'CORE::sqrt', '_', 'CORE::getc', ';*', 'CORE::fileno', '*', 'CORE::getpeername', '*', 'CORE::sin', '_', 'CORE::getnetbyaddr', '$$', 'CORE::grep', undef(), 'CORE::setservent', '$', 'CORE::sub', undef(), 'CORE::shmctl', '$$$', 'CORE::study', undef(), 'CORE::msgrcv', '$$$$$', 'CORE::setsockopt', '*$$$', 'CORE::int', '_', 'CORE::pop', ';' . chr(92) . '@', 'CORE::link', '$$', 'CORE::exec', undef(), 'CORE::setpwent', '', 'CORE::mkdir', '_;$', 'CORE::sysseek', '*$$', 'CORE::endservent', '', 'CORE::chr', '_', 'CORE::when', undef(), 'CORE::getpwuid', '$', 'CORE::setprotoent', '$', 'CORE::reverse', '@', 'CORE::say', undef(), 'CORE::goto', undef(), 'CORE::getgrent', '', 'CORE::endnetent', '', 'CORE::hex', '_', 'CORE::binmode', '*;$', 'CORE::formline', '$@', 'CORE::getgrnam', '$', 'CORE::ucfirst', '_', 'CORE::chdir', ';$', 'CORE::setnetent', '$', 'CORE::splice', chr(92) . '@;$$@', 'CORE::unlink', '@', 'CORE::time', '', 'CORE::push', chr(92) . '@@', 'CORE::exit', ';$', 'CORE::endgrent', '', 'CORE::unshift', chr(92) . '@@', 'CORE::local', undef(), 'CORE::my', undef(), 'CORE::cos', '_', 'CORE::redo', undef(), 'CORE::warn', '@', 'CORE::getsockname', '*', 'CORE::pipe', '**', 'CORE::sprintf', '$@', 'CORE::open', '*;$@', 'CORE::setpgrp', ';$$', 'CORE::exp', '_', 'CORE::seekdir', '*$', 'CORE::getservbyport', '$$', 'CORE::given', undef(), 'CORE::pack', '$@', 'CORE::msgget', '$$', 'CORE::rindex', '$$;$', 'CORE::srand', ';$', 'CORE::telldir', '*', 'CORE::connect', '*$', 'CORE::getprotobyname', '$', 'CORE::msgsnd', '$$$', 'CORE::length', '_', 'CORE::state', undef(), 'CORE::die', '@', 'CORE::delete', undef(), 'CORE::getservent', '', 'CORE::getservbyname', '$$', 'CORE::setpriority', '$$$', 'CORE::lc', '_', 'CORE::fcntl', '*$$', 'CORE::chroot', '_', 'CORE::recv', '*' . chr(92) . '$$$', 'CORE::dbmopen', chr(92) . '%$$', 'CORE::socketpair', '**$$$', 'CORE::vec', '$$$', 'CORE::system', undef(), 'CORE::defined', '_', 'CORE::index', '$$;$', 'CORE::caller', ';$', 'CORE::close', ';*', 'CORE::atan2', '$$', 'CORE::semop', '$$', 'CORE::unpack', '$;$', 'CORE::ord', '_', 'CORE::chmod', '@', 'CORE::prototype', undef(), 'CORE::getprotobynumber', '$', 'CORE::values', chr(92) . '[@%]', 'CORE::chomp', undef(), 'CORE::ioctl', '*$$', 'CORE::eof', ';*', 'CORE::crypt', '$$', 'CORE::do', undef(), 'CORE::flock', '*$', 'CORE::wait', '', 'CORE::sethostent', '$', 'CORE::return', undef(), 'CORE::getsockopt', '*$$', 'CORE::fork', '', 'CORE::require', undef(), 'CORE::format', undef(), 'CORE::readpipe', '_', 'CORE::endhostent', '', 'CORE::getpgrp', ';$', 'CORE::setgrent', '', 'CORE::keys', chr(92) . '[@%]', 'CORE::glob', undef(), 'CORE::getpriority', '$$', 'CORE::reset', ';$', 'CORE::sysopen', '*$$;$', 'CORE::continue', '', 'CORE::next', undef(), 'CORE::getgrgid', '$', 'CORE::default', undef(), 'CORE::shift', ';' . chr(92) . '@', 'CORE::symlink', '$$', 'CORE::exists', '$', 'CORE::printf', '$@', 'CORE::m', undef(), 'CORE::q', undef(), 'CORE::qq', undef(), 'CORE::qw', undef(), 'CORE::qx', undef(), 'CORE::qr', undef(), 'CORE::s', undef(), 'CORE::tr', undef(), 'CORE::y', undef()});
+((our  $SPECIAL_VAR) = {'$_', 'ARG', '$&', '$MATCH', '$`', '$PREMATCH', '$' . chr(39), '$POSTMATCH', '$+', '$LAST_PAREN_MATCH', '@+', '@LAST_MATCH_END', '%+', '%LAST_PAREN_MATCH', '@-', '@LAST_MATCH_START', '$|', 'autoflush', '$/', '$RS', '@_', '@ARG', '< $', '$EUID', '$.', '$NR', '< $< ', '$UID', '$(', '$GID', '$#', undef(), '$@', '$EVAL_ERROR', '$=', '$FORMAT_LINES_PER_PAGE', '$,', '$OFS', '$?', '$CHILD_ERROR', '$*', undef(), '$[', undef(), '$$', '$PID', '%-', undef(), '$~', '$FORMAT_NAME', '$-', '$FORMAT_LINES_LEFT', '$&', '$MATCH', '$%', '$FORMAT_PAGE_NUMBER', '$)', '$EGID', '$]', undef(), '$!', '$ERRNO', '$;', '$SUBSEP', '$' . chr(92), '$ORS', '%!', undef(), '$"', '$LIST_SEPARATOR', '$_', '$ARG', '$:', 'FORMAT_LINE_BREAK_CHARACTERS'});
+((our  $CORE_OVERRIDABLE) = {'say', 1, 'break', 1, 'given', 1, 'when', 1, 'default', 1, 'state', 1, 'lock', 1});
+((our  $CORE_PROTO) = {'CORE::shutdown', '*$', 'CORE::chop', undef(), 'CORE::lstat', '*', 'CORE::rename', '$$', 'CORE::lock', chr(92) . '$', 'CORE::rand', ';$', 'CORE::gmtime', ';$', 'CORE::gethostbyname', '$', 'CORE::each', chr(92) . '[@%]', 'CORE::ref', '_', 'CORE::syswrite', '*$;$$', 'CORE::msgctl', '$$$', 'CORE::getnetbyname', '$', 'CORE::write', ';*', 'CORE::alarm', '_', 'CORE::print', undef(), 'CORE::getnetent', '', 'CORE::semget', '$$$', 'CORE::use', undef(), 'CORE::abs', '_', 'CORE::break', '', 'CORE::undef', undef(), 'CORE::no', undef(), 'CORE::eval', '_', 'CORE::split', undef(), 'CORE::localtime', ';$', 'CORE::sort', undef(), 'CORE::chown', '@', 'CORE::endpwent', '', 'CORE::getpwent', '', 'CORE::pos', undef(), 'CORE::lcfirst', '_', 'CORE::kill', '@', 'CORE::send', '*$$;$', 'CORE::endprotoent', '', 'CORE::semctl', '$$$$', 'CORE::waitpid', '$$', 'CORE::utime', '@', 'CORE::dbmclose', chr(92) . '%', 'CORE::getpwnam', '$', 'CORE::substr', '$$;$$', 'CORE::listen', '*$', 'CORE::getprotoent', '', 'CORE::shmget', '$$$', 'CORE::our', undef(), 'CORE::readlink', '_', 'CORE::shmwrite', '$$$$', 'CORE::times', '', 'CORE::package', undef(), 'CORE::map', undef(), 'CORE::join', '$@', 'CORE::rmdir', '_', 'CORE::shmread', '$$$$', 'CORE::uc', '_', 'CORE::bless', '$;$', 'CORE::closedir', '*', 'CORE::getppid', '', 'CORE::tie', chr(92) . '[$@%]$;@', 'CORE::readdir', '*', 'CORE::gethostent', '', 'CORE::getlogin', '', 'CORE::last', undef(), 'CORE::gethostbyaddr', '$$', 'CORE::accept', '**', 'CORE::log', '_', 'CORE::tell', ';*', 'CORE::readline', ';*', 'CORE::tied', undef(), 'CORE::socket', '*$$$', 'CORE::umask', ';$', 'CORE::sysread', '*' . chr(92) . '$$;$', 'CORE::syscall', '$@', 'CORE::quotemeta', '_', 'CORE::dump', '', 'CORE::opendir', '*$', 'CORE::untie', undef(), 'CORE::truncate', '$$', 'CORE::select', ';*', 'CORE::sleep', ';$', 'CORE::seek', '*$$', 'CORE::read', '*' . chr(92) . '$$;$', 'CORE::rewinddir', '*', 'CORE::scalar', undef(), 'CORE::wantarray', '', 'CORE::oct', '_', 'CORE::bind', '*$', 'CORE::stat', '*', 'CORE::sqrt', '_', 'CORE::getc', ';*', 'CORE::fileno', '*', 'CORE::getpeername', '*', 'CORE::sin', '_', 'CORE::getnetbyaddr', '$$', 'CORE::grep', undef(), 'CORE::setservent', '$', 'CORE::sub', undef(), 'CORE::shmctl', '$$$', 'CORE::study', undef(), 'CORE::msgrcv', '$$$$$', 'CORE::setsockopt', '*$$$', 'CORE::int', '_', 'CORE::pop', ';' . chr(92) . '@', 'CORE::link', '$$', 'CORE::exec', undef(), 'CORE::setpwent', '', 'CORE::mkdir', '_;$', 'CORE::sysseek', '*$$', 'CORE::endservent', '', 'CORE::chr', '_', 'CORE::when', undef(), 'CORE::getpwuid', '$', 'CORE::setprotoent', '$', 'CORE::reverse', '@', 'CORE::say', undef(), 'CORE::goto', undef(), 'CORE::getgrent', '', 'CORE::endnetent', '', 'CORE::hex', '_', 'CORE::binmode', '*;$', 'CORE::formline', '$@', 'CORE::getgrnam', '$', 'CORE::ucfirst', '_', 'CORE::chdir', ';$', 'CORE::setnetent', '$', 'CORE::splice', chr(92) . '@;$$@', 'CORE::unlink', '@', 'CORE::time', '', 'CORE::push', chr(92) . '@@', 'CORE::exit', ';$', 'CORE::endgrent', '', 'CORE::unshift', chr(92) . '@@', 'CORE::local', undef(), 'CORE::my', undef(), 'CORE::cos', '_', 'CORE::redo', undef(), 'CORE::warn', '@', 'CORE::getsockname', '*', 'CORE::pipe', '**', 'CORE::sprintf', '$@', 'CORE::open', '*;$@', 'CORE::setpgrp', ';$$', 'CORE::exp', '_', 'CORE::seekdir', '*$', 'CORE::getservbyport', '$$', 'CORE::given', undef(), 'CORE::pack', '$@', 'CORE::msgget', '$$', 'CORE::rindex', '$$;$', 'CORE::srand', ';$', 'CORE::telldir', '*', 'CORE::connect', '*$', 'CORE::getprotobyname', '$', 'CORE::msgsnd', '$$$', 'CORE::length', '_', 'CORE::state', undef(), 'CORE::die', '@', 'CORE::delete', undef(), 'CORE::getservent', '', 'CORE::getservbyname', '$$', 'CORE::setpriority', '$$$', 'CORE::lc', '_', 'CORE::fcntl', '*$$', 'CORE::chroot', '_', 'CORE::recv', '*' . chr(92) . '$$$', 'CORE::dbmopen', chr(92) . '%$$', 'CORE::socketpair', '**$$$', 'CORE::vec', '$$$', 'CORE::system', undef(), 'CORE::defined', '_', 'CORE::index', '$$;$', 'CORE::caller', ';$', 'CORE::close', ';*', 'CORE::atan2', '$$', 'CORE::semop', '$$', 'CORE::unpack', '$;$', 'CORE::ord', '_', 'CORE::chmod', '@', 'CORE::prototype', undef(), 'CORE::getprotobynumber', '$', 'CORE::values', chr(92) . '[@%]', 'CORE::chomp', undef(), 'CORE::ioctl', '*$$', 'CORE::eof', ';*', 'CORE::crypt', '$$', 'CORE::do', undef(), 'CORE::flock', '*$', 'CORE::wait', '', 'CORE::sethostent', '$', 'CORE::return', undef(), 'CORE::getsockopt', '*$$', 'CORE::fork', '', 'CORE::require', undef(), 'CORE::format', undef(), 'CORE::readpipe', '_', 'CORE::endhostent', '', 'CORE::getpgrp', ';$', 'CORE::setgrent', '', 'CORE::keys', chr(92) . '[@%]', 'CORE::glob', undef(), 'CORE::getpriority', '$$', 'CORE::reset', ';$', 'CORE::sysopen', '*$$;$', 'CORE::continue', '', 'CORE::next', undef(), 'CORE::getgrgid', '$', 'CORE::default', undef(), 'CORE::shift', ';' . chr(92) . '@', 'CORE::symlink', '$$', 'CORE::exists', '$', 'CORE::printf', '$@', 'CORE::m', undef(), 'CORE::q', undef(), 'CORE::qq', undef(), 'CORE::qw', undef(), 'CORE::qx', undef(), 'CORE::qr', undef(), 'CORE::s', undef(), 'CORE::tr', undef(), 'CORE::y', undef()});
 1;
 
 ;

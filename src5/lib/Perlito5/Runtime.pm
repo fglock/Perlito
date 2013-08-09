@@ -1,4 +1,4 @@
-package Perlito5::Runtime;
+package Perlito5;
 
 use Perlito5::strict;
 
@@ -17,16 +17,17 @@ $^V = bless( { 'original' => 'v5.14.1',
              }, 'version' )
                     unless defined $^V;
 
-$Perlito5::EXPAND_USE = 1;
-$Perlito5::STRICT     = 0;
-$Perlito5::WARNINGS   = 0;
-$Perlito5::UTF8       = 0;
-$Perlito5::BYTES      = 0;
-$Perlito5::CALLER     = [];
-$Perlito5::PKG_NAME   = '';     # current package being parsed
+our $EXPAND_USE = 1;
+our $STRICT     = 0;
+our $WARNINGS   = 0;
+our $UTF8       = 0;
+our $BYTES      = 0;
+our $CALLER     = [];
+our $PKG_NAME   = '';     # current package being parsed
+our %DATA_SECTION = ();   # contents of the __DATA__ sections per package
 
 # list of packages that "exist" - this is used by the indirect-object parser
-$Perlito5::PACKAGES = {
+our $PACKAGES = {
     STDERR       => 1,
     STDOUT       => 1,
     STDIN        => 1,
@@ -49,7 +50,7 @@ push @INC, $_
 # obtained with:
 # $ perldoc -u perlvar | perl -ne ' /^\s*$/ && next; if (/^=item\s+([^\n]+)/) { push @item, $1; print "@item - $_" } else { if (@item) { push @xx, [@item]; print "push\n"; @item = () } }; END {use Data::Dumper; print Dumper \@xx} '
 
-$Perlito5::SPECIAL_VAR = {
+our $SPECIAL_VAR = {
           '$_' => 'ARG',
           '$&' => '$MATCH',
           '$`' => '$PREMATCH',
@@ -94,7 +95,7 @@ $Perlito5::SPECIAL_VAR = {
 # No other builtins can be redefined (the ones in $Perlito5::CORE_PROTO).
 # The other builtins can still be used for method names.
 
-$Perlito5::CORE_OVERRIDABLE = {
+our $CORE_OVERRIDABLE = {
           'say'     => 1,
           'break'   => 1,
           'given'   => 1,
@@ -108,7 +109,7 @@ $Perlito5::CORE_OVERRIDABLE = {
 # obtained with:
 # $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{"CORE::$_"} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } ' > ~/tmp/core.pm
 
-$Perlito5::CORE_PROTO = {
+our $CORE_PROTO = {
           'CORE::shutdown' => '*$',
           'CORE::chop' => undef,
           'CORE::lstat' => '*',

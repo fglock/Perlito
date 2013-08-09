@@ -8446,7 +8446,7 @@ return r;
 						(v_p = ((Hash_space.p5hget(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0)))([v_str, (p5num(v_p) + 1)], 0)));
 					}, function () { return (Hash_space).hasOwnProperty(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], p5want)) }, false, "");
 				if ( ((p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 7], 0) == '__END__') || (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 8], 0) == '__DATA__')) ) {
-					throw((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : p5pkg["Perlito5::Grammar::Space"].length([v_str], p5want)})));
+					throw(p5pkg["Perlito5::Grammar::Space"].term_end([v_str, v_p], p5want));
 				};
 				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_p, 'capture', (new p5ArrayRef(['space', ' '])))))));
 			}
@@ -8460,7 +8460,43 @@ return r;
 			}
 		});
 		p5make_sub("Perlito5::Grammar::Space", "term_end", function (List__, p5want) {
-				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', List__.p5aget(0), 'from', List__.p5aget(1), 'to', p5pkg["Perlito5::Grammar::Space"].length([List__.p5aget(0)], 1), 'capture', (new p5ArrayRef(['space', ' '])))))));
+				var v_str;
+				(v_str = (List__.p5aget(0)));
+				var v_p;
+				(v_p = (List__.p5aget(1)));
+				var v_is_data;
+				(v_is_data = (0));
+				if ( ((p5pkg["Perlito5::Grammar::Space"].substr([v_str, List__.p5aget(1), 7], 0) == '__END__') && (p5str(p5make_package("Perlito5")["v_PKG_NAME"]) == 'main')) ) {
+					(v_p = ((p5num(v_p) + 7)));
+					(v_is_data = (1));
+				}
+				else {
+					if ( (p5pkg["Perlito5::Grammar::Space"].substr([v_str, List__.p5aget(1), 8], 0) == '__DATA__') ) {
+						(v_p = ((p5num(v_p) + 8)));
+						(v_is_data = (1));
+					};
+				};
+				var v_m;
+				(v_m = (p5call(p5pkg["Perlito5::Grammar::Space"], "to_eol", [v_str, v_p], 0)));
+				(v_p = ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')));
+				if ( (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0) == p5pkg["Perlito5::Grammar::Space"].chr([10], 0)) ) {
+					(v_p)++;
+					if ( (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0) == p5pkg["Perlito5::Grammar::Space"].chr([13], 0)) ) {
+						(v_p)++;
+					};
+				}
+				else {
+					if ( (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0) == p5pkg["Perlito5::Grammar::Space"].chr([13], 0)) ) {
+						(v_p)++;
+						if ( (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0) == p5pkg["Perlito5::Grammar::Space"].chr([10], 0)) ) {
+							(v_p)++;
+						};
+					};
+				};
+				if ( p5bool(v_is_data) ) {
+					p5make_package("Perlito5")["Hash_DATA_SECTION"].p5hset(p5str(p5make_package("Perlito5")["v_PKG_NAME"]), (p5pkg["Perlito5::Grammar::Space"].substr([List__.p5aget(0), v_p], 0)));
+				};
+				return ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', List__.p5aget(1), 'to', p5pkg["Perlito5::Grammar::Space"].length([List__.p5aget(0)], 1), 'capture', (new p5ArrayRef(['space', ' '])))))));
 		});
 		p5pkg["Perlito5::Precedence"].add_term(['#', p5pkg["Perlito5::Grammar::Space"].term_space], null);
 		p5pkg["Perlito5::Precedence"].add_term([p5pkg["Perlito5::Grammar::Space"].chr([9], 1), p5pkg["Perlito5::Grammar::Space"].term_space], null);
@@ -8773,7 +8809,7 @@ return r;
 						(v_p = ((Hash_space.p5hget(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0)))([v_str, (p5num(v_p) + 1)], 0)));
 					}, function () { return (Hash_space).hasOwnProperty(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], p5want)) }, false, "");
 				if ( ((p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 7], 0) == '__END__') || (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 8], 0) == '__DATA__')) ) {
-					throw((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : p5pkg["Perlito5::Grammar::Space"].length([v_str], p5want)})));
+					throw(p5pkg["Perlito5::Grammar::Space"].term_end([v_str, v_p], p5want));
 				};
 				if ( (p5num(v_p) == p5num(v_pos)) ) {
 					throw(p5context([0], p5want));
@@ -8803,7 +8839,7 @@ return r;
 						(v_p = ((Hash_space.p5hget(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], 0)))([v_str, (p5num(v_p) + 1)], 0)));
 					}, function () { return (Hash_space).hasOwnProperty(p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 1], p5want)) }, false, "");
 				if ( ((p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 7], 0) == '__END__') || (p5pkg["Perlito5::Grammar::Space"].substr([v_str, v_p, 8], 0) == '__DATA__')) ) {
-					throw((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : p5pkg["Perlito5::Grammar::Space"].length([v_str], p5want)})));
+					throw(p5pkg["Perlito5::Grammar::Space"].term_end([v_str, v_p], p5want));
 				};
 				return ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_p})));
 			}
@@ -11271,7 +11307,7 @@ return r;
 	})()
 ;
 	(function () {
-		var p5121 = p5make_package("Perlito5::Runtime");
+		var p5121 = p5make_package("Perlito5");
 		// use Perlito5::strict
 ;
 		if ( (p5scalar_deref((String.fromCharCode(15) || (String.fromCharCode(15) = new p5ScalarRef(null)))) != null) ) {
@@ -11290,7 +11326,7 @@ return r;
 			null;
 		}
 		else {
-			(p5pkg["main"]["v_/"] = (p5pkg["Perlito5::Runtime"].chr([10], 0)));
+			(p5pkg["main"]["v_/"] = (p5pkg["Perlito5"].chr([10], 0)));
 		};
 		if ( (p5pkg["main"]["v_\""] != null) ) {
 			null;
@@ -11314,7 +11350,7 @@ return r;
 			null;
 		}
 		else {
-			(p5pkg["main"]["v_;"] = (p5pkg["Perlito5::Runtime"].chr([28], 0)));
+			(p5pkg["main"]["v_;"] = (p5pkg["Perlito5"].chr([28], 0)));
 		};
 		if ( (p5pkg["main"]["v_?"] != null) ) {
 			null;
@@ -11332,22 +11368,35 @@ return r;
 			null;
 		}
 		else {
-			p5scalar_deref_set((String.fromCharCode(22) || (String.fromCharCode(22) = new p5ScalarRef(null))), (p5pkg["Perlito5::Runtime"].bless([(new p5HashRef(p5a_to_h(p5list_to_a('original', 'v5.14.1', 'qv', 1, 'version', (new p5ArrayRef([5, 14, 1])))))), 'version'], 0)));
+			p5scalar_deref_set((String.fromCharCode(22) || (String.fromCharCode(22) = new p5ScalarRef(null))), (p5pkg["Perlito5"].bless([(new p5HashRef(p5a_to_h(p5list_to_a('original', 'v5.14.1', 'qv', 1, 'version', (new p5ArrayRef([5, 14, 1])))))), 'version'], 0)));
 		};
-		(p5make_package("Perlito5")["v_EXPAND_USE"] = (1));
-		(p5make_package("Perlito5")["v_STRICT"] = (0));
-		(p5make_package("Perlito5")["v_WARNINGS"] = (0));
-		(p5make_package("Perlito5")["v_UTF8"] = (0));
-		(p5make_package("Perlito5")["v_BYTES"] = (0));
-		(p5make_package("Perlito5")["v_CALLER"] = ((new p5ArrayRef([]))));
-		(p5make_package("Perlito5")["v_PKG_NAME"] = (''));
-		(p5make_package("Perlito5")["v_PACKAGES"] = ((new p5HashRef({'STDERR' : 1, 'STDOUT' : 1, 'STDIN' : 1, 'main' : 1, 'strict' : 1, 'warnings' : 1, 'utf8' : 1, 'bytes' : 1, 'encoding' : 1, 'UNIVERSAL' : 1, 'CORE' : 1, 'CORE::GLOBAL' : 1, 'Perlito5::IO' : 1}))));
-		p5for(p5make_package("Perlito5::Runtime"), "v__", function () {
-				p5pkg["main"]["List_INC"].p5push([p5pkg["Perlito5::Runtime"]["v__"]]);
-			}, p5list_to_a(p5pkg["Perlito5::Runtime"].split(p5list_to_a(':', p5or(p5pkg["main"]["Hash_ENV"].p5hget('PERL5LIB'), function () { return '' })), 1)), false, "");
-		(p5make_package("Perlito5")["v_SPECIAL_VAR"] = ((new p5HashRef(p5a_to_h(p5list_to_a('$_', 'ARG', '$&', '$MATCH', '$`', '$PREMATCH', '$' + String.fromCharCode(39), '$POSTMATCH', '$+', '$LAST_PAREN_MATCH', '@+', '@LAST_MATCH_END', '%+', '%LAST_PAREN_MATCH', '@-', '@LAST_MATCH_START', '$|', 'autoflush', '$/', '$RS', '@_', '@ARG', '< $', '$EUID', '$.', '$NR', '< $< ', '$UID', '$(', '$GID', '$#', null, '$@', '$EVAL_ERROR', '$=', '$FORMAT_LINES_PER_PAGE', '$,', '$OFS', '$?', '$CHILD_ERROR', '$*', null, '$[', null, '$$', '$PID', '%-', null, '$~', '$FORMAT_NAME', '$-', '$FORMAT_LINES_LEFT', '$&', '$MATCH', '$%', '$FORMAT_PAGE_NUMBER', '$)', '$EGID', '$]', null, '$!', '$ERRNO', '$;', '$SUBSEP', '$' + String.fromCharCode(92), '$ORS', '%!', null, '$"', '$LIST_SEPARATOR', '$_', '$ARG', '$:', 'FORMAT_LINE_BREAK_CHARACTERS'))))));
-		(p5make_package("Perlito5")["v_CORE_OVERRIDABLE"] = ((new p5HashRef({'say' : 1, 'break' : 1, 'given' : 1, 'when' : 1, 'default' : 1, 'state' : 1, 'lock' : 1}))));
-		(p5make_package("Perlito5")["v_CORE_PROTO"] = ((new p5HashRef(p5a_to_h(p5list_to_a('CORE::shutdown', '*$', 'CORE::chop', null, 'CORE::lstat', '*', 'CORE::rename', '$$', 'CORE::lock', String.fromCharCode(92) + '$', 'CORE::rand', ';$', 'CORE::gmtime', ';$', 'CORE::gethostbyname', '$', 'CORE::each', String.fromCharCode(92) + '[@%]', 'CORE::ref', '_', 'CORE::syswrite', '*$;$$', 'CORE::msgctl', '$$$', 'CORE::getnetbyname', '$', 'CORE::write', ';*', 'CORE::alarm', '_', 'CORE::print', null, 'CORE::getnetent', '', 'CORE::semget', '$$$', 'CORE::use', null, 'CORE::abs', '_', 'CORE::break', '', 'CORE::undef', null, 'CORE::no', null, 'CORE::eval', '_', 'CORE::split', null, 'CORE::localtime', ';$', 'CORE::sort', null, 'CORE::chown', '@', 'CORE::endpwent', '', 'CORE::getpwent', '', 'CORE::pos', null, 'CORE::lcfirst', '_', 'CORE::kill', '@', 'CORE::send', '*$$;$', 'CORE::endprotoent', '', 'CORE::semctl', '$$$$', 'CORE::waitpid', '$$', 'CORE::utime', '@', 'CORE::dbmclose', String.fromCharCode(92) + '%', 'CORE::getpwnam', '$', 'CORE::substr', '$$;$$', 'CORE::listen', '*$', 'CORE::getprotoent', '', 'CORE::shmget', '$$$', 'CORE::our', null, 'CORE::readlink', '_', 'CORE::shmwrite', '$$$$', 'CORE::times', '', 'CORE::package', null, 'CORE::map', null, 'CORE::join', '$@', 'CORE::rmdir', '_', 'CORE::shmread', '$$$$', 'CORE::uc', '_', 'CORE::bless', '$;$', 'CORE::closedir', '*', 'CORE::getppid', '', 'CORE::tie', String.fromCharCode(92) + '[$@%]$;@', 'CORE::readdir', '*', 'CORE::gethostent', '', 'CORE::getlogin', '', 'CORE::last', null, 'CORE::gethostbyaddr', '$$', 'CORE::accept', '**', 'CORE::log', '_', 'CORE::tell', ';*', 'CORE::readline', ';*', 'CORE::tied', null, 'CORE::socket', '*$$$', 'CORE::umask', ';$', 'CORE::sysread', '*' + String.fromCharCode(92) + '$$;$', 'CORE::syscall', '$@', 'CORE::quotemeta', '_', 'CORE::dump', '', 'CORE::opendir', '*$', 'CORE::untie', null, 'CORE::truncate', '$$', 'CORE::select', ';*', 'CORE::sleep', ';$', 'CORE::seek', '*$$', 'CORE::read', '*' + String.fromCharCode(92) + '$$;$', 'CORE::rewinddir', '*', 'CORE::scalar', null, 'CORE::wantarray', '', 'CORE::oct', '_', 'CORE::bind', '*$', 'CORE::stat', '*', 'CORE::sqrt', '_', 'CORE::getc', ';*', 'CORE::fileno', '*', 'CORE::getpeername', '*', 'CORE::sin', '_', 'CORE::getnetbyaddr', '$$', 'CORE::grep', null, 'CORE::setservent', '$', 'CORE::sub', null, 'CORE::shmctl', '$$$', 'CORE::study', null, 'CORE::msgrcv', '$$$$$', 'CORE::setsockopt', '*$$$', 'CORE::int', '_', 'CORE::pop', ';' + String.fromCharCode(92) + '@', 'CORE::link', '$$', 'CORE::exec', null, 'CORE::setpwent', '', 'CORE::mkdir', '_;$', 'CORE::sysseek', '*$$', 'CORE::endservent', '', 'CORE::chr', '_', 'CORE::when', null, 'CORE::getpwuid', '$', 'CORE::setprotoent', '$', 'CORE::reverse', '@', 'CORE::say', null, 'CORE::goto', null, 'CORE::getgrent', '', 'CORE::endnetent', '', 'CORE::hex', '_', 'CORE::binmode', '*;$', 'CORE::formline', '$@', 'CORE::getgrnam', '$', 'CORE::ucfirst', '_', 'CORE::chdir', ';$', 'CORE::setnetent', '$', 'CORE::splice', String.fromCharCode(92) + '@;$$@', 'CORE::unlink', '@', 'CORE::time', '', 'CORE::push', String.fromCharCode(92) + '@@', 'CORE::exit', ';$', 'CORE::endgrent', '', 'CORE::unshift', String.fromCharCode(92) + '@@', 'CORE::local', null, 'CORE::my', null, 'CORE::cos', '_', 'CORE::redo', null, 'CORE::warn', '@', 'CORE::getsockname', '*', 'CORE::pipe', '**', 'CORE::sprintf', '$@', 'CORE::open', '*;$@', 'CORE::setpgrp', ';$$', 'CORE::exp', '_', 'CORE::seekdir', '*$', 'CORE::getservbyport', '$$', 'CORE::given', null, 'CORE::pack', '$@', 'CORE::msgget', '$$', 'CORE::rindex', '$$;$', 'CORE::srand', ';$', 'CORE::telldir', '*', 'CORE::connect', '*$', 'CORE::getprotobyname', '$', 'CORE::msgsnd', '$$$', 'CORE::length', '_', 'CORE::state', null, 'CORE::die', '@', 'CORE::delete', null, 'CORE::getservent', '', 'CORE::getservbyname', '$$', 'CORE::setpriority', '$$$', 'CORE::lc', '_', 'CORE::fcntl', '*$$', 'CORE::chroot', '_', 'CORE::recv', '*' + String.fromCharCode(92) + '$$$', 'CORE::dbmopen', String.fromCharCode(92) + '%$$', 'CORE::socketpair', '**$$$', 'CORE::vec', '$$$', 'CORE::system', null, 'CORE::defined', '_', 'CORE::index', '$$;$', 'CORE::caller', ';$', 'CORE::close', ';*', 'CORE::atan2', '$$', 'CORE::semop', '$$', 'CORE::unpack', '$;$', 'CORE::ord', '_', 'CORE::chmod', '@', 'CORE::prototype', null, 'CORE::getprotobynumber', '$', 'CORE::values', String.fromCharCode(92) + '[@%]', 'CORE::chomp', null, 'CORE::ioctl', '*$$', 'CORE::eof', ';*', 'CORE::crypt', '$$', 'CORE::do', null, 'CORE::flock', '*$', 'CORE::wait', '', 'CORE::sethostent', '$', 'CORE::return', null, 'CORE::getsockopt', '*$$', 'CORE::fork', '', 'CORE::require', null, 'CORE::format', null, 'CORE::readpipe', '_', 'CORE::endhostent', '', 'CORE::getpgrp', ';$', 'CORE::setgrent', '', 'CORE::keys', String.fromCharCode(92) + '[@%]', 'CORE::glob', null, 'CORE::getpriority', '$$', 'CORE::reset', ';$', 'CORE::sysopen', '*$$;$', 'CORE::continue', '', 'CORE::next', null, 'CORE::getgrgid', '$', 'CORE::default', null, 'CORE::shift', ';' + String.fromCharCode(92) + '@', 'CORE::symlink', '$$', 'CORE::exists', '$', 'CORE::printf', '$@', 'CORE::m', null, 'CORE::q', null, 'CORE::qq', null, 'CORE::qw', null, 'CORE::qx', null, 'CORE::qr', null, 'CORE::s', null, 'CORE::tr', null, 'CORE::y', null))))));
+		// our p5pkg["Perlito5"]["v_EXPAND_USE"]
+		(p5pkg["Perlito5"]["v_EXPAND_USE"] = (1));
+		// our p5pkg["Perlito5"]["v_STRICT"]
+		(p5pkg["Perlito5"]["v_STRICT"] = (0));
+		// our p5pkg["Perlito5"]["v_WARNINGS"]
+		(p5pkg["Perlito5"]["v_WARNINGS"] = (0));
+		// our p5pkg["Perlito5"]["v_UTF8"]
+		(p5pkg["Perlito5"]["v_UTF8"] = (0));
+		// our p5pkg["Perlito5"]["v_BYTES"]
+		(p5pkg["Perlito5"]["v_BYTES"] = (0));
+		// our p5pkg["Perlito5"]["v_CALLER"]
+		(p5pkg["Perlito5"]["v_CALLER"] = ((new p5ArrayRef([]))));
+		// our p5pkg["Perlito5"]["v_PKG_NAME"]
+		(p5pkg["Perlito5"]["v_PKG_NAME"] = (''));
+		// our p5pkg["Perlito5"]["Hash_DATA_SECTION"]
+		(p5pkg["Perlito5"]["Hash_DATA_SECTION"] = {});
+		// our p5pkg["Perlito5"]["v_PACKAGES"]
+		(p5pkg["Perlito5"]["v_PACKAGES"] = ((new p5HashRef({'STDERR' : 1, 'STDOUT' : 1, 'STDIN' : 1, 'main' : 1, 'strict' : 1, 'warnings' : 1, 'utf8' : 1, 'bytes' : 1, 'encoding' : 1, 'UNIVERSAL' : 1, 'CORE' : 1, 'CORE::GLOBAL' : 1, 'Perlito5::IO' : 1}))));
+		p5for(p5make_package("Perlito5"), "v__", function () {
+				p5pkg["main"]["List_INC"].p5push([p5pkg["Perlito5"]["v__"]]);
+			}, p5list_to_a(p5pkg["Perlito5"].split(p5list_to_a(':', p5or(p5pkg["main"]["Hash_ENV"].p5hget('PERL5LIB'), function () { return '' })), 1)), false, "");
+		// our p5pkg["Perlito5"]["v_SPECIAL_VAR"]
+		(p5pkg["Perlito5"]["v_SPECIAL_VAR"] = ((new p5HashRef(p5a_to_h(p5list_to_a('$_', 'ARG', '$&', '$MATCH', '$`', '$PREMATCH', '$' + String.fromCharCode(39), '$POSTMATCH', '$+', '$LAST_PAREN_MATCH', '@+', '@LAST_MATCH_END', '%+', '%LAST_PAREN_MATCH', '@-', '@LAST_MATCH_START', '$|', 'autoflush', '$/', '$RS', '@_', '@ARG', '< $', '$EUID', '$.', '$NR', '< $< ', '$UID', '$(', '$GID', '$#', null, '$@', '$EVAL_ERROR', '$=', '$FORMAT_LINES_PER_PAGE', '$,', '$OFS', '$?', '$CHILD_ERROR', '$*', null, '$[', null, '$$', '$PID', '%-', null, '$~', '$FORMAT_NAME', '$-', '$FORMAT_LINES_LEFT', '$&', '$MATCH', '$%', '$FORMAT_PAGE_NUMBER', '$)', '$EGID', '$]', null, '$!', '$ERRNO', '$;', '$SUBSEP', '$' + String.fromCharCode(92), '$ORS', '%!', null, '$"', '$LIST_SEPARATOR', '$_', '$ARG', '$:', 'FORMAT_LINE_BREAK_CHARACTERS'))))));
+		// our p5pkg["Perlito5"]["v_CORE_OVERRIDABLE"]
+		(p5pkg["Perlito5"]["v_CORE_OVERRIDABLE"] = ((new p5HashRef({'say' : 1, 'break' : 1, 'given' : 1, 'when' : 1, 'default' : 1, 'state' : 1, 'lock' : 1}))));
+		// our p5pkg["Perlito5"]["v_CORE_PROTO"]
+		(p5pkg["Perlito5"]["v_CORE_PROTO"] = ((new p5HashRef(p5a_to_h(p5list_to_a('CORE::shutdown', '*$', 'CORE::chop', null, 'CORE::lstat', '*', 'CORE::rename', '$$', 'CORE::lock', String.fromCharCode(92) + '$', 'CORE::rand', ';$', 'CORE::gmtime', ';$', 'CORE::gethostbyname', '$', 'CORE::each', String.fromCharCode(92) + '[@%]', 'CORE::ref', '_', 'CORE::syswrite', '*$;$$', 'CORE::msgctl', '$$$', 'CORE::getnetbyname', '$', 'CORE::write', ';*', 'CORE::alarm', '_', 'CORE::print', null, 'CORE::getnetent', '', 'CORE::semget', '$$$', 'CORE::use', null, 'CORE::abs', '_', 'CORE::break', '', 'CORE::undef', null, 'CORE::no', null, 'CORE::eval', '_', 'CORE::split', null, 'CORE::localtime', ';$', 'CORE::sort', null, 'CORE::chown', '@', 'CORE::endpwent', '', 'CORE::getpwent', '', 'CORE::pos', null, 'CORE::lcfirst', '_', 'CORE::kill', '@', 'CORE::send', '*$$;$', 'CORE::endprotoent', '', 'CORE::semctl', '$$$$', 'CORE::waitpid', '$$', 'CORE::utime', '@', 'CORE::dbmclose', String.fromCharCode(92) + '%', 'CORE::getpwnam', '$', 'CORE::substr', '$$;$$', 'CORE::listen', '*$', 'CORE::getprotoent', '', 'CORE::shmget', '$$$', 'CORE::our', null, 'CORE::readlink', '_', 'CORE::shmwrite', '$$$$', 'CORE::times', '', 'CORE::package', null, 'CORE::map', null, 'CORE::join', '$@', 'CORE::rmdir', '_', 'CORE::shmread', '$$$$', 'CORE::uc', '_', 'CORE::bless', '$;$', 'CORE::closedir', '*', 'CORE::getppid', '', 'CORE::tie', String.fromCharCode(92) + '[$@%]$;@', 'CORE::readdir', '*', 'CORE::gethostent', '', 'CORE::getlogin', '', 'CORE::last', null, 'CORE::gethostbyaddr', '$$', 'CORE::accept', '**', 'CORE::log', '_', 'CORE::tell', ';*', 'CORE::readline', ';*', 'CORE::tied', null, 'CORE::socket', '*$$$', 'CORE::umask', ';$', 'CORE::sysread', '*' + String.fromCharCode(92) + '$$;$', 'CORE::syscall', '$@', 'CORE::quotemeta', '_', 'CORE::dump', '', 'CORE::opendir', '*$', 'CORE::untie', null, 'CORE::truncate', '$$', 'CORE::select', ';*', 'CORE::sleep', ';$', 'CORE::seek', '*$$', 'CORE::read', '*' + String.fromCharCode(92) + '$$;$', 'CORE::rewinddir', '*', 'CORE::scalar', null, 'CORE::wantarray', '', 'CORE::oct', '_', 'CORE::bind', '*$', 'CORE::stat', '*', 'CORE::sqrt', '_', 'CORE::getc', ';*', 'CORE::fileno', '*', 'CORE::getpeername', '*', 'CORE::sin', '_', 'CORE::getnetbyaddr', '$$', 'CORE::grep', null, 'CORE::setservent', '$', 'CORE::sub', null, 'CORE::shmctl', '$$$', 'CORE::study', null, 'CORE::msgrcv', '$$$$$', 'CORE::setsockopt', '*$$$', 'CORE::int', '_', 'CORE::pop', ';' + String.fromCharCode(92) + '@', 'CORE::link', '$$', 'CORE::exec', null, 'CORE::setpwent', '', 'CORE::mkdir', '_;$', 'CORE::sysseek', '*$$', 'CORE::endservent', '', 'CORE::chr', '_', 'CORE::when', null, 'CORE::getpwuid', '$', 'CORE::setprotoent', '$', 'CORE::reverse', '@', 'CORE::say', null, 'CORE::goto', null, 'CORE::getgrent', '', 'CORE::endnetent', '', 'CORE::hex', '_', 'CORE::binmode', '*;$', 'CORE::formline', '$@', 'CORE::getgrnam', '$', 'CORE::ucfirst', '_', 'CORE::chdir', ';$', 'CORE::setnetent', '$', 'CORE::splice', String.fromCharCode(92) + '@;$$@', 'CORE::unlink', '@', 'CORE::time', '', 'CORE::push', String.fromCharCode(92) + '@@', 'CORE::exit', ';$', 'CORE::endgrent', '', 'CORE::unshift', String.fromCharCode(92) + '@@', 'CORE::local', null, 'CORE::my', null, 'CORE::cos', '_', 'CORE::redo', null, 'CORE::warn', '@', 'CORE::getsockname', '*', 'CORE::pipe', '**', 'CORE::sprintf', '$@', 'CORE::open', '*;$@', 'CORE::setpgrp', ';$$', 'CORE::exp', '_', 'CORE::seekdir', '*$', 'CORE::getservbyport', '$$', 'CORE::given', null, 'CORE::pack', '$@', 'CORE::msgget', '$$', 'CORE::rindex', '$$;$', 'CORE::srand', ';$', 'CORE::telldir', '*', 'CORE::connect', '*$', 'CORE::getprotobyname', '$', 'CORE::msgsnd', '$$$', 'CORE::length', '_', 'CORE::state', null, 'CORE::die', '@', 'CORE::delete', null, 'CORE::getservent', '', 'CORE::getservbyname', '$$', 'CORE::setpriority', '$$$', 'CORE::lc', '_', 'CORE::fcntl', '*$$', 'CORE::chroot', '_', 'CORE::recv', '*' + String.fromCharCode(92) + '$$$', 'CORE::dbmopen', String.fromCharCode(92) + '%$$', 'CORE::socketpair', '**$$$', 'CORE::vec', '$$$', 'CORE::system', null, 'CORE::defined', '_', 'CORE::index', '$$;$', 'CORE::caller', ';$', 'CORE::close', ';*', 'CORE::atan2', '$$', 'CORE::semop', '$$', 'CORE::unpack', '$;$', 'CORE::ord', '_', 'CORE::chmod', '@', 'CORE::prototype', null, 'CORE::getprotobynumber', '$', 'CORE::values', String.fromCharCode(92) + '[@%]', 'CORE::chomp', null, 'CORE::ioctl', '*$$', 'CORE::eof', ';*', 'CORE::crypt', '$$', 'CORE::do', null, 'CORE::flock', '*$', 'CORE::wait', '', 'CORE::sethostent', '$', 'CORE::return', null, 'CORE::getsockopt', '*$$', 'CORE::fork', '', 'CORE::require', null, 'CORE::format', null, 'CORE::readpipe', '_', 'CORE::endhostent', '', 'CORE::getpgrp', ';$', 'CORE::setgrent', '', 'CORE::keys', String.fromCharCode(92) + '[@%]', 'CORE::glob', null, 'CORE::getpriority', '$$', 'CORE::reset', ';$', 'CORE::sysopen', '*$$;$', 'CORE::continue', '', 'CORE::next', null, 'CORE::getgrgid', '$', 'CORE::default', null, 'CORE::shift', ';' + String.fromCharCode(92) + '@', 'CORE::symlink', '$$', 'CORE::exists', '$', 'CORE::printf', '$@', 'CORE::m', null, 'CORE::q', null, 'CORE::qq', null, 'CORE::qw', null, 'CORE::qx', null, 'CORE::qr', null, 'CORE::s', null, 'CORE::tr', null, 'CORE::y', null))))));
 		1;
 	})()
 ;

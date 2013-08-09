@@ -43,6 +43,8 @@ TODO list for Perlito5
     missing MODIFY_CODE_ATTRIBUTES handlers
 
 -- create __DATA__
+    %Perlito5::DATA_SECTION contains the __DATA__ for each package 
+
     http://perldoc.perl.org/SelfLoader.html#The-__DATA__-token
 
     In package 'main', __END__ behaves like __DATA__.
