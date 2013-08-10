@@ -9,6 +9,9 @@ Perlito5::Precedence::add_term( 'sort'  => sub { Perlito5::Grammar::Map->term_so
 
 token map_or_grep { 'map' | 'grep' };
 
+
+# TODO: map ( BLOCK LIST )
+
 token term_map_or_grep {
     # Note: this is map-block; map-expr is parsed as a normal subroutine
     <map_or_grep> <.Perlito5::Grammar::Space.opt_ws>
@@ -28,8 +31,6 @@ token term_map_or_grep {
     }
 };
 
-# TODO: sort SUBNAME
-# 
 #     Warning: syntactical care is required when sorting the list
 #     returned from a function. If you want to sort the list returned
 #     by the function call "find_records(@key)", you can use:

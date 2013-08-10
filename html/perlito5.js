@@ -11690,6 +11690,9 @@ return r;
 		p5make_sub("Perlito5::AST::Apply", "code", function (List__, p5want) {
 				return (List__.p5aget_hash(0)._hash_.p5hget('code'));
 		});
+		p5make_sub("Perlito5::AST::Apply", "special_arg", function (List__, p5want) {
+				return (List__.p5aget_hash(0)._hash_.p5hget('special_arg'));
+		});
 		p5make_sub("Perlito5::AST::Apply", "arguments", function (List__, p5want) {
 				return (List__.p5aget_hash(0)._hash_.p5hget('arguments'));
 		});

@@ -8724,6 +8724,9 @@ sub Perlito5::AST::Apply::new {
 sub Perlito5::AST::Apply::code {
     $_[0]->{    'code'}
 };
+sub Perlito5::AST::Apply::special_arg {
+    $_[0]->{    'special_arg'}
+};
 sub Perlito5::AST::Apply::arguments {
     $_[0]->{    'arguments'}
 };

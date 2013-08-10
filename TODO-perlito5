@@ -32,6 +32,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- AST - move the block parameter in sort() to Perlito5::AST::Apply->special_arg, to disambiguate this case:
+    sort $x 1,2,3   # $x is subroutine reference
+    sort $x,1,2,3   # $x is list element
+
 -- sort SUBNAME LIST
     see Grammar/Map.pm
 
