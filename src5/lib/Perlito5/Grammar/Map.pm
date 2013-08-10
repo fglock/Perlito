@@ -21,12 +21,10 @@ token term_map_or_grep {
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{map_or_grep}),
-                    arguments => [
-                        Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] ),
-                        @{ Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}) }
-                    ], 
-                    namespace => ''
+                    code        => Perlito5::Match::flat($MATCH->{map_or_grep}),
+                    special_arg => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] ),
+                    arguments   => Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}), 
+                    namespace   => ''
                  )
                ]
         }
@@ -38,12 +36,10 @@ token term_map_or_grep {
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => Perlito5::Match::flat($MATCH->{map_or_grep}),
-                    arguments => [
-                        Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] ),
-                        @{ Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}) }
-                    ], 
-                    namespace => ''
+                    code        => Perlito5::Match::flat($MATCH->{map_or_grep}),
+                    special_arg => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] ),
+                    arguments   => Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}), 
+                    namespace   => ''
                  )
                ]
         }
@@ -99,11 +95,9 @@ token term_sort {
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => 'sort',
-                    arguments => [
-                        $MATCH->{_tmp},
-                        @{ Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}) }
-                    ], 
+                    code        => 'sort',
+                    special_arg => $MATCH->{_tmp},
+                    arguments => Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}),
                     namespace => ''
                  )
                ]
@@ -139,12 +133,10 @@ token term_sort {
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
-                    code      => 'sort',
-                    arguments => [
-                        $MATCH->{_tmp},
-                        @{ Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}) }
-                    ], 
-                    namespace => ''
+                    code        => 'sort',
+                    special_arg => $MATCH->{_tmp},
+                    arguments   => Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}{capture}), 
+                    namespace   => ''
                  )
                ]
         }
