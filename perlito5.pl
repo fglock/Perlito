@@ -6476,7 +6476,7 @@ sub Perlito5::Grammar::Space::start_of_line {
     }
 })) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
+    ((((do {
     (((('=' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((((do {
@@ -6529,6 +6529,116 @@ sub Perlito5::Grammar::Space::start_of_line {
 })))
 })))
 })) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((((((((('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((' ' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(9) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+})))
+})) && (($last_match_null < 2))); do {{
+
+}} ) {
+        if (($to == $MATCH->{'to'})) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($m = $MATCH);
+        ($to = $MATCH->{'to'})
+    };
+    ($MATCH = $m);
+    ($MATCH->{'to'} = $to);
+    1
+}))) && ((('line' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'})))))) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    ((my  $count) = 0);
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((' ' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(9) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+})))
+})) && (($last_match_null < 2))); do {{
+
+}} ) {
+        if (($to == $MATCH->{'to'})) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($m = $MATCH);
+        ($to = $MATCH->{'to'});
+        ($count = ($count + 1))
+    };
+    ($MATCH = $m);
+    ($MATCH->{'to'} = $to);
+    ($count > 0)
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->digits($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.digits'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $m) = $MATCH);
+    ((my  $to) = $MATCH->{'to'});
+    for ( ; (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((' ' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(9) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+})))
+})) && (($last_match_null < 2))); do {{
+
+}} ) {
+        if (($to == $MATCH->{'to'})) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($m = $MATCH);
+        ($to = $MATCH->{'to'})
+    };
+    ($MATCH = $m);
+    ($MATCH->{'to'} = $to);
+    1
+}))) && ((do {
+    ((my  $m2) = $grammar->to_eol($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'str'} = $str);
+    ($Perlito5::LINE_NUMBER = (0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'})));
+;
+    1
+}))))
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (1)
 })))
@@ -13222,8 +13332,10 @@ else {
 ((our  $UTF8) = 0);
 ((our  $BYTES) = 0);
 ((our  $CALLER) = []);
-((our  $PKG_NAME) = '');
 ((our  %DATA_SECTION) = ());
+((our  $PKG_NAME) = '');
+((our  $LINE_NUMBER) = 0);
+((our  $FILE_NAME) = '');
 ((our  $PACKAGES) = {'STDERR', 1, 'STDOUT', 1, 'STDIN', 1, 'main', 1, 'strict', 1, 'warnings', 1, 'utf8', 1, 'bytes', 1, 'encoding', 1, 'UNIVERSAL', 1, 'CORE', 1, 'CORE::GLOBAL', 1, 'Perlito5::IO', 1});
 for (split(':', (($ENV{'PERL5LIB'} || '')))) {
     push(@INC, $_ )

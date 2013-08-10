@@ -17,14 +17,16 @@ $^V = bless( { 'original' => 'v5.14.1',
              }, 'version' )
                     unless defined $^V;
 
-our $EXPAND_USE = 1;
-our $STRICT     = 0;
-our $WARNINGS   = 0;
-our $UTF8       = 0;
-our $BYTES      = 0;
-our $CALLER     = [];
-our $PKG_NAME   = '';     # current package being parsed
+our $EXPAND_USE   = 1;
+our $STRICT       = 0;
+our $WARNINGS     = 0;
+our $UTF8         = 0;
+our $BYTES        = 0;
+our $CALLER       = [];
 our %DATA_SECTION = ();   # contents of the __DATA__ sections per package
+our $PKG_NAME     = '';   # current package being compiled
+our $LINE_NUMBER  = 0;    # current line number being compiled
+our $FILE_NAME    = '';   # current file name being compiled
 
 # list of packages that "exist" - this is used by the indirect-object parser
 our $PACKAGES = {

@@ -101,6 +101,22 @@ token start_of_line {
            |  'begin'  <.pod_begin>
            |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
            ]
+    | '#'
+        [ ' ' | \t ]*
+        'line'
+        [ ' ' | \t ]+
+        <Perlito5::Grammar.digits>
+        [ ' ' | \t ]*
+
+        # TODO: optional filename (specified with or without quotes)
+
+        <.to_eol>
+        {
+            $Perlito5::LINE_NUMBER = 0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'});
+
+            # TODO: filename
+            # $Perlito5::FILE_NAME   = ...;
+        }
     | ''
     ]
 };
