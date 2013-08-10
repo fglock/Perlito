@@ -146,12 +146,10 @@ sub typeglob {
 sub print_ast {
     my ($decl, $the_object, $expr) = @_;
     Perlito5::AST::Apply->new( 
-        'namespace' => 'Perlito5::IO',
-        'code'      => $decl,
-        'arguments' => [
-            $the_object,
-            $expr,
-        ],
+        namespace   => '',
+        code        => $decl,
+        special_arg => $the_object,
+        arguments   => $expr,
     )
 }
 
@@ -162,18 +160,18 @@ token term_print {
         '('
             <.Perlito5::Grammar::Space.opt_ws>
             <the_object>
-            <Perlito5::Expression.paren_parse>
+            <Perlito5::Expression.list_parse>
         ')'
 
         { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'});
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'});
             return if !ref($list);
             $MATCH->{capture} = [
                 'term',
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    $list,
+                    Perlito5::Expression::expand_list($list),
                 ),
             ]
         }
@@ -189,7 +187,7 @@ token term_print {
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    $list,
+                    Perlito5::Expression::expand_list($list),
                 ),
             ]
         }

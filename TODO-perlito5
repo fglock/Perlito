@@ -32,25 +32,12 @@ TODO list for Perlito5
 
 * Parser
 
--- AST - move the block parameter in sort() to Perlito5::AST::Apply->special_arg, to disambiguate this case:
-    sort $x 1,2,3   # $x is subroutine reference
-    sort $x,1,2,3   # $x is list element
-
--- sort SUBNAME LIST
-    see Grammar/Map.pm
-
 -- attributes
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
 
 -- create __DATA__
     %Perlito5::DATA_SECTION contains the __DATA__ for each package 
-
-    http://perldoc.perl.org/SelfLoader.html#The-__DATA__-token
-
-    In package 'main', __END__ behaves like __DATA__.
-    In other packages, __END__ is really the end.
-    Only the last __DATA__ in each package use()-ed is accessible.
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"

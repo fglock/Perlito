@@ -6795,7 +6795,7 @@ sub Perlito5::Grammar::Print::typeglob {
 };
 sub Perlito5::Grammar::Print::print_ast {
     (my($decl, $the_object, $expr) = @_);
-    Perlito5::AST::Apply->new('namespace', 'Perlito5::IO', 'code', $decl, 'arguments', [$the_object, $expr])
+    Perlito5::AST::Apply->new('namespace', '', 'code', $decl, 'special_arg', $the_object, 'arguments', $expr)
 };
 sub Perlito5::Grammar::Print::term_print {
     ((my  $grammar) = $_[0]);
@@ -6847,10 +6847,10 @@ sub Perlito5::Grammar::Print::term_print {
         0
     }
 }))) && ((do {
-    ((my  $m2) = Perlito5::Expression->paren_parse($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Expression->list_parse($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Expression.paren_parse'} = $m2);
+        ($MATCH->{'Perlito5::Expression.list_parse'} = $m2);
         1
     }
     else {
@@ -6858,11 +6858,11 @@ sub Perlito5::Grammar::Print::term_print {
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'str'} = $str);
-    ((my  $list) = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.paren_parse'}));
+    ((my  $list) = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'}));
     if (!(ref($list))) {
         return ()
     };
-    ($MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), $list)]);
+    ($MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), Perlito5::Expression::expand_list($list))]);
     1
 })))
 })) || ((do {
@@ -6893,7 +6893,7 @@ sub Perlito5::Grammar::Print::term_print {
     if (!(ref($list))) {
         return ()
     };
-    ($MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), $list)]);
+    ($MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), Perlito5::Expression::expand_list($list))]);
     1
 }))))
 })))
