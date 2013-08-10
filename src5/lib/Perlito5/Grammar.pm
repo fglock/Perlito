@@ -163,16 +163,36 @@ token val_version {
 };
 
 my @PKG;
-token exp_stmts {
-    {
-        push @PKG, $Perlito5::PKG_NAME
+sub exp_stmts {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    push @PKG, $Perlito5::PKG_NAME;
+ 
+    my @stmts;
+    my $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
+    $pos = $m->{to};
+    while ($m) {
+        if ( substr($str, $pos, 1) eq ';' ) {
+            $m = Perlito5::Grammar::Space->opt_ws($str, $pos + 1);
+            $pos = $m->{to};
+        }
+        else {
+            $m = Perlito5::Expression->statement_parse($str, $pos);
+            if ($m) {
+                push @stmts, $m->{capture};
+                $pos = $m->{to};
+                if ( substr($str, $pos, 1) eq ';' ) {
+                    $pos = $pos + 1;
+                }
+                $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
+                $pos = $m->{to};
+            }
+        }
     }
-    <Perlito5::Expression.delimited_statement>*
-    { 
-        $Perlito5::PKG_NAME = pop @PKG;
-        $MATCH->{capture} = [ map( $_->{capture}, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
-    }
-};
+    $Perlito5::PKG_NAME = pop @PKG;
+    return { str => $str, to => $pos, capture => \@stmts };
+}
 
 token args_sig {
     [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*

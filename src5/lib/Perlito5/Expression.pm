@@ -648,23 +648,6 @@ my $Expr_end_token = {
 my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
-sub op_parse_spc {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $last_is_term = $_[3];
-
-    my $m = Perlito5::Precedence->op_parse($str, $pos, $last_is_term);
-    if (!$m) {
-        return $m;
-    }
-    my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
-    if ($spc) {
-        $m->{to} = $spc->{to};
-    }
-    return $m;
-}
-
 sub argument_parse {
     my $self = $_[0];
     my $str = $_[1];
@@ -691,7 +674,13 @@ sub argument_parse {
             }
         }
         else {
-            my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            if ($m) {
+                my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+                if ($spc) {
+                    $m->{to} = $spc->{to};
+                }
+            }
             # say "# list lexer got: " . $m->perl;
             if (!$m) {
                 return [ 'end', '*end*' ];
@@ -765,7 +754,13 @@ sub list_parse {
             }
         }
         else {
-            my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            if ($m) {
+                my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+                if ($spc) {
+                    $m->{to} = $spc->{to};
+                }
+            }
             # say "# list lexer got: " . $m->perl;
             if (!$m) {
                 return [ 'end', '*end*' ];
@@ -824,7 +819,13 @@ sub circumfix_parse {
     my $last_pos = $pos;
     my $get_token = sub {
         my $last_is_term = $_[0];
-        my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
+        my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+        if ($m) {
+            my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+            if ($spc) {
+                $m->{to} = $spc->{to};
+            }
+        }
         if (!$m) {
             die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
         }
@@ -901,7 +902,13 @@ sub exp_parse {
             $v = pop @$lexer_stack;
         }
         else {
-            my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            if ($m) {
+                my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+                if ($spc) {
+                    $m->{to} = $spc->{to};
+                }
+            }
             # say "# exp lexer got: " . $m->perl;
             if (!$m) {
                 return [ 'end', '*end*' ];
@@ -1057,14 +1064,6 @@ sub modifier {
     die "Unexpected statement modifier '$modifier'";
 }
 
-
-token delimited_statement {
-    <.Perlito5::Grammar::Space.ws>?
-    [ ';' <.Perlito5::Grammar::Space.ws>?
-    | <statement_parse> ';'? <.Perlito5::Grammar::Space.ws>?
-        { $MATCH->{capture} = $MATCH->{statement_parse}{capture} }
-    ]
-};
 
 sub statement_parse {
     my $self = $_[0];
