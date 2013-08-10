@@ -32,9 +32,6 @@ TODO list for Perlito5
 
 * Parser
 
--- print BLOCK LIST
-    change BLOCK to use Perlito5::Expression.term_curly (see Grammar/Map.pm)
-
 -- sort SUBNAME LIST
     see Grammar/Map.pm
 

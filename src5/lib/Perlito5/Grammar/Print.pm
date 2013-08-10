@@ -27,9 +27,9 @@ token the_object {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
             }
     |
-        '{' <Perlito5::Expression.curly_parse> '}'
+        <before '{'> <Perlito5::Expression.term_curly> 
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'});
+                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] );
             }
     |
         <typeglob>

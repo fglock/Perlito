@@ -6668,19 +6668,29 @@ sub Perlito5::Grammar::Print::the_object {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Expression->curly_parse($str, $MATCH->{'to'}));
+    (((((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
+    ((my  $res) = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})));
+    ($MATCH = ($res ? $tmp : 0))
+})) && ((do {
+    ((my  $m2) = Perlito5::Expression->term_curly($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Expression.curly_parse'} = $m2);
+        ($MATCH->{'Perlito5::Expression.term_curly'} = $m2);
         1
     }
     else {
         0
     }
-}))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+}))) && ((do {
     ($MATCH->{'str'} = $str);
-    ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'}));
+    ($MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts', $MATCH->{'Perlito5::Expression.term_curly'}->{'capture'}->[2]));
 ;
     1
 }))))
