@@ -5507,10 +5507,17 @@ sub Perlito5::Grammar::Sigil::term_sigil {
         ($p = $m->{'to'});
         ($m = Perlito5::Grammar->optional_namespace_before_ident($str, $p));
         if ($m) {
+            ((my  $namespace) = Perlito5::Match::flat($m));
+            ((my  $pos) = $m->{'to'});
             ((my  $n) = Perlito5::Grammar->var_name($str, $m->{'to'}));
+            (my  $name);
             if ($n) {
-                ((my  $spc) = Perlito5::Grammar::Space->opt_ws($str, $n->{'to'}));
-                ($m->{'capture'} = Perlito5::AST::Var->new('sigil', $sigil, 'namespace', Perlito5::Match::flat($m), 'name', Perlito5::Match::flat($n)));
+                ($name = Perlito5::Match::flat($n));
+                ($pos = $n->{'to'})
+            };
+            if (($namespace || $name)) {
+                ((my  $spc) = Perlito5::Grammar::Space->opt_ws($str, $pos));
+                ($m->{'capture'} = Perlito5::AST::Var->new('sigil', $sigil, 'namespace', $namespace, 'name', $name));
                 ($m->{'to'} = $spc->{'to'});
                 ($m = Perlito5::Grammar::String->double_quoted_var_with_subscript($m));
                 ($m->{'capture'} = ['term', $m->{'capture'}]);
@@ -5562,10 +5569,15 @@ sub Perlito5::Grammar::Sigil::term_sigil {
     };
     ($m = Perlito5::Grammar->optional_namespace_before_ident($str, $p));
     if ($m) {
+        ((my  $namespace) = Perlito5::Match::flat($m));
         ((my  $n) = Perlito5::Grammar->var_name($str, $m->{'to'}));
         if ($n) {
-            ($n->{'capture'} = ['term', Perlito5::AST::Var->new('sigil', $sigil, 'namespace', Perlito5::Match::flat($m), 'name', Perlito5::Match::flat($n))]);
+            ($n->{'capture'} = ['term', Perlito5::AST::Var->new('sigil', $sigil, 'namespace', $namespace, 'name', Perlito5::Match::flat($n))]);
             return ($n)
+        };
+        if ($namespace) {
+            ($m->{'capture'} = ['term', Perlito5::AST::Var->new('sigil', $sigil, 'namespace', $namespace, 'name', undef())]);
+            return ($m)
         }
     };
     return ($self->term_special_var($str, $pos))

@@ -7378,13 +7378,22 @@ var p5100 = p5pkg['main'];
 						(v_m = (p5call(p5pkg["Perlito5::Grammar"], "optional_namespace_before_ident", [v_str, v_p], 0)));
 						if ( p5bool(v_m) ) {
 							(function () {
+								var v_namespace;
+								(v_namespace = (p5pkg["Perlito5::Match"].flat([v_m], 0)));
+								var v_pos;
+								(v_pos = ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')));
 								var v_n;
 								(v_n = (p5call(p5pkg["Perlito5::Grammar"], "var_name", p5list_to_a(v_str, (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')), 0)));
+								var v_name;
 								if ( p5bool(v_n) ) {
+									(v_name = (p5pkg["Perlito5::Match"].flat([v_n], 0)));
+									(v_pos = ((v_n || (v_n = new p5HashRef({})))._hash_.p5hget('to')));
+								};
+								if ( (p5bool(v_namespace) || p5bool(v_name)) ) {
 									(function () {
 										var v_spc;
-										(v_spc = (p5call(p5pkg["Perlito5::Grammar::Space"], "opt_ws", p5list_to_a(v_str, (v_n || (v_n = new p5HashRef({})))._hash_.p5hget('to')), 0)));
-										(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', v_sigil, 'namespace', p5pkg["Perlito5::Match"].flat([v_m], 1), 'name', p5pkg["Perlito5::Match"].flat([v_n], 1)), 0)));
+										(v_spc = (p5call(p5pkg["Perlito5::Grammar::Space"], "opt_ws", [v_str, v_pos], 0)));
+										(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Var"], "new", ['sigil', v_sigil, 'namespace', v_namespace, 'name', v_name], 0)));
 										(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('to', ((v_spc || (v_spc = new p5HashRef({})))._hash_.p5hget('to')));
 										(v_m = (p5call(p5pkg["Perlito5::Grammar::String"], "double_quoted_var_with_subscript", [v_m], 0)));
 										(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture'))))));
@@ -7453,11 +7462,17 @@ var p5100 = p5pkg['main'];
 				(v_m = (p5call(p5pkg["Perlito5::Grammar"], "optional_namespace_before_ident", [v_str, v_p], 0)));
 				if ( p5bool(v_m) ) {
 					(function () {
+						var v_namespace;
+						(v_namespace = (p5pkg["Perlito5::Match"].flat([v_m], 0)));
 						var v_n;
 						(v_n = (p5call(p5pkg["Perlito5::Grammar"], "var_name", p5list_to_a(v_str, (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('to')), 0)));
 						if ( p5bool(v_n) ) {
-							(v_n || (v_n = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', v_sigil, 'namespace', p5pkg["Perlito5::Match"].flat([v_m], 1), 'name', p5pkg["Perlito5::Match"].flat([v_n], 1)), 1))))));
+							(v_n || (v_n = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', v_sigil, 'namespace', v_namespace, 'name', p5pkg["Perlito5::Match"].flat([v_n], 1)), 1))))));
 							throw(p5context([v_n], p5want));
+						};
+						if ( p5bool(v_namespace) ) {
+							(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', v_sigil, 'namespace', v_namespace, 'name', null), 1))))));
+							throw(p5context([v_m], p5want));
 						};
 						})();
 				};

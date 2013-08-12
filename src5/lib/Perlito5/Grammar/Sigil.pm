@@ -198,16 +198,23 @@ sub term_sigil {
 
         $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
         if ($m) {
+            my $namespace = Perlito5::Match::flat($m);
+            my $pos  = $m->{to};
             #  ${name  ...
             my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
+            my $name;
             if ($n) {
-                my $spc = Perlito5::Grammar::Space->opt_ws($str, $n->{to});
+                $name = Perlito5::Match::flat($n);
+                $pos  = $n->{to};
+            }
+            if ($namespace || $name) {
+                my $spc = Perlito5::Grammar::Space->opt_ws($str, $pos);
                 # we are parsing:  ${var}  ${var{index}}
                 # create the 'Var' object
                 $m->{capture} = Perlito5::AST::Var->new(
                     sigil       => $sigil,
-                    namespace   => Perlito5::Match::flat($m),
-                    name        => Perlito5::Match::flat($n),
+                    namespace   => $namespace,
+                    name        => $name,
                 );
                 $m->{to} = $spc->{to};
                 # hijack some string interpolation code to parse the subscript
@@ -298,18 +305,30 @@ sub term_sigil {
 
     $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
     if ($m) {
+        my $namespace = Perlito5::Match::flat($m);
         #  $name ...
         my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
         if ($n) {
             $n->{capture} = [ 'term', 
                     Perlito5::AST::Var->new(
                             sigil       => $sigil,
-                            namespace   => Perlito5::Match::flat($m),
+                            namespace   => $namespace,
                             name        => Perlito5::Match::flat($n),
                         )
                 ];
             return $n;
         }
+        if ($namespace) {
+            $m->{capture} = [ 'term', 
+                    Perlito5::AST::Var->new(
+                            sigil       => $sigil,
+                            namespace   => $namespace,
+                            name        => undef,
+                        )
+                ];
+            return $m;
+        }
+
     }
 
     #  $! ...
