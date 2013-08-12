@@ -102,11 +102,26 @@ token named_sub_def {
     <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
     <Perlito5::Grammar.prototype> <.Perlito5::Grammar.opt_ws>
     <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
-    \{
+    [
+        \{
         <.Perlito5::Grammar.opt_ws>
         <Perlito5::Grammar.exp_stmts>
         <.Perlito5::Grammar.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
+        [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
+        {
+            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
+        }
+    |
+        <.Perlito5::Expression.statement_parse>
+        {
+            die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\''
+        }
+    |
+        {
+            # subroutine predeclaration - there is no block
+            $MATCH->{_tmp} = undef;
+        }
+    ]
     {
         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
         my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.prototype"});
@@ -122,16 +137,18 @@ token named_sub_def {
             }
 
             my $full_name = "${namespace}::$name";
-            warn "Subroutine $full_name redefined"
-                if exists $Perlito5::PROTO->{$full_name};
+
+            # TODO - check if the previous definition was a predeclaration
+            # warn "Subroutine $full_name redefined"
+            #     if exists $Perlito5::PROTO->{$full_name};
 
             $Perlito5::PROTO->{$full_name} = $sig;
         }
         $MATCH->{capture} = Perlito5::AST::Sub->new(
-            name  => $name, 
-            namespace => $namespace,
-            sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}),
+            name       => $name, 
+            namespace  => $namespace,
+            sig        => $sig, 
+            block      => $MATCH->{_tmp},
             attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
         ) 
     }

@@ -5974,7 +5974,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
     ((my  $tmp) = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((((((((((do {
+    (((((((((do {
     ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -6032,7 +6032,10 @@ sub Perlito5::Grammar::Block::named_sub_def {
     else {
         0
     }
-}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+}))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((((do {
+    (((((((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -6074,6 +6077,35 @@ sub Perlito5::Grammar::Block::named_sub_def {
 })))
 }))) && ((do {
     ($MATCH->{'str'} = $str);
+    ($MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}));
+    1
+})))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((do {
+    ((my  $m2) = Perlito5::Expression->statement_parse($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{'str'} = $str);
+    die('Illegal declaration of subroutine ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), chr(39));
+    1
+}))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    ($MATCH->{'str'} = $str);
+    ($MATCH->{'_tmp'} = undef());
+    1
+})))
+})))
+}))) && ((do {
+    ($MATCH->{'str'} = $str);
     ((my  $name) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}));
     ((my  $sig) = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.prototype'}));
     if (($sig eq '*undef*')) {
@@ -6085,12 +6117,9 @@ sub Perlito5::Grammar::Block::named_sub_def {
             ($namespace = (($name eq '_') ? 'main' : $Perlito5::PKG_NAME))
         };
         ((my  $full_name) = ($namespace . '::' . $name));
-        if (exists($Perlito5::PROTO->{$full_name})) {
-            warn(('Subroutine ' . $full_name . ' redefined'))
-        };
         ($Perlito5::PROTO->{$full_name} = $sig)
     };
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new('name', $name, 'namespace', $namespace, 'sig', $sig, 'block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'attributes', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute.opt_attribute'})));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new('name', $name, 'namespace', $namespace, 'sig', $sig, 'block', $MATCH->{'_tmp'}, 'attributes', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute.opt_attribute'})));
     1
 })))
 }))
