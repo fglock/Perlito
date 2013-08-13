@@ -1,9 +1,9 @@
 
-package Perlito5::Precedence;
+package Perlito5::Grammar::Precedence;
 
 use feature 'say';
 
-# Perlito5::Precedence attributes:
+# Perlito5::Grammar::Precedence attributes:
 #   get_token - code ref
 #   reduce    - code ref
 #   end_token - array ref
@@ -50,12 +50,12 @@ sub is_ident_middle {
 my @Parsed_op_chars = (2, 1);
 my %Parsed_op = (
       # 1 char
-        '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
-        '('  => sub { Perlito5::Expression->term_paren($_[0], $_[1]) },
-        '['  => sub { Perlito5::Expression->term_square($_[0], $_[1]) },
-        '{'  => sub { Perlito5::Expression->term_curly($_[0], $_[1]) },
+        '?'  => sub { Perlito5::Grammar::Expression->term_ternary($_[0], $_[1]) },
+        '('  => sub { Perlito5::Grammar::Expression->term_paren($_[0], $_[1]) },
+        '['  => sub { Perlito5::Grammar::Expression->term_square($_[0], $_[1]) },
+        '{'  => sub { Perlito5::Grammar::Expression->term_curly($_[0], $_[1]) },
       # 2 chars
-        '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
+        '->' => sub { Perlito5::Grammar::Expression->term_arrow($_[0], $_[1]) },
 );
 
 my @Term_chars;
@@ -469,11 +469,11 @@ sub precedence_parse {
 
 =head1 NAME
 
-Perlito5::Precedence - precedence parser for Perlito
+Perlito5::Grammar::Precedence - precedence parser for Perlito
 
 =head1 SYNOPSIS
 
-    my $prec = Perlito5::Precedence->new(
+    my $prec = Perlito5::Grammar::Precedence->new(
         get_token => $get_token,
         reduce    => $reduce_to_ast,
         end_token => [ 

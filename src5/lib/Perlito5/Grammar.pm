@@ -1,6 +1,6 @@
 package Perlito5::Grammar;
 
-use Perlito5::Expression;
+use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
 use Perlito5::Grammar::Sigil;
@@ -89,13 +89,13 @@ token optional_namespace_before_ident {
 token exp_stmts2 { <exp_stmts> { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{exp_stmts}) } };
 
 token exp {
-    <Perlito5::Expression.exp_parse>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.exp_parse"}) }
+    <Perlito5::Grammar::Expression.exp_parse>
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.exp_parse"}) }
 };
 
 token exp2 {
-    <Perlito5::Expression.exp_parse>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.exp_parse"}) }
+    <Perlito5::Grammar::Expression.exp_parse>
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.exp_parse"}) }
 };
 
 token opt_type {
@@ -172,7 +172,7 @@ sub exp_stmts {
             $pos = $m->{to};
         }
         else {
-            $m = Perlito5::Expression->statement_parse($str, $pos);
+            $m = Perlito5::Grammar::Expression->statement_parse($str, $pos);
             if ($m) {
                 push @stmts, $m->{capture};
                 $pos = $m->{to};

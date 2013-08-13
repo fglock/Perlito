@@ -1,6 +1,6 @@
 package Perlito5::Grammar::Regex;
 
-use Perlito5::Precedence;
+use Perlito5::Grammar::Precedence;
 
     # this module implements a Recursive descent parser
     # using (more or less) the Perl 6 "token" algorithm
@@ -8,7 +8,7 @@ use Perlito5::Precedence;
     # the parsing process is based on Perl 6:
     # "Perl 6 "sandwiches" an operator-precedence parser in between two Recursive descent parsers"
     #
-    # see the precedence_parse() implementation for the operator-precedence parser (Perlito5::Precedence)
+    # see the precedence_parse() implementation for the operator-precedence parser (Perlito5::Grammar::Precedence)
     #
     # http://en.wikipedia.org/wiki/Recursive_descent_parser
     #
@@ -47,7 +47,7 @@ token term_token {
                 { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{token})       ] }
 };
 
-Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
 
 
 # this is the "grammar grammar"

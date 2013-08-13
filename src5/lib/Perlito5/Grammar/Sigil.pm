@@ -2,13 +2,13 @@ use v5;
 
 package Perlito5::Grammar::Sigil;
 
-use Perlito5::Precedence;
+use Perlito5::Grammar::Precedence;
 
-Perlito5::Precedence::add_term( '$'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '@'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '%'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '&'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '*'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '$'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '@'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '%'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '&'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '*'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
 
 
 # the special variables list
@@ -254,7 +254,7 @@ sub term_sigil {
                 return $caret;
             }
         }
-        $m = Perlito5::Expression->curly_parse( $str, $p );
+        $m = Perlito5::Grammar::Expression->curly_parse( $str, $p );
         if ($m) {
             #  ${ ... }
             my $p = $m->{to};

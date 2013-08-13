@@ -11,11 +11,11 @@ our %Print = (
     system => 1,
 );
 
-Perlito5::Precedence::add_term( 'print'  => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'printf' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'exec'   => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'system' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'print'  => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'printf' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'exec'   => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'system' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
 
 token print_decl { 'print' | 'printf' | 'say' | 'exec' | 'system' };
 
@@ -27,9 +27,9 @@ token the_object {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
             }
     |
-        <before '{'> <Perlito5::Expression.term_curly> 
+        <before '{'> <Perlito5::Grammar::Expression.term_curly> 
             {
-                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Expression.term_curly'}{capture}[2] );
+                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}{capture}[2] );
             }
     |
         <typeglob>
@@ -67,9 +67,9 @@ token the_object {
             # print "space + non-space\n";
         }
         else {
-            my $m = Perlito5::Precedence->op_parse($MATCH->{str}, $pos, 1);
+            my $m = Perlito5::Grammar::Precedence->op_parse($MATCH->{str}, $pos, 1);
             my $next_op = $m ? Perlito5::Match::flat($m)->[1] : '';
-            my $is_infix = Perlito5::Precedence::is_fixity_type('infix', $next_op);
+            my $is_infix = Perlito5::Grammar::Precedence::is_fixity_type('infix', $next_op);
             # print "is_infix $is_infix '$next_op'\n";
             return if $is_infix;
         }
@@ -160,34 +160,34 @@ token term_print {
         '('
             <.Perlito5::Grammar::Space.opt_ws>
             <the_object>
-            <Perlito5::Expression.list_parse>
+            <Perlito5::Grammar::Expression.list_parse>
         ')'
 
         { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'});
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
             return if !ref($list);
             $MATCH->{capture} = [
                 'term',
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Expression::expand_list($list),
+                    Perlito5::Grammar::Expression::expand_list($list),
                 ),
             ]
         }
     |
         <the_object>
-        <Perlito5::Expression.list_parse>
+        <Perlito5::Grammar::Expression.list_parse>
 
         { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.list_parse'});
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
             return if !ref($list);
             $MATCH->{capture} = [
                 'term',
                 print_ast(
                     Perlito5::Match::flat($MATCH->{'print_decl'}),
                     Perlito5::Match::flat($MATCH->{'the_object'}),
-                    Perlito5::Expression::expand_list($list),
+                    Perlito5::Grammar::Expression::expand_list($list),
                 ),
             ]
         }

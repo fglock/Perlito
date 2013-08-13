@@ -9,9 +9,9 @@ token the_object {
                 $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
             }
     |
-        '{' <Perlito5::Expression.curly_parse> '}'
+        '{' <Perlito5::Grammar::Expression.curly_parse> '}'
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Expression.curly_parse'});
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.curly_parse'});
             }
     |
         <Perlito5::Grammar::Print.typeglob>
@@ -132,17 +132,17 @@ token the_object {
             if ( substr($str, $p, 2) eq '->' ) {
             }
             elsif ( substr($str, $p, 1) eq '(' ) {
-                my $m = Perlito5::Expression->term_paren( $str, $p );
+                my $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
                 if ( $m ) {
                     $arg = $m->{capture}[2];
                     $p   = $m->{to};
-                    $arg = Perlito5::Expression::expand_list( $arg );
+                    $arg = Perlito5::Grammar::Expression::expand_list( $arg );
                 }
             }
             else {
-                my $m = Perlito5::Expression->list_parse( $str, $p );
+                my $m = Perlito5::Grammar::Expression->list_parse( $str, $p );
                 if ($m->{capture} ne '*undef*') {
-                    $arg = Perlito5::Expression::expand_list( $m->{capture} );
+                    $arg = Perlito5::Grammar::Expression::expand_list( $m->{capture} );
                     $p   = $m->{to};
                 }
             }
@@ -312,19 +312,19 @@ token the_object {
                 my $m;
                 my $arg;
                 if ( substr($str, $p, 1) eq '(' ) {
-                    $m = Perlito5::Expression->term_paren( $str, $p );
+                    $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
                     if ( !$m ) { return $m };
                     $p = $m->{to};
                     $has_paren = 1;
                     $arg = $m->{capture}[2];
-                    $arg = Perlito5::Expression::expand_list( $arg );
+                    $arg = Perlito5::Grammar::Expression::expand_list( $arg );
                     my $v = shift @{ $arg };
                     die "Too many arguments for $name"
                         if @{ $arg };
                     $arg = $v;
                 }
                 else {
-                    $m = Perlito5::Expression->argument_parse( $str, $p );
+                    $m = Perlito5::Grammar::Expression->argument_parse( $str, $p );
                     $arg = $m->{capture};
                     if ( $arg eq '*undef*' ) {
                         $arg = undef;
@@ -382,10 +382,10 @@ token the_object {
         # maybe it's a subroutine call
 
         if ( substr($str, $p, 1) eq '(' ) {
-            $m = Perlito5::Expression->term_paren( $str, $p );
+            $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
             if ( !$m ) { return $m };
             my $arg = $m->{capture}[2];
-            $arg = Perlito5::Expression::expand_list( $arg );
+            $arg = Perlito5::Grammar::Expression::expand_list( $arg );
             $m->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
                         code      => $name,
@@ -397,7 +397,7 @@ token the_object {
         }
 
 
-        my $m_list = Perlito5::Expression->list_parse( $str, $p );
+        my $m_list = Perlito5::Grammar::Expression->list_parse( $str, $p );
         my $list = $m_list->{capture};
         if ($list ne '*undef*') {
             $m_name->{capture} = [ 'postfix_or_term', 'funcall',

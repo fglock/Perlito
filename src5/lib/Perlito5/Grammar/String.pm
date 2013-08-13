@@ -2,23 +2,23 @@ use v5;
 
 package Perlito5::Grammar::String;
 
-use Perlito5::Precedence;
+use Perlito5::Grammar::Precedence;
 
-Perlito5::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '<'  => sub { Perlito5::Grammar::String->term_glob($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( '`'  => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'm'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'qr' => sub { Perlito5::Grammar::String->term_qr_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'tr' => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'y'  => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '<'  => sub { Perlito5::Grammar::String->term_glob($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( '`'  => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'm'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'qx' => sub { Perlito5::Grammar::String->term_qx($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'qr' => sub { Perlito5::Grammar::String->term_qr_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'tr' => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'y'  => sub { Perlito5::Grammar::String->term_tr_quote($_[0], $_[1]) } );
 
 
 token term_q_quote {
@@ -717,7 +717,7 @@ sub double_quoted_var_with_subscript {
     my $m_index;
     if (substr($str, $p, 3) eq '->[') {
         $p += 3;
-        $m_index = Perlito5::Expression->list_parse($str, $p);
+        $m_index = Perlito5::Grammar::Expression->list_parse($str, $p);
         die "syntax error" unless $m_index;
         my $exp = $m_index->{capture};
         $p = $m_index->{to};
@@ -733,7 +733,7 @@ sub double_quoted_var_with_subscript {
     }
     if (substr($str, $p, 3) eq '->{') {
         $pos += 2;
-        $m_index = Perlito5::Expression->term_curly($str, $pos);
+        $m_index = Perlito5::Grammar::Expression->term_curly($str, $pos);
         die "syntax error" unless $m_index;
         $m_index->{capture} = Perlito5::AST::Call->new(
                 method    => 'postcircumfix:<{ }>',
@@ -747,9 +747,9 @@ sub double_quoted_var_with_subscript {
         if ($interpolate == 2) {
             # inside a regex: disambiguate from char-class
             # these are valid indexes: 12 -1 $x
-            my $m = Perlito5::Expression->term_digit($str, $p+1)
+            my $m = Perlito5::Grammar::Expression->term_digit($str, $p+1)
                  || (  substr($str, $p+1, 1) eq '-'
-                    && Perlito5::Expression->term_digit($str, $p+2)
+                    && Perlito5::Grammar::Expression->term_digit($str, $p+2)
                     )
                  || Perlito5::Grammar::Sigil->term_sigil($str, $p+1);
             return $m_var unless $m;
@@ -757,7 +757,7 @@ sub double_quoted_var_with_subscript {
         }
 
         $p++;
-        $m_index = Perlito5::Expression->list_parse($str, $p);
+        $m_index = Perlito5::Grammar::Expression->list_parse($str, $p);
         if ($m_index) {
             my $exp = $m_index->{capture};
             $p = $m_index->{to};
@@ -772,7 +772,7 @@ sub double_quoted_var_with_subscript {
             }
         }
     }
-    $m_index = Perlito5::Expression->term_curly($str, $pos);
+    $m_index = Perlito5::Grammar::Expression->term_curly($str, $pos);
     if ($m_index) {
         $m_index->{capture} = Perlito5::AST::Lookup->new(
                 obj       => $m_var->{capture},

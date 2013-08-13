@@ -1,6 +1,6 @@
 package Perlito5::Grammar::Space;
 
-use Perlito5::Precedence;
+use Perlito5::Grammar::Precedence;
 
 
 my %space = (
@@ -69,14 +69,14 @@ sub term_end {
     return { str => $str, from => $_[1], to => length($_[0]), capture => [ 'space',   ' ' ] }
 }
 
-Perlito5::Precedence::add_term( '#'        => \&term_space );
-Perlito5::Precedence::add_term( chr(9)     => \&term_space );
-Perlito5::Precedence::add_term( chr(10)    => \&term_space );
-Perlito5::Precedence::add_term( chr(12)    => \&term_space );
-Perlito5::Precedence::add_term( chr(13)    => \&term_space );
-Perlito5::Precedence::add_term( chr(32)    => \&term_space );
-Perlito5::Precedence::add_term( '__END__'  => \&term_end );
-Perlito5::Precedence::add_term( '__DATA__' => \&term_end );
+Perlito5::Grammar::Precedence::add_term( '#'        => \&term_space );
+Perlito5::Grammar::Precedence::add_term( chr(9)     => \&term_space );
+Perlito5::Grammar::Precedence::add_term( chr(10)    => \&term_space );
+Perlito5::Grammar::Precedence::add_term( chr(12)    => \&term_space );
+Perlito5::Grammar::Precedence::add_term( chr(13)    => \&term_space );
+Perlito5::Grammar::Precedence::add_term( chr(32)    => \&term_space );
+Perlito5::Grammar::Precedence::add_term( '__END__'  => \&term_end );
+Perlito5::Grammar::Precedence::add_term( '__DATA__' => \&term_end );
 
 
 token to_eol {

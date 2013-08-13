@@ -1,12 +1,12 @@
 
 package Perlito5::Grammar::Use;
 
-use Perlito5::Precedence;
+use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar;
 use strict;
 
-Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 
 
 my %Perlito_internal_module = (
@@ -36,15 +36,15 @@ token term_use {
             ];
         }
     |
-        <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
+        <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Grammar::Expression.list_parse>
         {
 
-            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.list_parse"});
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.list_parse"});
             if ($list eq '*undef*') {
                 $list = undef
             }
             else {
-                my $m = $MATCH->{"Perlito5::Expression.list_parse"};
+                my $m = $MATCH->{"Perlito5::Grammar::Expression.list_parse"};
                 my $list_code = substr( $str, $m->{from}, $m->{to} - $m->{from} );
 
                 # TODO - set the lexical context for eval

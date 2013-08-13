@@ -1,27 +1,27 @@
 
-package Perlito5::Expression;
-use Perlito5::Precedence;
+package Perlito5::Grammar::Expression;
+use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
 
-Perlito5::Precedence::add_term( '.'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '0'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '1'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '2'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '3'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '4'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '5'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '6'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '7'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '8'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( '9'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'my'    => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'our'   => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'eval'  => sub { Perlito5::Expression->term_eval( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'state' => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'local' => sub { Perlito5::Expression->term_local( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'return' => sub { Perlito5::Expression->term_return( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'package' => sub { Perlito5::Expression->term_package( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '.'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '0'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '1'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '2'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '3'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '4'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '5'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '6'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '7'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '8'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( '9'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'my'    => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'our'   => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'eval'  => sub { Perlito5::Grammar::Expression->term_eval( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'state' => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'local' => sub { Perlito5::Grammar::Expression->term_local( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'return' => sub { Perlito5::Grammar::Expression->term_return( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'package' => sub { Perlito5::Grammar::Expression->term_package( $_[0], $_[1] ) } );
 
 
 sub expand_list {
@@ -260,7 +260,7 @@ my $reduce_to_ast = sub {
     elsif ($last_op->[0] eq 'postfix_or_term') {
         push( @$num_stack,  reduce_postfix( $last_op, pop_term($num_stack) ) );
     }
-    elsif (Perlito5::Precedence::is_assoc_type('list', $last_op->[1])) {
+    elsif (Perlito5::Grammar::Precedence::is_assoc_type('list', $last_op->[1])) {
         my $arg;
         if (scalar(@$num_stack) < 2) {
             my $v2 = pop_term($num_stack);
@@ -306,7 +306,7 @@ my $reduce_to_ast = sub {
                 arguments => $arg,
               );
     }
-    elsif (Perlito5::Precedence::is_assoc_type('chain', $last_op->[1])) {
+    elsif (Perlito5::Grammar::Precedence::is_assoc_type('chain', $last_op->[1])) {
         if (scalar(@$num_stack) < 2) {
             die("Missing value after operator " . $last_op->[1]);
         }
@@ -653,7 +653,7 @@ sub argument_parse {
             $v = pop @$lexer_stack;
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
-                && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
                 )
             {
                 # say "# finishing list - first token is: ", $v->[1];
@@ -661,7 +661,7 @@ sub argument_parse {
             }
         }
         else {
-            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
             if ($m) {
                 my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
                 if ($spc) {
@@ -675,7 +675,7 @@ sub argument_parse {
             $v = $m->{capture};
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
-                && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
                 )
             {
                 # say "# finishing list - first token is: ", $v->[1];
@@ -693,7 +693,7 @@ sub argument_parse {
 
         return $v;
     };
-    my $prec = Perlito5::Precedence->new(
+    my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token, 
         reduce          => $reduce_to_ast,
         end_token       => $Argument_end_token,
@@ -733,7 +733,7 @@ sub list_parse {
             $v = pop @$lexer_stack;
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
-                && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
                 )
             {
                 # say "# finishing list - first token is: ", $v->[1];
@@ -741,7 +741,7 @@ sub list_parse {
             }
         }
         else {
-            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
             if ($m) {
                 my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
                 if ($spc) {
@@ -755,7 +755,7 @@ sub list_parse {
             $v = $m->{capture};
             if  (  $is_first_token
                 && ($v->[0] eq 'op')
-                && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))
                 )
             {
                 # say "# finishing list - first token is: ", $v->[1];
@@ -774,7 +774,7 @@ sub list_parse {
 
         return $v;
     };
-    my $prec = Perlito5::Precedence->new(
+    my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token, 
         reduce          => $reduce_to_ast,
         end_token       => $List_end_token,
@@ -806,7 +806,7 @@ sub circumfix_parse {
     my $last_pos = $pos;
     my $get_token = sub {
         my $last_is_term = $_[0];
-        my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+        my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
         if ($m) {
             my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
             if ($spc) {
@@ -826,7 +826,7 @@ sub circumfix_parse {
 
     my %delim_token;
     $delim_token{ $delimiter } = 1;
-    my $prec = Perlito5::Precedence->new(
+    my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token,
         reduce          => $reduce_to_ast,
         end_token       => \%delim_token,
@@ -889,7 +889,7 @@ sub exp_parse {
             $v = pop @$lexer_stack;
         }
         else {
-            my $m = Perlito5::Precedence->op_parse($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
             if ($m) {
                 my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
                 if ($spc) {
@@ -908,7 +908,7 @@ sub exp_parse {
         # say "# exp_lexer got " . $v->perl;
         return $v;
     };
-    my $prec = Perlito5::Precedence->new(
+    my $prec = Perlito5::Grammar::Precedence->new(
         get_token       => $get_token,
         reduce          => $reduce_to_ast,
         end_token       => $Expr_end_token,
@@ -1121,7 +1121,7 @@ sub statement_parse {
 
 =head1 NAME
 
-Perlito5::Expression - Parser and AST generator for Perlito
+Perlito5::Grammar::Expression - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 

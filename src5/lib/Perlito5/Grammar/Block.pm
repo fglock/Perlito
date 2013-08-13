@@ -1,7 +1,7 @@
 
 package Perlito5::Grammar::Block;
 
-use Perlito5::Expression;
+use Perlito5::Grammar::Expression;
 use strict;
 
 our %Named_block = (
@@ -12,12 +12,12 @@ our %Named_block = (
     END       => 1,
 );
 
-Perlito5::Precedence::add_term( 'do'    => sub { Perlito5::Grammar::Block->term_do( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'sub'   => sub { Perlito5::Grammar::Block->term_anon_sub( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'do'    => sub { Perlito5::Grammar::Block->term_do( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( 'sub'   => sub { Perlito5::Grammar::Block->term_anon_sub( $_[0], $_[1] ) } );
 
-Perlito5::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
-Perlito5::Expression::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
+Perlito5::Grammar::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Grammar::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
+Perlito5::Grammar::Expression::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
     for keys %Named_block;
 
 
@@ -42,7 +42,7 @@ sub term_block {
     if ( substr($str, $p, 1) eq '{' ) {
         # do we recognize a bare block in this position?
         # warn "maybe bareblock at $p";
-        my $m = Perlito5::Expression->term_curly($str, $p);
+        my $m = Perlito5::Grammar::Expression->term_curly($str, $p);
         if ($m) {
             my $block_start = $p;
             $p = $m->{to};
@@ -59,7 +59,7 @@ sub term_block {
                 if ( $ws ) {
                     $p = $ws->{to};
                 }
-                my $cont = Perlito5::Expression->term_curly($str, $p);
+                my $cont = Perlito5::Grammar::Expression->term_curly($str, $p);
                 die "syntax error" unless $cont;
                 warn "continue!";
 
@@ -74,7 +74,7 @@ sub term_block {
             # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
 
             $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
-            $v = Perlito5::Expression::block_or_hash($v)
+            $v = Perlito5::Grammar::Expression::block_or_hash($v)
                 unless $has_continue || $block_name;
 
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
@@ -115,7 +115,7 @@ token named_sub_def {
             $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
         }
     |
-        <.Perlito5::Expression.statement_parse>
+        <.Perlito5::Grammar::Expression.statement_parse>
         {
             die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\''
         }
@@ -187,8 +187,8 @@ token term_anon_sub {
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Expression.statement_parse>
-                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.statement_parse'}) ) ] }
+    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Grammar::Expression.statement_parse>
+                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.statement_parse'}) ) ] }
 };
 
 token args_sig {
