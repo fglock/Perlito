@@ -9685,8 +9685,7 @@ do {{
         };
         ($Perlito5::VAR->[0]->{$perl5_name} = $env);
         if (($self->{'decl'} eq 'my')) {
-            ((my  $str) = '');
-            ($str = ($str . 'var ' . $self->{'var'}->emit_javascript2()));
+            ((my  $str) = ('var ' . $self->{'var'}->emit_javascript2()));
             if (($self->{'var'}->sigil() eq '%')) {
                 ($str = ($str . ' = {};'))
             }
@@ -9702,7 +9701,19 @@ do {{
         }
         else {
             if (($self->{'decl'} eq 'our')) {
-                return (('// our ' . $self->{'var'}->emit_javascript2()))
+                ((my  $str) = $self->{'var'}->emit_javascript2());
+                if (($self->{'var'}->sigil() eq '%')) {
+                    ($str = ($str . ' = {};'))
+                }
+                else {
+                    if (($self->{'var'}->sigil() eq '@')) {
+                        ($str = ($str . '= [];'))
+                    }
+                    else {
+                        return (('// our ' . $str))
+                    }
+                };
+                return (('if (typeof ' . $self->{'var'}->emit_javascript2() . ' == "undefined" ) { ' . $str . '};'))
             }
             else {
                 if (($self->{'decl'} eq 'local')) {

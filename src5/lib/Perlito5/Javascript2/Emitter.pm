@@ -1131,8 +1131,7 @@ package Perlito5::AST::Decl;
         $Perlito5::VAR->[0]{ $perl5_name } = $env;
 
         if ($self->{decl} eq 'my') {
-            my $str = "";
-            $str = $str . 'var ' . $self->{var}->emit_javascript2();
+            my $str = 'var ' . $self->{var}->emit_javascript2();
             if ($self->{var}->sigil eq '%') {
                 $str = $str . ' = {};';
             }
@@ -1145,8 +1144,23 @@ package Perlito5::AST::Decl;
             return $str;
         }
         elsif ($self->{decl} eq 'our') {
-            # TODO
-            return '// our ' . $self->{var}->emit_javascript2();
+            my $str = $self->{var}->emit_javascript2();
+            if ($self->{var}->sigil eq '%') {
+                $str = $str . ' = {};';
+            }
+            elsif ($self->{var}->sigil eq '@') {
+                $str = $str . '= [];';
+            }
+            else {
+                return '// our ' . $str;
+            }
+            # return '(function () { if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
+            #         . $str
+            #         . '; return ' . $self->{var}->emit_javascript2()
+            #         . '}})()';
+            return 'if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
+                    . $str
+                    . '};';
         }
         elsif ($self->{decl} eq 'local') {
             # TODO - add grammar support
