@@ -54,7 +54,7 @@ sub caret_char {
         return 0 if $c lt 'A' || $c gt 'Z';
         $c = chr( ord($c) - ord("A") + 1 );
     }
-    elsif ( $_[0]->ws($_[1], $pos) ) {
+    elsif ( Perlito5::Grammar::Space->ws($_[1], $pos) ) {
         return 0;
     }
     return 0 if $c lt "\cA" || $c gt "\cZ";
@@ -85,12 +85,6 @@ token optional_namespace_before_ident {
     | ''
         { $MATCH->{capture} = '' }
 };
-
-
-# TODO - use Perlito5::Grammar::Space->ws() instead
-token ws      { <.Perlito5::Grammar::Space.ws>  };
-token opt_ws  { <.Perlito5::Grammar::Space.ws>? };
-
 
 token exp_stmts2 { <exp_stmts> { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{exp_stmts}) } };
 

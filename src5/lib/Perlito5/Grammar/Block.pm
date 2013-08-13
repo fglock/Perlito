@@ -103,13 +103,13 @@ sub term_block {
 
 token named_sub_def {
     <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
-    <Perlito5::Grammar::Block.prototype> <.Perlito5::Grammar.opt_ws>
-    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar::Block.prototype> <.Perlito5::Grammar::Space.opt_ws>
+    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
     [
         \{
-        <.Perlito5::Grammar.opt_ws>
+        <.Perlito5::Grammar::Space.opt_ws>
         <Perlito5::Grammar.exp_stmts>
-        <.Perlito5::Grammar.opt_ws>
+        <.Perlito5::Grammar::Space.opt_ws>
         [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
         {
             $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
@@ -196,18 +196,18 @@ token args_sig {
 };
 
 token prototype {
-    |   <.Perlito5::Grammar.opt_ws> \( <.Perlito5::Grammar.opt_ws>  <args_sig>  <.Perlito5::Grammar.opt_ws>  \)
+    |   <.Perlito5::Grammar::Space.opt_ws> \( <.Perlito5::Grammar::Space.opt_ws>  <args_sig>  <.Perlito5::Grammar::Space.opt_ws>  \)
         { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
     |   { $MATCH->{capture} = '*undef*' }   # default signature
 };
 
 token anon_sub_def {
-    <prototype> <.Perlito5::Grammar.opt_ws> 
-    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
+    <prototype> <.Perlito5::Grammar::Space.opt_ws> 
+    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
     \{ 
-        <.Perlito5::Grammar.opt_ws> 
+        <.Perlito5::Grammar::Space.opt_ws> 
         <Perlito5::Grammar.exp_stmts> 
-        <.Perlito5::Grammar.opt_ws>
+        <.Perlito5::Grammar::Space.opt_ws>
     [   \}     | { die 'Syntax Error in anon sub' } ]
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype});
