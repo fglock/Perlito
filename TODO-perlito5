@@ -32,6 +32,13 @@ TODO list for Perlito5
 
 * Parser
 
+-- "'" meaning "::"
+    $'m  # $::m
+    $m'  # String found where operator expected
+
+    package X'Y  # X::Y
+    package X'   # Invalid version format (non-numeric data)
+
 -- attributes
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
