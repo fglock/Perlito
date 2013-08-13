@@ -32,6 +32,9 @@ TODO list for Perlito5
 
 * Parser
 
+-- prototype() can be set by aliasing:
+    *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
+
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
