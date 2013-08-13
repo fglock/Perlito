@@ -1975,7 +1975,16 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             my @in  = @{$self->{arguments}};
-            my $fun  = shift @in;
+
+            my $fun;
+
+            if ( $self->{special_arg} ) {
+                # TODO - test 'special_arg' type (scalar, block, ...)
+                $fun  = $self->{special_arg};
+            }
+            else {
+                $fun  = shift @in;
+            }
             my $list = Perlito5::Javascript2::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
@@ -2104,12 +2113,12 @@ package Perlito5::AST::Apply;
 
         if (exists $Perlito5::Javascript2::op_infix_js_str{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript2::op_infix_js_str{$code}, map( Perlito5::Javascript2::to_str($_), @{$self->{arguments}} ))
+                . join( $Perlito5::Javascript2::op_infix_js_str{$code}, map { Perlito5::Javascript2::to_str($_) } @{$self->{arguments}} )
                 . ')'
         }
         if (exists $Perlito5::Javascript2::op_infix_js_num{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript2::op_infix_js_num{$code}, map( Perlito5::Javascript2::to_num($_), @{$self->{arguments}} ))
+                . join( $Perlito5::Javascript2::op_infix_js_num{$code}, map { Perlito5::Javascript2::to_num($_) } @{$self->{arguments}} )
                 . ')'
         }
         if (exists $Perlito5::Javascript2::op_prefix_js_str{$code}) {

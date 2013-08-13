@@ -46,26 +46,27 @@ package Perlito5::AST::CompUnit;
 package Perlito5::AST::Val::Int;
 {
     sub emit_perl5 {
-        my $self = $_[0];
+        my $self  = $_[0];
         my $level = $_[1];
-         $self->{int} }
+        $self->{int};
+    }
 }
 
 package Perlito5::AST::Val::Num;
 {
     sub emit_perl5 {
-        my $self = $_[0];
+        my $self  = $_[0];
         my $level = $_[1];
-         $self->{num} }
+        $self->{num};
+    }
 }
 
 package Perlito5::AST::Val::Buf;
 {
     sub emit_perl5 {
-        my $self = $_[0];
+        my $self  = $_[0];
         my $level = $_[1];
-        
-        Perlito5::Perl5::escape_string($self->{buf})
+        Perlito5::Perl5::escape_string( $self->{buf} );
     }
 }
 
@@ -361,8 +362,18 @@ package Perlito5::AST::Apply;
         if ($code eq 'unshift')    { return 'unshift(' . $self->{arguments}->[0]->emit_perl5($level+1)  . ', ' . $self->{arguments}->[1]->emit_perl5($level+1) . ')' }
 
         if ($code eq 'map')       {    
+
+            if ( $self->{special_arg} ) {
+                # TODO - test 'special_arg' type (scalar, block, ...)
+                return "map {\n"
+                .   join(";\n", map { Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ) } @{$self->{special_arg}{stmts}} ) . "\n"
+                . Perlito5::Perl5::tab($level) . "} "
+    
+                . join(',', map { $_->emit_perl5($level+1) } @{$self->{arguments}} );
+            }
+
             my $str = shift @{$self->{arguments}};
-            return 'map(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5($level+1), @{$self->{arguments}} )) . ')'
+            return 'map(' . $str->emit_perl5($level+1) . ', ' . join(',', map { $_->emit_perl5($level+1) } @{$self->{arguments}} ) . ')'
         }
 
         if ($code eq 'infix:<x>')  { 

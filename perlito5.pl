@@ -10246,7 +10246,13 @@ do {{
                 ((my  $level) = shift());
                 ((my  $wantarray) = shift());
                 ((my  @in) = @{$self->{'arguments'}});
-                ((my  $fun) = shift(@in));
+                (my  $fun);
+                if ($self->{'special_arg'}) {
+                    ($fun = $self->{'special_arg'})
+                }
+                else {
+                    ($fun = shift(@in))
+                };
                 ((my  $list) = Perlito5::Javascript2::to_list(\@in));
                 if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
                     ($fun = $fun->{'stmts'})
@@ -10329,10 +10335,14 @@ do {{
             return ($emit_js{$code}->($self, $level, $wantarray))
         };
         if (exists($Perlito5::Javascript2::op_infix_js_str{$code})) {
-            return (('(' . join($Perlito5::Javascript2::op_infix_js_str{$code}, map(Perlito5::Javascript2::to_str($_), @{$self->{'arguments'}})) . ')'))
+            return (('(' . join($Perlito5::Javascript2::op_infix_js_str{$code}, map {
+                            Perlito5::Javascript2::to_str($_)
+                        } @{$self->{'arguments'}}) . ')'))
         };
         if (exists($Perlito5::Javascript2::op_infix_js_num{$code})) {
-            return (('(' . join($Perlito5::Javascript2::op_infix_js_num{$code}, map(Perlito5::Javascript2::to_num($_), @{$self->{'arguments'}})) . ')'))
+            return (('(' . join($Perlito5::Javascript2::op_infix_js_num{$code}, map {
+                            Perlito5::Javascript2::to_num($_)
+                        } @{$self->{'arguments'}}) . ')'))
         };
         if (exists($Perlito5::Javascript2::op_prefix_js_str{$code})) {
             return (($Perlito5::Javascript2::op_prefix_js_str{$code} . '(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ')'))
@@ -12410,8 +12420,17 @@ do {{
             return (('unshift(' . $self->{'arguments'}->[0]->emit_perl5(($level + 1)) . ', ' . $self->{'arguments'}->[1]->emit_perl5(($level + 1)) . ')'))
         };
         if (($code eq 'map')) {
+            if ($self->{'special_arg'}) {
+                return (('map {' . chr(10) . join(';' . chr(10), map {
+                                (Perlito5::Perl5::tab(($level + 1)) . $_->emit_perl5(($level + 1)))
+                            } @{$self->{'special_arg'}->{'stmts'}}) . chr(10) . Perlito5::Perl5::tab($level) . '} ' . join(',', map {
+                                $_->emit_perl5(($level + 1))
+                            } @{$self->{'arguments'}})))
+            };
             ((my  $str) = shift(@{$self->{'arguments'}}));
-            return (('map(' . $str->emit_perl5() . ', ' . join(',', map($_->emit_perl5(($level + 1)), @{$self->{'arguments'}})) . ')'))
+            return (('map(' . $str->emit_perl5(($level + 1)) . ', ' . join(',', map {
+                            $_->emit_perl5(($level + 1))
+                        } @{$self->{'arguments'}}) . ')'))
         };
         if (($code eq 'infix:<x>')) {
             return (('join("", ' . join(' x ', map($_->emit_perl5(($level + 1)), @{$self->{'arguments'}})) . ')'))

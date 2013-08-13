@@ -13999,7 +13999,12 @@ return r;
 								var List_in= [];
 								(List_in = p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_));
 								var v_fun;
-								(v_fun = (List_in.shift()));
+								if ( p5bool((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('special_arg')) ) {
+									(v_fun = ((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('special_arg')));
+								}
+								else {
+									(v_fun = (List_in.shift()));
+								};
 								var v_list;
 								(v_list = (p5pkg["Perlito5::Javascript2"].to_list([(new p5ArrayRef(List_in))], 0)));
 								if ( (p5str(p5pkg["Perlito5::AST::Apply"].ref([v_fun], 0)) == 'Perlito5::AST::Lit::Block') ) {
