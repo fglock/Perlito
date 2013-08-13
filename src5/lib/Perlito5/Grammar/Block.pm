@@ -12,6 +12,9 @@ our %Named_block = (
     END       => 1,
 );
 
+Perlito5::Precedence::add_term( 'do'    => sub { Perlito5::Grammar::Block->term_do( $_[0], $_[1] ) } );
+Perlito5::Precedence::add_term( 'sub'   => sub { Perlito5::Grammar::Block->term_anon_sub( $_[0], $_[1] ) } );
+
 Perlito5::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
@@ -100,7 +103,7 @@ sub term_block {
 
 token named_sub_def {
     <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
-    <Perlito5::Grammar.prototype> <.Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar::Block.prototype> <.Perlito5::Grammar.opt_ws>
     <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
     [
         \{
@@ -124,7 +127,7 @@ token named_sub_def {
     ]
     {
         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
-        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.prototype"});
+        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.prototype"});
         $sig = undef if $sig eq '*undef*';
         my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"});
         if ( $name ) {
@@ -176,6 +179,48 @@ sub named_sub {
     }
     return Perlito5::Grammar::Block->named_sub_def($str, $p);
 }
+
+token term_anon_sub {
+    'sub' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Block.anon_sub_def>
+                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.anon_sub_def"})     ] }
+};
+
+token term_do {
+    # Note: this is do-block; do-string is parsed as a normal subroutine
+    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Expression.statement_parse>
+                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Expression.statement_parse'}) ) ] }
+};
+
+token args_sig {
+    [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*
+};
+
+token prototype {
+    |   <.Perlito5::Grammar.opt_ws> \( <.Perlito5::Grammar.opt_ws>  <args_sig>  <.Perlito5::Grammar.opt_ws>  \)
+        { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
+    |   { $MATCH->{capture} = '*undef*' }   # default signature
+};
+
+token anon_sub_def {
+    <prototype> <.Perlito5::Grammar.opt_ws> 
+    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
+    \{ 
+        <.Perlito5::Grammar.opt_ws> 
+        <Perlito5::Grammar.exp_stmts> 
+        <.Perlito5::Grammar.opt_ws>
+    [   \}     | { die 'Syntax Error in anon sub' } ]
+    {
+        my $sig  = Perlito5::Match::flat($MATCH->{prototype});
+        $sig = undef if $sig eq '*undef*';
+        $MATCH->{capture} = Perlito5::AST::Sub->new(
+            name  => undef, 
+            namespace => undef,
+            sig   => $sig, 
+            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}),
+            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
+        ) 
+    }
+};
 
 
 1;

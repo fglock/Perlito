@@ -16,9 +16,7 @@ Perlito5::Precedence::add_term( '7'     => sub { Perlito5::Expression->term_digi
 Perlito5::Precedence::add_term( '8'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( '9'     => sub { Perlito5::Expression->term_digit( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'my'    => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'do'    => sub { Perlito5::Expression->term_do( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'our'   => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Precedence::add_term( 'sub'   => sub { Perlito5::Expression->term_anon_sub( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'eval'  => sub { Perlito5::Expression->term_eval( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'state' => sub { Perlito5::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Precedence::add_term( 'local' => sub { Perlito5::Expression->term_local( $_[0], $_[1] ) } );
@@ -481,17 +479,6 @@ token term_return {
                  )
                ]
         }
-};
-
-token term_anon_sub {
-    'sub' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.anon_sub_def>
-                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.anon_sub_def"})     ] }
-};
-
-token term_do {
-    # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <statement_parse>
-                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{statement_parse}) ) ] }
 };
 
 token term_package {

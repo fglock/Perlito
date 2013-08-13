@@ -194,37 +194,6 @@ sub exp_stmts {
     return { str => $str, to => $pos, capture => \@stmts };
 }
 
-token args_sig {
-    [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*
-};
-
-token prototype {
-    |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
-    |   { $MATCH->{capture} = '*undef*' }   # default signature
-};
-
-token anon_sub_def {
-    <prototype> <.opt_ws> 
-    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar.opt_ws>
-    \{ 
-        <.opt_ws> 
-        <exp_stmts> 
-        <.opt_ws>
-    [   \}     | { die 'Syntax Error in anon sub' } ]
-    {
-        my $sig  = Perlito5::Match::flat($MATCH->{prototype});
-        $sig = undef if $sig eq '*undef*';
-        $MATCH->{capture} = Perlito5::AST::Sub->new(
-            name  => undef, 
-            namespace => undef,
-            sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{exp_stmts}),
-            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
-        ) 
-    }
-};
-
 
 =begin
 
