@@ -335,8 +335,7 @@ package Perlito5::AST::Apply;
                 }
             }
 
-            return Perlito5::Perl5::tab($level)
-                . 'm!' . $s . '!' . $self->{arguments}->[1];
+            return 'm!' . $s . '!' . $self->{arguments}->[1];
         }
         if ($self->{code} eq 'p5:tr') {
             return 'tr!' . $self->{arguments}->[0]->{buf}   # emit_perl5($level+1) 

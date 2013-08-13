@@ -13,11 +13,11 @@ Perlito5::Expression::add_statement( 'unless'  => sub { Perlito5::Grammar->unles
 
 
 token unless {
-    unless <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
+    'unless' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_curly>
     [
         <.Perlito5::Grammar::Space.opt_ws>
-        else <.Perlito5::Grammar::Space.opt_ws>
+        'else' <.Perlito5::Grammar::Space.opt_ws>
             '{' <.Perlito5::Grammar::Space.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.Perlito5::Grammar::Space.opt_ws>
@@ -49,11 +49,11 @@ token unless {
 };
 
 token if {
-    if <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
+    'if' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_curly>
     [
         <.Perlito5::Grammar::Space.opt_ws>
-        else <.Perlito5::Grammar::Space.opt_ws>
+        'else' <.Perlito5::Grammar::Space.opt_ws>
             '{' <.Perlito5::Grammar::Space.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.Perlito5::Grammar::Space.opt_ws>
@@ -71,7 +71,7 @@ token if {
         }
     |
         <.Perlito5::Grammar::Space.opt_ws>
-        els <if>
+        'els' <if>
         {
             my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_curly"})->[2];
             if (!defined($body)) {
@@ -99,7 +99,7 @@ token if {
 };
 
 token when {
-    when <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
+    'when' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_paren>
          <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Expression.term_curly>
         {
             my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_curly"})->[2];
@@ -114,7 +114,7 @@ token when {
 };
 
 token for {
-    for 'each'?
+    'for' 'each'?
     [
         <.Perlito5::Grammar::Space.ws> [ <Perlito5::Expression.term_declarator>
                 { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Expression.term_declarator"})->[1] }
@@ -182,7 +182,7 @@ token for {
 };
 
 token while {
-    while <.Perlito5::Grammar::Space.opt_ws>
+    'while' <.Perlito5::Grammar::Space.opt_ws>
             '(' <Perlito5::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
             '{' <.Perlito5::Grammar::Space.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
@@ -199,7 +199,7 @@ token while {
 };
 
 token given {
-    given <.Perlito5::Grammar::Space.opt_ws> '(' <Perlito5::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
+    'given' <.Perlito5::Grammar::Space.opt_ws> '(' <Perlito5::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
             '{' <.Perlito5::Grammar::Space.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
                 <.Perlito5::Grammar::Space.opt_ws>
