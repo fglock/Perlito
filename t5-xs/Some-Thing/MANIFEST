@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+Thing.xs
+t/Some-Thing.t
+lib/Some/Thing.pm
