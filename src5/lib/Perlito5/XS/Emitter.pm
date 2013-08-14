@@ -45,7 +45,6 @@ package Perlito5::XS;
 
 	sub escape_string {
 		my $s = shift;
-		my @out;
 		my $tmp = '';
 		return '""' if $s eq '';
 		for my $i (0 .. length($s) - 1) {
@@ -59,13 +58,10 @@ package Perlito5::XS;
 				$tmp = $tmp . $c;
 			}
 			else {
-				push @out, "\"$tmp\"" if $tmp ne '';
-				push @out, sprintf "\\x%02x", ord($c);
-				$tmp = '';
+				$tmp .= sprintf "\\x%02x", ord($c);
 			}
 		}
-		push @out, "\"$tmp\"" if $tmp ne '';
-		return join(' ', @out);
+		return "\"$tmp\"";
 	}
 
 }
