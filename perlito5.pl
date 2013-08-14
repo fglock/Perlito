@@ -13177,15 +13177,15 @@ do {{
                 push(@body, $_ )
             }
         };
-        ('package ' . $self->{'name'} . ';' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab($level) . $_->emit_xs($level)), @body)) . ';' . chr(10) . chr(10))
+        ('MODULE = ' . $self->{'name'} . ' PACKAGE = ' . $self->{'name'} . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab($level) . $_->emit_xs($level)), @body)) . ';' . chr(10) . chr(10) . chr(10))
     };
     sub Perlito5::AST::CompUnit::emit_xs_program {
         ((my  $comp_units) = $_[0]);
-        ((my  $str) = 'use v5.10;' . chr(10));
+        ((my  $str) = ('#include "EXTERN.h"' . chr(10) . '#include "perl.h"' . chr(10) . '#include "XSUB.h"' . chr(10) . chr(10)));
         for my  $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_xs(0)))
         };
-        ($str = ($str . '1;' . chr(10)));
+        ($str = ($str . chr(10)));
         return ($str)
     }
 }};
@@ -13194,7 +13194,7 @@ do {{
     sub Perlito5::AST::Val::Int::emit_xs {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        $self->{'int'}
+        ('newSViv(' . $self->{'int'} . ')')
     }
 }};
 package Perlito5::AST::Val::Num;
@@ -13202,7 +13202,7 @@ do {{
     sub Perlito5::AST::Val::Num::emit_xs {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        $self->{'num'}
+        ('newSVnv(' . $self->{'num'} . ')')
     }
 }};
 package Perlito5::AST::Val::Buf;
@@ -13210,7 +13210,7 @@ do {{
     sub Perlito5::AST::Val::Buf::emit_xs {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        Perlito5::XS::escape_string($self->{'buf'})
+        ('newSVpv(' . Perlito5::XS::escape_string($self->{'buf'}) . ', 0)')
     }
 }};
 package Perlito5::AST::Lit::Block;
@@ -13263,9 +13263,9 @@ do {{
         if (($str_name eq '"')) {
             ($str_name = chr(92) . '"')
         };
-        ((my  $xs_name) = $self->xs_name());
+        ((my  $xs_name) = $self->perl5_name());
         (my  $decl_type);
-        ((my  $decl) = $self->xs_get_decl($xs_name));
+        ((my  $decl) = $self->perl5_get_decl($xs_name));
         if ($decl) {
             ($decl_type = $decl->{'decl'})
         }
@@ -13275,7 +13275,7 @@ do {{
             }
         };
         ((my  $ns) = '');
-        if ($self->{'namespace'}) {
+        if ((0 && $self->{'namespace'})) {
             if ((($self->{'namespace'} eq 'main') && (substr($self->{'name'}, 0, 1) eq '^'))) {
                 return (($self->{'sigil'} . '{' . $self->{'name'} . '}'))
             }
@@ -13285,6 +13285,7 @@ do {{
         };
         ((my  $c) = substr($self->{'name'}, 0, 1));
         if (((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || (($c eq '_')))) {
+            ($self->{'sigil'} = '*');
             return (($self->{'sigil'} . $ns . $self->{'name'}))
         };
         return (($self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}'))
@@ -13322,7 +13323,7 @@ do {{
 }};
 package Perlito5::AST::Apply;
 do {{
-    ((my  %op_prefix_xs) = ('say', 'say', 'print', 'print', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not', 'prefix:<~>', '~'));
+    ((my  %op_prefix_xs) = ('say', 'say', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not', 'prefix:<~>', '~'));
     ((my  %op_infix_xs) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<lt>', ' lt ', 'infix:<gt>', ' gt ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
     sub Perlito5::AST::Apply::emit_xs {
         ((my  $self) = $_[0]);
@@ -13481,6 +13482,9 @@ do {{
         if (($code eq 'return')) {
             return (('return (' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
         };
+        if (($code eq 'print')) {
+            return (('fprintf (stdout, ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
+        };
         if (($self->{'bareword'} && !(@{$self->{'arguments'}}))) {
             return ($code)
         };
@@ -13556,8 +13560,9 @@ do {{
     sub Perlito5::AST::Decl::emit_xs {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
+        ($self->{'type'} = 'SV');
         ((my  $decl) = $self->{'decl'});
-        ((my  $str) = ('(' . $self->{'decl'} . ' ' . $self->{'type'} . ' ' . $self->{'var'}->emit_xs(($level + 1)) . ')'));
+        ((my  $str) = ('(' . $self->{'type'} . ' ' . $self->{'var'}->emit_xs(($level + 1)) . ')'));
         return ($str)
     }
 }};
@@ -13568,11 +13573,11 @@ do {{
         ((my  $level) = $_[1]);
         ((my  $name) = '');
         if ($self->{'name'}) {
-            ($name = ($self->{'namespace'} . '::' . $self->{'name'} . ' '))
+            ($name = ($self->{'name'} . ' '))
         };
         ((my  $sig) = $self->{'sig'});
         ((my  $i) = 0);
-        ('sub ' . $name . '{' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . chr(10) . Perlito5::XS::tab($level) . '}')
+        ('void ' . $name . '()' . chr(10) . 'CODE:' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . chr(10))
     }
 }};
 package Perlito5::AST::Do;

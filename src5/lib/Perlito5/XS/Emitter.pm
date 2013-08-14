@@ -27,18 +27,22 @@ package Perlito5::AST::CompUnit;
                 push @body, $_
             }
         }
-           'package ' . $self->{name} . ";" . "\n"
+           'MODULE = ' . $self->{name} . " PACKAGE = " . $self->{name} . "\n"
         .        join(";\n", map( Perlito5::XS::tab($level) . $_->emit_xs( $level ), @body )) . ";\n"
+        . "\n"
         . "\n"
     }
     sub emit_xs_program {
         my $comp_units = $_[0];
 
-        my $str = "use v5.10;\n";    # because we might use 'when' and 'say'
+        my $str = "#include \"EXTERN.h\"\n"
+                . "#include \"perl.h\"\n"
+                . "#include \"XSUB.h\"\n"
+                . "\n";
         for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_xs(0)
         }
-        $str .= "1;\n";
+        $str .= "\n";
         return $str;
     }
 }
@@ -48,7 +52,7 @@ package Perlito5::AST::Val::Int;
     sub emit_xs {
         my $self  = $_[0];
         my $level = $_[1];
-        $self->{int};
+        'newSViv(' . $self->{int} . ')';
     }
 }
 
@@ -57,7 +61,7 @@ package Perlito5::AST::Val::Num;
     sub emit_xs {
         my $self  = $_[0];
         my $level = $_[1];
-        $self->{num};
+        'newSVnv(' . $self->{num} . ')';
     }
 }
 
@@ -66,7 +70,7 @@ package Perlito5::AST::Val::Buf;
     sub emit_xs {
         my $self  = $_[0];
         my $level = $_[1];
-        Perlito5::XS::escape_string( $self->{buf} );
+        'newSVpv(' . Perlito5::XS::escape_string( $self->{buf} ) . ', 0)';
     }
 }
 
@@ -148,10 +152,10 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
-        my $xs_name = $self->xs_name;
+        my $xs_name = $self->perl5_name;
         # say "looking up $xs_name";
         my $decl_type;  # my, our, local
-        my $decl = $self->xs_get_decl( $xs_name );
+        my $decl = $self->perl5_get_decl( $xs_name );
         if ( $decl ) {
             # say "found ", $decl->{decl};
             $decl_type = $decl->{decl};
@@ -170,7 +174,7 @@ package Perlito5::AST::Var;
 
         # Normalize the sigil
         my $ns = '';
-        if ($self->{namespace}) {
+        if (0 && $self->{namespace}) {
             if ($self->{namespace} eq 'main' && substr($self->{name}, 0, 1) eq '^') {
                 # don't add the namespace to special variables
                 return $self->{sigil} . '{' . $self->{name} . '}'
@@ -185,6 +189,8 @@ package Perlito5::AST::Var;
            || ($c eq '_')
            ) 
         {
+            #return $self->{name};
+	    $self->{sigil} = '*';
             return $self->{sigil} . $ns . $self->{name}
         }
         return $self->{sigil} . "{'" . $ns . $str_name . "'}"
@@ -230,7 +236,7 @@ package Perlito5::AST::Apply;
 
     my %op_prefix_xs = (
         say     => 'say',
-        print   => 'print',
+        #print   => 'print',
         keys    => 'keys',
         values  => 'values',
         warn    => 'warn',
@@ -473,6 +479,10 @@ package Perlito5::AST::Apply;
             return 'return (' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ')';
         }
 
+        if ($code eq 'print') {
+            return 'fprintf (stdout, ' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ')';
+        }
+
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return $code;
         }
@@ -605,10 +615,12 @@ package Perlito5::AST::Decl;
     sub emit_xs {
         my $self = $_[0];
         my $level = $_[1];
+
+	$self->{type} = 'SV';
         
         my $decl = $self->{decl};
         my $str =
-              '(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_xs($level+1) . ')';
+              '(' . $self->{type} . ' ' . $self->{var}->emit_xs($level+1) . ')';
         return $str;
     }
 }
@@ -620,14 +632,15 @@ package Perlito5::AST::Sub;
         my $level = $_[1];
         
         my $name = '';
-        $name = $self->{namespace} . "::" . $self->{name} . " "
+        #$name = $self->{namespace} . "::" . $self->{name} . " "
+        $name = $self->{name} . " "
             if $self->{name};
 
         my $sig = $self->{sig};
         my $i = 0;
-          'sub ' . $name . "{\n"
+          'void ' . $name . "()\n"
+        . "CODE:\n"
         .   join(";\n", map( Perlito5::XS::tab($level+1) . $_->emit_xs( $level + 1 ), @{$self->{block}} )) . "\n"
-        . Perlito5::XS::tab($level) . "}"
     }
 }
 
