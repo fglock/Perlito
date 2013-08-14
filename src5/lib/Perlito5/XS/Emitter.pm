@@ -290,7 +290,7 @@ package Perlito5::AST::Apply;
         #print   => 'print',
         keys    => 'keys',
         values  => 'values',
-        warn    => 'warn',
+        #warn    => 'warn',
         'prefix:<!>'    => '!',
         'prefix:<++>'   => '++',
         'prefix:<-->'   => '--',
@@ -532,6 +532,10 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'print') {
             return 'puts( SvPVx_nolen( ' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ') )';
+        }
+
+        if ($code eq 'warn') {
+            return 'warn( SvPVx_nolen( ' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ') )';
         }
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {

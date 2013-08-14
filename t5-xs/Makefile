@@ -1,7 +1,7 @@
 
 CODE =	package Some::Thing;
 #CODE +=	sub foo { my $$something = 21; return $$something * 2; }
-CODE +=	sub foo { print( "MOO\n" ) }
+CODE +=	sub foo { warn( "MOO" ) }
 #CODE +=	sub foo { my $$something = [qw[ Hello World ]]; return $$something }
 #CODE +=	sub bar { my @something = qw( Hello World ); return \@something }
 

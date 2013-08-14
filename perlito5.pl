@@ -13339,7 +13339,7 @@ do {{
 }};
 package Perlito5::AST::Apply;
 do {{
-    ((my  %op_prefix_xs) = ('say', 'say', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not', 'prefix:<~>', '~'));
+    ((my  %op_prefix_xs) = ('say', 'say', 'keys', 'keys', 'values', 'values', 'prefix:<!>', '!', 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+', 'prefix:<->', '-', 'prefix:<-d>', '-d', 'prefix:<-e>', '-e', 'prefix:<-f>', '-f', 'prefix:<not>', 'not', 'prefix:<~>', '~'));
     ((my  %op_infix_xs) = ('list:<,>', ', ', 'list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<%>', ' % ', 'infix:<**>', ' ** ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<lt>', ' lt ', 'infix:<gt>', ' gt ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<=~>', ' =~ ', 'infix:<!~>', ' !~ '));
     sub Perlito5::AST::Apply::emit_xs {
         ((my  $self) = $_[0]);
@@ -13500,6 +13500,9 @@ do {{
         };
         if (($code eq 'print')) {
             return (('puts( SvPVx_nolen( ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ') )'))
+        };
+        if (($code eq 'warn')) {
+            return (('warn( SvPVx_nolen( ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ') )'))
         };
         if (($self->{'bareword'} && !(@{$self->{'arguments'}}))) {
             return ($code)
