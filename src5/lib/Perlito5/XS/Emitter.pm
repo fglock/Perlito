@@ -9,9 +9,64 @@ package Perlito5::XS;
         "    " x $level
     }
 
-    sub escape_string {
-        return Perlito5::Dumper::escape_string($_[0]);
-    }
+	my %safe_char = (
+		' ' => 1,
+		'!' => 1,
+		'"' => 1,
+		'#' => 1,
+		'$' => 1,
+		'%' => 1,
+		'&' => 1,
+		'(' => 1,
+		')' => 1,
+		'*' => 1,
+		'+' => 1,
+		',' => 1,
+		'-' => 1,
+		'.' => 1,
+		'/' => 1,
+		':' => 1,
+		';' => 1,
+		'<' => 1,
+		'=' => 1,
+		'>' => 1,
+		'?' => 1,
+		'@' => 1,
+		'[' => 1,
+		']' => 1,
+		'^' => 1,
+		'_' => 1,
+		'`' => 1,
+		'{' => 1,
+		'|' => 1,
+		'}' => 1,
+		'~' => 1,
+	);
+
+	sub escape_string {
+		my $s = shift;
+		my @out;
+		my $tmp = '';
+		return '""' if $s eq '';
+		for my $i (0 .. length($s) - 1) {
+			my $c = substr($s, $i, 1);
+			if  (  ($c ge 'a' && $c le 'z')
+				|| ($c ge 'A' && $c le 'Z')
+				|| ($c ge '0' && $c le '9')
+				|| exists( $safe_char{$c} )
+				)
+			{
+				$tmp = $tmp . $c;
+			}
+			else {
+				push @out, "\"$tmp\"" if $tmp ne '';
+				push @out, sprintf "\\x%02x", ord($c);
+				$tmp = '';
+			}
+		}
+		push @out, "\"$tmp\"" if $tmp ne '';
+		return join(' ', @out);
+	}
 
 }
 

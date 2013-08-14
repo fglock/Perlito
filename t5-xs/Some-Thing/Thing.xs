@@ -6,7 +6,7 @@
 MODULE = Some::Thing PACKAGE = Some::Thing
 void foo ()
 PPCODE:
-    SV *something = newSViv(42);
+    SV *something = newSVpv("Hello World", 0);
     PUSHs(something);
 
 
