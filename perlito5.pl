@@ -13177,7 +13177,7 @@ do {{
                 push(@body, $_ )
             }
         };
-        ('MODULE = ' . $self->{'name'} . ' PACKAGE = ' . $self->{'name'} . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab($level) . $_->emit_xs($level)), @body)) . ';' . chr(10) . chr(10) . chr(10))
+        (join(chr(10), map((Perlito5::XS::tab($level) . $_->emit_xs($level)), @body)) . chr(10) . chr(10) . chr(10))
     };
     sub Perlito5::AST::CompUnit::emit_xs_program {
         ((my  $comp_units) = $_[0]);
@@ -13373,7 +13373,7 @@ do {{
             return (('"' . $Perlito5::PKG_NAME . '"'))
         };
         if (($self->{'code'} eq 'package')) {
-            return (('package ' . $self->{'namespace'}))
+            return (('MODULE = ' . $self->{'namespace'} . ' PACKAGE = ' . $self->{'namespace'}))
         };
         if (($code eq 'undef')) {
             return ('undef()')
@@ -13577,7 +13577,7 @@ do {{
         };
         ((my  $sig) = $self->{'sig'});
         ((my  $i) = 0);
-        ('void ' . $name . '()' . chr(10) . 'CODE:' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . chr(10))
+        ('void ' . $name . '()' . chr(10) . 'CODE:' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . ';' . chr(10))
     }
 }};
 package Perlito5::AST::Do;

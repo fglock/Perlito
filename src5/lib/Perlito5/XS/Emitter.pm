@@ -27,8 +27,8 @@ package Perlito5::AST::CompUnit;
                 push @body, $_
             }
         }
-           'MODULE = ' . $self->{name} . " PACKAGE = " . $self->{name} . "\n"
-        .        join(";\n", map( Perlito5::XS::tab($level) . $_->emit_xs( $level ), @body )) . ";\n"
+        #   'MODULE = ' . $self->{name} . " PACKAGE = " . $self->{name} . "\n"
+                 join("\n", map( Perlito5::XS::tab($level) . $_->emit_xs( $level ), @body )) . "\n"
         . "\n"
         . "\n"
     }
@@ -353,7 +353,7 @@ package Perlito5::AST::Apply;
         if ($code eq '__PACKAGE__') {
             return '"' . $Perlito5::PKG_NAME . '"';
         }
-        if ($self->{code} eq 'package')    { return 'package ' . $self->{namespace} }
+        if ($self->{code} eq 'package')    { return 'MODULE = ' . $self->{namespace} . ' PACKAGE = ' . $self->{namespace} }
         if ($code eq 'undef')      { return 'undef()' }
 
         if ($code eq 'scalar')     { return 'scalar(' . ($self->{arguments}->[0]->emit_xs) . ')' }
@@ -640,7 +640,7 @@ package Perlito5::AST::Sub;
         my $i = 0;
           'void ' . $name . "()\n"
         . "CODE:\n"
-        .   join(";\n", map( Perlito5::XS::tab($level+1) . $_->emit_xs( $level + 1 ), @{$self->{block}} )) . "\n"
+        .   join(";\n", map( Perlito5::XS::tab($level+1) . $_->emit_xs( $level + 1 ), @{$self->{block}} )) . ";\n"
     }
 }
 
