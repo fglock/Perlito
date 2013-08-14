@@ -189,7 +189,7 @@ package Perlito5::AST::Var;
            || ($c eq '_')
            ) 
         {
-            #return $self->{name};
+            return $self->{name};
 	    $self->{sigil} = '*';
             return $self->{sigil} . $ns . $self->{name}
         }
@@ -476,7 +476,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'return') {
-            return 'return (' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ')';
+            return 'PUSHs(' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ')';
         }
 
         if ($code eq 'print') {
@@ -616,11 +616,11 @@ package Perlito5::AST::Decl;
         my $self = $_[0];
         my $level = $_[1];
 
-	$self->{type} = 'SV';
+	$self->{type} = 'SV *';
         
         my $decl = $self->{decl};
         my $str =
-              $self->{type} . ' ' . $self->{var}->emit_xs($level+1);
+              $self->{type} . $self->{var}->emit_xs($level+1);
         return $str;
     }
 }
@@ -639,7 +639,7 @@ package Perlito5::AST::Sub;
         my $sig = $self->{sig};
         my $i = 0;
           'void ' . $name . "()\n"
-        . "CODE:\n"
+        . "PPCODE:\n"
         .   join(";\n", map( Perlito5::XS::tab($level+1) . $_->emit_xs( $level + 1 ), @{$self->{block}} )) . ";\n"
     }
 }

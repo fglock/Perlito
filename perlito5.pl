@@ -13285,6 +13285,7 @@ do {{
         };
         ((my  $c) = substr($self->{'name'}, 0, 1));
         if (((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || (($c eq '_')))) {
+            return ($self->{'name'});
             ($self->{'sigil'} = '*');
             return (($self->{'sigil'} . $ns . $self->{'name'}))
         };
@@ -13480,7 +13481,7 @@ do {{
             return ($eval)
         };
         if (($code eq 'return')) {
-            return (('return (' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
+            return (('PUSHs(' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
         };
         if (($code eq 'print')) {
             return (('fprintf (stdout, ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
@@ -13560,9 +13561,9 @@ do {{
     sub Perlito5::AST::Decl::emit_xs {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ($self->{'type'} = 'SV');
+        ($self->{'type'} = 'SV *');
         ((my  $decl) = $self->{'decl'});
-        ((my  $str) = ($self->{'type'} . ' ' . $self->{'var'}->emit_xs(($level + 1))));
+        ((my  $str) = ($self->{'type'} . $self->{'var'}->emit_xs(($level + 1))));
         return ($str)
     }
 }};
@@ -13577,7 +13578,7 @@ do {{
         };
         ((my  $sig) = $self->{'sig'});
         ((my  $i) = 0);
-        ('void ' . $name . '()' . chr(10) . 'CODE:' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . ';' . chr(10))
+        ('void ' . $name . '()' . chr(10) . 'PPCODE:' . chr(10) . join(';' . chr(10), map((Perlito5::XS::tab(($level + 1)) . $_->emit_xs(($level + 1))), @{$self->{'block'}})) . ';' . chr(10))
     }
 }};
 package Perlito5::AST::Do;
