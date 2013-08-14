@@ -13165,7 +13165,6 @@ do {{
     ((my  %safe_char) = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1));
     sub Perlito5::XS::escape_string {
         ((my  $s) = shift());
-        (my  @out);
         ((my  $tmp) = '');
         if (($s eq '')) {
             return ('""')
@@ -13176,17 +13175,10 @@ do {{
                 ($tmp = ($tmp . $c))
             }
             else {
-                if (($tmp ne '')) {
-                    push(@out, ('"' . $tmp . '"') )
-                };
-                push(@out, sprintf(chr(92) . 'x%02x', ord($c)) );
-                ($tmp = '')
+                ($tmp = ($tmp . sprintf(chr(92) . 'x%02x', ord($c))))
             }
         };
-        if (($tmp ne '')) {
-            push(@out, ('"' . $tmp . '"') )
-        };
-        return (join(' ', @out))
+        return (('"' . $tmp . '"'))
     }
 }};
 package Perlito5::AST::CompUnit;
@@ -13507,7 +13499,7 @@ do {{
             return (('PUSHs(' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
         };
         if (($code eq 'print')) {
-            return (('fprintf (stdout, ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ')'))
+            return (('puts( SvPVx_nolen( ' . join(', ', map($_->emit_xs(($level + 1)), @{$self->{'arguments'}})) . ') )'))
         };
         if (($self->{'bareword'} && !(@{$self->{'arguments'}}))) {
             return ($code)

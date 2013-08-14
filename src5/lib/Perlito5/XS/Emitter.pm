@@ -531,7 +531,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'print') {
-            return 'fprintf (stdout, ' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ')';
+            return 'puts( SvPVx_nolen( ' . join(', ', map( $_->emit_xs($level+1), @{$self->{arguments}} )) . ') )';
         }
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {

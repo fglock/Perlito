@@ -6,8 +6,7 @@
 MODULE = Some::Thing PACKAGE = Some::Thing
 void foo ()
 PPCODE:
-    SV *something = newSVpv("Hello World", 0);
-    PUSHs(something);
+    puts( SvPVx_nolen( newSVpv("MOO\x0a", 0)) );
 
 
 
