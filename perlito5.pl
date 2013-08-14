@@ -13499,7 +13499,7 @@ do {{
                 return (('(' . $parameters->emit_xs(($level + 1)) . ' = ' . $arguments->emit_xs(($level + 1)) . ')'))
             }
         };
-        ('(' . $parameters->emit_xs(($level + 1)) . ' = ' . $arguments->emit_xs(($level + 1)) . ')')
+        ($parameters->emit_xs(($level + 1)) . ' = ' . $arguments->emit_xs(($level + 1)))
     }
 }};
 package Perlito5::AST::If;
@@ -13562,7 +13562,7 @@ do {{
         ((my  $level) = $_[1]);
         ($self->{'type'} = 'SV');
         ((my  $decl) = $self->{'decl'});
-        ((my  $str) = ('(' . $self->{'type'} . ' ' . $self->{'var'}->emit_xs(($level + 1)) . ')'));
+        ((my  $str) = ($self->{'type'} . ' ' . $self->{'var'}->emit_xs(($level + 1))));
         return ($str)
     }
 }};

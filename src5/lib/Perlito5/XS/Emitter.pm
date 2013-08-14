@@ -507,7 +507,7 @@ package Perlito5::AST::Apply;
             }
 
         }
-        '(' . $parameters->emit_xs($level+1) . ' = ' . $arguments->emit_xs($level+1) . ')';
+        $parameters->emit_xs($level+1) . ' = ' . $arguments->emit_xs($level+1);
     }
 }
 
@@ -620,7 +620,7 @@ package Perlito5::AST::Decl;
         
         my $decl = $self->{decl};
         my $str =
-              '(' . $self->{type} . ' ' . $self->{var}->emit_xs($level+1) . ')';
+              $self->{type} . ' ' . $self->{var}->emit_xs($level+1);
         return $str;
     }
 }
