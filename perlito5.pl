@@ -338,8 +338,8 @@ sub Perlito5::Grammar::Precedence::op_parse {
     for my  $len (@{$End_token_chars}) {
         ((my  $term) = substr($str, $pos, $len));
         if (exists($End_token->{$term})) {
-            ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
-            ((my  $c2) = substr($str, ($pos + length($term)), 1));
+            ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
+            ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && is_ident_middle($c2)))) && !(((($c1 eq '<') && ($c2 eq '<')))))) {
                 return ({'str', $str, 'from', $pos, 'to', $pos, 'capture', ['end', $term]})
             }
@@ -349,8 +349,8 @@ sub Perlito5::Grammar::Precedence::op_parse {
         for my  $len (@Term_chars) {
             ((my  $term) = substr($str, $pos, $len));
             if (exists($Term{$term})) {
-                ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
-                ((my  $c2) = substr($str, ($pos + length($term)), 1));
+                ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
+                ((my  $c2) = substr($str, ($pos + $len), 1));
                 if (((is_num($c1) || !(is_ident_middle($c1))) || !(is_ident_middle($c2)))) {
                     ((my  $m) = $Term{$term}->($str, $pos));
                     if ($m) {
@@ -372,8 +372,8 @@ sub Perlito5::Grammar::Precedence::op_parse {
     for my  $len (@Op_chars) {
         ((my  $op) = substr($str, $pos, $len));
         if (exists($Op{$op})) {
-            ((my  $c1) = substr($str, (($pos + length($op)) - 1), 1));
-            ((my  $c2) = substr($str, ($pos + length($op)), 1));
+            ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
+            ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && is_ident_middle($c2)))) && !(((($c1 eq '&') && ($c2 eq '&')))))) {
                 if (((exists($Operator->{'infix'}->{$op}) && !(exists($Operator->{'prefix'}->{$op}))) && !($last_is_term))) {
 

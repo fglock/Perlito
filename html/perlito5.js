@@ -1927,9 +1927,9 @@ var p5100 = p5pkg['main'];
 						if ( (v_End_token)._hash_.hasOwnProperty(v_term) ) {
 							(function () {
 								var v_c1;
-								(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_term], 0)) - 1), 1], 0)));
+								(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5num(v_len)) - 1), 1], 0)));
 								var v_c2;
-								(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_term], 0)), 1], 0)));
+								(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5num(v_len)), 1], 0)));
 								if ( (!( (p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c1], 0)) && p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c2], 0)))) && !( ((p5str(v_c1) == '<') && (p5str(v_c2) == '<')))) ) {
 									throw((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_pos, 'capture', (new p5ArrayRef(['end', v_term])))))));
 								};
@@ -1943,9 +1943,9 @@ var p5100 = p5pkg['main'];
 							if ( (Hash_Term).hasOwnProperty(v_term) ) {
 								(function () {
 									var v_c1;
-									(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_term], 0)) - 1), 1], 0)));
+									(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5num(v_len)) - 1), 1], 0)));
 									var v_c2;
-									(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_term], 0)), 1], 0)));
+									(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5num(v_len)), 1], 0)));
 									if ( ((p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_num([v_c1], 0)) || !( p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c1], 0)))) || !( p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c2], 0)))) ) {
 										(function () {
 											var v_m;
@@ -1978,9 +1978,9 @@ var p5100 = p5pkg['main'];
 						if ( (Hash_Op).hasOwnProperty(v_op) ) {
 							(function () {
 								var v_c1;
-								(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_op], 0)) - 1), 1], 0)));
+								(v_c1 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, ((p5num(v_pos) + p5num(v_len)) - 1), 1], 0)));
 								var v_c2;
-								(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5pkg["Perlito5::Grammar::Precedence"].length([v_op], 0)), 1], 0)));
+								(v_c2 = (p5pkg["Perlito5::Grammar::Precedence"].substr([v_str, (p5num(v_pos) + p5num(v_len)), 1], 0)));
 								if ( (!( (p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c1], 0)) && p5bool(p5pkg["Perlito5::Grammar::Precedence"].is_ident_middle([v_c2], 0)))) && !( ((p5str(v_c1) == '&') && (p5str(v_c2) == '&')))) ) {
 									if ( ((((v_Operator || (v_Operator = new p5HashRef({})))._hash_.p5hget('infix'))._hash_.hasOwnProperty(v_op) && !( ((v_Operator || (v_Operator = new p5HashRef({})))._hash_.p5hget('prefix'))._hash_.hasOwnProperty(v_op))) && !( p5bool(v_last_is_term))) ) {
 										null;
