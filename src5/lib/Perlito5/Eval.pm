@@ -209,21 +209,13 @@ sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    my @param_name;
-    # TODO - process $self->{sig}->positional
     my $sub =
             sub {
                 my $env = shift;
                 my $args = shift;
-
                 my %context;
-                my $n = 0;
                 $context{'@_'} = $args;
-                for my $name ( @param_name ) {
-                    $context{$name} = $args->[$n]->eval($env);
-                    $n = $n + 1;
-                }
-                my $env1 = [ %context, @$env ];
+                my $env1 = [ \%context, @$env ];
                 my $r;
                 for my $stmt ( @{$self->{block}} ) {
                     $r = $stmt->eval($env1);

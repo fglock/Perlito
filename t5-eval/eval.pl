@@ -6,10 +6,13 @@ use strict;
 
 BEGIN { say "compiling1" }
 
-my $source = <<SRC;
-
+my $source = <<'SRC';
     print 1 + 3, "\n";
-
+    sub f {
+        # my $x;
+        print "HERE\n";
+    }
+    f();
 SRC
 
 my $m;
