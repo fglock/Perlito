@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..21";
+say "1..28";
 
 my $v = 0;
 my $r = 0;
@@ -126,5 +126,62 @@ print "not " if $v != 7;
 print "ok 20 - with_proto $v\n";
 print "not " if $r != 7;
 print "ok 21 - with_proto $r\n";
+
+# ampersand string
+
+$v = 3;
+$r = \&{"with_proto"};
+$r = $r->(4);
+print "not " if $v != 7;
+print "ok 22 - with_proto $v\n";
+print "not " if $r != 7;
+print "ok 23 - with_proto $r\n";
+
+# ampersand string
+
+$v = 3;
+eval ' $r = &{"with_proto"}(4) ';
+$e = $@;
+print "not " if !$e;
+print "ok 24 - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+
+# ampersand string
+
+$v = 3;
+eval ' $r = &{"with_proto"} ';
+$e = $@;
+print "not " if !$e;
+print "ok 25 - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+
+
+# ampersand string, no strict
+    
+{
+    no strict;
+    $v = 3;
+    eval ' $r = &{"with_proto"}(4) ';
+    $e = $@;
+    print "not " if $e;
+    print "ok 26 - not syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
+}
+    
+# ampersand string, no strict
+    
+{
+    no strict;
+    $v = 3;
+    eval ' $r = &{"with_proto"} ';
+    $e = $@;
+    print "not " if $e;
+    print "ok 27 - not syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
+}
+
+# ampersand string
+
+$v = 3;
+eval ' $r = &{"with_proto"}->(4) ';
+$e = $@;
+print "not " if !$e;
+print "ok 28 - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
 
 

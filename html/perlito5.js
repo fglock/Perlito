@@ -13512,6 +13512,20 @@ var p5100 = p5pkg['main'];
 								(v_level = (List__.p5aget(1)));
 								var v_arg;
 								(v_arg = ((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0)));
+								if ( p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Apply'], 0)) ) {
+									if ( (p5str((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('code')) == '@') ) {
+										null;
+									};
+									if ( (p5str((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('code')) == '%') ) {
+										null;
+									};
+									if ( (p5str((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('code')) == '*') ) {
+										null;
+									};
+									if ( (p5str((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('code')) == 'prefix:<&>') ) {
+										throw(p5context([('p5code_lookup_by_name("' + p5str(p5make_package("Perlito5")["v_PKG_NAME"]) + '", ' + p5str(p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0), "emit_javascript2", [v_level], 0)) + ')')], p5want));
+									};
+								};
 								if ( p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Var'], 0)) ) {
 									if ( (p5str(p5call(v_arg, "sigil", [], 0)) == '@') ) {
 										throw(p5context([('(new p5ArrayRef(' + p5str(p5call(v_arg, "emit_javascript2", [v_level], 0)) + '))')], p5want));
