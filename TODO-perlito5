@@ -32,9 +32,6 @@ TODO list for Perlito5
 
 * Parser
 
--- prototype() can be set by aliasing:
-    *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
-
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
@@ -120,6 +117,9 @@ TODO list for Perlito5
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
 -- things that work in perlito5, but which are errors in 'perl'
+
+    $ perl -e ' my @things= map {  no warnings; 123 } @list; '
+    "no" not allowed in expression
 
     quotes vs. hash lookups:
     
@@ -243,6 +243,11 @@ TODO list for Perlito5
 
 
 * Javascript backend
+
+-- code emitter for first argument of sort() and grep() 
+
+-- prototype() can be set by aliasing:
+    *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
 
 -- check that \(@a) and \@a have different meanings
 
