@@ -257,6 +257,7 @@ sub eval {
     'use ' . $self->{mod}
 }
 
+1;
 
 =begin
 

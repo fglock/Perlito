@@ -1825,37 +1825,37 @@ package Perlito5::AST::Apply;
 
             # TODO - test return() from inside eval
 
-                "(function (p5want) {\n"
-                    . "var r;\n"
-                    . 'p5pkg["main"]["v_@"] = "";' . "\n"
-                    . 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';' . "\n"
-                    . "try {\n"
-                        . 'r = ' . $eval . "\n"
-                    . "}\n"
-                    . "catch(err) {\n"
-                    .    "if ( err instanceof p5_error || err instanceof Error ) {\n"
-                    .        'p5pkg["main"]["v_@"] = err;' . "\n"
+                                                           "(function (p5want) {\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "var r;\n"
+                . Perlito5::Javascript2::tab($level + 1) .     'p5pkg["main"]["v_@"] = "";' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .     'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "try {\n"
+                . Perlito5::Javascript2::tab($level + 2) .         'r = ' . $eval . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "}\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "catch(err) {\n"
+                . Perlito5::Javascript2::tab($level + 2) .        "if ( err instanceof p5_error || err instanceof Error ) {\n"
+                . Perlito5::Javascript2::tab($level + 3) .            'p5pkg["main"]["v_@"] = err;' . "\n"
 
-                            # try to add a stack trace
+                                                                     # try to add a stack trace
 
-                    .        'try {' . "\n"
-                    .        '    p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\n" + err.stack;' . "\n"
-                    .        '}' . "\n"
-                    .        'catch(err) { }' . "\n"
+                . Perlito5::Javascript2::tab($level + 3) .            'try {' . "\n"
+                . Perlito5::Javascript2::tab($level + 4) .                'p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\n" + err.stack;' . "\n"
+                . Perlito5::Javascript2::tab($level + 3) .            '}' . "\n"
+                . Perlito5::Javascript2::tab($level + 3) .            'catch(err) { }' . "\n"
 
-                    .    "}\n"
-                    .    "else {\n"
-                    .        "return(err);\n" 
-                    .    "}\n"
-                    . "}\n"
-                    . "return r;\n"
-                . "})(" 
-                    .   ($wantarray eq 'list'   ? '1' 
-                        :$wantarray eq 'scalar' ? '0' 
-                        :$wantarray eq 'void'   ? 'null'
-                        :                         'p5want'
-                        ) 
-                    . ")"
+                . Perlito5::Javascript2::tab($level + 2) .        "}\n"
+                . Perlito5::Javascript2::tab($level + 2) .        "else {\n"
+                . Perlito5::Javascript2::tab($level + 3) .            "return(err);\n" 
+                . Perlito5::Javascript2::tab($level + 2) .        "}\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "}\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "return r;\n"
+                . Perlito5::Javascript2::tab($level + 0) . "})(" 
+                                                         .       ($wantarray eq 'list'   ? '1' 
+                                                                 :$wantarray eq 'scalar' ? '0' 
+                                                                 :$wantarray eq 'void'   ? 'null'
+                                                                 :                         'p5want'
+                                                                 ) 
+                                                         .    ")"
 
         },
 
