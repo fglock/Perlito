@@ -196,8 +196,8 @@ sub eval {
 
     my $decl = $self->{decl};
     my $name = $self->{var}->plain_name;
-    if (!( exists ($env->[0]){ $name } )) {
-        ($env->[0]){ $name } = undef;
+    if (!exists( $env->[0]->{ $name } )) {
+        $env->[0]{ $name } = undef;
     }
     return undef;
 }
@@ -219,7 +219,7 @@ sub eval {
                 my $n = 0;
                 $context{'@_'} = $args;
                 for my $name ( @param_name ) {
-                    $context{$name} = ($args->[$n])->eval($env);
+                    $context{$name} = $args->[$n]->eval($env);
                     $n = $n + 1;
                 }
                 my $env1 = [ %context, @$env ];
