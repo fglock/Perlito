@@ -9,6 +9,7 @@ sub eval {
     for my $stmt ( @{$self->{body}} ) {
         $stmt->eval($env1);
     }
+    return;
 }
 
 package Perlito5::AST::Val::Int;
@@ -128,7 +129,7 @@ sub eval {
     # warn "Perlito5::AST::Apply ", $env->perl, " code: '", $code, "'";
     for my $e ( @{$env} ) {
         if (exists( $e->{ $code } )) {
-            return ($e->{ $code }->( $env, @{$self->{arguments}} ));
+            return ($e->{ $code }->( $env, $self->{arguments} ));
         }
     }
     warn "Interpreter runtime error: subroutine '", $code, "()' not found";

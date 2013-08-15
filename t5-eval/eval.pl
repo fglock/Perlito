@@ -8,7 +8,7 @@ BEGIN { say "compiling1" }
 
 my $source = <<SRC;
 
-    1 + 3;
+    print 1 + 3, "\n";
 
 SRC
 
@@ -48,13 +48,27 @@ else {
     $comp_units = Perlito5::Match::flat($m);
 }
 
-my $comp_unit = 
-    Perlito5::AST::CompUnit->new(
-        name => 'main',
-        body => $comp_units,
-    );
+my $comp_unit = Perlito5::AST::CompUnit->new(
+    name => 'main',
+    body => $comp_units,
+);
 
-print Perlito5::Dumper::Dumper($comp_unit);
+say Perlito5::Dumper::Dumper($comp_unit);
 
-$comp_unit->eval;
+my $env = [
+    {
+        'infix:<+>' => sub {
+            my ( $env, $args ) = @_;
+            $args->[0]->eval($env) + $args->[1]->eval($env);
+        },
+        'print' => sub {
+            my ( $env, $args ) = @_;
+            print $_->eval($env) for @$args;
+        }
+    },
+];
+
+my $result = $comp_unit->eval($env);
+
+say Perlito5::Dumper::Dumper($result);
 
