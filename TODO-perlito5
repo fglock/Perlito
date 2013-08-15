@@ -338,6 +338,18 @@ TODO list for Perlito5
         list.unshift(invocant);
         p5want = 0;  // TODO BUG - workaround for broken bootstrap
 
+-- bug https://github.com/fglock/Perlito/issues/10
+    "Perlito 5 JS has syntax errors"
+
+    Tried
+    
+    YUI Compressor online
+    and
+    Google Closure Compiler
+    http://closure-compiler.appspot.com/home
+    
+    Both failed with syntax errors.
+
 
 * Nice to Have
 
