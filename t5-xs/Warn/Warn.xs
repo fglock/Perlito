@@ -3,8 +3,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
-MODULE = Some::Thing PACKAGE = Some::Thing
-void foo ()
+MODULE = Warn PACKAGE = Warn
+void test ()
 PPCODE:
     warn( SvPVx_nolen( newSVpv("MOO", 0)) );
 

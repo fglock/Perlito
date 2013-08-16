@@ -1,6 +1,0 @@
-Revision history for Perl extension Some::Thing.
-
-0.01  Wed Aug 14 15:27:48 2013
-	- original version; created by h2xs 1.23 with options
-		--skip-ppport -An Some::Thing
-

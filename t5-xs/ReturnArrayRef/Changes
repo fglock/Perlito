@@ -1,0 +1,6 @@
+Revision history for Perl extension ReturnArrayRef.
+
+0.01  Fri Aug 16 20:53:41 2013
+	- original version; created by h2xs 1.23 with options
+		--skip-ppport -An ReturnArrayRef
+
