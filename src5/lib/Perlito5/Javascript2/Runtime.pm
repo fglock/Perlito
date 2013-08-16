@@ -523,7 +523,16 @@ p5num = function(o) {
     //     return o.num();
     // }
     if (typeof o !== "number") {
-        return parseFloat(p5str(o));
+        var s = p5str(o).trim();
+        var s1 = s.substr(0, 3).toUpperCase();
+        if ( s1 == "NAN" ) { return NaN };
+        if ( s1 == "INF" ) { return Infinity };
+        s1 = s.substr(0, 4).toUpperCase();
+        if ( s1 == "-NAN" ) { return NaN };
+        if ( s1 == "-INF" ) { return -Infinity };
+        s1 = parseFloat(s);
+        if ( isNaN(s1) ) { return 0 };
+        return s1;
     }
     return o;
 };

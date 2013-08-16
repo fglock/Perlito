@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..20';
+say '1..32';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -108,4 +108,38 @@ print 'not ' if $r ne '-890-';  say "ok 19 - array deref interpolation - $r";
     $r = "[$$y]";
     print 'not ' if $r ne '[123]';  say "ok 20 - scalar deref interpolation - $r";
 }
+
+# autoincrement
+
+$v = 'AZ';
+$r = $v++;
+print 'not ' if $r ne 'AZ';  say "ok 21 - string increment - $r";
+print 'not ' if $v ne 'BA';  say "ok 22 - string increment - $v";
+
+$v = 'Z';
+$r = ++$v;
+print 'not ' if $r ne 'AA';  say "ok 23 - string increment - $r";
+print 'not ' if $v ne 'AA';  say "ok 24 - string increment - $v";
+
+# autodecrement
+
+$v = 'AZ';
+$r = $v--;
+print 'not ' if $r ne 'AZ';  say "ok 25 - string decrement - $r";
+print 'not ' if $v ne '-1';  say "ok 26 - string decrement - $v";
+
+$v = 'Z';
+$r = --$v;
+print 'not ' if $r ne '-1';  say "ok 27 - string decrement - $r";
+print 'not ' if $v ne '-1';  say "ok 28 - string decrement - $v";
+
+$v = '5AZ';
+$r = $v--;
+print 'not ' if $r ne '5AZ'; say "ok 29 - string decrement - $r";
+print 'not ' if $v ne '4';   say "ok 30 - string decrement - $v";
+
+$v = '-5Z';
+$r = --$v;
+print 'not ' if $r ne '-6';  say "ok 31 - string decrement - $r";
+print 'not ' if $v ne '-6';  say "ok 32 - string decrement - $v";
 

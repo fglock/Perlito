@@ -1531,18 +1531,18 @@ package Perlito5::AST::Apply;
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
             if ( $arg->isa('Perlito5::AST::Apply') ) {
-                if ( $arg->{code} eq '@' ) {
-                    # TODO
-                    # return '(new p5ArrayRef(' . $arg->emit_javascript2($level) . '))';
-                }
-                if ( $arg->{code} eq '%' ) {
-                    # TODO
-                    # return '(new p5HashRef(' . $arg->emit_javascript2($level) . '))';
-                }
-                if ( $arg->{code} eq '*' ) {
-                    # TODO
-                    # return '(new p5GlobRef(' . $arg->emit_javascript2($level) . '))';
-                }
+                # if ( $arg->{code} eq '@' ) {
+                #     # TODO
+                #     return '(new p5ArrayRef(' . $arg->emit_javascript2($level) . '))';
+                # }
+                # if ( $arg->{code} eq '%' ) {
+                #     # TODO
+                #     return '(new p5HashRef(' . $arg->emit_javascript2($level) . '))';
+                # }
+                # if ( $arg->{code} eq '*' ) {
+                #     # TODO
+                #     return '(new p5GlobRef(' . $arg->emit_javascript2($level) . '))';
+                # }
                 if ( $arg->{code} eq 'prefix:<&>' ) {
                     return 'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->{arguments}->[0]->emit_javascript2($level) . ')';
                 }
@@ -1573,7 +1573,6 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-
             if  (   $arg->isa( 'Perlito5::AST::Index')
                 ||  $arg->isa( 'Perlito5::AST::Lookup') 
                 ||  $arg->isa( 'Perlito5::AST::Call') 
@@ -1581,7 +1580,15 @@ package Perlito5::AST::Apply;
             {
                 return $arg->emit_javascript2($level+1, 0, 'p5postincr');
             }
-
+            if  (   $arg->isa( 'Perlito5::AST::Var')
+                &&  $arg->{sigil} eq '$'
+                )
+            {
+                return '(function (_tmp) { '
+                            . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' 
+                            . 'return _tmp ' 
+                        . '})(' . $arg->emit_javascript2($level) . ')';
+            }
             '(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')++';
         },
         'postfix:<-->' => sub {
@@ -1596,6 +1603,15 @@ package Perlito5::AST::Apply;
             {
                 return $arg->emit_javascript2($level+1, 0, 'p5postdecr');
             }
+            if  (   $arg->isa( 'Perlito5::AST::Var')
+                &&  $arg->{sigil} eq '$'
+                )
+            {
+                return '(function (_tmp) { '
+                            . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' 
+                            . 'return _tmp ' 
+                        . '})(' . $arg->emit_javascript2($level) . ')';
+            }
 
             '(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')--';
         },
@@ -1603,7 +1619,6 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-
             if  (   $arg->isa( 'Perlito5::AST::Index')
                 ||  $arg->isa( 'Perlito5::AST::Lookup') 
                 ||  $arg->isa( 'Perlito5::AST::Call') 
@@ -1611,7 +1626,15 @@ package Perlito5::AST::Apply;
             {
                 return $arg->emit_javascript2($level+1, 0, 'p5incr');
             }
-
+            if  (   $arg->isa( 'Perlito5::AST::Var')
+                &&  $arg->{sigil} eq '$'
+                )
+            {
+                return '(function (_tmp) { '
+                            . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' 
+                            . 'return ' . $arg->emit_javascript2($level) . ' '
+                        . '})(' . $arg->emit_javascript2($level) . ')';
+            }
             '++(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
         },
         'prefix:<-->' => sub {
@@ -1625,6 +1648,15 @@ package Perlito5::AST::Apply;
                 )
             {
                 return $arg->emit_javascript2($level+1, 0, 'p5decr');
+            }
+            if  (   $arg->isa( 'Perlito5::AST::Var')
+                &&  $arg->{sigil} eq '$'
+                )
+            {
+                return '(function (_tmp) { '
+                            . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' 
+                            . 'return ' . $arg->emit_javascript2($level) . ' '
+                        . '})(' . $arg->emit_javascript2($level) . ')';
             }
 
             '--(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
