@@ -3441,7 +3441,7 @@ sub Perlito5::Grammar::Regex::parsed_code {
                 }))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Regex::rule_terms {
+sub Perlito5::Grammar::Regex::rule_term {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -3650,90 +3650,6 @@ sub Perlito5::Grammar::Regex::rule_terms {
                                                     }))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
                                             ($MATCH->{'str'} = $str);
                                             ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule'}));
-                                            1
-                                            }))))
-                            })))
-                }))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::Regex::rule_term {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = {'str', $str, 'from', $pos, 'to', $pos});
-    ((my  $tmp) = (((do {
-                ((my  $pos1) = $MATCH->{'to'});
-                (((do {
-                            (((do {
-                                        ((my  $m2) = $grammar->rule_terms($str, $MATCH->{'to'}));
-                                        if ($m2) {
-                                                ($MATCH->{'to'} = $m2->{'to'});
-                                                ($MATCH->{'rule_terms'} = $m2);
-                                                1
-                                            }
-                                            else {
-                                                0
-                                            }
-                                        })) && ((do {
-                                        ($MATCH->{'str'} = $str);
-                                        ($MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule_terms'}));
-                                        1
-                                        })))
-                            })) || ((do {
-                            ($MATCH->{'to'} = $pos1);
-                            (((((do {
-                                                ((my  $tmp) = $MATCH);
-                                                ($MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}});
-                                                ((my  $res) = ((do {
-                                                            ((my  $pos1) = $MATCH->{'to'});
-                                                            ((((((((((((do {
-                                                                                                            ((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                                            })) || ((do {
-                                                                                                            ($MATCH->{'to'} = $pos1);
-                                                                                                            (((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                                            }))) || ((do {
-                                                                                                        ($MATCH->{'to'} = $pos1);
-                                                                                                        ((((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                                        }))) || ((do {
-                                                                                                    ($MATCH->{'to'} = $pos1);
-                                                                                                    (((('>' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                                    }))) || ((do {
-                                                                                                ($MATCH->{'to'} = $pos1);
-                                                                                                ((((':' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                                }))) || ((do {
-                                                                                            ($MATCH->{'to'} = $pos1);
-                                                                                            (((('?' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                            }))) || ((do {
-                                                                                        ($MATCH->{'to'} = $pos1);
-                                                                                        (((('+' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                        }))) || ((do {
-                                                                                    ($MATCH->{'to'} = $pos1);
-                                                                                    (((('*' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                    }))) || ((do {
-                                                                                ($MATCH->{'to'} = $pos1);
-                                                                                (((('|' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                                }))) || ((do {
-                                                                            ($MATCH->{'to'} = $pos1);
-                                                                            (((('&' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                            }))) || ((do {
-                                                                        ($MATCH->{'to'} = $pos1);
-                                                                        (((('/' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-                                                                        })))
-                                                            })));
-                                                ($MATCH = ($res ? 0 : $tmp))
-                                                })) && ((do {
-                                                ((my  $m2) = $grammar->any($str, $MATCH->{'to'}));
-                                                if ($m2) {
-                                                        ($MATCH->{'to'} = $m2->{'to'});
-                                                        ($MATCH->{'any'} = $m2);
-                                                        1
-                                                    }
-                                                    else {
-                                                        0
-                                                    }
-                                                }))) && ((do {
-                                            ($MATCH->{'str'} = $str);
-                                            ($MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', Perlito5::Match::flat($MATCH->{'any'})));
                                             1
                                             }))))
                             })))

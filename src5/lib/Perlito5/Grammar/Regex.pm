@@ -86,7 +86,7 @@ token parsed_code {
     { $MATCH->{capture} = Perlito5::Match::flat($MATCH) }
 };
 
-token rule_terms {
+token rule_term {
     |   '<before'
         <.Perlito5::Grammar::Space.ws> <rule> \>
         { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
@@ -110,9 +110,9 @@ token rule_terms {
         { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
     |   \\
         [
-        | c \[ <Perlito5::Grammar.digits> \]
+        | 'c' \[ <Perlito5::Grammar.digits> \]
           { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
-        | c <Perlito5::Grammar.digits>
+        | 'c' <Perlito5::Grammar.digits>
           { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.digits"}) ) ) }
         | <any>
           #  \e  \E
@@ -124,17 +124,6 @@ token rule_terms {
         <rule> ']'
         { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
 
-};
-
-token rule_term {
-    |
-        # { say 'matching terms'; }
-        <rule_terms>
-        {
-            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule_terms})
-        }
-    |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
 };
 
 token quant_exp  {   \? | \* | \+  };

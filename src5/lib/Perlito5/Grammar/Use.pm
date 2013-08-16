@@ -36,7 +36,7 @@ token term_use {
             ];
         }
     |
-        <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Grammar::Expression.list_parse>
+        <Perlito5::Grammar.full_ident>  [ '-' <Perlito5::Grammar.ident> ]? <Perlito5::Grammar::Expression.list_parse>
         {
 
             my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.list_parse"});
