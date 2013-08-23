@@ -9197,11 +9197,7 @@ do {{
         if ($has_local) {
             ($out = ($out . (Perlito5::Javascript2::tab($level) . 'var local_idx = p5LOCAL.length;' . chr(10))))
         };
-        if ($self->{'top_level'}) {
-            ($level)++
-        };
-        if ($create_context) {
-            ($out = ($out . (Perlito5::Javascript2::tab($level) . '(function () {' . chr(10))));
+        if (($self->{'top_level'} || $create_context)) {
             ($level)++
         };
         ((my  $tab) = Perlito5::Javascript2::tab($level));
@@ -9292,16 +9288,18 @@ do {{
         if ($has_local) {
             push(@str, 'p5cleanup_local(local_idx, null);' )
         };
-        if ($create_context) {
-            ($level)--;
-            push(@str, '})();' )
-        };
         if (($self->{'top_level'} && $Perlito5::THROW)) {
             ($level)--;
             ($out = ($out . (Perlito5::Javascript2::tab($level) . 'try {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript2::tab($level) . '}' . chr(10) . Perlito5::Javascript2::tab($level) . 'catch(err) {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript2::tab(($level + 2)) . 'throw(err);' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'else {' . chr(10) . Perlito5::Javascript2::tab(($level + 2)) . (($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)')) . ';' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript2::tab($level) . '}')))
         }
         else {
-            ($out = ($out . join(chr(10), map(($tab . $_), @str))))
+            if ($create_context) {
+                ($level)--;
+                ($out = ($out . (Perlito5::Javascript2::tab($level) . '(function () {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript2::tab($level) . '})();')))
+            }
+            else {
+                ($out = ($out . join(chr(10), map(($tab . $_), @str))))
+            }
         };
         ($Perlito5::PKG_NAME = $outer_pkg);
         if ($self->{'top_level'}) {

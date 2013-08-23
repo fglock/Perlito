@@ -513,11 +513,7 @@ package Perlito5::Javascript2::LexicalBlock;
 
         $out .= Perlito5::Javascript2::tab($level) . "var local_idx = p5LOCAL.length;\n"
             if $has_local;
-        if ($self->{top_level}) {
-            $level++;
-        }
-        if ( $create_context ) {
-            $out .= Perlito5::Javascript2::tab($level) . "(function () {\n";
+        if ($self->{top_level} || $create_context) {
             $level++;
         }
 
@@ -633,10 +629,6 @@ package Perlito5::Javascript2::LexicalBlock;
         if ( $has_local ) {
             push @str, 'p5cleanup_local(local_idx, null);';
         }
-        if ( $create_context ) {
-            $level--;
-            push @str, "})();";
-        }
         if ($self->{top_level} && $Perlito5::THROW) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
@@ -659,6 +651,12 @@ package Perlito5::Javascript2::LexicalBlock;
                     . ";\n"
                 . Perlito5::Javascript2::tab($level + 1)   . '}' . "\n"
                 . Perlito5::Javascript2::tab($level)   . '}';
+        }
+        elsif ( $create_context ) {
+            $level--;
+            $out .= Perlito5::Javascript2::tab($level) . "(function () {\n"
+                  .      join("\n", map($tab . $_, @str)) . "\n"
+                  . Perlito5::Javascript2::tab($level) .  "})();";
         }
         else {
             $out .= join("\n", map($tab . $_, @str));
