@@ -606,9 +606,9 @@ package Perlito5::AST::Decl;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $decl = $self->{decl};
-        my $str =
-              '(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5($level+1) . ')';
+        my $str = $self->{decl} . ' '
+                . ($self->{type} ? $self->{type} . ' ' : '')
+                . $self->{var}->emit_perl5($level+1);
         return $str;
     }
 }
