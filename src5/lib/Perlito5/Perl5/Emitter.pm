@@ -78,9 +78,9 @@ package Perlito5::AST::Lit::Block;
         
         # TODO - emit "continue" block
 
-          "do {{\n"
+          "{\n"
         .   join(";\n", map( Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @{$self->{stmts}} )) . "\n"
-        . Perlito5::Perl5::tab($level) . "}}"
+        . Perlito5::Perl5::tab($level) . "}"
     }
 }
 
