@@ -139,6 +139,10 @@ sub concat { $_[0]->{concat} }
 sub emit_perl5 {
     my $self = $_[0];
 
+    if ( scalar( @{$self->{concat}} ) == 1 ) {
+        return $self->{concat}[0]->emit_perl5;
+    }
+
     '('
         . join( ' && ',
                 map( $_->emit_perl5, @{$self->{concat}} )
