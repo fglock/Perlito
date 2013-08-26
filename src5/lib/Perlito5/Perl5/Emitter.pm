@@ -266,6 +266,8 @@ package Perlito5::AST::Apply;
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
         'infix:<<=>' => ' <= ',
+        'infix:<<<>' => ' << ',
+        'infix:<>>>' => ' >> ',
 
         'infix:<&>'  => ' & ',
         'infix:<|>'  => ' | ',
