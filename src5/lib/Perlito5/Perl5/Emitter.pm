@@ -470,7 +470,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'return') {
-            return 'return (' . join(', ', map( $_->emit_perl5($level+1), @{$self->{arguments}} )) . ')';
+            return 'return ' . join(', ', map( $_->emit_perl5($level+1), @{$self->{arguments}} ));
         }
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
