@@ -493,11 +493,11 @@ package Perlito5::AST::Apply;
                 || $parameters->method eq 'postcircumfix:<[ ]>'
                 )
             {
-                return '(' . $parameters->emit_perl5($level+1) . ' = ' . $arguments->emit_perl5($level+1) . ')';
+                return $parameters->emit_perl5($level+1) . ' = ' . $arguments->emit_perl5($level+1);
             }
 
         }
-        '(' . $parameters->emit_perl5($level+1) . ' = ' . $arguments->emit_perl5($level+1) . ')';
+        $parameters->emit_perl5($level+1) . ' = ' . $arguments->emit_perl5($level+1);
     }
 }
 
@@ -639,7 +639,7 @@ package Perlito5::AST::Do;
         
         my $block = $self->simplify->block;
           "(do \{\n"
-        .   join(";\n", map( defined($_) && Perlito5::Perl5::tab($level) . $_->emit_perl5( $level + 1 ), @$block )) . "\n"
+        .   join(";\n", map( defined($_) && Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @$block )) . "\n"
         . Perlito5::Perl5::tab($level) . "})"
     }
 }
