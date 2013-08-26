@@ -114,6 +114,10 @@ sub or_list { $_[0]->{or_list} }
 sub emit_perl5 {
     my $self = $_[0];
 
+    if ( scalar( @{$self->{or_list}} ) == 1 ) {
+        return $self->{or_list}[0]->emit_perl5;
+    }
+
     '(do { '
         . 'my $pos1 = $MATCH->{to}; (do { '
         . join( '}) || (do { $MATCH->{to} = $pos1; ',
