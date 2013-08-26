@@ -439,7 +439,10 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
-                $eval = $arg->emit_perl5( $level + 1 );     # TODO -, $wantarray );
+                my $do = $arg->simplify->block;
+                $eval = "eval {\n" 
+                    .  join(";\n", map( defined($_) && Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @$do )) . "\n"
+                    . Perlito5::Perl5::tab($level) . "}"
             }
             else {
                 $eval = 
