@@ -12065,13 +12065,17 @@ package Perlito5::AST::Sub;
     sub Perlito5::AST::Sub::emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        my $name = '';
+        my @parts;
         if ($self->{'name'}) {
-            $name = ($self->{'namespace'} . '::' . $self->{'name'} . ' ')
+            push(@parts, ($self->{'namespace'} . '::' . $self->{'name'}))
         };
-        my $sig = $self->{'sig'};
-        my $i = 0;
-        ('sub ' . $name . '{' . chr(10) . join(';' . chr(10), map((Perlito5::Perl5::tab(($level + 1)) . $_->emit_perl5(($level + 1))), @{$self->{'block'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
+        if (defined($self->{'sig'})) {
+            push(@parts, ('(' . $self->{'sig'} . ')'))
+        };
+        if (defined($self->{'block'})) {
+            push(@parts, ('{' . chr(10) . join(';' . chr(10), map((Perlito5::Perl5::tab(($level + 1)) . $_->emit_perl5(($level + 1))), @{$self->{'block'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}'))
+        };
+        join(' ', 'sub', @parts)
     }
 };
 package Perlito5::AST::Do;

@@ -611,15 +611,19 @@ package Perlito5::AST::Sub;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $name = '';
-        $name = $self->{namespace} . "::" . $self->{name} . " "
+        my @parts;
+        push @parts, $self->{namespace} . "::" . $self->{name}
             if $self->{name};
 
-        my $sig = $self->{sig};
-        my $i = 0;
-          'sub ' . $name . "{\n"
-        .   join(";\n", map( Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @{$self->{block}} )) . "\n"
-        . Perlito5::Perl5::tab($level) . "}"
+        push @parts, '(' . $self->{sig} . ')'
+            if defined $self->{sig};
+
+        push @parts, "{\n"
+            .   join(";\n", map( Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @{$self->{block}} )) . "\n"
+            . Perlito5::Perl5::tab($level) . "}"
+            if defined $self->{block};
+
+        join(' ', 'sub', @parts);
     }
 }
 
