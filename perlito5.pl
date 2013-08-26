@@ -11824,7 +11824,7 @@ package Perlito5::AST::Call;
     sub Perlito5::AST::Call::emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        my $invocant = $self->{'invocant'}->emit_perl5();
+        my $invocant = $self->{'invocant'}->emit_perl5(($level + 1));
         if (($self->{'method'} eq 'postcircumfix:<[ ]>')) {
             return ($invocant . '->[' . $self->{'arguments'}->emit_perl5(($level + 1)) . ']')
         };
@@ -11833,6 +11833,9 @@ package Perlito5::AST::Call;
         };
         my $meth = $self->{'method'};
         if (($meth eq 'postcircumfix:<( )>')) {
+            if (((ref($self->{'invocant'}) eq 'Perlito5::AST::Var') && ($self->{'invocant'}->{'sigil'} eq '&'))) {
+                return ($invocant . '(' . join(', ', map($_->emit_perl5(($level + 1)), @{$self->{'arguments'}})) . ')')
+            };
             $meth = ''
         };
         if ((ref($meth) eq 'Perlito5::AST::Var')) {
