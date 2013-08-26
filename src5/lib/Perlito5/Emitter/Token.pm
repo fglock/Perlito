@@ -29,14 +29,13 @@ package Perlito5::Rul::Quantifier;
 sub new { my $class = shift; bless {@_}, $class }
 sub term { $_[0]->{term} }
 sub quant { $_[0]->{quant} }
-sub greedy { $_[0]->{greedy} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    if ($self->{quant} eq '' && $self->{greedy} eq '') {
+    if ($self->{quant} eq '') {
         return $self->{term}->emit_perl5;
     }
-    if ($self->{quant} eq '+' && $self->{greedy} eq '') {
+    if ($self->{quant} eq '+') {
         $self->{term}->set_captures_to_array;
         return
             '(do { '
@@ -61,7 +60,7 @@ sub emit_perl5 {
             .   '$count > 0; '
             . '})';
     }
-    if ($self->{quant} eq '*' && $self->{greedy} eq '') {
+    if ($self->{quant} eq '*') {
         $self->{term}->set_captures_to_array;
         return
             '(do { '
@@ -84,12 +83,12 @@ sub emit_perl5 {
             .   '1 '
             . '})';
     }
-    if ($self->{quant} eq '?' && $self->{greedy} eq '') {
+    if ($self->{quant} eq '?') {
         $self->{term}->set_captures_to_array;
         return
             '(do { '
             .   'my $m = $MATCH; '
-            .   'if (!(do {' . $self->{term}->emit_perl5() . '})) '
+            .   'if (!' . $self->{term}->emit_perl5() . ') '
             .   '{ '
             .       '$MATCH = $m; '
             .   '}; '
@@ -97,8 +96,7 @@ sub emit_perl5 {
             . '})';
     }
 
-    warn "Perlito5::Rul::Quantifier:  not implemented";
-    $self->{term}->emit_perl5;
+    die "Perlito5::Rul::Quantifier:  not implemented";
 }
 sub set_captures_to_array {
     my $self = $_[0];

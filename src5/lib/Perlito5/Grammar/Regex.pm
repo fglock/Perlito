@@ -128,19 +128,16 @@ token rule_term {
 
 token quant_exp  {   \? | \* | \+  };
 
-token greedy_exp {   \?  |  \+  |  ''  };
-
 token quantifier {
     <Perlito5::Grammar::Space.opt_ws>
     <rule_term>
     <Perlito5::Grammar::Space.opt_ws>
     [
-        <quant_exp> <greedy_exp>
+        <quant_exp>
         <Perlito5::Grammar::Space.opt_ws>
         { $MATCH->{capture} = Perlito5::Rul::Quantifier->new(
                 term    => Perlito5::Match::flat($MATCH->{rule_term}),
                 quant   => Perlito5::Match::flat($MATCH->{quant_exp}),
-                greedy  => Perlito5::Match::flat($MATCH->{greedy_exp}),
             )
         }
     |
