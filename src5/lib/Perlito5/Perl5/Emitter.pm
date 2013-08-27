@@ -449,25 +449,11 @@ package Perlito5::AST::Apply;
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
                 my $do = $arg->simplify->block;
-                $eval = "eval {\n" 
+                return "eval {\n" 
                     .  join(";\n", map( defined($_) && Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ), @$do )) . "\n"
                     . Perlito5::Perl5::tab($level) . "}"
             }
-            else {
-                $eval = 
-                    '(do { '
-                    .   'my $m = Perlito5::Grammar->exp_stmts(' 
-                    .       $arg->emit_perl5( $level + 1, 'scalar' ) . ', 0);'
-
-                    .   'my $source; '
-                    .   '$source .= (defined $_ ? $_->emit_perl5(0, "scalar") : "") . ";\n" '
-                    .       'for @{ Perlito5::Match::flat($m) }; '
-
-                    # .   'warn $source;'
-                    .   'eval $source;'
-                    . '})';
-            }
-            return $eval;
+            return 'eval ' . $self->emit_perl5_args($level+1);
         }
 
         if ($code eq 'return') {
