@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..17';
+say '1..21';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -79,3 +79,30 @@ say "ok 16 - array push";
 print 'not '
     unless ref( \@x14 ) eq 'ARRAY';
 say "ok 17 - ref is ARRAY";
+
+
+# slices
+
+@a = ( 3 .. 10 );
+$v = " @a[2,4,6] ";
+print 'not '
+    unless $v eq " 5 7 9 ";
+say "ok 18 - slice # [$v]";
+
+$x = [ 3 .. 10 ];
+my @z = @$x[ 2, 4 ];
+$v = " @z ";
+print 'not '
+    unless $v eq " 5 7 ";
+say "ok 19 - slice # [$v]";
+
+$v = " @$x[2,4,5] ";
+print 'not '
+    unless $v eq " 5 7 8 ";
+say "ok 20 - slice # [$v]";
+
+$v = " @{ $x}[2,4,5] ";
+print 'not '
+    unless $v eq " 5 7 8 ";
+say "ok 21 - slice # [$v]";
+

@@ -819,12 +819,12 @@ package Perlito5::AST::Index;
            )
         {
             # @a[10, 20]
-            # @$a[0, 2] ==> @{ $a->[0,2] }
+            # @$a[0, 2] ==> @{$a}[0,2]
             return
               '(function (a, v) { '
                     . 'var src=' . $self->{obj}->emit_javascript2($level) . '; '
-                    . 'for (var i=0, l=v.length; ' . 'i<=l; ++i)' . '{ '
-                            . 'a.push(src[i]) '
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(src[v[i]]) '
                     . '}; '
                     . 'return a ' 
             . '})('

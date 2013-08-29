@@ -8947,7 +8947,7 @@ package Perlito5::AST::Index;
             return ($v->emit_javascript2($level) . '.' . $method . '(' . Perlito5::Javascript2::to_num($self->{'index_exp'}, $level) . ')')
         };
         if (((($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<@>'))) || (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '@'))))) {
-            return ('(function (a, v) { ' . 'var src=' . $self->{'obj'}->emit_javascript2($level) . '; ' . 'for (var i=0, l=v.length; ' . 'i<=l; ++i)' . '{ ' . 'a.push(src[i]) ' . '}; ' . 'return a ' . '})(' . '[], ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ')')
+            return ('(function (a, v) { ' . 'var src=' . $self->{'obj'}->emit_javascript2($level) . '; ' . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ ' . 'a.push(src[v[i]]) ' . '}; ' . 'return a ' . '})(' . '[], ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ')')
         };
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
             return (Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'array') . '._array_.' . $method . '(' . Perlito5::Javascript2::to_num($self->{'index_exp'}) . ')')
