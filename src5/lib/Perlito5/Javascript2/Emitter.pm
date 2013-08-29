@@ -802,12 +802,37 @@ package Perlito5::AST::Index;
            && $self->{obj}->sigil eq '$'
            )
         {
+            # $a[10]
             my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
             return $v->emit_javascript2($level)
                     . '.' . $method . '(' 
                         . Perlito5::Javascript2::to_num($self->{index_exp}, $level) 
                     . ')';
         }
+
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<@>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '@'
+              )
+           )
+        {
+            # @a[10, 20]
+            # @$a[0, 2] ==> @{ $a->[0,2] }
+            return
+              '(function (a, v) { '
+                    . 'var src=' . $self->{obj}->emit_javascript2($level) . '; '
+                    . 'for (var i=0, l=v.length; ' . 'i<=l; ++i)' . '{ '
+                            . 'a.push(src[i]) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
+
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
            )
