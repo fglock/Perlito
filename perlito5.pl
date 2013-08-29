@@ -3877,14 +3877,23 @@ sub Perlito5::Grammar::String::term_q_quote {
                                                                                         my $tmp = $MATCH;
                                                                                         $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                                         my $res = ((do {
-                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                                    if ($m2) {
-                                                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                                                        1
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        0
-                                                                                                    }
+                                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                                    ((((do {
+                                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                                    if ($m2) {
+                                                                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                                                                        1
+                                                                                                                    }
+                                                                                                                    else {
+                                                                                                                        0
+                                                                                                                    }
+                                                                                                                })) || ((do {
+                                                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                                                    ()
+                                                                                                                }))) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                                            })))
                                                                                                 }));
                                                                                         $MATCH = ($res ? 0 : $tmp)
                                                                                     }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -3938,14 +3947,23 @@ sub Perlito5::Grammar::String::term_qq_quote {
                                                                                         my $tmp = $MATCH;
                                                                                         $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                                         my $res = ((do {
-                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                                    if ($m2) {
-                                                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                                                        1
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        0
-                                                                                                    }
+                                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                                    ((((do {
+                                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                                    if ($m2) {
+                                                                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                                                                        1
+                                                                                                                    }
+                                                                                                                    else {
+                                                                                                                        0
+                                                                                                                    }
+                                                                                                                })) || ((do {
+                                                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                                                    ()
+                                                                                                                }))) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                                            })))
                                                                                                 }));
                                                                                         $MATCH = ($res ? 0 : $tmp)
                                                                                     }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -3996,14 +4014,23 @@ sub Perlito5::Grammar::String::term_qw_quote {
                                                                     my $tmp = $MATCH;
                                                                     $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                     my $res = ((do {
-                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                if ($m2) {
-                                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                                    1
-                                                                                }
-                                                                                else {
-                                                                                    0
-                                                                                }
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                ((((do {
+                                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                if ($m2) {
+                                                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                                                    1
+                                                                                                }
+                                                                                                else {
+                                                                                                    0
+                                                                                                }
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ()
+                                                                                            }))) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                        })))
                                                                             }));
                                                                     $MATCH = ($res ? 0 : $tmp)
                                                                 }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -4052,14 +4079,23 @@ sub Perlito5::Grammar::String::term_m_quote {
                                                                                         my $tmp = $MATCH;
                                                                                         $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                                         my $res = ((do {
-                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                                    if ($m2) {
-                                                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                                                        1
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        0
-                                                                                                    }
+                                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                                    ((((do {
+                                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                                    if ($m2) {
+                                                                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                                                                        1
+                                                                                                                    }
+                                                                                                                    else {
+                                                                                                                        0
+                                                                                                                    }
+                                                                                                                })) || ((do {
+                                                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                                                    ()
+                                                                                                                }))) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                                            })))
                                                                                                 }));
                                                                                         $MATCH = ($res ? 0 : $tmp)
                                                                                     }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -4110,14 +4146,23 @@ sub Perlito5::Grammar::String::term_s_quote {
                                                                     my $tmp = $MATCH;
                                                                     $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                     my $res = ((do {
-                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                if ($m2) {
-                                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                                    1
-                                                                                }
-                                                                                else {
-                                                                                    0
-                                                                                }
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                ((((do {
+                                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                if ($m2) {
+                                                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                                                    1
+                                                                                                }
+                                                                                                else {
+                                                                                                    0
+                                                                                                }
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ()
+                                                                                            }))) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                        })))
                                                                             }));
                                                                     $MATCH = ($res ? 0 : $tmp)
                                                                 }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -4166,14 +4211,23 @@ sub Perlito5::Grammar::String::term_qx {
                                                                                         my $tmp = $MATCH;
                                                                                         $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                                         my $res = ((do {
-                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                                    if ($m2) {
-                                                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                                                        1
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        0
-                                                                                                    }
+                                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                                    ((((do {
+                                                                                                                    my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                                    if ($m2) {
+                                                                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                                                                        1
+                                                                                                                    }
+                                                                                                                    else {
+                                                                                                                        0
+                                                                                                                    }
+                                                                                                                })) || ((do {
+                                                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                                                    ()
+                                                                                                                }))) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                                            })))
                                                                                                 }));
                                                                                         $MATCH = ($res ? 0 : $tmp)
                                                                                     }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -4254,14 +4308,23 @@ sub Perlito5::Grammar::String::term_tr_quote {
                                                                     my $tmp = $MATCH;
                                                                     $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                     my $res = ((do {
-                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                if ($m2) {
-                                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                                    1
-                                                                                }
-                                                                                else {
-                                                                                    0
-                                                                                }
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                ((((do {
+                                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                if ($m2) {
+                                                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                                                    1
+                                                                                                }
+                                                                                                else {
+                                                                                                    0
+                                                                                                }
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ()
+                                                                                            }))) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                        })))
                                                                             }));
                                                                     $MATCH = ($res ? 0 : $tmp)
                                                                 }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -4307,14 +4370,23 @@ sub Perlito5::Grammar::String::term_qr_quote {
                                                                     my $tmp = $MATCH;
                                                                     $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
                                                                     my $res = ((do {
-                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                if ($m2) {
-                                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                                    1
-                                                                                }
-                                                                                else {
-                                                                                    0
-                                                                                }
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                ((((do {
+                                                                                                my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                                if ($m2) {
+                                                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                                                    1
+                                                                                                }
+                                                                                                else {
+                                                                                                    0
+                                                                                                }
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ()
+                                                                                            }))) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && ($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+                                                                                        })))
                                                                             }));
                                                                     $MATCH = ($res ? 0 : $tmp)
                                                                 }))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -8985,6 +9057,16 @@ package Perlito5::AST::Lookup;
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             my $v = Perlito5::AST::Var->new('sigil', '%', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name());
             return ($v->emit_javascript2($level) . '.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{'index_exp'}, $level) . ')')
+        };
+        if (((($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<@>'))) || (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '@'))))) {
+            my $v;
+            if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
+                $v = Perlito5::AST::Var->new('sigil', '%', 'namespace', $self->{'obj'}->namespace(), 'name', $self->{'obj'}->name())
+            };
+            if ($self->{'obj'}->isa('Perlito5::AST::Apply')) {
+                $v = Perlito5::AST::Apply->new('code', 'prefix:<%>', 'namespace', $self->{'obj'}->namespace(), 'arguments', $self->{'obj'}->arguments())
+            };
+            return ('(function (a, v) { ' . 'var src=' . $v->emit_javascript2($level) . '; ' . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ ' . 'a.push(src.p5hget(v[i])) ' . '}; ' . 'return a ' . '})(' . '[], ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ')')
         };
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && ($self->{'obj'}->{'code'} eq 'prefix:<$>'))) {
             return (Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'hash') . '._hash_.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{'index_exp'}, $level, 'list') . ')')

@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..21';
+say '1..24';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -81,7 +81,7 @@ print 'not '
 say "ok 17 - ref is ARRAY";
 
 
-# slices
+# array slices
 
 @a = ( 3 .. 10 );
 $v = " @a[2,4,6] ";
@@ -105,4 +105,25 @@ $v = " @{ $x}[2,4,5] ";
 print 'not '
     unless $v eq " 5 7 8 ";
 say "ok 21 - slice # [$v]";
+
+
+# hash slices
+
+my %a = ( a => 3, y => 4, z => 5, b => 10 );
+$v = " @a{ 'y', 'z' } ";
+print 'not '
+    unless $v eq " 4 5 ";
+say "ok 22 - slice # [$v]";
+
+my $p = \%a;
+$v = " @$p{ 'y', 'z' } ";
+print 'not '
+    unless $v eq " 4 5 ";
+say "ok 23 - slice # [$v]";
+
+$v = " @{$p}{ 'y', 'z' } ";
+print 'not '
+    unless $v eq " 4 5 ";
+say "ok 24 - slice # [$v]";
+
 
