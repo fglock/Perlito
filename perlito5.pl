@@ -9191,6 +9191,21 @@ package Perlito5::AST::Var;
         };
         die('don' . chr(39) . 't know how to assign to variable ', $self->sigil(), $self->name())
     };
+    sub Perlito5::AST::Var::emit_javascript2_set_list {
+        my $self = shift();
+        my $level = shift();
+        my $list = shift();
+        if (($self->sigil() eq '$')) {
+            return ($self->emit_javascript2() . ' = ' . $list . '.shift()')
+        };
+        if (($self->sigil() eq '@')) {
+            return ($self->emit_javascript2() . ' = ' . $list . '; ' . $list . ' = []')
+        };
+        if (($self->sigil() eq '%')) {
+            return ($self->emit_javascript2() . ' = p5a_to_h(' . $list . '); ' . $list . ' = []')
+        };
+        die('don' . chr(39) . 't know how to assign to variable ', $self->sigil(), $self->name())
+    };
     sub Perlito5::AST::Var::perl5_name_javascript2 {
         my $self = shift();
         my $sigil = $self->{'sigil'};
@@ -9296,6 +9311,12 @@ package Perlito5::AST::Decl;
         my $arguments = shift();
         my $level = shift();
         $self->var()->emit_javascript2_set($arguments, $level)
+    };
+    sub Perlito5::AST::Decl::emit_javascript2_set_list {
+        my $self = shift();
+        my $level = shift();
+        my $list = shift();
+        $self->var()->emit_javascript2_set_list($level, $list)
     }
 };
 package Perlito5::AST::Proto;
@@ -9652,7 +9673,7 @@ package Perlito5::AST::Apply;
                 if (($parameters->isa('Perlito5::AST::Apply') && (((($parameters->code() eq 'my') || ($parameters->code() eq 'local')) || ($parameters->code() eq 'circumfix:<( )>'))))) {
                     my $tmp = ('tmp' . Perlito5::Javascript2::get_label());
                     my $tmp2 = ('tmp' . Perlito5::Javascript2::get_label());
-                    return ('(function () {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp . ' = ' . Perlito5::Javascript2::to_list([$arguments], ($level + 1)) . ';' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0);' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . join((';' . chr(10) . Perlito5::Javascript2::tab(($level + 1))), (map(+(((($_->isa('Perlito5::AST::Apply') && ($_->code() eq 'undef')) ? ($tmp . '.shift()') : (($_->sigil() eq '$') ? ($_->emit_javascript2() . ' = ' . $tmp . '.shift()') : (($_->sigil() eq '@') ? ($_->emit_javascript2() . ' = ' . $tmp . '; ' . $tmp . ' = []') : (($_->sigil() eq '%') ? ($_->emit_javascript2() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []') : die('not implemented'))))))), @{$parameters->arguments()})), ('return ' . $tmp2)) . chr(10) . Perlito5::Javascript2::tab($level) . '})()')
+                    return ('(function () {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp . ' = ' . Perlito5::Javascript2::to_list([$arguments], ($level + 1)) . ';' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0);' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . join((';' . chr(10) . Perlito5::Javascript2::tab(($level + 1))), (map($_->emit_javascript2_set_list(($level + 1), $tmp), @{$parameters->arguments()})), ('return ' . $tmp2)) . chr(10) . Perlito5::Javascript2::tab($level) . '})()')
                 };
                 if (((((($parameters->isa('Perlito5::AST::Index') || $parameters->isa('Perlito5::AST::Lookup')) || $parameters->isa('Perlito5::AST::Call')) || $parameters->isa('Perlito5::AST::Var')) || $parameters->isa('Perlito5::AST::Decl')) || $parameters->isa('Perlito5::AST::Apply'))) {
                     return $parameters->emit_javascript2_set($arguments, ($level + 1))
@@ -10066,6 +10087,15 @@ package Perlito5::AST::Apply;
             return ('p5call_sub(' . '"' . $namespace . '", ' . '"' . $name . '", ' . $arg_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
         };
         ($code . '(' . $arg_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
+    };
+    sub Perlito5::AST::Apply::emit_javascript2_set_list {
+        my $self = shift();
+        my $level = shift();
+        my $list = shift();
+        if (($self->code() eq 'undef')) {
+            return ($list . '.shift()')
+        };
+        die('not implemented: assign to ', $self->code())
     }
 };
 package Perlito5::AST::If;

@@ -1124,6 +1124,24 @@ package Perlito5::AST::Var;
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
 
+    sub emit_javascript2_set_list {
+        my $self = shift;
+        my $level = shift;
+        my $list = shift;
+
+        if ( $self->sigil eq '$' ) {
+            return $self->emit_javascript2() . ' = ' . $list  . '.shift()'
+        }
+        if ( $self->sigil eq '@' ) {
+            return $self->emit_javascript2() . ' = ' . $list  . '; ' . $list . ' = []'
+        }
+        if ( $self->sigil eq '%' ) {
+            return $self->emit_javascript2() . ' = p5a_to_h(' . $list  . '); ' . $list . ' = []'
+        }
+ 
+        die "don't know how to assign to variable ", $self->sigil, $self->name;
+    }
+
     sub perl5_name_javascript2 {
         my $self = shift;
 
@@ -1254,8 +1272,13 @@ package Perlito5::AST::Decl;
         my $self      = shift;
         my $arguments = shift;
         my $level     = shift;
-
         $self->var->emit_javascript2_set($arguments, $level);
+    }
+    sub emit_javascript2_set_list {
+        my $self = shift;
+        my $level = shift;
+        my $list = shift;
+        $self->var->emit_javascript2_set_list($level, $list);
     }
 }
 
@@ -1800,18 +1823,8 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::tab($level + 1) .      'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);\n"
                 . Perlito5::Javascript2::tab($level + 1)
                 . join( ";\n" . Perlito5::Javascript2::tab($level + 1),
-                            (
-                            map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
-                                 ? $tmp . '.shift()' 
-                                 : $_->sigil eq '$' 
-                                 ? $_->emit_javascript2() . ' = ' . $tmp . '.shift()'
-                                 : $_->sigil eq '@' 
-                                 ? $_->emit_javascript2() . ' = ' . $tmp . '; ' . $tmp . ' = []'
-                                 : $_->sigil eq '%' 
-                                 ? $_->emit_javascript2() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []'
-                                 : die("not implemented")
-                                 ),
-                                 @{ $parameters->arguments }
+                            ( map $_->emit_javascript2_set_list($level+1, $tmp),
+                                  @{ $parameters->arguments }
                             ),
                             'return ' . $tmp2,
                   ) . "\n"
@@ -2429,6 +2442,17 @@ package Perlito5::AST::Apply;
                     ) 
               . ')';
 
+    }
+
+    sub emit_javascript2_set_list {
+        my $self = shift;
+        my $level = shift;
+        my $list = shift;
+
+        if ( $self->code eq 'undef' ) {
+            return $list . '.shift()' 
+        }
+        die "not implemented: assign to ", $self->code;
     }
 
 }
