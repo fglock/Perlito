@@ -12972,6 +12972,31 @@ var p5100 = p5pkg['main'];
 						}
 					}
 				});
+				p5make_sub("Perlito5::AST::Call", "emit_javascript2_set_list", function (List__, p5want) {
+					try {
+						var v_self;
+						(v_self = (List__.shift()));
+						var v_level;
+						(v_level = (List__.shift()));
+						var v_list;
+						(v_list = (List__.shift()));
+						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('method')) == 'postcircumfix:<[ ]>') ) {
+							throw(p5context([(p5str(p5pkg["Perlito5::Javascript2"].emit_javascript2_autovivify(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('invocant'), v_level, 'array'), 0)) + '._array_.p5aset(' + p5str(p5pkg["Perlito5::Javascript2"].to_num(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('arguments'), (p5num(v_level) + 1)), 0)) + ', ' + p5str(v_list) + '.shift()' + ')')], p5want));
+						};
+						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('method')) == 'postcircumfix:<{ }>') ) {
+							throw(p5context([(p5str(p5pkg["Perlito5::Javascript2"].emit_javascript2_autovivify(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('invocant'), v_level, 'hash'), 0)) + '._hash_.p5hset(' + p5str(p5pkg["Perlito5::Javascript2"].autoquote(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('arguments'), (p5num(v_level) + 1), 'list'), 0)) + ', ' + p5str(v_list) + '.shift()' + ')')], p5want));
+						};
+						return (p5pkg["Perlito5::AST::Call"].die([p5list_to_a('don' + String.fromCharCode(39) + 't know how to assign to method ', (v_self || (v_self = new p5HashRef({})))._hash_.p5hget('method'))], p5want));
+					}
+					catch(err) {
+						if ( err instanceof Error ) {
+							throw(err);
+						}
+						else {
+							return(err);
+						}
+					}
+				});
 			}, [0], false, "");
 		var p5157 = p5make_package("Perlito5::AST::Apply");
 		p5for_lex(function () {

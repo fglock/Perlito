@@ -9394,6 +9394,18 @@ package Perlito5::AST::Call;
             return (Perlito5::Javascript2::emit_javascript2_autovivify($self->{'invocant'}, $level, 'hash') . '._hash_.p5hset(' . Perlito5::Javascript2::autoquote($self->{'arguments'}, ($level + 1), 'list') . ', ' . Perlito5::Javascript2::to_scalar([$arguments], ($level + 1)) . ')')
         };
         die('don' . chr(39) . 't know how to assign to method ', $self->{'method'})
+    };
+    sub Perlito5::AST::Call::emit_javascript2_set_list {
+        my $self = shift();
+        my $level = shift();
+        my $list = shift();
+        if (($self->{'method'} eq 'postcircumfix:<[ ]>')) {
+            return (Perlito5::Javascript2::emit_javascript2_autovivify($self->{'invocant'}, $level, 'array') . '._array_.p5aset(' . Perlito5::Javascript2::to_num($self->{'arguments'}, ($level + 1)) . ', ' . $list . '.shift()' . ')')
+        };
+        if (($self->{'method'} eq 'postcircumfix:<{ }>')) {
+            return (Perlito5::Javascript2::emit_javascript2_autovivify($self->{'invocant'}, $level, 'hash') . '._hash_.p5hset(' . Perlito5::Javascript2::autoquote($self->{'arguments'}, ($level + 1), 'list') . ', ' . $list . '.shift()' . ')')
+        };
+        die('don' . chr(39) . 't know how to assign to method ', $self->{'method'})
     }
 };
 package Perlito5::AST::Apply;
