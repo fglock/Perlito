@@ -977,11 +977,11 @@ package Perlito5::AST::Lookup;
             return
               '(function (a, v) { '
                     . 'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";\n"
-                    . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . ";\n"
+                    . 'var out=' . $v->emit_javascript2($level) . ";\n"
                     . 'var tmp' . ";\n"
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'tmp = src.p5hget(i); ' 
-                            . 'out.p5hset(v[i], tmp) '
+                            . 'out.p5hset(v[i], tmp); '
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 
@@ -1016,11 +1016,11 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return
               '(function (a, v) { '
-                    . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . ";\n"
+                    . 'var out=' . $v->emit_javascript2($level) . ";\n"
                     . 'var tmp' . ";\n"
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'tmp = ' . $list . '.shift(); ' 
-                            . 'out.p5hset(v[i], tmp) '
+                            . 'out.p5hset(v[i], tmp); '
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 

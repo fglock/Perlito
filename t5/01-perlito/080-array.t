@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..24';
+say '1..26';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -126,4 +126,20 @@ print 'not '
     unless $v eq " 4 5 ";
 say "ok 24 - slice # [$v]";
 
+
+# slice assignment
+
+@x=(4..10);
+(@x[2,3], $x[1]) = (@x[3,2], 9);
+$v = "[@x]";
+print "not "
+    unless $v eq "[4 9 7 6 8 9 10]";
+say "ok 25 - slice assignment # $v";
+
+my %x = (2 => 7, 3 => 8, 1 => 6);
+(@x{2,3}, $x{1}) = (@x{3,2}, 9);
+$v = "[@x{1,2,3}]";
+print "not "
+    unless $v eq "[9 8 7]";
+say "ok 26 - hash slice assignment # $v";
 
