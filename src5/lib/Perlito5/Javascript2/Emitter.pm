@@ -824,7 +824,7 @@ package Perlito5::AST::Index;
               '(function (a, v) { '
                     . 'var src=' . $self->{obj}->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
-                            . 'a.push(src[v[i]]) '
+                            . 'a.push(src.' . $method . '(v[i])) '
                     . '}; '
                     . 'return a ' 
             . '})('
