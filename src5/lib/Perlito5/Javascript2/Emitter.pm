@@ -1795,10 +1795,11 @@ package Perlito5::AST::Apply;
                 my $tmp  = 'tmp' . Perlito5::Javascript2::get_label();
                 my $tmp2 = 'tmp' . Perlito5::Javascript2::get_label();
                 return
-                  '(function () { '
-                    . 'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . '; '
-                    . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); '
-                    . join( '; ',
+                                                            "(function () {\n"
+                . Perlito5::Javascript2::tab($level + 1) .      'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ";\n"
+                . Perlito5::Javascript2::tab($level + 1) .      'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);\n"
+                . Perlito5::Javascript2::tab($level + 1)
+                . join( ";\n" . Perlito5::Javascript2::tab($level + 1),
                             (
                             map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
                                  ? $tmp . '.shift()' 
@@ -1812,9 +1813,9 @@ package Perlito5::AST::Apply;
                                  ),
                                  @{ $parameters->arguments }
                             ),
-                            'return ' . $tmp2
-                          )
-                . ' })()'
+                            'return ' . $tmp2,
+                  ) . "\n"
+                . Perlito5::Javascript2::tab($level) .      "})()";
             }
 
             if  (   $parameters->isa( 'Perlito5::AST::Index')
