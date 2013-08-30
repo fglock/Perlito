@@ -921,21 +921,9 @@ package Perlito5::AST::Lookup;
         my $level = shift;
         my $wantarray = shift;
         my $autovivification_type = shift;   # array, hash
-
         my $method = $autovivification_type || 'p5hget';
         $method = 'p5hget_array' if $autovivification_type eq 'array';
         $method = 'p5hget_hash'  if $autovivification_type eq 'hash';
-
-        if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
-           )
-        {
-            my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
-            return $v->emit_javascript2($level) 
-                . '.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level)
-                . ')';
-        }
-
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -946,13 +934,11 @@ package Perlito5::AST::Lookup;
         {
             # @a{ 'x', 'y' }
             # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
-
             my $v;
             $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-
             return
               '(function (a, v) { '
                     . 'var src=' . $v->emit_javascript2($level) . '; '
@@ -965,53 +951,109 @@ package Perlito5::AST::Lookup;
                     . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
                 . ')';
         }
-
-        if (  $self->{obj}->isa('Perlito5::AST::Apply')
-           && $self->{obj}->{code} eq 'prefix:<$>'
-           )
-        {
-            # $$a{0} ==> $a->{0}
-            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}{arguments}[0], $level, 'hash' )
-                . '._hash_.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level, 'list')
-                . ')';
-
-        }
-
-        return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' )
-            . '._hash_.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level)
+        return $self->emit_javascript2_container($level) . '.' . $method . '('
+                . Perlito5::Javascript2::autoquote($self->{index_exp}, $level)
             . ')';
     }
-
     sub emit_javascript2_set {
         my $self      = shift;
         my $arguments = shift;
         my $level     = shift;
-
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<@>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '@'
+              )
+           )
+        {
+            # @a{ 'x', 'y' }
+            # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
+            my $v;
+            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+                if $self->{obj}->isa('Perlito5::AST::Var');
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+                if $self->{obj}->isa('Perlito5::AST::Apply');
+            return
+              '(function (a, v) { '
+                    . 'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";\n"
+                    . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . ";\n"
+                    . 'var tmp' . ";\n"
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'tmp = src.p5hget(i); ' 
+                            . 'out.p5hset(v[i], tmp) '
+                            . 'a.push(tmp) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
+        return $self->emit_javascript2_container($level) . '.p5hset('
+                    . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+            . ')';
+    }
+    sub emit_javascript2_set_list {
+        my $self      = shift;
+        my $level     = shift;
+        my $list      = shift;
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<@>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '@'
+              )
+           )
+        {
+            # @a{ 'x', 'y' }
+            # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
+            my $v;
+            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+                if $self->{obj}->isa('Perlito5::AST::Var');
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+                if $self->{obj}->isa('Perlito5::AST::Apply');
+            return
+              '(function (a, v) { '
+                    . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . ";\n"
+                    . 'var tmp' . ";\n"
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'tmp = ' . $list . '.shift(); ' 
+                            . 'out.p5hset(v[i], tmp) '
+                            . 'a.push(tmp) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
+        return $self->emit_javascript2_container($level) . '.p5hset('
+                    . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
+                    . $list . '.shift()'
+            . ')';
+    }
+    sub emit_javascript2_container {
+        my $self = shift;
+        my $level = shift;
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'
            )
         {
             my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name );
             return $v->emit_javascript2($level)
-                . '.p5hset(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
-                    . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
-                . ')';
         }
-        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+        elsif (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
            )
         {
             # $$a{0} ==> $a->{0}
-            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}{arguments}[0], $level, 'hash' )
-                . '._hash_.p5hset(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level, 'list') . ', '
-                    . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
-                . ')';
+            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}{arguments}[0], $level, 'hash' ) . '._hash_';
         }
-
-        Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' )
-            . '._hash_.p5hset(' . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
-                   . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
-            . ')';
+        else {
+            return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . '._hash_';
+        }
     }
 
 }
