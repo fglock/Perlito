@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <link rel="stylesheet" href="ansi.css" type="text/css" media="all" />
+        <style>
+            html, body {
+                background-color: #333;
+                color: white;
+                font-family: monospace;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            #console {
+                height: 100%;
+                width: 100%;
+                position:relative;
+                background-color: black;
+                margin: 0 auto;
+                margin-top: 0px;
+            }
+            .jqconsole {
+                padding: 10px;
+                padding-bottom: 10px;
+            }
+            .jqconsole-cursor {
+                background-color: #999;
+            }
+            .jqconsole-blurred .jqconsole-cursor {
+                background-color: #666;
+            }
+            .jqconsole-prompt {
+                color: #0d0;
+            }
+            .jqconsole-old-prompt {
+                color: #0b0;
+                font-weight: normal;
+            }
+            .jqconsole-input {
+                color: #dd0;
+            }
+            .jqconsole-old-input {
+                color: #bb0;
+                font-weight: normal;
+            }
+            .brace {
+                color: #00FFFF;
+            }
+            .paran {
+                color: #FF00FF;
+            }
+            .bracket {
+                color: #FFFF00;
+            }
+            .jqconsole-composition {
+                background-color: red;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="console"></div>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="jqconsole.js"></script>
+        <script src="perlito5.js"></script>
+        <script>
+            p5pkg.CORE.print = function(List__) {
+                var i;
+                for (i = 0; i < List__.length; i++) {
+                    jqconsole.Write(p5str(List__[i]));
+                }
+                return true;
+            };
+
+            p5pkg.CORE.say = p5pkg.CORE.warn = function(List__) {
+                var i;
+                List__.push("\n");
+                for (i = 0; i < List__.length; i++) {
+                    jqconsole.Write(p5str(List__[i]));
+                }
+                return true;
+            };
+
+            p5pkg["main"]["v_^O"] = "browser";
+            p5pkg["main"]["Hash_INC"]["Perlito5/strict.pm"] = "Perlito5/strict.pm";
+            p5pkg["main"]["Hash_INC"]["Perlito5/warnings.pm"] = "Perlito5/warnings.pm";
+
+            $(function() {
+                // Creating the console.
+                var header = 'Perlito is a compiler collection that implements a Perl 5 and a Perl 6 compiler.\n'
+                           + 'Main Perlito repository: http://github.com/fglock/Perlito\n'
+                           + 'Terminal simulator: https://github.com/replit/jq-console\n\n';
+                window.jqconsole = $('#console').jqconsole(header, 'Perlito> ');
+
+                // Abort prompt on Ctrl+Z.
+                jqconsole.RegisterShortcut('Z', function() {
+                    jqconsole.AbortPrompt();
+                    handler();
+                });
+                // Move to line start Ctrl+A.
+                jqconsole.RegisterShortcut('A', function() {
+                    jqconsole.MoveToStart();
+                    handler();
+                });
+                // Move to line end Ctrl+E.
+                jqconsole.RegisterShortcut('E', function() {
+                    jqconsole.MoveToEnd();
+                    handler();
+                });
+                jqconsole.RegisterMatching('{', '}', 'brace');
+                jqconsole.RegisterMatching('(', ')', 'paran');
+                jqconsole.RegisterMatching('[', ']', 'bracket');
+                // Handle a command.
+                var handler = function(command) {
+                    if (command) {
+                        try {
+                            //var js_source = p5pkg["Perlito5"].compile_p5_to_js(['return Perlito5::Dumper::Dumper(' + command + ')']);
+                            var js_source = p5pkg["Perlito5"].compile_p5_to_js(['return Perlito5::Dumper::Dumper(eval q(' + command + '))']);
+                            eval(js_source);
+                        } catch (e) {
+                            jqconsole.Write(e + '\n');
+                        }
+                    }
+                    jqconsole.Prompt(true, handler, function(command) {
+                        // Continue line if can't compile the command.
+                        try {
+                            var js_source = p5pkg["Perlito5"].compile_p5_to_js([command]);
+                        } catch (e) {
+                            if (/[\[\{\(]$/.test(command)) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        }
+                        return false;
+                    });
+                };
+
+                // Initiate the first prompt.
+                handler();
+            });
+        </script>
+    </body>
+</html>
