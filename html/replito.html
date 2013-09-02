@@ -82,6 +82,41 @@
                 return true;
             };
 
+            p5is_file = function () { return true }
+            p5make_sub("Perlito5::IO", "slurp", function(List__) {
+                var source = false;
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: 'http://api.metacpan.org/module/_search',
+                    dataType: 'json',
+                    data: {
+                        fields: 'author,release,path',
+                        q: 'path:lib' + List__[0] + ' AND status:latest',
+                        size: 1
+                    },
+                    success: function (_search) {
+                        var fields = _search['hits']['hits'][0]['fields'];
+                        var uri = 'http://api.metacpan.org/source/'
+                                + fields.author + '/'
+                                + fields.release + '/'
+                                + fields.path;
+                        $.ajax({
+                            async: false,
+                            type: 'GET',
+                            url: uri,
+                            dataType: 'text',
+                            success: function (pm) {
+                                source = pm;
+                            }
+                        });
+                    }
+                });
+                var js_source = p5pkg["Perlito5"].compile_p5_to_js([source]);
+                //console.log(js_source);
+                eval(js_source);
+            });
+
             p5pkg["main"]["v_^O"] = "browser";
             p5pkg["main"]["Hash_INC"]["Perlito5/strict.pm"] = "Perlito5/strict.pm";
             p5pkg["main"]["Hash_INC"]["Perlito5/warnings.pm"] = "Perlito5/warnings.pm";
