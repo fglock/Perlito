@@ -125,13 +125,11 @@
                     jqconsole.Prompt(true, handler, function(command) {
                         // Continue line if can't compile the command.
                         try {
-                            var js_source = p5pkg["Perlito5"].compile_p5_to_js([command]);
+                            p5make_package("Perlito5")["v_PKG_NAME"] = 'main';
+                            p5make_package("Perlito5")["v_PROTO"] = new p5HashRef({});
+                            var ast = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [command, 0], 0);
                         } catch (e) {
-                            if (/[\[\{\(]$/.test(command)) {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
+                            return 0;
                         }
                         return false;
                     });
