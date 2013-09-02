@@ -79,17 +79,7 @@ sub block_or_hash {
         # say "#  not a list -- not hash";
         return $o
     }
-    # the argument is a list -- check that it contains a pair
-    for my $item ( @{$stmt->arguments} ) {
-        # say "#  item: ", $item->perl;
-        if ( ref($item) eq 'Perlito5::AST::Apply' && $item->code eq 'infix:<=>>' ) {
-            # argument is a pair
-            # say "#  block: ", $o->perl;
-            # say "#  hash with args: ", ( expand_list($stmt->arguments) )->perl;
-            return Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => expand_list($stmt))
-        }
-    }
-    return $o;
+    return Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => expand_list($stmt));
 }
 
 sub pop_term {

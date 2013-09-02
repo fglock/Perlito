@@ -1070,12 +1070,7 @@ sub Perlito5::Grammar::Expression::block_or_hash {
     if (($stmt->code() ne 'list:<,>')) {
         return $o
     };
-    for my  $item (@{$stmt->arguments()}) {
-        if (((ref($item) eq 'Perlito5::AST::Apply') && ($item->code() eq 'infix:<=>>'))) {
-            return Perlito5::AST::Apply->new('code', 'circumfix:<{ }>', 'namespace', '', 'arguments', expand_list($stmt))
-        }
-    };
-    return $o
+    return Perlito5::AST::Apply->new('code', 'circumfix:<{ }>', 'namespace', '', 'arguments', expand_list($stmt))
 };
 sub Perlito5::Grammar::Expression::pop_term {
     my $num_stack = shift();

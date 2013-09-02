@@ -2814,12 +2814,7 @@ var p5100 = p5pkg['main'];
 				if ( (p5str(p5call(v_stmt, "code", [], 0)) != 'list:<,>') ) {
 					throw(p5context([v_o], p5want));
 				};
-				p5for_lex(function (v_item) {
-						if ( ((p5str(p5pkg["Perlito5::Grammar::Expression"].ref([v_item], 0)) == 'Perlito5::AST::Apply') && (p5str(p5call(v_item, "code", [], 0)) == 'infix:<=>>')) ) {
-							throw(p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'circumfix:<{ }>', 'namespace', '', 'arguments', p5pkg["Perlito5::Grammar::Expression"].expand_list([v_stmt], 1)), p5want));
-						};
-					}, p5list_to_a(p5call(v_stmt, "arguments", [], p5want)._array_), false, "");
-				return (p5context([v_o], p5want));
+				return (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'circumfix:<{ }>', 'namespace', '', 'arguments', p5pkg["Perlito5::Grammar::Expression"].expand_list([v_stmt], 1)), p5want));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
