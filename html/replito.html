@@ -93,8 +93,8 @@
                            + 'Terminal simulator: https://github.com/replit/jq-console\n\n';
                 window.jqconsole = $('#console').jqconsole(header, 'Perlito> ');
 
-                // Abort prompt on Ctrl+Z.
-                jqconsole.RegisterShortcut('Z', function() {
+                // Abort prompt on Ctrl+C.
+                jqconsole.RegisterShortcut('C', function() {
                     jqconsole.AbortPrompt();
                     handler();
                 });
