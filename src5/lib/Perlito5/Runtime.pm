@@ -323,15 +323,29 @@ our $CORE_PROTO = {
           'CORE::exists' => '$',      # original 'undef',
           'CORE::printf' => '$@',      # original 'undef',
 
-          'CORE::m'  => undef, 
-          'CORE::q'  => undef,
-          'CORE::qq' => undef,
-          'CORE::qw' => undef,
-          'CORE::qx' => undef,
-          'CORE::qr' => undef,
-          'CORE::s'  => undef,
-          'CORE::tr' => undef,
-          'CORE::y'  => undef,
-        };
-1;
+          'CORE::m'      => undef, 
+          'CORE::q'      => undef,
+          'CORE::qq'     => undef,
+          'CORE::qw'     => undef,
+          'CORE::qx'     => undef,
+          'CORE::qr'     => undef,
+          'CORE::s'      => undef,
+          'CORE::tr'     => undef,
+          'CORE::y'      => undef,
+
+          'CORE::if'     => undef, 
+          'CORE::unless' => undef,
+          'CORE::when'   => undef,
+          'CORE::for'    => undef,
+          'CORE::foreach'=> undef,
+          'CORE::while'  => undef,
+          'CORE::given'  => undef,
+
+          'CORE::and'    => undef,
+          'CORE::or'     => undef,
+          'CORE::xor'    => undef,
+          'CORE::not'    => undef,
+          'CORE::cmp'    => undef,
+        };  
+1;          
 
