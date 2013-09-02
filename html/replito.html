@@ -115,8 +115,8 @@
                 var handler = function(command) {
                     if (command) {
                         try {
-                            //var js_source = p5pkg["Perlito5"].compile_p5_to_js(['return Perlito5::Dumper::Dumper(' + command + ')']);
                             var js_source = p5pkg["Perlito5"].compile_p5_to_js(['return Perlito5::Dumper::Dumper(eval q(' + command + '))']);
+                            //console.log(js_source);
                             eval(js_source);
                         } catch (e) {
                             jqconsole.Write(e + '\n');
