@@ -244,6 +244,15 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- unary minus
+    special cases for string and bareword
+
+-- '&' prototype
+    add tests; see Try::Tiny
+
+-- AUTOLOAD() called from UNIVERSAL autovivifies packages
+    add tests
+
 -- code emitter for first argument of sort() and grep() 
 
 -- prototype() can be set by aliasing:
