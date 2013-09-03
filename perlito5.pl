@@ -6350,7 +6350,7 @@ sub Perlito5::Grammar::Space::start_of_line {
                                                                                     })))
                                                                         })) || ((do {
                                                                             $MATCH->{'to'} = $pos1;
-                                                                            ((((('head1' eq substr($str, $MATCH->{'to'}, 5)) && ($MATCH->{'to'} = (5 + $MATCH->{'to'})))) && ((do {
+                                                                            ((((('head' eq substr($str, $MATCH->{'to'}, 4)) && ($MATCH->{'to'} = (4 + $MATCH->{'to'})))) && ((do {
                                                                                             my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
                                                                                             if ($m2) {
                                                                                                 $MATCH->{'to'} = $m2->{'to'};
