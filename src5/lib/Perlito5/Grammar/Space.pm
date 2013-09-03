@@ -97,7 +97,7 @@ token start_of_line {
     <.Perlito5::Grammar::String.here_doc>
     [ '='  [
            |  'pod'    <.pod_pod_begin>
-           |  'head1'  <.pod_pod_begin>
+           |  'head'  <.pod_pod_begin>
            |  'begin'  <.pod_begin>
            |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
            ]
