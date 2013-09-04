@@ -271,7 +271,7 @@ p5make_package("Perlito5::IO");
 p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
 
-function p5make_sub(pkg_name, sub_name, func) {
+function p5typeglob_set(pkg_name, sub_name, func) {
     p5make_package(pkg_name);
     p5pkg[pkg_name][sub_name] = func;
 }
@@ -811,12 +811,12 @@ p5a_to_h = function(a) {
 
 if (isNode) {
     var fs = require("fs");
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
         var filename = p5str(List__[0]);
         return fs.readFileSync(filename, "utf8");
     });
 } else {
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
         var filename = p5str(List__[0]);
         if (typeof readFile == "function") {
             return readFile(filename);

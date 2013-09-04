@@ -313,12 +313,31 @@ p5make_package("Perlito5::IO");
 p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
 
-function p5make_sub(pkg_name, sub_name, func) {
-    p5make_package(pkg_name);
-    p5pkg[pkg_name][sub_name] = func;
-}
-
 var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
+
+function p5typeglob_set(namespace, name, obj) {
+    p5make_package(namespace);
+    if ( obj.hasOwnProperty("_ref_") ) {
+        if ( obj._ref_ == "HASH" ) {
+            p5pkg[namespace][sigils['%'] + name] = obj._hash_;
+        }
+        else if ( obj._ref_ == "ARRAY" ) {
+            p5pkg[namespace][sigils['@'] + name] = obj._array_;
+        }
+        else if ( obj._ref_ == "SCALAR" ) {
+            p5pkg[namespace][sigils['$'] + name] = obj._scalar_;
+        }
+        else if ( obj._ref_ == "GLOB" ) {
+            // TODO
+            p5pkg[namespace][name] = obj;
+        }
+    }
+    else {
+        p5pkg[namespace][name] = obj;   // CODE
+        // TODO - non-reference
+    }
+    return p5pkg[namespace][name];  // TODO - return GLOB
+}
 
 function p5set_local(namespace, name, sigil) {
     var vname = sigils[sigil] + name;
