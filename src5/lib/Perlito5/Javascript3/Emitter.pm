@@ -2251,7 +2251,7 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript3::tab($level) . '}';
 
         if ( $self->{name} ) {
-            return 'p5make_sub("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
+            return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
         }
         else {
             return $s;

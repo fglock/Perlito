@@ -29,7 +29,7 @@ if (isNode) {
 
     var fs = require("fs");
 
-    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+    p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
         var i;
         List__.shift(); // TODO - use IO::FILE
         for (i = 0; i < List__.length; i++) {
@@ -141,13 +141,13 @@ if (isNode) {
         }
     };
 
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
         return fs.readFileSync(List__[0],"utf8");
     });
 
 } else {
     // not running in node.js
-    p5make_sub("Perlito5::IO", "print", function (List__, p5want) {
+    p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
         var i;
         List__.shift(); // TODO - use IO::FILE
         for (i = 0; i < List__.length; i++) {
@@ -155,7 +155,7 @@ if (isNode) {
         }
         return 1;
     });
-    p5make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
         var filename = List__[0];
         if (typeof readFile == "function") {
             return readFile(filename);

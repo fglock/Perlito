@@ -1187,7 +1187,11 @@ package Perlito5::AST::Var;
             return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1, 'hash') . ')' 
         }
         if ( $self->sigil eq '*' ) {
-            return '(' . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . ')'
+            return 'p5typeglob_set(' 
+            .   '"' . ($self->{namespace} || $Perlito5::PKG_NAME) . '", ' 
+            .   '"' . $self->{name} . '", ' 
+            .   Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+            . ')'
         }
 
         die "don't know how to assign to variable ", $self->sigil, $self->name;
@@ -2725,7 +2729,7 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript2::tab($level) . '}';
 
         if ( $self->{name} ) {
-            return 'p5make_sub("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
+            return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
         }
         else {
             return $s;
