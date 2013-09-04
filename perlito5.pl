@@ -10260,7 +10260,7 @@ package Perlito5::AST::Use;
         my $self = shift();
         my $level = shift();
         Perlito5::Grammar::Use::emit_time_eval($self);
-        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
+        ('true // ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
     }
 };
 
@@ -11735,7 +11735,7 @@ package Perlito5::AST::Use;
         my $self = shift();
         my $level = shift();
         Perlito5::Grammar::Use::emit_time_eval($self);
-        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
+        ('true // ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
     }
 };
 
