@@ -95,25 +95,29 @@
                         dataType: 'json',
                         data: {
                             fields: 'author,release,path',
-                            q: 'path:lib' + filename + ' AND status:latest',
+                            q: 'path:' + filename + ' AND status:latest',
                             size: 1
                         },
                         success: function (_search) {
-                            var fields = _search['hits']['hits'][0]['fields'];
-                            var uri = 'http://api.metacpan.org/source/'
-                                    + fields.author + '/'
-                                    + fields.release + '/'
-                                    + fields.path;
-                            metacpan_uri[filename] = uri;
-                            found = true;
+                            try {
+                                var fields = _search['hits']['hits'][0]['fields'];
+                                var uri = 'http://api.metacpan.org/source/'
+                                        + fields.author + '/'
+                                        + fields.release + '/'
+                                        + fields.path;
+                                metacpan_uri[filename] = uri;
+                                found = true;
+                            } catch (e) {
+                                metacpan_uri[filename] = null;
+                            }
                         }
                     });
                 }
                 return found;
             }
 
-            p5make_sub("Perlito5::IO", "slurp", function(List__) {
-                if (!p5is_file(List__[0])) {
+            p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
+                if (!p5is_file(List__[0]) || metacpan_uri[List__[0]] === null) {
                     return '';
                 }
                 var source = '';
@@ -134,6 +138,7 @@
             p5pkg["main"]["Hash_INC"]["Perlito5/strict.pm"] = "Perlito5/strict.pm";
             p5pkg["main"]["Hash_INC"]["Perlito5/warnings.pm"] = "Perlito5/warnings.pm";
             p5pkg["main"]["Hash_INC"]["Perlito5/utf8.pm"] = "Perlito5/utf8.pm";
+            p5pkg["main"]["List_INC"] = ['lib', 'bin', ''];
 
             $(function() {
                 // Creating the console.
