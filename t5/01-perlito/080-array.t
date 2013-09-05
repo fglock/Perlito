@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..26';
+say '1..27';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -142,4 +142,17 @@ $v = "[@x{1,2,3}]";
 print "not "
     unless $v eq "[9 8 7]";
 say "ok 26 - hash slice assignment # $v";
+
+
+# from http://perltraining.com.au/tips/2009-03-11.html
+my @duplicates = (1, 1, 2, 3, 4, 5, 5, 6, 7, 7, 8, 9, 2, 3, 3,);
+my %unique;
+# Our hash here has keys, but all its values will be undefined.
+# That's fine, since we're only interested in the keys.
+@unique{@duplicates} = ();
+my @unique_elements = sort keys %unique;
+$v = "@unique_elements";
+print "not "
+    unless $v eq '1 2 3 4 5 6 7 8 9';
+print "ok 27 - unique_elements $v\n";
 
