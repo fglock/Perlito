@@ -366,6 +366,11 @@ TODO list for Perlito5
     print -$_
     # -a
 
+    my $foo = '-bar';
+    print $foo;
+    print -$foo;
+    # -bar+bar
+
 
 * Nice to Have
 
