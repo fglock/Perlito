@@ -12118,6 +12118,9 @@ package Perlito5::AST::Apply;
         if (($code eq 'prefix:<&>')) {
             return ('&{' . $self->emit_perl5_args(($level + 1)) . '}')
         };
+        if (($code eq 'prefix:<*>')) {
+            return ('*{' . $self->emit_perl5_args(($level + 1)) . '}')
+        };
         if (($code eq 'prefix:<$#>')) {
             return ('$#{' . $self->emit_perl5_args(($level + 1)) . '}')
         };
