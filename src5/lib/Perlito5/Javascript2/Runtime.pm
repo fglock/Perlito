@@ -7,12 +7,9 @@ sub perl5_to_js {
 
     # say "source: [" . $source . "]";
 
-    my $strict_old      = $Perlito5::STRICT;
-    my $var_env_js_old  = $Perlito5::VAR;
-    $Perlito5::VAR      = $var_env_js;
-
-    my $namespace_old   = $Perlito5::PKG_NAME;
-    $Perlito5::PKG_NAME = $namespace;
+    my    $strict_old         = $Perlito5::STRICT;
+    local $Perlito5::VAR      = $var_env_js;
+    local $Perlito5::PKG_NAME = $namespace;
 
     my $match = Perlito5::Grammar->exp_stmts( $source, 0 );
 
@@ -20,24 +17,16 @@ sub perl5_to_js {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
-    my $ast = bless( 
-        {
-            block => bless(
-                        {
+    my $ast = Perlito5::AST::Do->new(
+                block => Perlito5::AST::Lit::Block->new(
                             stmts => $match->{capture},
-                        },
-                        "Perlito5::AST::Lit::Block"
-                     )
-        },
-        "Perlito5::AST::Do"
-    );
+                         ),
+              );
 
     # say "ast: [" . ast . "]";
     my $js_code = $ast->emit_javascript2(0);
     # say "js-source: [" . $js_code . "]";
 
-    $Perlito5::PKG_NAME = $namespace_old;
-    $Perlito5::VAR      = $var_env_js_old;
     $Perlito5::STRICT   = $strict_old;
     return $js_code;
 }

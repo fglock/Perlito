@@ -10274,18 +10274,14 @@ package Perlito5::Javascript2::Runtime;
 sub Perlito5::Javascript2::Runtime::perl5_to_js {
     my($source, $namespace, $var_env_js) = @_;
     my $strict_old = $Perlito5::STRICT;
-    my $var_env_js_old = $Perlito5::VAR;
-    $Perlito5::VAR = $var_env_js;
-    my $namespace_old = $Perlito5::PKG_NAME;
-    $Perlito5::PKG_NAME = $namespace;
+    local $Perlito5::VAR = $var_env_js;
+    local $Perlito5::PKG_NAME = $namespace;
     my $match = Perlito5::Grammar->exp_stmts($source, 0);
     if ((!($match) || ($match->{'to'} != length($source)))) {
         die('Syntax error in eval near pos ', $match->{'to'})
     };
-    my $ast = bless({'block', bless({'stmts', $match->{'capture'}}, 'Perlito5::AST::Lit::Block')}, 'Perlito5::AST::Do');
+    my $ast = Perlito5::AST::Do->new('block', Perlito5::AST::Lit::Block->new('stmts', $match->{'capture'}));
     my $js_code = $ast->emit_javascript2(0);
-    $Perlito5::PKG_NAME = $namespace_old;
-    $Perlito5::VAR = $var_env_js_old;
     $Perlito5::STRICT = $strict_old;
     return $js_code
 };
