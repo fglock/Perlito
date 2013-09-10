@@ -687,18 +687,15 @@ p5negative = function(o) {
         s1 = parseFloat(s.trim());
         if ( isNaN(s1) ) {
             var c = s.substr(0, 1);
-            var start = '';
-            if ( c == '+' ) { start = '-'; s = s.substr(1); c = s.substr(0, 1); }
-            if ( c == '-' ) { start = '+'; s = s.substr(1); c = s.substr(0, 1); }
+            if ( c == '+' ) { s = s.substr(1); return '-' + s }
+            if ( c == '-' ) { s = s.substr(1); return '+' + s }
             if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
-                if ( start == "-" ) { return 0 };
+                if ( s.trim().substr(0,1) == "-" ) { return 0 };
                 return '-0';
             };
-            if ( start == "-" ) { return start + s };
-            if ( start == "+" ) { return start + s };
             return '-' + s
         };
-        return s1;
+        return -s1;
     }
     return -o;
 };

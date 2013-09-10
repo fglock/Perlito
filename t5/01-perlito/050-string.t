@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..50';
+say '1..53';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -196,19 +196,29 @@ $v = '-!Z ';
 $r = -$v;
 print 'not ' if $r ne '+!Z ';  say "ok 46 - string negative - $r";
 
+$v = '+!Z ';
+$r = -$v;
+print 'not ' if $r ne '-!Z ';  say "ok 47 - string negative - $r";
 
+$v = '- 00.12';
+$r = -$v;
+print 'not ' if $r ne '+ 00.12';  say "ok 48 - string negative - $r";
+
+$v = '-00.12';
+$r = -$v;
+print 'not ' if $r ne '0.12';  say "ok 49 - string negative - $r";
 
 
 # positive
 
 $v = 'AZ';
 $r = +$v;
-print 'not ' if $r ne 'AZ';  say "ok 47 - string positive - $r";
-print 'not ' if $v ne 'AZ';  say "ok 48 - string positive - $v";
+print 'not ' if $r ne 'AZ';  say "ok 50 - string positive - $r";
+print 'not ' if $v ne 'AZ';  say "ok 51 - string positive - $v";
 
 $v = '-Z';
 $r = +$v;
-print 'not ' if $r ne '-Z';  say "ok 49 - string positive - $r";
-print 'not ' if $v ne '-Z';  say "ok 50 - string positive - $v";
+print 'not ' if $r ne '-Z';  say "ok 52 - string positive - $r";
+print 'not ' if $v ne '-Z';  say "ok 53 - string positive - $v";
 
 
