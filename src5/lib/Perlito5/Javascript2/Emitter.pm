@@ -1645,7 +1645,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            '-( ' . $self->{arguments}->[0]->emit_javascript2( $level, 'scalar' ) . ')';
+            'p5negative( ' . $self->{arguments}->[0]->emit_javascript2( $level, 'scalar' ) . ')';
         },
         'prefix:<+>' => sub {
             my $self      = shift;

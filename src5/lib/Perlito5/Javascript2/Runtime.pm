@@ -675,6 +675,34 @@ p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
+p5negative = function(o) {
+    if (o == null) {
+        return '-0';
+    }
+    if (typeof o === "object" && (o instanceof Array)) {
+        return -(o.length);
+    }
+    if (typeof o !== "number") {
+        var s = p5str(o);
+        s1 = parseFloat(s.trim());
+        if ( isNaN(s1) ) {
+            var c = s.substr(0, 1);
+            var start = '';
+            if ( c == '+' ) { start = '-'; s = s.substr(1); c = s.substr(0, 1); }
+            if ( c == '-' ) { start = '+'; s = s.substr(1); c = s.substr(0, 1); }
+            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
+                if ( start == "-" ) { return 0 };
+                return '-0';
+            };
+            if ( start == "-" ) { return start + s };
+            if ( start == "+" ) { return start + s };
+            return '-' + s
+        };
+        return s1;
+    }
+    return -o;
+};
+
 p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
     var v_old = namespace[var_name];
