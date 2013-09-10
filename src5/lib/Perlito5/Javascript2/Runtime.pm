@@ -328,6 +328,21 @@ function p5typeglob_set(namespace, name, obj) {
     return p5pkg[namespace][name];  // TODO - return GLOB
 }
 
+function p5typeglob_deref_set(v, obj) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        return p5typeglob_set(pkg_name, v, obj);
+    }
+    CORE.die(["TODO: can't p5typeglob_deref_set()"]);
+}
+
 function p5set_local(namespace, name, sigil) {
     var vname = sigils[sigil] + name;
     p5LOCAL.push([namespace, vname, namespace[vname]]);

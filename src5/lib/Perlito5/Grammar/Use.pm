@@ -15,6 +15,7 @@ my %Perlito_internal_module = (
     utf8     => 'Perlito5::utf8',
     bytes    => 'Perlito5::bytes',
     encoding => 'Perlito5::encoding',
+    Carp     => 'Perlito5::Carp',
 );
 
 

@@ -1557,6 +1557,12 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
                 . ')';
         }
+        if ($code eq 'prefix:<*>') {
+            return 'p5typeglob_deref_set(' 
+                . Perlito5::Javascript2::to_scalar($self->{arguments}, $level+1) . ', '
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . ')';
+        }
 
         '(' . $self->emit_javascript2( $level+1 ) . ' = ' . $arguments->emit_javascript2( $level+1 ) . ')';
     }
@@ -2232,7 +2238,16 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             my @in  = @{$self->{arguments}};
-            my $fun  = shift @in;
+
+            my $fun;
+
+            if ( $self->{special_arg} ) {
+                # TODO - test 'special_arg' type (scalar, block, ...)
+                $fun  = $self->{special_arg};
+            }
+            else {
+                $fun  = shift @in;
+            }
             my $list = Perlito5::Javascript2::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
