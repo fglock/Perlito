@@ -554,8 +554,6 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
 
-        # TODO - use the context information ($wantarray)
-
         if ($self->{needs_return} && $last_statement) {
 
             if ($last_statement->isa( 'Perlito5::AST::Decl' )) {
@@ -575,24 +573,7 @@ package Perlito5::Javascript2::LexicalBlock;
                 $last_statement = $last_statement->{arguments}[0];
             }
 
-            if ($last_statement->isa( 'Perlito5::AST::If' )) {
-                my $cond      = $last_statement->cond;
-                my $body      = $last_statement->body;
-                my $otherwise = $last_statement->otherwise;
-                $body         = Perlito5::Javascript2::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
-                push @str,
-                        'if ( ' . Perlito5::Javascript2::to_bool( $cond, $level+1 ) . ' ) {' . "\n"
-                        .   $body->emit_javascript2($level+1) . "\n"
-                        . Perlito5::Javascript2::tab($level) . '}';
-                if ($otherwise) {
-                    $otherwise = Perlito5::Javascript2::LexicalBlock->new( block => $otherwise->stmts, needs_return => 1 );
-                    push @str, "\n"
-                        . Perlito5::Javascript2::tab($level) . 'else {' . "\n"
-                        .   $otherwise->emit_javascript2($level+1) . "\n"
-                        . Perlito5::Javascript2::tab($level) . '}';
-                }
-            }
-            elsif ( $last_statement->isa( 'Perlito5::AST::Lit::Block' ) ) {
+            if ( $last_statement->isa( 'Perlito5::AST::Lit::Block' ) ) {
                 my $body = Perlito5::Javascript2::LexicalBlock->new( block => $last_statement->{stmts}, needs_return => 1 );
                 push @str,
                       'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
@@ -601,6 +582,7 @@ package Perlito5::Javascript2::LexicalBlock;
             }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
+                  || $last_statement->isa( 'Perlito5::AST::If' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
@@ -2561,15 +2543,28 @@ package Perlito5::AST::If;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
-        my $cond = $self->{cond};
-        my $body  = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
-        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($cond, $level + 1) . ' ) {' . "\n"
+        my $wantarray = shift;
+        my $body;
+        my $otherwise;
+
+        if ($wantarray eq 'runtime') {
+            $body      = Perlito5::Javascript2::LexicalBlock->new( 
+                            block => $self->{body}->stmts, needs_return => 1 );
+            $otherwise = Perlito5::Javascript2::LexicalBlock->new( 
+                            block => $self->{otherwise}->stmts, needs_return => 1 );
+        }
+        else {
+            $body      = Perlito5::Javascript2::LexicalBlock->new( 
+                            block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
+            $otherwise = Perlito5::Javascript2::LexicalBlock->new( 
+                            block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
+        }
+
+        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($self->{cond}, $level + 1) . ' ) {' . "\n"
             .       $body->emit_javascript2( $level + 1 ) . "\n"
             . Perlito5::Javascript2::tab($level) . '}';
         if ( @{ $self->{otherwise}->stmts } ) {
-            my $otherwise = Perlito5::Javascript2::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
-            $s = $s
-                . "\n"
+            $s = $s . "\n"
                 . Perlito5::Javascript2::tab($level) . 'else {' . "\n"
                 .       $otherwise->emit_javascript2( $level + 1 ) . "\n"
                 . Perlito5::Javascript2::tab($level) . '}';

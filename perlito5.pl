@@ -8879,33 +8879,20 @@ package Perlito5::Javascript2::LexicalBlock;
             if (((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')) && $self->{'top_level'}) && @{$last_statement->{'arguments'}})) {
                 $last_statement = $last_statement->{'arguments'}->[0]
             };
-            if ($last_statement->isa('Perlito5::AST::If')) {
-                my $cond = $last_statement->cond();
-                my $body = $last_statement->body();
-                my $otherwise = $last_statement->otherwise();
-                $body = Perlito5::Javascript2::LexicalBlock->new('block', $body->stmts(), 'needs_return', 1);
-                push(@str, ('if ( ' . Perlito5::Javascript2::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}'));
-                if ($otherwise) {
-                    $otherwise = Perlito5::Javascript2::LexicalBlock->new('block', $otherwise->stmts(), 'needs_return', 1);
-                    push(@str, (chr(10) . Perlito5::Javascript2::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}'))
-                }
+            if ($last_statement->isa('Perlito5::AST::Lit::Block')) {
+                my $body = Perlito5::Javascript2::LexicalBlock->new('block', $last_statement->{'stmts'}, 'needs_return', 1);
+                push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}'))
             }
             else {
-                if ($last_statement->isa('Perlito5::AST::Lit::Block')) {
-                    my $body = Perlito5::Javascript2::LexicalBlock->new('block', $last_statement->{'stmts'}, 'needs_return', 1);
-                    push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}'))
+                if (((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || $last_statement->isa('Perlito5::AST::If')) || $last_statement->isa('Perlito5::AST::Use')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                    push(@str, $last_statement->emit_javascript2($level, 'runtime'))
                 }
                 else {
-                    if ((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || $last_statement->isa('Perlito5::AST::Use')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
-                        push(@str, $last_statement->emit_javascript2($level, 'runtime'))
+                    if ($has_local) {
+                        push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . '));'))
                     }
                     else {
-                        if ($has_local) {
-                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . '));'))
-                        }
-                        else {
-                            push(@str, ('return (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . ');'))
-                        }
+                        push(@str, ('return (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . ');'))
                     }
                 }
             }
@@ -10164,11 +10151,19 @@ package Perlito5::AST::If;
     sub Perlito5::AST::If::emit_javascript2 {
         my $self = shift();
         my $level = shift();
-        my $cond = $self->{'cond'};
-        my $body = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1);
-        my $s = ('if ( ' . Perlito5::Javascript2::to_bool($cond, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}');
+        my $wantarray = shift();
+        my $body;
+        my $otherwise;
+        if (($wantarray eq 'runtime')) {
+            $body = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 1);
+            $otherwise = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 1)
+        }
+        else {
+            $body = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1);
+            $otherwise = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1)
+        };
+        my $s = ('if ( ' . Perlito5::Javascript2::to_bool($self->{'cond'}, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}');
         if (@{$self->{'otherwise'}->stmts()}) {
-            my $otherwise = Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1);
             $s = ($s . chr(10) . Perlito5::Javascript2::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}')
         };
         return $s
