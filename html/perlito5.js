@@ -12268,7 +12268,7 @@ var p5100 = p5pkg['main'];
 									})();
 								}
 								else {
-									if ( (((p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::For'], 0)) || p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::While'], 0))) || (p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_last_statement, "code", [], 0)) == 'goto'))) || (p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_last_statement, "code", [], 0)) == 'return'))) ) {
+									if ( ((((p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::For'], 0)) || p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::While'], 0))) || p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Use'], 0))) || (p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_last_statement, "code", [], 0)) == 'goto'))) || (p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_last_statement, "code", [], 0)) == 'return'))) ) {
 										List_str.p5push(p5list_to_a(p5call(v_last_statement, "emit_javascript2", [v_level, 'runtime'], 1)));
 									}
 									else {
@@ -14431,12 +14431,30 @@ var p5100 = p5pkg['main'];
 		var p5164 = p5make_package("Perlito5::AST::Use");
 		p5for_lex(function () {
 				p5typeglob_set("Perlito5::AST::Use", "emit_javascript2", function (List__, p5want) {
+					try {
 						var v_self;
 						(v_self = (List__.shift()));
 						var v_level;
 						(v_level = (List__.shift()));
+						var v_wantarray;
+						(v_wantarray = (List__.shift()));
 						p5pkg["Perlito5::Grammar::Use"].emit_time_eval([v_self], null);
-						return (p5context([('// ' + p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('code')) + ' ' + p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('mod')) + String.fromCharCode(10))], p5want));
+						if ( (p5str(v_wantarray) == 'runtime') ) {
+							throw(p5context(['p5context([], p5want)'], p5want))
+						}
+						
+						else {
+							throw(p5context([('// ' + p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('code')) + ' ' + p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('mod')) + String.fromCharCode(10))], p5want))
+						}
+					}
+					catch(err) {
+						if ( err instanceof Error ) {
+							throw(err);
+						}
+						else {
+							return(err);
+						}
+					}
 				});
 			}, [0], false, "");
 	})()

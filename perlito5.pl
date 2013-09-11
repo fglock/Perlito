@@ -8893,7 +8893,7 @@ package Perlito5::Javascript2::LexicalBlock;
                     push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}'))
                 }
                 else {
-                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                    if ((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || $last_statement->isa('Perlito5::AST::Use')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
                         push(@str, $last_statement->emit_javascript2($level, 'runtime'))
                     }
                     else {
@@ -10268,8 +10268,14 @@ package Perlito5::AST::Use;
     sub Perlito5::AST::Use::emit_javascript2 {
         my $self = shift();
         my $level = shift();
+        my $wantarray = shift();
         Perlito5::Grammar::Use::emit_time_eval($self);
-        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
+        if (($wantarray eq 'runtime')) {
+            return 'p5context([], p5want)'
+        }
+        else {
+            return ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
+        }
     }
 };
 
