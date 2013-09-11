@@ -8283,6 +8283,14 @@ sub Perlito5::AST::Lookup::autoquote {
         if (!(exists($Perlito5::PROTO->{$full_name}))) {
             return Perlito5::AST::Val::Buf->new('buf', $full_name)
         }
+    }
+    else {
+        if (($index->isa('Perlito5::AST::Apply') && ((($index->code() eq 'prefix:<->') || ($index->code() eq 'prefix:<+>'))))) {
+            my $arg = $index->arguments()->[0];
+            if ($arg) {
+                return Perlito5::AST::Apply->new('code', $index->code(), 'namespace', $index->namespace(), 'arguments', [$self->autoquote($arg)])
+            }
+        }
     };
     $index
 };
@@ -8733,12 +8741,7 @@ package Perlito5::Javascript2;
     sub Perlito5::Javascript2::autoquote {
         my $index = shift();
         my $level = shift();
-        if (($index->isa('Perlito5::AST::Apply') && $index->{'bareword'})) {
-            my $full_name = ((($index->{'namespace'} ? ($index->{'namespace'} . '::') : '')) . $index->{'code'});
-            if (!(exists($Perlito5::PROTO->{$full_name}))) {
-                $index = Perlito5::AST::Val::Buf->new('buf', $full_name)
-            }
-        };
+        $index = Perlito5::AST::Lookup->autoquote($index);
         return to_str($index, $level)
     };
     sub Perlito5::Javascript2::emit_javascript2_autovivify {

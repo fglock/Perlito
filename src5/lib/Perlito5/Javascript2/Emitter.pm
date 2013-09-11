@@ -399,17 +399,7 @@ package Perlito5::Javascript2;
         # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
         # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
     
-        if ($index->isa('Perlito5::AST::Apply')
-           && $index->{bareword}
-           )
-        {
-            my $full_name = ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code};
-            if ( !exists $Perlito5::PROTO->{$full_name} ) {
-                $index = Perlito5::AST::Val::Buf->new( 
-                    buf => $full_name
-                );
-            }
-        }
+        $index = Perlito5::AST::Lookup->autoquote($index);
     
         return to_str($index, $level);
     }
