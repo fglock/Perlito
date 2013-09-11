@@ -43,6 +43,12 @@ CORE.bless = function(List__) {
     return o;
 };
 
+CORE.caller = function(List__, want) {
+    return p5pkg["Perlito5"].v_CALLER._array_ ?
+           p5pkg["Perlito5"].v_CALLER._array_[0]._array_ :
+           p5context([], want);
+};
+
 CORE.chr = function(List__) {
     var v = p5num(List__[0]);
     return String.fromCharCode(v >= 0 ? v : 65533);

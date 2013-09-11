@@ -357,6 +357,20 @@ TODO list for Perlito5
     
     Both failed with syntax errors.
 
+-- flip-flop operator
+    if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
+
+-- unary minus on strings.
+
+    my $_ = "a"
+    print -$_
+    # -a
+
+    my $foo = '-bar';
+    print $foo;
+    print -$foo;
+    # -bar+bar
+
 
 * Nice to Have
 
@@ -385,6 +399,39 @@ TODO list for Perlito5
 -- local(*{$caller."::a"}) = \my $a;
 -- *{$pkg . "::foo"} = \&bar;
 
+
+* Oddities
+
+-- from moritz, Schwern and others at
+    http://stackoverflow.com/questions/161872/hidden-features-of-perl
+
+    - you can give subs numeric names if you use symbolic references
+
+    $ perl -lwe '*4 = sub { print "yes" }; 4->()'
+    yes
+
+    - you can use letters as delimiters
+
+    $ perl -Mstrict  -wle 'print q bJet another perl hacker.b'
+    Jet another perl hacker.
+    
+    Likewise you can write regular expressions:
+    
+    m xabcx
+    # same as m/abc/
+
+    The "desperation mode" of Perl's loop control constructs which causes them to look up the stack to find a matching label allows some curious behaviors which Test::More takes advantage of, for better or worse.
+    
+    SKIP: {
+        skip() if $something;
+    
+        print "Never printed";
+    }
+    
+    sub skip {
+        no warnings "exiting";
+        last SKIP;
+    }
 
 
 * Deprecate

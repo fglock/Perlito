@@ -7,12 +7,9 @@ sub perl5_to_js {
 
     # say "source: [" . $source . "]";
 
-    my $strict_old      = $Perlito5::STRICT;
-    my $var_env_js_old  = $Perlito5::VAR;
-    $Perlito5::VAR      = $var_env_js;
-
-    my $namespace_old   = $Perlito5::PKG_NAME;
-    $Perlito5::PKG_NAME = $namespace;
+    my    $strict_old         = $Perlito5::STRICT;
+    local $Perlito5::VAR      = $var_env_js;
+    local $Perlito5::PKG_NAME = $namespace;
 
     my $match = Perlito5::Grammar->exp_stmts( $source, 0 );
 
@@ -20,24 +17,16 @@ sub perl5_to_js {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
-    my $ast = bless( 
-        {
-            block => bless(
-                        {
+    my $ast = Perlito5::AST::Do->new(
+                block => Perlito5::AST::Lit::Block->new(
                             stmts => $match->{capture},
-                        },
-                        "Perlito5::AST::Lit::Block"
-                     )
-        },
-        "Perlito5::AST::Do"
-    );
+                         ),
+              );
 
     # say "ast: [" . ast . "]";
     my $js_code = $ast->emit_javascript2(0);
     # say "js-source: [" . $js_code . "]";
 
-    $Perlito5::PKG_NAME = $namespace_old;
-    $Perlito5::VAR      = $var_env_js_old;
     $Perlito5::STRICT   = $strict_old;
     return $js_code;
 }
@@ -337,6 +326,21 @@ function p5typeglob_set(namespace, name, obj) {
         // TODO - non-reference
     }
     return p5pkg[namespace][name];  // TODO - return GLOB
+}
+
+function p5typeglob_deref_set(v, obj) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        return p5typeglob_set(pkg_name, v, obj);
+    }
+    CORE.die(["TODO: can't p5typeglob_deref_set()"]);
 }
 
 function p5set_local(namespace, name, sigil) {
@@ -669,6 +673,31 @@ p5str_inc = function(s) {
         return s.substr(0, s.length-1) + c;
     }
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+};
+
+p5negative = function(o) {
+    if (o == null) {
+        return '-0';
+    }
+    if (typeof o === "object" && (o instanceof Array)) {
+        return -(o.length);
+    }
+    if (typeof o !== "number") {
+        var s = p5str(o);
+        s1 = parseFloat(s.trim());
+        if ( isNaN(s1) ) {
+            var c = s.substr(0, 1);
+            if ( c == '+' ) { s = s.substr(1); return '-' + s }
+            if ( c == '-' ) { s = s.substr(1); return '+' + s }
+            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
+                if ( s.trim().substr(0,1) == "-" ) { return 0 };
+                return '-0';
+            };
+            return '-' + s
+        };
+        return -s1;
+    }
+    return -o;
 };
 
 p5for = function(namespace, var_name, func, args, cont, label) {

@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..32';
+say '1..53';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -142,4 +142,83 @@ $v = '-5Z';
 $r = --$v;
 print 'not ' if $r ne '-6';  say "ok 31 - string decrement - $r";
 print 'not ' if $v ne '-6';  say "ok 32 - string decrement - $v";
+
+# negative
+
+$v = 'AZ';
+$r = -$v;
+print 'not ' if $r ne '-AZ';  say "ok 33 - string negative - $r";
+print 'not ' if $v ne 'AZ';   say "ok 34 - string negative - $v";
+
+$v = '-Z';
+$r = -$v;
+print 'not ' if $r ne '+Z';  say "ok 35 - string negative - $r";
+print 'not ' if $v ne '-Z';  say "ok 36 - string negative - $v";
+
+$v = '-NAN';
+$r = -$v;
+print 'not ' if $r ne '+NAN';  say "ok 37 - string negative - $r";
+
+$v = '-INF';
+$r = -$v;
+print 'not ' if $r ne '+INF';  say "ok 38 - string negative - $r";
+
+
+$v = ' AZ ';
+$r = -$v;
+print 'not ' if $r ne '-0';  say "ok 39 - string negative - $r";
+
+$v = ' -Z ';
+$r = -$v;
+print 'not ' if $r ne '0';  say "ok 40 - string negative - $r";
+
+$v = ' - ';
+$r = -$v;
+print 'not ' if $r ne '0';  say "ok 41 - string negative - $r";
+
+$v = ' + ';
+$r = -$v;
+print 'not ' if $r ne '-0';  say "ok 42 - string negative - $r";
+
+$v = '-';
+$r = -$v;
+print 'not ' if $r ne '+';  say "ok 43 - string negative - $r";
+
+$v = '+';
+$r = -$v;
+print 'not ' if $r ne '-';  say "ok 44 - string negative - $r";
+
+$v = '!AZ ';
+$r = -$v;
+print 'not ' if $r ne '-0';  say "ok 45 - string negative - $r";
+
+$v = '-!Z ';
+$r = -$v;
+print 'not ' if $r ne '+!Z ';  say "ok 46 - string negative - $r";
+
+$v = '+!Z ';
+$r = -$v;
+print 'not ' if $r ne '-!Z ';  say "ok 47 - string negative - $r";
+
+$v = '- 00.12';
+$r = -$v;
+print 'not ' if $r ne '+ 00.12';  say "ok 48 - string negative - $r";
+
+$v = '-00.12';
+$r = -$v;
+print 'not ' if $r ne '0.12';  say "ok 49 - string negative - $r";
+
+
+# positive
+
+$v = 'AZ';
+$r = +$v;
+print 'not ' if $r ne 'AZ';  say "ok 50 - string positive - $r";
+print 'not ' if $v ne 'AZ';  say "ok 51 - string positive - $v";
+
+$v = '-Z';
+$r = +$v;
+print 'not ' if $r ne '-Z';  say "ok 52 - string positive - $r";
+print 'not ' if $v ne '-Z';  say "ok 53 - string positive - $v";
+
 
