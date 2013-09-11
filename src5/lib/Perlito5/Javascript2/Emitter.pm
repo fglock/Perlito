@@ -611,6 +611,7 @@ package Perlito5::Javascript2::LexicalBlock;
             }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
+                  || $last_statement->isa( 'Perlito5::AST::Use' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
@@ -2772,8 +2773,15 @@ package Perlito5::AST::Use;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        '// ' . $self->{code} . ' ' . $self->{mod} . "\n"
+
+        if ($wantarray eq 'runtime') {
+            return 'p5context([], p5want)';
+        }
+        else {
+            return '// ' . $self->{code} . ' ' . $self->{mod} . "\n";
+        }
     }
 }
 
