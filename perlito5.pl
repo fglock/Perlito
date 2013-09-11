@@ -9719,10 +9719,7 @@ package Perlito5::AST::Apply;
                     my $tmp2 = ('tmp' . Perlito5::Javascript2::get_label());
                     return ('(function () {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp . ' = ' . Perlito5::Javascript2::to_list([$arguments], ($level + 1)) . ';' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0);' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . join((';' . chr(10) . Perlito5::Javascript2::tab(($level + 1))), (map($_->emit_javascript2_set_list(($level + 1), $tmp), @{$parameters->arguments()})), ('return ' . $tmp2)) . chr(10) . Perlito5::Javascript2::tab($level) . '})()')
                 };
-                if (((((($parameters->isa('Perlito5::AST::Index') || $parameters->isa('Perlito5::AST::Lookup')) || $parameters->isa('Perlito5::AST::Call')) || $parameters->isa('Perlito5::AST::Var')) || $parameters->isa('Perlito5::AST::Decl')) || $parameters->isa('Perlito5::AST::Apply'))) {
-                    return $parameters->emit_javascript2_set($arguments, ($level + 1))
-                };
-                ('(' . $parameters->emit_javascript2($level) . ' = ' . $arguments->emit_javascript2(($level + 1)) . ')')
+                return $parameters->emit_javascript2_set($arguments, ($level + 1))
             }, 'break', sub {
                 my $self = shift();
                 my $level = shift();

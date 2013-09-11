@@ -1904,20 +1904,7 @@ package Perlito5::AST::Apply;
                   ) . "\n"
                 . Perlito5::Javascript2::tab($level) .      "})()";
             }
-
-            if  (   $parameters->isa( 'Perlito5::AST::Index')
-                ||  $parameters->isa( 'Perlito5::AST::Lookup') 
-                ||  $parameters->isa( 'Perlito5::AST::Call') 
-                ||  $parameters->isa( 'Perlito5::AST::Var') 
-                ||  $parameters->isa( 'Perlito5::AST::Decl') 
-                ||  $parameters->isa( 'Perlito5::AST::Apply') 
-                )
-            {
-                return $parameters->emit_javascript2_set($arguments, $level+1);
-            }
-
-            '(' . $parameters->emit_javascript2( $level ) . ' = ' . $arguments->emit_javascript2( $level+1 ) . ')';
-
+            return $parameters->emit_javascript2_set($arguments, $level+1);
         },
 
         'break' => sub {

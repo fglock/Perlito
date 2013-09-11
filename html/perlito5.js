@@ -13238,10 +13238,7 @@ var p5100 = p5pkg['main'];
 }, p5list_to_a(p5call(v_parameters, "arguments", [], p5want)._array_)), ('return ' + p5str(v_tmp2)))], 0) + String.fromCharCode(10) + p5str(p5pkg["Perlito5::Javascript2"].tab([v_level], 0)) + '})()')], p5want));
 									})();
 								};
-								if ( (((((p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Index'], 0)) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Lookup'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Call'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Var'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Decl'], 0))) || p5bool(p5call(v_parameters, "isa", ['Perlito5::AST::Apply'], 0))) ) {
-									throw(p5call(v_parameters, "emit_javascript2_set", [v_arguments, (p5num(v_level) + 1)], p5want));
-								};
-								return (p5context([('(' + p5str(p5call(v_parameters, "emit_javascript2", [v_level], 0)) + ' = ' + p5str(p5call(v_arguments, "emit_javascript2", [(p5num(v_level) + 1)], 0)) + ')')], p5want));
+								return (p5call(v_parameters, "emit_javascript2_set", [v_arguments, (p5num(v_level) + 1)], p5want));
 							}
 							catch(err) {
 								if ( err instanceof Error ) {
