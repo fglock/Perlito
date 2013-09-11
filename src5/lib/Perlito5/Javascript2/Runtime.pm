@@ -374,28 +374,24 @@ var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;
 function p5HashRef(o) {
     this._hash_ = o;
     this._ref_ = "HASH";
-    this._id_  = p5id++;
     this.bool = function() { return 1 };
 }
 
 function p5ArrayRef(o) {
     this._array_ = o;
     this._ref_ = "ARRAY";
-    this._id_  = p5id++;
     this.bool = function() { return 1 };
 }
 
 function p5ScalarRef(o) {
     this._scalar_ = o;
     this._ref_ = "SCALAR";
-    this._id_  = p5id++;
     this.bool = function() { return 1 };
 }
 
 function p5GlobRef(o) {
     this._scalar_ = o;
     this._ref_ = "GLOB";
-    this._id_  = p5id++;
     this.bool = function() { return 1 };
 }
 
@@ -530,6 +526,7 @@ p5str = function(o) {
         }
 
         if ( o.hasOwnProperty("_ref_") ) {
+            if (!o._id_) { o._id_ = p5id++ }
             return [o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
         }
 
