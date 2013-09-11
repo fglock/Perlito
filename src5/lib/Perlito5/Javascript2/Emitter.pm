@@ -573,16 +573,10 @@ package Perlito5::Javascript2::LexicalBlock;
                 $last_statement = $last_statement->{arguments}[0];
             }
 
-            if ( $last_statement->isa( 'Perlito5::AST::Lit::Block' ) ) {
-                my $body = Perlito5::Javascript2::LexicalBlock->new( block => $last_statement->{stmts}, needs_return => 1 );
-                push @str,
-                      'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
-                    .   $body->emit_javascript2( $level + 1 ) . "\n"
-                    . Perlito5::Javascript2::tab($level) . '}'
-            }
-            elsif (  $last_statement->isa( 'Perlito5::AST::For' )
+            if    (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::If' )
+                  || $last_statement->isa( 'Perlito5::AST::Lit::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
@@ -722,6 +716,14 @@ package Perlito5::AST::Lit::Block;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
+        my $body;
+        if ($wantarray eq 'runtime') {
+            $body = Perlito5::Javascript2::LexicalBlock->new( block => $self->{stmts}, needs_return => 1 );
+        }
+        else {
+            $body = Perlito5::Javascript2::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 );
+        }
 
         my $init = "";
         if ($self->{name} eq 'INIT') {
@@ -737,7 +739,7 @@ package Perlito5::AST::Lit::Block;
         return 'p5for_lex('
                 . "function () {\n"
                 .   $init
-                .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{stmts}, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                .   $body->emit_javascript2($level + 2) . "\n"
                 . Perlito5::Javascript2::tab($level + 1) . '}, '
                 .   '[0], '
                 . $self->emit_javascript2_continue($level) . ', '
