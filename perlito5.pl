@@ -9935,8 +9935,15 @@ package Perlito5::AST::Apply;
                 my @in = @{$self->{'arguments'}};
                 my $fun;
                 my $list;
-                if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
-                    $fun = shift(@in);
+                if ($self->{'special_arg'}) {
+                    $fun = $self->{'special_arg'}
+                }
+                else {
+                    if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
+                        $fun = shift(@in)
+                    }
+                };
+                if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
                     $fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript2::LexicalBlock->new('block', $fun->{'stmts'}, 'needs_return', 1, 'top_level', 0))->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}')
                 }
                 else {

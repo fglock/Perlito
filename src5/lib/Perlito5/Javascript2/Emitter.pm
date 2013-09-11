@@ -2249,9 +2249,19 @@ package Perlito5::AST::Apply;
             my $fun;
             my $list;
 
-            if (ref($in[0]) eq 'Perlito5::AST::Lit::Block') {
+            if ( $self->{special_arg} ) {
+                # TODO - test 'special_arg' type (scalar, block, ...)
+                $fun  = $self->{special_arg};
+            }
+            else {
+                if (ref($in[0]) eq 'Perlito5::AST::Lit::Block') {
+                    # the sort function is optional
+                    $fun  = shift @in;
+                }
+            }
+
+            if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
                 # the sort function is optional
-                $fun = shift @in;
                 $fun =
                       'function (p5want) {' . "\n"
                     .   (Perlito5::Javascript2::LexicalBlock->new( block => $fun->{stmts}, needs_return => 1, top_level => 0 ))->emit_javascript2( $level + 1 ) . "\n"
