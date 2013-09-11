@@ -10173,6 +10173,9 @@ package Perlito5::AST::If;
         };
         my $s = ('if ( ' . Perlito5::Javascript2::to_bool($self->{'cond'}, ($level + 1)) . ' ) {' . chr(10) . $body->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}');
         if (@{$self->{'otherwise'}->stmts()}) {
+            if (((@{$self->{'otherwise'}->stmts()} == 1) && (ref($self->{'otherwise'}->stmts()->[0]) eq 'Perlito5::AST::If'))) {
+                return ($s . chr(10) . Perlito5::Javascript2::tab($level) . 'else ' . $self->{'otherwise'}->stmts()->[0]->emit_javascript2($level, $wantarray))
+            };
             $s = ($s . chr(10) . Perlito5::Javascript2::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}')
         };
         return $s
