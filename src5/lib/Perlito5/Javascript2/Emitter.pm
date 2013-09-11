@@ -2773,7 +2773,7 @@ package Perlito5::AST::Use;
         my $self = shift;
         my $level = shift;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        'true // ' . $self->{code} . ' ' . $self->{mod} . "\n"
+        '// ' . $self->{code} . ' ' . $self->{mod} . "\n"
     }
 }
 
