@@ -2616,7 +2616,15 @@ package Perlito5::AST::If;
         }
         return $s;
     }
-    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_get_decl {
+        my $self = shift;
+        # NOTE - a declaration with modifier has undefined behaviour
+        return $self->{body}->emit_javascript2_get_decl
+            if $self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block';
+        return $self->{otherwise}->emit_javascript2_get_decl
+            if $self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Lit::Block';
+        return ();
+    }
 }
 
 

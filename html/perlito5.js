@@ -13887,7 +13887,25 @@ return ((p5context([p5pkg["Perlito5::AST::Apply"].ref([p5pkg["Perlito5::AST::App
 					}
 				});
 				p5typeglob_set("Perlito5::AST::If", "emit_javascript2_get_decl", function (List__, p5want) {
-					return (p5context([], p5want));
+					try {
+						var v_self;
+						v_self = (List__.shift());
+						if ( (p5bool((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('body')) && (p5str(p5pkg["Perlito5::AST::If"].ref([(v_self || (v_self = new p5HashRef({})))._hash_.p5hget('body')], 0)) != 'Perlito5::AST::Lit::Block')) ) {
+							throw(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('body'), "emit_javascript2_get_decl", [], p5want))
+						};
+						if ( (p5bool((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('otherwise')) && (p5str(p5pkg["Perlito5::AST::If"].ref([(v_self || (v_self = new p5HashRef({})))._hash_.p5hget('otherwise')], 0)) != 'Perlito5::AST::Lit::Block')) ) {
+							throw(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('otherwise'), "emit_javascript2_get_decl", [], p5want))
+						};
+						return (p5context([], p5want));
+					}
+					catch(err) {
+						if ( err instanceof Error ) {
+							throw(err);
+						}
+						else {
+							return(err);
+						}
+					}
 				});
 			}, [0], false, ""
 		);
