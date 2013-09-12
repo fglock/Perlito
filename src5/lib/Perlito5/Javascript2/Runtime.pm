@@ -369,6 +369,8 @@ function p5cleanup_local(idx, value) {
 
 //-------- Reference
 
+var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;
+
 function p5HashRef(o) {
     this._hash_ = o;
     this._ref_ = "HASH";
@@ -517,8 +519,17 @@ p5str = function(o) {
     if (o == null) {
         return "";
     }
-    if (typeof o === "object" && (o instanceof Array)) {
-        return CORE.join(["", o]);
+    if (typeof o === "object") {
+
+        if (o instanceof Array) {
+            return CORE.join(["", o]);
+        }
+
+        if ( o.hasOwnProperty("_ref_") ) {
+            if (!o._id_) { o._id_ = p5id++ }
+            return [o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
+        }
+
     }
     // if (typeof o.string === "function") {
     //     return o.string();

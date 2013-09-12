@@ -63,6 +63,18 @@ sub autoquote {
             return Perlito5::AST::Val::Buf->new( buf => $full_name );
         }
     }
+    elsif (  $index->isa('Perlito5::AST::Apply')
+          && ($index->code eq 'prefix:<->' || $index->code eq 'prefix:<+>')
+          )
+    {
+        my $arg = $index->arguments->[0];
+        return Perlito5::AST::Apply->new(
+                    code => $index->code,
+                    namespace => $index->namespace, 
+                    arguments => [ $self->autoquote($arg) ],
+               )
+            if $arg;
+    }
 
     $index;
 }

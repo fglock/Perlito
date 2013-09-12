@@ -157,16 +157,19 @@ print 'not ' if $v ne '-Z';  say "ok 36 - string negative - $v";
 
 $v = '-NAN';
 $r = -$v;
-print 'not ' if $r ne '+NAN';  say "ok 37 - string negative - $r";
+print 'not ' unless $r eq '+NAN' || $r eq 'nan';  
+                             say "ok 37 - string negative - $r";
 
 $v = '-INF';
 $r = -$v;
-print 'not ' if $r ne '+INF';  say "ok 38 - string negative - $r";
+print 'not ' unless $r eq '+INF' || $r eq 'inf'; 
+                             say "ok 38 - string negative - $r";
 
 
 $v = ' AZ ';
 $r = -$v;
-print 'not ' if $r ne '-0';  say "ok 39 - string negative - $r";
+print 'not ' unless $r eq '-0' || $r eq '0';  
+                             say "ok 39 - string negative - $r";
 
 $v = ' -Z ';
 $r = -$v;
@@ -178,7 +181,8 @@ print 'not ' if $r ne '0';  say "ok 41 - string negative - $r";
 
 $v = ' + ';
 $r = -$v;
-print 'not ' if $r ne '-0';  say "ok 42 - string negative - $r";
+print 'not ' unless $r eq '-0' || $r eq '0'; 
+                             say "ok 42 - string negative - $r";
 
 $v = '-';
 $r = -$v;
@@ -190,7 +194,8 @@ print 'not ' if $r ne '-';  say "ok 44 - string negative - $r";
 
 $v = '!AZ ';
 $r = -$v;
-print 'not ' if $r ne '-0';  say "ok 45 - string negative - $r";
+print 'not ' unless $r eq '-0' || $r eq '0'; 
+                             say "ok 45 - string negative - $r";
 
 $v = '-!Z ';
 $r = -$v;
@@ -206,7 +211,8 @@ print 'not ' if $r ne '+ 00.12';  say "ok 48 - string negative - $r";
 
 $v = '-00.12';
 $r = -$v;
-print 'not ' if $r ne '0.12';  say "ok 49 - string negative - $r";
+print 'not ' unless $r eq '0.12' || $r eq '+00.12'; 
+                             say "ok 49 - string negative - $r";
 
 
 # positive

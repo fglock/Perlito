@@ -1,5 +1,10 @@
 package Perlito5::Dumper;
 
+sub _identity {
+    # returns true if the 2 arguments point to the same reference
+    "$_[0]" eq "$_[1]"
+}
+
 sub Dumper {
     my $obj = $_[0];
     my $level = $_[1] || 0;

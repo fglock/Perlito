@@ -244,16 +244,27 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- unary minus
-    special cases for string and bareword
+-- 'require 5.006;'
+    # Can't locate 5.006 in @INC
+
+-- variable declaration in expressions
+    our $Verbose ||= 0;
+    our (%Cache);
+    local $SIG{__WARN__};
+    my $args = @_ or @_ = @$exports;
+
+-- 'next', 'last' in expression
+    (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)
+    ... ) and last
+
+-- 'x' in list context
+    @{$cache}{@$ok} = (1) x @$ok;
 
 -- '&' prototype
     add tests; see Try::Tiny
 
 -- AUTOLOAD() called from UNIVERSAL autovivifies packages
     add tests
-
--- code emitter for first argument of sort() and grep() 
 
 -- prototype() can be set by aliasing:
     *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$

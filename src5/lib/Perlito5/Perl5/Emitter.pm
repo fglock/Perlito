@@ -373,18 +373,18 @@ package Perlito5::AST::Apply;
         }
         if ($self->{code} eq 'package')    { return 'package ' . $self->{namespace} }
 
-        if ($code eq 'map')       {    
+        if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
 
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
-                return "map {\n"
+                return "$code {\n"
                 .   join(";\n", map { Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ) } @{$self->{special_arg}{stmts}} ) . "\n"
                 . Perlito5::Perl5::tab($level) . "} "
     
                 . $self->emit_perl5_args($level+1);
             }
 
-            return 'map(' . $self->emit_perl5_args($level+1) . ')'
+            return "$code(" . $self->emit_perl5_args($level+1) . ')'
         }
 
         if ($code eq 'infix:<x>')  { 
@@ -493,6 +493,13 @@ package Perlito5::AST::If;
         my $self = $_[0];
         my $level = $_[1];
         
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+            return $self->{body}->emit_perl5($level+1) . ' if ' . $self->{cond}->emit_perl5($level+1);
+        }
+        if ($self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Lit::Block') {
+            return $self->{otherwise}->emit_perl5($level+1) . ' unless ' . $self->{cond}->emit_perl5($level+1);
+        }
+
         return 'if (' . $self->{cond}->emit_perl5($level+1) . ") "
              .  ($self->{body}
                 ? Perlito5::Perl5::emit_perl5_block($self->{body}->stmts, $level)
@@ -529,10 +536,13 @@ package Perlito5::AST::While;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $cond = $self->{cond};
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+            return $self->{body}->emit_perl5($level+1) . ' while ' . $self->{cond}->emit_perl5($level+1);
+        }
+
            'for ( '
         .  ( $self->{init}     ? $self->{init}->emit_perl5($level+1)           . '; ' : '; ' )
-        .  ( $cond             ? $cond->emit_perl5($level+1)                   . '; ' : '; ' )
+        .  ( $self->{cond}     ? $self->{cond}->emit_perl5($level+1)           . '; ' : '; ' )
         .  ( $self->{continue} ? $self->{continue}->emit_perl5($level+1)       . ' '  : ' '  )
         .  ') ' . Perlito5::Perl5::emit_perl5_block($self->{body}->stmts, $level);
     }
@@ -544,6 +554,10 @@ package Perlito5::AST::For;
         my $self = $_[0];
         my $level = $_[1];
         
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+            return $self->{body}->emit_perl5($level+1) . ' for ' . $self->{cond}->emit_perl5($level+1);
+        }
+
         my $cond;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
