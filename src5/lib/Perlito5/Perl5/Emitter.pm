@@ -373,18 +373,18 @@ package Perlito5::AST::Apply;
         }
         if ($self->{code} eq 'package')    { return 'package ' . $self->{namespace} }
 
-        if ($code eq 'map')       {    
+        if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
 
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
-                return "map {\n"
+                return "$code {\n"
                 .   join(";\n", map { Perlito5::Perl5::tab($level+1) . $_->emit_perl5( $level + 1 ) } @{$self->{special_arg}{stmts}} ) . "\n"
                 . Perlito5::Perl5::tab($level) . "} "
     
                 . $self->emit_perl5_args($level+1);
             }
 
-            return 'map(' . $self->emit_perl5_args($level+1) . ')'
+            return "$code(" . $self->emit_perl5_args($level+1) . ')'
         }
 
         if ($code eq 'infix:<x>')  { 
