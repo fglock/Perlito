@@ -645,7 +645,7 @@ package Perlito5::AST::CompUnit;
         my $self = $_[0];
         my $level = $_[1];
         my $str = "(function () {\n"
-            .   Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1 ) . "\n"
+            . Perlito5::Javascript2::tab($level + 1) . Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1 ) . "\n"
             . Perlito5::Javascript2::tab($level) . "})()\n";
         return $str;
     }
@@ -1586,7 +1586,8 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            "var " . Perlito5::Javascript2::pkg_new_var() . ' = p5make_package("' . $self->{namespace} . '")';
+            # "var " . Perlito5::Javascript2::pkg_new_var() . ' = p5make_package("' . $self->{namespace} . '")';
+            'p5make_package("' . $self->{namespace} . '")';
         },
         'infix:<=>>' => sub {
             my $self      = shift;

@@ -8633,7 +8633,7 @@ package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::emit_javascript2 {
         my $self = $_[0];
         my $level = $_[1];
-        my $str = ('(function () {' . chr(10) . Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}, 'needs_return', 0)->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '})()' . chr(10));
+        my $str = ('(function () {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}, 'needs_return', 0)->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '})()' . chr(10));
         return $str
     };
     sub Perlito5::AST::CompUnit::emit_javascript2_program {
@@ -9196,7 +9196,7 @@ package Perlito5::AST::Apply;
                 'p5want'
             }, 'package', sub {
                 my $self = $_[0];
-                ('var ' . Perlito5::Javascript2::pkg_new_var() . ' = p5make_package("' . $self->{'namespace'} . '")')
+                ('p5make_package("' . $self->{'namespace'} . '")')
             }, 'infix:<=>>', sub {
                 my $self = shift();
                 my $level = shift();
