@@ -480,6 +480,7 @@ package Perlito5::Javascript2::LexicalBlock;
         my $self = shift;
         my $level = shift;
         my $wantarray = shift;
+        my $original_level = $level;
 
         my @block;
         for (@{$self->{block}}) {
@@ -488,9 +489,8 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
         if (!@block) {
-            return Perlito5::Javascript2::tab($level) . 'null;';
+            return 'null;';
         }
-        my $out = '';
         my @str;
         my $has_local = $self->has_decl("local");
         my $create_context = $self->{create_context} && $self->has_decl("my");
@@ -501,13 +501,10 @@ package Perlito5::Javascript2::LexicalBlock;
         $Perlito5::THROW = 0
             if $self->{top_level};
 
-        $out .= Perlito5::Javascript2::tab($level) . "var local_idx = p5LOCAL.length;\n"
-            if $has_local;
         if ($self->{top_level} || $create_context) {
             $level++;
         }
 
-        my $tab = Perlito5::Javascript2::tab($level);
         my $last_statement;
         if ($self->{needs_return}) {
             $last_statement = pop @block;
@@ -594,39 +591,44 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
         if ( $has_local ) {
-            push @str, 'p5cleanup_local(local_idx, null);';
+            unshift @str, 'var local_idx = p5LOCAL.length;';
+            push    @str, 'p5cleanup_local(local_idx, null);';
         }
+        my $out;
         if ($self->{top_level} && $Perlito5::THROW) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
-            $level--;
-            $out .= 
-                  Perlito5::Javascript2::tab($level) . "try {\n"
-                .   join("\n", map($tab . $_, @str)) . "\n"
-                . Perlito5::Javascript2::tab($level)   . '}' . "\n"
-                . Perlito5::Javascript2::tab($level)   . 'catch(err) {' . "\n"
-                . Perlito5::Javascript2::tab($level + 1)   . 'if ( err instanceof Error ) {' . "\n"
-                . Perlito5::Javascript2::tab($level + 2)       . 'throw(err);' . "\n"
-                . Perlito5::Javascript2::tab($level + 1)   . '}' . "\n"
-                . Perlito5::Javascript2::tab($level + 1)   . 'else {' . "\n"
+            $level = $original_level;
+            my $tab = "\n" . Perlito5::Javascript2::tab($level + 1);
+            $out =                                         "try {"
+                . $tab                                   .    join($tab, @str) . "\n"
+                . Perlito5::Javascript2::tab($level)     . '}' . "\n"
+                . Perlito5::Javascript2::tab($level)     . 'catch(err) {' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .    'if ( err instanceof Error ) {' . "\n"
+                . Perlito5::Javascript2::tab($level + 2)         . 'throw(err);' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .    '}' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .    'else {' . "\n"
                 . Perlito5::Javascript2::tab($level + 2)
                     . ( $has_local
                       ? 'return p5cleanup_local(local_idx, err)'
                       : 'return(err)'
                       )
                     . ";\n"
-                . Perlito5::Javascript2::tab($level + 1)   . '}' . "\n"
-                . Perlito5::Javascript2::tab($level)   . '}';
+                . Perlito5::Javascript2::tab($level + 1) .   '}' . "\n"
+                . Perlito5::Javascript2::tab($level)     . '}';
         }
         elsif ( $create_context ) {
-            $level--;
-            $out .= Perlito5::Javascript2::tab($level) . "(function () {\n"
-                  .      join("\n", map($tab . $_, @str)) . "\n"
+            $level = $original_level;
+            my $tab = "\n" . Perlito5::Javascript2::tab($level + 1);
+            $out =                                        "(function () {"
+                  . $tab                               .     join($tab, @str) . "\n"
                   . Perlito5::Javascript2::tab($level) .  "})();";
         }
         else {
-            $out .= join("\n", map($tab . $_, @str));
+            $level = $original_level;
+            my $tab = "\n" . Perlito5::Javascript2::tab($level);
+            $out = join($tab, @str);
         }
         $Perlito5::PKG_NAME = $outer_pkg;
         $Perlito5::THROW    = $outer_throw
@@ -2554,40 +2556,48 @@ package Perlito5::AST::If;
         my $self = shift;
         my $level = shift;
         my $wantarray = shift;
-        my $body;
-        my $otherwise;
+        my $body =
+              ref($self->{body}) eq 'ARRAY'
+            ? $self->{body}[0]  # may be undef
+            : (!@{ $self->{body}->stmts })
+            ? undef
+            : $wantarray eq 'runtime'
+            ? Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 1 )
+            : Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
+        my $otherwise =
+              ref($self->{otherwise}) eq 'ARRAY'
+            ? $self->{otherwise}[0]  # may be undef
+            : (!@{ $self->{otherwise}->stmts })
+            ? undef
+            : $wantarray eq 'runtime'
+            ? Perlito5::Javascript2::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 1 )
+            : Perlito5::Javascript2::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
+ 
+        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($self->{cond}, $level + 1) . ' ) {';
 
-        if ($wantarray eq 'runtime') {
-            $body      = Perlito5::Javascript2::LexicalBlock->new( 
-                            block => $self->{body}->stmts, needs_return => 1 );
-            $otherwise = Perlito5::Javascript2::LexicalBlock->new( 
-                            block => $self->{otherwise}->stmts, needs_return => 1 );
+        if ($body) {
+            $s = $s . "\n"
+            . Perlito5::Javascript2::tab($level + 1) . $body->emit_javascript2( $level + 1, $wantarray ) . "\n"
+            . Perlito5::Javascript2::tab($level)     . '}';
         }
         else {
-            $body      = Perlito5::Javascript2::LexicalBlock->new( 
-                            block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
-            $otherwise = Perlito5::Javascript2::LexicalBlock->new( 
-                            block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
+            $s = $s . "}";
         }
 
-        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($self->{cond}, $level + 1) . ' ) {' . "\n"
-            .       $body->emit_javascript2( $level + 1 ) . "\n"
-            . Perlito5::Javascript2::tab($level) . '}';
-        if ( @{ $self->{otherwise}->stmts } ) {
+        if ($otherwise) {
 
-            if ( @{ $self->{otherwise}->stmts } == 1 
-               && ref($self->{otherwise}->stmts->[0]) eq 'Perlito5::AST::If'
+            if ( @{ $otherwise->{block} } == 1 
+               && ref($otherwise->{block}[0]) eq 'Perlito5::AST::If'
                )
             {
                 return $s . "\n"
-                . Perlito5::Javascript2::tab($level) . 'else '
-                . $self->{otherwise}->stmts->[0]->emit_javascript2( $level, $wantarray );
+                . Perlito5::Javascript2::tab($level)     . 'else ' . $otherwise->{block}[0]->emit_javascript2( $level, $wantarray );
             }
 
             $s = $s . "\n"
-                . Perlito5::Javascript2::tab($level) . 'else {' . "\n"
-                .       $otherwise->emit_javascript2( $level + 1 ) . "\n"
-                . Perlito5::Javascript2::tab($level) . '}';
+                . Perlito5::Javascript2::tab($level)     . 'else {' . "\n"
+                . Perlito5::Javascript2::tab($level + 1) .  $otherwise->emit_javascript2( $level + 1, $wantarray ) . "\n"
+                . Perlito5::Javascript2::tab($level)     . '}';
         }
         return $s;
     }
@@ -2618,7 +2628,7 @@ package Perlito5::AST::When;
         my $label = '';  # TODO
 
         my $s = 'if ( ' . Perlito5::Javascript2::to_bool($expr, $level + 1) . ' ) {' . "\n"
-            .       $body->emit_javascript2( $level + 1 ) . "\n"
+            . Perlito5::Javascript2::tab($level + 1) .       $body->emit_javascript2( $level + 1 ) . "\n"
 
             . Perlito5::Javascript2::tab($level+1) . 'throw(new p5_error("next", "' . $label . '"))'
             . Perlito5::Javascript2::tab($level) . '}';
@@ -2634,10 +2644,14 @@ package Perlito5::AST::While;
         my $level = shift;
 
         my $cond = $self->{cond};
+        my $body =
+              ref($self->{body}) eq 'ARRAY'
+            ? $self->{body}
+            : $self->{body}{stmts};
 
         return 'p5while('
                     . "function () {\n"
-                    .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                    . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     . Perlito5::Javascript2::emit_function_javascript2($level, 0, $cond) . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
@@ -2652,6 +2666,11 @@ package Perlito5::AST::For;
         my $self = shift;
         my $level = shift;
 
+        my $body =
+              ref($self->{body}) eq 'ARRAY'
+            ? $self->{body}
+            : $self->{body}{stmts};
+
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
 
@@ -2659,20 +2678,21 @@ package Perlito5::AST::For;
             # TODO - loop label
             # TODO - continue-block is a syntax error
 
-            my $body      = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
             return
                'for ( '
             .  ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript2($level + 1) . '; '  : '; ' )
             .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript2($level + 1) . '; '  : '; ' )
             .  ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ' '  )
             .  ') {' . "\n" 
-                . $body->emit_javascript2( $level + 1 ) . "\n"
+            .  Perlito5::Javascript2::tab($level + 1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 1) . "\n"
             .  Perlito5::Javascript2::tab($level) . '}'
         }
 
         my $cond = Perlito5::Javascript2::to_list([$self->{cond}], $level + 1);
 
-        my $topic = $self->{body}->sig();
+        my $topic;
+        $topic = $self->{body}{sig}
+            if ref($self->{body}) ne 'ARRAY';
         if (!$topic) {
             $topic = Perlito5::AST::Decl->new(
                         decl => 'our',
@@ -2712,7 +2732,7 @@ package Perlito5::AST::For;
             my $sig = $v->emit_javascript2( $level + 1 );
             $s =    'p5for_lex('
                     . "function ($sig) {\n"
-                    .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                    . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     .   $cond . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
@@ -2725,7 +2745,7 @@ package Perlito5::AST::For;
                     . 'p5make_package("' . $namespace . '"), '
                     . '"v_' . $v->{name} . '", '
                     . 'function () {' . "\n"
-                    .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                    . Perlito5::Javascript2::tab($level + 1) .  (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     .   $cond . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
@@ -2744,10 +2764,9 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =
-          'function (List__, p5want) {' . "\n"
-        .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript2( $level + 1 ) . "\n"
-        . Perlito5::Javascript2::tab($level) . '}';
+        my $s =                                 'function (List__, p5want) {' . "\n"
+        . Perlito5::Javascript2::tab($level+1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript2( $level + 1 ) . "\n"
+        . Perlito5::Javascript2::tab($level)   . '}';
 
         if ( $self->{name} ) {
             return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
@@ -2766,10 +2785,9 @@ package Perlito5::AST::Do;
         my $wantarray = shift;
 
         my $block = $self->simplify->block;
-        return
-              '(function () {' . "\n"
-            .   (Perlito5::Javascript2::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray ) . "\n"
-            . Perlito5::Javascript2::tab($level) . '})()'
+        return                                        '(function () {' . "\n"
+            . Perlito5::Javascript2::tab($level + 1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray ) . "\n"
+            . Perlito5::Javascript2::tab($level) .    '})()'
     }
 }
 

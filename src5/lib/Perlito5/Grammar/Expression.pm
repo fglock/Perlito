@@ -991,8 +991,8 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) 
+                body      => [ $expression ],
+                otherwise => [ ], 
             ),
         };
     }
@@ -1001,8 +1001,8 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) 
+                body      => [ ],
+                otherwise => [ $expression ], 
             ),
         };
     }
@@ -1011,7 +1011,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::When->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
+                body      => [ $expression ],
             ),
         };
     }
@@ -1020,8 +1020,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
-                body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
-                continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
+                body     => [ $expression ],
             ) 
         };
     }
@@ -1033,8 +1032,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::For->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
-                body     => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ),
-                continue => Perlito5::AST::Lit::Block->new(stmts => [] ) 
+                body     => [ $expression ],
             ) 
         };
     }

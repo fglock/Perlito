@@ -493,6 +493,13 @@ package Perlito5::AST::If;
         my $self = $_[0];
         my $level = $_[1];
         
+        if (ref($self->{body}) eq 'ARRAY' && @{$self->{body}}) {
+            return $self->{body}[0]->emit_perl5($level+1) . ' if ' . $self->{cond}->emit_perl5($level+1);
+        }
+        if (ref($self->{otherwise}) eq 'ARRAY' && @{$self->{otherwise}}) {
+            return $self->{otherwise}[0]->emit_perl5($level+1) . ' unless ' . $self->{cond}->emit_perl5($level+1);
+        }
+
         return 'if (' . $self->{cond}->emit_perl5($level+1) . ") "
              .  ($self->{body}
                 ? Perlito5::Perl5::emit_perl5_block($self->{body}->stmts, $level)
@@ -529,10 +536,13 @@ package Perlito5::AST::While;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $cond = $self->{cond};
+        if (ref($self->{body}) eq 'ARRAY' && @{$self->{body}}) {
+            return $self->{body}[0]->emit_perl5($level+1) . ' while ' . $self->{cond}->emit_perl5($level+1);
+        }
+
            'for ( '
         .  ( $self->{init}     ? $self->{init}->emit_perl5($level+1)           . '; ' : '; ' )
-        .  ( $cond             ? $cond->emit_perl5($level+1)                   . '; ' : '; ' )
+        .  ( $self->{cond}     ? $self->{cond}->emit_perl5($level+1)           . '; ' : '; ' )
         .  ( $self->{continue} ? $self->{continue}->emit_perl5($level+1)       . ' '  : ' '  )
         .  ') ' . Perlito5::Perl5::emit_perl5_block($self->{body}->stmts, $level);
     }
@@ -544,6 +554,10 @@ package Perlito5::AST::For;
         my $self = $_[0];
         my $level = $_[1];
         
+        if (ref($self->{body}) eq 'ARRAY' && @{$self->{body}}) {
+            return $self->{body}[0]->emit_perl5($level+1) . ' for ' . $self->{cond}->emit_perl5($level+1);
+        }
+
         my $cond;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
