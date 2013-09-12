@@ -140,6 +140,13 @@ TODO list for Perlito5
 
 * Add tests for fixed bugs:
 
+    ---
+    variable declarations in expressions
+
+    our $Verbose ||= 0;
+    our (%Cache);
+    my $args = @_ or @_ = @$exports;
+
 
     ---
     add additional variants of "for"
@@ -247,11 +254,8 @@ TODO list for Perlito5
 -- 'require 5.006;'
     # Can't locate 5.006 in @INC
 
--- variable declaration in expressions
-    our $Verbose ||= 0;
-    our (%Cache);
+-- expressions in 'local'
     local $SIG{__WARN__};
-    my $args = @_ or @_ = @$exports;
 
 -- 'next', 'last' in expression
     (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)
