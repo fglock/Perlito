@@ -991,8 +991,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => [ $expression ],
-                otherwise => [ ], 
+                body      => $expression,
             ),
         };
     }
@@ -1001,8 +1000,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => [ ],
-                otherwise => [ $expression ], 
+                otherwise => $expression, 
             ),
         };
     }
@@ -1011,7 +1009,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::When->new(
                 cond      => Perlito5::Match::flat($modifier_exp),
-                body      => [ $expression ],
+                body      => $expression,
             ),
         };
     }
@@ -1020,7 +1018,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
-                body     => [ $expression ],
+                body     => $expression,
             ) 
         };
     }
@@ -1032,7 +1030,7 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::For->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
-                body     => [ $expression ],
+                body     => $expression,
             ) 
         };
     }

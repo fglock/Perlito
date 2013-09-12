@@ -2558,16 +2558,16 @@ package Perlito5::AST::If;
         my $level = shift;
         my $wantarray = shift;
         my $body =
-              ref($self->{body}) eq 'ARRAY'
-            ? $self->{body}[0]  # may be undef
+              ref($self->{body}) ne 'Perlito5::AST::Lit::Block'
+            ? $self->{body} # may be undef
             : (!@{ $self->{body}->stmts })
             ? undef
             : $wantarray eq 'runtime'
             ? Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 1 )
             : Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
         my $otherwise =
-              ref($self->{otherwise}) eq 'ARRAY'
-            ? $self->{otherwise}[0]  # may be undef
+              ref($self->{otherwise}) ne 'Perlito5::AST::Lit::Block'
+            ? $self->{otherwise}  # may be undef
             : (!@{ $self->{otherwise}->stmts })
             ? undef
             : $wantarray eq 'runtime'
@@ -2646,8 +2646,8 @@ package Perlito5::AST::While;
 
         my $cond = $self->{cond};
         my $body =
-              ref($self->{body}) eq 'ARRAY'
-            ? $self->{body}
+              ref($self->{body}) ne 'Perlito5::AST::Lit::Block'
+            ? [ $self->{body} ]
             : $self->{body}{stmts};
 
         return 'p5while('
@@ -2668,8 +2668,8 @@ package Perlito5::AST::For;
         my $level = shift;
 
         my $body =
-              ref($self->{body}) eq 'ARRAY'
-            ? $self->{body}
+              ref($self->{body}) ne 'Perlito5::AST::Lit::Block'
+            ? [ $self->{body} ]
             : $self->{body}{stmts};
 
         if (ref($self->{cond}) eq 'ARRAY') {

@@ -2035,19 +2035,19 @@ sub Perlito5::Grammar::Expression::modifier {
         die('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
     };
     if (($modifier eq 'if')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'body', [$expression], 'otherwise', [])}
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
     };
     if (($modifier eq 'unless')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'body', [], 'otherwise', [$expression])}
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'otherwise', $expression)}
     };
     if (($modifier eq 'when')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::When->new('cond', Perlito5::Match::flat($modifier_exp), 'body', [$expression])}
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::When->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
     };
     if (($modifier eq 'while')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::While->new('cond', Perlito5::Match::flat($modifier_exp), 'body', [$expression])}
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::While->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
     };
     if ((($modifier eq 'for') || ($modifier eq 'foreach'))) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::For->new('cond', Perlito5::Match::flat($modifier_exp), 'body', [$expression])}
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::For->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
     };
     die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
 };
@@ -9821,8 +9821,8 @@ package Perlito5::AST::If;
         my $self = shift();
         my $level = shift();
         my $wantarray = shift();
-        my $body = ((ref($self->{'body'}) eq 'ARRAY') ? $self->{'body'}->[0] : ((!(@{$self->{'body'}->stmts()})) ? undef() : (($wantarray eq 'runtime') ? Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 1) : Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1))));
-        my $otherwise = ((ref($self->{'otherwise'}) eq 'ARRAY') ? $self->{'otherwise'}->[0] : ((!(@{$self->{'otherwise'}->stmts()})) ? undef() : (($wantarray eq 'runtime') ? Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 1) : Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1))));
+        my $body = ((ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') ? $self->{'body'} : ((!(@{$self->{'body'}->stmts()})) ? undef() : (($wantarray eq 'runtime') ? Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 1) : Perlito5::Javascript2::LexicalBlock->new('block', $self->{'body'}->stmts(), 'needs_return', 0, 'create_context', 1))));
+        my $otherwise = ((ref($self->{'otherwise'}) ne 'Perlito5::AST::Lit::Block') ? $self->{'otherwise'} : ((!(@{$self->{'otherwise'}->stmts()})) ? undef() : (($wantarray eq 'runtime') ? Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 1) : Perlito5::Javascript2::LexicalBlock->new('block', $self->{'otherwise'}->stmts(), 'needs_return', 0, 'create_context', 1))));
         my $s = ('if ( ' . Perlito5::Javascript2::to_bool($self->{'cond'}, ($level + 1)) . ' ) {');
         if ($body) {
             $s = ($s . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . $body->emit_javascript2(($level + 1), $wantarray) . chr(10) . Perlito5::Javascript2::tab($level) . '}')
@@ -9858,7 +9858,7 @@ package Perlito5::AST::While;
         my $self = shift();
         my $level = shift();
         my $cond = $self->{'cond'};
-        my $body = ((ref($self->{'body'}) eq 'ARRAY') ? $self->{'body'} : $self->{'body'}->{'stmts'});
+        my $body = ((ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') ? [$self->{'body'}] : $self->{'body'}->{'stmts'});
         return ('p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab(($level + 2)) . (Perlito5::Javascript2::LexicalBlock->new('block', $body, 'needs_return', 0, 'top_level', 0))->emit_javascript2(($level + 2)) . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level, 0, $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . (($self->{'label'} || '')) . '"' . ')')
     }
 };
@@ -9867,7 +9867,7 @@ package Perlito5::AST::For;
     sub Perlito5::AST::For::emit_javascript2 {
         my $self = shift();
         my $level = shift();
-        my $body = ((ref($self->{'body'}) eq 'ARRAY') ? $self->{'body'} : $self->{'body'}->{'stmts'});
+        my $body = ((ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') ? [$self->{'body'}] : $self->{'body'}->{'stmts'});
         if ((ref($self->{'cond'}) eq 'ARRAY')) {
             return ('for ( ' . (($self->{'cond'}->[0] ? ($self->{'cond'}->[0]->emit_javascript2(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[1] ? ($self->{'cond'}->[1]->emit_javascript2(($level + 1)) . '; ') : '; ')) . (($self->{'cond'}->[2] ? ($self->{'cond'}->[2]->emit_javascript2(($level + 1)) . ' ') : ' ')) . ') {' . chr(10) . Perlito5::Javascript2::tab(($level + 1)) . (Perlito5::Javascript2::LexicalBlock->new('block', $body, 'needs_return', 0, 'top_level', 0))->emit_javascript2(($level + 1)) . chr(10) . Perlito5::Javascript2::tab($level) . '}')
         };
@@ -11794,11 +11794,11 @@ package Perlito5::AST::If;
     sub Perlito5::AST::If::emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        if (((ref($self->{'body'}) eq 'ARRAY') && @{$self->{'body'}})) {
-            return ($self->{'body'}->[0]->emit_perl5(($level + 1)) . ' if ' . $self->{'cond'}->emit_perl5(($level + 1)))
+        if (($self->{'body'} && (ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block'))) {
+            return ($self->{'body'}->emit_perl5(($level + 1)) . ' if ' . $self->{'cond'}->emit_perl5(($level + 1)))
         };
-        if (((ref($self->{'otherwise'}) eq 'ARRAY') && @{$self->{'otherwise'}})) {
-            return ($self->{'otherwise'}->[0]->emit_perl5(($level + 1)) . ' unless ' . $self->{'cond'}->emit_perl5(($level + 1)))
+        if (($self->{'otherwise'} && (ref($self->{'otherwise'}) ne 'Perlito5::AST::Lit::Block'))) {
+            return ($self->{'otherwise'}->emit_perl5(($level + 1)) . ' unless ' . $self->{'cond'}->emit_perl5(($level + 1)))
         };
         return ('if (' . $self->{'cond'}->emit_perl5(($level + 1)) . ') ' . (($self->{'body'} ? Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts(), $level) : '{ }')) . ((($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()})) ? ((chr(10) . Perlito5::Perl5::tab($level) . 'else ' . Perlito5::Perl5::emit_perl5_block($self->{'otherwise'}->stmts(), $level))) : '')))
     }
@@ -11816,8 +11816,8 @@ package Perlito5::AST::While;
     sub Perlito5::AST::While::emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        if (((ref($self->{'body'}) eq 'ARRAY') && @{$self->{'body'}})) {
-            return ($self->{'body'}->[0]->emit_perl5(($level + 1)) . ' while ' . $self->{'cond'}->emit_perl5(($level + 1)))
+        if (($self->{'body'} && (ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block'))) {
+            return ($self->{'body'}->emit_perl5(($level + 1)) . ' while ' . $self->{'cond'}->emit_perl5(($level + 1)))
         };
         ('for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_perl5(($level + 1)) . '; ') : '; ')) . (($self->{'cond'} ? ($self->{'cond'}->emit_perl5(($level + 1)) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_perl5(($level + 1)) . ' ') : ' ')) . ') ' . Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts(), $level))
     }
@@ -11827,8 +11827,8 @@ package Perlito5::AST::For;
     sub Perlito5::AST::For::emit_perl5 {
         my $self = $_[0];
         my $level = $_[1];
-        if (((ref($self->{'body'}) eq 'ARRAY') && @{$self->{'body'}})) {
-            return ($self->{'body'}->[0]->emit_perl5(($level + 1)) . ' for ' . $self->{'cond'}->emit_perl5(($level + 1)))
+        if (($self->{'body'} && (ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block'))) {
+            return ($self->{'body'}->emit_perl5(($level + 1)) . ' for ' . $self->{'cond'}->emit_perl5(($level + 1)))
         };
         my $cond;
         if ((ref($self->{'cond'}) eq 'ARRAY')) {
