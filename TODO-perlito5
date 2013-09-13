@@ -258,9 +258,11 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- autovivification of fully-qualified globals
+-- autovivification of fully-qualified array and hash globals
     $Exporter::Cache[2] = 3;
     # Cannot call method 'p5aset' of undefined
+
+    See: p5scalar_deref() / p5scalar_deref_set() in Perlito5/Javascript2/Runtime.pm
 
 -- pass @_ to &sub
     $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
