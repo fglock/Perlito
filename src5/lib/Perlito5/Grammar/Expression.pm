@@ -21,7 +21,26 @@ Perlito5::Grammar::Precedence::add_term( 'eval'  => sub { Perlito5::Grammar::Exp
 Perlito5::Grammar::Precedence::add_term( 'state' => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'local' => sub { Perlito5::Grammar::Expression->term_local( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'return' => sub { Perlito5::Grammar::Expression->term_return( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'package' => sub { Perlito5::Grammar::Expression->term_package( $_[0], $_[1] ) } );
+
+
+
+# --- TODO - move this to its own module
+my @Statement_chars;
+my %Statement;
+
+sub add_statement {
+    my $name = shift;
+    my $param = shift;
+    $Statement{$name} = $param;
+    unshift @Statement_chars, scalar(@Statement_chars) + 1
+        while @Statement_chars < length($name);
+}
+# ----
+
+
+# --- TODO - move this to its own module
+Perlito5::Grammar::Expression::add_statement( 'package'  => sub { Perlito5::Grammar::Expression->stmt_package( $_[0], $_[1] ) } );
+# ----
 
 
 sub expand_list {
@@ -471,8 +490,7 @@ token term_return {
         }
 };
 
-token term_package {
-    # XXX - BUG - package is a statement, not a term
+token stmt_package {
     'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
     [
         # package X { block }
@@ -485,7 +503,7 @@ token term_package {
         }
         <Perlito5::Grammar::Expression.term_curly> 
         {
-            $MATCH->{capture} = [ 'term',
+            $MATCH->{capture} = 
                 Perlito5::AST::Lit::Block->new(
                     stmts => [
                         Perlito5::AST::Apply->new(
@@ -495,8 +513,7 @@ token term_package {
                         ),
                         @{ $MATCH->{'Perlito5::Grammar::Expression.term_curly'}{capture}[2] }
                     ]
-                )
-            ];
+                );
         }
     |
         # old syntax - set the package name in the same lexical context
@@ -504,13 +521,12 @@ token term_package {
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
             $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
-            $MATCH->{capture} = [ 'term',
+            $MATCH->{capture} = 
                  Perlito5::AST::Apply->new(
                     code      => 'package',
                     arguments => [], 
                     namespace => $name
-                 )
-               ]
+                 );
         }
     ]
 };
@@ -946,17 +962,6 @@ sub exp_parse {
     };
 }
 
-
-my @Statement_chars;
-my %Statement;
-
-sub add_statement {
-    my $name = shift;
-    my $param = shift;
-    $Statement{$name} = $param;
-    unshift @Statement_chars, scalar(@Statement_chars) + 1
-        while @Statement_chars < length($name);
-}
 
 sub exp_stmt {
     my $self = $_[0];

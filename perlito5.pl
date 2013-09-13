@@ -992,8 +992,16 @@ Perlito5::Grammar::Precedence::add_term('local', sub {
 Perlito5::Grammar::Precedence::add_term('return', sub {
         Perlito5::Grammar::Expression->term_return($_[0], $_[1])
     });
-Perlito5::Grammar::Precedence::add_term('package', sub {
-        Perlito5::Grammar::Expression->term_package($_[0], $_[1])
+my @Statement_chars;
+my %Statement;
+sub Perlito5::Grammar::Expression::add_statement {
+    my $name = shift();
+    my $param = shift();
+    $Statement{$name} = $param;
+    unshift(@Statement_chars, (scalar(@Statement_chars) + 1)) while (@Statement_chars < length($name))
+};
+Perlito5::Grammar::Expression::add_statement('package', sub {
+        Perlito5::Grammar::Expression->stmt_package($_[0], $_[1])
     });
 sub Perlito5::Grammar::Expression::expand_list {
     my $param_list = shift();
@@ -1715,7 +1723,7 @@ sub Perlito5::Grammar::Expression::term_return {
                         })))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Expression::term_package {
+sub Perlito5::Grammar::Expression::stmt_package {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -1769,7 +1777,7 @@ sub Perlito5::Grammar::Expression::term_package {
                                                         }
                                                     }))) && ((do {
                                                     $MATCH->{'str'} = $str;
-                                                    $MATCH->{'capture'} = ['term', Perlito5::AST::Lit::Block->new('stmts', [Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]}])];
+                                                    $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts', [Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]}]);
                                                     1
                                                 })))
                                     })) || ((do {
@@ -1779,7 +1787,7 @@ sub Perlito5::Grammar::Expression::term_package {
                                                 my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                                                 $Perlito5::PACKAGES->{$name} = 1;
                                                 $Perlito5::PKG_NAME = $name;
-                                                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name)];
+                                                $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name);
                                                 1
                                             }))
                                     })))
@@ -2023,14 +2031,6 @@ sub Perlito5::Grammar::Expression::exp_parse {
     };
     my $result = pop_term($res);
     return {'str', $str, 'from', $pos, 'to', $last_pos, 'capture', $result}
-};
-my @Statement_chars;
-my %Statement;
-sub Perlito5::Grammar::Expression::add_statement {
-    my $name = shift();
-    my $param = shift();
-    $Statement{$name} = $param;
-    unshift(@Statement_chars, (scalar(@Statement_chars) + 1)) while (@Statement_chars < length($name))
 };
 sub Perlito5::Grammar::Expression::exp_stmt {
     my $self = $_[0];
