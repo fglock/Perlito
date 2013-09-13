@@ -33,6 +33,9 @@ TODO list for Perlito5
 * Parser
 
 -- dot-decimal strings
+    5.4.66.77
+    v5.4.66.77
+
     $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
     BM
 
