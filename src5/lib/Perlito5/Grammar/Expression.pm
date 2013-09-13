@@ -472,7 +472,34 @@ token term_return {
 };
 
 token term_package {
+    # XXX - BUG - package is a statement, not a term
     'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
+    [
+        # package X { block }
+        <.Perlito5::Grammar::Space.opt_ws>
+        {
+            # set the package name before parsing the block
+            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            $Perlito5::PACKAGES->{$name} = 1;
+            $Perlito5::PKG_NAME = $name;
+        }
+        <Perlito5::Grammar::Expression.term_curly> 
+        {
+            $MATCH->{capture} = [ 'term',
+                Perlito5::AST::Lit::Block->new(
+                    stmts => [
+                        Perlito5::AST::Apply->new(
+                            code      => 'package',
+                            arguments => [], 
+                            namespace => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),
+                        ),
+                        @{ $MATCH->{'Perlito5::Grammar::Expression.term_curly'}{capture}[2] }
+                    ]
+                )
+            ];
+        }
+    |
+        # old syntax - set the package name in the same lexical context
         {
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
             $Perlito5::PACKAGES->{$name} = 1;
@@ -485,6 +512,7 @@ token term_package {
                  )
                ]
         }
+    ]
 };
 
 token term_eval {

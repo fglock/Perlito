@@ -1740,12 +1740,49 @@ sub Perlito5::Grammar::Expression::term_package {
                                     0
                                 }
                             }))) && ((do {
-                            $MATCH->{'str'} = $str;
-                            my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
-                            $Perlito5::PACKAGES->{$name} = 1;
-                            $Perlito5::PKG_NAME = $name;
-                            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name)];
-                            1
+                            my $pos1 = $MATCH->{'to'};
+                            (((do {
+                                        (((((do {
+                                                            my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
+                                                            if ($m2) {
+                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                1
+                                                            }
+                                                            else {
+                                                                0
+                                                            }
+                                                        })) && ((do {
+                                                            $MATCH->{'str'} = $str;
+                                                            my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
+                                                            $Perlito5::PACKAGES->{$name} = 1;
+                                                            $Perlito5::PKG_NAME = $name;
+                                                            1
+                                                        }))) && ((do {
+                                                        my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            $MATCH->{'Perlito5::Grammar::Expression.term_curly'} = $m2;
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    }))) && ((do {
+                                                    $MATCH->{'str'} = $str;
+                                                    $MATCH->{'capture'} = ['term', Perlito5::AST::Lit::Block->new('stmts', [Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]}])];
+                                                    1
+                                                })))
+                                    })) || ((do {
+                                        $MATCH->{'to'} = $pos1;
+                                        ((do {
+                                                $MATCH->{'str'} = $str;
+                                                my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
+                                                $Perlito5::PACKAGES->{$name} = 1;
+                                                $Perlito5::PKG_NAME = $name;
+                                                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name)];
+                                                1
+                                            }))
+                                    })))
                         })))));
     ($tmp ? $MATCH : 0)
 };
