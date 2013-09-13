@@ -32,6 +32,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- dot-decimal strings
+    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
+    BM
+
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
@@ -250,6 +254,24 @@ TODO list for Perlito5
 
 
 * Javascript backend
+
+-- dot-decimal strings
+    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
+    BM
+
+-- variable declarations inside condition
+    if ((my $color = <STDIN>) =~ /red/i) {
+        $value = 0xff0000;
+    }
+    elsif ($color =~ /green/i) {
+        $value = 0x00ff00;
+    }
+    else { ... }
+
+    After the else, the $color variable is no longer in scope.
+
+-- do {} while / do {} until
+    execute the loop once, before checking the condition
 
 -- 'require 5.006;'
     # Can't locate 5.006 in @INC
