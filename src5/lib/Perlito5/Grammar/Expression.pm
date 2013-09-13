@@ -5,17 +5,6 @@ use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Statement;
 
-Perlito5::Grammar::Precedence::add_term( '.'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '0'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '1'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '2'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '3'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '4'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '5'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '6'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '7'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '8'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '9'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'my'    => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'our'   => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'eval'  => sub { Perlito5::Grammar::Expression->term_eval( $_[0], $_[1] ) } );
@@ -382,11 +371,6 @@ token term_arrow {
               }
             ]
         ]
-};
-
-token term_digit {
-      <Perlito5::Grammar.val_num>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_num"}) ]  }  # 123.456
-    | <Perlito5::Grammar.val_int>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_int"}) ]  }  # 123
 };
 
 token term_ternary {

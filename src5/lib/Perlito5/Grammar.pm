@@ -1,6 +1,7 @@
 package Perlito5::Grammar;
 
 use Perlito5::Grammar::Expression;
+use Perlito5::Grammar::Statement;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
 use Perlito5::Grammar::Sigil;
@@ -10,19 +11,10 @@ use Perlito5::Grammar::Space;
 use Perlito5::Grammar::Print;
 use Perlito5::Grammar::Map;
 use Perlito5::Grammar::Attribute;
+use Perlito5::Grammar::Number;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/
-    ? {
-        str  => $_[1],
-        from => $_[2],
-        to   => $_[2] + 1,
-      }
-    : 0;
-}
-
-sub digit {
-    substr( $_[1], $_[2], 1 ) =~ m/\d/
     ? {
         str  => $_[1],
         from => $_[2],
@@ -105,7 +97,7 @@ token opt_type {
 
 token var_sigil     { \$ |\% |\@ |\& | \* };
 
-token var_name      { <full_ident> | <digit> };
+token var_name      { <full_ident> | <Perlito5::Grammar::Number.digit> };
 
 token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>
@@ -116,44 +108,6 @@ token var_ident {
             name        => Perlito5::Match::flat($MATCH->{var_name}),
         )
     }
-};
-
-token exponent {
-    [ 'e' | 'E' ]  [ '+' | '-' | '' ]  [ '_' | \d ]+
-};
-
-token val_num {
-    [
-    |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
-    |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
-    ]
-    {
-        my $s = Perlito5::Match::flat($MATCH);
-        $s =~ s/_//g;
-        $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
-    }
-};
-
-token digits {
-    \d+
-};
-
-token val_int {
-    [ '0' ['x'|'X'] <.word>+   # XXX test for hex number
-    | '0' ['b'|'B'] [ '_' | '0' | '1' ]+
-    | '0' [ '_' | \d]+        # XXX test for octal number
-    ]
-        { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
-    | \d [ '_' | \d]*
-        {
-            my $s = Perlito5::Match::flat($MATCH);
-            $s =~ s/_//g;
-            $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => $s )
-        }
-};
-
-token val_version {
-    ['v']? <.digits> [ '.' <.digits> [ '.' <.digits> ]? ]?
 };
 
 my @PKG;

@@ -24,7 +24,7 @@ token use_decl { 'use' | 'no' };
 token term_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
     [
-        <Perlito5::Grammar.val_version>
+        <Perlito5::Grammar::Number.val_version>
         {
             # TODO - check version
 
