@@ -5,8 +5,8 @@ use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar;
 use strict;
 
-Perlito5::Grammar::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
+Perlito5::Grammar::Statement::add_statement( 'no'  => sub { Perlito5::Grammar::Use->stmt_use($_[0], $_[1]) } );
+Perlito5::Grammar::Statement::add_statement( 'use' => sub { Perlito5::Grammar::Use->stmt_use($_[0], $_[1]) } );
 
 
 my %Perlito_internal_module = (
@@ -21,20 +21,18 @@ my %Perlito_internal_module = (
 
 token use_decl { 'use' | 'no' };
 
-token term_use {
+token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
     [
         <Perlito5::Grammar::Number.val_version>
         {
             # TODO - check version
 
-            $MATCH->{capture} = [ 'term',
-                Perlito5::AST::Apply->new(
-                    code => 'undef',
-                    namespace => '',
-                    arguments => []
-                )
-            ];
+            $MATCH->{capture} = Perlito5::AST::Apply->new(
+                                   code => 'undef',
+                                   namespace => '',
+                                   arguments => []
+                                );
         }
     |
         <Perlito5::Grammar.full_ident>  [ '-' <Perlito5::Grammar.ident> ]? <Perlito5::Grammar::Expression.list_parse>
@@ -65,7 +63,7 @@ token term_use {
 
             parse_time_eval($ast);
 
-            $MATCH->{capture} = [ 'term', $ast ];
+            $MATCH->{capture} = $ast;
         }
     ]
 };
@@ -265,7 +263,7 @@ Perlito5::Grammar::Use - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    term_use($str)
+    stmt_use($str)
 
 =head1 DESCRIPTION
 

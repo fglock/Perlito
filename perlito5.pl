@@ -5055,11 +5055,11 @@ package Perlito5::Grammar::Use;
 
 # use strict
 ;
-Perlito5::Grammar::Precedence::add_term('no', sub {
-        Perlito5::Grammar::Use->term_use($_[0], $_[1])
+Perlito5::Grammar::Statement::add_statement('no', sub {
+        Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
     });
-Perlito5::Grammar::Precedence::add_term('use', sub {
-        Perlito5::Grammar::Use->term_use($_[0], $_[1])
+Perlito5::Grammar::Statement::add_statement('use', sub {
+        Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
     });
 my %Perlito_internal_module = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding', 'Carp', 'Perlito5::Carp');
 sub Perlito5::Grammar::Use::use_decl {
@@ -5078,7 +5078,7 @@ sub Perlito5::Grammar::Use::use_decl {
                 })));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Use::term_use {
+sub Perlito5::Grammar::Use::stmt_use {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -5117,7 +5117,7 @@ sub Perlito5::Grammar::Use::term_use {
                                                     }
                                                 })) && ((do {
                                                     $MATCH->{'str'} = $str;
-                                                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', [])];
+                                                    $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', []);
                                                     1
                                                 })))
                                     })) || ((do {
@@ -5179,7 +5179,7 @@ sub Perlito5::Grammar::Use::term_use {
                                                         $Perlito5::PACKAGES->{$full_ident} = 1;
                                                         my $ast = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', $full_ident, 'arguments', $list);
                                                         parse_time_eval($ast);
-                                                        $MATCH->{'capture'} = ['term', $ast];
+                                                        $MATCH->{'capture'} = $ast;
                                                         1
                                                     }))))
                                     })))
