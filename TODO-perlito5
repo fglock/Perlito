@@ -258,6 +258,10 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- pass @_ to &sub
+    $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
+    # call foo(@_)
+
 -- dot-decimal strings
     $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
     BM
