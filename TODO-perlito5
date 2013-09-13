@@ -282,6 +282,9 @@ TODO list for Perlito5
 -- expressions in 'local'
     local $SIG{__WARN__};
 
+-- assign old-self to my / local
+    local $Some_Global = $Some_Global;
+
 -- 'next', 'last' in expression
     (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)
     ... ) and last
