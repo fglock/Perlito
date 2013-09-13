@@ -12500,7 +12500,7 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 								v_decl_namespace = ('');
 								var v_decl;
 								v_decl = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_get_decl_javascript2", [v_perl5_name], 0));
-								if ( (p5bool(v_decl) && (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'my')) ) {
+								if ( (p5bool(v_decl) && ((p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'my') || (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'state'))) ) {
 									p5pkg["Perlito5::AST::Decl"].die([[('Can' + String.fromCharCode(39) + 't localize lexical variable ' + p5str(v_perl5_name))]], null);
 								};
 								if ( (p5bool(v_decl) && ((p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'our') || (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'local'))) ) {

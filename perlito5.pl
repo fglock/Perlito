@@ -8986,7 +8986,7 @@ package Perlito5::AST::Decl;
             my $perl5_name = $self->{'var'}->perl5_name_javascript2();
             my $decl_namespace = '';
             my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
-            if (($decl && ($decl->{'decl'} eq 'my'))) {
+            if (($decl && ((($decl->{'decl'} eq 'my') || ($decl->{'decl'} eq 'state'))))) {
                 die(('Can' . chr(39) . 't localize lexical variable ' . $perl5_name))
             };
             if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
