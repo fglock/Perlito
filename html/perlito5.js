@@ -12492,8 +12492,27 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 					try {
 						var v_self;
 						v_self = (List__.shift());
+						if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')) == 'local') ) {
+							(function () {
+								var v_perl5_name;
+								v_perl5_name = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_name_javascript2", [], 0));
+								var v_decl_namespace;
+								v_decl_namespace = ('');
+								var v_decl;
+								v_decl = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_get_decl_javascript2", [v_perl5_name], 0));
+								if ( (p5bool(v_decl) && (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'my')) ) {
+									p5pkg["Perlito5::AST::Decl"].die([[('Can' + String.fromCharCode(39) + 't localize lexical variable ' + p5str(v_perl5_name))]], null);
+								};
+								if ( (p5bool(v_decl) && ((p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'our') || (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'local'))) ) {
+									v_decl_namespace = ((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('namespace'));
+								};
+								var v_ns;
+								v_ns = (('p5pkg["' + p5str(p5or(p5or((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('namespace'), function () { return v_decl_namespace }), function () { return p5make_package("Perlito5")["v_PKG_NAME"] })) + '"]'));
+								throw(p5context([('p5set_local(' + p5str(v_ns) + ',' + p5str(p5pkg["Perlito5::Javascript2"].escape_string(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('name')), 0)) + ',' + p5str(p5pkg["Perlito5::Javascript2"].escape_string(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('sigil')), 0)) + '); ')], p5want));
+							})();
+						};
 						var v_type;
-						v_type = (( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')) == 'local') ? 'our' : (v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')));
+						v_type = ((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl'));
 						var v_env;
 						v_env = ((new p5HashRef({'decl' : v_type})));
 						var v_perl5_name;
@@ -12508,7 +12527,7 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 									v_decl_namespace = ('');
 									var v_decl;
 									v_decl = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_get_decl_javascript2", [v_perl5_name], 0));
-									if ( (((p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')) == 'local') && p5bool(v_decl)) && ((p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'our') || (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'local'))) ) {
+									if ( (p5bool(v_decl) && (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'our')) ) {
 										v_decl_namespace = ((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('namespace'));
 									};
 									(v_env || (v_env = new p5HashRef({})))._hash_.p5hset('namespace', (p5or(v_decl_namespace, function () { return p5make_package("Perlito5")["v_PKG_NAME"] })));
@@ -12543,20 +12562,6 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 								throw(p5context([('// our ' + p5str(v_str))], p5want));
 							};
 							throw(p5context([('if (typeof ' + p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "emit_javascript2", [], 0)) + ' == "undefined" ) { ' + p5str(v_str) + '};')], p5want))
-						}
-						else if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')) == 'local') ) {
-							var v_perl5_name;
-							v_perl5_name = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_name_javascript2", [], 0));
-							var v_decl_namespace;
-							v_decl_namespace = ('');
-							var v_decl;
-							v_decl = (p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "perl5_get_decl_javascript2", [v_perl5_name], 0));
-							if ( (p5bool(v_decl) && ((p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'our') || (p5str((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('decl')) == 'local'))) ) {
-								v_decl_namespace = ((v_decl || (v_decl = new p5HashRef({})))._hash_.p5hget('namespace'));
-							};
-							var v_ns;
-							v_ns = (('p5pkg["' + p5str(p5or(p5or((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('namespace'), function () { return v_decl_namespace }), function () { return p5make_package("Perlito5")["v_PKG_NAME"] })) + '"]'));
-							throw(p5context([('p5set_local(' + p5str(v_ns) + ',' + p5str(p5pkg["Perlito5::Javascript2"].escape_string(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('name')), 0)) + ',' + p5str(p5pkg["Perlito5::Javascript2"].escape_string(p5list_to_a((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('var')._hash_.p5hget('sigil')), 0)) + '); ')], p5want))
 						}
 						else if ( (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('decl')) == 'state') ) {
 							throw(p5context([('// state ' + p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('var'), "emit_javascript2", [], 0)))], p5want))
@@ -14171,9 +14176,9 @@ return ((p5context([p5pkg["Perlito5::AST::Apply"].ref([p5pkg["Perlito5::AST::App
 			var v_strict_old;
 			v_strict_old = (p5make_package("Perlito5")["v_STRICT"]);
 			p5set_local(p5pkg["Perlito5"],'VAR','$'); 
-			p5pkg["Perlito5"]["v_VAR"] = (v_var_env_js);
+			p5make_package("Perlito5")["v_VAR"] = (v_var_env_js);
 			p5set_local(p5pkg["Perlito5"],'PKG_NAME','$'); 
-			p5pkg["Perlito5"]["v_PKG_NAME"] = (v_namespace);
+			p5make_package("Perlito5")["v_PKG_NAME"] = (v_namespace);
 			var v_match;
 			v_match = (p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [v_source, 0], 0));
 			if ( (!( p5bool(v_match)) || (p5num((v_match || (v_match = new p5HashRef({})))._hash_.p5hget('to')) != p5pkg["Perlito5::Javascript2::Runtime"].length([v_source], 0))) ) {

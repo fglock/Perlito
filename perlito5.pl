@@ -8982,7 +8982,20 @@ package Perlito5::AST::Decl;
     };
     sub Perlito5::AST::Decl::emit_javascript2_init {
         my $self = shift();
-        my $type = (($self->{'decl'} eq 'local') ? 'our' : $self->{'decl'});
+        if (($self->{'decl'} eq 'local')) {
+            my $perl5_name = $self->{'var'}->perl5_name_javascript2();
+            my $decl_namespace = '';
+            my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
+            if (($decl && ($decl->{'decl'} eq 'my'))) {
+                die(('Can' . chr(39) . 't localize lexical variable ' . $perl5_name))
+            };
+            if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                $decl_namespace = $decl->{'namespace'}
+            };
+            my $ns = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]');
+            return ('p5set_local(' . $ns . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'sigil'}) . '); ')
+        };
+        my $type = $self->{'decl'};
         my $env = {'decl', $type};
         my $perl5_name = $self->{'var'}->perl5_name_javascript2();
         if (($self->{'decl'} ne 'my')) {
@@ -8990,7 +9003,7 @@ package Perlito5::AST::Decl;
             if (($self->{'var'}->{'namespace'} eq '')) {
                 my $decl_namespace = '';
                 my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
-                if (((($self->{'decl'} eq 'local') && $decl) && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                if (($decl && ($decl->{'decl'} eq 'our'))) {
                     $decl_namespace = $decl->{'namespace'}
                 };
                 $env->{'namespace'} = ($decl_namespace || $Perlito5::PKG_NAME)
@@ -9029,23 +9042,11 @@ package Perlito5::AST::Decl;
                 return ('if (typeof ' . $self->{'var'}->emit_javascript2() . ' == "undefined" ) { ' . $str . '};')
             }
             else {
-                if (($self->{'decl'} eq 'local')) {
-                    my $perl5_name = $self->{'var'}->perl5_name_javascript2();
-                    my $decl_namespace = '';
-                    my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
-                    if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
-                        $decl_namespace = $decl->{'namespace'}
-                    };
-                    my $ns = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]');
-                    return ('p5set_local(' . $ns . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'sigil'}) . '); ')
+                if (($self->{'decl'} eq 'state')) {
+                    return ('// state ' . $self->{'var'}->emit_javascript2())
                 }
                 else {
-                    if (($self->{'decl'} eq 'state')) {
-                        return ('// state ' . $self->{'var'}->emit_javascript2())
-                    }
-                    else {
-                        die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
-                    }
+                    die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
                 }
             }
         }
