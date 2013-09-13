@@ -2811,6 +2811,9 @@ var p5100 = p5pkg['main'];
 						List_Statement_chars.p5unshift([(p5num((List_Statement_chars.length)) + 1)]);
 					}, function () { return (p5num(List_Statement_chars.length) < p5pkg["Perlito5::Grammar::Expression"].length([v_name], 0)) }, false, "")
 		});
+		p5pkg["Perlito5::Grammar::Expression"].add_statement(['...', function (List__, p5want) {
+	return (p5call(p5pkg["Perlito5::Grammar::Expression"], "stmt_yadayada", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
+}], null);
 		p5pkg["Perlito5::Grammar::Expression"].add_statement(['package', function (List__, p5want) {
 	return (p5call(p5pkg["Perlito5::Grammar::Expression"], "stmt_package", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
 }], null);
@@ -3708,6 +3711,23 @@ var p5100 = p5pkg['main'];
 							var v_args;
 							v_args = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('list_parse')), 0));
 							(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'return', 'arguments', ( (p5str(v_args) == '*undef*') ? (new p5ArrayRef([])) : (new p5ArrayRef([v_args]))), 'namespace', ''), 1))))));
+							return (p5context([1], p5want));
+						})()], 0) })], 0)], 0));
+			return (( p5bool(v_tmp) ? v_MATCH : 0));
+		});
+		p5typeglob_set("Perlito5::Grammar::Expression", "stmt_yadayada", function (List__, p5want) {
+			var v_grammar;
+			v_grammar = (List__.p5aget(0));
+			var v_str;
+			v_str = (List__.p5aget(1));
+			var v_pos;
+			v_pos = (List__.p5aget(2));
+			var v_MATCH;
+			v_MATCH = ((new p5HashRef({'str' : v_str, 'from' : v_pos, 'to' : v_pos})));
+			var v_tmp;
+			v_tmp = (p5context([p5context([p5and(p5context([p5and(('...' == p5pkg["Perlito5::Grammar::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to'), 3], 0)), function () { return p5context([(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('to', ((3 + p5num((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to')))))], 0) })], 0), function () { return p5context([(function () {
+							(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('str', (v_str));
+							p5pkg["Perlito5::Grammar::Expression"].die([['Unimplemented']], null);
 							return (p5context([1], p5want));
 						})()], 0) })], 0)], 0));
 			return (( p5bool(v_tmp) ? v_MATCH : 0));

@@ -1000,6 +1000,9 @@ sub Perlito5::Grammar::Expression::add_statement {
     $Statement{$name} = $param;
     unshift(@Statement_chars, (scalar(@Statement_chars) + 1)) while (@Statement_chars < length($name))
 };
+Perlito5::Grammar::Expression::add_statement('...', sub {
+        Perlito5::Grammar::Expression->stmt_yadayada($_[0], $_[1])
+    });
 Perlito5::Grammar::Expression::add_statement('package', sub {
         Perlito5::Grammar::Expression->stmt_package($_[0], $_[1])
     });
@@ -1719,6 +1722,18 @@ sub Perlito5::Grammar::Expression::term_return {
                             $MATCH->{'str'} = $str;
                             my $args = Perlito5::Match::flat($MATCH->{'list_parse'});
                             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'return', 'arguments', (($args eq '*undef*') ? [] : [$args]), 'namespace', '')];
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Expression::stmt_yadayada {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((('...' eq substr($str, $MATCH->{'to'}, 3)) && ($MATCH->{'to'} = (3 + $MATCH->{'to'})))) && ((do {
+                            $MATCH->{'str'} = $str;
+                            die('Unimplemented');
                             1
                         })))));
     ($tmp ? $MATCH : 0)

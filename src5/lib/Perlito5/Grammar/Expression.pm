@@ -39,6 +39,7 @@ sub add_statement {
 
 
 # --- TODO - move this to its own module
+Perlito5::Grammar::Expression::add_statement( '...'      => sub { Perlito5::Grammar::Expression->stmt_yadayada( $_[0], $_[1] ) } );
 Perlito5::Grammar::Expression::add_statement( 'package'  => sub { Perlito5::Grammar::Expression->stmt_package( $_[0], $_[1] ) } );
 # ----
 
@@ -488,6 +489,10 @@ token term_return {
                  )
                ]
         }
+};
+
+token stmt_yadayada {
+    '...' { die "Unimplemented" }
 };
 
 token stmt_package {
