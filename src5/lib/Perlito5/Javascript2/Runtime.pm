@@ -274,6 +274,22 @@ function p5scalar_deref_set(v, n) {
     return v._scalar_;
 }
 
+function p5global_array(pkg_name, name) {
+    v = "List_"+name;
+    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
+        p5pkg[pkg_name][v] = [];
+    }
+    return p5pkg[pkg_name][v];
+}
+
+function p5global_hash(pkg_name, name) {
+    v = "Hash_"+name;
+    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
+        p5pkg[pkg_name][v] = {};
+    }
+    return p5pkg[pkg_name][v];
+}
+
 p5make_package("main");
 p5make_package("Perlito5");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
