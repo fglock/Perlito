@@ -172,7 +172,7 @@ sub exp_stmts {
             $pos = $m->{to};
         }
         else {
-            $m = Perlito5::Grammar::Expression->statement_parse($str, $pos);
+            $m = Perlito5::Grammar::Statement->statement_parse($str, $pos);
             if ($m) {
                 push @stmts, $m->{capture};
                 $pos = $m->{to};
