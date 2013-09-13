@@ -247,7 +247,7 @@ function p5scalar_deref(v) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        return p5pkg[pkg_name]["v_"+v];
+        return p5make_package(pkg_name)["v_"+v];
     }
     return v._scalar_;
 }
@@ -267,7 +267,7 @@ function p5scalar_deref_set(v, n) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        p5pkg[pkg_name]["v_"+v] = n;
+        p5make_package(pkg_name)["v_"+v] = n;
         return p5pkg[pkg_name]["v_"+v];
     }
     v._scalar_ = n;
