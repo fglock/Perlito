@@ -55,13 +55,17 @@ token digits {
     \d+
 };
 
+token digits_underscore {
+    \d [ '_' | \d]*
+};
+
 token val_int {
-    [ '0' ['x'|'X'] <.Perlito5::Grammar.word>+   # XXX test for hex number
-    | '0' ['b'|'B'] [ '_' | '0' | '1' ]+
-    | '0' [ '_' | \d]+        # XXX test for octal number
-    ]
+    '0' [  ['x'|'X'] <.Perlito5::Grammar.word>+   # XXX test for hex digits
+        |  ['b'|'B'] [ '_' | '0' | '1' ]+
+        |  [ '_' | \d]+        # XXX test for octal number
+        ]
         { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
-    | \d [ '_' | \d]*
+    | <.digits_underscore>
         {
             my $s = Perlito5::Match::flat($MATCH);
             $s =~ s/_//g;
@@ -70,7 +74,8 @@ token val_int {
 };
 
 token val_version {
-    ['v']? <.digits> [ '.' <.digits> [ '.' <.digits> ]? ]?
+    # TODO - this should return a "VSTRING"
+    ['v']? <.digits_underscore> [ '.' <.digits_underscore> [ '.' <.digits_underscore> ]? ]?
 };
 
 1;
@@ -83,7 +88,7 @@ Perlito5::Grammar::Number - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    term_print($str)
+    term_digit($str)
 
 =head1 DESCRIPTION
 

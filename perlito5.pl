@@ -7284,6 +7284,59 @@ sub Perlito5::Grammar::Number::digits {
                 })));
     ($tmp ? $MATCH : 0)
 };
+sub Perlito5::Grammar::Number::digits_underscore {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((do {
+                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
+                        })) && ((do {
+                            my $last_match_null = 0;
+                            my $m = $MATCH;
+                            my $to = $MATCH->{'to'};
+                            for ( ; (((do {
+                                            my $pos1 = $MATCH->{'to'};
+                                            (((do {
+                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                    })) || ((do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        ((do {
+                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                if ($m2) {
+                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                    1
+                                                                }
+                                                                else {
+                                                                    0
+                                                                }
+                                                            }))
+                                                    })))
+                                        })) && (($last_match_null < 2))); {
+
+                                } ) {
+                                if (($to == $MATCH->{'to'})) {
+                                    $last_match_null = ($last_match_null + 1)
+                                }
+                                else {
+                                    $last_match_null = 0
+                                };
+                                $m = $MATCH;
+                                $to = $MATCH->{'to'}
+                            };
+                            $MATCH = $m;
+                            $MATCH->{'to'} = $to;
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
 sub Perlito5::Grammar::Number::val_int {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -7292,10 +7345,10 @@ sub Perlito5::Grammar::Number::val_int {
     my $tmp = (((do {
                     my $pos1 = $MATCH->{'to'};
                     (((do {
-                                (((do {
-                                            my $pos1 = $MATCH->{'to'};
-                                            ((((do {
-                                                            ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                my $pos1 = $MATCH->{'to'};
+                                                ((((do {
+                                                                (((do {
                                                                             my $pos1 = $MATCH->{'to'};
                                                                             (((do {
                                                                                         (('x' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
@@ -7303,63 +7356,20 @@ sub Perlito5::Grammar::Number::val_int {
                                                                                         $MATCH->{'to'} = $pos1;
                                                                                         ((('X' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
                                                                                     })))
-                                                                        }))) && ((do {
-                                                                        my $last_match_null = 0;
-                                                                        my $m = $MATCH;
-                                                                        my $to = $MATCH->{'to'};
-                                                                        my $count = 0;
-                                                                        for ( ; (((do {
-                                                                                        my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
-                                                                                        if ($m2) {
-                                                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                                                            1
-                                                                                        }
-                                                                                        else {
-                                                                                            0
-                                                                                        }
-                                                                                    })) && (($last_match_null < 2))); {
-
-                                                                            } ) {
-                                                                            if (($to == $MATCH->{'to'})) {
-                                                                                $last_match_null = ($last_match_null + 1)
-                                                                            }
-                                                                            else {
-                                                                                $last_match_null = 0
-                                                                            };
-                                                                            $m = $MATCH;
-                                                                            $to = $MATCH->{'to'};
-                                                                            $count = ($count + 1)
-                                                                        };
-                                                                        $MATCH = $m;
-                                                                        $MATCH->{'to'} = $to;
-                                                                        ($count > 0)
-                                                                    })))
-                                                        })) || ((do {
-                                                            $MATCH->{'to'} = $pos1;
-                                                            (((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                                my $pos1 = $MATCH->{'to'};
-                                                                                (((do {
-                                                                                            (('b' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                        })) || ((do {
-                                                                                            $MATCH->{'to'} = $pos1;
-                                                                                            ((('B' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                        })))
-                                                                            }))) && ((do {
+                                                                        })) && ((do {
                                                                             my $last_match_null = 0;
                                                                             my $m = $MATCH;
                                                                             my $to = $MATCH->{'to'};
                                                                             my $count = 0;
                                                                             for ( ; (((do {
-                                                                                            my $pos1 = $MATCH->{'to'};
-                                                                                            ((((do {
-                                                                                                            (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                                        })) || ((do {
-                                                                                                            $MATCH->{'to'} = $pos1;
-                                                                                                            ((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                                        }))) || ((do {
-                                                                                                        $MATCH->{'to'} = $pos1;
-                                                                                                        ((('1' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                                    })))
+                                                                                            my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                            if ($m2) {
+                                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                                1
+                                                                                            }
+                                                                                            else {
+                                                                                                0
+                                                                                            }
                                                                                         })) && (($last_match_null < 2))); {
 
                                                                                 } ) {
@@ -7376,102 +7386,109 @@ sub Perlito5::Grammar::Number::val_int {
                                                                             $MATCH = $m;
                                                                             $MATCH->{'to'} = $to;
                                                                             ($count > 0)
-                                                                        }))))
-                                                        }))) || ((do {
-                                                        $MATCH->{'to'} = $pos1;
-                                                        ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                        my $last_match_null = 0;
-                                                                        my $m = $MATCH;
-                                                                        my $to = $MATCH->{'to'};
-                                                                        my $count = 0;
-                                                                        for ( ; (((do {
-                                                                                        my $pos1 = $MATCH->{'to'};
-                                                                                        (((do {
-                                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                                })) || ((do {
-                                                                                                    $MATCH->{'to'} = $pos1;
-                                                                                                    ((do {
-                                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                                            if ($m2) {
-                                                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                                                1
-                                                                                                            }
-                                                                                                            else {
-                                                                                                                0
-                                                                                                            }
-                                                                                                        }))
-                                                                                                })))
-                                                                                    })) && (($last_match_null < 2))); {
+                                                                        })))
+                                                            })) || ((do {
+                                                                $MATCH->{'to'} = $pos1;
+                                                                ((((do {
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                (((do {
+                                                                                            (('b' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                        })) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('B' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                        })))
+                                                                            })) && ((do {
+                                                                                my $last_match_null = 0;
+                                                                                my $m = $MATCH;
+                                                                                my $to = $MATCH->{'to'};
+                                                                                my $count = 0;
+                                                                                for ( ; (((do {
+                                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                                ((((do {
+                                                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                                            })) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                                            }))) || ((do {
+                                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                                            ((('1' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                                        })))
+                                                                                            })) && (($last_match_null < 2))); {
 
-                                                                            } ) {
-                                                                            if (($to == $MATCH->{'to'})) {
-                                                                                $last_match_null = ($last_match_null + 1)
-                                                                            }
-                                                                            else {
-                                                                                $last_match_null = 0
-                                                                            };
-                                                                            $m = $MATCH;
-                                                                            $to = $MATCH->{'to'};
-                                                                            $count = ($count + 1)
+                                                                                    } ) {
+                                                                                    if (($to == $MATCH->{'to'})) {
+                                                                                        $last_match_null = ($last_match_null + 1)
+                                                                                    }
+                                                                                    else {
+                                                                                        $last_match_null = 0
+                                                                                    };
+                                                                                    $m = $MATCH;
+                                                                                    $to = $MATCH->{'to'};
+                                                                                    $count = ($count + 1)
+                                                                                };
+                                                                                $MATCH = $m;
+                                                                                $MATCH->{'to'} = $to;
+                                                                                ($count > 0)
+                                                                            }))))
+                                                            }))) || ((do {
+                                                            $MATCH->{'to'} = $pos1;
+                                                            ((do {
+                                                                    my $last_match_null = 0;
+                                                                    my $m = $MATCH;
+                                                                    my $to = $MATCH->{'to'};
+                                                                    my $count = 0;
+                                                                    for ( ; (((do {
+                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                    (((do {
+                                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ((do {
+                                                                                                        my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                                                        if ($m2) {
+                                                                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                                                                            1
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            0
+                                                                                                        }
+                                                                                                    }))
+                                                                                            })))
+                                                                                })) && (($last_match_null < 2))); {
+
+                                                                        } ) {
+                                                                        if (($to == $MATCH->{'to'})) {
+                                                                            $last_match_null = ($last_match_null + 1)
+                                                                        }
+                                                                        else {
+                                                                            $last_match_null = 0
                                                                         };
-                                                                        $MATCH = $m;
-                                                                        $MATCH->{'to'} = $to;
-                                                                        ($count > 0)
-                                                                    }))))
-                                                    })))
-                                        })) && ((do {
+                                                                        $m = $MATCH;
+                                                                        $to = $MATCH->{'to'};
+                                                                        $count = ($count + 1)
+                                                                    };
+                                                                    $MATCH = $m;
+                                                                    $MATCH->{'to'} = $to;
+                                                                    ($count > 0)
+                                                                }))
+                                                        })))
+                                            }))) && ((do {
                                             $MATCH->{'str'} = $str;
                                             $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(lc(Perlito5::Match::flat($MATCH))));
                                             1
                                         })))
                             })) || ((do {
                                 $MATCH->{'to'} = $pos1;
-                                (((((do {
-                                                    my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                    if ($m2) {
-                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                        1
-                                                    }
-                                                    else {
-                                                        0
-                                                    }
-                                                })) && ((do {
-                                                    my $last_match_null = 0;
-                                                    my $m = $MATCH;
-                                                    my $to = $MATCH->{'to'};
-                                                    for ( ; (((do {
-                                                                    my $pos1 = $MATCH->{'to'};
-                                                                    (((do {
-                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                            })) || ((do {
-                                                                                $MATCH->{'to'} = $pos1;
-                                                                                ((do {
-                                                                                        my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                        if ($m2) {
-                                                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                                                            1
-                                                                                        }
-                                                                                        else {
-                                                                                            0
-                                                                                        }
-                                                                                    }))
-                                                                            })))
-                                                                })) && (($last_match_null < 2))); {
-
-                                                        } ) {
-                                                        if (($to == $MATCH->{'to'})) {
-                                                            $last_match_null = ($last_match_null + 1)
-                                                        }
-                                                        else {
-                                                            $last_match_null = 0
-                                                        };
-                                                        $m = $MATCH;
-                                                        $to = $MATCH->{'to'}
-                                                    };
-                                                    $MATCH = $m;
-                                                    $MATCH->{'to'} = $to;
+                                ((((do {
+                                                my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                if ($m2) {
+                                                    $MATCH->{'to'} = $m2->{'to'};
                                                     1
-                                                }))) && ((do {
+                                                }
+                                                else {
+                                                    0
+                                                }
+                                            })) && ((do {
                                                 $MATCH->{'str'} = $str;
                                                 my $s = Perlito5::Match::flat($MATCH);
                                                 ($s =~ s!_!!g);
@@ -7494,7 +7511,7 @@ sub Perlito5::Grammar::Number::val_version {
                                 };
                                 1
                             })) && ((do {
-                                my $m2 = $grammar->digits($str, $MATCH->{'to'});
+                                my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
                                     1
@@ -7505,7 +7522,7 @@ sub Perlito5::Grammar::Number::val_version {
                             }))) && ((do {
                             my $m = $MATCH;
                             if (!((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                        my $m2 = $grammar->digits($str, $MATCH->{'to'});
+                                                        my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
                                                         if ($m2) {
                                                             $MATCH->{'to'} = $m2->{'to'};
                                                             1
@@ -7516,7 +7533,7 @@ sub Perlito5::Grammar::Number::val_version {
                                                     }))) && ((do {
                                                     my $m = $MATCH;
                                                     if (!(((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                            my $m2 = $grammar->digits($str, $MATCH->{'to'});
+                                                                            my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
                                                                             if ($m2) {
                                                                                 $MATCH->{'to'} = $m2->{'to'};
                                                                                 1
