@@ -258,6 +258,10 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- autovivification of fully-qualified globals
+    $Exporter::Cache[2] = 3;
+    # Cannot call method 'p5aset' of undefined
+
 -- pass @_ to &sub
     $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
     # call foo(@_)
