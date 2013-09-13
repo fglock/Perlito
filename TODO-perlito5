@@ -262,7 +262,7 @@ TODO list for Perlito5
     $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
     # call foo(@_)
 
--- dot-decimal strings
+-- dot-decimal strings / v-strings
     $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
     BM
 
@@ -280,8 +280,8 @@ TODO list for Perlito5
 -- do {} while / do {} until
     execute the loop once, before checking the condition
 
--- 'require 5.006;'
-    # Can't locate 5.006 in @INC
+-- 'require v5.006;'
+    # Can't locate v5.006 in @INC
 
 -- expressions in 'local'
     local $SIG{__WARN__};

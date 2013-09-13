@@ -7450,6 +7450,9 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 				v_filename = (List__.shift());
 				var v_is_bareword;
 				v_is_bareword = (List__.shift());
+				if ( ((p5str(v_filename) >= '0') && (p5str(v_filename) <= '9999')) ) {
+					throw(p5context([], p5want));
+				};
 				if ( p5bool(v_is_bareword) ) {
 					(p5make_package("Perlito5")["v_PACKAGES"] || (p5make_package("Perlito5")["v_PACKAGES"] = new p5HashRef({})))._hash_.p5hset(p5str(v_filename), (1));
 					v_filename = (p5pkg["Perlito5::Grammar::Use"].modulename_to_filename([v_filename], 0));

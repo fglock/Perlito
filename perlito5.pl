@@ -5294,6 +5294,9 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 sub Perlito5::Grammar::Use::require {
     my $filename = shift();
     my $is_bareword = shift();
+    if ((($filename ge '0') && ($filename le '9999'))) {
+        return 
+    };
     if ($is_bareword) {
         $Perlito5::PACKAGES->{$filename} = 1;
         $filename = modulename_to_filename($filename)
