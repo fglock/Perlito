@@ -1210,14 +1210,29 @@ package Perlito5::AST::Decl;
         my $self = shift;
 
         if ($self->{decl} eq 'local') {
-            # TODO - add grammar support
-            # if ($self->var->isa("Lookup")) {
-            #     return 
-            #         'p5set_local(' . $self->var->{obj}->emit_javascript2() . ', '
-            #                      . $self->var->{index_exp}->emit_javascript2() . ', '
-            #                      . '""); '
-            #         . $self->{var}->emit_javascript2( $level );
-            # }
+
+            # # add support for 'local $x[10]'
+            # # TODO - 'local ($x, $y[10])'
+            #
+            # my $var = $self->{var};
+            # my $sigil = $var->{sigil} || '$';
+            # my $tmp = Perlito5::AST::Var->new(sigil => $sigil, name => '_tmp_');
+            # my $tmp_decl = Perlito5::AST::Decl->new('decl' => 'my', 'type', '', 'var', $tmp);
+            # push @{ $Perlito5::VAR },
+            #     { $sigil . '_tmp_' => { decl => 'my' } };
+            #
+            # my $tmp_set = $tmp->emit_javascript2_set($var);
+            # my $var_set = $var->emit_javascript2_set($tmp);
+            # # print $tmp_set, "\n";
+            # # print $var_set, "\n";
+            #
+            # pop @{ $Perlito5::VAR };
+            #
+            # return 'function(){ '
+            #     .       $tmp_decl->emit_javascript2_init() . '; '
+            #     .       $tmp_set . '; '
+            #     .       'p5LOCAL.push(function(){ ' . $var_set . ' }) '
+            #     .  '}()';
 
             my $perl5_name = $self->{var}->perl5_name_javascript2;
             # say "looking up $perl5_name";
