@@ -999,7 +999,7 @@ sub Perlito5::Grammar::Statement::stmt_format {
                                         $MATCH->{'str'} = $str;
                                         my $placeholder = Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [])]);
                                         push(@Perlito5::Grammar::String::Here_doc, ['single_quote', $placeholder->{'arguments'}->[0]->{'arguments'}, '.']);
-                                        $MATCH->{'capture'} = Perlito5::AST::Decl->new('decl', 'FORMAT', 'type', undef(), 'var', Perlito5::AST::Var->new('name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'namespace', '', 'sigil', 'FORMAT', 'value', $placeholder));
+                                        $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'infix:<=>', 'namespace', '', 'arguments', [Perlito5::AST::Decl->new('decl', 'FORMAT', 'type', undef(), 'var', Perlito5::AST::Var->new('name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'namespace', '', 'sigil', 'FORMAT')), $placeholder]);
                                         1
                                     }))) && ((do {
                                     my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});

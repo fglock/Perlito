@@ -48,20 +48,28 @@ token stmt_format {
             $placeholder->{arguments}[0]{arguments},
             '.',  # delimiter
         ];
+        # "FORMAT format_name = string"
         $MATCH->{capture} =
-            Perlito5::AST::Decl->new(
-                decl => 'FORMAT',
-                type => undef,
-                var  => Perlito5::AST::Var->new(
-                            name      => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
-                            namespace => '',            # TODO - split namespace/name
-                            sigil     => 'FORMAT',      # ???
-                            value     => $placeholder   # TODO - use proper assignment with infix:<=>
-                        ),
+            Perlito5::AST::Apply->new(
+                code      => 'infix:<=>',
+                namespace => '',
+                arguments => [
+                    Perlito5::AST::Decl->new(
+                        decl => 'FORMAT',
+                        type => undef,
+                        var  => Perlito5::AST::Var->new(
+                                    name      => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
+                                    namespace => '',            # TODO - split namespace/name
+                                    sigil     => 'FORMAT',      # ???
+                                ),
+                    ),
+                    $placeholder,
+                ]
             );
     }
     <.Perlito5::Grammar::Space.opt_ws>
     '=' 
+    # TODO - make sure there are only spaces or comments until the end of the line
     <.Perlito5::Grammar::Space.ws>  # this will read the 'here-doc' we are expecting
 };
 
