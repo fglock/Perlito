@@ -16,9 +16,53 @@ sub add_statement {
 # --- TODO - move this to its own module
 Perlito5::Grammar::Statement::add_statement( '...'      => sub { Perlito5::Grammar::Statement->stmt_yadayada( $_[0], $_[1] ) } );
 Perlito5::Grammar::Statement::add_statement( 'package'  => sub { Perlito5::Grammar::Statement->stmt_package( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'format'   => sub { Perlito5::Grammar::Statement->stmt_format( $_[0], $_[1] ) } );
 
 token stmt_yadayada {
     '...' { die "Unimplemented" }
+};
+
+token stmt_format {
+    'format' <.Perlito5::Grammar::Space.ws> 
+    [ <Perlito5::Grammar.full_ident>
+    | { $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT' }
+    ]
+    {
+        # inject a here-doc request
+        # see Perlito5::Grammar::String
+        my $placeholder = Perlito5::AST::Apply->new(
+            code      => 'list:<.>',
+            namespace => '',
+            arguments => [
+                # XXX - this comment was originally on Perlito5::Grammar::String
+                # XXX - test 12 t/base/lex.t fails if we don't use this "double-pointer"   '
+                Perlito5::AST::Apply->new(
+                    code      => 'list:<.>',
+                    namespace => '',
+                    arguments => []
+                  )
+            ]
+        );
+        push @Perlito5::Grammar::String::Here_doc, [
+            'single_quote',
+            $placeholder->{arguments}[0]{arguments},
+            '.',  # delimiter
+        ];
+        $MATCH->{capture} =
+            Perlito5::AST::Decl->new(
+                decl => 'FORMAT',
+                type => undef,
+                var  => Perlito5::AST::Var->new(
+                            name      => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
+                            namespace => '',            # TODO - split namespace/name
+                            sigil     => 'FORMAT',      # ???
+                            value     => $placeholder   # TODO - use proper assignment with infix:<=>
+                        ),
+            );
+    }
+    <.Perlito5::Grammar::Space.opt_ws>
+    '=' 
+    <.Perlito5::Grammar::Space.ws>  # this will read the 'here-doc' we are expecting
 };
 
 token stmt_package {

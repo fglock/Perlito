@@ -946,6 +946,9 @@ Perlito5::Grammar::Statement::add_statement('...', sub {
 Perlito5::Grammar::Statement::add_statement('package', sub {
         Perlito5::Grammar::Statement->stmt_package($_[0], $_[1])
     });
+Perlito5::Grammar::Statement::add_statement('format', sub {
+        Perlito5::Grammar::Statement->stmt_format($_[0], $_[1])
+    });
 sub Perlito5::Grammar::Statement::stmt_yadayada {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -955,6 +958,67 @@ sub Perlito5::Grammar::Statement::stmt_yadayada {
                             $MATCH->{'str'} = $str;
                             die('Unimplemented');
                             1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Statement::stmt_format {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = ((((((((((('format' eq substr($str, $MATCH->{'to'}, 6)) && ($MATCH->{'to'} = (6 + $MATCH->{'to'})))) && ((do {
+                                                my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
+                                                if ($m2) {
+                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                    1
+                                                }
+                                                else {
+                                                    0
+                                                }
+                                            }))) && ((do {
+                                            my $pos1 = $MATCH->{'to'};
+                                            (((do {
+                                                        my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            $MATCH->{'Perlito5::Grammar.full_ident'} = $m2;
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    })) || ((do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        ((do {
+                                                                $MATCH->{'str'} = $str;
+                                                                $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT';
+                                                                1
+                                                            }))
+                                                    })))
+                                        }))) && ((do {
+                                        $MATCH->{'str'} = $str;
+                                        my $placeholder = Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [])]);
+                                        push(@Perlito5::Grammar::String::Here_doc, ['single_quote', $placeholder->{'arguments'}->[0]->{'arguments'}, '.']);
+                                        $MATCH->{'capture'} = Perlito5::AST::Decl->new('decl', 'FORMAT', 'type', undef(), 'var', Perlito5::AST::Var->new('name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'namespace', '', 'sigil', 'FORMAT', 'value', $placeholder));
+                                        1
+                                    }))) && ((do {
+                                    my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
+                                    if ($m2) {
+                                        $MATCH->{'to'} = $m2->{'to'};
+                                        1
+                                    }
+                                    else {
+                                        0
+                                    }
+                                }))) && ((('=' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+                            my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
                         })))));
     ($tmp ? $MATCH : 0)
 };
@@ -4626,7 +4690,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     };
     return {'str', $str, 'from', $pos, 'to', $p, 'capture', $ast}
 };
-my @Here_doc;
+our @Here_doc;
 sub Perlito5::Grammar::String::here_doc_wanted {
     my $self = $_[0];
     my $str = $_[1];

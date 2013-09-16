@@ -444,7 +444,7 @@ sub string_interpolation_parse {
 }
 
 
-my @Here_doc;
+our @Here_doc;
 sub here_doc_wanted {
     # setup a here-doc request
     # the actual text will be parsed later, by here_doc()
