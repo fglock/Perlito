@@ -15,9 +15,9 @@ our %Named_block = (
 Perlito5::Grammar::Precedence::add_term( 'do'    => sub { Perlito5::Grammar::Block->term_do( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'sub'   => sub { Perlito5::Grammar::Block->term_anon_sub( $_[0], $_[1] ) } );
 
-Perlito5::Grammar::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Grammar::Expression::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
-Perlito5::Grammar::Expression::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
+Perlito5::Grammar::Statement::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Grammar::Statement::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
+Perlito5::Grammar::Statement::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
     for keys %Named_block;
 
 
@@ -115,7 +115,7 @@ token named_sub_def {
             $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
         }
     |
-        <.Perlito5::Grammar::Expression.statement_parse>
+        <.Perlito5::Grammar::Statement.statement_parse>
         {
             die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\''
         }
@@ -187,8 +187,8 @@ token term_anon_sub {
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Grammar::Expression.statement_parse>
-                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.statement_parse'}) ) ] }
+    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Grammar::Statement.statement_parse>
+                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement.statement_parse'}) ) ] }
 };
 
 token args_sig {

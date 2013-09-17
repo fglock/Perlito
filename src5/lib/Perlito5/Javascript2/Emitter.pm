@@ -1110,7 +1110,13 @@ package Perlito5::AST::Var;
         if ($self->{namespace}) {
             $ns = 'p5make_package("' . $self->{namespace} . '")';
             if ($self->{sigil} eq '$#') {
-                return '(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)';
+                return '(p5global_array("' . $self->{namespace} . '", "' . $str_name . '").length - 1)';
+            }
+            if ($self->{sigil} eq '@') {
+                return 'p5global_array("' . $self->{namespace} . '", "' . $str_name . '")';
+            }
+            if ($self->{sigil} eq '%') {
+                return 'p5global_hash("' . $self->{namespace} . '", "' . $str_name . '")';
             }
             return $ns . '["' . $table->{$self->{sigil}} . $str_name . '"]'
         }
@@ -1209,7 +1215,52 @@ package Perlito5::AST::Decl;
     sub emit_javascript2_init {
         my $self = shift;
 
-        my $type = $self->{decl} eq 'local' ? 'our' : $self->{decl};
+        if ($self->{decl} eq 'local') {
+
+            # # add support for 'local $x[10]'
+            # # TODO - 'local ($x, $y[10])'
+            #
+            # my $var = $self->{var};
+            # my $sigil = $var->{sigil} || '$';
+            # my $tmp = Perlito5::AST::Var->new(sigil => $sigil, name => '_tmp_');
+            # my $tmp_decl = Perlito5::AST::Decl->new('decl' => 'my', 'type', '', 'var', $tmp);
+            # push @{ $Perlito5::VAR },
+            #     { $sigil . '_tmp_' => { decl => 'my' } };
+            #
+            # my $tmp_set = $tmp->emit_javascript2_set($var);
+            # my $var_set = $var->emit_javascript2_set($tmp);
+            # # print $tmp_set, "\n";
+            # # print $var_set, "\n";
+            #
+            # pop @{ $Perlito5::VAR };
+            #
+            # return 'function(){ '
+            #     .       $tmp_decl->emit_javascript2_init() . '; '
+            #     .       $tmp_set . '; '
+            #     .       'p5LOCAL.push(function(){ ' . $var_set . ' }) '
+            #     .  '}()';
+
+            my $perl5_name = $self->{var}->perl5_name_javascript2;
+            # say "looking up $perl5_name";
+            my $decl_namespace = '';
+            my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
+            if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
+                die "Can't localize lexical variable $perl5_name";
+            }
+            if ( $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
+                # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
+                $decl_namespace = $decl->{namespace};
+            }
+
+            my $ns = 'p5pkg["' . ($self->{var}{namespace} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
+
+            return
+                  'p5set_local(' . $ns . ','
+                               . Perlito5::Javascript2::escape_string($self->{var}{name}) . ','
+                               . Perlito5::Javascript2::escape_string($self->{var}{sigil}) . '); ' 
+        }
+
+        my $type = $self->{decl};
         my $env = { decl => $type };
         my $perl5_name = $self->{var}->perl5_name_javascript2;
         if ( $self->{decl} ne 'my' ) {
@@ -1221,7 +1272,7 @@ package Perlito5::AST::Decl;
                 # say "looking up $perl5_name";
                 my $decl_namespace = '';
                 my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
-                if ( $self->{decl} eq 'local' && $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
+                if ( $decl && $decl->{decl} eq 'our') {
                     # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
                     $decl_namespace = $decl->{namespace};
                 }
@@ -1262,32 +1313,6 @@ package Perlito5::AST::Decl;
             return 'if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
                     . $str
                     . '};';
-        }
-        elsif ($self->{decl} eq 'local') {
-            # TODO - add grammar support
-            # if ($self->var->isa("Lookup")) {
-            #     return 
-            #         'p5set_local(' . $self->var->{obj}->emit_javascript2() . ', '
-            #                      . $self->var->{index_exp}->emit_javascript2() . ', '
-            #                      . '""); '
-            #         . $self->{var}->emit_javascript2( $level );
-            # }
-
-            my $perl5_name = $self->{var}->perl5_name_javascript2;
-            # say "looking up $perl5_name";
-            my $decl_namespace = '';
-            my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
-            if ( $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
-                # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
-                $decl_namespace = $decl->{namespace};
-            }
-
-            my $ns = 'p5pkg["' . ($self->{var}{namespace} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
-
-            return
-                  'p5set_local(' . $ns . ','
-                               . Perlito5::Javascript2::escape_string($self->{var}{name}) . ','
-                               . Perlito5::Javascript2::escape_string($self->{var}{sigil}) . '); ' 
         }
         elsif ($self->{decl} eq 'state') {
             # TODO

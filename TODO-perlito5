@@ -32,6 +32,13 @@ TODO list for Perlito5
 
 * Parser
 
+-- dot-decimal strings
+    5.4.66.77
+    v5.4.66.77
+
+    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
+    BM
+
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
@@ -251,11 +258,43 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- 'require 5.006;'
-    # Can't locate 5.006 in @INC
+-- autovivification of fully-qualified array and hash globals
+    $#{"Exporter::Cache"};
+
+    ${"Exporter::Cache"}[2] = 3;
+
+    See: p5scalar_deref() / p5scalar_deref_set() in Perlito5/Javascript2/Runtime.pm
+
+-- pass @_ to &sub
+    $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
+    # call foo(@_)
+
+-- dot-decimal strings / v-strings
+    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
+    BM
+
+-- variable declarations inside condition
+    if ((my $color = <STDIN>) =~ /red/i) {
+        $value = 0xff0000;
+    }
+    elsif ($color =~ /green/i) {
+        $value = 0x00ff00;
+    }
+    else { ... }
+
+    After the else, the $color variable is no longer in scope.
+
+-- do {} while / do {} until
+    execute the loop once, before checking the condition
+
+-- 'require v5.006;'
+    # Can't locate v5.006 in @INC
 
 -- expressions in 'local'
     local $SIG{__WARN__};
+
+-- assign old-self to my / local
+    local $Some_Global = $Some_Global;
 
 -- 'next', 'last' in expression
     (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)

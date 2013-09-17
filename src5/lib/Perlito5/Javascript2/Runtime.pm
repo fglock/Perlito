@@ -247,7 +247,7 @@ function p5scalar_deref(v) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        return p5pkg[pkg_name]["v_"+v];
+        return p5make_package(pkg_name)["v_"+v];
     }
     return v._scalar_;
 }
@@ -267,11 +267,27 @@ function p5scalar_deref_set(v, n) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        p5pkg[pkg_name]["v_"+v] = n;
+        p5make_package(pkg_name)["v_"+v] = n;
         return p5pkg[pkg_name]["v_"+v];
     }
     v._scalar_ = n;
     return v._scalar_;
+}
+
+function p5global_array(pkg_name, name) {
+    v = "List_"+name;
+    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
+        p5pkg[pkg_name][v] = [];
+    }
+    return p5pkg[pkg_name][v];
+}
+
+function p5global_hash(pkg_name, name) {
+    v = "Hash_"+name;
+    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
+        p5pkg[pkg_name][v] = {};
+    }
+    return p5pkg[pkg_name][v];
 }
 
 p5make_package("main");
@@ -302,7 +318,7 @@ p5make_package("Perlito5::IO");
 p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
 
-var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_' };
+var sigils = { '@' : 'List_', '%' : 'Hash_', '$' : 'v_', '&' : '' };
 
 function p5typeglob_set(namespace, name, obj) {
     p5make_package(namespace);
@@ -316,13 +332,16 @@ function p5typeglob_set(namespace, name, obj) {
         else if ( obj._ref_ == "SCALAR" ) {
             p5pkg[namespace][sigils['$'] + name] = obj._scalar_;
         }
+        else if ( obj._ref_ == "CODE" ) {
+            p5pkg[namespace][sigils['&'] + name] = obj._code_;
+        }
         else if ( obj._ref_ == "GLOB" ) {
             // TODO
             p5pkg[namespace][name] = obj;
         }
     }
     else {
-        p5pkg[namespace][name] = obj;   // CODE
+        p5pkg[namespace][name] = obj;   // native CODE
         // TODO - non-reference
     }
     return p5pkg[namespace][name];  // TODO - return GLOB
@@ -392,6 +411,12 @@ function p5ScalarRef(o) {
 function p5GlobRef(o) {
     this._scalar_ = o;
     this._ref_ = "GLOB";
+    this.bool = function() { return 1 };
+}
+
+function p5CodeRef(o) {
+    this._code_ = o;
+    this._ref_ = "CODE";
     this.bool = function() { return 1 };
 }
 

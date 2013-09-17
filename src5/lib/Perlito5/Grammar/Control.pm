@@ -3,13 +3,13 @@ use strict;
 use Perlito5::Grammar::Expression;
 
 
-Perlito5::Grammar::Expression::add_statement( 'if'      => sub { Perlito5::Grammar->if( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'for'     => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'foreach' => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'when'    => sub { Perlito5::Grammar->when( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'while'   => sub { Perlito5::Grammar->while( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'given'   => sub { Perlito5::Grammar->given( $_[0], $_[1] ) } );
-Perlito5::Grammar::Expression::add_statement( 'unless'  => sub { Perlito5::Grammar->unless( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'if'      => sub { Perlito5::Grammar->if( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'for'     => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'foreach' => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'when'    => sub { Perlito5::Grammar->when( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'while'   => sub { Perlito5::Grammar->while( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'given'   => sub { Perlito5::Grammar->given( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'unless'  => sub { Perlito5::Grammar->unless( $_[0], $_[1] ) } );
 
 
 token unless {

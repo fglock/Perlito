@@ -931,6 +931,261 @@ sub Perlito5::Grammar::Attribute::opt_attribute {
 
 ;
 package main;
+package Perlito5::Grammar::Statement;
+my @Statement_chars;
+my %Statement;
+sub Perlito5::Grammar::Statement::add_statement {
+    my $name = shift();
+    my $param = shift();
+    $Statement{$name} = $param;
+    unshift(@Statement_chars, (scalar(@Statement_chars) + 1)) while (@Statement_chars < length($name))
+};
+Perlito5::Grammar::Statement::add_statement('...', sub {
+        Perlito5::Grammar::Statement->stmt_yadayada($_[0], $_[1])
+    });
+Perlito5::Grammar::Statement::add_statement('package', sub {
+        Perlito5::Grammar::Statement->stmt_package($_[0], $_[1])
+    });
+Perlito5::Grammar::Statement::add_statement('format', sub {
+        Perlito5::Grammar::Statement->stmt_format($_[0], $_[1])
+    });
+sub Perlito5::Grammar::Statement::stmt_yadayada {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((('...' eq substr($str, $MATCH->{'to'}, 3)) && ($MATCH->{'to'} = (3 + $MATCH->{'to'})))) && ((do {
+                            $MATCH->{'str'} = $str;
+                            die('Unimplemented');
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Statement::stmt_format {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = ((((((((((('format' eq substr($str, $MATCH->{'to'}, 6)) && ($MATCH->{'to'} = (6 + $MATCH->{'to'})))) && ((do {
+                                                my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
+                                                if ($m2) {
+                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                    1
+                                                }
+                                                else {
+                                                    0
+                                                }
+                                            }))) && ((do {
+                                            my $pos1 = $MATCH->{'to'};
+                                            (((do {
+                                                        my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            $MATCH->{'Perlito5::Grammar.full_ident'} = $m2;
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    })) || ((do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        ((do {
+                                                                $MATCH->{'str'} = $str;
+                                                                $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT';
+                                                                1
+                                                            }))
+                                                    })))
+                                        }))) && ((do {
+                                        $MATCH->{'str'} = $str;
+                                        my $placeholder = Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'list:<.>', 'namespace', '', 'arguments', [])]);
+                                        push(@Perlito5::Grammar::String::Here_doc, ['single_quote', $placeholder->{'arguments'}->[0]->{'arguments'}, '.']);
+                                        $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'infix:<=>', 'namespace', '', 'arguments', [Perlito5::AST::Decl->new('decl', 'FORMAT', 'type', undef(), 'var', Perlito5::AST::Var->new('name', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), 'namespace', '', 'sigil', 'FORMAT')), $placeholder]);
+                                        1
+                                    }))) && ((do {
+                                    my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
+                                    if ($m2) {
+                                        $MATCH->{'to'} = $m2->{'to'};
+                                        1
+                                    }
+                                    else {
+                                        0
+                                    }
+                                }))) && ((('=' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+                            my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Statement::stmt_package {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((((('package' eq substr($str, $MATCH->{'to'}, 7)) && ($MATCH->{'to'} = (7 + $MATCH->{'to'})))) && ((do {
+                                    my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
+                                    if ($m2) {
+                                        $MATCH->{'to'} = $m2->{'to'};
+                                        1
+                                    }
+                                    else {
+                                        0
+                                    }
+                                }))) && ((do {
+                                my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
+                                if ($m2) {
+                                    $MATCH->{'to'} = $m2->{'to'};
+                                    $MATCH->{'Perlito5::Grammar.full_ident'} = $m2;
+                                    1
+                                }
+                                else {
+                                    0
+                                }
+                            }))) && ((do {
+                            my $pos1 = $MATCH->{'to'};
+                            (((do {
+                                        (((((do {
+                                                            my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
+                                                            if ($m2) {
+                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                1
+                                                            }
+                                                            else {
+                                                                0
+                                                            }
+                                                        })) && ((do {
+                                                            $MATCH->{'str'} = $str;
+                                                            my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
+                                                            $Perlito5::PACKAGES->{$name} = 1;
+                                                            $Perlito5::PKG_NAME = $name;
+                                                            1
+                                                        }))) && ((do {
+                                                        my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            $MATCH->{'Perlito5::Grammar::Expression.term_curly'} = $m2;
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    }))) && ((do {
+                                                    $MATCH->{'str'} = $str;
+                                                    $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts', [Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]}]);
+                                                    1
+                                                })))
+                                    })) || ((do {
+                                        $MATCH->{'to'} = $pos1;
+                                        ((do {
+                                                $MATCH->{'str'} = $str;
+                                                my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
+                                                $Perlito5::PACKAGES->{$name} = 1;
+                                                $Perlito5::PKG_NAME = $name;
+                                                $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name);
+                                                1
+                                            }))
+                                    })))
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Statement::exp_stmt {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    for my  $len (@Statement_chars) {
+        my $term = substr($str, $pos, $len);
+        if (exists($Statement{$term})) {
+            my $m = $Statement{$term}->($str, $pos);
+            return $m if $m
+        }
+    };
+    return 0
+};
+my @Modifier_chars = (7, 6, 5, 4, 3, 2);
+my %Modifier = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1, 'given', 1);
+sub Perlito5::Grammar::Statement::statement_modifier {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $expression = $_[3];
+    for my  $len (@Modifier_chars) {
+        my $term = substr($str, $pos, $len);
+        if (exists($Modifier{$term})) {
+            my $m = $self->modifier($str, ($pos + $len), $term, $expression);
+            return $m if $m
+        }
+    };
+    return 0
+};
+sub Perlito5::Grammar::Statement::modifier {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $modifier = $_[3];
+    my $expression = $_[4];
+    my $modifier_exp = Perlito5::Grammar::Expression->exp_parse($str, $pos);
+    if (!($modifier_exp)) {
+        die('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
+    };
+    if (($modifier eq 'if')) {
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
+    };
+    if (($modifier eq 'unless')) {
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'otherwise', $expression)}
+    };
+    if (($modifier eq 'when')) {
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::When->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
+    };
+    if (($modifier eq 'while')) {
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::While->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
+    };
+    if ((($modifier eq 'for') || ($modifier eq 'foreach'))) {
+        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::For->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
+    };
+    die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
+};
+sub Perlito5::Grammar::Statement::statement_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $res = $self->exp_stmt($str, $pos);
+    if ($res) {
+        return $res
+    };
+    $res = Perlito5::Grammar::Expression->exp_parse($str, $pos);
+    if (!($res)) {
+        return 
+    };
+    if ((((substr($str, $res->{'to'}, 1) eq ':') && $res->{'capture'}->isa('Perlito5::AST::Apply')) && $res->{'capture'}->{'bareword'})) {
+        my $label = $res->{'capture'}->{'code'};
+        my $ws = Perlito5::Grammar::Space->opt_ws($str, ($res->{'to'} + 1));
+        my $stmt = $self->statement_parse($str, $ws->{'to'});
+        if ($stmt) {
+            $stmt->{'capture'}->{'label'} = $label;
+            return $stmt
+        };
+        $res->{'to'} = $ws->{'to'};
+        $res->{'capture'} = Perlito5::AST::Apply->new('arguments', [], 'code', 'undef', 'namespace', '', 'label', $label);
+        return $res
+    };
+    my $modifier = $self->statement_modifier($str, $res->{'to'}, Perlito5::Match::flat($res));
+    my $p = ($modifier ? $modifier->{'to'} : $res->{'to'});
+    my $terminator = substr($str, $p, 1);
+    die('Number or Bareword found where operator expected') if ((($terminator ne ';') && ($terminator ne '}')) && ($terminator ne ''));
+    if (!($modifier)) {
+        return $res
+    };
+    return $modifier
+};
+1;
+
+;
+package main;
 package Perlito5::Grammar::Expression;
 
 # use Perlito5::Grammar::Precedence
@@ -941,39 +1196,9 @@ package Perlito5::Grammar::Expression;
 
 # use Perlito5::Grammar::Attribute
 ;
-Perlito5::Grammar::Precedence::add_term('.', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('0', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('1', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('2', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('3', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('4', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('5', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('6', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('7', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('8', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('9', sub {
-        Perlito5::Grammar::Expression->term_digit($_[0], $_[1])
-    });
+
+# use Perlito5::Grammar::Statement
+;
 Perlito5::Grammar::Precedence::add_term('my', sub {
         Perlito5::Grammar::Expression->term_declarator($_[0], $_[1])
     });
@@ -991,9 +1216,6 @@ Perlito5::Grammar::Precedence::add_term('local', sub {
     });
 Perlito5::Grammar::Precedence::add_term('return', sub {
         Perlito5::Grammar::Expression->term_return($_[0], $_[1])
-    });
-Perlito5::Grammar::Precedence::add_term('package', sub {
-        Perlito5::Grammar::Expression->term_package($_[0], $_[1])
     });
 sub Perlito5::Grammar::Expression::expand_list {
     my $param_list = shift();
@@ -1385,50 +1607,6 @@ sub Perlito5::Grammar::Expression::term_arrow {
                         })))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Expression::term_digit {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = (((do {
-                    my $pos1 = $MATCH->{'to'};
-                    (((do {
-                                (((do {
-                                            my $m2 = Perlito5::Grammar->val_num($str, $MATCH->{'to'});
-                                            if ($m2) {
-                                                $MATCH->{'to'} = $m2->{'to'};
-                                                $MATCH->{'Perlito5::Grammar.val_num'} = $m2;
-                                                1
-                                            }
-                                            else {
-                                                0
-                                            }
-                                        })) && ((do {
-                                            $MATCH->{'str'} = $str;
-                                            $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.val_num'})];
-                                            1
-                                        })))
-                            })) || ((do {
-                                $MATCH->{'to'} = $pos1;
-                                ((((do {
-                                                my $m2 = Perlito5::Grammar->val_int($str, $MATCH->{'to'});
-                                                if ($m2) {
-                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                    $MATCH->{'Perlito5::Grammar.val_int'} = $m2;
-                                                    1
-                                                }
-                                                else {
-                                                    0
-                                                }
-                                            })) && ((do {
-                                                $MATCH->{'str'} = $str;
-                                                $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.val_int'})];
-                                                1
-                                            }))))
-                            })))
-                })));
-    ($tmp ? $MATCH : 0)
-};
 sub Perlito5::Grammar::Expression::term_ternary {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -1715,40 +1893,6 @@ sub Perlito5::Grammar::Expression::term_return {
                         })))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Expression::term_package {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = (((((((('package' eq substr($str, $MATCH->{'to'}, 7)) && ($MATCH->{'to'} = (7 + $MATCH->{'to'})))) && ((do {
-                                    my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
-                                    if ($m2) {
-                                        $MATCH->{'to'} = $m2->{'to'};
-                                        1
-                                    }
-                                    else {
-                                        0
-                                    }
-                                }))) && ((do {
-                                my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
-                                if ($m2) {
-                                    $MATCH->{'to'} = $m2->{'to'};
-                                    $MATCH->{'Perlito5::Grammar.full_ident'} = $m2;
-                                    1
-                                }
-                                else {
-                                    0
-                                }
-                            }))) && ((do {
-                            $MATCH->{'str'} = $str;
-                            my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
-                            $Perlito5::PACKAGES->{$name} = 1;
-                            $Perlito5::PKG_NAME = $name;
-                            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'package', 'arguments', [], 'namespace', $name)];
-                            1
-                        })))));
-    ($tmp ? $MATCH : 0)
-};
 sub Perlito5::Grammar::Expression::term_eval {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -1987,103 +2131,6 @@ sub Perlito5::Grammar::Expression::exp_parse {
     my $result = pop_term($res);
     return {'str', $str, 'from', $pos, 'to', $last_pos, 'capture', $result}
 };
-my @Statement_chars;
-my %Statement;
-sub Perlito5::Grammar::Expression::add_statement {
-    my $name = shift();
-    my $param = shift();
-    $Statement{$name} = $param;
-    unshift(@Statement_chars, (scalar(@Statement_chars) + 1)) while (@Statement_chars < length($name))
-};
-sub Perlito5::Grammar::Expression::exp_stmt {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    for my  $len (@Statement_chars) {
-        my $term = substr($str, $pos, $len);
-        if (exists($Statement{$term})) {
-            my $m = $Statement{$term}->($str, $pos);
-            return $m if $m
-        }
-    };
-    return 0
-};
-my @Modifier_chars = (7, 6, 5, 4, 3, 2);
-my %Modifier = ('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1, 'given', 1);
-sub Perlito5::Grammar::Expression::statement_modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $expression = $_[3];
-    for my  $len (@Modifier_chars) {
-        my $term = substr($str, $pos, $len);
-        if (exists($Modifier{$term})) {
-            my $m = $self->modifier($str, ($pos + $len), $term, $expression);
-            return $m if $m
-        }
-    };
-    return 0
-};
-sub Perlito5::Grammar::Expression::modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $modifier = $_[3];
-    my $expression = $_[4];
-    my $modifier_exp = $self->exp_parse($str, $pos);
-    if (!($modifier_exp)) {
-        die('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
-    };
-    if (($modifier eq 'if')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
-    };
-    if (($modifier eq 'unless')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::If->new('cond', Perlito5::Match::flat($modifier_exp), 'otherwise', $expression)}
-    };
-    if (($modifier eq 'when')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::When->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
-    };
-    if (($modifier eq 'while')) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::While->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
-    };
-    if ((($modifier eq 'for') || ($modifier eq 'foreach'))) {
-        return {'str', $str, 'from', $pos, 'to', $modifier_exp->{'to'}, 'capture', Perlito5::AST::For->new('cond', Perlito5::Match::flat($modifier_exp), 'body', $expression)}
-    };
-    die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
-};
-sub Perlito5::Grammar::Expression::statement_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $res = $self->exp_stmt($str, $pos);
-    if ($res) {
-        return $res
-    };
-    $res = $self->exp_parse($str, $pos);
-    if (!($res)) {
-        return 
-    };
-    if ((((substr($str, $res->{'to'}, 1) eq ':') && $res->{'capture'}->isa('Perlito5::AST::Apply')) && $res->{'capture'}->{'bareword'})) {
-        my $label = $res->{'capture'}->{'code'};
-        my $ws = Perlito5::Grammar::Space->opt_ws($str, ($res->{'to'} + 1));
-        my $stmt = $self->statement_parse($str, $ws->{'to'});
-        if ($stmt) {
-            $stmt->{'capture'}->{'label'} = $label;
-            return $stmt
-        };
-        $res->{'to'} = $ws->{'to'};
-        $res->{'capture'} = Perlito5::AST::Apply->new('arguments', [], 'code', 'undef', 'namespace', '', 'label', $label);
-        return $res
-    };
-    my $modifier = $self->statement_modifier($str, $res->{'to'}, Perlito5::Match::flat($res));
-    my $p = ($modifier ? $modifier->{'to'} : $res->{'to'});
-    my $terminator = substr($str, $p, 1);
-    die('Number or Bareword found where operator expected') if ((($terminator ne ';') && ($terminator ne '}')) && ($terminator ne ''));
-    if (!($modifier)) {
-        return $res
-    };
-    return $modifier
-};
 1;
 
 ;
@@ -2098,25 +2145,25 @@ package Perlito5::Grammar;
 
 # use Perlito5::Grammar::Expression
 ;
-Perlito5::Grammar::Expression::add_statement('if', sub {
+Perlito5::Grammar::Statement::add_statement('if', sub {
         Perlito5::Grammar->if($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('for', sub {
+Perlito5::Grammar::Statement::add_statement('for', sub {
         Perlito5::Grammar->for($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('foreach', sub {
+Perlito5::Grammar::Statement::add_statement('foreach', sub {
         Perlito5::Grammar->for($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('when', sub {
+Perlito5::Grammar::Statement::add_statement('when', sub {
         Perlito5::Grammar->when($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('while', sub {
+Perlito5::Grammar::Statement::add_statement('while', sub {
         Perlito5::Grammar->while($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('given', sub {
+Perlito5::Grammar::Statement::add_statement('given', sub {
         Perlito5::Grammar->given($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('unless', sub {
+Perlito5::Grammar::Statement::add_statement('unless', sub {
         Perlito5::Grammar->unless($_[0], $_[1])
     });
 sub Perlito5::Grammar::unless {
@@ -3397,10 +3444,10 @@ sub Perlito5::Grammar::Regex::rule_term {
                                                         my $pos1 = $MATCH->{'to'};
                                                         ((((do {
                                                                         ((((((('c' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((('[' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-                                                                                            my $m2 = Perlito5::Grammar->digits($str, $MATCH->{'to'});
+                                                                                            my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                                                                                             if ($m2) {
                                                                                                 $MATCH->{'to'} = $m2->{'to'};
-                                                                                                $MATCH->{'Perlito5::Grammar.digits'} = $m2;
+                                                                                                $MATCH->{'Perlito5::Grammar::Number.digits'} = $m2;
                                                                                                 1
                                                                                             }
                                                                                             else {
@@ -3408,16 +3455,16 @@ sub Perlito5::Grammar::Regex::rule_term {
                                                                                             }
                                                                                         }))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
                                                                                     $MATCH->{'str'} = $str;
-                                                                                    $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'})));
+                                                                                    $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'})));
                                                                                     1
                                                                                 })))
                                                                     })) || ((do {
                                                                         $MATCH->{'to'} = $pos1;
                                                                         (((((('c' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                                            my $m2 = Perlito5::Grammar->digits($str, $MATCH->{'to'});
+                                                                                            my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                                                                                             if ($m2) {
                                                                                                 $MATCH->{'to'} = $m2->{'to'};
-                                                                                                $MATCH->{'Perlito5::Grammar.digits'} = $m2;
+                                                                                                $MATCH->{'Perlito5::Grammar::Number.digits'} = $m2;
                                                                                                 1
                                                                                             }
                                                                                             else {
@@ -3425,7 +3472,7 @@ sub Perlito5::Grammar::Regex::rule_term {
                                                                                             }
                                                                                         }))) && ((do {
                                                                                         $MATCH->{'str'} = $str;
-                                                                                        $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'})));
+                                                                                        $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant', chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'})));
                                                                                         1
                                                                                     }))))
                                                                     }))) || ((do {
@@ -4643,7 +4690,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     };
     return {'str', $str, 'from', $pos, 'to', $p, 'capture', $ast}
 };
-my @Here_doc;
+our @Here_doc;
 sub Perlito5::Grammar::String::here_doc_wanted {
     my $self = $_[0];
     my $str = $_[1];
@@ -4845,7 +4892,7 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     };
     if ((substr($str, $p, 1) eq '[')) {
         if (($interpolate == 2)) {
-            my $m = ((Perlito5::Grammar::Expression->term_digit($str, ($p + 1)) || (((substr($str, ($p + 1), 1) eq '-') && Perlito5::Grammar::Expression->term_digit($str, ($p + 2))))) || Perlito5::Grammar::Sigil->term_sigil($str, ($p + 1)));
+            my $m = ((Perlito5::Grammar::Number->term_digit($str, ($p + 1)) || (((substr($str, ($p + 1), 1) eq '-') && Perlito5::Grammar::Number->term_digit($str, ($p + 2))))) || Perlito5::Grammar::Sigil->term_sigil($str, ($p + 1)));
             return $m_var unless $m;
             return $m_var unless (substr($str, $m->{'to'}, 1) eq ']')
         };
@@ -5072,11 +5119,11 @@ package Perlito5::Grammar::Use;
 
 # use strict
 ;
-Perlito5::Grammar::Precedence::add_term('no', sub {
-        Perlito5::Grammar::Use->term_use($_[0], $_[1])
+Perlito5::Grammar::Statement::add_statement('no', sub {
+        Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
     });
-Perlito5::Grammar::Precedence::add_term('use', sub {
-        Perlito5::Grammar::Use->term_use($_[0], $_[1])
+Perlito5::Grammar::Statement::add_statement('use', sub {
+        Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
     });
 my %Perlito_internal_module = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding', 'Carp', 'Perlito5::Carp');
 sub Perlito5::Grammar::Use::use_decl {
@@ -5095,7 +5142,7 @@ sub Perlito5::Grammar::Use::use_decl {
                 })));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Use::term_use {
+sub Perlito5::Grammar::Use::stmt_use {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -5123,10 +5170,10 @@ sub Perlito5::Grammar::Use::term_use {
                             my $pos1 = $MATCH->{'to'};
                             (((do {
                                         (((do {
-                                                    my $m2 = Perlito5::Grammar->val_version($str, $MATCH->{'to'});
+                                                    my $m2 = Perlito5::Grammar::Number->val_version($str, $MATCH->{'to'});
                                                     if ($m2) {
                                                         $MATCH->{'to'} = $m2->{'to'};
-                                                        $MATCH->{'Perlito5::Grammar.val_version'} = $m2;
+                                                        $MATCH->{'Perlito5::Grammar::Number.val_version'} = $m2;
                                                         1
                                                     }
                                                     else {
@@ -5134,7 +5181,7 @@ sub Perlito5::Grammar::Use::term_use {
                                                     }
                                                 })) && ((do {
                                                     $MATCH->{'str'} = $str;
-                                                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', [])];
+                                                    $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', []);
                                                     1
                                                 })))
                                     })) || ((do {
@@ -5196,7 +5243,7 @@ sub Perlito5::Grammar::Use::term_use {
                                                         $Perlito5::PACKAGES->{$full_ident} = 1;
                                                         my $ast = Perlito5::AST::Use->new('code', Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod', $full_ident, 'arguments', $list);
                                                         parse_time_eval($ast);
-                                                        $MATCH->{'capture'} = ['term', $ast];
+                                                        $MATCH->{'capture'} = $ast;
                                                         1
                                                     }))))
                                     })))
@@ -5311,6 +5358,9 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 sub Perlito5::Grammar::Use::require {
     my $filename = shift();
     my $is_bareword = shift();
+    if ((($filename ge '0') && ($filename le '9999'))) {
+        return 
+    };
     if ($is_bareword) {
         $Perlito5::PACKAGES->{$filename} = 1;
         $filename = modulename_to_filename($filename)
@@ -5350,13 +5400,13 @@ Perlito5::Grammar::Precedence::add_term('do', sub {
 Perlito5::Grammar::Precedence::add_term('sub', sub {
         Perlito5::Grammar::Block->term_anon_sub($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('{', sub {
+Perlito5::Grammar::Statement::add_statement('{', sub {
         Perlito5::Grammar::Block->term_block($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement('sub', sub {
+Perlito5::Grammar::Statement::add_statement('sub', sub {
         Perlito5::Grammar::Block->named_sub($_[0], $_[1])
     });
-Perlito5::Grammar::Expression::add_statement($_, sub {
+Perlito5::Grammar::Statement::add_statement($_, sub {
             Perlito5::Grammar::Block->term_block($_[0], $_[1])
         }) for keys(%Named_block);
 sub Perlito5::Grammar::Block::term_block {
@@ -5531,7 +5581,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
                                             })) || ((do {
                                                 $MATCH->{'to'} = $pos1;
                                                 ((((do {
-                                                                my $m2 = Perlito5::Grammar::Expression->statement_parse($str, $MATCH->{'to'});
+                                                                my $m2 = Perlito5::Grammar::Statement->statement_parse($str, $MATCH->{'to'});
                                                                 if ($m2) {
                                                                     $MATCH->{'to'} = $m2->{'to'};
                                                                     1
@@ -5637,10 +5687,10 @@ sub Perlito5::Grammar::Block::term_do {
                                     my $res = ((('{' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))));
                                     $MATCH = ($res ? $tmp : 0)
                                 }))) && ((do {
-                                my $m2 = Perlito5::Grammar::Expression->statement_parse($str, $MATCH->{'to'});
+                                my $m2 = Perlito5::Grammar::Statement->statement_parse($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
-                                    $MATCH->{'Perlito5::Grammar::Expression.statement_parse'} = $m2;
+                                    $MATCH->{'Perlito5::Grammar::Statement.statement_parse'} = $m2;
                                     1
                                 }
                                 else {
@@ -5648,7 +5698,7 @@ sub Perlito5::Grammar::Block::term_do {
                                 }
                             }))) && ((do {
                             $MATCH->{'str'} = $str;
-                            $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.statement_parse'}))];
+                            $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement.statement_parse'}))];
                             1
                         })))));
     ($tmp ? $MATCH : 0)
@@ -6215,10 +6265,10 @@ sub Perlito5::Grammar::Space::start_of_line {
                                                                             $MATCH->{'to'} = $to;
                                                                             ($count > 0)
                                                                         }))) && ((do {
-                                                                        my $m2 = Perlito5::Grammar->digits($str, $MATCH->{'to'});
+                                                                        my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                                                                         if ($m2) {
                                                                             $MATCH->{'to'} = $m2->{'to'};
-                                                                            $MATCH->{'Perlito5::Grammar.digits'} = $m2;
+                                                                            $MATCH->{'Perlito5::Grammar::Number.digits'} = $m2;
                                                                             1
                                                                         }
                                                                         else {
@@ -6262,7 +6312,7 @@ sub Perlito5::Grammar::Space::start_of_line {
                                                                 }
                                                             }))) && ((do {
                                                             $MATCH->{'str'} = $str;
-                                                            $Perlito5::LINE_NUMBER = (0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.digits'}));
+                                                            $Perlito5::LINE_NUMBER = (0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'}));
                                                             1
                                                         }))))
                                         }))) || ((do {
@@ -6913,9 +6963,672 @@ sub Perlito5::Grammar::Map::term_sort {
 
 ;
 package main;
+package Perlito5::Grammar::Number;
+
+# use strict
+;
+
+# use Perlito5::Grammar::Precedence
+;
+Perlito5::Grammar::Precedence::add_term('.', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('0', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('1', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('2', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('3', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('4', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('5', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('6', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('7', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('8', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+Perlito5::Grammar::Precedence::add_term('9', sub {
+        Perlito5::Grammar::Number->term_digit($_[0], $_[1])
+    });
+sub Perlito5::Grammar::Number::term_digit {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((do {
+                    my $pos1 = $MATCH->{'to'};
+                    (((do {
+                                (((do {
+                                            my $m2 = Perlito5::Grammar::Number->val_num($str, $MATCH->{'to'});
+                                            if ($m2) {
+                                                $MATCH->{'to'} = $m2->{'to'};
+                                                $MATCH->{'Perlito5::Grammar::Number.val_num'} = $m2;
+                                                1
+                                            }
+                                            else {
+                                                0
+                                            }
+                                        })) && ((do {
+                                            $MATCH->{'str'} = $str;
+                                            $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_num'})];
+                                            1
+                                        })))
+                            })) || ((do {
+                                $MATCH->{'to'} = $pos1;
+                                ((((do {
+                                                my $m2 = Perlito5::Grammar::Number->val_int($str, $MATCH->{'to'});
+                                                if ($m2) {
+                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                    $MATCH->{'Perlito5::Grammar::Number.val_int'} = $m2;
+                                                    1
+                                                }
+                                                else {
+                                                    0
+                                                }
+                                            })) && ((do {
+                                                $MATCH->{'str'} = $str;
+                                                $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_int'})];
+                                                1
+                                            }))))
+                            })))
+                })));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::digit {
+    ((substr($_[1], $_[2], 1) =~ m!\d!) ? {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)} : 0)
+};
+sub Perlito5::Grammar::Number::exponent {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = ((((((do {
+                                my $pos1 = $MATCH->{'to'};
+                                (((do {
+                                            (('e' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                        })) || ((do {
+                                            $MATCH->{'to'} = $pos1;
+                                            ((('E' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                        })))
+                            })) && ((do {
+                                my $pos1 = $MATCH->{'to'};
+                                ((((do {
+                                                (('+' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                            })) || ((do {
+                                                $MATCH->{'to'} = $pos1;
+                                                ((('-' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                            }))) || ((do {
+                                            $MATCH->{'to'} = $pos1;
+                                            1
+                                        })))
+                            }))) && ((do {
+                            my $last_match_null = 0;
+                            my $m = $MATCH;
+                            my $to = $MATCH->{'to'};
+                            my $count = 0;
+                            for ( ; (((do {
+                                            my $pos1 = $MATCH->{'to'};
+                                            (((do {
+                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                    })) || ((do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        ((do {
+                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                if ($m2) {
+                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                    1
+                                                                }
+                                                                else {
+                                                                    0
+                                                                }
+                                                            }))
+                                                    })))
+                                        })) && (($last_match_null < 2))); {
+
+                                } ) {
+                                if (($to == $MATCH->{'to'})) {
+                                    $last_match_null = ($last_match_null + 1)
+                                }
+                                else {
+                                    $last_match_null = 0
+                                };
+                                $m = $MATCH;
+                                $to = $MATCH->{'to'};
+                                $count = ($count + 1)
+                            };
+                            $MATCH = $m;
+                            $MATCH->{'to'} = $to;
+                            ($count > 0)
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::val_num {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((do {
+                            my $pos1 = $MATCH->{'to'};
+                            (((do {
+                                        (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                            if ($m2) {
+                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                1
+                                                            }
+                                                            else {
+                                                                0
+                                                            }
+                                                        }))) && ((do {
+                                                        my $last_match_null = 0;
+                                                        my $m = $MATCH;
+                                                        my $to = $MATCH->{'to'};
+                                                        for ( ; (((do {
+                                                                        my $pos1 = $MATCH->{'to'};
+                                                                        (((do {
+                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                })) || ((do {
+                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                    ((do {
+                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                                            if ($m2) {
+                                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                                1
+                                                                                            }
+                                                                                            else {
+                                                                                                0
+                                                                                            }
+                                                                                        }))
+                                                                                })))
+                                                                    })) && (($last_match_null < 2))); {
+
+                                                            } ) {
+                                                            if (($to == $MATCH->{'to'})) {
+                                                                $last_match_null = ($last_match_null + 1)
+                                                            }
+                                                            else {
+                                                                $last_match_null = 0
+                                                            };
+                                                            $m = $MATCH;
+                                                            $to = $MATCH->{'to'}
+                                                        };
+                                                        $MATCH = $m;
+                                                        $MATCH->{'to'} = $to;
+                                                        1
+                                                    }))) && ((do {
+                                                    my $m = $MATCH;
+                                                    if (!(((do {
+                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
+                                                                    if ($m2) {
+                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                        1
+                                                                    }
+                                                                    else {
+                                                                        0
+                                                                    }
+                                                                })))) {
+                                                        $MATCH = $m
+                                                    };
+                                                    1
+                                                })))
+                                    })) || ((do {
+                                        $MATCH->{'to'} = $pos1;
+                                        (((((do {
+                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                            if ($m2) {
+                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                1
+                                                            }
+                                                            else {
+                                                                0
+                                                            }
+                                                        })) && ((do {
+                                                            my $last_match_null = 0;
+                                                            my $m = $MATCH;
+                                                            my $to = $MATCH->{'to'};
+                                                            for ( ; (((do {
+                                                                            my $pos1 = $MATCH->{'to'};
+                                                                            (((do {
+                                                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                    })) || ((do {
+                                                                                        $MATCH->{'to'} = $pos1;
+                                                                                        ((do {
+                                                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                                                if ($m2) {
+                                                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                                                    1
+                                                                                                }
+                                                                                                else {
+                                                                                                    0
+                                                                                                }
+                                                                                            }))
+                                                                                    })))
+                                                                        })) && (($last_match_null < 2))); {
+
+                                                                } ) {
+                                                                if (($to == $MATCH->{'to'})) {
+                                                                    $last_match_null = ($last_match_null + 1)
+                                                                }
+                                                                else {
+                                                                    $last_match_null = 0
+                                                                };
+                                                                $m = $MATCH;
+                                                                $to = $MATCH->{'to'}
+                                                            };
+                                                            $MATCH = $m;
+                                                            $MATCH->{'to'} = $to;
+                                                            1
+                                                        }))) && ((do {
+                                                        my $pos1 = $MATCH->{'to'};
+                                                        (((do {
+                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
+                                                                    if ($m2) {
+                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                        1
+                                                                    }
+                                                                    else {
+                                                                        0
+                                                                    }
+                                                                })) || ((do {
+                                                                    $MATCH->{'to'} = $pos1;
+                                                                    ((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                                                            my $tmp = $MATCH;
+                                                                                            $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
+                                                                                            my $res = ((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))));
+                                                                                            $MATCH = ($res ? 0 : $tmp)
+                                                                                        }))) && ((do {
+                                                                                        my $last_match_null = 0;
+                                                                                        my $m = $MATCH;
+                                                                                        my $to = $MATCH->{'to'};
+                                                                                        for ( ; (((do {
+                                                                                                        my $pos1 = $MATCH->{'to'};
+                                                                                                        (((do {
+                                                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                                                })) || ((do {
+                                                                                                                    $MATCH->{'to'} = $pos1;
+                                                                                                                    ((do {
+                                                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                                                                            if ($m2) {
+                                                                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                                                                1
+                                                                                                                            }
+                                                                                                                            else {
+                                                                                                                                0
+                                                                                                                            }
+                                                                                                                        }))
+                                                                                                                })))
+                                                                                                    })) && (($last_match_null < 2))); {
+
+                                                                                            } ) {
+                                                                                            if (($to == $MATCH->{'to'})) {
+                                                                                                $last_match_null = ($last_match_null + 1)
+                                                                                            }
+                                                                                            else {
+                                                                                                $last_match_null = 0
+                                                                                            };
+                                                                                            $m = $MATCH;
+                                                                                            $to = $MATCH->{'to'}
+                                                                                        };
+                                                                                        $MATCH = $m;
+                                                                                        $MATCH->{'to'} = $to;
+                                                                                        1
+                                                                                    }))) && ((do {
+                                                                                    my $m = $MATCH;
+                                                                                    if (!(((do {
+                                                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
+                                                                                                    if ($m2) {
+                                                                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                                                                        1
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        0
+                                                                                                    }
+                                                                                                })))) {
+                                                                                        $MATCH = $m
+                                                                                    };
+                                                                                    1
+                                                                                }))))
+                                                                })))
+                                                    }))))
+                                    })))
+                        })) && ((do {
+                            $MATCH->{'str'} = $str;
+                            my $s = Perlito5::Match::flat($MATCH);
+                            ($s =~ s!_!!g);
+                            $MATCH->{'capture'} = Perlito5::AST::Val::Num->new('num', $s);
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::digits {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((do {
+                    my $last_match_null = 0;
+                    my $m = $MATCH;
+                    my $to = $MATCH->{'to'};
+                    my $count = 0;
+                    for ( ; (((do {
+                                    my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                    if ($m2) {
+                                        $MATCH->{'to'} = $m2->{'to'};
+                                        1
+                                    }
+                                    else {
+                                        0
+                                    }
+                                })) && (($last_match_null < 2))); {
+
+                        } ) {
+                        if (($to == $MATCH->{'to'})) {
+                            $last_match_null = ($last_match_null + 1)
+                        }
+                        else {
+                            $last_match_null = 0
+                        };
+                        $m = $MATCH;
+                        $to = $MATCH->{'to'};
+                        $count = ($count + 1)
+                    };
+                    $MATCH = $m;
+                    $MATCH->{'to'} = $to;
+                    ($count > 0)
+                })));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::digits_underscore {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((do {
+                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
+                        })) && ((do {
+                            my $last_match_null = 0;
+                            my $m = $MATCH;
+                            my $to = $MATCH->{'to'};
+                            for ( ; (((do {
+                                            my $pos1 = $MATCH->{'to'};
+                                            (((do {
+                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                    })) || ((do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        ((do {
+                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                if ($m2) {
+                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                    1
+                                                                }
+                                                                else {
+                                                                    0
+                                                                }
+                                                            }))
+                                                    })))
+                                        })) && (($last_match_null < 2))); {
+
+                                } ) {
+                                if (($to == $MATCH->{'to'})) {
+                                    $last_match_null = ($last_match_null + 1)
+                                }
+                                else {
+                                    $last_match_null = 0
+                                };
+                                $m = $MATCH;
+                                $to = $MATCH->{'to'}
+                            };
+                            $MATCH = $m;
+                            $MATCH->{'to'} = $to;
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::val_int {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((do {
+                    my $pos1 = $MATCH->{'to'};
+                    (((do {
+                                ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                my $pos1 = $MATCH->{'to'};
+                                                ((((do {
+                                                                (((do {
+                                                                            my $pos1 = $MATCH->{'to'};
+                                                                            (((do {
+                                                                                        (('x' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                    })) || ((do {
+                                                                                        $MATCH->{'to'} = $pos1;
+                                                                                        ((('X' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                    })))
+                                                                        })) && ((do {
+                                                                            my $last_match_null = 0;
+                                                                            my $m = $MATCH;
+                                                                            my $to = $MATCH->{'to'};
+                                                                            my $count = 0;
+                                                                            for ( ; (((do {
+                                                                                            my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
+                                                                                            if ($m2) {
+                                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                                1
+                                                                                            }
+                                                                                            else {
+                                                                                                0
+                                                                                            }
+                                                                                        })) && (($last_match_null < 2))); {
+
+                                                                                } ) {
+                                                                                if (($to == $MATCH->{'to'})) {
+                                                                                    $last_match_null = ($last_match_null + 1)
+                                                                                }
+                                                                                else {
+                                                                                    $last_match_null = 0
+                                                                                };
+                                                                                $m = $MATCH;
+                                                                                $to = $MATCH->{'to'};
+                                                                                $count = ($count + 1)
+                                                                            };
+                                                                            $MATCH = $m;
+                                                                            $MATCH->{'to'} = $to;
+                                                                            ($count > 0)
+                                                                        })))
+                                                            })) || ((do {
+                                                                $MATCH->{'to'} = $pos1;
+                                                                ((((do {
+                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                (((do {
+                                                                                            (('b' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                        })) || ((do {
+                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                            ((('B' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                        })))
+                                                                            })) && ((do {
+                                                                                my $last_match_null = 0;
+                                                                                my $m = $MATCH;
+                                                                                my $to = $MATCH->{'to'};
+                                                                                my $count = 0;
+                                                                                for ( ; (((do {
+                                                                                                my $pos1 = $MATCH->{'to'};
+                                                                                                ((((do {
+                                                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                                            })) || ((do {
+                                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                                ((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                                            }))) || ((do {
+                                                                                                            $MATCH->{'to'} = $pos1;
+                                                                                                            ((('1' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+                                                                                                        })))
+                                                                                            })) && (($last_match_null < 2))); {
+
+                                                                                    } ) {
+                                                                                    if (($to == $MATCH->{'to'})) {
+                                                                                        $last_match_null = ($last_match_null + 1)
+                                                                                    }
+                                                                                    else {
+                                                                                        $last_match_null = 0
+                                                                                    };
+                                                                                    $m = $MATCH;
+                                                                                    $to = $MATCH->{'to'};
+                                                                                    $count = ($count + 1)
+                                                                                };
+                                                                                $MATCH = $m;
+                                                                                $MATCH->{'to'} = $to;
+                                                                                ($count > 0)
+                                                                            }))))
+                                                            }))) || ((do {
+                                                            $MATCH->{'to'} = $pos1;
+                                                            ((do {
+                                                                    my $last_match_null = 0;
+                                                                    my $m = $MATCH;
+                                                                    my $to = $MATCH->{'to'};
+                                                                    my $count = 0;
+                                                                    for ( ; (((do {
+                                                                                    my $pos1 = $MATCH->{'to'};
+                                                                                    (((do {
+                                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
+                                                                                            })) || ((do {
+                                                                                                $MATCH->{'to'} = $pos1;
+                                                                                                ((do {
+                                                                                                        my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                                                                                        if ($m2) {
+                                                                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                                                                            1
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            0
+                                                                                                        }
+                                                                                                    }))
+                                                                                            })))
+                                                                                })) && (($last_match_null < 2))); {
+
+                                                                        } ) {
+                                                                        if (($to == $MATCH->{'to'})) {
+                                                                            $last_match_null = ($last_match_null + 1)
+                                                                        }
+                                                                        else {
+                                                                            $last_match_null = 0
+                                                                        };
+                                                                        $m = $MATCH;
+                                                                        $to = $MATCH->{'to'};
+                                                                        $count = ($count + 1)
+                                                                    };
+                                                                    $MATCH = $m;
+                                                                    $MATCH->{'to'} = $to;
+                                                                    ($count > 0)
+                                                                }))
+                                                        })))
+                                            }))) && ((do {
+                                            $MATCH->{'str'} = $str;
+                                            $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(lc(Perlito5::Match::flat($MATCH))));
+                                            1
+                                        })))
+                            })) || ((do {
+                                $MATCH->{'to'} = $pos1;
+                                ((((do {
+                                                my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                if ($m2) {
+                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                    1
+                                                }
+                                                else {
+                                                    0
+                                                }
+                                            })) && ((do {
+                                                $MATCH->{'str'} = $str;
+                                                my $s = Perlito5::Match::flat($MATCH);
+                                                ($s =~ s!_!!g);
+                                                $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', $s);
+                                                1
+                                            }))))
+                            })))
+                })));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::val_version {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = ((((((do {
+                                my $m = $MATCH;
+                                if (!(((('v' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) {
+                                    $MATCH = $m
+                                };
+                                1
+                            })) && ((do {
+                                my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                if ($m2) {
+                                    $MATCH->{'to'} = $m2->{'to'};
+                                    1
+                                }
+                                else {
+                                    0
+                                }
+                            }))) && ((do {
+                            my $m = $MATCH;
+                            if (!((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                        my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    }))) && ((do {
+                                                    my $m = $MATCH;
+                                                    if (!(((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                                            my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                                            if ($m2) {
+                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                1
+                                                                            }
+                                                                            else {
+                                                                                0
+                                                                            }
+                                                                        })))))) {
+                                                        $MATCH = $m
+                                                    };
+                                                    1
+                                                })))))) {
+                                $MATCH = $m
+                            };
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+1;
+
+;
+package main;
 package Perlito5::Grammar;
 
 # use Perlito5::Grammar::Expression
+;
+
+# use Perlito5::Grammar::Statement
 ;
 
 # use Perlito5::Grammar::Control
@@ -6944,11 +7657,11 @@ package Perlito5::Grammar;
 
 # use Perlito5::Grammar::Attribute
 ;
+
+# use Perlito5::Grammar::Number
+;
 sub Perlito5::Grammar::word {
     ((substr($_[1], $_[2], 1) =~ m!\w!) ? {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)} : 0)
-};
-sub Perlito5::Grammar::digit {
-    ((substr($_[1], $_[2], 1) =~ m!\d!) ? {'str', $_[1], 'from', $_[2], 'to', ($_[2] + 1)} : 0)
 };
 sub Perlito5::Grammar::ident {
     return  if ((substr($_[1], $_[2], 1) !~ m!\w!) || (substr($_[1], $_[2], 1) =~ m!\d!));
@@ -7296,10 +8009,10 @@ sub Perlito5::Grammar::var_name {
                             })) || ((do {
                                 $MATCH->{'to'} = $pos1;
                                 ((do {
-                                        my $m2 = $grammar->digit($str, $MATCH->{'to'});
+                                        my $m2 = Perlito5::Grammar::Number->digit($str, $MATCH->{'to'});
                                         if ($m2) {
                                             $MATCH->{'to'} = $m2->{'to'};
-                                            $MATCH->{'digit'} = $m2;
+                                            $MATCH->{'Perlito5::Grammar::Number.digit'} = $m2;
                                             1
                                         }
                                         else {
@@ -7352,558 +8065,6 @@ sub Perlito5::Grammar::var_ident {
                         })))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::exponent {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = ((((((do {
-                                my $pos1 = $MATCH->{'to'};
-                                (((do {
-                                            (('e' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                        })) || ((do {
-                                            $MATCH->{'to'} = $pos1;
-                                            ((('E' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                        })))
-                            })) && ((do {
-                                my $pos1 = $MATCH->{'to'};
-                                ((((do {
-                                                (('+' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                            })) || ((do {
-                                                $MATCH->{'to'} = $pos1;
-                                                ((('-' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                            }))) || ((do {
-                                            $MATCH->{'to'} = $pos1;
-                                            1
-                                        })))
-                            }))) && ((do {
-                            my $last_match_null = 0;
-                            my $m = $MATCH;
-                            my $to = $MATCH->{'to'};
-                            my $count = 0;
-                            for ( ; (((do {
-                                            my $pos1 = $MATCH->{'to'};
-                                            (((do {
-                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                    })) || ((do {
-                                                        $MATCH->{'to'} = $pos1;
-                                                        ((do {
-                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                if ($m2) {
-                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                    1
-                                                                }
-                                                                else {
-                                                                    0
-                                                                }
-                                                            }))
-                                                    })))
-                                        })) && (($last_match_null < 2))); {
-
-                                } ) {
-                                if (($to == $MATCH->{'to'})) {
-                                    $last_match_null = ($last_match_null + 1)
-                                }
-                                else {
-                                    $last_match_null = 0
-                                };
-                                $m = $MATCH;
-                                $to = $MATCH->{'to'};
-                                $count = ($count + 1)
-                            };
-                            $MATCH = $m;
-                            $MATCH->{'to'} = $to;
-                            ($count > 0)
-                        })))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::val_num {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = (((((do {
-                            my $pos1 = $MATCH->{'to'};
-                            (((do {
-                                        (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                            if ($m2) {
-                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                1
-                                                            }
-                                                            else {
-                                                                0
-                                                            }
-                                                        }))) && ((do {
-                                                        my $last_match_null = 0;
-                                                        my $m = $MATCH;
-                                                        my $to = $MATCH->{'to'};
-                                                        for ( ; (((do {
-                                                                        my $pos1 = $MATCH->{'to'};
-                                                                        (((do {
-                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                })) || ((do {
-                                                                                    $MATCH->{'to'} = $pos1;
-                                                                                    ((do {
-                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                            if ($m2) {
-                                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                                1
-                                                                                            }
-                                                                                            else {
-                                                                                                0
-                                                                                            }
-                                                                                        }))
-                                                                                })))
-                                                                    })) && (($last_match_null < 2))); {
-
-                                                            } ) {
-                                                            if (($to == $MATCH->{'to'})) {
-                                                                $last_match_null = ($last_match_null + 1)
-                                                            }
-                                                            else {
-                                                                $last_match_null = 0
-                                                            };
-                                                            $m = $MATCH;
-                                                            $to = $MATCH->{'to'}
-                                                        };
-                                                        $MATCH = $m;
-                                                        $MATCH->{'to'} = $to;
-                                                        1
-                                                    }))) && ((do {
-                                                    my $m = $MATCH;
-                                                    if (!(((do {
-                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
-                                                                    if ($m2) {
-                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                        1
-                                                                    }
-                                                                    else {
-                                                                        0
-                                                                    }
-                                                                })))) {
-                                                        $MATCH = $m
-                                                    };
-                                                    1
-                                                })))
-                                    })) || ((do {
-                                        $MATCH->{'to'} = $pos1;
-                                        (((((do {
-                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                            if ($m2) {
-                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                1
-                                                            }
-                                                            else {
-                                                                0
-                                                            }
-                                                        })) && ((do {
-                                                            my $last_match_null = 0;
-                                                            my $m = $MATCH;
-                                                            my $to = $MATCH->{'to'};
-                                                            for ( ; (((do {
-                                                                            my $pos1 = $MATCH->{'to'};
-                                                                            (((do {
-                                                                                        (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                    })) || ((do {
-                                                                                        $MATCH->{'to'} = $pos1;
-                                                                                        ((do {
-                                                                                                my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                                if ($m2) {
-                                                                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                                                                    1
-                                                                                                }
-                                                                                                else {
-                                                                                                    0
-                                                                                                }
-                                                                                            }))
-                                                                                    })))
-                                                                        })) && (($last_match_null < 2))); {
-
-                                                                } ) {
-                                                                if (($to == $MATCH->{'to'})) {
-                                                                    $last_match_null = ($last_match_null + 1)
-                                                                }
-                                                                else {
-                                                                    $last_match_null = 0
-                                                                };
-                                                                $m = $MATCH;
-                                                                $to = $MATCH->{'to'}
-                                                            };
-                                                            $MATCH = $m;
-                                                            $MATCH->{'to'} = $to;
-                                                            1
-                                                        }))) && ((do {
-                                                        my $pos1 = $MATCH->{'to'};
-                                                        (((do {
-                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
-                                                                    if ($m2) {
-                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                        1
-                                                                    }
-                                                                    else {
-                                                                        0
-                                                                    }
-                                                                })) || ((do {
-                                                                    $MATCH->{'to'} = $pos1;
-                                                                    ((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                                            my $tmp = $MATCH;
-                                                                                            $MATCH = {'str', $str, 'from', $tmp->{'to'}, 'to', $tmp->{'to'}};
-                                                                                            my $res = ((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))));
-                                                                                            $MATCH = ($res ? 0 : $tmp)
-                                                                                        }))) && ((do {
-                                                                                        my $last_match_null = 0;
-                                                                                        my $m = $MATCH;
-                                                                                        my $to = $MATCH->{'to'};
-                                                                                        for ( ; (((do {
-                                                                                                        my $pos1 = $MATCH->{'to'};
-                                                                                                        (((do {
-                                                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                                                })) || ((do {
-                                                                                                                    $MATCH->{'to'} = $pos1;
-                                                                                                                    ((do {
-                                                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                                                            if ($m2) {
-                                                                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                                                                1
-                                                                                                                            }
-                                                                                                                            else {
-                                                                                                                                0
-                                                                                                                            }
-                                                                                                                        }))
-                                                                                                                })))
-                                                                                                    })) && (($last_match_null < 2))); {
-
-                                                                                            } ) {
-                                                                                            if (($to == $MATCH->{'to'})) {
-                                                                                                $last_match_null = ($last_match_null + 1)
-                                                                                            }
-                                                                                            else {
-                                                                                                $last_match_null = 0
-                                                                                            };
-                                                                                            $m = $MATCH;
-                                                                                            $to = $MATCH->{'to'}
-                                                                                        };
-                                                                                        $MATCH = $m;
-                                                                                        $MATCH->{'to'} = $to;
-                                                                                        1
-                                                                                    }))) && ((do {
-                                                                                    my $m = $MATCH;
-                                                                                    if (!(((do {
-                                                                                                    my $m2 = $grammar->exponent($str, $MATCH->{'to'});
-                                                                                                    if ($m2) {
-                                                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                                                        1
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        0
-                                                                                                    }
-                                                                                                })))) {
-                                                                                        $MATCH = $m
-                                                                                    };
-                                                                                    1
-                                                                                }))))
-                                                                })))
-                                                    }))))
-                                    })))
-                        })) && ((do {
-                            $MATCH->{'str'} = $str;
-                            my $s = Perlito5::Match::flat($MATCH);
-                            ($s =~ s!_!!g);
-                            $MATCH->{'capture'} = Perlito5::AST::Val::Num->new('num', $s);
-                            1
-                        })))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::digits {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = (((do {
-                    my $last_match_null = 0;
-                    my $m = $MATCH;
-                    my $to = $MATCH->{'to'};
-                    my $count = 0;
-                    for ( ; (((do {
-                                    my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                    if ($m2) {
-                                        $MATCH->{'to'} = $m2->{'to'};
-                                        1
-                                    }
-                                    else {
-                                        0
-                                    }
-                                })) && (($last_match_null < 2))); {
-
-                        } ) {
-                        if (($to == $MATCH->{'to'})) {
-                            $last_match_null = ($last_match_null + 1)
-                        }
-                        else {
-                            $last_match_null = 0
-                        };
-                        $m = $MATCH;
-                        $to = $MATCH->{'to'};
-                        $count = ($count + 1)
-                    };
-                    $MATCH = $m;
-                    $MATCH->{'to'} = $to;
-                    ($count > 0)
-                })));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::val_int {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = (((do {
-                    my $pos1 = $MATCH->{'to'};
-                    (((do {
-                                (((do {
-                                            my $pos1 = $MATCH->{'to'};
-                                            ((((do {
-                                                            ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                            my $pos1 = $MATCH->{'to'};
-                                                                            (((do {
-                                                                                        (('x' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                    })) || ((do {
-                                                                                        $MATCH->{'to'} = $pos1;
-                                                                                        ((('X' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                    })))
-                                                                        }))) && ((do {
-                                                                        my $last_match_null = 0;
-                                                                        my $m = $MATCH;
-                                                                        my $to = $MATCH->{'to'};
-                                                                        my $count = 0;
-                                                                        for ( ; (((do {
-                                                                                        my $m2 = $grammar->word($str, $MATCH->{'to'});
-                                                                                        if ($m2) {
-                                                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                                                            1
-                                                                                        }
-                                                                                        else {
-                                                                                            0
-                                                                                        }
-                                                                                    })) && (($last_match_null < 2))); {
-
-                                                                            } ) {
-                                                                            if (($to == $MATCH->{'to'})) {
-                                                                                $last_match_null = ($last_match_null + 1)
-                                                                            }
-                                                                            else {
-                                                                                $last_match_null = 0
-                                                                            };
-                                                                            $m = $MATCH;
-                                                                            $to = $MATCH->{'to'};
-                                                                            $count = ($count + 1)
-                                                                        };
-                                                                        $MATCH = $m;
-                                                                        $MATCH->{'to'} = $to;
-                                                                        ($count > 0)
-                                                                    })))
-                                                        })) || ((do {
-                                                            $MATCH->{'to'} = $pos1;
-                                                            (((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                                my $pos1 = $MATCH->{'to'};
-                                                                                (((do {
-                                                                                            (('b' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                        })) || ((do {
-                                                                                            $MATCH->{'to'} = $pos1;
-                                                                                            ((('B' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                        })))
-                                                                            }))) && ((do {
-                                                                            my $last_match_null = 0;
-                                                                            my $m = $MATCH;
-                                                                            my $to = $MATCH->{'to'};
-                                                                            my $count = 0;
-                                                                            for ( ; (((do {
-                                                                                            my $pos1 = $MATCH->{'to'};
-                                                                                            ((((do {
-                                                                                                            (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                                        })) || ((do {
-                                                                                                            $MATCH->{'to'} = $pos1;
-                                                                                                            ((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                                        }))) || ((do {
-                                                                                                        $MATCH->{'to'} = $pos1;
-                                                                                                        ((('1' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-                                                                                                    })))
-                                                                                        })) && (($last_match_null < 2))); {
-
-                                                                                } ) {
-                                                                                if (($to == $MATCH->{'to'})) {
-                                                                                    $last_match_null = ($last_match_null + 1)
-                                                                                }
-                                                                                else {
-                                                                                    $last_match_null = 0
-                                                                                };
-                                                                                $m = $MATCH;
-                                                                                $to = $MATCH->{'to'};
-                                                                                $count = ($count + 1)
-                                                                            };
-                                                                            $MATCH = $m;
-                                                                            $MATCH->{'to'} = $to;
-                                                                            ($count > 0)
-                                                                        }))))
-                                                        }))) || ((do {
-                                                        $MATCH->{'to'} = $pos1;
-                                                        ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                        my $last_match_null = 0;
-                                                                        my $m = $MATCH;
-                                                                        my $to = $MATCH->{'to'};
-                                                                        my $count = 0;
-                                                                        for ( ; (((do {
-                                                                                        my $pos1 = $MATCH->{'to'};
-                                                                                        (((do {
-                                                                                                    (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                                                })) || ((do {
-                                                                                                    $MATCH->{'to'} = $pos1;
-                                                                                                    ((do {
-                                                                                                            my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                                            if ($m2) {
-                                                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                                                1
-                                                                                                            }
-                                                                                                            else {
-                                                                                                                0
-                                                                                                            }
-                                                                                                        }))
-                                                                                                })))
-                                                                                    })) && (($last_match_null < 2))); {
-
-                                                                            } ) {
-                                                                            if (($to == $MATCH->{'to'})) {
-                                                                                $last_match_null = ($last_match_null + 1)
-                                                                            }
-                                                                            else {
-                                                                                $last_match_null = 0
-                                                                            };
-                                                                            $m = $MATCH;
-                                                                            $to = $MATCH->{'to'};
-                                                                            $count = ($count + 1)
-                                                                        };
-                                                                        $MATCH = $m;
-                                                                        $MATCH->{'to'} = $to;
-                                                                        ($count > 0)
-                                                                    }))))
-                                                    })))
-                                        })) && ((do {
-                                            $MATCH->{'str'} = $str;
-                                            $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', oct(lc(Perlito5::Match::flat($MATCH))));
-                                            1
-                                        })))
-                            })) || ((do {
-                                $MATCH->{'to'} = $pos1;
-                                (((((do {
-                                                    my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                    if ($m2) {
-                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                        1
-                                                    }
-                                                    else {
-                                                        0
-                                                    }
-                                                })) && ((do {
-                                                    my $last_match_null = 0;
-                                                    my $m = $MATCH;
-                                                    my $to = $MATCH->{'to'};
-                                                    for ( ; (((do {
-                                                                    my $pos1 = $MATCH->{'to'};
-                                                                    (((do {
-                                                                                (('_' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))
-                                                                            })) || ((do {
-                                                                                $MATCH->{'to'} = $pos1;
-                                                                                ((do {
-                                                                                        my $m2 = $grammar->digit($str, $MATCH->{'to'});
-                                                                                        if ($m2) {
-                                                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                                                            1
-                                                                                        }
-                                                                                        else {
-                                                                                            0
-                                                                                        }
-                                                                                    }))
-                                                                            })))
-                                                                })) && (($last_match_null < 2))); {
-
-                                                        } ) {
-                                                        if (($to == $MATCH->{'to'})) {
-                                                            $last_match_null = ($last_match_null + 1)
-                                                        }
-                                                        else {
-                                                            $last_match_null = 0
-                                                        };
-                                                        $m = $MATCH;
-                                                        $to = $MATCH->{'to'}
-                                                    };
-                                                    $MATCH = $m;
-                                                    $MATCH->{'to'} = $to;
-                                                    1
-                                                }))) && ((do {
-                                                $MATCH->{'str'} = $str;
-                                                my $s = Perlito5::Match::flat($MATCH);
-                                                ($s =~ s!_!!g);
-                                                $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int', $s);
-                                                1
-                                            }))))
-                            })))
-                })));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Grammar::val_version {
-    my $grammar = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
-    my $tmp = ((((((do {
-                                my $m = $MATCH;
-                                if (!(((('v' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) {
-                                    $MATCH = $m
-                                };
-                                1
-                            })) && ((do {
-                                my $m2 = $grammar->digits($str, $MATCH->{'to'});
-                                if ($m2) {
-                                    $MATCH->{'to'} = $m2->{'to'};
-                                    1
-                                }
-                                else {
-                                    0
-                                }
-                            }))) && ((do {
-                            my $m = $MATCH;
-                            if (!((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                        my $m2 = $grammar->digits($str, $MATCH->{'to'});
-                                                        if ($m2) {
-                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                            1
-                                                        }
-                                                        else {
-                                                            0
-                                                        }
-                                                    }))) && ((do {
-                                                    my $m = $MATCH;
-                                                    if (!(((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                            my $m2 = $grammar->digits($str, $MATCH->{'to'});
-                                                                            if ($m2) {
-                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                1
-                                                                            }
-                                                                            else {
-                                                                                0
-                                                                            }
-                                                                        })))))) {
-                                                        $MATCH = $m
-                                                    };
-                                                    1
-                                                })))))) {
-                                $MATCH = $m
-                            };
-                            1
-                        })))));
-    ($tmp ? $MATCH : 0)
-};
 my @PKG;
 sub Perlito5::Grammar::exp_stmts {
     my $self = $_[0];
@@ -7921,7 +8082,7 @@ sub Perlito5::Grammar::exp_stmts {
             $pos = $m->{'to'}
         }
         else {
-            $m = Perlito5::Grammar::Expression->statement_parse($str, $pos);
+            $m = Perlito5::Grammar::Statement->statement_parse($str, $pos);
             if ($m) {
                 push(@stmts, $m->{'capture'});
                 $pos = $m->{'to'};
@@ -8872,7 +9033,13 @@ package Perlito5::AST::Var;
         if ($self->{'namespace'}) {
             $ns = ('p5make_package("' . $self->{'namespace'} . '")');
             if (($self->{'sigil'} eq '$#')) {
-                return ('(' . $ns . '["' . $table->{'@'} . $str_name . '"].length - 1)')
+                return ('(p5global_array("' . $self->{'namespace'} . '", "' . $str_name . '").length - 1)')
+            };
+            if (($self->{'sigil'} eq '@')) {
+                return ('p5global_array("' . $self->{'namespace'} . '", "' . $str_name . '")')
+            };
+            if (($self->{'sigil'} eq '%')) {
+                return ('p5global_hash("' . $self->{'namespace'} . '", "' . $str_name . '")')
             };
             return ($ns . '["' . $table->{$self->{'sigil'}} . $str_name . '"]')
         };
@@ -8945,7 +9112,20 @@ package Perlito5::AST::Decl;
     };
     sub Perlito5::AST::Decl::emit_javascript2_init {
         my $self = shift();
-        my $type = (($self->{'decl'} eq 'local') ? 'our' : $self->{'decl'});
+        if (($self->{'decl'} eq 'local')) {
+            my $perl5_name = $self->{'var'}->perl5_name_javascript2();
+            my $decl_namespace = '';
+            my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
+            if (($decl && ((($decl->{'decl'} eq 'my') || ($decl->{'decl'} eq 'state'))))) {
+                die(('Can' . chr(39) . 't localize lexical variable ' . $perl5_name))
+            };
+            if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                $decl_namespace = $decl->{'namespace'}
+            };
+            my $ns = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]');
+            return ('p5set_local(' . $ns . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'sigil'}) . '); ')
+        };
+        my $type = $self->{'decl'};
         my $env = {'decl', $type};
         my $perl5_name = $self->{'var'}->perl5_name_javascript2();
         if (($self->{'decl'} ne 'my')) {
@@ -8953,7 +9133,7 @@ package Perlito5::AST::Decl;
             if (($self->{'var'}->{'namespace'} eq '')) {
                 my $decl_namespace = '';
                 my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
-                if (((($self->{'decl'} eq 'local') && $decl) && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                if (($decl && ($decl->{'decl'} eq 'our'))) {
                     $decl_namespace = $decl->{'namespace'}
                 };
                 $env->{'namespace'} = ($decl_namespace || $Perlito5::PKG_NAME)
@@ -8992,23 +9172,11 @@ package Perlito5::AST::Decl;
                 return ('if (typeof ' . $self->{'var'}->emit_javascript2() . ' == "undefined" ) { ' . $str . '};')
             }
             else {
-                if (($self->{'decl'} eq 'local')) {
-                    my $perl5_name = $self->{'var'}->perl5_name_javascript2();
-                    my $decl_namespace = '';
-                    my $decl = $self->{'var'}->perl5_get_decl_javascript2($perl5_name);
-                    if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
-                        $decl_namespace = $decl->{'namespace'}
-                    };
-                    my $ns = ('p5pkg["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]');
-                    return ('p5set_local(' . $ns . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript2::escape_string($self->{'var'}->{'sigil'}) . '); ')
+                if (($self->{'decl'} eq 'state')) {
+                    return ('// state ' . $self->{'var'}->emit_javascript2())
                 }
                 else {
-                    if (($self->{'decl'} eq 'state')) {
-                        return ('// state ' . $self->{'var'}->emit_javascript2())
-                    }
-                    else {
-                        die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
-                    }
+                    die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39)))
                 }
             }
         }
@@ -10015,7 +10183,7 @@ sub Perlito5::Javascript2::Runtime::perl5_to_js {
     return $js_code
 };
 sub Perlito5::Javascript2::Runtime::emit_javascript2 {
-    return (('//' . chr(10) . '// lib/Perlito5/Javascript2/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-Javascript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    p5pkg = {};' . chr(10) . '    p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        return List__[0]._class_._ref_ == List__[1]' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = List__[1];' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref__, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . '        p5pkg[pkg_name]._is_package_ = 1;' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = [];' . chr(10) . '        p5pkg[pkg_name]["v_a"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_b"] = null;' . chr(10) . '        p5pkg[pkg_name]["v__"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = null;' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can be a function already' . chr(10) . '    if (typeof sub_name === "function") {' . chr(10) . '        return sub_name;' . chr(10) . '    }' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    if (isa) {' . chr(10) . '        for (var i = 0; i < isa.length; i++) {' . chr(10) . '            if (!seen[isa[i]]) {' . chr(10) . '                var m = p5get_class_for_method(method, isa[i], seen);' . chr(10) . '                if (m) {' . chr(10) . '                    return m ' . chr(10) . '                }' . chr(10) . '                seen[isa[i]]++;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list, p5want) {' . chr(10) . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '        invocant = p5make_package(invocant);' . chr(10) . '    }' . chr(10) . '    else if ( invocant.hasOwnProperty("_is_package_") ) {' . chr(10) . '        list.unshift(invocant._ref_);   // invocant is a "package" object' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '    }' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list, p5want)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list, p5want)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list, p5want)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);' . chr(10) . '        }' . chr(10) . chr(10) . '        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);' . chr(10) . chr(10) . '    }' . chr(10) . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . chr(10) . '}' . chr(10) . chr(10) . 'function p5call_sub(namespace, name, list, p5want) {' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty(name)) {' . chr(10) . '        return p5pkg[namespace][name](list, p5want)' . chr(10) . '    }' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {' . chr(10) . '        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;' . chr(10) . '        return p5pkg[namespace]["AUTOLOAD"](list, p5want)' . chr(10) . '    }' . chr(10) . '    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref(v) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        return p5pkg[pkg_name]["v_"+v];' . chr(10) . '    }' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref_set(v, n) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        p5pkg[pkg_name]["v_"+v] = n;' . chr(10) . '        return p5pkg[pkg_name]["v_"+v];' . chr(10) . '    }' . chr(10) . '    v._scalar_ = n;' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5pkg["Perlito5"].v_PKG_NAME = "main";' . chr(10) . 'p5pkg["main"]["v_@"] = [];      // $@' . chr(10) . 'p5pkg["main"]["v_|"] = 0;       // $|' . chr(10) . 'p5pkg["main"]["v_/"] = "' . chr(92) . 'n";    // $/' . chr(10) . 'p5pkg["main"][' . chr(39) . 'v_"' . chr(39) . '] = " ";     // $"' . chr(10) . 'p5pkg["main"]["List_#"] = [];   // @#' . chr(10) . 'p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O' . chr(10) . 'p5pkg["main"]["List_INC"] = [];' . chr(10) . 'p5pkg["main"]["Hash_INC"] = {};' . chr(10) . 'p5pkg["main"]["List_ARGV"] = [];' . chr(10) . 'p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);' . chr(10) . chr(10) . '    p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . '    for (e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];' . chr(10) . chr(10) . '    p5pkg["main"]["v_$"]       = process.pid;' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = arguments;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ' };' . chr(10) . chr(10) . 'function p5typeglob_set(namespace, name, obj) {' . chr(10) . '    p5make_package(namespace);' . chr(10) . '    if ( obj.hasOwnProperty("_ref_") ) {' . chr(10) . '        if ( obj._ref_ == "HASH" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '%' . chr(39) . '] + name] = obj._hash_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "ARRAY" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '@' . chr(39) . '] + name] = obj._array_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "SCALAR" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '$' . chr(39) . '] + name] = obj._scalar_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "GLOB" ) {' . chr(10) . '            // TODO' . chr(10) . '            p5pkg[namespace][name] = obj;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        p5pkg[namespace][name] = obj;   // CODE' . chr(10) . '        // TODO - non-reference' . chr(10) . '    }' . chr(10) . '    return p5pkg[namespace][name];  // TODO - return GLOB' . chr(10) . '}' . chr(10) . chr(10) . 'function p5typeglob_deref_set(v, obj) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        return p5typeglob_set(pkg_name, v, obj);' . chr(10) . '    }' . chr(10) . '    CORE.die(["TODO: can' . chr(39) . 't p5typeglob_deref_set()"]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_local(namespace, name, sigil) {' . chr(10) . '    var vname = sigils[sigil] + name;' . chr(10) . '    p5LOCAL.push([namespace, vname, namespace[vname]]);' . chr(10) . chr(10) . '    if (sigil == ' . chr(39) . '$' . chr(39) . ') {' . chr(10) . '        namespace[vname] = null;' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Array([]);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Hash({});' . chr(10) . '    }' . chr(10) . '    return namespace[vname];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        l = p5LOCAL.pop();' . chr(10) . '        l[0][l[1]] = l[2];' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Reference' . chr(10) . chr(10) . 'var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Hash ' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) { return this[i] }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hset", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i, v) { this[i] = v; return this[i] }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5incr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postincr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5decr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postdecr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_array", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5ArrayRef([]) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_hash", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5HashRef({}) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . '//-------' . chr(10) . chr(10) . chr(10) . 'p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a.apply(null, List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    while (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'p5list_to_a = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        var o = arguments[i];' . chr(10) . '        if  (  o == null' . chr(10) . '            || o._class_    // perl5 blessed reference' . chr(10) . '            || o._ref_      // perl5 un-blessed reference' . chr(10) . '            )' . chr(10) . '        {' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '        else if (o instanceof Array) {' . chr(10) . '            // perl5 array' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (typeof o === "object") {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o) {' . chr(10) . '                if (o.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-ref' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5idx = function(a, i) {' . chr(10) . '    return i >= 0 ? i : a.length + i' . chr(10) . '};' . chr(10) . chr(10) . 'p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object") {' . chr(10) . chr(10) . '        if (o instanceof Array) {' . chr(10) . '            return CORE.join(["", o]);' . chr(10) . '        }' . chr(10) . chr(10) . '        if ( o.hasOwnProperty("_ref_") ) {' . chr(10) . '            if (!o._id_) { o._id_ = p5id++ }' . chr(10) . '            return [o._ref_, ' . chr(39) . '(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');' . chr(10) . '        }' . chr(10) . chr(10) . '    }' . chr(10) . '    // if (typeof o.string === "function") {' . chr(10) . '    //     return o.string();' . chr(10) . '    // }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return o.length;' . chr(10) . '    }' . chr(10) . '    // if (typeof o.num === "function") {' . chr(10) . '    //     return o.num();' . chr(10) . '    // }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o).trim();' . chr(10) . '        var s1 = s.substr(0, 3).toUpperCase();' . chr(10) . '        if ( s1 == "NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "INF" ) { return Infinity };' . chr(10) . '        s1 = s.substr(0, 4).toUpperCase();' . chr(10) . '        if ( s1 == "-NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "-INF" ) { return -Infinity };' . chr(10) . '        s1 = parseFloat(s);' . chr(10) . '        if ( isNaN(s1) ) { return 0 };' . chr(10) . '        return s1;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        // if (typeof o.bool === "function") {' . chr(10) . '        //     return o.bool();' . chr(10) . '        // }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'p5incr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o + 1;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(p5str(o));' . chr(10) . '};' . chr(10) . chr(10) . 'p5decr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o - 1;' . chr(10) . '    }' . chr(10) . '    return p5num(o) - 1;' . chr(10) . '};' . chr(10) . chr(10) . 'p5modulo = function(o, k) {' . chr(10) . '    var m = o % k;' . chr(10) . '    if ( k < 0 && m > 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    else if ( k > 0 && m < 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    return m;' . chr(10) . '};' . chr(10) . chr(10) . 'p5shift_left = function(o, k) {' . chr(10) . '    return k < 31 ? o << k : o * Math.pow(2, k);' . chr(10) . '};' . chr(10) . chr(10) . 'p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_replicate = function(o, n) {' . chr(10) . '    n = p5num(n);' . chr(10) . '    return n ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_inc = function(s) {' . chr(10) . '    s = p5str(s);' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'p5negative = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return -(o.length);' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o);' . chr(10) . '        s1 = parseFloat(s.trim());' . chr(10) . '        if ( isNaN(s1) ) {' . chr(10) . '            var c = s.substr(0, 1);' . chr(10) . '            if ( c == ' . chr(39) . '+' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '-' . chr(39) . ' + s }' . chr(10) . '            if ( c == ' . chr(39) . '-' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '+' . chr(39) . ' + s }' . chr(10) . '            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {' . chr(10) . '                if ( s.trim().substr(0,1) == "-" ) { return 0 };' . chr(10) . '                return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '            };' . chr(10) . '            return ' . chr(39) . '-' . chr(39) . ' + s' . chr(10) . '        };' . chr(10) . '        return -s1;' . chr(10) . '    }' . chr(10) . '    return -o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for = function(namespace, var_name, func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    var v_old = namespace[var_name];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace[var_name] = args[i];' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '       }' . chr(10) . '   }' . chr(10) . '    namespace[var_name] = v_old;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for_lex = function(func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        try {' . chr(10) . '            func(args[i])' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5while = function(func, cond, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    while (_redo || p5bool(cond())) {' . chr(10) . '        _redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        var o = p5list_to_a(func(1));' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"] = a;' . chr(10) . '                namespace["v_b"] = b;' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10)))
+    return (('//' . chr(10) . '// lib/Perlito5/Javascript2/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-Javascript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    p5pkg = {};' . chr(10) . '    p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        return List__[0]._class_._ref_ == List__[1]' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = List__[1];' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref__, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . '        p5pkg[pkg_name]._is_package_ = 1;' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = [];' . chr(10) . '        p5pkg[pkg_name]["v_a"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_b"] = null;' . chr(10) . '        p5pkg[pkg_name]["v__"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = null;' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can be a function already' . chr(10) . '    if (typeof sub_name === "function") {' . chr(10) . '        return sub_name;' . chr(10) . '    }' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    if (isa) {' . chr(10) . '        for (var i = 0; i < isa.length; i++) {' . chr(10) . '            if (!seen[isa[i]]) {' . chr(10) . '                var m = p5get_class_for_method(method, isa[i], seen);' . chr(10) . '                if (m) {' . chr(10) . '                    return m ' . chr(10) . '                }' . chr(10) . '                seen[isa[i]]++;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list, p5want) {' . chr(10) . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '        invocant = p5make_package(invocant);' . chr(10) . '    }' . chr(10) . '    else if ( invocant.hasOwnProperty("_is_package_") ) {' . chr(10) . '        list.unshift(invocant._ref_);   // invocant is a "package" object' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '    }' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list, p5want)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list, p5want)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list, p5want)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);' . chr(10) . '        }' . chr(10) . chr(10) . '        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);' . chr(10) . chr(10) . '    }' . chr(10) . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . chr(10) . '}' . chr(10) . chr(10) . 'function p5call_sub(namespace, name, list, p5want) {' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty(name)) {' . chr(10) . '        return p5pkg[namespace][name](list, p5want)' . chr(10) . '    }' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {' . chr(10) . '        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;' . chr(10) . '        return p5pkg[namespace]["AUTOLOAD"](list, p5want)' . chr(10) . '    }' . chr(10) . '    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref(v) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        return p5make_package(pkg_name)["v_"+v];' . chr(10) . '    }' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref_set(v, n) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        p5make_package(pkg_name)["v_"+v] = n;' . chr(10) . '        return p5pkg[pkg_name]["v_"+v];' . chr(10) . '    }' . chr(10) . '    v._scalar_ = n;' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5global_array(pkg_name, name) {' . chr(10) . '    v = "List_"+name;' . chr(10) . '    if (!p5make_package(pkg_name).hasOwnProperty(v)) {' . chr(10) . '        p5pkg[pkg_name][v] = [];' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name][v];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5global_hash(pkg_name, name) {' . chr(10) . '    v = "Hash_"+name;' . chr(10) . '    if (!p5make_package(pkg_name).hasOwnProperty(v)) {' . chr(10) . '        p5pkg[pkg_name][v] = {};' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name][v];' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5pkg["Perlito5"].v_PKG_NAME = "main";' . chr(10) . 'p5pkg["main"]["v_@"] = [];      // $@' . chr(10) . 'p5pkg["main"]["v_|"] = 0;       // $|' . chr(10) . 'p5pkg["main"]["v_/"] = "' . chr(92) . 'n";    // $/' . chr(10) . 'p5pkg["main"][' . chr(39) . 'v_"' . chr(39) . '] = " ";     // $"' . chr(10) . 'p5pkg["main"]["List_#"] = [];   // @#' . chr(10) . 'p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O' . chr(10) . 'p5pkg["main"]["List_INC"] = [];' . chr(10) . 'p5pkg["main"]["Hash_INC"] = {};' . chr(10) . 'p5pkg["main"]["List_ARGV"] = [];' . chr(10) . 'p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);' . chr(10) . chr(10) . '    p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . '    for (e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];' . chr(10) . chr(10) . '    p5pkg["main"]["v_$"]       = process.pid;' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = arguments;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ', ' . chr(39) . '&' . chr(39) . ' : ' . chr(39) . chr(39) . ' };' . chr(10) . chr(10) . 'function p5typeglob_set(namespace, name, obj) {' . chr(10) . '    p5make_package(namespace);' . chr(10) . '    if ( obj.hasOwnProperty("_ref_") ) {' . chr(10) . '        if ( obj._ref_ == "HASH" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '%' . chr(39) . '] + name] = obj._hash_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "ARRAY" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '@' . chr(39) . '] + name] = obj._array_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "SCALAR" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '$' . chr(39) . '] + name] = obj._scalar_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "CODE" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '&' . chr(39) . '] + name] = obj._code_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "GLOB" ) {' . chr(10) . '            // TODO' . chr(10) . '            p5pkg[namespace][name] = obj;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        p5pkg[namespace][name] = obj;   // native CODE' . chr(10) . '        // TODO - non-reference' . chr(10) . '    }' . chr(10) . '    return p5pkg[namespace][name];  // TODO - return GLOB' . chr(10) . '}' . chr(10) . chr(10) . 'function p5typeglob_deref_set(v, obj) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        return p5typeglob_set(pkg_name, v, obj);' . chr(10) . '    }' . chr(10) . '    CORE.die(["TODO: can' . chr(39) . 't p5typeglob_deref_set()"]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_local(namespace, name, sigil) {' . chr(10) . '    var vname = sigils[sigil] + name;' . chr(10) . '    p5LOCAL.push([namespace, vname, namespace[vname]]);' . chr(10) . chr(10) . '    if (sigil == ' . chr(39) . '$' . chr(39) . ') {' . chr(10) . '        namespace[vname] = null;' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Array([]);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Hash({});' . chr(10) . '    }' . chr(10) . '    return namespace[vname];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        l = p5LOCAL.pop();' . chr(10) . '        l[0][l[1]] = l[2];' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Reference' . chr(10) . chr(10) . 'var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5CodeRef(o) {' . chr(10) . '    this._code_ = o;' . chr(10) . '    this._ref_ = "CODE";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Hash ' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) { return this[i] }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hset", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i, v) { this[i] = v; return this[i] }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5incr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postincr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5decr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postdecr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_array", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5ArrayRef([]) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_hash", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5HashRef({}) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . '//-------' . chr(10) . chr(10) . chr(10) . 'p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a.apply(null, List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    while (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'p5list_to_a = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        var o = arguments[i];' . chr(10) . '        if  (  o == null' . chr(10) . '            || o._class_    // perl5 blessed reference' . chr(10) . '            || o._ref_      // perl5 un-blessed reference' . chr(10) . '            )' . chr(10) . '        {' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '        else if (o instanceof Array) {' . chr(10) . '            // perl5 array' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (typeof o === "object") {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o) {' . chr(10) . '                if (o.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-ref' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5idx = function(a, i) {' . chr(10) . '    return i >= 0 ? i : a.length + i' . chr(10) . '};' . chr(10) . chr(10) . 'p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object") {' . chr(10) . chr(10) . '        if (o instanceof Array) {' . chr(10) . '            return CORE.join(["", o]);' . chr(10) . '        }' . chr(10) . chr(10) . '        if ( o.hasOwnProperty("_ref_") ) {' . chr(10) . '            if (!o._id_) { o._id_ = p5id++ }' . chr(10) . '            return [o._ref_, ' . chr(39) . '(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');' . chr(10) . '        }' . chr(10) . chr(10) . '    }' . chr(10) . '    // if (typeof o.string === "function") {' . chr(10) . '    //     return o.string();' . chr(10) . '    // }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return o.length;' . chr(10) . '    }' . chr(10) . '    // if (typeof o.num === "function") {' . chr(10) . '    //     return o.num();' . chr(10) . '    // }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o).trim();' . chr(10) . '        var s1 = s.substr(0, 3).toUpperCase();' . chr(10) . '        if ( s1 == "NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "INF" ) { return Infinity };' . chr(10) . '        s1 = s.substr(0, 4).toUpperCase();' . chr(10) . '        if ( s1 == "-NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "-INF" ) { return -Infinity };' . chr(10) . '        s1 = parseFloat(s);' . chr(10) . '        if ( isNaN(s1) ) { return 0 };' . chr(10) . '        return s1;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        // if (typeof o.bool === "function") {' . chr(10) . '        //     return o.bool();' . chr(10) . '        // }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'p5incr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o + 1;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(p5str(o));' . chr(10) . '};' . chr(10) . chr(10) . 'p5decr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o - 1;' . chr(10) . '    }' . chr(10) . '    return p5num(o) - 1;' . chr(10) . '};' . chr(10) . chr(10) . 'p5modulo = function(o, k) {' . chr(10) . '    var m = o % k;' . chr(10) . '    if ( k < 0 && m > 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    else if ( k > 0 && m < 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    return m;' . chr(10) . '};' . chr(10) . chr(10) . 'p5shift_left = function(o, k) {' . chr(10) . '    return k < 31 ? o << k : o * Math.pow(2, k);' . chr(10) . '};' . chr(10) . chr(10) . 'p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_replicate = function(o, n) {' . chr(10) . '    n = p5num(n);' . chr(10) . '    return n ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_inc = function(s) {' . chr(10) . '    s = p5str(s);' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'p5negative = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return -(o.length);' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o);' . chr(10) . '        s1 = parseFloat(s.trim());' . chr(10) . '        if ( isNaN(s1) ) {' . chr(10) . '            var c = s.substr(0, 1);' . chr(10) . '            if ( c == ' . chr(39) . '+' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '-' . chr(39) . ' + s }' . chr(10) . '            if ( c == ' . chr(39) . '-' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '+' . chr(39) . ' + s }' . chr(10) . '            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {' . chr(10) . '                if ( s.trim().substr(0,1) == "-" ) { return 0 };' . chr(10) . '                return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '            };' . chr(10) . '            return ' . chr(39) . '-' . chr(39) . ' + s' . chr(10) . '        };' . chr(10) . '        return -s1;' . chr(10) . '    }' . chr(10) . '    return -o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for = function(namespace, var_name, func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    var v_old = namespace[var_name];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace[var_name] = args[i];' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '       }' . chr(10) . '   }' . chr(10) . '    namespace[var_name] = v_old;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for_lex = function(func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        try {' . chr(10) . '            func(args[i])' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5while = function(func, cond, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    while (_redo || p5bool(cond())) {' . chr(10) . '        _redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        var o = p5list_to_a(func(1));' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"] = args[i];' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"] = a;' . chr(10) . '                namespace["v_b"] = b;' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10)))
 };
 1;
 

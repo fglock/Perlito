@@ -3,25 +3,14 @@ package Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
+use Perlito5::Grammar::Statement;
 
-Perlito5::Grammar::Precedence::add_term( '.'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '0'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '1'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '2'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '3'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '4'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '5'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '6'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '7'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '8'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '9'     => sub { Perlito5::Grammar::Expression->term_digit( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'my'    => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'our'   => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'eval'  => sub { Perlito5::Grammar::Expression->term_eval( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'state' => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'local' => sub { Perlito5::Grammar::Expression->term_local( $_[0], $_[1] ) } );
 Perlito5::Grammar::Precedence::add_term( 'return' => sub { Perlito5::Grammar::Expression->term_return( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'package' => sub { Perlito5::Grammar::Expression->term_package( $_[0], $_[1] ) } );
 
 
 sub expand_list {
@@ -384,11 +373,6 @@ token term_arrow {
         ]
 };
 
-token term_digit {
-      <Perlito5::Grammar.val_num>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_num"}) ]  }  # 123.456
-    | <Perlito5::Grammar.val_int>    { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.val_int"}) ]  }  # 123
-};
-
 token term_ternary {
     '?'  <ternary5_parse> ':'
                 { $MATCH->{capture} = [ 'op',          '? :', Perlito5::Match::flat($MATCH->{ternary5_parse})  ] }
@@ -466,22 +450,6 @@ token term_return {
                     code      => 'return',
                     arguments => $args eq '*undef*' ? [] : [$args],
                     namespace => ''
-                 )
-               ]
-        }
-};
-
-token term_package {
-    'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
-        {
-            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
-            $Perlito5::PACKAGES->{$name} = 1;
-            $Perlito5::PKG_NAME = $name;
-            $MATCH->{capture} = [ 'term',
-                 Perlito5::AST::Apply->new(
-                    code      => 'package',
-                    arguments => [], 
-                    namespace => $name
                  )
                ]
         }
@@ -918,189 +886,6 @@ sub exp_parse {
     };
 }
 
-
-my @Statement_chars;
-my %Statement;
-
-sub add_statement {
-    my $name = shift;
-    my $param = shift;
-    $Statement{$name} = $param;
-    unshift @Statement_chars, scalar(@Statement_chars) + 1
-        while @Statement_chars < length($name);
-}
-
-sub exp_stmt {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    for my $len ( @Statement_chars ) {
-        my $term = substr($str, $pos, $len);
-        if (exists($Statement{$term})) {
-            my $m = $Statement{$term}->($str, $pos);
-            return $m if $m;
-        }
-    }
-    return 0;
-}
-
-
-my @Modifier_chars = (7, 6, 5, 4, 3, 2);
-my %Modifier = (
-    'if'     => 1, 
-    'unless' => 1,  
-    'when'   => 1, 
-    'for'    => 1, 
-    'foreach'=> 1, 
-    'while'  => 1, 
-    'given'  => 1,
-);
-
-sub statement_modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $expression = $_[3]; 
-    for my $len ( @Modifier_chars ) {
-        my $term = substr($str, $pos, $len);
-        if (exists($Modifier{$term})) {
-            my $m = $self->modifier($str, $pos + $len, $term, $expression);
-            return $m if $m;
-        }
-    }
-    return 0;
-}
-
-sub modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $modifier = $_[3];
-    my $expression = $_[4]; 
-
-    my $modifier_exp = $self->exp_parse($str, $pos);
-    # say "# statement modifier [", Perlito5::Match::flat($modifier), "] exp: ", $modifier_exp->perl;
-    if (!$modifier_exp) {
-        die "Expected expression after '", Perlito5::Match::flat($modifier), "'";
-    }
-    # TODO - require a statement terminator
-    # say "# statement_parse modifier result: ", $modifier_exp->perl;
-
-    if ($modifier eq 'if') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp),
-                body      => $expression,
-            ),
-        };
-    }
-    if ($modifier eq 'unless') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp),
-                otherwise => $expression, 
-            ),
-        };
-    }
-    if ($modifier eq 'when') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::When->new(
-                cond      => Perlito5::Match::flat($modifier_exp),
-                body      => $expression,
-            ),
-        };
-    }
-    if ($modifier eq 'while') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::While->new(
-                cond     => Perlito5::Match::flat($modifier_exp),
-                body     => $expression,
-            ) 
-        };
-    }
-    if  (  $modifier eq 'for'
-        || $modifier eq 'foreach'
-        ) 
-    {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::For->new(
-                cond     => Perlito5::Match::flat($modifier_exp),
-                body     => $expression,
-            ) 
-        };
-    }
-    die "Unexpected statement modifier '$modifier'";
-}
-
-
-sub statement_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    # say "# statement_parse input: ",$str," at ",$pos;
-
-    # the rule for subroutines seems to be: 
-    # named subs are statements,
-    # anonymous subs are plain terms.
-
-    my $res = $self->exp_stmt($str, $pos);
-    if ($res) {
-        # say "# statement result: ", $res->perl;
-        return $res;
-    }
-    $res = $self->exp_parse($str, $pos);
-    if (!$res) {
-        # say "# not a statement or expression";
-        return;
-    }
-
-    # did we just see a label?
-    if (  substr($str, $res->{to}, 1) eq ':'
-       && $res->{capture}->isa('Perlito5::AST::Apply')
-       && $res->{capture}{bareword}
-       )
-    {
-        my $label = $res->{capture}{code};
-        # say "label $label";
-        my $ws   = Perlito5::Grammar::Space->opt_ws( $str, $res->{to} + 1 );
-        my $stmt = $self->statement_parse( $str, $ws->{to} );
-        if ($stmt) {
-            $stmt->{capture}{label} = $label;
-            return $stmt;
-        }
-        $res->{to} = $ws->{to};
-        $res->{capture} = Perlito5::AST::Apply->new(
-                'arguments' => [],
-                'code'      => 'undef',
-                'namespace' => '',
-                'label'     => $label,
-            );
-        return $res;
-    }
-
-    # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res));
-
-    my $p = $modifier ? $modifier->{to} : $res->{to};
-    my $terminator = substr($str, $p, 1);
-    die "Number or Bareword found where operator expected"
-        if $terminator ne ';'
-        && $terminator ne '}'
-        && $terminator ne '';
-
-    if (!$modifier) {
-        # say "# statement expression no modifier result: ", $res->perl;
-        # TODO - require a statement terminator
-        return $res;
-    }
-    return $modifier;
-}
-
 1;
 
 =begin
@@ -1111,7 +896,7 @@ Perlito5::Grammar::Expression - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    statement_parse($str)
+    Perlito5::Grammar::Expression->exp_parse($str)
 
 =head1 DESCRIPTION
 
