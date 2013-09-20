@@ -233,6 +233,19 @@ TODO list for Perlito5
     '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
 
+-- from moritz, Schwern and others at
+    http://stackoverflow.com/questions/161872/hidden-features-of-perl
+
+    - you can use letters as delimiters
+
+    $ perl -Mstrict  -wle 'print q bJet another perl hacker.b'
+    Jet another perl hacker.
+    
+    Likewise you can write regular expressions:
+    
+    m xabcx
+    # same as m/abc/
+
 
 
 * Perl5 backend
@@ -464,17 +477,7 @@ TODO list for Perlito5
     $ perl -lwe '*4 = sub { print "yes" }; 4->()'
     yes
 
-    - you can use letters as delimiters
-
-    $ perl -Mstrict  -wle 'print q bJet another perl hacker.b'
-    Jet another perl hacker.
-    
-    Likewise you can write regular expressions:
-    
-    m xabcx
-    # same as m/abc/
-
-    The "desperation mode" of Perl's loop control constructs which causes them to look up the stack to find a matching label allows some curious behaviors which Test::More takes advantage of, for better or worse.
+-- The "desperation mode" of Perl's loop control constructs which causes them to look up the stack to find a matching label allows some curious behaviors which Test::More takes advantage of, for better or worse.
     
     SKIP: {
         skip() if $something;

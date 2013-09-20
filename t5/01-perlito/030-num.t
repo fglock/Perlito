@@ -3,7 +3,7 @@ use strict;
 use feature 'say';
 
 package Main;
-say '1..8';
+say '1..9';
 my $v = 1 + 0.3;
 if (( $v < 1.29 ) || ( $v > 1.31 )) {
     print 'not '
@@ -40,4 +40,8 @@ say 'ok 7 - defined var';
 my $y;
 print 'not ' if defined $y;
 say 'ok 8 - undefined var';
+
+$v = eval '013.4e2';
+print 'not ' if $v != 11400;
+say 'ok 9 - octal integer followed by dot # TODO';
 

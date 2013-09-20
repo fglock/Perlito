@@ -28,8 +28,7 @@ token stmt_format {
     | { $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT' }
     ]
     {
-        # inject a here-doc request
-        # see Perlito5::Grammar::String
+        # inject a here-doc request - see Perlito5::Grammar::String
         my $placeholder = Perlito5::AST::Apply->new(
             code      => 'list:<.>',
             namespace => '',
@@ -48,21 +47,12 @@ token stmt_format {
             $placeholder->{arguments}[0]{arguments},
             '.',  # delimiter
         ];
-        # "FORMAT format_name = string"
         $MATCH->{capture} =
             Perlito5::AST::Apply->new(
-                code      => 'infix:<=>',
+                code      => 'p5:format',
                 namespace => '',
                 arguments => [
-                    Perlito5::AST::Decl->new(
-                        decl => 'FORMAT',
-                        type => undef,
-                        var  => Perlito5::AST::Var->new(
-                                    name      => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
-                                    namespace => '',            # TODO - split namespace/name
-                                    sigil     => 'FORMAT',      # ???
-                                ),
-                    ),
+                    Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
                     $placeholder,
                 ]
             );

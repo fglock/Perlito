@@ -440,6 +440,17 @@ package Perlito5::Javascript2;
         return 'function () { return ' . $argument->emit_javascript2($level, $wantarray) . ' }';
     }
 
+    sub emit_wrap_statement_javascript2 {
+        my $wantarray = shift;
+        my $argument = shift;
+
+        # TODO - enable this optimization
+        # if ($wantarray eq 'void') {
+        #     return $argument;
+        # }
+        return '(function () { ' . $argument . ' })()';
+    }
+
 }
 
 package Perlito5::Javascript2::LexicalBlock;
@@ -1939,41 +1950,65 @@ package Perlito5::AST::Apply;
         'break' => sub {
             my $self      = shift;
             my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
-            'throw(new p5_error("break", ""))'
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw(new p5_error("break", ""))'
+            );
         },
         'next' => sub {
             my $self      = shift;
             my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            'throw(new p5_error("next", "' . $label . '"))'
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw(new p5_error("next", "' . $label . '"))'
+            );
         },
         'last' => sub {
             my $self      = shift;
             my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            'throw(new p5_error("last", "' . $label . '"))'
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw(new p5_error("last", "' . $label . '"))'
+            );
         },
         'redo' => sub {
             my $self      = shift;
             my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            'throw(new p5_error("redo", "' . $label . '"))'
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw(new p5_error("redo", "' . $label . '"))'
+            );
         },
-
         'return' => sub {
             my $self      = shift;
             my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
-            'throw(' . Perlito5::Javascript2::to_runtime_context( $self->{arguments}, $level ) . ')';
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw(' . Perlito5::Javascript2::to_runtime_context( $self->{arguments}, $level ) . ')'
+            );
         },
         'goto' => sub {
             my $self = $_[0];
+            my $level     = shift;
+            my $wantarray = shift;
             $Perlito5::THROW = 1;
-            'throw((' . $self->{arguments}->[0]->emit_javascript2() . ')([List__, p5want]))';
+            Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $wantarray, 
+                'throw((' . $self->{arguments}->[0]->emit_javascript2() . ')([List__, p5want]))'
+            );
         },
 
         'do' => sub {
