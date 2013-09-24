@@ -2574,7 +2574,16 @@ var p5100 = p5pkg['main'];
 					v_sig = ((p5make_package("Perlito5")["v_CORE_PROTO"] || (p5make_package("Perlito5")["v_CORE_PROTO"] = new p5HashRef({})))._hash_.p5hget(p5str(v_effective_name)));
 				}
 				else {
-					v_sig = (null);
+					(function () {
+						var v_m;
+						v_m = (p5call(p5pkg["Perlito5::Grammar::Number"], "val_version", [v_str, v_pos], 0));
+						if ( p5bool(v_m) ) {
+							(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', ((new p5ArrayRef(p5list_to_a('term', (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture'))))));
+							(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('to', (v_p));
+							(function () { throw(p5context([v_m], p5want)) })();
+						};
+						v_sig = (null);
+					})();
 				};
 				var v_has_paren;
 				v_has_paren = (0);
