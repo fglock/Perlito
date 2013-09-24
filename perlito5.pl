@@ -6866,23 +6866,40 @@ sub Perlito5::Grammar::Number::term_digit {
     my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
     my $tmp = (((do {
                     my $pos1 = $MATCH->{'to'};
-                    ((((do {
-                                    (((do {
-                                                my $m2 = Perlito5::Grammar::Number->val_octal($str, $MATCH->{'to'});
-                                                if ($m2) {
-                                                    $MATCH->{'to'} = $m2->{'to'};
-                                                    $MATCH->{'Perlito5::Grammar::Number.val_octal'} = $m2;
+                    (((((do {
+                                        (((do {
+                                                    my $m2 = Perlito5::Grammar::Number->val_octal($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        $MATCH->{'Perlito5::Grammar::Number.val_octal'} = $m2;
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                })) && ((do {
+                                                    $MATCH->{'str'} = $str;
+                                                    $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_octal'})];
                                                     1
-                                                }
-                                                else {
-                                                    0
-                                                }
-                                            })) && ((do {
-                                                $MATCH->{'str'} = $str;
-                                                $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_octal'})];
-                                                1
-                                            })))
-                                })) || ((do {
+                                                })))
+                                    })) || ((do {
+                                        $MATCH->{'to'} = $pos1;
+                                        ((((do {
+                                                        my $m2 = Perlito5::Grammar::Number->val_vstring($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            $MATCH->{'Perlito5::Grammar::Number.val_vstring'} = $m2;
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    })) && ((do {
+                                                        $MATCH->{'str'} = $str;
+                                                        $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_vstring'})];
+                                                        1
+                                                    }))))
+                                    }))) || ((do {
                                     $MATCH->{'to'} = $pos1;
                                     ((((do {
                                                     my $m2 = Perlito5::Grammar::Number->val_num($str, $MATCH->{'to'});
@@ -7439,18 +7456,12 @@ sub Perlito5::Grammar::Number::val_int {
                         })))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::Number::val_version {
+sub Perlito5::Grammar::Number::val_vstring {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
     my $tmp = ((((((do {
-                                my $m = $MATCH;
-                                if (!(((('v' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) {
-                                    $MATCH = $m
-                                };
-                                1
-                            })) && ((do {
                                 my $m2 = $grammar->val_int($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
@@ -7460,39 +7471,108 @@ sub Perlito5::Grammar::Number::val_version {
                                 else {
                                     0
                                 }
-                            }))) && ((do {
-                            my $last_match_null = 0;
-                            my $m = $MATCH;
-                            my $to = $MATCH->{'to'};
-                            for ( ; (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                    my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
-                                                    if ($m2) {
-                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                        if (exists($MATCH->{'digits_underscore'})) {
-                                                            push(@{$MATCH->{'digits_underscore'}}, $m2)
+                            })) && ((do {
+                                my $last_match_null = 0;
+                                my $m = $MATCH;
+                                my $to = $MATCH->{'to'};
+                                my $count = 0;
+                                for ( ; (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                        my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            if (exists($MATCH->{'digits_underscore'})) {
+                                                                push(@{$MATCH->{'digits_underscore'}}, $m2)
+                                                            }
+                                                            else {
+                                                                $MATCH->{'digits_underscore'} = [$m2]
+                                                            };
+                                                            1
                                                         }
                                                         else {
-                                                            $MATCH->{'digits_underscore'} = [$m2]
-                                                        };
-                                                        1
-                                                    }
-                                                    else {
-                                                        0
-                                                    }
-                                                })))) && (($last_match_null < 2))); {
+                                                            0
+                                                        }
+                                                    })))) && (($last_match_null < 2))); {
 
-                                } ) {
-                                if (($to == $MATCH->{'to'})) {
-                                    $last_match_null = ($last_match_null + 1)
-                                }
-                                else {
-                                    $last_match_null = 0
+                                    } ) {
+                                    if (($to == $MATCH->{'to'})) {
+                                        $last_match_null = ($last_match_null + 1)
+                                    }
+                                    else {
+                                        $last_match_null = 0
+                                    };
+                                    $m = $MATCH;
+                                    $to = $MATCH->{'to'};
+                                    $count = ($count + 1)
                                 };
-                                $m = $MATCH;
-                                $to = $MATCH->{'to'}
-                            };
-                            $MATCH = $m;
-                            $MATCH->{'to'} = $to;
+                                $MATCH = $m;
+                                $MATCH->{'to'} = $to;
+                                ($count > 0)
+                            }))) && ((do {
+                            $MATCH->{'str'} = $str;
+                            my @parts = @{$MATCH->{'digits_underscore'}};
+                            return  if (@parts < 2);
+                            $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:vstring', 'namespace', '', 'arguments', [$MATCH->{'val_int'}->{'capture'}->{'int'}, map {
+                                            Perlito5::Match::flat($_)
+                                        } @parts]);
+                            1
+                        })))));
+    ($tmp ? $MATCH : 0)
+};
+sub Perlito5::Grammar::Number::val_version {
+    my $grammar = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $MATCH = {'str', $str, 'from', $pos, 'to', $pos};
+    my $tmp = (((((((('v' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                    my $m2 = $grammar->val_int($str, $MATCH->{'to'});
+                                    if ($m2) {
+                                        $MATCH->{'to'} = $m2->{'to'};
+                                        $MATCH->{'val_int'} = $m2;
+                                        1
+                                    }
+                                    else {
+                                        0
+                                    }
+                                }))) && ((do {
+                                my $last_match_null = 0;
+                                my $m = $MATCH;
+                                my $to = $MATCH->{'to'};
+                                for ( ; (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                        my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                        if ($m2) {
+                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                            if (exists($MATCH->{'digits_underscore'})) {
+                                                                push(@{$MATCH->{'digits_underscore'}}, $m2)
+                                                            }
+                                                            else {
+                                                                $MATCH->{'digits_underscore'} = [$m2]
+                                                            };
+                                                            1
+                                                        }
+                                                        else {
+                                                            0
+                                                        }
+                                                    })))) && (($last_match_null < 2))); {
+
+                                    } ) {
+                                    if (($to == $MATCH->{'to'})) {
+                                        $last_match_null = ($last_match_null + 1)
+                                    }
+                                    else {
+                                        $last_match_null = 0
+                                    };
+                                    $m = $MATCH;
+                                    $to = $MATCH->{'to'}
+                                };
+                                $MATCH = $m;
+                                $MATCH->{'to'} = $to;
+                                1
+                            }))) && ((do {
+                            $MATCH->{'str'} = $str;
+                            my @parts = @{$MATCH->{'digits_underscore'}};
+                            $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'p5:vstring', 'namespace', '', 'arguments', [$MATCH->{'val_int'}->{'capture'}->{'int'}, map {
+                                            Perlito5::Match::flat($_)
+                                        } @parts]);
                             1
                         })))));
     ($tmp ? $MATCH : 0)

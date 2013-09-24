@@ -20,9 +20,9 @@ token term_digit {
     | <Perlito5::Grammar::Number.val_octal>
         # 0123
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_octal"}) ]  }
-    # | <Perlito5::Grammar::Number.val_version>
-    #     # 123.456.789
-    #     { print "version\n" }
+    | <Perlito5::Grammar::Number.val_vstring>
+        # 123.456.789
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_vstring"}) ]  }
     | <Perlito5::Grammar::Number.val_num>
         # 123.456
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_num"}) ]  }
@@ -82,21 +82,35 @@ token val_int {
         }
 };
 
-token val_version {
-    # TODO - this should return a "VSTRING"
-    #
-    # $ perl5.16 -e ' use strict; $a = v100; print ref(\$a) '
-    # VSTRING
-    # $ perl5.16 -e ' use strict; sub v100 { 123 } $a = v100; print ref(\$a)
-    # SCALAR
-    # $ perl5.16 -e ' use strict; sub v100 { 123 } $a = v100.100; print ref(\$a) '
-    # VSTRING
+token val_vstring {
+    <val_int> [ '.' <digits_underscore> ]+
+    {
+        my @parts = @{ $MATCH->{digits_underscore} };
+        return if @parts < 2;
+        $MATCH->{capture} = Perlito5::AST::Apply->new(
+                    code      => 'p5:vstring',
+                    namespace => '',
+                    arguments => [
+                        $MATCH->{val_int}{capture}{int},
+                        map { Perlito5::Match::flat($_) } @parts
+                    ],
+               );
+    }
+};
 
-    ['v']? <val_int> [ '.' <digits_underscore> ]*
-    # {
-    #     print "HERE!\n";
-    #     return;
-    # }
+token val_version {
+    'v' <val_int> [ '.' <digits_underscore> ]*
+    {
+        my @parts = @{ $MATCH->{digits_underscore} };
+        $MATCH->{capture} = Perlito5::AST::Apply->new(
+                    code      => 'p5:vstring',
+                    namespace => '',
+                    arguments => [
+                        $MATCH->{val_int}{capture}{int},
+                        map { Perlito5::Match::flat($_) } @parts
+                    ],
+               );
+    }
 };
 
 1;

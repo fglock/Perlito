@@ -24,8 +24,10 @@ token use_decl { 'use' | 'no' };
 token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
     [
+        # TODO - "use 5"
         <Perlito5::Grammar::Number.val_version>
         {
+            # "use v5"
             # TODO - check version
 
             $MATCH->{capture} = Perlito5::AST::Apply->new(
