@@ -551,8 +551,13 @@ p5str = function(o) {
         }
 
         if ( o.hasOwnProperty("_ref_") ) {
+            var class_name = '';
+            if (o._class_ && typeof o._class_._ref_ === "string") {
+                // blessed reference
+                class_name = o._class_._ref_ + '=';
+            }
             if (!o._id_) { o._id_ = p5id++ }
-            return [o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
+            return [class_name, o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
         }
 
     }
