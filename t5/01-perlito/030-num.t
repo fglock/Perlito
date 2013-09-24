@@ -43,5 +43,5 @@ say 'ok 8 - undefined var';
 
 $v = eval '013.4e2';
 print 'not ' if $v != 11400;
-say 'ok 9 - octal integer followed by dot # TODO';
+say 'ok 9 - octal integer followed by dot';
 
