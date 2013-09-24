@@ -17,7 +17,10 @@ Perlito5::Grammar::Precedence::add_term( '9' => sub { Perlito5::Grammar::Number-
 
 
 token term_digit {
-      <Perlito5::Grammar::Number.val_num>
+    | <Perlito5::Grammar::Number.val_octal>
+        # 0123
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_octal"}) ]  }
+    | <Perlito5::Grammar::Number.val_num>
         # 123.456
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_num"}) ]  }
     | <Perlito5::Grammar::Number.val_int>
@@ -40,18 +43,15 @@ token exponent {
 };
 
 token val_num {
-    [ '0' [ '_' | \d]   { return }  # looks like octal
-    |
-      [
-      |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
-      |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
-      ]
-      {
-          my $s = Perlito5::Match::flat($MATCH);
-          $s =~ s/_//g;
-          $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
-      }
+    [
+    |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
+    |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
     ]
+    {
+        my $s = Perlito5::Match::flat($MATCH);
+        $s =~ s/_//g;
+        $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
+    }
 };
 
 token digits {
@@ -62,13 +62,16 @@ token digits_underscore {
     \d [ '_' | \d]*
 };
 
-token val_int {
+token val_octal {
     '0' [  ['x'|'X'] <.Perlito5::Grammar.word>+   # XXX test for hex digits
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
         |  [ '_' | \d]+        # XXX test for octal number
         ]
         { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
-    | <.digits_underscore>
+};
+
+token val_int {
+    <.digits_underscore>
         {
             my $s = Perlito5::Match::flat($MATCH);
             $s =~ s/_//g;
