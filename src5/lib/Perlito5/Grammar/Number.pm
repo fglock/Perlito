@@ -40,15 +40,18 @@ token exponent {
 };
 
 token val_num {
-    [
-    |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
-    |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
+    [ '0' [ '_' | \d]   { return }  # looks like octal
+    |
+      [
+      |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
+      |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
+      ]
+      {
+          my $s = Perlito5::Match::flat($MATCH);
+          $s =~ s/_//g;
+          $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
+      }
     ]
-    {
-        my $s = Perlito5::Match::flat($MATCH);
-        $s =~ s/_//g;
-        $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
-    }
 };
 
 token digits {
