@@ -7451,43 +7451,48 @@ sub Perlito5::Grammar::Number::val_version {
                                 };
                                 1
                             })) && ((do {
-                                my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                my $m2 = $grammar->val_int($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
+                                    $MATCH->{'val_int'} = $m2;
                                     1
                                 }
                                 else {
                                     0
                                 }
                             }))) && ((do {
+                            my $last_match_null = 0;
                             my $m = $MATCH;
-                            if (!((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                        my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
-                                                        if ($m2) {
-                                                            $MATCH->{'to'} = $m2->{'to'};
-                                                            1
+                            my $to = $MATCH->{'to'};
+                            for ( ; (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
+                                                    my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        if (exists($MATCH->{'digits_underscore'})) {
+                                                            push(@{$MATCH->{'digits_underscore'}}, $m2)
                                                         }
                                                         else {
-                                                            0
-                                                        }
-                                                    }))) && ((do {
-                                                    my $m = $MATCH;
-                                                    if (!(((((('.' eq substr($str, $MATCH->{'to'}, 1)) && ($MATCH->{'to'} = (1 + $MATCH->{'to'})))) && ((do {
-                                                                            my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
-                                                                            if ($m2) {
-                                                                                $MATCH->{'to'} = $m2->{'to'};
-                                                                                1
-                                                                            }
-                                                                            else {
-                                                                                0
-                                                                            }
-                                                                        })))))) {
-                                                        $MATCH = $m
-                                                    };
-                                                    1
-                                                })))))) {
-                                $MATCH = $m
+                                                            $MATCH->{'digits_underscore'} = [$m2]
+                                                        };
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                })))) && (($last_match_null < 2))); {
+
+                                } ) {
+                                if (($to == $MATCH->{'to'})) {
+                                    $last_match_null = ($last_match_null + 1)
+                                }
+                                else {
+                                    $last_match_null = 0
+                                };
+                                $m = $MATCH;
+                                $to = $MATCH->{'to'}
                             };
+                            $MATCH = $m;
+                            $MATCH->{'to'} = $to;
                             1
                         })))));
     ($tmp ? $MATCH : 0)

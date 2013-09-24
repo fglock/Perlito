@@ -20,6 +20,9 @@ token term_digit {
     | <Perlito5::Grammar::Number.val_octal>
         # 0123
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_octal"}) ]  }
+    # | <Perlito5::Grammar::Number.val_version>
+    #     # 123.456.789
+    #     { print "version\n" }
     | <Perlito5::Grammar::Number.val_num>
         # 123.456
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_num"}) ]  }
@@ -65,7 +68,7 @@ token digits_underscore {
 token val_octal {
     '0' [  ['x'|'X'] <.Perlito5::Grammar.word>+   # XXX test for hex digits
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
-        |  [ '_' | \d]+        # XXX test for octal number
+        |  [ '_' | \d]+        # XXX test for octal digits
         ]
         { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
 };
@@ -81,7 +84,19 @@ token val_int {
 
 token val_version {
     # TODO - this should return a "VSTRING"
-    ['v']? <.digits_underscore> [ '.' <.digits_underscore> [ '.' <.digits_underscore> ]? ]?
+    #
+    # $ perl5.16 -e ' use strict; $a = v100; print ref(\$a) '
+    # VSTRING
+    # $ perl5.16 -e ' use strict; sub v100 { 123 } $a = v100; print ref(\$a)
+    # SCALAR
+    # $ perl5.16 -e ' use strict; sub v100 { 123 } $a = v100.100; print ref(\$a) '
+    # VSTRING
+
+    ['v']? <val_int> [ '.' <digits_underscore> ]*
+    # {
+    #     print "HERE!\n";
+    #     return;
+    # }
 };
 
 1;
