@@ -1778,15 +1778,40 @@ sub Perlito5::Grammar::Expression::term_declarator {
                                                                         0
                                                                     }
                                                                 })) && ((do {
-                                                                    my $m2 = Perlito5::Grammar->opt_type($str, $MATCH->{'to'});
-                                                                    if ($m2) {
-                                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                                        $MATCH->{'Perlito5::Grammar.opt_type'} = $m2;
-                                                                        1
-                                                                    }
-                                                                    else {
-                                                                        0
-                                                                    }
+                                                                    my $pos1 = $MATCH->{'to'};
+                                                                    (((do {
+                                                                                (((do {
+                                                                                            my $m2 = Perlito5::Grammar::Block->named_sub($str, $MATCH->{'to'});
+                                                                                            if ($m2) {
+                                                                                                $MATCH->{'to'} = $m2->{'to'};
+                                                                                                $MATCH->{'Perlito5::Grammar::Block.named_sub'} = $m2;
+                                                                                                1
+                                                                                            }
+                                                                                            else {
+                                                                                                0
+                                                                                            }
+                                                                                        })) && ((do {
+                                                                                            $MATCH->{'str'} = $str;
+                                                                                            my $sub = $MATCH->{'Perlito5::Grammar::Block.named_sub'}->{'capture'};
+                                                                                            $sub->{'decl'} = Perlito5::Match::flat($MATCH->{'declarator'});
+                                                                                            $MATCH->{'capture'} = ['term', $sub];
+                                                                                            return $MATCH;
+                                                                                            1
+                                                                                        })))
+                                                                            })) || ((do {
+                                                                                $MATCH->{'to'} = $pos1;
+                                                                                ((do {
+                                                                                        my $m2 = Perlito5::Grammar->opt_type($str, $MATCH->{'to'});
+                                                                                        if ($m2) {
+                                                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                                                            $MATCH->{'Perlito5::Grammar.opt_type'} = $m2;
+                                                                                            1
+                                                                                        }
+                                                                                        else {
+                                                                                            0
+                                                                                        }
+                                                                                    }))
+                                                                            })))
                                                                 })))
                                                     })) || ((do {
                                                         $MATCH->{'to'} = $pos1;

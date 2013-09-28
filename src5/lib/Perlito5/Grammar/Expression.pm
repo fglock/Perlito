@@ -399,7 +399,17 @@ token declarator {
 
 token term_declarator {
     <declarator> 
-    [ <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> 
+    [ <.Perlito5::Grammar::Space.ws> 
+        [
+          <Perlito5::Grammar::Block.named_sub>
+          {
+            my $sub = $MATCH->{"Perlito5::Grammar::Block.named_sub"}{capture};
+            $sub->{decl} = Perlito5::Match::flat($MATCH->{declarator});
+            $MATCH->{capture} = [ 'term', $sub ];
+            return $MATCH;
+          }
+        | <Perlito5::Grammar.opt_type> 
+        ]
     | ''
     ]
     <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
