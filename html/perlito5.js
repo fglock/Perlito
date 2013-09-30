@@ -7103,7 +7103,7 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 	return (p5call(p5pkg["Perlito5::Grammar::Use"], "stmt_use", p5list_to_a(List__.p5aget(0), List__.p5aget(1)), p5want));
 }], null);
 		var Hash_Perlito_internal_module = {};
-		Hash_Perlito_internal_module = {'strict' : 'Perlito5::strict', 'warnings' : 'Perlito5::warnings', 'utf8' : 'Perlito5::utf8', 'bytes' : 'Perlito5::bytes', 'encoding' : 'Perlito5::encoding', 'Carp' : 'Perlito5::Carp'};
+		Hash_Perlito_internal_module = {'strict' : 'Perlito5::strict', 'warnings' : 'Perlito5::warnings', 'utf8' : 'Perlito5::utf8', 'bytes' : 'Perlito5::bytes', 'encoding' : 'Perlito5::encoding', 'Carp' : 'Perlito5::Carp', 'Data::Dumper' : 'Perlito5::Dumper'};
 		p5typeglob_set("Perlito5::Grammar::Use", "use_decl", function (List__, p5want) {
 			var v_grammar;
 			v_grammar = (List__.p5aget(0));

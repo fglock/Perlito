@@ -5012,7 +5012,7 @@ Perlito5::Grammar::Statement::add_statement('no', sub {
 Perlito5::Grammar::Statement::add_statement('use', sub {
         Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
     });
-my %Perlito_internal_module = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding', 'Carp', 'Perlito5::Carp');
+my %Perlito_internal_module = ('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings', 'utf8', 'Perlito5::utf8', 'bytes', 'Perlito5::bytes', 'encoding', 'Perlito5::encoding', 'Carp', 'Perlito5::Carp', 'Data::Dumper', 'Perlito5::Dumper');
 sub Perlito5::Grammar::Use::use_decl {
     my $grammar = $_[0];
     my $str = $_[1];
