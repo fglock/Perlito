@@ -4,7 +4,7 @@ use feature 'say';
 
 package Main;
 
-say '1..8';
+say '1..11';
 
 sub subr { $_[0] + $_[1] };
 
@@ -58,8 +58,14 @@ say "ok 6";
 sub xyz ($$);
 print "not " unless exists &xyz;
 say "ok 7 # exists";
+print "not " unless exists &{xyz};
+say "ok 8 # exists";
+print "not " unless exists &{"xyz"};
+say "ok 9 # exists";
 
 print "not " if exists &abc;
-say "ok 8 # not exists";
+say "ok 10 # not exists";
+print "not " if exists &{"abc"};
+say "ok 11 # exists";
 
 

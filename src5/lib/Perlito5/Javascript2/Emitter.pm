@@ -2374,6 +2374,13 @@ package Perlito5::AST::Apply;
                 my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
                 return 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Javascript2::escape_string($name) . ')';
             }
+            if (  $arg->isa('Perlito5::AST::Apply')
+               && $arg->{code} eq 'prefix:<&>'
+               )
+            {
+                my $arg2 = $arg->{arguments}->[0];
+                return 'p5sub_exists(' . Perlito5::Javascript2::to_str($arg2) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
+            }
         },
 
     );

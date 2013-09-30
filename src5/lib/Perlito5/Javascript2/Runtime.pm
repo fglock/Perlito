@@ -237,6 +237,24 @@ function p5sub(fun, prot) {
     return fun;
 }
 
+function p5sub_exists(name, current_pkg_name) {
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        v = String.fromCharCode(c + 64) + v.substr(1);
+        pkg_name = 'main';
+    }
+    return p5pkg[pkg_name].hasOwnProperty(v) 
+}
+
 function p5scalar_deref(v) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
