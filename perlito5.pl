@@ -8396,8 +8396,12 @@ sub Perlito5::Dumper::import {
 sub Perlito5::Dumper::Dumper {
     my $seen = {};
     my $level = '    ';
-    my $pos = '$VAR1';
-    return ($pos . ' = ' . _dumper($_[0], $level, $seen, $pos) . ';' . chr(10))
+    my @out;
+    for my  $i ((0 .. $#_)) {
+        my $pos = ('$VAR' . (($i + 1)));
+        push(@out, ($pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';' . chr(10)))
+    };
+    return join('', @out)
 };
 sub Perlito5::Dumper::ast_dumper {
     my $seen = {};
@@ -8452,6 +8456,7 @@ sub Perlito5::Dumper::escape_string {
     my @out;
     my $tmp = '';
     return chr(39) . chr(39) if ($s eq '');
+    return (0 + $s) if (((0 + $s)) eq $s);
     for my  $i ((0 .. (length($s) - 1))) {
         my $c = substr($s, $i, 1);
         if ((((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || ((($c ge '0') && ($c le '9')))) || exists($safe_char{$c}))) {

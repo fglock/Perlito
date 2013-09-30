@@ -11510,9 +11510,13 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 			v_seen = ((new p5HashRef({})));
 			var v_level;
 			v_level = ('    ');
-			var v_pos;
-			v_pos = ('$VAR1');
-			return (p5context([(p5str(v_pos) + ' = ' + p5str(p5pkg["Perlito5::Dumper"]._dumper(p5list_to_a(List__.p5aget(0), v_level, v_seen, v_pos), 0)) + ';' + String.fromCharCode(10))], p5want));
+			var List_out= [];
+			p5for_lex(function (v_i) {
+						var v_pos;
+						v_pos = (('$VAR' + p5str((p5num(v_i) + 1))));
+						List_out.p5push([(p5str(v_pos) + ' = ' + p5str(p5pkg["Perlito5::Dumper"]._dumper(p5list_to_a(List__.p5aget(p5num(v_i)), v_level, v_seen, v_pos), 0)) + ';' + String.fromCharCode(10))]);
+					}, p5list_to_a((function (a) { for (var i=0, l=(List__.length - 1); i<=l; ++i){ a.push(i) }; return a })([])), false, "");
+			return (p5context([p5pkg["Perlito5::Dumper"].join(['', p5list_to_a(List_out)], p5want)], p5want));
 		});
 		p5typeglob_set("Perlito5::Dumper", "ast_dumper", function (List__, p5want) {
 			var v_seen;
@@ -11615,6 +11619,9 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 				v_tmp = ('');
 				if ( (p5str(v_s) == '') ) {
 					(function () { throw(p5context([String.fromCharCode(39) + String.fromCharCode(39)], p5want)) })()
+				};
+				if ( (p5str((0 + p5num(v_s))) == p5str(v_s)) ) {
+					(function () { throw(p5context([(0 + p5num(v_s))], p5want)) })()
 				};
 				p5for_lex(function (v_i) {
 						var v_c;
