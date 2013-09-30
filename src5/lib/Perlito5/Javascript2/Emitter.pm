@@ -2856,9 +2856,13 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =                                 'function (List__, p5want) {' . "\n"
+        my $prototype = defined($self->{sig}) 
+                        ? Perlito5::Javascript2::escape_string($self->{sig}) 
+                        : 'null';
+
+        my $s =                                 'p5sub(function (List__, p5want) {' . "\n"
         . Perlito5::Javascript2::tab($level+1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript2( $level + 1 ) . "\n"
-        . Perlito5::Javascript2::tab($level)   . '}';
+        . Perlito5::Javascript2::tab($level)   . '}, ' . $prototype . ')';
 
         if ( $self->{name} ) {
             return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
