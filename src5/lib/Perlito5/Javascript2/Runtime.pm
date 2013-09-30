@@ -689,6 +689,18 @@ p5str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
+p5list_replicate = function(o, n) {
+    o = p5list_to_a(o);
+    n = p5num(n);
+    var out = [];
+    for(var i = 0; i < n; i++) {
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
+    }
+    return out;
+};
+
 p5str_inc = function(s) {
     s = p5str(s);
     if (s.length < 2) {

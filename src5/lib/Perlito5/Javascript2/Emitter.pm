@@ -1847,6 +1847,11 @@ package Perlito5::AST::Apply;
 
         'infix:<x>' => sub {
             my $self = $_[0];
+            my $arg   = $self->{arguments}->[0];
+            if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>') {
+                # ($v) x $i
+                return 'p5list_replicate(' . join( ', ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
+            }
             'p5str_replicate(' . join( ', ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
         },
 
