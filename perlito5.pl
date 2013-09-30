@@ -8371,35 +8371,64 @@ sub Perlito5::AST::Use::code {
 ;
 package main;
 package Perlito5::Dumper;
-sub Perlito5::Dumper::_identity {
-    ($_[0] eq $_[1])
+sub Perlito5::Dumper::import {
+    my $pkg = shift();
+    my $callpkg = caller(0);
+    *{($callpkg . '::Dumper')} = \&Dumper;
+    return 
 };
 sub Perlito5::Dumper::Dumper {
-    my $obj = $_[0];
-    my $level = ($_[1] || 0);
+    my $seen = {};
+    my $level = '    ';
+    my $pos = '$VAR1';
+    return ($pos . ' = ' . _dumper($_[0], $level, $seen, $pos) . ';' . chr(10))
+};
+sub Perlito5::Dumper::ast_dumper {
+    my $seen = {};
+    my $level = '    ';
+    my $pos = '[TODO - recursive structure in AST is not supported]';
+    return _dumper($_[0], $level, $seen, $pos)
+};
+sub Perlito5::Dumper::_dumper {
+    my($obj, $tab, $seen, $pos) = @_;
     return 'undef' if !(defined($obj));
     my $ref = ref($obj);
-    my $tab = join("", '    ' x $level);
+    return escape_string($obj) if !($ref);
+    my $as_string = $obj;
+    return $seen->{$as_string} if $seen->{$as_string};
+    $seen->{$as_string} = $pos;
     my $tab1 = ($tab . '    ');
     if (($ref eq 'ARRAY')) {
-        return ('[' . chr(10) . join('', map(($tab1 . Dumper($_, ($level + 1)) . ',' . chr(10)), @{$obj})) . $tab . ']')
+        return '[]' unless @{$obj};
+        my @out;
+        for my  $i ((0 .. $#{$obj})) {
+            my $here = ($pos . '->[' . $i . ']');
+            push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+        };
+        return join('', '[' . chr(10), @out, $tab, ']')
     }
     else {
         if (($ref eq 'HASH')) {
-            return ('{' . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' => ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), sort(keys(%{$obj})))) . $tab . '}')
+            return '{}' unless keys(%{$obj});
+            my @out;
+            for my  $i (sort(keys(%{$obj}))) {
+                my $here = ($pos . '->{' . $i . '}');
+                push(@out, $tab1, (chr(39) . $i . chr(39) . ' => '), _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            };
+            return join('', '{' . chr(10), @out, $tab, '}')
         }
         else {
             if (($ref eq 'SCALAR')) {
-                return (chr(92) . Dumper(${$obj}))
-            }
-            else {
-                if ($ref) {
-                    return ('bless({' . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' => ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), sort(keys(%{$obj})))) . $tab . ('}, ' . chr(39) . $ref . chr(39) . ')'))
-                }
+                return (chr(92) . _dumper(${$obj}, $tab1, $seen, $pos))
             }
         }
     };
-    return escape_string($obj)
+    my @out;
+    for my  $i (sort(keys(%{$obj}))) {
+        my $here = ($pos . '->{' . $i . '}');
+        push(@out, $tab1, (chr(39) . $i . chr(39) . ' => '), _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+    };
+    return join('', 'bless({' . chr(10), @out, $tab, ('}, ' . chr(39) . $ref . chr(39) . ')'))
 };
 my %safe_char = (' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1);
 sub Perlito5::Dumper::escape_string {
@@ -8420,6 +8449,9 @@ sub Perlito5::Dumper::escape_string {
     };
     push(@out, (chr(39) . $tmp . chr(39))) if ($tmp ne '');
     return join(' . ', @out)
+};
+sub Perlito5::Dumper::_identity {
+    ($_[0] eq $_[1])
 };
 1;
 
@@ -9630,7 +9662,7 @@ package Perlito5::AST::Apply;
                     $eval = $arg->emit_javascript2(($level + 1), $wantarray)
                 }
                 else {
-                    my $var_env_perl5 = Perlito5::Dumper::Dumper($Perlito5::VAR);
+                    my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
                     my $m = Perlito5::Grammar::Expression->term_square($var_env_perl5, 0);
                     $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
                     my $var_env_js = ('(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))');
@@ -11204,7 +11236,7 @@ package Perlito5::AST::Apply;
                 if (($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '*'))) {
                     return ('(' . $parameters->emit_javascript3($level) . ' = ' . $arguments->emit_javascript3(($level + 1)) . ')')
                 };
-                say(Perlito5::Dumper::Dumper($parameters));
+                say(Perlito5::Dumper::ast_dumper($parameters));
                 die('assignment: don' . chr(39) . 't know what to do with left side isa ', ref($parameters))
             }, 'break', sub {
                 my $self = shift();
@@ -11255,7 +11287,7 @@ package Perlito5::AST::Apply;
                     $eval = $arg->emit_javascript3(($level + 1), $wantarray)
                 }
                 else {
-                    my $var_env_perl5 = Perlito5::Dumper::Dumper($Perlito5::VAR);
+                    my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
                     my $m = Perlito5::Grammar::Expression->term_square($var_env_perl5, 0);
                     $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
                     my $var_env_js = ('(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list($m) . ')))');
@@ -13317,7 +13349,7 @@ if (($backend && @ARGV)) {
                     print(Perlito5::AST::CompUnit::emit_xs_program($comp_units))
                 };
                 if (($backend eq 'ast-perl5')) {
-                    say(Perlito5::Dumper::Dumper($comp_units))
+                    say(Perlito5::Dumper::ast_dumper($comp_units))
                 }
                 else {
                     if (($backend eq 'ast-pretty')) {

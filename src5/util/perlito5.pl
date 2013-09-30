@@ -265,7 +265,7 @@ if ($backend && @ARGV) {
                 #     print Perlito5::AST::CompUnit::emit_java_program( $comp_units );
                 # }
                 if ($backend eq 'ast-perl5') {
-                    say Perlito5::Dumper::Dumper( $comp_units );
+                    say Perlito5::Dumper::ast_dumper( $comp_units );
                 }
                 elsif ($backend eq 'ast-pretty') {
                     eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';

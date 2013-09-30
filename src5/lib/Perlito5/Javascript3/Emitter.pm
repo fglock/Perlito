@@ -1621,7 +1621,7 @@ package Perlito5::AST::Apply;
                 return '(' . $parameters->emit_javascript3( $level ) . ' = ' . $arguments->emit_javascript3( $level+1 ) . ')';
             }
 
-            say Perlito5::Dumper::Dumper( $parameters );
+            say Perlito5::Dumper::ast_dumper( $parameters );
             die "assignment: don't know what to do with left side isa ", ref($parameters);
             # $parameters->emit_javascript3( $level ) . '.assign(' . $arguments->emit_javascript3( $level+1 ) . ')';
 
@@ -1703,11 +1703,11 @@ package Perlito5::AST::Apply;
             else {
                 # eval string
 
-                my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
+                my $var_env_perl5 = Perlito5::Dumper::ast_dumper( $Perlito5::VAR );
                 # say "at eval: ", $var_env_perl5;
                 my $m = Perlito5::Grammar::Expression->term_square( $var_env_perl5, 0 );
                 $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
-                # say Perlito5::Dumper::Dumper( $m );
+                # say Perlito5::Dumper::ast_dumper( $m );
                 my $var_env_js = '(new p5ArrayRef(new p5Array(' . Perlito5::Javascript3::to_list($m) . ')))';
                 $eval ='eval(perl5_to_js(' 
                             . Perlito5::Javascript3::to_str($arg) . ", "
