@@ -1,65 +1,97 @@
 package Perlito5::Dumper;
 
-sub _identity {
-    # returns true if the 2 arguments point to the same reference
-    "$_[0]" eq "$_[1]"
+sub import {
+    my $pkg     = shift;
+    my $callpkg = caller(0);
+    *{ $callpkg . "::Dumper" } = \&Dumper;
+    return;
 }
 
 sub Dumper {
-    my $obj = $_[0];
-    my $level = $_[1] || 0;
+    # old-style Data::Dumper
+    my $seen  = {};
+    my $level = '    ';
+    my $pos   = '$VAR1';
+    return "$pos = " . _dumper($_[0], $level, $seen, $pos) . ";\n";
+}
 
-    return 'undef'
-        if !defined $obj;
+sub ast_dumper {
+    my $seen  = {};
+    my $level = '    ';
+    my $pos   = '[TODO - recursive structure in AST is not supported]';
+    return _dumper($_[0], $level, $seen, $pos);
+}
+
+sub _dumper {
+    my ($obj, $tab, $seen, $pos) = @_;
+
+    return 'undef' if !defined $obj;
 
     my $ref = ref($obj);
-    my $tab = '    ' x $level;
+    return escape_string($obj) if !$ref;
+
+    my $as_string = "$obj";
+    return $seen->{$as_string} if $seen->{$as_string};
+    $seen->{$as_string} = $pos;
+        
     my $tab1 = $tab . '    ';
 
     if ($ref eq 'ARRAY') {
-        return "[\n" 
-            . join( "", 
-                    map($tab1 . Dumper($_, $level+1) . ",\n", @$obj)
-                  ) 
-            . $tab . ']';
+        return '[]' unless @$obj;
+        my @out;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = $pos . '->[' . $i . ']';
+            push @out, 
+                $tab1,
+                _dumper($obj->[$i], $tab1, $seen, $here), 
+                ",\n";
+        }
+        return join('', "[\n", @out, $tab, ']');
     }
     elsif ($ref eq 'HASH') {
-        return "{\n"
-            . join( "", 
-                    map($tab1 . "'$_' => " . Dumper($obj->{$_}, $level+1) . ",\n", sort keys %$obj)
-                  )
-            . $tab . '}';
+        return '{}' unless keys %$obj;
+        my @out;
+        for my $i ( sort keys %$obj ) {
+            my $here = $pos . '->{' . $i . '}';
+            push @out, 
+                $tab1,
+                "'$i' => ",
+                _dumper($obj->{$i}, $tab1, $seen, $here), 
+                ",\n";
+        }
+        return join('', "{\n", @out, $tab, '}');
     }
     elsif ($ref eq 'SCALAR') {
-        return "\\" . Dumper($$obj);
-    }
-    elsif ($ref) {
-        # TODO find out what kind of reference this is (ARRAY, HASH, ...)
-        # local $@;
-        # eval {
-        #     my @data = @$obj;
-        #     say "is array";
-        #     return 'bless(' . "..." . ", '$ref')";
-        # }
-        # or eval {
-        #     $@ = '';
-        #     my %data = %$obj;
-        #     say "is hash";
-        #     return 'bless(' . "..." . ", '$ref')";
-        # };
-        # $@ = '';
-
-        # assume it's a blessed HASH
-
-        return "bless({\n"
-            . join( "", 
-                    map($tab1 . "'$_' => " . Dumper($obj->{$_}, $level+1) . ",\n", sort keys %$obj)
-                  )
-            . $tab . "}, '$ref')";
+        return "\\" . _dumper($$obj, $tab1, $seen, $pos);
     }
 
-    return escape_string($obj);
-
+    # TODO find out what kind of reference this is (ARRAY, HASH, ...)
+    # local $@;
+    # eval {
+    #     my @data = @$obj;
+    #     say "is array";
+    #     return 'bless(' . "..." . ", '$ref')";
+    # }
+    # or eval {
+    #     $@ = '';
+    #     my %data = %$obj;
+    #     say "is hash";
+    #     return 'bless(' . "..." . ", '$ref')";
+    # };
+    # $@ = '';
+    
+    # assume it's a blessed HASH
+    
+    my @out;
+    for my $i ( sort keys %$obj ) {
+        my $here = $pos . '->{' . $i . '}';
+        push @out, 
+            $tab1,
+            "'$i' => ",
+            _dumper($obj->{$i}, $tab1, $seen, $here), 
+            ",\n";
+    }
+    return join('', "bless({\n", @out, $tab, "}, '$ref')");
 }
 
 my %safe_char = (
@@ -121,6 +153,10 @@ sub escape_string {
     return join(' . ', @out);
 }
 
+sub _identity {
+    # returns true if the 2 arguments point to the same reference
+    "$_[0]" eq "$_[1]"
+}
 
 1;
 

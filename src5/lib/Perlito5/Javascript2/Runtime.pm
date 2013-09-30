@@ -545,20 +545,28 @@ p5str = function(o) {
         return "";
     }
     if (typeof o === "object") {
-
         if (o instanceof Array) {
             return CORE.join(["", o]);
         }
-
         if ( o.hasOwnProperty("_ref_") ) {
+            var class_name = '';
+            if (o._class_ && typeof o._class_._ref_ === "string") {
+                // blessed reference
+                class_name = o._class_._ref_ + '=';
+            }
             if (!o._id_) { o._id_ = p5id++ }
-            return [o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
+            return [class_name, o._ref_, '(0x', o._id_.toString( 16 ), ')'].join('');
         }
-
     }
-    // if (typeof o.string === "function") {
-    //     return o.string();
-    // }
+    if (typeof o === "function") {
+        var class_name = '';
+        if (o._class_ && typeof o._class_._ref_ === "string") {
+            // blessed reference
+            class_name = o._class_._ref_ + '=';
+        }
+        if (!o._id_) { o._id_ = p5id++ }
+        return [class_name, 'CODE(0x', o._id_.toString( 16 ), ')'].join('');
+    }
     if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\d)$/,"e-0$1");
     }
@@ -578,9 +586,6 @@ p5num = function(o) {
     if (typeof o === "object" && (o instanceof Array)) {
         return o.length;
     }
-    // if (typeof o.num === "function") {
-    //     return o.num();
-    // }
     if (typeof o !== "number") {
         var s = p5str(o).trim();
         var s1 = s.substr(0, 3).toUpperCase();
@@ -607,9 +612,6 @@ p5bool = function(o) {
         if (typeof o === "string") {
             return o != "" && o != "0";
         }
-        // if (typeof o.bool === "function") {
-        //     return o.bool();
-        // }
         if (typeof o.length === "number") {
             return o.length;
         }

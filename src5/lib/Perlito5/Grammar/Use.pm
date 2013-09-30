@@ -10,12 +10,13 @@ Perlito5::Grammar::Statement::add_statement( 'use' => sub { Perlito5::Grammar::U
 
 
 my %Perlito_internal_module = (
-    strict   => 'Perlito5::strict',
-    warnings => 'Perlito5::warnings',
-    utf8     => 'Perlito5::utf8',
-    bytes    => 'Perlito5::bytes',
-    encoding => 'Perlito5::encoding',
-    Carp     => 'Perlito5::Carp',
+    strict         => 'Perlito5::strict',
+    warnings       => 'Perlito5::warnings',
+    utf8           => 'Perlito5::utf8',
+    bytes          => 'Perlito5::bytes',
+    encoding       => 'Perlito5::encoding',
+    Carp           => 'Perlito5::Carp',
+    'Data::Dumper' => 'Perlito5::Dumper',
 );
 
 
@@ -24,8 +25,10 @@ token use_decl { 'use' | 'no' };
 token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
     [
+        # TODO - "use 5"
         <Perlito5::Grammar::Number.val_version>
         {
+            # "use v5"
             # TODO - check version
 
             $MATCH->{capture} = Perlito5::AST::Apply->new(
