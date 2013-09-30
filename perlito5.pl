@@ -5057,15 +5057,31 @@ sub Perlito5::Grammar::Use::stmt_use {
                             my $pos1 = $MATCH->{'to'};
                             (((do {
                                         (((do {
-                                                    my $m2 = Perlito5::Grammar::Number->val_version($str, $MATCH->{'to'});
-                                                    if ($m2) {
-                                                        $MATCH->{'to'} = $m2->{'to'};
-                                                        $MATCH->{'Perlito5::Grammar::Number.val_version'} = $m2;
-                                                        1
-                                                    }
-                                                    else {
-                                                        0
-                                                    }
+                                                    my $pos1 = $MATCH->{'to'};
+                                                    (((do {
+                                                                my $m2 = Perlito5::Grammar::Number->val_version($str, $MATCH->{'to'});
+                                                                if ($m2) {
+                                                                    $MATCH->{'to'} = $m2->{'to'};
+                                                                    $MATCH->{'Perlito5::Grammar::Number.val_version'} = $m2;
+                                                                    1
+                                                                }
+                                                                else {
+                                                                    0
+                                                                }
+                                                            })) || ((do {
+                                                                $MATCH->{'to'} = $pos1;
+                                                                ((do {
+                                                                        my $m2 = Perlito5::Grammar::Number->term_digit($str, $MATCH->{'to'});
+                                                                        if ($m2) {
+                                                                            $MATCH->{'to'} = $m2->{'to'};
+                                                                            $MATCH->{'Perlito5::Grammar::Number.term_digit'} = $m2;
+                                                                            1
+                                                                        }
+                                                                        else {
+                                                                            0
+                                                                        }
+                                                                    }))
+                                                            })))
                                                 })) && ((do {
                                                     $MATCH->{'str'} = $str;
                                                     $MATCH->{'capture'} = Perlito5::AST::Apply->new('code', 'undef', 'namespace', '', 'arguments', []);
