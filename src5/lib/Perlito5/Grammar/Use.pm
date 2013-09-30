@@ -26,7 +26,9 @@ token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space.ws>
     [
         # TODO - "use 5"
-        <Perlito5::Grammar::Number.val_version>
+        [ <Perlito5::Grammar::Number.val_version>
+        | <Perlito5::Grammar::Number.term_digit>
+        ]
         {
             # "use v5"
             # TODO - check version

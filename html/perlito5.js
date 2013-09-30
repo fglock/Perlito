@@ -7163,16 +7163,34 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 							v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to'));
 							return (p5or(p5context([(function () {
 								return (p5and(p5context([(function () {
-									var v_m2;
-									v_m2 = (p5call(p5pkg["Perlito5::Grammar::Number"], "val_version", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to')), 0));
-									if ( p5bool(v_m2) ) {
-										(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('to', ((v_m2 || (v_m2 = new p5HashRef({})))._hash_.p5hget('to')));
-										(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('Perlito5::Grammar::Number.val_version', (v_m2));
-										return (p5context([1], p5want));
-									}
-									else {
-										return (p5context([0], p5want));
-									}
+									var v_pos1;
+									v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to'));
+									return (p5or(p5context([(function () {
+										var v_m2;
+										v_m2 = (p5call(p5pkg["Perlito5::Grammar::Number"], "val_version", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to')), 0));
+										if ( p5bool(v_m2) ) {
+											(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('to', ((v_m2 || (v_m2 = new p5HashRef({})))._hash_.p5hget('to')));
+											(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('Perlito5::Grammar::Number.val_version', (v_m2));
+											return (p5context([1], p5want));
+										}
+										else {
+											return (p5context([0], p5want));
+										}
+									})()], 0), function () { return p5context([(function () {
+										(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('to', (v_pos1));
+										return (p5context([(function () {
+											var v_m2;
+											v_m2 = (p5call(p5pkg["Perlito5::Grammar::Number"], "term_digit", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('to')), 0));
+											if ( p5bool(v_m2) ) {
+												(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('to', ((v_m2 || (v_m2 = new p5HashRef({})))._hash_.p5hget('to')));
+												(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('Perlito5::Grammar::Number.term_digit', (v_m2));
+												return (p5context([1], p5want));
+											}
+											else {
+												return (p5context([0], p5want));
+											}
+										})()], p5want));
+									})()], p5want) }));
 								})()], 0), function () { return p5context([(function () {
 									(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('str', (v_str));
 									(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'undef', 'namespace', '', 'arguments', (new p5ArrayRef([]))), 0)));
