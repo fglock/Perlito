@@ -9884,6 +9884,11 @@ package Perlito5::AST::Apply;
                     if (($arg->method() eq 'postcircumfix:<{ }>')) {
                         return ('(' . $arg->invocant()->emit_javascript2() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{'arguments'})->emit_javascript2($level) . ')')
                     }
+                };
+                if (($arg->isa('Perlito5::AST::Var') && ($arg->sigil() eq '&'))) {
+                    my $name = $arg->{'name'};
+                    my $namespace = ($arg->{'namespace'} || $Perlito5::PKG_NAME);
+                    return ('p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Javascript2::escape_string($name) . ')')
                 }
             });
     sub Perlito5::AST::Apply::emit_javascript2 {

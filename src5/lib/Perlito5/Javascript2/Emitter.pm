@@ -2365,6 +2365,15 @@ package Perlito5::AST::Apply;
                     return '(' . $arg->invocant->emit_javascript2() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . ')';
                 }
             }
+            if (  $arg->isa('Perlito5::AST::Var')
+               && $arg->sigil eq '&'
+               )
+            {
+                # TODO exist() + 'my sub'
+                my $name = $arg->{name};
+                my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                return 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Javascript2::escape_string($name) . ')';
+            }
         },
 
     );

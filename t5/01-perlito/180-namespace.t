@@ -4,7 +4,7 @@ use feature 'say';
 
 package Main;
 
-say '1..6';
+say '1..8';
 
 sub subr { $_[0] + $_[1] };
 
@@ -52,4 +52,14 @@ say "ok 5";
 
 print "not " unless Mod2::subr4() == 456;
 say "ok 6";
+
+# exists
+
+sub xyz ($$);
+print "not " unless exists &xyz;
+say "ok 7 # exists";
+
+print "not " if exists &abc;
+say "ok 8 # not exists";
+
 

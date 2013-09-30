@@ -13981,8 +13981,15 @@ return (p5call(p5pkg["Perlito5::AST::Apply"]["v__"], "emit_javascript2_set_list"
 								};
 								if ( p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Call'], 0)) ) {
 									if ( (p5str(p5call(v_arg, "method", [], 0)) == 'postcircumfix:<{ }>') ) {
-										(function () { throw(p5context([('(' + p5str(p5call(p5call(v_arg, "invocant", [], 0), "emit_javascript2", [], 0)) + ')._hash_.hasOwnProperty(' + p5str(p5call(p5call(p5pkg["Perlito5::AST::Lookup"], "autoquote", p5list_to_a((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('arguments')), 0), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })()
-									}
+										(function () { throw(p5context([('(' + p5str(p5call(p5call(v_arg, "invocant", [], 0), "emit_javascript2", [], 0)) + ')._hash_.hasOwnProperty(' + p5str(p5call(p5call(p5pkg["Perlito5::AST::Lookup"], "autoquote", p5list_to_a((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('arguments')), 0), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
+									};
+								};
+								if ( (p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_arg, "sigil", [], 0)) == '&')) ) {
+									var v_name;
+									v_name = ((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('name'));
+									var v_namespace;
+									v_namespace = (p5or((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('namespace'), function () { return p5make_package("Perlito5")["v_PKG_NAME"] }));
+									(function () { throw(p5context([('p5pkg[' + p5str(p5pkg["Perlito5::Javascript2"].escape_string([v_namespace], 0)) + '].hasOwnProperty(' + p5str(p5pkg["Perlito5::Javascript2"].escape_string([v_name], 0)) + ')')], p5want)) })()
 								}
 							}
 							catch(err) {
