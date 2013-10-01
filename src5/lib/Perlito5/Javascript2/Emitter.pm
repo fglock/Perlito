@@ -1558,13 +1558,15 @@ package Perlito5::AST::Apply;
         if ($code eq 'prefix:<$>') {
             return 'p5scalar_deref_set(' 
                 . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
-                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)  . ', '
+                . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
         if ($code eq 'prefix:<*>') {
             return 'p5typeglob_deref_set(' 
                 . Perlito5::Javascript2::to_scalar($self->{arguments}, $level+1) . ', '
-                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)       . ', '
+                . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
 
@@ -1673,7 +1675,10 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
-            return 'p5scalar_deref(' . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ')';
+            return 'p5scalar_deref(' 
+                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . ')';
         },
         'prefix:<@>' => sub {
             my $self  = $_[0];
