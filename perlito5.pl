@@ -6431,7 +6431,7 @@ sub Perlito5::Grammar::Print::typeglob {
         return $m_name
     };
     my $effective_name = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name);
-    if (exists($Perlito5::PROTO->{$effective_name})) {
+    if ((exists($Perlito5::PROTO->{$effective_name}) || exists(&{$effective_name}))) {
         return 
     };
     if ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
