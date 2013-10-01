@@ -2383,6 +2383,14 @@ package Perlito5::AST::Apply;
             }
         },
 
+        'prototype' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            my $arg = $self->{arguments}->[0];
+            return 'p5sub_prototype(' . $arg->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
+        },
+
     );
 
     sub emit_javascript2 {

@@ -307,15 +307,6 @@ CORE.split = function(List__) {
     CORE.die(["not implemented"]);
 };
 
-CORE.prototype = function(List__, data) {
-    var name = List__[0];
-    if (typeof name === "function") {
-        return name._prototype_;
-    }
-    // TODO - fully qualify "name" using information from "data"
-    // XXX - lookup in CORE::GLOBAL?
-    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
-};
 
 EOT
 } # end of emit_javascript2()

@@ -255,6 +255,30 @@ function p5sub_exists(name, current_pkg_name) {
     return p5pkg[pkg_name].hasOwnProperty(v) 
 }
 
+function p5sub_prototype(name, current_pkg_name) {
+    if (typeof name === "function") {
+        return name._prototype_;
+    }
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        v = String.fromCharCode(c + 64) + v.substr(1);
+        pkg_name = 'main';
+    }
+    if (p5pkg[pkg_name].hasOwnProperty(v)) {
+        return p5pkg[pkg_name][v]._prototype_
+    }
+    return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
+}
+
 function p5scalar_deref(v) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
