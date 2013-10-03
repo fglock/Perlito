@@ -484,11 +484,17 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'prefix:<+>') { return '+('  . $self->{arguments}->[0]->emit_perl6()  . ')' }
 
-        if ($code eq 'list:<.>')
-        {
+        if ($code eq 'list:<.>') {
             return '('
                 . join( ' ~ ',
                         map( Perlito5::Perl6::to_str($_), @{$self->{arguments}} )
+                      )
+                . ')'
+        }
+        if ($code eq 'list:<,>') {
+            return '('
+                . join( ', ',
+                        map( $_->emit_perl6, @{$self->{arguments}} )
                       )
                 . ')'
         }

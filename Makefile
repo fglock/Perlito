@@ -145,6 +145,9 @@ build-5js ::
 build-5browser ::
 	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
 
+build-5to6browser ::
+	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > html/perlito5to6.js
+
 build-5js3 ::
 	perl perlito5.pl -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js
 

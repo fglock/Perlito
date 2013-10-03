@@ -12567,6 +12567,9 @@ package Perlito5::AST::Apply;
         if (($code eq 'list:<.>')) {
             return ('(' . join(' ~ ', map(Perlito5::Perl6::to_str($_), @{$self->{'arguments'}})) . ')')
         };
+        if (($code eq 'list:<,>')) {
+            return ('(' . join(', ', map($_->emit_perl6(), @{$self->{'arguments'}})) . ')')
+        };
         if (($code eq 'ternary:<? :>')) {
             return (Perlito5::Perl6::tab($level) . '( ' . Perlito5::Perl6::to_bool($self->{'arguments'}->[0]) . ' ?? ' . ($self->{'arguments'}->[1])->emit_perl6() . ' !! ' . ($self->{'arguments'}->[2])->emit_perl6() . ')')
         };
