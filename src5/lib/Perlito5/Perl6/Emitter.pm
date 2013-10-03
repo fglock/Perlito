@@ -446,6 +446,9 @@ package Perlito5::AST::Apply;
 
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{arguments}->[0];
+
+            return '$?VM' if $arg->isa('Perlito5::AST::Val::Buf') && $arg->{buf} eq chr(15);  # $^O
+
             return '$(' . $arg->emit_perl6 . ')';
         }
         if ( $code eq 'prefix:<@>' ) {
