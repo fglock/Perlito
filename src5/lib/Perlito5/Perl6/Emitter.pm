@@ -376,6 +376,10 @@ package Perlito5::AST::Apply;
         'infix:<//>' => ' // ',
     );
 
+    my %special_var = (
+        chr(15) => '$*OS',  # $^O
+    );
+
     sub emit_perl6 {
         my $self = shift;
         my $level = shift;
@@ -421,15 +425,7 @@ package Perlito5::AST::Apply;
             my $fun  = $self->{arguments}->[0];
             my $list = $self->{arguments}->[1];
             return
-                    '(function (a_) { '
-                        . 'var out = []; '
-                        . 'if ( a_ == null ) { return out; }; '
-                        . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'my $_ = a_[i]; '
-                            . 'out.push(' . $fun->emit_perl6 . ')'
-                        . '}; '
-                        . 'return out;'
-                    . ' })(' . $list->emit_perl6() . ')'
+                    '(map ' . $fun->emit_perl6 . ', ' . $list->emit_perl6() . ')'
         }
 
         if (  $code eq 'bless' 
@@ -447,7 +443,8 @@ package Perlito5::AST::Apply;
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{arguments}->[0];
 
-            return '$*OS' if $arg->isa('Perlito5::AST::Val::Buf') && $arg->{buf} eq chr(15);  # $^O
+            return $special_var{$arg->{buf}}
+                if $arg->isa('Perlito5::AST::Val::Buf') && exists $special_var{$arg->{buf}};
 
             return '$(' . $arg->emit_perl6 . ')';
         }

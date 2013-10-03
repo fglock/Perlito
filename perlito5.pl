@@ -12479,6 +12479,7 @@ package Perlito5::AST::Call;
 package Perlito5::AST::Apply;
 {
     my %op_infix_js = ('infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:<x>', ' x ', 'infix:<+>', ' + ', 'infix:<.>', ' ~ ', 'infix:</>', ' / ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<..>', ' .. ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<//>', ' // ');
+    my %special_var = (chr(15), '$*OS');
     sub Perlito5::AST::Apply::emit_perl6 {
         my $self = shift();
         my $level = shift();
@@ -12512,7 +12513,7 @@ package Perlito5::AST::Apply;
         if (($code eq 'map')) {
             my $fun = $self->{'arguments'}->[0];
             my $list = $self->{'arguments'}->[1];
-            return ('(function (a_) { ' . 'var out = []; ' . 'if ( a_ == null ) { return out; }; ' . 'for(var i = 0; i < a_.length; i++) { ' . 'my $_ = a_[i]; ' . 'out.push(' . $fun->emit_perl6() . ')' . '}; ' . 'return out;' . ' })(' . $list->emit_perl6() . ')')
+            return ('(map ' . $fun->emit_perl6() . ', ' . $list->emit_perl6() . ')')
         };
         if ((($code eq 'bless') || ($code eq 'ref'))) {
             return ('Perlito5::Perl6::Runtime::' . $code . '( ' . join(', ', map($_->emit_perl6(), @{$self->{'arguments'}})) . ')')
@@ -12522,7 +12523,7 @@ package Perlito5::AST::Apply;
         };
         if (($code eq 'prefix:<$>')) {
             my $arg = $self->{'arguments'}->[0];
-            return '$*OS' if ($arg->isa('Perlito5::AST::Val::Buf') && ($arg->{'buf'} eq chr(15)));
+            return $special_var{$arg->{'buf'}} if ($arg->isa('Perlito5::AST::Val::Buf') && exists($special_var{$arg->{'buf'}}));
             return ('$(' . $arg->emit_perl6() . ')')
         };
         if (($code eq 'prefix:<@>')) {
