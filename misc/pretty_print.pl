@@ -7,6 +7,7 @@ package Perlito5::PrettyPrint {
         stmt    => \&statement,                 # if (expr) {stms}
         block   => \&block,                     # {stmts}
         keyword => \&keyword,                   # if
+        bareword => \&bareword,                 # main
         op      => \&op,                        # expr
         paren   => \&paren,                     # (expr)
         paren_semicolon => \&paren_semicolon,   # (expr;expr;expr)
@@ -169,6 +170,12 @@ package Perlito5::PrettyPrint {
     }
 
     sub keyword {
+        my ( $data, $level, $out ) = @_;
+        push @$out, $data->[1];
+        return;
+    }
+
+    sub bareword {
         my ( $data, $level, $out ) = @_;
         push @$out, $data->[1];
         return;
