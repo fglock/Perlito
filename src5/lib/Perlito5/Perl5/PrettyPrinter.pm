@@ -65,17 +65,7 @@ our %op = (
     'infix:<<<>' => { fix => 'infix', prec => 7, str => ' << ' },
     'infix:<>>>' => { fix => 'infix', prec => 7, str => ' >> ' },
 
-    # TODO - more named unary
-    'prefix:<-f>'    => { fix => 'prefix', prec => 8, str => '-f ' },
-    'prefix:<do>'    => { fix => 'parsed', prec => 8, str => 'do ' },
-    'prefix:<sub>'   => { fix => 'parsed', prec => 8, str => 'sub' },
-    'prefix:<my>'    => { fix => 'parsed', prec => 8, str => 'my' },
-    'prefix:<our>'   => { fix => 'parsed', prec => 8, str => 'our' },
-    'prefix:<state>' => { fix => 'parsed', prec => 8, str => 'state' },
-    'prefix:<local>' => { fix => 'parsed', prec => 8, str => 'local' },
-    'prefix:<map>'   => { fix => 'parsed', prec => 8, str => 'map'  },
-    'prefix:<grep>'  => { fix => 'parsed', prec => 8, str => 'grep' },
-    'prefix:<sort>'  => { fix => 'parsed', prec => 8, str => 'sort' },
+    # named unary - see below
 
     'infix:<lt>' => { fix => 'infix', prec => 9, str => ' lt ' },
     'infix:<le>' => { fix => 'infix', prec => 9, str => ' le ' },
@@ -139,8 +129,22 @@ our %op = (
     'infix:<xor>' => { fix => 'infix', prec => 22, str => ' xor ' },
 );
 
-my %tab;
+# more unary operators
+$op{ "prefix:<$_>" } = { fix => 'prefix', prec => 8, str => "$_ " }
+    for qw(
+        -r -w -x -o
+        -R -W -X -O
+        -e -z -s
+        -f -d -l -p -S -b -c -t
+        -u -g -k
+        -T -B
+        -M -A -C
+    );
+$op{ "prefix:<$_>" } = { fix => 'prefix', prec => 8, str => "$_" }
+    for qw( do sub my our state local
+            map grep sort );
 
+my %tab;
 sub tab {
     my $level = $_[0];
     $tab{$level} //= "    " x $level;
@@ -169,15 +173,12 @@ sub statement_need_semicolon {
     return 0 if $data->[0] eq 'block';
     return 0 if $data->[0] eq 'comment';
     if ( $data->[0] eq 'stmt' ) {
-
         # stmt => [ keyword => 'if' ],
         if ( ref( $data->[1] ) ) {
             my $dd = $data->[1];    # [ keyword => 'if' ],
             if ( $dd->[0] eq 'keyword' ) {
                 return 0
                   if ref( $data->[-1] ) && $data->[-1][0] eq 'block';
-
-                # if $dd->[1] eq 'if' || $dd->[1] eq 'for' || $dd->[1] eq 'while';
             }
         }
     }
