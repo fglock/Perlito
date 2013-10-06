@@ -4,6 +4,7 @@ use warnings;
 
 my %dispatch = (
     stmt            => \&statement,          # if (expr) {stms}
+    stmt_modifier   => \&statement_modifier, # stmt if expr
     block           => \&block,              # {stmts}
     keyword         => \&keyword,            # if
     bareword        => \&bareword,           # main
@@ -223,6 +224,22 @@ sub statement {
             push @$out, $d;
         }
         push @$out, ' ' if $line != $#$data;
+    }
+}
+
+sub statement_modifier {
+    my ( $data, $level, $out ) = @_;
+    for my $line ( 1 .. 2 ) {
+        my $d = $data->[$line];
+        push @$out, tab($level);
+        if ( ref($d) ) {
+            $dispatch{ $d->[0] }->( $d, $level, $out );
+        }
+        else {
+            push @$out, $d;
+        }
+        push @$out, "\n" if $line == 1;
+        $level++;
     }
 }
 

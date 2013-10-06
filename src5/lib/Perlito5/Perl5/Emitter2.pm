@@ -382,10 +382,12 @@ package Perlito5::AST::If;
         my $self = $_[0];
         
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
-            return $self->{body}->emit_perl5_2() . ' if ' . $self->{cond}->emit_perl5_2();
+            return [ stmt_modifier => $self->{body}->emit_perl5_2(),
+                                      [ stmt => 'if', $self->{cond}->emit_perl5_2() ] ];
         }
         if ($self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Lit::Block') {
-            return $self->{otherwise}->emit_perl5_2() . ' unless ' . $self->{cond}->emit_perl5_2();
+            return [ stmt_modifier => $self->{otherwise}->emit_perl5_2(),
+                                      [ stmt => 'unless', $self->{cond}->emit_perl5_2() ] ];
         }
 
         return 'if (' . $self->{cond}->emit_perl5_2() . ") "

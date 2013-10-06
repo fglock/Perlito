@@ -12483,10 +12483,10 @@ package Perlito5::AST::If;
     sub Perlito5::AST::If::emit_perl5_2 {
         my $self = $_[0];
         if (($self->{'body'} && (ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block'))) {
-            return ($self->{'body'}->emit_perl5_2() . ' if ' . $self->{'cond'}->emit_perl5_2())
+            return ['stmt_modifier', $self->{'body'}->emit_perl5_2(), ['stmt', 'if', $self->{'cond'}->emit_perl5_2()]]
         };
         if (($self->{'otherwise'} && (ref($self->{'otherwise'}) ne 'Perlito5::AST::Lit::Block'))) {
-            return ($self->{'otherwise'}->emit_perl5_2() . ' unless ' . $self->{'cond'}->emit_perl5_2())
+            return ['stmt_modifier', $self->{'otherwise'}->emit_perl5_2(), ['stmt', 'unless', $self->{'cond'}->emit_perl5_2()]]
         };
         return ('if (' . $self->{'cond'}->emit_perl5_2() . ') ' . (($self->{'body'} ? Perlito5::Perl5::emit_perl5_2_block($self->{'body'}->stmts()) : '{ }')) . ((($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()})) ? ((chr(10) . 'else ' . Perlito5::Perl5::emit_perl5_2_block($self->{'otherwise'}->stmts()))) : '')))
     }
@@ -12585,7 +12585,7 @@ package Perlito5::Perl5::PrettyPrinter;
 
 # use warnings
 ;
-my %dispatch = ('stmt', \&statement, 'block', \&block, 'keyword', \&keyword, 'bareword', \&bareword, 'op', \&op, 'paren', \&paren, 'paren_semicolon', \&paren_semicolon, 'comment', \&comment);
+my %dispatch = ('stmt', \&statement, 'stmt_modifier', \&statement_modifier, 'block', \&block, 'keyword', \&keyword, 'bareword', \&bareword, 'op', \&op, 'paren', \&paren, 'paren_semicolon', \&paren_semicolon, 'comment', \&comment);
 my %pair = ('(', ')', '[', ']', '{', '}');
 our %op = ('prefix:<-->', {'fix', 'prefix', 'prec', 1, 'str', '--'}, 'prefix:<++>', {'fix', 'prefix', 'prec', 1, 'str', '++'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '--'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '++'}, 'infix:<**>', {'fix', 'infix', 'prec', 2, 'str', '**'}, 'prefix:<' . chr(92) . '>', {'fix', 'prefix', 'prec', 3, 'str', chr(92)}, 'prefix:<+>', {'fix', 'prefix', 'prec', 3, 'str', '+'}, 'prefix:<->', {'fix', 'prefix', 'prec', 3, 'str', '-'}, 'prefix:<~>', {'fix', 'prefix', 'prec', 3, 'str', '~'}, 'prefix:<!>', {'fix', 'prefix', 'prec', 3, 'str', '!'}, 'infix:<=~>', {'fix', 'infix', 'prec', 4, 'str', ' =~ '}, 'infix:<!~>', {'fix', 'infix', 'prec', 4, 'str', ' !~ '}, 'infix:<*>', {'fix', 'infix', 'prec', 5, 'str', ' * '}, 'infix:</>', {'fix', 'infix', 'prec', 5, 'str', ' / '}, 'infix:<%>', {'fix', 'infix', 'prec', 5, 'str', ' % '}, 'infix:<x>', {'fix', 'infix', 'prec', 5, 'str', ' x '}, 'infix:<+>', {'fix', 'infix', 'prec', 6, 'str', ' + '}, 'infix:<->', {'fix', 'infix', 'prec', 6, 'str', ' - '}, 'list:<.>', {'fix', 'list', 'prec', 6, 'str', ' . '}, 'infix:<<<>', {'fix', 'infix', 'prec', 7, 'str', ' << '}, 'infix:<>>>', {'fix', 'infix', 'prec', 7, 'str', ' >> '}, 'prefix:<-f>', {'fix', 'prefix', 'prec', 8, 'str', '-f '}, 'prefix:<do>', {'fix', 'parsed', 'prec', 8, 'str', 'do '}, 'prefix:<sub>', {'fix', 'parsed', 'prec', 8, 'str', 'sub'}, 'prefix:<my>', {'fix', 'parsed', 'prec', 8, 'str', 'my'}, 'prefix:<our>', {'fix', 'parsed', 'prec', 8, 'str', 'our'}, 'prefix:<state>', {'fix', 'parsed', 'prec', 8, 'str', 'state'}, 'infix:<lt>', {'fix', 'infix', 'prec', 9, 'str', ' lt '}, 'infix:<le>', {'fix', 'infix', 'prec', 9, 'str', ' le '}, 'infix:<gt>', {'fix', 'infix', 'prec', 9, 'str', ' gt '}, 'infix:<ge>', {'fix', 'infix', 'prec', 9, 'str', ' ge '}, 'infix:<<=>', {'fix', 'infix', 'prec', 9, 'str', ' <= '}, 'infix:<>=>', {'fix', 'infix', 'prec', 9, 'str', ' >= '}, 'infix:<<>', {'fix', 'infix', 'prec', 9, 'str', ' < '}, 'infix:<>>', {'fix', 'infix', 'prec', 9, 'str', ' > '}, 'infix:<=>', {'fix', 'infix', 'prec', 19, 'str', ' = '}, 'infix:<=>>', {'fix', 'infix', 'prec', 20, 'str', ' => '}, 'list:<,>', {'fix', 'list', 'prec', 20, 'str', ', '});
 my %tab;
@@ -12727,6 +12727,21 @@ sub Perlito5::Perl5::PrettyPrinter::statement {
             push(@{$out}, $d)
         };
         push(@{$out}, ' ') if ($line != $#{$data})
+    }
+};
+sub Perlito5::Perl5::PrettyPrinter::statement_modifier {
+    my($data, $level, $out) = @_;
+    for my  $line ((1 .. 2)) {
+        my $d = $data->[$line];
+        push(@{$out}, tab($level));
+        if (ref($d)) {
+            $dispatch{$d->[0]}->($d, $level, $out)
+        }
+        else {
+            push(@{$out}, $d)
+        };
+        push(@{$out}, chr(10)) if ($line == 1);
+        ($level)++
     }
 };
 sub Perlito5::Perl5::PrettyPrinter::block {
