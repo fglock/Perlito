@@ -12395,15 +12395,6 @@ package Perlito5::AST::Apply;
             };
             return ($code . '(' . $self->emit_perl5_2_args() . ')')
         };
-        if (($code eq 'circumfix:<[ ]>')) {
-            return ('[' . $self->emit_perl5_2_args() . ']')
-        };
-        if (($code eq 'circumfix:<{ }>')) {
-            return ('{' . $self->emit_perl5_2_args() . '}')
-        };
-        if (($code eq 'circumfix:<( )>')) {
-            return ('(' . $self->emit_perl5_2_args() . ')')
-        };
         if (($code eq 'prefix:<$>')) {
             return ('${' . $self->emit_perl5_2_args() . '}')
         };
@@ -12421,28 +12412,6 @@ package Perlito5::AST::Apply;
         };
         if (($code eq 'prefix:<$#>')) {
             return ('$#{' . $self->emit_perl5_2_args() . '}')
-        };
-        if (($code eq 'ternary:<? :>')) {
-            return ('(' . $self->{'arguments'}->[0]->emit_perl5_2() . ' ? ' . $self->{'arguments'}->[1]->emit_perl5_2() . ' : ' . $self->{'arguments'}->[2]->emit_perl5_2() . ')')
-        };
-        if (($code eq 'require')) {
-            return ('Perlito5::Grammar::Use::require(' . $self->{'arguments'}->[0]->emit_perl5_2() . ')')
-        };
-        if (($code eq 'do')) {
-            my $ast = Perlito5::AST::Apply->new('code', 'eval', 'namespace', '', 'arguments', [Perlito5::AST::Apply->new('code', 'slurp', 'namespace', 'Perlito5::IO', 'arguments', $self->{'arguments'})]);
-            return $ast->emit_perl5_2()
-        };
-        if (($code eq 'eval')) {
-            my $arg = $self->{'arguments'}->[0];
-            my $eval;
-            if ($arg->isa('Perlito5::AST::Do')) {
-                my $do = $arg->simplify()->block();
-                return ('eval {' . chr(10) . join(';' . chr(10), map((defined($_) && $_->emit_perl5_2()), @{$do})) . chr(10) . '}')
-            };
-            return ('eval ' . $self->emit_perl5_2_args())
-        };
-        if (($code eq 'return')) {
-            return ('return ' . $self->emit_perl5_2_args())
         };
         if (($self->{'bareword'} && !(@{$self->{'arguments'}}))) {
             return ['bareword', $code]
@@ -12559,7 +12528,7 @@ package Perlito5::Perl5::PrettyPrinter;
 ;
 my %dispatch = ('stmt', \&statement, 'stmt_modifier', \&statement_modifier, 'block', \&block, 'keyword', \&keyword, 'bareword', \&bareword, 'op', \&op, 'paren', \&paren, 'paren_semicolon', \&paren_semicolon, 'comment', \&comment);
 my %pair = ('(', ')', '[', ']', '{', '}');
-our %op = ('prefix:<-->', {'fix', 'prefix', 'prec', 1, 'str', '--'}, 'prefix:<++>', {'fix', 'prefix', 'prec', 1, 'str', '++'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '--'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '++'}, 'infix:<**>', {'fix', 'infix', 'prec', 2, 'str', '**'}, 'prefix:<' . chr(92) . '>', {'fix', 'prefix', 'prec', 3, 'str', chr(92)}, 'prefix:<+>', {'fix', 'prefix', 'prec', 3, 'str', '+'}, 'prefix:<->', {'fix', 'prefix', 'prec', 3, 'str', '-'}, 'prefix:<~>', {'fix', 'prefix', 'prec', 3, 'str', '~'}, 'prefix:<!>', {'fix', 'prefix', 'prec', 3, 'str', '!'}, 'infix:<=~>', {'fix', 'infix', 'prec', 4, 'str', ' =~ '}, 'infix:<!~>', {'fix', 'infix', 'prec', 4, 'str', ' !~ '}, 'infix:<*>', {'fix', 'infix', 'prec', 5, 'str', ' * '}, 'infix:</>', {'fix', 'infix', 'prec', 5, 'str', ' / '}, 'infix:<%>', {'fix', 'infix', 'prec', 5, 'str', ' % '}, 'infix:<x>', {'fix', 'infix', 'prec', 5, 'str', ' x '}, 'infix:<+>', {'fix', 'infix', 'prec', 6, 'str', ' + '}, 'infix:<->', {'fix', 'infix', 'prec', 6, 'str', ' - '}, 'list:<.>', {'fix', 'list', 'prec', 6, 'str', ' . '}, 'infix:<<<>', {'fix', 'infix', 'prec', 7, 'str', ' << '}, 'infix:<>>>', {'fix', 'infix', 'prec', 7, 'str', ' >> '}, 'prefix:<-f>', {'fix', 'prefix', 'prec', 8, 'str', '-f '}, 'prefix:<do>', {'fix', 'parsed', 'prec', 8, 'str', 'do '}, 'prefix:<sub>', {'fix', 'parsed', 'prec', 8, 'str', 'sub'}, 'prefix:<my>', {'fix', 'parsed', 'prec', 8, 'str', 'my'}, 'prefix:<our>', {'fix', 'parsed', 'prec', 8, 'str', 'our'}, 'prefix:<state>', {'fix', 'parsed', 'prec', 8, 'str', 'state'}, 'infix:<lt>', {'fix', 'infix', 'prec', 9, 'str', ' lt '}, 'infix:<le>', {'fix', 'infix', 'prec', 9, 'str', ' le '}, 'infix:<gt>', {'fix', 'infix', 'prec', 9, 'str', ' gt '}, 'infix:<ge>', {'fix', 'infix', 'prec', 9, 'str', ' ge '}, 'infix:<<=>', {'fix', 'infix', 'prec', 9, 'str', ' <= '}, 'infix:<>=>', {'fix', 'infix', 'prec', 9, 'str', ' >= '}, 'infix:<<>', {'fix', 'infix', 'prec', 9, 'str', ' < '}, 'infix:<>>', {'fix', 'infix', 'prec', 9, 'str', ' > '}, 'infix:<<=>>', {'fix', 'infix', 'prec', 10, 'str', ' <=> '}, 'infix:<cmp>', {'fix', 'infix', 'prec', 10, 'str', ' cmp '}, 'infix:<==>', {'fix', 'infix', 'prec', 10, 'str', ' == '}, 'infix:<!=>', {'fix', 'infix', 'prec', 10, 'str', ' != '}, 'infix:<ne>', {'fix', 'infix', 'prec', 10, 'str', ' ne '}, 'infix:<eq>', {'fix', 'infix', 'prec', 10, 'str', ' eq '}, 'infix:<&>', {'fix', 'infix', 'prec', 11, 'str', ' & '}, 'infix:<|>', {'fix', 'infix', 'prec', 12, 'str', ' | '}, 'infix:<^>', {'fix', 'infix', 'prec', 12, 'str', ' ^ '}, 'infix:<..>', {'fix', 'infix', 'prec', 13, 'str', ' .. '}, 'infix:<...>', {'fix', 'infix', 'prec', 13, 'str', ' ... '}, 'infix:<~~>', {'fix', 'infix', 'prec', 13, 'str', ' ~~ '}, 'infix:<&&>', {'fix', 'infix', 'prec', 14, 'str', ' && '}, 'infix:<||>', {'fix', 'infix', 'prec', 15, 'str', ' || '}, 'infix:<//>', {'fix', 'infix', 'prec', 15, 'str', ' // '}, 'ternary:<? :>', {'fix', 'ternary', 'prec', 16}, 'infix:<=>', {'fix', 'infix', 'prec', 17, 'str', ' = '}, 'infix:<**=>', {'fix', 'infix', 'prec', 17, 'str', ' **= '}, 'infix:<+=>', {'fix', 'infix', 'prec', 17, 'str', ' += '}, 'infix:<-=>', {'fix', 'infix', 'prec', 17, 'str', ' -= '}, 'infix:<*=>', {'fix', 'infix', 'prec', 17, 'str', ' *= '}, 'infix:</=>', {'fix', 'infix', 'prec', 17, 'str', ' /= '}, 'infix:<x=>', {'fix', 'infix', 'prec', 17, 'str', ' x= '}, 'infix:<|=>', {'fix', 'infix', 'prec', 17, 'str', ' |= '}, 'infix:<&=>', {'fix', 'infix', 'prec', 17, 'str', ' &= '}, 'infix:<.=>', {'fix', 'infix', 'prec', 17, 'str', ' .= '}, 'infix:<<<=>', {'fix', 'infix', 'prec', 17, 'str', ' <<= '}, 'infix:<>>=>', {'fix', 'infix', 'prec', 17, 'str', ' >>= '}, 'infix:<%=>', {'fix', 'infix', 'prec', 17, 'str', ' %= '}, 'infix:<||=>', {'fix', 'infix', 'prec', 17, 'str', ' ||= '}, 'infix:<&&=>', {'fix', 'infix', 'prec', 17, 'str', ' &&= '}, 'infix:<^=>', {'fix', 'infix', 'prec', 17, 'str', ' ^= '}, 'infix:<//=>', {'fix', 'infix', 'prec', 17, 'str', ' //= '}, 'infix:<=>>', {'fix', 'infix', 'prec', 18, 'str', ' => '}, 'list:<,>', {'fix', 'list', 'prec', 19, 'str', ', '}, 'prefix:<not>', {'fix', 'infix', 'prec', 20, 'str', ' not '}, 'infix:<and>', {'fix', 'infix', 'prec', 21, 'str', ' and '}, 'infix:<or>', {'fix', 'infix', 'prec', 22, 'str', ' or '}, 'infix:<xor>', {'fix', 'infix', 'prec', 22, 'str', ' xor '});
+our %op = ('circumfix:<[ ]>', {'fix', 'circumfix', 'prec', 0, 'str', '['}, 'circumfix:<{ }>', {'fix', 'circumfix', 'prec', 0, 'str', '{'}, 'circumfix:<( )>', {'fix', 'circumfix', 'prec', 0, 'str', '('}, 'prefix:<-->', {'fix', 'prefix', 'prec', 1, 'str', '--'}, 'prefix:<++>', {'fix', 'prefix', 'prec', 1, 'str', '++'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '--'}, 'postfix:<-->', {'fix', 'postfix', 'prec', 1, 'str', '++'}, 'infix:<**>', {'fix', 'infix', 'prec', 2, 'str', '**'}, 'prefix:<' . chr(92) . '>', {'fix', 'prefix', 'prec', 3, 'str', chr(92)}, 'prefix:<+>', {'fix', 'prefix', 'prec', 3, 'str', '+'}, 'prefix:<->', {'fix', 'prefix', 'prec', 3, 'str', '-'}, 'prefix:<~>', {'fix', 'prefix', 'prec', 3, 'str', '~'}, 'prefix:<!>', {'fix', 'prefix', 'prec', 3, 'str', '!'}, 'infix:<=~>', {'fix', 'infix', 'prec', 4, 'str', ' =~ '}, 'infix:<!~>', {'fix', 'infix', 'prec', 4, 'str', ' !~ '}, 'infix:<*>', {'fix', 'infix', 'prec', 5, 'str', ' * '}, 'infix:</>', {'fix', 'infix', 'prec', 5, 'str', ' / '}, 'infix:<%>', {'fix', 'infix', 'prec', 5, 'str', ' % '}, 'infix:<x>', {'fix', 'infix', 'prec', 5, 'str', ' x '}, 'infix:<+>', {'fix', 'infix', 'prec', 6, 'str', ' + '}, 'infix:<->', {'fix', 'infix', 'prec', 6, 'str', ' - '}, 'list:<.>', {'fix', 'list', 'prec', 6, 'str', ' . '}, 'infix:<<<>', {'fix', 'infix', 'prec', 7, 'str', ' << '}, 'infix:<>>>', {'fix', 'infix', 'prec', 7, 'str', ' >> '}, 'prefix:<-f>', {'fix', 'prefix', 'prec', 8, 'str', '-f '}, 'prefix:<do>', {'fix', 'parsed', 'prec', 8, 'str', 'do '}, 'prefix:<sub>', {'fix', 'parsed', 'prec', 8, 'str', 'sub'}, 'prefix:<my>', {'fix', 'parsed', 'prec', 8, 'str', 'my'}, 'prefix:<our>', {'fix', 'parsed', 'prec', 8, 'str', 'our'}, 'prefix:<state>', {'fix', 'parsed', 'prec', 8, 'str', 'state'}, 'infix:<lt>', {'fix', 'infix', 'prec', 9, 'str', ' lt '}, 'infix:<le>', {'fix', 'infix', 'prec', 9, 'str', ' le '}, 'infix:<gt>', {'fix', 'infix', 'prec', 9, 'str', ' gt '}, 'infix:<ge>', {'fix', 'infix', 'prec', 9, 'str', ' ge '}, 'infix:<<=>', {'fix', 'infix', 'prec', 9, 'str', ' <= '}, 'infix:<>=>', {'fix', 'infix', 'prec', 9, 'str', ' >= '}, 'infix:<<>', {'fix', 'infix', 'prec', 9, 'str', ' < '}, 'infix:<>>', {'fix', 'infix', 'prec', 9, 'str', ' > '}, 'infix:<<=>>', {'fix', 'infix', 'prec', 10, 'str', ' <=> '}, 'infix:<cmp>', {'fix', 'infix', 'prec', 10, 'str', ' cmp '}, 'infix:<==>', {'fix', 'infix', 'prec', 10, 'str', ' == '}, 'infix:<!=>', {'fix', 'infix', 'prec', 10, 'str', ' != '}, 'infix:<ne>', {'fix', 'infix', 'prec', 10, 'str', ' ne '}, 'infix:<eq>', {'fix', 'infix', 'prec', 10, 'str', ' eq '}, 'infix:<&>', {'fix', 'infix', 'prec', 11, 'str', ' & '}, 'infix:<|>', {'fix', 'infix', 'prec', 12, 'str', ' | '}, 'infix:<^>', {'fix', 'infix', 'prec', 12, 'str', ' ^ '}, 'infix:<..>', {'fix', 'infix', 'prec', 13, 'str', ' .. '}, 'infix:<...>', {'fix', 'infix', 'prec', 13, 'str', ' ... '}, 'infix:<~~>', {'fix', 'infix', 'prec', 13, 'str', ' ~~ '}, 'infix:<&&>', {'fix', 'infix', 'prec', 14, 'str', ' && '}, 'infix:<||>', {'fix', 'infix', 'prec', 15, 'str', ' || '}, 'infix:<//>', {'fix', 'infix', 'prec', 15, 'str', ' // '}, 'ternary:<? :>', {'fix', 'ternary', 'prec', 16}, 'infix:<=>', {'fix', 'infix', 'prec', 17, 'str', ' = '}, 'infix:<**=>', {'fix', 'infix', 'prec', 17, 'str', ' **= '}, 'infix:<+=>', {'fix', 'infix', 'prec', 17, 'str', ' += '}, 'infix:<-=>', {'fix', 'infix', 'prec', 17, 'str', ' -= '}, 'infix:<*=>', {'fix', 'infix', 'prec', 17, 'str', ' *= '}, 'infix:</=>', {'fix', 'infix', 'prec', 17, 'str', ' /= '}, 'infix:<x=>', {'fix', 'infix', 'prec', 17, 'str', ' x= '}, 'infix:<|=>', {'fix', 'infix', 'prec', 17, 'str', ' |= '}, 'infix:<&=>', {'fix', 'infix', 'prec', 17, 'str', ' &= '}, 'infix:<.=>', {'fix', 'infix', 'prec', 17, 'str', ' .= '}, 'infix:<<<=>', {'fix', 'infix', 'prec', 17, 'str', ' <<= '}, 'infix:<>>=>', {'fix', 'infix', 'prec', 17, 'str', ' >>= '}, 'infix:<%=>', {'fix', 'infix', 'prec', 17, 'str', ' %= '}, 'infix:<||=>', {'fix', 'infix', 'prec', 17, 'str', ' ||= '}, 'infix:<&&=>', {'fix', 'infix', 'prec', 17, 'str', ' &&= '}, 'infix:<^=>', {'fix', 'infix', 'prec', 17, 'str', ' ^= '}, 'infix:<//=>', {'fix', 'infix', 'prec', 17, 'str', ' //= '}, 'infix:<=>>', {'fix', 'infix', 'prec', 18, 'str', ' => '}, 'list:<,>', {'fix', 'list', 'prec', 19, 'str', ', '}, 'prefix:<not>', {'fix', 'infix', 'prec', 20, 'str', ' not '}, 'infix:<and>', {'fix', 'infix', 'prec', 21, 'str', ' and '}, 'infix:<or>', {'fix', 'infix', 'prec', 22, 'str', ' or '}, 'infix:<xor>', {'fix', 'infix', 'prec', 22, 'str', ' xor '});
 my %tab;
 sub Perlito5::Perl5::PrettyPrinter::tab {
     my $level = $_[0];
@@ -12590,9 +12559,9 @@ sub Perlito5::Perl5::PrettyPrinter::op_render {
     my($data, $level, $out, $current_op) = @_;
     if (ref($data)) {
         my $this_prec = op_precedence($data);
-        push(@{$out}, '(') if ($current_op->{'prec'} < $this_prec);
+        push(@{$out}, '(') if (($this_prec && $current_op->{'prec'}) && ($current_op->{'prec'} < $this_prec));
         $dispatch{$data->[0]}->($data, $level, $out);
-        push(@{$out}, ')') if ($current_op->{'prec'} < $this_prec)
+        push(@{$out}, ')') if (($this_prec && $current_op->{'prec'}) && ($current_op->{'prec'} < $this_prec))
     }
     else {
         push(@{$out}, $data)
@@ -12618,28 +12587,44 @@ sub Perlito5::Perl5::PrettyPrinter::op {
                 push(@{$out}, $spec->{'str'})
             }
             else {
-                if (($spec->{'fix'} eq 'list')) {
-                    for my  $line ((2 .. $#{$data})) {
-                        op_render($data->[$line], $level, $out, $spec);
-                        push(@{$out}, $spec->{'str'}) if ($line != $#{$data})
-                    }
+                if (($spec->{'fix'} eq 'ternary')) {
+                    op_render($data->[2], $level, $out, $spec);
+                    push(@{$out}, ' ? ');
+                    op_render($data->[3], $level, $out, $spec);
+                    push(@{$out}, ' : ');
+                    op_render($data->[4], $level, $out, $spec)
                 }
                 else {
-                    if (($spec->{'fix'} eq 'parsed')) {
+                    if (($spec->{'fix'} eq 'circumfix')) {
                         push(@{$out}, $spec->{'str'});
-                        for my  $line ((2 .. $#{$data})) {
-                            my $d = $data->[$line];
-                            push(@{$out}, ' ');
-                            if (ref($d)) {
-                                $dispatch{$d->[0]}->($d, $level, $out)
-                            }
-                            else {
-                                push(@{$out}, $d)
-                            }
-                        }
+                        op_render($data->[2], $level, $out, $spec);
+                        push(@{$out}, $pair{$spec->{'str'}})
                     }
                     else {
-                        die(('unknown fixity: ' . $spec->{'fix'}))
+                        if (($spec->{'fix'} eq 'list')) {
+                            for my  $line ((2 .. $#{$data})) {
+                                op_render($data->[$line], $level, $out, $spec);
+                                push(@{$out}, $spec->{'str'}) if ($line != $#{$data})
+                            }
+                        }
+                        else {
+                            if (($spec->{'fix'} eq 'parsed')) {
+                                push(@{$out}, $spec->{'str'});
+                                for my  $line ((2 .. $#{$data})) {
+                                    my $d = $data->[$line];
+                                    push(@{$out}, ' ');
+                                    if (ref($d)) {
+                                        $dispatch{$d->[0]}->($d, $level, $out)
+                                    }
+                                    else {
+                                        push(@{$out}, $d)
+                                    }
+                                }
+                            }
+                            else {
+                                die(('unknown fixity: ' . $spec->{'fix'}))
+                            }
+                        }
                     }
                 }
             }

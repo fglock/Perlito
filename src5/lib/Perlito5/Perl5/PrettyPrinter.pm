@@ -21,6 +21,10 @@ my %pair = (
 );
 
 our %op = (
+    'circumfix:<[ ]>' => { fix => 'circumfix',  prec => 0, str => '[' },
+    'circumfix:<{ }>' => { fix => 'circumfix',  prec => 0, str => '{' },
+    'circumfix:<( )>' => { fix => 'circumfix',  prec => 0, str => '(' },
+
     'prefix:<-->'  => { fix => 'prefix',  prec => 1, str => '--' },
     'prefix:<++>'  => { fix => 'prefix',  prec => 1, str => '++' },
     'postfix:<-->' => { fix => 'postfix', prec => 1, str => '--' },
@@ -158,9 +162,9 @@ sub op_render {
     my ( $data, $level, $out, $current_op ) = @_;
     if ( ref($data) ) {
         my $this_prec = op_precedence($data);
-        push @$out, '(' if $current_op->{prec} < $this_prec;
+        push @$out, '(' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
         $dispatch{ $data->[0] }->( $data, $level, $out );
-        push @$out, ')' if $current_op->{prec} < $this_prec;
+        push @$out, ')' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
     }
     else {
         push @$out, $data;
@@ -183,6 +187,18 @@ sub op {
     elsif ( $spec->{fix} eq 'postfix' ) {
         op_render( $data->[2], $level, $out, $spec );
         push @$out, $spec->{str};
+    }
+    elsif ( $spec->{fix} eq 'ternary' ) {
+        op_render( $data->[2], $level, $out, $spec );
+        push @$out, ' ? ';
+        op_render( $data->[3], $level, $out, $spec );
+        push @$out, ' : ';
+        op_render( $data->[4], $level, $out, $spec );
+    }
+    elsif ( $spec->{fix} eq 'circumfix' ) {
+        push @$out, $spec->{str};
+        op_render( $data->[2], $level, $out, $spec );
+        push @$out, $pair{$spec->{str}};
     }
     elsif ( $spec->{fix} eq 'list' ) {
         for my $line ( 2 .. $#$data ) {

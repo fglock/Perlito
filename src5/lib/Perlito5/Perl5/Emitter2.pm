@@ -276,60 +276,12 @@ package Perlito5::AST::Apply;
             return "$code(" . $self->emit_perl5_2_args() . ')'
         }
 
-        if ( $code eq 'circumfix:<[ ]>' ) { return '[' . $self->emit_perl5_2_args() . ']' }
-        if ( $code eq 'circumfix:<{ }>' ) { return '{' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'circumfix:<( )>' ) { return '(' . $self->emit_perl5_2_args() . ')' }
-
         if ( $code eq 'prefix:<$>' )  { return '${' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<@>' )  { return '@{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<%>' )  { return '%{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<&>' )  { return '&{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<*>' )  { return '*{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<$#>' ) { return '$#{' . $self->emit_perl5_2_args() . '}' }
-
-        if ($code eq 'ternary:<? :>') {
-            return '('  . $self->{arguments}->[0]->emit_perl5_2()
-                . ' ? ' . $self->{arguments}->[1]->emit_perl5_2()
-                . ' : ' . $self->{arguments}->[2]->emit_perl5_2()
-                .  ')'
-        }
-
-        if ($code eq 'require') {
-            return 'Perlito5::Grammar::Use::require(' . $self->{arguments}[0]->emit_perl5_2() . ')'
-        }
-
-        if ($code eq 'do') {
-            # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
-            my $ast =
-                Perlito5::AST::Apply->new(
-                    code => 'eval',
-                    namespace => '',
-                    arguments => [
-                       Perlito5::AST::Apply->new(
-                          code => 'slurp',
-                          namespace => 'Perlito5::IO',
-                          arguments => $self->{arguments}
-                        )
-                    ]
-                );
-            return $ast->emit_perl5_2();
-        }
-
-        if ($code eq 'eval') {
-            my $arg = $self->{arguments}->[0];
-            my $eval;
-            if ($arg->isa( "Perlito5::AST::Do" )) {
-                my $do = $arg->simplify->block;
-                return "eval {\n" 
-                    .  join(";\n", map( defined($_) && $_->emit_perl5_2(), @$do )) . "\n"
-                    . "}"
-            }
-            return 'eval ' . $self->emit_perl5_2_args();
-        }
-
-        if ($code eq 'return') {
-            return 'return ' . $self->emit_perl5_2_args();
-        }
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return [ bareword => $code ];
