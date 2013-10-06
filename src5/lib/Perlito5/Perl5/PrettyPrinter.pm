@@ -23,6 +23,13 @@ my %pair = (
 );
 
 our %op = (
+    'prefix:<$>'  => { fix => 'deref', prec => 0, str => '$'  }, 
+    'prefix:<@>'  => { fix => 'deref', prec => 0, str => '@'  },
+    'prefix:<%>'  => { fix => 'deref', prec => 0, str => '%'  },
+    'prefix:<&>'  => { fix => 'deref', prec => 0, str => '&'  },
+    'prefix:<*>'  => { fix => 'deref', prec => 0, str => '*'  },
+    'prefix:<$#>' => { fix => 'deref', prec => 0, str => '$#' }, 
+
     'circumfix:<[ ]>' => { fix => 'circumfix',  prec => 0, str => '[' },
     'circumfix:<{ }>' => { fix => 'circumfix',  prec => 0, str => '{' },
     'circumfix:<( )>' => { fix => 'circumfix',  prec => 0, str => '(' },
@@ -32,7 +39,7 @@ our %op = (
     'prefix:<-->'  => { fix => 'prefix',  prec => 1, str => '--' },
     'prefix:<++>'  => { fix => 'prefix',  prec => 1, str => '++' },
     'postfix:<-->' => { fix => 'postfix', prec => 1, str => '--' },
-    'postfix:<-->' => { fix => 'postfix', prec => 1, str => '++' },
+    'postfix:<++>' => { fix => 'postfix', prec => 1, str => '++' },
 
     'infix:<**>' => { fix => 'infix', prec => 2, str => '**' },
 
@@ -209,9 +216,17 @@ sub op {
         push @$out, ' : ';
         op_render( $data->[4], $level, $out, $spec );
     }
+    elsif ( $spec->{fix} eq 'deref' ) {
+        push @$out, $spec->{str}, '{';
+        op_render( $data->[2], $level, $out, $spec );
+        push @$out, '}';
+    }
     elsif ( $spec->{fix} eq 'circumfix' ) {
         push @$out, $spec->{str};
-        op_render( $data->[2], $level, $out, $spec );
+        for my $line ( 2 .. $#$data ) {
+            op_render( $data->[$line], $level, $out, $spec );
+            push @$out, ', ' if $line != $#$data;
+        }
         push @$out, $pair{$spec->{str}};
     }
     elsif ( $spec->{fix} eq 'list' ) {
@@ -238,12 +253,13 @@ sub apply {
     my ( $data, $level, $out ) = @_;
     my @dd = @$data;
     shift @dd;
+    my $open = shift @dd;
     my $d = $dd[0];
     render( $d, $level, $out );
     $dd[0] = 'list:<,>';
-    push @$out, '(';
+    push @$out, $open;
     op( [ op => @dd ], $level, $out );
-    push @$out, ')';
+    push @$out, $pair{$open};
 }
 
 sub paren {

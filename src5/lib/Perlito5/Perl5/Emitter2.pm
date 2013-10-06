@@ -70,17 +70,18 @@ package Perlito5::AST::Index;
            && $self->{obj}->sigil eq '$'
            )
         {
-            my $v = $self->{obj};
-            return $v->emit_perl5_2() . '[' . $self->{index_exp}->emit_perl5_2() . ']';
+            return [ apply => '[', $self->{obj}->emit_perl5_2(), $self->{index_exp}->emit_perl5_2() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
            )
         {
             # $$a[0] ==> $a->[0]
-            return $self->{obj}{arguments}[0]->emit_perl5_2() . '->[' . $self->{index_exp}->emit_perl5_2() . ']';
+            return [ op => 'infix:<->>', $self->{obj}{arguments}[0]->emit_perl5_2(), 
+                     [ op => 'circumfix:<[ ]>', $self->{index_exp}->emit_perl5_2() ] ];
         }
-        $self->{obj}->emit_perl5_2() . '->[' . $self->{index_exp}->emit_perl5_2() . ']';
+        return [ op => 'infix:<->>', $self->{obj}->emit_perl5_2(), 
+                 [ op => 'circumfix:<[ ]>', $self->{index_exp}->emit_perl5_2() ] ];
     }
 }
 
@@ -92,8 +93,7 @@ package Perlito5::AST::Lookup;
            && $self->{obj}->sigil eq '$'
            )
         {
-            my $v = $self->{obj};
-            return $v->emit_perl5_2() . '{' . $self->autoquote($self->{index_exp})->emit_perl5_2() . '}';
+            return [ apply => '{', $self->{obj}->emit_perl5_2(), $self->autoquote($self->{index_exp})->emit_perl5_2() ];
         }
 
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
@@ -101,10 +101,11 @@ package Perlito5::AST::Lookup;
            )
         {
             # $$a{0} ==> $a->{0}
-            return $self->{obj}{arguments}[0]->emit_perl5_2() . '->{' . $self->autoquote($self->{index_exp})->emit_perl5_2() . '}';
+            return [ op => 'infix:<->>', $self->{obj}{arguments}[0]->emit_perl5_2(), 
+                     [ op => 'circumfix:<{ }>', $self->autoquote($self->{index_exp})->emit_perl5_2() ] ];
         }
-
-        $self->{obj}->emit_perl5_2() . '->{' . $self->autoquote($self->{index_exp})->emit_perl5_2() . '}';
+        return [ op => 'infix:<->>', $self->{obj}->emit_perl5_2(), 
+                 [ op => 'circumfix:<{ }>', $self->autoquote($self->{index_exp})->emit_perl5_2() ] ];
     }
 }
 
@@ -174,10 +175,12 @@ package Perlito5::AST::Call;
         my $self = $_[0]; 
         my $invocant = $self->{invocant}->emit_perl5_2();
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
-            return $invocant . '->[' . $self->{arguments}->emit_perl5_2() . ']'
+            return [ op => 'infix:<->>', $invocant, 
+                     [ op => 'circumfix:<[ ]>', $self->{arguments}->emit_perl5_2() ] ];
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
-            return $invocant . '->{' . Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_perl5_2() . '}'
+            return [ op => 'infix:<->>', $invocant, 
+                     [ op => 'circumfix:<{ }>', Perlito5::AST::Lookup->autoquote($self->{arguments})->emit_perl5_2() ] ];
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -263,20 +266,13 @@ package Perlito5::AST::Apply;
     
                 . $self->emit_perl5_2_args();
             }
-            return [ apply => $code, $self->emit_perl5_2_args() ];
+            return [ apply => '(', $code, $self->emit_perl5_2_args() ];
         }
-
-        if ( $code eq 'prefix:<$>' )  { return '${' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'prefix:<@>' )  { return '@{' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'prefix:<%>' )  { return '%{' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'prefix:<&>' )  { return '&{' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'prefix:<*>' )  { return '*{' . $self->emit_perl5_2_args() . '}' }
-        if ( $code eq 'prefix:<$#>' ) { return '$#{' . $self->emit_perl5_2_args() . '}' }
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return [ bareword => $code ];
         }
-        return [ apply => $code, $self->emit_perl5_2_args() ];
+        return [ apply => '(', $code, $self->emit_perl5_2_args() ];
     }
 }
 
