@@ -12355,7 +12355,7 @@ package Perlito5::AST::Apply;
     };
     sub Perlito5::AST::Apply::emit_perl5_2 {
         my $self = $_[0];
-        if (ref($code)) {
+        if (ref($self->{'code'})) {
             return ['op', 'infix:<->>', $self->{'code'}->emit_perl5_2(), $self->emit_perl5_2_args()]
         };
         if ($Perlito5::Perl5::PrettyPrinter::op{$self->{'code'}}) {
