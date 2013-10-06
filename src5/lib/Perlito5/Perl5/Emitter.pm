@@ -304,18 +304,31 @@ package Perlito5::AST::If;
             return [ stmt_modifier => $self->{otherwise}->emit_perl5(),
                                       [ stmt => 'unless', $self->{cond}->emit_perl5() ] ];
         }
-        # TODO - elsif
-        return ( [ stmt => [ keyword => 'if' ],
-                   [ paren => '(', $self->{cond}->emit_perl5() ],
-                   Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
-                 ],
-                ($self->{otherwise} && scalar(@{ $self->{otherwise}->stmts })
-                    ? [ stmt => [ keyword => 'else' ],
-                        Perlito5::Perl5::emit_perl5_block($self->{otherwise}->stmts)
-                      ]
-                    : ()
-                )
-               );
+        my @out = ( [ stmt => [ keyword => 'if' ],
+                      [ paren => '(', $self->{cond}->emit_perl5() ],
+                      Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
+                    ] );
+        my $otherwise = $self->{otherwise};
+
+        while ( $otherwise
+              && @{ $otherwise->{stmts} } == 1 
+              && ref($otherwise->{stmts}[0]) eq 'Perlito5::AST::If'
+              && ($otherwise->{stmts}[0]{body} && ref($otherwise->{stmts}[0]{body}) eq 'Perlito5::AST::Lit::Block')
+              )
+        {
+            push @out, [ stmt => [ keyword => 'elsif' ],
+                         [ paren => '(', $otherwise->{stmts}[0]{cond}->emit_perl5() ],
+                         Perlito5::Perl5::emit_perl5_block($otherwise->{stmts}[0]{body}{stmts})
+                       ];
+            $otherwise = $otherwise->{stmts}[0]{otherwise};
+        }
+
+        return @out if !($otherwise && scalar(@{ $otherwise->stmts }));
+
+        push @out, [ stmt => [ keyword => 'else' ],
+                     Perlito5::Perl5::emit_perl5_block($otherwise->stmts)
+                   ];
+        return @out;
     }
 }
 
