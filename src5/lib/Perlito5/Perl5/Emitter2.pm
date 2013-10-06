@@ -66,8 +66,12 @@ package Perlito5::AST::Index;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-        if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<@>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+              )
            )
         {
             return [ apply => '[', $self->{obj}->emit_perl5_2(), $self->{index_exp}->emit_perl5_2() ];
@@ -89,13 +93,16 @@ package Perlito5::AST::Lookup;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-        if (  $self->{obj}->isa('Perlito5::AST::Var')
-           && $self->{obj}->sigil eq '$'
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<@>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
+              )
            )
         {
             return [ apply => '{', $self->{obj}->emit_perl5_2(), $self->autoquote($self->{index_exp})->emit_perl5_2() ];
         }
-
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
            )
