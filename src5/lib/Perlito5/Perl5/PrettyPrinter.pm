@@ -13,6 +13,7 @@ my %dispatch = (
     paren           => \&paren,                 # (expr)
     paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
     apply           => \&apply,                 # subr(expr)
+    call            => \&call,                  # expr->subr(expr)
     comment         => \&comment,               # # comment
 );
 
@@ -71,6 +72,10 @@ our %op = (
     'prefix:<my>'    => { fix => 'parsed', prec => 8, str => 'my' },
     'prefix:<our>'   => { fix => 'parsed', prec => 8, str => 'our' },
     'prefix:<state>' => { fix => 'parsed', prec => 8, str => 'state' },
+    'prefix:<local>' => { fix => 'parsed', prec => 8, str => 'local' },
+    'prefix:<map>'   => { fix => 'parsed', prec => 8, str => 'map'  },
+    'prefix:<grep>'  => { fix => 'parsed', prec => 8, str => 'grep' },
+    'prefix:<sort>'  => { fix => 'parsed', prec => 8, str => 'sort' },
 
     'infix:<lt>' => { fix => 'infix', prec => 9, str => ' lt ' },
     'infix:<le>' => { fix => 'infix', prec => 9, str => ' le ' },
@@ -249,6 +254,21 @@ sub op {
     return;
 }
 
+sub call {
+    my ( $data, $level, $out ) = @_;
+    my @dd = @$data;
+    shift @dd;
+    my $open = '(';
+    render( shift(@dd), $level, $out );
+    push @$out, '->';
+    my $d = $dd[0];
+    render( $d, $level, $out );
+    $dd[0] = 'list:<,>';
+    push @$out, $open;
+    op( [ op => @dd ], $level, $out );
+    push @$out, $pair{$open};
+}
+
 sub apply {
     my ( $data, $level, $out ) = @_;
     my @dd = @$data;
@@ -325,13 +345,9 @@ sub statement {
 
 sub statement_modifier {
     my ( $data, $level, $out ) = @_;
-    for my $line ( 1 .. 2 ) {
-        my $d = $data->[$line];
-        push @$out, tab($level);
-        render( $d, $level, $out );
-        push @$out, "\n" if $line == 1;
-        $level++;
-    }
+    render( $data->[1], $level, $out );
+    push @$out, "\n", tab($level + 1);
+    render( $data->[2], $level, $out );
 }
 
 sub block {

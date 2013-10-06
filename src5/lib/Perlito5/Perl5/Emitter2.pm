@@ -148,6 +148,8 @@ package Perlito5::AST::Var;
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
+            return $self->{namespace} . '::'
+                if $self->{sigil} eq '::';
             if ($self->{namespace} eq 'main' && substr($self->{name}, 0, 1) eq '^') {
                 # don't add the namespace to special variables
                 return $self->{sigil} . '{' . $self->{name} . '}'
@@ -191,12 +193,16 @@ package Perlito5::AST::Call;
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {
-            if (  ref($self->{invocant}) eq 'Perlito5::AST::Var'
-               && $self->{invocant}{sigil} eq '&'
-               )
+            if (  (  ref($self->{invocant}) eq 'Perlito5::AST::Var'
+                  && $self->{invocant}{sigil} eq '&'
+                  )
+               || (  ref($self->{invocant}) eq 'Perlito5::AST::Apply'
+                  && $self->{invocant}{code} eq 'prefix:<&>'
+                  )
+               ) 
             {
                 #  &subr(args)
-                return $invocant . '(' . join(', ', map( $_->emit_perl5_2(), @{$self->{arguments}} )) . ')';
+                return [ apply => '(', $invocant, map { $_->emit_perl5_2() } @{$self->{arguments}} ];
             }
             $meth = '';
         }
@@ -204,7 +210,7 @@ package Perlito5::AST::Call;
             $meth = $meth->emit_perl5_2();
         }
         if ( $meth ) {
-            return $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5_2(), @{$self->{arguments}} )) . ')';
+            return [ call => $invocant, $meth, map { $_->emit_perl5_2() } @{$self->{arguments}} ];
         }
         return [ op => 'infix:<->>', $invocant, [ op => 'list:<,>', map { $_->emit_perl5_2() } @{$self->{arguments}} ] ];
     }
@@ -221,6 +227,11 @@ package Perlito5::AST::Apply;
         my $self = $_[0];   
         if (ref $self->{code}) {
             return [ op => 'infix:<->>', $self->{code}->emit_perl5_2(), $self->emit_perl5_2_args() ];
+        }
+        if ($self->{code} eq 'infix:<=>>')  { 
+            return [ op => $self->{code}, 
+                     Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5_2(),
+                     $self->{arguments}[1]->emit_perl5_2() ]
         }
         if ( $Perlito5::Perl5::PrettyPrinter::op{ $self->{code} } ) {
             return [ op => $self->{code}, $self->emit_perl5_2_args() ];
@@ -267,11 +278,9 @@ package Perlito5::AST::Apply;
         if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
-                return "$code {\n"
-                .   join(";\n", map { $_->emit_perl5_2() } @{$self->{special_arg}{stmts}} ) . "\n"
-                . "} "
-    
-                . $self->emit_perl5_2_args();
+                return [ op => 'prefix:<' . $code . '>',
+                         [ 'block', map { $_->emit_perl5_2() } @{$self->{special_arg}{stmts}} ],
+                         $self->emit_perl5_2_args() ]
             }
             return [ apply => '(', $code, $self->emit_perl5_2_args() ];
         }
