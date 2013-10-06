@@ -4,11 +4,9 @@ use Perlito5::AST;
 
 package Perlito5::Perl5;
 {
-
     sub escape_string {
         return Perlito5::Dumper::escape_string($_[0]);
     }
-
     sub emit_perl5_2_block {
         my $block = $_[0];
         return [ 'block', 
@@ -21,8 +19,7 @@ package Perlito5::AST::CompUnit;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-        return (
-                 [ stmt => [ keyword => 'package'], [ bareword => $self->{name} ] ],
+        return ( [ stmt => [ keyword => 'package'], [ bareword => $self->{name} ] ],
                  map { defined($_) && $_->emit_perl5_2() } @{$self->{body}}
                );
     }
@@ -92,7 +89,6 @@ package Perlito5::AST::Lookup;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-        
 
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'
@@ -280,18 +276,10 @@ package Perlito5::AST::Apply;
             return "$code(" . $self->emit_perl5_2_args() . ')'
         }
 
-        if ($code eq 'infix:<=>>')  { 
-            return Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5_2()  . ', ' 
-                . $self->{arguments}[1]->emit_perl5_2()
-        }
-
         if ( $code eq 'circumfix:<[ ]>' ) { return '[' . $self->emit_perl5_2_args() . ']' }
         if ( $code eq 'circumfix:<{ }>' ) { return '{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'circumfix:<( )>' ) { return '(' . $self->emit_perl5_2_args() . ')' }
-        if ($code eq 'prefix:<\\>') { 
-            # TODO - \(@a) vs. \@a
-            return '\\' . $self->{arguments}[0]->emit_perl5_2() . ''
-        }
+
         if ( $code eq 'prefix:<$>' )  { return '${' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<@>' )  { return '@{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<%>' )  { return '%{' . $self->emit_perl5_2_args() . '}' }
@@ -299,20 +287,11 @@ package Perlito5::AST::Apply;
         if ( $code eq 'prefix:<*>' )  { return '*{' . $self->emit_perl5_2_args() . '}' }
         if ( $code eq 'prefix:<$#>' ) { return '$#{' . $self->emit_perl5_2_args() . '}' }
 
-        if ( $code eq 'postfix:<++>' ) { return '(' . $self->emit_perl5_2_args() . ')++' }
-        if ( $code eq 'postfix:<-->' ) { return '(' . $self->emit_perl5_2_args() . ')--' }
-
-        if ($code eq 'infix:<..>') { return '('  . join(' .. ', map( $_->emit_perl5_2(), @{$self->{arguments}} ))  . ")" }
-
         if ($code eq 'ternary:<? :>') {
             return '('  . $self->{arguments}->[0]->emit_perl5_2()
                 . ' ? ' . $self->{arguments}->[1]->emit_perl5_2()
                 . ' : ' . $self->{arguments}->[2]->emit_perl5_2()
                 .  ')'
-        }
-
-        if ($code eq 'infix:<=>') {
-            return emit_perl5_2_bind( $self->{arguments}->[0], $self->{arguments}->[1] );
         }
 
         if ($code eq 'require') {
@@ -356,23 +335,6 @@ package Perlito5::AST::Apply;
             return [ bareword => $code ];
         }
         $code . '(' . $self->emit_perl5_2_args() . ')';
-    }
-
-    sub emit_perl5_2_bind {
-        my $parameters = shift;
-        my $arguments = shift;
-
-        if ($parameters->isa( 'Perlito5::AST::Call' )) {
-            # $a->{3} = 4
-            # $a->[3] = 4
-            if  (  $parameters->method eq 'postcircumfix:<{ }>'
-                || $parameters->method eq 'postcircumfix:<[ ]>'
-                )
-            {
-                return $parameters->emit_perl5_2() . ' = ' . $arguments->emit_perl5_2();
-            }
-        }
-        $parameters->emit_perl5_2() . ' = ' . $arguments->emit_perl5_2();
     }
 }
 
@@ -423,7 +385,8 @@ package Perlito5::AST::While;
     sub emit_perl5_2 {
         my $self = $_[0];
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
-            return $self->{body}->emit_perl5_2() . ' while ' . $self->{cond}->emit_perl5_2();
+            return [ stmt_modifier => $self->{body}->emit_perl5_2(),
+                                      [ stmt => 'while', $self->{cond}->emit_perl5_2() ] ];
         }
 
            'for ( '
@@ -440,7 +403,8 @@ package Perlito5::AST::For;
         my $self = $_[0];
         
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
-            return $self->{body}->emit_perl5_2() . ' for ' . $self->{cond}->emit_perl5_2();
+            return [ stmt_modifier => $self->{body}->emit_perl5_2(),
+                                      [ stmt => 'for', $self->{cond}->emit_perl5_2() ] ];
         }
 
         my $cond;

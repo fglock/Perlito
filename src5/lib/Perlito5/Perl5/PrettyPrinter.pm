@@ -3,15 +3,15 @@ use strict;
 use warnings;
 
 my %dispatch = (
-    stmt            => \&statement,          # if (expr) {stms}
-    stmt_modifier   => \&statement_modifier, # stmt if expr
-    block           => \&block,              # {stmts}
-    keyword         => \&keyword,            # if
-    bareword        => \&bareword,           # main
-    op              => \&op,                 # expr
-    paren           => \&paren,              # (expr)
-    paren_semicolon => \&paren_semicolon,    # (expr;expr;expr)
-    comment         => \&comment,            # # comment
+    stmt            => \&statement,             # if (expr) {stms}
+    stmt_modifier   => \&statement_modifier,    # stmt if expr
+    block           => \&block,                 # {stmts}
+    keyword         => \&keyword,               # if
+    bareword        => \&bareword,              # main
+    op              => \&op,                    # expr
+    paren           => \&paren,                 # (expr)
+    paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
+    comment         => \&comment,               # # comment
 );
 
 my %pair = (
@@ -66,15 +66,57 @@ our %op = (
     'infix:<<>'  => { fix => 'infix', prec => 9, str => ' < ' },
     'infix:<>>'  => { fix => 'infix', prec => 9, str => ' > ' },
 
-    # TODO - more operators
+    'infix:<<=>>' => { fix => 'infix', prec => 10, str => ' <=> ' },
+    'infix:<cmp>' => { fix => 'infix', prec => 10, str => ' cmp ' },
+    'infix:<==>'  => { fix => 'infix', prec => 10, str => ' == ' },
+    'infix:<!=>'  => { fix => 'infix', prec => 10, str => ' != ' },
+    'infix:<ne>'  => { fix => 'infix', prec => 10, str => ' ne ' },
+    'infix:<eq>'  => { fix => 'infix', prec => 10, str => ' eq ' },
 
-    'infix:<=>' => { fix => 'infix', prec => 19, str => ' = ' },
+    'infix:<&>' => { fix => 'infix', prec => 11, str => ' & ' },
 
-    'infix:<=>>' => { fix => 'infix', prec => 20, str => ' => ' },
-    'list:<,>'   => { fix => 'list',  prec => 20, str => ', ' },
+    'infix:<|>' => { fix => 'infix', prec => 12, str => ' | ' },
+    'infix:<^>' => { fix => 'infix', prec => 12, str => ' ^ ' },
 
-    # TODO - more operators
+    'infix:<..>'  => { fix => 'infix', prec => 13, str => ' .. ' },
+    'infix:<...>' => { fix => 'infix', prec => 13, str => ' ... ' },
+    'infix:<~~>'  => { fix => 'infix', prec => 13, str => ' ~~ ' },
 
+    'infix:<&&>' => { fix => 'infix', prec => 14, str => ' && ' },
+
+    'infix:<||>' => { fix => 'infix', prec => 15, str => ' || ' },
+    'infix:<//>' => { fix => 'infix', prec => 15, str => ' // ' },
+
+    'ternary:<? :>' => { fix => 'ternary', prec => 16 },
+
+    'infix:<=>'   => { fix => 'infix', prec => 17, str => ' = ' },
+    'infix:<**=>' => { fix => 'infix', prec => 17, str => ' **= ' },
+    'infix:<+=>'  => { fix => 'infix', prec => 17, str => ' += ' },
+    'infix:<-=>'  => { fix => 'infix', prec => 17, str => ' -= ' },
+    'infix:<*=>'  => { fix => 'infix', prec => 17, str => ' *= ' },
+    'infix:</=>'  => { fix => 'infix', prec => 17, str => ' /= ' },
+    'infix:<x=>'  => { fix => 'infix', prec => 17, str => ' x= ' },
+    'infix:<|=>'  => { fix => 'infix', prec => 17, str => ' |= ' },
+    'infix:<&=>'  => { fix => 'infix', prec => 17, str => ' &= ' },
+    'infix:<.=>'  => { fix => 'infix', prec => 17, str => ' .= ' },
+    'infix:<<<=>' => { fix => 'infix', prec => 17, str => ' <<= ' },
+    'infix:<>>=>' => { fix => 'infix', prec => 17, str => ' >>= ' },
+    'infix:<%=>'  => { fix => 'infix', prec => 17, str => ' %= ' },
+    'infix:<||=>' => { fix => 'infix', prec => 17, str => ' ||= ' },
+    'infix:<&&=>' => { fix => 'infix', prec => 17, str => ' &&= ' },
+    'infix:<^=>'  => { fix => 'infix', prec => 17, str => ' ^= ' },
+    'infix:<//=>' => { fix => 'infix', prec => 17, str => ' //= ' },
+
+    'infix:<=>>' => { fix => 'infix', prec => 18, str => ' => ' },
+
+    'list:<,>' => { fix => 'list', prec => 19, str => ', ' },
+
+    'prefix:<not>' => { fix => 'infix', prec => 20, str => ' not ' },
+
+    'infix:<and>' => { fix => 'infix', prec => 21, str => ' and ' },
+
+    'infix:<or>'  => { fix => 'infix', prec => 22, str => ' or ' },
+    'infix:<xor>' => { fix => 'infix', prec => 22, str => ' xor ' },
 );
 
 my %tab;
