@@ -1,6 +1,6 @@
 use v5;
-
 use Perlito5::AST;
+use strict;
 
 package Perlito5::Perl5;
 {
@@ -33,7 +33,7 @@ package Perlito5::AST::Val::Int;
 {
     sub emit_perl5_2 {
         my $self  = $_[0];
-        $self->{int};
+        [ number => $self->{int} ];
     }
 }
 
@@ -41,7 +41,7 @@ package Perlito5::AST::Val::Num;
 {
     sub emit_perl5_2 {
         my $self  = $_[0];
-        $self->{num};
+        [ number => $self->{num} ];
     }
 }
 
@@ -66,7 +66,6 @@ package Perlito5::AST::Index;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'
            )
@@ -89,7 +88,6 @@ package Perlito5::AST::Lookup;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'
            )
@@ -173,8 +171,7 @@ package Perlito5::AST::Proto;
 package Perlito5::AST::Call;
 {
     sub emit_perl5_2 {
-        my $self = $_[0];
-        
+        my $self = $_[0]; 
         my $invocant = $self->{invocant}->emit_perl5_2();
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return $invocant . '->[' . $self->{arguments}->emit_perl5_2() . ']'
@@ -196,22 +193,25 @@ package Perlito5::AST::Call;
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_perl5_2();
         }
-        $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5_2(), @{$self->{arguments}} )) . ')';
+        if ( $meth ) {
+            return $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5_2(), @{$self->{arguments}} )) . ')';
+        }
+        return [ op => 'infix:<->>', $invocant, [ op => 'list:<,>', map { $_->emit_perl5_2() } @{$self->{arguments}} ] ];
     }
 }
 
 package Perlito5::AST::Apply;
 {
-
     sub emit_perl5_2_args {
         my $self = $_[0];
         return () if !$self->{arguments};
         return map { $_->emit_perl5_2() } @{$self->{arguments}};
     }
-
     sub emit_perl5_2 {
-        my $self = $_[0];
-        
+        my $self = $_[0];   
+        if (ref $code) {
+            return [ op => 'infix:<->>', $self->{code}->emit_perl5_2(), $self->emit_perl5_2_args() ];
+        }
         if ( $Perlito5::Perl5::PrettyPrinter::op{ $self->{code} } ) {
             return [ op => $self->{code}, $self->emit_perl5_2_args() ];
         }
@@ -222,10 +222,6 @@ package Perlito5::AST::Apply;
         }
         my $code = $ns . $self->{code};
 
-        if (ref $code ne '') {
-            return '(' . $self->{code}->emit_perl5_2() . ')->(' . $self->emit_perl5_2_args() . ')';
-        }
-
         if ($self->{code} eq 'p5:s') {
             return 's!' . $self->{arguments}->[0]->{buf}   # emit_perl5_2() 
                  .  '!' . $self->{arguments}->[1]->{buf}   # emit_perl5_2()
@@ -233,7 +229,6 @@ package Perlito5::AST::Apply;
 
         }
         if ($self->{code} eq 'p5:m') {
-
             my $s;
             if ($self->{arguments}->[0]->isa('Perlito5::AST::Val::Buf')) {
                 $s = $self->{arguments}->[0]->{buf}
@@ -257,13 +252,9 @@ package Perlito5::AST::Apply;
                  .   '!';
         }
 
-        if ($code eq '__PACKAGE__') {
-            return '"' . $Perlito5::PKG_NAME . '"';
-        }
-        if ($self->{code} eq 'package')    { return 'package ' . $self->{namespace} }
+        if ($self->{code} eq 'package')    { return [ stmt => 'package', [ bareword => $self->{namespace} ] ] }
 
         if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
-
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
                 return "$code {\n"
@@ -272,8 +263,7 @@ package Perlito5::AST::Apply;
     
                 . $self->emit_perl5_2_args();
             }
-
-            return "$code(" . $self->emit_perl5_2_args() . ')'
+            return [ apply => $code, $self->emit_perl5_2_args() ];
         }
 
         if ( $code eq 'prefix:<$>' )  { return '${' . $self->emit_perl5_2_args() . '}' }
@@ -286,15 +276,14 @@ package Perlito5::AST::Apply;
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return [ bareword => $code ];
         }
-        $code . '(' . $self->emit_perl5_2_args() . ')';
+        return [ apply => $code, $self->emit_perl5_2_args() ];
     }
 }
 
 package Perlito5::AST::If;
 {
     sub emit_perl5_2 {
-        my $self = $_[0];
-        
+        my $self = $_[0]; 
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
             return [ stmt_modifier => $self->{body}->emit_perl5_2(),
                                       [ stmt => 'if', $self->{cond}->emit_perl5_2() ] ];
@@ -303,19 +292,18 @@ package Perlito5::AST::If;
             return [ stmt_modifier => $self->{otherwise}->emit_perl5_2(),
                                       [ stmt => 'unless', $self->{cond}->emit_perl5_2() ] ];
         }
-
-        return 'if (' . $self->{cond}->emit_perl5_2() . ") "
-             .  ($self->{body}
-                ? Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
-                : '{ }'
+        # TODO - elsif
+        return ( [ stmt => [ keyword => 'if' ],
+                   [ paren => '(', $self->{cond}->emit_perl5_2() ],
+                   Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
+                 ],
+                ($self->{otherwise} && scalar(@{ $self->{otherwise}->stmts })
+                    ? [ stmt => [ keyword => 'else' ],
+                        Perlito5::Perl5::emit_perl5_2_block($self->{otherwise}->stmts)
+                      ]
+                    : ()
                 )
-             .  ($self->{otherwise} && scalar(@{ $self->{otherwise}->stmts })
-                ?  ( "\n"
-                    . "else " 
-                    . Perlito5::Perl5::emit_perl5_2_block($self->{otherwise}->stmts)
-                    )
-                : ''
-                );
+               );
     }
 }
 
@@ -323,11 +311,10 @@ package Perlito5::AST::When;
 {
     sub emit_perl5_2 {
         my $self = $_[0];
-        return 'when (' . $self->{cond}->emit_perl5_2() . ") "
-             .  ($self->{body}
-                ? Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
-                : '{ }'
-                );
+        return [ stmt => [ keyword => 'when' ],
+                 [ paren => '(', $self->{cond}->emit_perl5_2() ],
+                 Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
+               ];
     }
 }
 
@@ -338,14 +325,13 @@ package Perlito5::AST::While;
         my $self = $_[0];
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
             return [ stmt_modifier => $self->{body}->emit_perl5_2(),
-                                      [ stmt => 'while', $self->{cond}->emit_perl5_2() ] ];
+                                      [ stmt => [ keyword => 'while' ], $self->{cond}->emit_perl5_2() ] ];
         }
-
-           'for ( '
-        .  ( $self->{init}     ? $self->{init}->emit_perl5_2()           . '; ' : '; ' )
-        .  ( $self->{cond}     ? $self->{cond}->emit_perl5_2()           . '; ' : '; ' )
-        .  ( $self->{continue} ? $self->{continue}->emit_perl5_2()       . ' '  : ' '  )
-        .  ') ' . Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts);
+        # TODO - continue
+        return [ stmt => [ keyword => 'while' ],
+                 [ paren => '(', $self->{cond}->emit_perl5_2() ],
+                 Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
+               ];
     }
 }
 
@@ -362,13 +348,14 @@ package Perlito5::AST::For;
         my $cond;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
-            $cond =
-               ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript() . '; '  : '; ' )
-            .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript() . '; '  : '; ' )
-            .  ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript() . ' '   : ' '  )
+            $cond = [ paren_semicolon => '(', 
+                      ( $self->{cond}[0] ? $self->{cond}[0]->emit_perl5_2() : [] ),
+                      ( $self->{cond}[1] ? $self->{cond}[1]->emit_perl5_2() : [] ),
+                      ( $self->{cond}[2] ? $self->{cond}[2]->emit_perl5_2() : [] ),
+                    ];
         }
         else {
-            $cond = $self->{cond}->emit_perl5_2()
+            $cond = [ paren => '(', $self->{cond}->emit_perl5_2() ];
         }
 
         my $sig = '';
@@ -377,12 +364,16 @@ package Perlito5::AST::For;
             # $_
         }
         elsif ($sig_ast->{decl}) {
-            $sig = $sig_ast->{decl} . ' ' . $sig_ast->{type} . ' ' . $sig_ast->{var}->emit_perl5_2() . ' ';
+            $sig = $sig_ast->{decl} . ' ' . $sig_ast->{type} . ' ' . $sig_ast->{var}->emit_perl5_2();
         }
         else {
-            $sig = $sig_ast->emit_perl5_2() . ' ';
+            $sig = $sig_ast->emit_perl5_2();
         }
-        return 'for ' . $sig . '(' . $cond . ') ' . Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts);
+        return [ stmt => [ keyword => 'for' ],
+                 ($sig ? $sig : ()),
+                 $cond,
+                 Perlito5::Perl5::emit_perl5_2_block($self->{body}->stmts)
+               ];
     }
 }
 

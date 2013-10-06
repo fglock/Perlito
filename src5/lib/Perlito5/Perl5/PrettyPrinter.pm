@@ -8,9 +8,11 @@ my %dispatch = (
     block           => \&block,                 # {stmts}
     keyword         => \&keyword,               # if
     bareword        => \&bareword,              # main
+    number          => \&number,                # number
     op              => \&op,                    # expr
     paren           => \&paren,                 # (expr)
     paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
+    apply           => \&apply,                 # subr(expr)
     comment         => \&comment,               # # comment
 );
 
@@ -24,6 +26,8 @@ our %op = (
     'circumfix:<[ ]>' => { fix => 'circumfix',  prec => 0, str => '[' },
     'circumfix:<{ }>' => { fix => 'circumfix',  prec => 0, str => '{' },
     'circumfix:<( )>' => { fix => 'circumfix',  prec => 0, str => '(' },
+
+    'infix:<->>' => { fix => 'infix', prec => -1, str => '->' },
 
     'prefix:<-->'  => { fix => 'prefix',  prec => 1, str => '--' },
     'prefix:<++>'  => { fix => 'prefix',  prec => 1, str => '++' },
@@ -130,6 +134,16 @@ sub tab {
     $tab{$level} //= "    " x $level;
 }
 
+sub render {
+    my ( $data, $level, $out ) = @_;
+    if ( ref($data) ) {
+        $dispatch{ $data->[0] }->( $data, $level, $out );
+    }
+    else {
+        push @$out, $data;
+    }
+}
+
 sub op_precedence {
     my ($data) = @_;
     return 0 if !ref($data);
@@ -163,7 +177,7 @@ sub op_render {
     if ( ref($data) ) {
         my $this_prec = op_precedence($data);
         push @$out, '(' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
-        $dispatch{ $data->[0] }->( $data, $level, $out );
+        render( $data, $level, $out );
         push @$out, ')' if $this_prec && $current_op->{prec} && $current_op->{prec} < $this_prec;
     }
     else {
@@ -211,18 +225,25 @@ sub op {
         for my $line ( 2 .. $#$data ) {
             my $d = $data->[$line];
             push @$out, ' ';
-            if ( ref($d) ) {
-                $dispatch{ $d->[0] }->( $d, $level, $out );
-            }
-            else {
-                push @$out, $d;
-            }
+            render( $d, $level, $out );
         }
     }
     else {
         die "unknown fixity: $spec->{fix}";
     }
     return;
+}
+
+sub apply {
+    my ( $data, $level, $out ) = @_;
+    my @dd = @$data;
+    shift @dd;
+    my $d = $dd[0];
+    render( $d, $level, $out );
+    $dd[0] = 'list:<,>';
+    push @$out, '(';
+    op( [ op => @dd ], $level, $out );
+    push @$out, ')';
 }
 
 sub paren {
@@ -240,7 +261,7 @@ sub paren_semicolon {
     my ( $data, $level, $out ) = @_;
     push @$out, $data->[1];
     for my $line ( 2 .. $#$data ) {
-        op( $data->[$line], $level, $out ) if @{ $data->[$line] };
+        render( $data->[$line], $level, $out ) if @{ $data->[$line] };
         if ( $line != $#$data ) {
             if ( @{ $data->[ $line + 1 ] } ) {
                 push @$out, '; ';
@@ -265,6 +286,12 @@ sub bareword {
     return;
 }
 
+sub number {
+    my ( $data, $level, $out ) = @_;
+    push @$out, $data->[1];
+    return;
+}
+
 sub comment {
     my ( $data, $level, $out ) = @_;
     push @$out, $data->[1];
@@ -275,12 +302,7 @@ sub statement {
     my ( $data, $level, $out ) = @_;
     for my $line ( 1 .. $#$data ) {
         my $d = $data->[$line];
-        if ( ref($d) ) {
-            $dispatch{ $d->[0] }->( $d, $level, $out );
-        }
-        else {
-            push @$out, $d;
-        }
+        render( $d, $level, $out );
         push @$out, ' ' if $line != $#$data;
     }
 }
@@ -290,12 +312,7 @@ sub statement_modifier {
     for my $line ( 1 .. 2 ) {
         my $d = $data->[$line];
         push @$out, tab($level);
-        if ( ref($d) ) {
-            $dispatch{ $d->[0] }->( $d, $level, $out );
-        }
-        else {
-            push @$out, $d;
-        }
+        render( $d, $level, $out );
         push @$out, "\n" if $line == 1;
         $level++;
     }
@@ -312,12 +329,7 @@ sub block {
     for my $line ( 1 .. $#$data ) {
         my $d = $data->[$line];
         push @$out, tab($level);
-        if ( ref($d) ) {
-            $dispatch{ $d->[0] }->( $d, $level, $out );
-        }
-        else {
-            push @$out, $d;
-        }
+        render( $d, $level, $out );
         push @$out, ';' if $line != $#$data && statement_need_semicolon($d);
         push @$out, "\n";
     }
@@ -330,12 +342,7 @@ sub pretty_print {
     for my $line ( 0 .. $#$data ) {
         my $d = $data->[$line];
         push @$out, tab($level);
-        if ( ref($d) ) {
-            $dispatch{ $d->[0] }->( $d, $level, $out );
-        }
-        else {
-            push @$out, $d;
-        }
+        render( $d, $level, $out );
         push @$out, ';' if $line != $#$data && statement_need_semicolon($d);
         push @$out, "\n";
     }
