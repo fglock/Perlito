@@ -599,15 +599,15 @@ sub Perlito5::Grammar::Bareword::the_object {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                 $MATCH = $res ? $tmp : 0
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Sigil->term_sigil($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -617,14 +617,14 @@ sub Perlito5::Grammar::Bareword::the_object {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Expression->curly_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -634,14 +634,14 @@ sub Perlito5::Grammar::Bareword::the_object {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.curly_parse'});
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Print->typeglob($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -651,7 +651,7 @@ sub Perlito5::Grammar::Bareword::the_object {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Print.typeglob'});
                 1
@@ -938,7 +938,7 @@ sub Perlito5::Grammar::Statement::stmt_yadayada {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('...' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('...' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         die('Unimplemented');
         1
@@ -950,7 +950,7 @@ sub Perlito5::Grammar::Statement::stmt_format {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('format' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('format' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -959,9 +959,9 @@ sub Perlito5::Grammar::Statement::stmt_format {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -971,21 +971,21 @@ sub Perlito5::Grammar::Statement::stmt_format {
             else {
                 0
             }
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT';
                 1
             })
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $placeholder = Perlito5::AST::Apply->new('code' => 'list:<.>', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'list:<.>', 'namespace' => '', 'arguments' => [])]);
         push(@Perlito5::Grammar::String::Here_doc, ['single_quote', $placeholder->{'arguments'}->[0]->{'arguments'}, '.']);
         $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:format', 'namespace' => '', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), $placeholder]);
         1
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -994,7 +994,7 @@ sub Perlito5::Grammar::Statement::stmt_format {
         else {
             0
         }
-    }) && ('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1011,7 +1011,7 @@ sub Perlito5::Grammar::Statement::stmt_package {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('package' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('package' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1020,7 +1020,7 @@ sub Perlito5::Grammar::Statement::stmt_package {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1030,10 +1030,10 @@ sub Perlito5::Grammar::Statement::stmt_package {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1042,13 +1042,13 @@ sub Perlito5::Grammar::Statement::stmt_package {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                 $Perlito5::PACKAGES->{$name} = 1;
                 $Perlito5::PKG_NAME = $name;
                 1
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1058,14 +1058,14 @@ sub Perlito5::Grammar::Statement::stmt_package {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts' => [Perlito5::AST::Apply->new('code' => 'package', 'arguments' => [], 'namespace' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]}]);
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                 $Perlito5::PACKAGES->{$name} = 1;
@@ -1423,7 +1423,7 @@ sub Perlito5::Grammar::Expression::term_arrow {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('->' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('->' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1432,10 +1432,10 @@ sub Perlito5::Grammar::Expression::term_arrow {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->paren_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1445,14 +1445,14 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['postfix_or_term', '.( )', Perlito5::Match::flat($MATCH->{'paren_parse'})];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->square_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1462,14 +1462,14 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['postfix_or_term', '.[ ]', Perlito5::Match::flat($MATCH->{'square_parse'})];
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->curly_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1479,14 +1479,14 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::Match::flat($MATCH->{'curly_parse'})];
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar->ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1496,7 +1496,7 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1505,10 +1505,10 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->paren_parse($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -1518,23 +1518,23 @@ sub Perlito5::Grammar::Expression::term_arrow {
                         else {
                             0
                         }
-                    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'})), Perlito5::Match::flat($MATCH->{'paren_parse'})];
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}))];
                         1
                     })
                 })
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1544,7 +1544,7 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1553,10 +1553,10 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->paren_parse($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -1566,14 +1566,14 @@ sub Perlito5::Grammar::Expression::term_arrow {
                         else {
                             0
                         }
-                    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}), Perlito5::Match::flat($MATCH->{'paren_parse'})];
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'})];
                         1
@@ -1589,7 +1589,7 @@ sub Perlito5::Grammar::Expression::term_ternary {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('?' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('?' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = $grammar->ternary5_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1599,7 +1599,7 @@ sub Perlito5::Grammar::Expression::term_ternary {
         else {
             0
         }
-    }) && (':' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && (':' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['op', '? :', Perlito5::Match::flat($MATCH->{'ternary5_parse'})];
         1
@@ -1611,7 +1611,7 @@ sub Perlito5::Grammar::Expression::term_paren {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = $grammar->paren_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1621,7 +1621,7 @@ sub Perlito5::Grammar::Expression::term_paren {
         else {
             0
         }
-    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['postfix_or_term', '( )', Perlito5::Match::flat($MATCH->{'paren_parse'})];
         1
@@ -1633,7 +1633,7 @@ sub Perlito5::Grammar::Expression::term_square {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = $grammar->square_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1643,7 +1643,7 @@ sub Perlito5::Grammar::Expression::term_square {
         else {
             0
         }
-    }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['postfix_or_term', '[ ]', Perlito5::Match::flat($MATCH->{'square_parse'})];
         1
@@ -1655,9 +1655,9 @@ sub Perlito5::Grammar::Expression::term_curly {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m = $MATCH;
-        if (!(do  {
+        if (!(do {
             my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1670,7 +1670,7 @@ sub Perlito5::Grammar::Expression::term_curly {
             $MATCH = $m
         }
         1
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1680,9 +1680,9 @@ sub Perlito5::Grammar::Expression::term_curly {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m = $MATCH;
-        if (!(do  {
+        if (!(do {
             my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1695,7 +1695,7 @@ sub Perlito5::Grammar::Expression::term_curly {
             $MATCH = $m
         }
         1
-    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'})];
         1
@@ -1707,14 +1707,14 @@ sub Perlito5::Grammar::Expression::declarator {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'my' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('state' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('our' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
         })
@@ -1726,7 +1726,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->declarator($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1736,10 +1736,10 @@ sub Perlito5::Grammar::Expression::term_declarator {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -1748,10 +1748,10 @@ sub Perlito5::Grammar::Expression::term_declarator {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (do  {
+                (do {
+                    (do {
                         my $m2 = Perlito5::Grammar::Block->named_sub($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -1761,7 +1761,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         my $sub = $MATCH->{'Perlito5::Grammar::Block.named_sub'}->{'capture'};
                         $sub->{'decl'} = Perlito5::Match::flat($MATCH->{'declarator'});
@@ -1769,9 +1769,9 @@ sub Perlito5::Grammar::Expression::term_declarator {
                         return($MATCH);
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         my $m2 = Perlito5::Grammar->opt_type($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -1784,11 +1784,11 @@ sub Perlito5::Grammar::Expression::term_declarator {
                     })
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             1
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1797,7 +1797,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->var_ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1807,7 +1807,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Attribute->opt_attribute($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1817,7 +1817,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $decl = Perlito5::Match::flat($MATCH->{'declarator'});
         my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.opt_type'});
@@ -1834,7 +1834,7 @@ sub Perlito5::Grammar::Expression::term_local {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('local' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('local' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1843,7 +1843,7 @@ sub Perlito5::Grammar::Expression::term_local {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->var_ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1853,7 +1853,7 @@ sub Perlito5::Grammar::Expression::term_local {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $decl = 'local';
         my $type = '';
@@ -1869,7 +1869,7 @@ sub Perlito5::Grammar::Expression::term_return {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('return' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('return' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1878,7 +1878,7 @@ sub Perlito5::Grammar::Expression::term_return {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->list_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1888,7 +1888,7 @@ sub Perlito5::Grammar::Expression::term_return {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $args = Perlito5::Match::flat($MATCH->{'list_parse'});
         $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'return', 'arguments' => $args eq '*undef*' ? [] : [$args], 'namespace' => '')];
@@ -1901,7 +1901,7 @@ sub Perlito5::Grammar::Expression::term_eval {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('eval' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('eval' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1910,12 +1910,12 @@ sub Perlito5::Grammar::Expression::term_eval {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $tmp = $MATCH;
         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
         my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
         $MATCH = $res ? $tmp : 0
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->term_curly($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1925,7 +1925,7 @@ sub Perlito5::Grammar::Expression::term_eval {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'term_curly'})->[2]))], 'namespace' => '')];
         1
@@ -2166,7 +2166,7 @@ sub Perlito5::Grammar::unless {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('unless' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('unless' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2175,7 +2175,7 @@ sub Perlito5::Grammar::unless {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_paren($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2185,7 +2185,7 @@ sub Perlito5::Grammar::unless {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2194,7 +2194,7 @@ sub Perlito5::Grammar::unless {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2204,10 +2204,10 @@ sub Perlito5::Grammar::unless {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2216,7 +2216,7 @@ sub Perlito5::Grammar::unless {
                 else {
                     0
                 }
-            }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+            }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2225,7 +2225,7 @@ sub Perlito5::Grammar::unless {
                 else {
                     0
                 }
-            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2234,7 +2234,7 @@ sub Perlito5::Grammar::unless {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2244,7 +2244,7 @@ sub Perlito5::Grammar::unless {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2253,7 +2253,7 @@ sub Perlito5::Grammar::unless {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
                 if (!defined($body)) {
@@ -2262,9 +2262,9 @@ sub Perlito5::Grammar::unless {
                 $MATCH->{'capture'} = Perlito5::AST::If->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_paren'})->[2], 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || []), 'otherwise' => Perlito5::AST::Lit::Block->new('stmts' => $body));
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
                 if (!defined($body)) {
@@ -2282,7 +2282,7 @@ sub Perlito5::Grammar::if {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('if' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('if' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2291,7 +2291,7 @@ sub Perlito5::Grammar::if {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_paren($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2301,7 +2301,7 @@ sub Perlito5::Grammar::if {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2310,7 +2310,7 @@ sub Perlito5::Grammar::if {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2320,10 +2320,10 @@ sub Perlito5::Grammar::if {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2332,7 +2332,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+            }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2341,7 +2341,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2350,7 +2350,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2360,7 +2360,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2369,7 +2369,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
                 if (!defined($body)) {
@@ -2378,9 +2378,9 @@ sub Perlito5::Grammar::if {
                 $MATCH->{'capture'} = Perlito5::AST::If->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_paren'})->[2], 'body' => Perlito5::AST::Lit::Block->new('stmts' => $body), 'otherwise' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}) || []));
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2389,7 +2389,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && ('els' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+            }) && ('els' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->if($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2399,7 +2399,7 @@ sub Perlito5::Grammar::if {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
                 if (!defined($body)) {
@@ -2408,9 +2408,9 @@ sub Perlito5::Grammar::if {
                 $MATCH->{'capture'} = Perlito5::AST::If->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_paren'})->[2], 'body' => Perlito5::AST::Lit::Block->new('stmts' => $body), 'otherwise' => Perlito5::AST::Lit::Block->new('stmts' => [Perlito5::Match::flat($MATCH->{'if'})]));
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
                 if (!defined($body)) {
@@ -2428,7 +2428,7 @@ sub Perlito5::Grammar::when {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('when' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('when' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2437,7 +2437,7 @@ sub Perlito5::Grammar::when {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_paren($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2447,7 +2447,7 @@ sub Perlito5::Grammar::when {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2456,7 +2456,7 @@ sub Perlito5::Grammar::when {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2466,7 +2466,7 @@ sub Perlito5::Grammar::when {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $body = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_curly'})->[2];
         if (!defined($body)) {
@@ -2482,16 +2482,16 @@ sub Perlito5::Grammar::for {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
         my $m = $MATCH;
         if (!('each' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))) {
             $MATCH = $m
         }
         1
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2500,10 +2500,10 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (do  {
+                (do {
+                    (do {
                         my $m2 = Perlito5::Grammar::Expression->term_declarator($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -2513,14 +2513,14 @@ sub Perlito5::Grammar::for {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.term_declarator'})->[1];
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar->var_ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -2530,13 +2530,13 @@ sub Perlito5::Grammar::for {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'});
                         1
                     }))
                 })
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2545,7 +2545,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Expression->paren_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2555,7 +2555,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2564,7 +2564,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2573,7 +2573,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2583,7 +2583,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2592,7 +2592,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2601,7 +2601,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->opt_continue_block($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2611,14 +2611,14 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.paren_parse'}), 'topic' => undef, 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => $MATCH->{'_tmp'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2627,7 +2627,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Expression->exp_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2637,16 +2637,16 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'c_style_for'} = 1;
                         1
-                    }) && (do  {
+                    }) && (do {
                         my $pos1 = $MATCH->{'to'};
-                        (do  {
+                        (do {
                             my $m2 = Perlito5::Grammar->exp($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -2656,12 +2656,12 @@ sub Perlito5::Grammar::for {
                             else {
                                 0
                             }
-                        }) || (do  {
+                        }) || (do {
                             $MATCH->{'to'} = $pos1;
                             ()
-                        }) || (do  {
+                        }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (do  {
+                            (do {
                                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
@@ -2672,9 +2672,9 @@ sub Perlito5::Grammar::for {
                                 }
                             })
                         })
-                    }) && (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $pos1 = $MATCH->{'to'};
-                        (do  {
+                        (do {
                             my $m2 = Perlito5::Grammar->exp2($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -2684,12 +2684,12 @@ sub Perlito5::Grammar::for {
                             else {
                                 0
                             }
-                        }) || (do  {
+                        }) || (do {
                             $MATCH->{'to'} = $pos1;
                             ()
-                        }) || (do  {
+                        }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (do  {
+                            (do {
                                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
@@ -2701,11 +2701,11 @@ sub Perlito5::Grammar::for {
                             })
                         })
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     1
                 })
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2714,7 +2714,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2723,7 +2723,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts2($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2733,7 +2733,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2742,7 +2742,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2751,7 +2751,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->opt_continue_block($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2761,7 +2761,7 @@ sub Perlito5::Grammar::for {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $header;
                 if ($MATCH->{'c_style_for'}) {
@@ -2782,7 +2782,7 @@ sub Perlito5::Grammar::while {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('while' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('while' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2791,7 +2791,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Expression->paren_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2801,7 +2801,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2810,7 +2810,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2819,7 +2819,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2829,7 +2829,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2838,7 +2838,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2847,7 +2847,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->opt_continue_block($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2857,7 +2857,7 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.paren_parse'}), 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => undef), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
         1
@@ -2869,7 +2869,7 @@ sub Perlito5::Grammar::given {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('given' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('given' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2878,7 +2878,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Expression->paren_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2888,7 +2888,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2897,7 +2897,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2906,7 +2906,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2916,7 +2916,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2925,7 +2925,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2934,7 +2934,7 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::AST::Given->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.paren_parse'}), 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'})));
         1
@@ -2946,10 +2946,10 @@ sub Perlito5::Grammar::opt_continue_block {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2958,7 +2958,7 @@ sub Perlito5::Grammar::opt_continue_block {
                 else {
                     0
                 }
-            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2967,7 +2967,7 @@ sub Perlito5::Grammar::opt_continue_block {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2977,7 +2977,7 @@ sub Perlito5::Grammar::opt_continue_block {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -2986,14 +2986,14 @@ sub Perlito5::Grammar::opt_continue_block {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => undef);
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts' => [], 'sig' => undef);
                 1
@@ -3011,7 +3011,7 @@ sub Perlito5::Grammar::Regex::token {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar->ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3021,7 +3021,7 @@ sub Perlito5::Grammar::Regex::token {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3030,7 +3030,7 @@ sub Perlito5::Grammar::Regex::token {
         else {
             0
         }
-    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Regex->rule($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3040,7 +3040,7 @@ sub Perlito5::Grammar::Regex::token {
         else {
             0
         }
-    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
         my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex.rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
         my $ast = Perlito5::Grammar::Block->named_sub_def($source, 0);
@@ -3054,7 +3054,7 @@ sub Perlito5::Grammar::Regex::term_token {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('token' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('token' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3063,7 +3063,7 @@ sub Perlito5::Grammar::Regex::term_token {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->token($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3073,7 +3073,7 @@ sub Perlito5::Grammar::Regex::term_token {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'token'})];
         1
@@ -3096,17 +3096,17 @@ sub Perlito5::Grammar::Regex::literal {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 (chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((do  {
+                ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                     my $res = (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
@@ -3134,18 +3134,18 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
         my $count = 0;
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 (chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = $grammar->literal($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3155,9 +3155,9 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
                         0
                     }
                 }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = $grammar->string_code($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3167,9 +3167,9 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
                         0
                     }
                 }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = $grammar->metasyntax_exp($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3179,9 +3179,9 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
                         0
                     }
                 }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((do  {
+                ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                     my $res = ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
@@ -3210,18 +3210,18 @@ sub Perlito5::Grammar::Regex::string_code {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
         my $count = 0;
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 (chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = $grammar->literal($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3231,9 +3231,9 @@ sub Perlito5::Grammar::Regex::string_code {
                         0
                     }
                 }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = $grammar->string_code($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3243,9 +3243,9 @@ sub Perlito5::Grammar::Regex::string_code {
                         0
                     }
                 }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((do  {
+                ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                     my $res = ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
@@ -3274,7 +3274,7 @@ sub Perlito5::Grammar::Regex::parsed_code {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->string_code($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3283,7 +3283,7 @@ sub Perlito5::Grammar::Regex::parsed_code {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH);
         1
@@ -3295,10 +3295,10 @@ sub Perlito5::Grammar::Regex::rule_term {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('<before' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('<before' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3307,7 +3307,7 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->rule($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3317,14 +3317,14 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::Before->new('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}));
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('<!before' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do  {
+            (('<!before' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3333,7 +3333,7 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->rule($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3343,14 +3343,14 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::NotBefore->new('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}));
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->literal($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3360,17 +3360,17 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant' => Perlito5::Match::flat($MATCH->{'literal'}));
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->metasyntax_exp($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3380,14 +3380,14 @@ sub Perlito5::Grammar::Regex::rule_term {
                         else {
                             0
                         }
-                    }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = Perlito5::Rul::Subrule->new('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures' => 0);
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = $grammar->metasyntax_exp($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3397,16 +3397,16 @@ sub Perlito5::Grammar::Regex::rule_term {
                         else {
                             0
                         }
-                    }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = Perlito5::Rul::Subrule->new('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures' => 1);
                         1
                     }))
                 })
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->parsed_code($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3416,17 +3416,17 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::Block->new('closure' => Perlito5::Match::flat($MATCH->{'parsed_code'}));
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            ((chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3436,14 +3436,14 @@ sub Perlito5::Grammar::Regex::rule_term {
                         else {
                             0
                         }
-                    }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant' => chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'})));
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    (('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3453,14 +3453,14 @@ sub Perlito5::Grammar::Regex::rule_term {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = Perlito5::Rul::Constant->new('constant' => chr(Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'})));
                         1
                     }))
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = $grammar->any($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3470,23 +3470,23 @@ sub Perlito5::Grammar::Regex::rule_term {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = Perlito5::Rul::SpecialChar->new('char' => Perlito5::Match::flat($MATCH->{'any'}));
                         1
                     }))
                 })
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::Dot->new();
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->rule($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3496,7 +3496,7 @@ sub Perlito5::Grammar::Regex::rule_term {
                 else {
                     0
                 }
-            }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule'});
                 1
@@ -3510,14 +3510,14 @@ sub Perlito5::Grammar::Regex::quant_exp {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '?' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
@@ -3529,7 +3529,7 @@ sub Perlito5::Grammar::Regex::quantifier {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3539,7 +3539,7 @@ sub Perlito5::Grammar::Regex::quantifier {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->rule_term($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3549,7 +3549,7 @@ sub Perlito5::Grammar::Regex::quantifier {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3559,10 +3559,10 @@ sub Perlito5::Grammar::Regex::quantifier {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = $grammar->quant_exp($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3572,7 +3572,7 @@ sub Perlito5::Grammar::Regex::quantifier {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3582,14 +3582,14 @@ sub Perlito5::Grammar::Regex::quantifier {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Rul::Quantifier->new('term' => Perlito5::Match::flat($MATCH->{'rule_term'}), 'quant' => Perlito5::Match::flat($MATCH->{'quant_exp'}));
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule_term'});
                 1
@@ -3603,10 +3603,10 @@ sub Perlito5::Grammar::Regex::concat_list {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = $grammar->quantifier($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3616,10 +3616,10 @@ sub Perlito5::Grammar::Regex::concat_list {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (do  {
+                (do {
+                    (do {
                         my $m2 = $grammar->concat_list($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3629,23 +3629,23 @@ sub Perlito5::Grammar::Regex::concat_list {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'quantifier'}), @{Perlito5::Match::flat($MATCH->{'concat_list'})}];
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'quantifier'})];
                         1
                     })
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = [];
                 1
@@ -3659,7 +3659,7 @@ sub Perlito5::Grammar::Regex::concat_exp {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->concat_list($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3669,7 +3669,7 @@ sub Perlito5::Grammar::Regex::concat_exp {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Rul::Concat->new('concat' => Perlito5::Match::flat($MATCH->{'concat_list'}));
         1
@@ -3681,10 +3681,10 @@ sub Perlito5::Grammar::Regex::or_list_exp {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = $grammar->concat_exp($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3694,10 +3694,10 @@ sub Perlito5::Grammar::Regex::or_list_exp {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('|' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('|' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->or_list_exp($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3707,23 +3707,23 @@ sub Perlito5::Grammar::Regex::or_list_exp {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'concat_exp'}), @{Perlito5::Match::flat($MATCH->{'or_list_exp'})}];
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'capture'} = [Perlito5::Match::flat($MATCH->{'concat_exp'})];
                         1
                     })
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = [];
                 1
@@ -3737,12 +3737,12 @@ sub Perlito5::Grammar::Regex::rule {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m = $MATCH;
-                if (!(do  {
+                if (!(do {
                     my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3756,11 +3756,11 @@ sub Perlito5::Grammar::Regex::rule {
                 }
                 1
             }) && ('|' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             1
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->or_list_exp($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3770,7 +3770,7 @@ sub Perlito5::Grammar::Regex::rule {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Rul::Or->new('or_list' => Perlito5::Match::flat($MATCH->{'or_list_exp'}));
         1
@@ -3832,16 +3832,16 @@ sub Perlito5::Grammar::String::term_q_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('q' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('q' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3850,7 +3850,7 @@ sub Perlito5::Grammar::String::term_q_quote {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
@@ -3858,11 +3858,11 @@ sub Perlito5::Grammar::String::term_q_quote {
                     }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->q_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3872,7 +3872,7 @@ sub Perlito5::Grammar::String::term_q_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'q_quote_parse'})];
         1
@@ -3884,16 +3884,16 @@ sub Perlito5::Grammar::String::term_qq_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('qq' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('qq' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3902,7 +3902,7 @@ sub Perlito5::Grammar::String::term_qq_quote {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
@@ -3910,11 +3910,11 @@ sub Perlito5::Grammar::String::term_qq_quote {
                     }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('"' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->qq_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3924,7 +3924,7 @@ sub Perlito5::Grammar::String::term_qq_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qq_quote_parse'})];
         1
@@ -3936,13 +3936,13 @@ sub Perlito5::Grammar::String::term_qw_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('qw' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('qw' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3951,14 +3951,14 @@ sub Perlito5::Grammar::String::term_qw_quote {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
             }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->qw_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -3968,7 +3968,7 @@ sub Perlito5::Grammar::String::term_qw_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qw_quote_parse'})];
         1
@@ -3980,16 +3980,16 @@ sub Perlito5::Grammar::String::term_m_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('m' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('m' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -3998,7 +3998,7 @@ sub Perlito5::Grammar::String::term_m_quote {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
@@ -4006,11 +4006,11 @@ sub Perlito5::Grammar::String::term_m_quote {
                     }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('/' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->m_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4020,7 +4020,7 @@ sub Perlito5::Grammar::String::term_m_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'m_quote_parse'})];
         1
@@ -4032,13 +4032,13 @@ sub Perlito5::Grammar::String::term_s_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('s' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('s' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -4047,14 +4047,14 @@ sub Perlito5::Grammar::String::term_s_quote {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
             }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->s_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4064,7 +4064,7 @@ sub Perlito5::Grammar::String::term_s_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'s_quote_parse'})];
         1
@@ -4076,16 +4076,16 @@ sub Perlito5::Grammar::String::term_qx {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('qx' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('qx' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -4094,7 +4094,7 @@ sub Perlito5::Grammar::String::term_qx {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
@@ -4102,11 +4102,11 @@ sub Perlito5::Grammar::String::term_qx {
                     }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('`' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->qx_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4116,7 +4116,7 @@ sub Perlito5::Grammar::String::term_qx {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qx_quote_parse'})];
         1
@@ -4128,7 +4128,7 @@ sub Perlito5::Grammar::String::term_glob {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = $grammar->glob_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4138,7 +4138,7 @@ sub Perlito5::Grammar::String::term_glob {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'glob_quote_parse'})];
         1
@@ -4150,21 +4150,21 @@ sub Perlito5::Grammar::String::term_tr_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'tr' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('y' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -4173,14 +4173,14 @@ sub Perlito5::Grammar::String::term_tr_quote {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
             }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->tr_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4190,7 +4190,7 @@ sub Perlito5::Grammar::String::term_tr_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'tr_quote_parse'})];
         1
@@ -4202,13 +4202,13 @@ sub Perlito5::Grammar::String::term_qr_quote {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('qr' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('qr' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -4217,14 +4217,14 @@ sub Perlito5::Grammar::String::term_qr_quote {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
             }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
         })
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->qr_quote_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -4234,7 +4234,7 @@ sub Perlito5::Grammar::String::term_qr_quote {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'qr_quote_parse'})];
         1
@@ -4587,19 +4587,19 @@ sub Perlito5::Grammar::String::newline {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            (chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m = $MATCH;
                 if (!(chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
                     $MATCH = $m
                 }
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            ((chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m = $MATCH;
                 if (!(chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
                     $MATCH = $m
@@ -4980,11 +4980,11 @@ sub Perlito5::Grammar::Use::use_decl {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'use' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('no' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))
         })
@@ -4996,7 +4996,7 @@ sub Perlito5::Grammar::Use::stmt_use {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->use_decl($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5006,7 +5006,7 @@ sub Perlito5::Grammar::Use::stmt_use {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5015,12 +5015,12 @@ sub Perlito5::Grammar::Use::stmt_use {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     my $m2 = Perlito5::Grammar::Number->val_version($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -5030,9 +5030,9 @@ sub Perlito5::Grammar::Use::stmt_use {
                     else {
                         0
                     }
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         my $m2 = Perlito5::Grammar::Number->term_digit($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -5044,14 +5044,14 @@ sub Perlito5::Grammar::Use::stmt_use {
                         }
                     })
                 })
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5061,9 +5061,9 @@ sub Perlito5::Grammar::Use::stmt_use {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m = $MATCH;
-                if (!(('-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                if (!(('-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m2 = Perlito5::Grammar->ident($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -5082,7 +5082,7 @@ sub Perlito5::Grammar::Use::stmt_use {
                     $MATCH = $m
                 }
                 1
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5092,7 +5092,7 @@ sub Perlito5::Grammar::Use::stmt_use {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
                 if ($list eq '*undef*') {
@@ -5341,7 +5341,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5351,7 +5351,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5361,7 +5361,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Block->prototype($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5371,7 +5371,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5380,7 +5380,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Attribute->opt_attribute($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5390,7 +5390,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5399,10 +5399,10 @@ sub Perlito5::Grammar::Block::named_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5411,7 +5411,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5421,7 +5421,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5430,26 +5430,26 @@ sub Perlito5::Grammar::Block::named_sub_def {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do  {
+                    (do {
                         $MATCH->{'str'} = $str;
                         die('Syntax Error in sub ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), chr(39));
                         1
                     })
                 })
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'});
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Statement->statement_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5458,20 +5458,20 @@ sub Perlito5::Grammar::Block::named_sub_def {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 die('Illegal declaration of subroutine ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), chr(39));
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'_tmp'} = undef;
                 1
             })
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'});
         my $sig = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block.prototype'});
@@ -5514,7 +5514,7 @@ sub Perlito5::Grammar::Block::term_anon_sub {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('sub' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('sub' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5523,7 +5523,7 @@ sub Perlito5::Grammar::Block::term_anon_sub {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Block->anon_sub_def($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5533,7 +5533,7 @@ sub Perlito5::Grammar::Block::term_anon_sub {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block.anon_sub_def'})];
         1
@@ -5545,7 +5545,7 @@ sub Perlito5::Grammar::Block::term_do {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('do' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('do' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5554,12 +5554,12 @@ sub Perlito5::Grammar::Block::term_do {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $tmp = $MATCH;
         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
         my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
         $MATCH = $res ? $tmp : 0
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Statement->statement_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5569,7 +5569,7 @@ sub Perlito5::Grammar::Block::term_do {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement.statement_parse'}))];
         1
@@ -5581,39 +5581,39 @@ sub Perlito5::Grammar::Block::args_sig {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 ';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 (chr(92) eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('@' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('%' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ('&' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
             })
@@ -5638,10 +5638,10 @@ sub Perlito5::Grammar::Block::prototype {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5650,7 +5650,7 @@ sub Perlito5::Grammar::Block::prototype {
                 else {
                     0
                 }
-            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5659,7 +5659,7 @@ sub Perlito5::Grammar::Block::prototype {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->args_sig($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5669,7 +5669,7 @@ sub Perlito5::Grammar::Block::prototype {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5678,14 +5678,14 @@ sub Perlito5::Grammar::Block::prototype {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = '' . Perlito5::Match::flat($MATCH->{'args_sig'});
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = '*undef*';
                 1
@@ -5699,7 +5699,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->prototype($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5709,7 +5709,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5718,7 +5718,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Attribute->opt_attribute($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5728,7 +5728,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5737,7 +5737,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5746,7 +5746,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar->exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5756,7 +5756,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -5765,19 +5765,19 @@ sub Perlito5::Grammar::Block::anon_sub_def {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 $MATCH->{'str'} = $str;
                 die('Syntax Error in anon sub');
                 1
             })
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $sig = Perlito5::Match::flat($MATCH->{'prototype'});
         $sig = undef
@@ -5872,18 +5872,18 @@ sub Perlito5::Grammar::Space::to_eol {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while (((do  {
+        while (((do {
             my $tmp = $MATCH;
             $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-            my $res = (do  {
+            my $res = (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 })
@@ -5910,18 +5910,18 @@ sub Perlito5::Grammar::Space::pod_pod_begin {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 })
-            }) && ('=cut' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+            }) && ('=cut' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5931,9 +5931,9 @@ sub Perlito5::Grammar::Space::pod_pod_begin {
                     0
                 }
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5942,7 +5942,7 @@ sub Perlito5::Grammar::Space::pod_pod_begin {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5961,18 +5961,18 @@ sub Perlito5::Grammar::Space::pod_begin {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 })
-            }) && ('=end' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+            }) && ('=end' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5982,9 +5982,9 @@ sub Perlito5::Grammar::Space::pod_begin {
                     0
                 }
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -5993,7 +5993,7 @@ sub Perlito5::Grammar::Space::pod_begin {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->pod_begin($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6012,7 +6012,7 @@ sub Perlito5::Grammar::Space::start_of_line {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar::String->here_doc($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6021,13 +6021,13 @@ sub Perlito5::Grammar::Space::start_of_line {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    ('pod' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+                (do {
+                    ('pod' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6037,9 +6037,9 @@ sub Perlito5::Grammar::Space::start_of_line {
                             0
                         }
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('head' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+                    (('head' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6049,9 +6049,9 @@ sub Perlito5::Grammar::Space::start_of_line {
                             0
                         }
                     }))
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('begin' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do  {
+                    (('begin' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->pod_begin($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6061,9 +6061,9 @@ sub Perlito5::Grammar::Space::start_of_line {
                             0
                         }
                     }))
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do  {
+                    (('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
                         my $m2 = $grammar->pod_begin($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6075,17 +6075,17 @@ sub Perlito5::Grammar::Space::start_of_line {
                     }))
                 })
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         ' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     })
@@ -6102,16 +6102,16 @@ sub Perlito5::Grammar::Space::start_of_line {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 1
-            }) && ('line' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+            }) && ('line' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
                 my $count = 0;
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         ' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     })
@@ -6129,7 +6129,7 @@ sub Perlito5::Grammar::Space::start_of_line {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 $count > 0
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6139,15 +6139,15 @@ sub Perlito5::Grammar::Space::start_of_line {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         ' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     })
@@ -6164,7 +6164,7 @@ sub Perlito5::Grammar::Space::start_of_line {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 1
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6173,12 +6173,12 @@ sub Perlito5::Grammar::Space::start_of_line {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $Perlito5::LINE_NUMBER = 0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'});
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             1
         })
@@ -6237,20 +6237,20 @@ sub Perlito5::Grammar::Print::print_decl {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'print' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('printf' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('say' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('exec' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('system' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'}))
         })
@@ -6262,15 +6262,15 @@ sub Perlito5::Grammar::Print::the_object {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                 $MATCH = $res ? $tmp : 0
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Sigil->term_sigil($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6280,24 +6280,24 @@ sub Perlito5::Grammar::Print::the_object {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                 $MATCH = $res ? $tmp : 0
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6307,14 +6307,14 @@ sub Perlito5::Grammar::Print::the_object {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]);
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = $grammar->typeglob($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6324,18 +6324,18 @@ sub Perlito5::Grammar::Print::the_object {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                 my $res = ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                 $MATCH = $res ? 0 : $tmp
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'typeglob'});
                 1
             }))
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $pos = $MATCH->{'to'};
         my $m = Perlito5::Grammar::Space->ws($MATCH->{'str'}, $pos);
@@ -6408,7 +6408,7 @@ sub Perlito5::Grammar::Print::term_print {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->print_decl($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6418,7 +6418,7 @@ sub Perlito5::Grammar::Print::term_print {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6427,10 +6427,10 @@ sub Perlito5::Grammar::Print::term_print {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6439,7 +6439,7 @@ sub Perlito5::Grammar::Print::term_print {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->the_object($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6449,7 +6449,7 @@ sub Perlito5::Grammar::Print::term_print {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6459,7 +6459,7 @@ sub Perlito5::Grammar::Print::term_print {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
                 return()
@@ -6467,9 +6467,9 @@ sub Perlito5::Grammar::Print::term_print {
                 $MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), Perlito5::Grammar::Expression::expand_list($list))];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = $grammar->the_object($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6479,7 +6479,7 @@ sub Perlito5::Grammar::Print::term_print {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6489,7 +6489,7 @@ sub Perlito5::Grammar::Print::term_print {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
                 return()
@@ -6519,11 +6519,11 @@ sub Perlito5::Grammar::Map::map_or_grep {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'map' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('grep' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))
         })
@@ -6535,7 +6535,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->map_or_grep($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6545,7 +6545,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6554,10 +6554,10 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6567,7 +6567,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6577,14 +6577,14 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => Perlito5::Match::flat($MATCH->{'map_or_grep'}), 'special_arg' => Perlito5::AST::Lit::Block->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]), 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression.list_parse'}->{'capture'}), 'namespace' => '')];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6593,7 +6593,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6603,7 +6603,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6613,7 +6613,7 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => Perlito5::Match::flat($MATCH->{'map_or_grep'}), 'special_arg' => Perlito5::AST::Lit::Block->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]), 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression.list_parse'}->{'capture'}), 'namespace' => '')];
                 1
@@ -6627,7 +6627,7 @@ sub Perlito5::Grammar::Map::term_sort {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('sort' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('sort' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -6636,13 +6636,13 @@ sub Perlito5::Grammar::Map::term_sort {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (do  {
+                (do {
+                    (do {
                         my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6652,14 +6652,14 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::AST::Lit::Block->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]);
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6669,7 +6669,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                         return()
@@ -6677,14 +6677,14 @@ sub Perlito5::Grammar::Map::term_sort {
                         $MATCH->{'_tmp'} = $name;
                         1
                     }))
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                         $MATCH = $res ? $tmp : 0
-                    }) && (do  {
+                    }) && (do {
                         my $m2 = Perlito5::Grammar::Sigil->term_sigil($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6694,7 +6694,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         my $var = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
                         return()
@@ -6703,7 +6703,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         1
                     }))
                 })
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6713,14 +6713,14 @@ sub Perlito5::Grammar::Map::term_sort {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'sort', 'special_arg' => $MATCH->{'_tmp'}, 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression.list_parse'}->{'capture'}), 'namespace' => '')];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6729,10 +6729,10 @@ sub Perlito5::Grammar::Map::term_sort {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
-                    (do  {
+                (do {
+                    (do {
                         my $m2 = Perlito5::Grammar->full_ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6742,7 +6742,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         my $m2 = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6751,7 +6751,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                         return()
@@ -6759,9 +6759,9 @@ sub Perlito5::Grammar::Map::term_sort {
                         $MATCH->{'_tmp'} = $name;
                         1
                     })
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Expression->term_curly($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6771,19 +6771,19 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::AST::Lit::Block->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}->{'capture'}->[2]);
                         1
                     }))
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((do  {
+                    ((do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                         $MATCH = $res ? $tmp : 0
-                    }) && (do  {
+                    }) && (do {
                         my $m2 = Perlito5::Grammar::Sigil->term_sigil($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -6793,7 +6793,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         else {
                             0
                         }
-                    }) && (do  {
+                    }) && (do {
                         $MATCH->{'str'} = $str;
                         my $var = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
                         return()
@@ -6802,7 +6802,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         1
                     }))
                 })
-            }) && (do  {
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression->list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6812,7 +6812,7 @@ sub Perlito5::Grammar::Map::term_sort {
                 else {
                     0
                 }
-            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'sort', 'special_arg' => $MATCH->{'_tmp'}, 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression.list_parse'}->{'capture'}), 'namespace' => '')];
                 1
@@ -6864,10 +6864,10 @@ sub Perlito5::Grammar::Number::term_digit {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = Perlito5::Grammar::Number->val_octal($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6877,14 +6877,14 @@ sub Perlito5::Grammar::Number::term_digit {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_octal'})];
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Number->val_vstring($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6894,14 +6894,14 @@ sub Perlito5::Grammar::Number::term_digit {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_vstring'})];
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Number->val_num($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6911,14 +6911,14 @@ sub Perlito5::Grammar::Number::term_digit {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_num'})];
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = Perlito5::Grammar::Number->val_int($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -6928,7 +6928,7 @@ sub Perlito5::Grammar::Number::term_digit {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.val_int'})];
                 1
@@ -6945,37 +6945,37 @@ sub Perlito5::Grammar::Number::exponent {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             'e' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('E' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
-    }) && (do  {
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             1
         })
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
         my $count = 0;
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (do  {
+                (do {
                     my $m2 = $grammar->digit($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7008,10 +7008,10 @@ sub Perlito5::Grammar::Number::val_num {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        (do {
+            ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->digit($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7020,17 +7020,17 @@ sub Perlito5::Grammar::Number::val_num {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (do  {
+                        (do {
                             my $m2 = $grammar->digit($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -7054,9 +7054,9 @@ sub Perlito5::Grammar::Number::val_num {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 1
-            }) && (do  {
+            }) && (do {
                 my $m = $MATCH;
-                if (!(do  {
+                if (!(do {
                     my $m2 = $grammar->exponent($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7070,9 +7070,9 @@ sub Perlito5::Grammar::Number::val_num {
                 }
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $m2 = $grammar->digit($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7081,17 +7081,17 @@ sub Perlito5::Grammar::Number::val_num {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (do  {
+                        (do {
                             my $m2 = $grammar->digit($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -7115,9 +7115,9 @@ sub Perlito5::Grammar::Number::val_num {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 1
-            }) && (do  {
+            }) && (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     my $m2 = $grammar->exponent($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7126,24 +7126,24 @@ sub Perlito5::Grammar::Number::val_num {
                     else {
                         0
                     }
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+                    (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                         $MATCH = $res ? 0 : $tmp
-                    }) && (do  {
+                    }) && (do {
                         my $last_match_null = 0;
                         my $m = $MATCH;
                         my $to = $MATCH->{'to'};
-                        while ((do  {
+                        while ((do {
                             my $pos1 = $MATCH->{'to'};
-                            (do  {
+                            (do {
                                 '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                            }) || (do  {
+                            }) || (do {
                                 $MATCH->{'to'} = $pos1;
-                                (do  {
+                                (do {
                                     my $m2 = $grammar->digit($str, $MATCH->{'to'});
                                     if ($m2) {
                                         $MATCH->{'to'} = $m2->{'to'};
@@ -7167,9 +7167,9 @@ sub Perlito5::Grammar::Number::val_num {
                         $MATCH = $m;
                         $MATCH->{'to'} = $to;
                         1
-                    }) && (do  {
+                    }) && (do {
                         my $m = $MATCH;
-                        if (!(do  {
+                        if (!(do {
                             my $m2 = $grammar->exponent($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -7186,7 +7186,7 @@ sub Perlito5::Grammar::Number::val_num {
                 })
             }))
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $s = Perlito5::Match::flat($MATCH);
         $s =~ s!_!!g;
@@ -7200,12 +7200,12 @@ sub Perlito5::Grammar::Number::digits {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
         my $count = 0;
-        while ((do  {
+        while ((do {
             my $m2 = $grammar->digit($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7236,7 +7236,7 @@ sub Perlito5::Grammar::Number::digits_underscore {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->digit($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7245,17 +7245,17 @@ sub Perlito5::Grammar::Number::digits_underscore {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((do  {
+        while ((do {
             my $pos1 = $MATCH->{'to'};
-            (do  {
+            (do {
                 '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-            }) || (do  {
+            }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (do  {
+                (do {
                     my $m2 = $grammar->digit($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7287,23 +7287,23 @@ sub Perlito5::Grammar::Number::val_octal {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((0 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = (((0 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     'x' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ('X' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 })
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
                 my $count = 0;
-                while ((do  {
+                while ((do {
                     my $m2 = Perlito5::Grammar->word($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7327,29 +7327,29 @@ sub Perlito5::Grammar::Number::val_octal {
                 $MATCH->{'to'} = $to;
                 $count > 0
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            ((do  {
+            ((do {
                 my $pos1 = $MATCH->{'to'};
-                (do  {
+                (do {
                     'b' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do  {
+                }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ('B' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 })
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
                 my $count = 0;
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (0 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (1 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     })
@@ -7368,20 +7368,20 @@ sub Perlito5::Grammar::Number::val_octal {
                 $MATCH->{'to'} = $to;
                 $count > 0
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
                 my $count = 0;
-                while ((do  {
+                while ((do {
                     my $pos1 = $MATCH->{'to'};
-                    (do  {
+                    (do {
                         '_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                    }) || (do  {
+                    }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (do  {
+                        (do {
                             my $m2 = $grammar->digit($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -7408,7 +7408,7 @@ sub Perlito5::Grammar::Number::val_octal {
                 $count > 0
             })
         })
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::AST::Val::Int->new('int' => oct(lc(Perlito5::Match::flat($MATCH))));
         1
@@ -7420,7 +7420,7 @@ sub Perlito5::Grammar::Number::val_int {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7429,7 +7429,7 @@ sub Perlito5::Grammar::Number::val_int {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my $s = Perlito5::Match::flat($MATCH);
         $s =~ s!_!!g;
@@ -7443,7 +7443,7 @@ sub Perlito5::Grammar::Number::val_vstring {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->val_int($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7453,12 +7453,12 @@ sub Perlito5::Grammar::Number::val_vstring {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
         my $count = 0;
-        while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
             my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7487,7 +7487,7 @@ sub Perlito5::Grammar::Number::val_vstring {
         $MATCH = $m;
         $MATCH->{'to'} = $to;
         $count > 0
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my @parts = @{$MATCH->{'digits_underscore'}};
         return()
@@ -7504,7 +7504,7 @@ sub Perlito5::Grammar::Number::val_version {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('v' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+    my $tmp = ((('v' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = $grammar->val_int($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7514,11 +7514,11 @@ sub Perlito5::Grammar::Number::val_version {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do  {
+        while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
             my $m2 = $grammar->digits_underscore($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7546,7 +7546,7 @@ sub Perlito5::Grammar::Number::val_version {
         $MATCH = $m;
         $MATCH->{'to'} = $to;
         1
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         my @parts = @{$MATCH->{'digits_underscore'}};
         $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:vstring', 'namespace' => '', 'arguments' => [$MATCH->{'val_int'}->{'capture'}->{'int'}, map {
@@ -7606,7 +7606,7 @@ sub Perlito5::Grammar::full_ident {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7615,11 +7615,11 @@ sub Perlito5::Grammar::full_ident {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+        while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
             my $m2 = $grammar->ident($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7649,7 +7649,7 @@ sub Perlito5::Grammar::namespace_before_ident {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7658,16 +7658,16 @@ sub Perlito5::Grammar::namespace_before_ident {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $tmp = $MATCH;
         $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
         my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
         $MATCH = $res ? $tmp : 0
-    }) && (do  {
+    }) && (do {
         my $last_match_null = 0;
         my $m = $MATCH;
         my $to = $MATCH->{'to'};
-        while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+        while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
             my $m2 = $grammar->ident($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7676,7 +7676,7 @@ sub Perlito5::Grammar::namespace_before_ident {
             else {
                 0
             }
-        }) && (do  {
+        }) && (do {
             my $tmp = $MATCH;
             $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
             my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
@@ -7702,10 +7702,10 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m2 = $grammar->namespace_before_ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7715,7 +7715,7 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 my $last_match_null = 0;
                 my $m = $MATCH;
                 my $to = $MATCH->{'to'};
@@ -7732,14 +7732,14 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
                 $MATCH = $m;
                 $MATCH->{'to'} = $to;
                 1
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'namespace_before_ident'});
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do  {
+            (('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
                 my $m2 = $grammar->optional_namespace_before_ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7749,7 +7749,7 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 my $name = Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'});
                 $MATCH->{'capture'} = 'main';
@@ -7757,9 +7757,9 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
                     if $name ne '';
                 1
             }))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (1 && (do  {
+            (1 && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = '';
                 1
@@ -7773,7 +7773,7 @@ sub Perlito5::Grammar::exp_stmts2 {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7783,7 +7783,7 @@ sub Perlito5::Grammar::exp_stmts2 {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'exp_stmts'});
         1
@@ -7795,7 +7795,7 @@ sub Perlito5::Grammar::exp {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar::Expression->exp_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7805,7 +7805,7 @@ sub Perlito5::Grammar::exp {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.exp_parse'});
         1
@@ -7817,7 +7817,7 @@ sub Perlito5::Grammar::exp2 {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = Perlito5::Grammar::Expression->exp_parse($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7827,7 +7827,7 @@ sub Perlito5::Grammar::exp2 {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.exp_parse'});
         1
@@ -7839,16 +7839,16 @@ sub Perlito5::Grammar::opt_type {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
-            (do  {
+        (do {
+            (do {
                 my $m = $MATCH;
                 if (!('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))) {
                     $MATCH = $m
                 }
                 1
-            }) && (do  {
+            }) && (do {
                 my $m2 = $grammar->full_ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7858,14 +7858,14 @@ sub Perlito5::Grammar::opt_type {
                 else {
                     0
                 }
-            }) && (do  {
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'full_ident'});
                 1
             })
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (1 && (do  {
+            (1 && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = '';
                 1
@@ -7879,20 +7879,20 @@ sub Perlito5::Grammar::var_sigil {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             '$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('%' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('@' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('&' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
             ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
         })
@@ -7904,9 +7904,9 @@ sub Perlito5::Grammar::var_name {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do  {
+    my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
-        (do  {
+        (do {
             my $m2 = $grammar->full_ident($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7916,9 +7916,9 @@ sub Perlito5::Grammar::var_name {
             else {
                 0
             }
-        }) || (do  {
+        }) || (do {
             $MATCH->{'to'} = $pos1;
-            (do  {
+            (do {
                 my $m2 = Perlito5::Grammar::Number->digit($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -7938,7 +7938,7 @@ sub Perlito5::Grammar::var_ident {
     my $str = $_[1];
     my $pos = $_[2];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do  {
+    my $tmp = (((do {
         my $m2 = $grammar->var_sigil($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7948,7 +7948,7 @@ sub Perlito5::Grammar::var_ident {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->optional_namespace_before_ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7958,7 +7958,7 @@ sub Perlito5::Grammar::var_ident {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         my $m2 = $grammar->var_name($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -7968,7 +7968,7 @@ sub Perlito5::Grammar::var_ident {
         else {
             0
         }
-    }) && (do  {
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::AST::Var->new('sigil' => Perlito5::Match::flat($MATCH->{'var_sigil'}), 'namespace' => Perlito5::Match::flat($MATCH->{'optional_namespace_before_ident'}), 'name' => Perlito5::Match::flat($MATCH->{'var_name'}));
         1
@@ -11988,7 +11988,7 @@ my %pair = ('(' => ')', '[' => ']', '{' => '}');
 our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<->>' => {'fix' => 'infix', 'prec' => -1, 'str' => '->'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' x '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'list:<.>' => {'fix' => 'list', 'prec' => 6, 'str' => ' . '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 11, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 14, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' // '}, 'ternary:<? :>' => {'fix' => 'ternary', 'prec' => 16}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 18, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 19, 'str' => ', '}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 20, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 21, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' xor '});
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
     for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
-$op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_}
+$op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 8, 'str' => $_}
     for 'do', 'sub', 'my', 'our', 'state', 'local', 'map', 'grep', 'sort';
 my %tab;
 sub Perlito5::Perl5::PrettyPrinter::tab {
@@ -13364,12 +13364,12 @@ if ($backend && @ARGV) {
         }
     }
     else {
-        eval(do  {
+        eval(do {
             %INC = ();
             $Perlito5::EXPAND_USE = 0;
             my $m;
             my $ok;
-            eval(do  {
+            eval(do {
                 $m = Perlito5::Grammar->exp_stmts($source, 0);
                 $ok = 1
             });
@@ -13382,7 +13382,7 @@ if ($backend && @ARGV) {
                 my $comp_units;
                 if ($expand_use) {
                     my $ok;
-                    eval(do  {
+                    eval(do {
                         $comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m));
                         $ok = 1
                     });
