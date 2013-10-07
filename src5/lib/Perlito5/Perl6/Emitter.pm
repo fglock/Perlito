@@ -1,5 +1,6 @@
 use v5;
 use Perlito5::AST;
+use Perlito5::Dumper;   # escape_string
 use strict;
 
 package Perlito5::Perl6;

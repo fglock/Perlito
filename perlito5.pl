@@ -12153,6 +12153,7 @@ sub Perlito5::Perl5::Runtime::emit_perl5 {
 package main;
 undef();
 # use Perlito5::AST
+# use Perlito5::Dumper
 # use strict
 package Perlito5::Perl6;
 {
