@@ -12655,9 +12655,26 @@ package Perlito5::AST::CompUnit;
 {
     sub Perlito5::AST::CompUnit::emit_perl62 {
         my $self = $_[0];
-        return((['stmt' => ['keyword' => 'package'], ['bareword' => $self->{'name'}]], map {
-            defined($_) && $_->emit_perl62()
-        } @{$self->{'body'}}))
+        my @body = grep {
+            defined($_)
+        } @{$self->{'body'}};
+        my @out;
+        my $pkg = {'name' => 'main', 'body' => []};
+        for my $stmt (@body) {
+            if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'package') {
+                push(@out, ['stmt' => ['keyword' => 'package'], ['bareword' => $pkg->{'name'}], ['block' => map {
+                    $_->emit_perl62()
+                } @{$pkg->{'body'}}]]);
+                $pkg = {'name' => $stmt->{'namespace'}, 'body' => []}
+            }
+            else {
+                push(@{$pkg->{'body'}}, $stmt)
+            }
+        }
+        push(@out, ['stmt' => ['keyword' => 'package'], ['bareword' => $pkg->{'name'}], ['block' => map {
+            $_->emit_perl62()
+        } @{$pkg->{'body'}}]]);
+        return(['block' => @out])
     }
     sub Perlito5::AST::CompUnit::emit_perl62_program {
         my $comp_units = $_[0];
@@ -12710,26 +12727,34 @@ package Perlito5::AST::Index;
 {
     sub Perlito5::AST::Index::emit_perl62 {
         my $self = $_[0];
-        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') {
+            return(['apply' => '[', $self->{'obj'}->emit_perl62(), $self->{'index_exp'}->emit_perl62()])
+        }
+        if ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@')) {
+            $self->{'obj'}->{'sigil'} = '@';
             return(['apply' => '[', $self->{'obj'}->emit_perl62(), $self->{'index_exp'}->emit_perl62()])
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-            return(['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl62()]])
+            return(['apply' => '[', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), $self->{'index_exp'}->emit_perl62()])
         }
-        return(['op' => 'infix:<->>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl62()]])
+        return(['op' => 'infix:<.>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl62()]])
     }
 }
 package Perlito5::AST::Lookup;
 {
     sub Perlito5::AST::Lookup::emit_perl62 {
         my $self = $_[0];
-        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') {
+            return(['apply' => '{', $self->{'obj'}->emit_perl62(), $self->autoquote($self->{'index_exp'})->emit_perl62()])
+        }
+        if ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@')) {
+            $self->{'obj'}->{'sigil'} = '@';
             return(['apply' => '{', $self->{'obj'}->emit_perl62(), $self->autoquote($self->{'index_exp'})->emit_perl62()])
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-            return(['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_perl62()]])
+            return(['apply' => '{', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), $self->autoquote($self->{'index_exp'})->emit_perl62()])
         }
-        return(['op' => 'infix:<->>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_perl62()]])
+        return(['op' => 'infix:<.>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_perl62()]])
     }
 }
 package Perlito5::AST::Var;
@@ -12779,10 +12804,10 @@ package Perlito5::AST::Call;
         my $self = $_[0];
         my $invocant = $self->{'invocant'}->emit_perl62();
         if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
-            return(['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<[ ]>', $self->{'arguments'}->emit_perl62()]])
+            return(['op' => 'infix:<.>', $invocant, ['op' => 'circumfix:<[ ]>', $self->{'arguments'}->emit_perl62()]])
         }
         if ($self->{'method'} eq 'postcircumfix:<{ }>') {
-            return(['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<{ }>', Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_perl62()]])
+            return(['op' => 'infix:<.>', $invocant, ['op' => 'circumfix:<{ }>', Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_perl62()]])
         }
         my $meth = $self->{'method'};
         if ($meth eq 'postcircumfix:<( )>') {
@@ -12801,7 +12826,7 @@ package Perlito5::AST::Call;
                 $_->emit_perl62()
             } @{$self->{'arguments'}}])
         }
-        return(['op' => 'infix:<->>', $invocant, ['op' => 'list:<,>', map {
+        return(['op' => 'infix:<.>', $invocant, ['op' => 'list:<,>', map {
             $_->emit_perl62()
         } @{$self->{'arguments'}}]])
     }
@@ -12819,13 +12844,21 @@ package Perlito5::AST::Apply;
     sub Perlito5::AST::Apply::emit_perl62 {
         my $self = $_[0];
         if (ref($self->{'code'})) {
-            return(['op' => 'infix:<->>', $self->{'code'}->emit_perl62(), $self->emit_perl62_args()])
+            return(['op' => 'infix:<.>', $self->{'code'}->emit_perl62(), $self->emit_perl62_args()])
         }
         if ($self->{'code'} eq 'infix:<=>>') {
             return(['op' => $self->{'code'}, Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_perl62(), $self->{'arguments'}->[1]->emit_perl62()])
         }
         if ($Perlito5::Perl62::PrettyPrinter::op{$self->{'code'}}) {
             return(['op' => $self->{'code'}, $self->emit_perl62_args()])
+        }
+        if ($self->{'code'} eq 'undef') {
+            if (@{$self->{'arguments'}}) {
+                die('TODO - undef(expr)')
+            }
+            else {
+                return('Any')
+            }
         }
         my $ns = '';
         if ($self->{'namespace'}) {
@@ -13832,6 +13865,7 @@ if ($backend && @ARGV) {
                 }
                 if ($backend eq 'perl62') {
                     say('# Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
+                    say('use v6;');
                     my @data = Perlito5::AST::CompUnit::emit_perl62_program($comp_units);
                     my $out = [];
                     Perlito5::Perl6::PrettyPrinter::pretty_print(\@data, 0, $out);
