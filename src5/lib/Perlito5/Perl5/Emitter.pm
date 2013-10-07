@@ -57,8 +57,19 @@ package Perlito5::AST::Lit::Block;
 {
     sub emit_perl5 {
         my $self = $_[0];
-        # TODO - emit "continue" block
-        Perlito5::Perl5::emit_perl5_block($self->{stmts});
+        my @out;
+        push @out, [ label => $self->{label} ]
+            if $self->{label};        
+        if ($self->{name}) {
+            push @out, [ stmt => [ keyword => $self->{name} ], Perlito5::Perl5::emit_perl5_block($self->{stmts}) ];
+        }
+        else {
+            push @out, Perlito5::Perl5::emit_perl5_block($self->{stmts});
+        }
+        if ($self->{continue} && @{ $self->{continue}{stmts} }) {
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_perl5_block($self->{continue}{stmts}) ]
+        }
+        return @out;
     }
 }
 
@@ -348,15 +359,22 @@ package Perlito5::AST::While;
 {
     sub emit_perl5 {
         my $self = $_[0];
+        my @out;
+        push @out, [ label => $self->{label} ]
+            if $self->{label};        
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
-            return [ stmt_modifier => $self->{body}->emit_perl5(),
+            return @out,
+                   [ stmt_modifier => $self->{body}->emit_perl5(),
                                       [ stmt => [ keyword => 'while' ], $self->{cond}->emit_perl5() ] ];
         }
-        # TODO - continue
-        return [ stmt => [ keyword => 'while' ],
-                 [ paren => '(', $self->{cond}->emit_perl5() ],
-                 Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
-               ];
+        push @out, [ stmt => [ keyword => 'while' ],
+                     [ paren => '(', $self->{cond}->emit_perl5() ],
+                     Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
+                   ];
+        if ($self->{continue} && @{ $self->{continue}{stmts} }) {
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_perl5_block($self->{continue}{stmts}) ]
+        }
+        return @out;
     }
 }
 
@@ -364,9 +382,13 @@ package Perlito5::AST::For;
 {
     sub emit_perl5 {
         my $self = $_[0];
-        
+        my @out;
+        push @out, [ label => $self->{label} ]
+            if $self->{label};        
+
         if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
-            return [ stmt_modifier => $self->{body}->emit_perl5(),
+            return @out,
+                   [ stmt_modifier => $self->{body}->emit_perl5(),
                                       [ stmt => 'for', $self->{cond}->emit_perl5() ] ];
         }
 
@@ -383,22 +405,23 @@ package Perlito5::AST::For;
             $cond = [ paren => '(', $self->{cond}->emit_perl5() ];
         }
 
-        my $sig = '';
+        my @sig;
         my $sig_ast = $self->{body}->sig();
         if (!$sig_ast) {
             # $_
         }
-        elsif ($sig_ast->{decl}) {
-            $sig = $sig_ast->{decl} . ' ' . $sig_ast->{type} . ' ' . $sig_ast->{var}->emit_perl5();
-        }
         else {
-            $sig = $sig_ast->emit_perl5();
+            @sig = $sig_ast->emit_perl5();
         }
-        return [ stmt => [ keyword => 'for' ],
-                 ($sig ? $sig : ()),
-                 $cond,
-                 Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
-               ];
+        push @out, [ stmt => [ keyword => 'for' ],
+                     @sig,
+                     $cond,
+                     Perlito5::Perl5::emit_perl5_block($self->{body}->stmts)
+                   ];
+        if ($self->{continue} && @{ $self->{continue}{stmts} }) {
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_perl5_block($self->{continue}{stmts}) ]
+        }
+        return @out;
     }
 }
 

@@ -61,7 +61,7 @@ sub term_block {
                 }
                 my $cont = Perlito5::Grammar::Expression->term_curly($str, $p);
                 die "syntax error" unless $cont;
-                warn "continue!";
+                # warn "continue!";
 
                 $continue->{stmts} = $cont->{capture}[2];
                 $has_continue = 1;

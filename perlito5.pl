@@ -321,7 +321,7 @@ sub Perlito5::Grammar::Precedence::op_parse {
     my $str = shift;
     my $pos = shift;
     my $last_is_term = shift;
-    for my  $len (@{$End_token_chars}) {
+    for my $len (@{$End_token_chars}) {
         my $term = substr($str, $pos, $len);
         if (exists($End_token->{$term})) {
             my $c1 = substr($str, $pos + $len - 1, 1);
@@ -332,7 +332,7 @@ sub Perlito5::Grammar::Precedence::op_parse {
         }
     }
     if (!$last_is_term) {
-        for my  $len (@Term_chars) {
+        for my $len (@Term_chars) {
             my $term = substr($str, $pos, $len);
             if (exists($Term{$term})) {
                 my $c1 = substr($str, $pos + $len - 1, 1);
@@ -345,7 +345,7 @@ sub Perlito5::Grammar::Precedence::op_parse {
             }
         }
     }
-    for my  $len (@Parsed_op_chars) {
+    for my $len (@Parsed_op_chars) {
         my $op = substr($str, $pos, $len);
         if (exists($Parsed_op{$op})) {
             my $m = $Parsed_op{$op}->($str, $pos);
@@ -353,7 +353,7 @@ sub Perlito5::Grammar::Precedence::op_parse {
                 if $m
         }
     }
-    for my  $len (@Op_chars) {
+    for my $len (@Op_chars) {
         my $op = substr($str, $pos, $len);
         if (exists($Op{$op})) {
             my $c1 = substr($str, $pos + $len - 1, 1);
@@ -1063,7 +1063,7 @@ sub Perlito5::Grammar::Statement::exp_stmt {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
-    for my  $len (@Statement_chars) {
+    for my $len (@Statement_chars) {
         my $term = substr($str, $pos, $len);
         if (exists($Statement{$term})) {
             my $m = $Statement{$term}->($str, $pos);
@@ -1080,7 +1080,7 @@ sub Perlito5::Grammar::Statement::statement_modifier {
     my $str = $_[1];
     my $pos = $_[2];
     my $expression = $_[3];
-    for my  $len (@Modifier_chars) {
+    for my $len (@Modifier_chars) {
         my $term = substr($str, $pos, $len);
         if (exists($Modifier{$term})) {
             my $m = $self->modifier($str, $pos + $len, $term, $expression);
@@ -1180,7 +1180,7 @@ sub Perlito5::Grammar::Expression::expand_list {
     my $param_list = shift;
     if (ref($param_list) eq 'Perlito5::AST::Apply' && $param_list->code() eq 'list:<,>') {
         my $args = [];
-        for my  $v (@{$param_list->arguments()}) {
+        for my $v (@{$param_list->arguments()}) {
             if (defined($v)) {
                 push(@{$args}, $v)
             }
@@ -5118,7 +5118,7 @@ sub Perlito5::Grammar::Use::filename_lookup {
             if $INC{$filename};
         die('Compilation failed in require')
     }
-    for my  $prefix (@INC, '.') {
+    for my $prefix (@INC, '.') {
         my $realfilename = $prefix . '/' . $filename;
         if (-f $realfilename) {
             $INC{$filename} = $realfilename;
@@ -5148,13 +5148,13 @@ sub Perlito5::Grammar::Use::expand_use {
 sub Perlito5::Grammar::Use::add_comp_unit {
     my $parse = shift;
     my $comp_units = [];
-    for my  $comp_unit (@{$parse}) {
+    for my $comp_unit (@{$parse}) {
         if (defined($comp_unit)) {
             if ($comp_unit->isa('Perlito5::AST::Use')) {
                 expand_use($comp_units, $comp_unit)
             }
             elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
-                for my  $stmt (@{$comp_unit->body()}) {
+                for my $stmt (@{$comp_unit->body()}) {
                     if ($stmt->isa('Perlito5::AST::Use')) {
                         expand_use($comp_units, $stmt)
                     }
@@ -5249,7 +5249,6 @@ sub Perlito5::Grammar::Block::term_block {
                 my $cont = Perlito5::Grammar::Expression->term_curly($str, $p);
                 die('syntax error')
                     unless $cont;
-                warn('continue!');
                 $continue->{'stmts'} = $cont->{'capture'}->[2];
                 $has_continue = 1;
                 $m->{'to'} = $cont->{'to'}
@@ -8225,7 +8224,7 @@ sub Perlito5::Dumper::Dumper {
     my $seen = {};
     my $level = '    ';
     my @out;
-    for my  $i (0 .. $#_) {
+    for my $i (0 .. $#_) {
         my $pos = '$VAR' . ($i + 1);
         push(@out, $pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
     }
@@ -8253,7 +8252,7 @@ sub Perlito5::Dumper::_dumper {
         return('[]')
             unless @{$obj};
         my @out;
-        for my  $i (0 .. $#{$obj}) {
+        for my $i (0 .. $#{$obj}) {
             my $here = $pos . '->[' . $i . ']';
             push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
         }
@@ -8263,7 +8262,7 @@ sub Perlito5::Dumper::_dumper {
         return('{}')
             unless keys(%{$obj});
         my @out;
-        for my  $i (sort(keys(%{$obj}))) {
+        for my $i (sort(keys(%{$obj}))) {
             my $here = $pos . '->{' . $i . '}';
             push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
         }
@@ -8273,7 +8272,7 @@ sub Perlito5::Dumper::_dumper {
         return(chr(92) . _dumper(${$obj}, $tab1, $seen, $pos))
     }
     my @out;
-    for my  $i (sort(keys(%{$obj}))) {
+    for my $i (sort(keys(%{$obj}))) {
         my $here = $pos . '->{' . $i . '}';
         push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
     }
@@ -8288,7 +8287,7 @@ sub Perlito5::Dumper::escape_string {
         if $s eq '';
     return(0 + $s)
         if (0 + $s) eq $s;
-    for my  $i (0 .. length($s) - 1) {
+    for my $i (0 .. length($s) - 1) {
         my $c = substr($s, $i, 1);
         if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
             $tmp = $tmp . $c
@@ -8343,7 +8342,7 @@ package Perlito5::Javascript2;
         my $tmp = '';
         return(chr(39) . chr(39))
             if $s eq '';
-        for my  $i (0 .. length($s) - 1) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
@@ -8440,12 +8439,12 @@ package Perlito5::Javascript2;
     }
     sub Perlito5::Javascript2::to_list_preprocess {
         my @items;
-        for my  $item (@{$_[0]}) {
+        for my $item (@{$_[0]}) {
             if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'circumfix:<( )>' || $item->code() eq 'list:<,>' || $item->code() eq 'infix:<=>>')) {
                 if ($item->isa('Perlito5::AST::Apply') && $item->code() eq 'infix:<=>>') {
                     $item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0])
                 }
-                for my  $arg (@{to_list_preprocess($item->arguments())}) {
+                for my $arg (@{to_list_preprocess($item->arguments())}) {
                     push(@items, $arg)
                 }
             }
@@ -8463,12 +8462,12 @@ package Perlito5::Javascript2;
     }
     sub Perlito5::Javascript2::to_scalar_preprocess {
         my @items;
-        for my  $item (@{$_[0]}) {
+        for my $item (@{$_[0]}) {
             if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'list:<,>' || $item->code() eq 'infix:<=>>')) {
                 if ($item->isa('Perlito5::AST::Apply') && $item->code() eq 'infix:<=>>') {
                     $item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0])
                 }
-                for my  $arg (@{to_scalar_preprocess($item->arguments())}) {
+                for my $arg (@{to_scalar_preprocess($item->arguments())}) {
                     push(@items, $arg)
                 }
             }
@@ -8534,7 +8533,7 @@ package Perlito5::Javascript2::LexicalBlock;
     sub Perlito5::Javascript2::LexicalBlock::has_decl {
         my $self = $_[0];
         my $type = $_[1];
-        for my  $decl (@{$self->{'block'}}) {
+        for my $decl (@{$self->{'block'}}) {
             return(1)
                 if grep {
                 $_->{'decl'} eq $type
@@ -8571,7 +8570,7 @@ package Perlito5::Javascript2::LexicalBlock;
         if ($self->{'needs_return'}) {
             $last_statement = pop(@block)
         }
-        for my  $decl (@block) {
+        for my $decl (@block) {
             if (ref($decl) eq 'Perlito5::AST::Apply' && $decl->code() eq 'package') {
                 $Perlito5::PKG_NAME = $decl->{'namespace'};
                 $Perlito5::VAR->[0]->{'$_'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
@@ -8580,7 +8579,7 @@ package Perlito5::Javascript2::LexicalBlock;
                 $Perlito5::VAR->[0]->{'$AUTOLOAD'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}
             }
             my @var_decl = $decl->emit_javascript2_get_decl();
-            for my  $arg (@var_decl) {
+            for my $arg (@var_decl) {
                 push(@str, $arg->emit_javascript2_init())
             }
             if (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) {
@@ -8589,7 +8588,7 @@ package Perlito5::Javascript2::LexicalBlock;
         }
         if ($self->{'needs_return'} && $last_statement) {
             my @var_decl = $last_statement->emit_javascript2_get_decl();
-            for my  $arg (@var_decl) {
+            for my $arg (@var_decl) {
                 push(@str, $arg->emit_javascript2_init())
             }
             if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return' && $self->{'top_level'} && @{$last_statement->{'arguments'}}) {
@@ -8645,7 +8644,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         my $str = '' . 'var p5want;' . chr(10) . 'var ' . Perlito5::Javascript2::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10);
         $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$/' => {'decl' => 'our', 'namespace' => 'main'}, '$"' => {'decl' => 'our', 'namespace' => 'main'}, '$,' => {'decl' => 'our', 'namespace' => 'main'}, '$!' => {'decl' => 'our', 'namespace' => 'main'}, '$;' => {'decl' => 'our', 'namespace' => 'main'}, '$?' => {'decl' => 'our', 'namespace' => 'main'}, '$[' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '$^V' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$AUTOLOAD' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
-        for my  $comp_unit (@{$comp_units}) {
+        for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_javascript2() . chr(10)
         }
         return($str)
@@ -10135,7 +10134,7 @@ package Perlito5::Javascript3;
         my $tmp = '';
         return(chr(39) . chr(39))
             if $s eq '';
-        for my  $i (0 .. length($s) - 1) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
@@ -10238,12 +10237,12 @@ package Perlito5::Javascript3;
     }
     sub Perlito5::Javascript3::to_list_preprocess {
         my @items;
-        for my  $item (@{$_[0]}) {
+        for my $item (@{$_[0]}) {
             if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'circumfix:<( )>' || $item->code() eq 'list:<,>' || $item->code() eq 'infix:<=>>')) {
                 if ($item->isa('Perlito5::AST::Apply') && $item->code() eq 'infix:<=>>') {
                     $item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0])
                 }
-                for my  $arg (@{to_list_preprocess($item->arguments())}) {
+                for my $arg (@{to_list_preprocess($item->arguments())}) {
                     push(@items, $arg)
                 }
             }
@@ -10261,12 +10260,12 @@ package Perlito5::Javascript3;
     }
     sub Perlito5::Javascript3::to_scalar_preprocess {
         my @items;
-        for my  $item (@{$_[0]}) {
+        for my $item (@{$_[0]}) {
             if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'list:<,>' || $item->code() eq 'infix:<=>>')) {
                 if ($item->isa('Perlito5::AST::Apply') && $item->code() eq 'infix:<=>>') {
                     $item->{'arguments'}->[0] = Perlito5::AST::Lookup->autoquote($item->{'arguments'}->[0])
                 }
-                for my  $arg (@{to_scalar_preprocess($item->arguments())}) {
+                for my $arg (@{to_scalar_preprocess($item->arguments())}) {
                     push(@items, $arg)
                 }
             }
@@ -10330,7 +10329,7 @@ package Perlito5::Javascript3::LexicalBlock;
     sub Perlito5::Javascript3::LexicalBlock::has_decl {
         my $self = $_[0];
         my $type = $_[1];
-        for my  $decl (@{$self->{'block'}}) {
+        for my $decl (@{$self->{'block'}}) {
             if (defined($decl)) {
                 if ($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq $type || $decl->isa('Perlito5::AST::Apply') && $decl->code() eq $type) {
                     return(1)
@@ -10381,7 +10380,7 @@ package Perlito5::Javascript3::LexicalBlock;
         if ($self->{'needs_return'}) {
             $last_statement = pop(@block)
         }
-        for my  $decl (@block) {
+        for my $decl (@block) {
             if (ref($decl) eq 'Perlito5::AST::Apply' && $decl->code() eq 'package') {
                 $Perlito5::PKG_NAME = $decl->{'namespace'};
                 $Perlito5::VAR->[0]->{'$_'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
@@ -10489,7 +10488,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         my $str = '' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript3::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10);
         $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$AUTOLOAD' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
-        for my  $comp_unit (@{$comp_units}) {
+        for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_javascript3() . chr(10)
         }
         return($str)
@@ -11540,7 +11539,19 @@ package Perlito5::AST::Lit::Block;
 {
     sub Perlito5::AST::Lit::Block::emit_perl5 {
         my $self = $_[0];
-        Perlito5::Perl5::emit_perl5_block($self->{'stmts'})
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
+        if ($self->{'name'}) {
+            push(@out, ['stmt' => ['keyword' => $self->{'name'}], Perlito5::Perl5::emit_perl5_block($self->{'stmts'})])
+        }
+        else {
+            push(@out, Perlito5::Perl5::emit_perl5_block($self->{'stmts'}))
+        }
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_perl5_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
     }
 }
 package Perlito5::AST::Index;
@@ -11678,7 +11689,7 @@ package Perlito5::AST::Apply;
                 $s = $self->{'arguments'}->[0]->{'buf'}
             }
             else {
-                for my  $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
+                for my $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
                     if ($ast->isa('Perlito5::AST::Val::Buf')) {
                         $s .= $ast->{'buf'}
                     }
@@ -11742,18 +11753,28 @@ package Perlito5::AST::While;
 {
     sub Perlito5::AST::While::emit_perl5 {
         my $self = $_[0];
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
         if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
-            return(['stmt_modifier' => $self->{'body'}->emit_perl5(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl5()]])
+            return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl5(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl5()]])
         }
-        return(['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_perl5()], Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts())])
+        push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_perl5()], Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts())]);
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_perl5_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
     }
 }
 package Perlito5::AST::For;
 {
     sub Perlito5::AST::For::emit_perl5 {
         my $self = $_[0];
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
         if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
-            return(['stmt_modifier' => $self->{'body'}->emit_perl5(), ['stmt' => 'for', $self->{'cond'}->emit_perl5()]])
+            return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl5(), ['stmt' => 'for', $self->{'cond'}->emit_perl5()]])
         }
         my $cond;
         if (ref($self->{'cond'}) eq 'ARRAY') {
@@ -11762,16 +11783,17 @@ package Perlito5::AST::For;
         else {
             $cond = ['paren' => '(', $self->{'cond'}->emit_perl5()]
         }
-        my $sig = '';
+        my @sig;
         my $sig_ast = $self->{'body'}->sig();
         if (!$sig_ast) {}
-        elsif ($sig_ast->{'decl'}) {
-            $sig = $sig_ast->{'decl'} . ' ' . $sig_ast->{'type'} . ' ' . $sig_ast->{'var'}->emit_perl5()
-        }
         else {
-            $sig = $sig_ast->emit_perl5()
+            @sig = $sig_ast->emit_perl5()
         }
-        return(['stmt' => ['keyword' => 'for'], ($sig ? $sig : ()), $cond, Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts())])
+        push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::Perl5::emit_perl5_block($self->{'body'}->stmts())]);
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_perl5_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
     }
 }
 package Perlito5::AST::Decl;
@@ -11816,7 +11838,7 @@ package main;
 package Perlito5::Perl5::PrettyPrinter;
 # use strict
 # use warnings
-my %dispatch = ('stmt' => \&statement, 'stmt_modifier' => \&statement_modifier, 'block' => \&block, 'keyword' => \&keyword, 'bareword' => \&bareword, 'number' => \&number, 'op' => \&op, 'paren' => \&paren, 'paren_semicolon' => \&paren_semicolon, 'apply' => \&apply, 'call' => \&call, 'comment' => \&comment);
+my %dispatch = ('stmt' => \&statement, 'stmt_modifier' => \&statement_modifier, 'block' => \&block, 'keyword' => \&keyword, 'bareword' => \&bareword, 'number' => \&number, 'op' => \&op, 'paren' => \&paren, 'paren_semicolon' => \&paren_semicolon, 'apply' => \&apply, 'call' => \&call, 'comment' => \&comment, 'label' => \&label);
 my %pair = ('(' => ')', '[' => ']', '{' => '}');
 our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<->>' => {'fix' => 'infix', 'prec' => -1, 'str' => '->'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' x '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'list:<.>' => {'fix' => 'list', 'prec' => 6, 'str' => ' . '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 11, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 14, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' // '}, 'ternary:<? :>' => {'fix' => 'ternary', 'prec' => 16}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 18, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 19, 'str' => ', '}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 20, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 21, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' xor '});
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
@@ -11850,9 +11872,7 @@ sub Perlito5::Perl5::PrettyPrinter::statement_need_semicolon {
     return(1)
         if !ref($data);
     return(0)
-        if $data->[0] eq 'block';
-    return(0)
-        if $data->[0] eq 'comment';
+        if $data->[0] eq 'block' || $data->[0] eq 'comment' || $data->[0] eq 'label';
     if ($data->[0] eq 'stmt') {
         if (ref($data->[1])) {
             my $dd = $data->[1];
@@ -11909,7 +11929,7 @@ sub Perlito5::Perl5::PrettyPrinter::op {
     }
     elsif ($spec->{'fix'} eq 'circumfix') {
         push(@{$out}, $spec->{'str'});
-        for my  $line (2 .. $#{$data}) {
+        for my $line (2 .. $#{$data}) {
             op_render($data->[$line], $level, $out, $spec);
             push(@{$out}, ', ')
                 if $line != $#{$data}
@@ -11917,7 +11937,7 @@ sub Perlito5::Perl5::PrettyPrinter::op {
         push(@{$out}, $pair{$spec->{'str'}})
     }
     elsif ($spec->{'fix'} eq 'list') {
-        for my  $line (2 .. $#{$data}) {
+        for my $line (2 .. $#{$data}) {
             op_render($data->[$line], $level, $out, $spec);
             push(@{$out}, $spec->{'str'})
                 if $line != $#{$data}
@@ -11925,7 +11945,7 @@ sub Perlito5::Perl5::PrettyPrinter::op {
     }
     elsif ($spec->{'fix'} eq 'parsed') {
         push(@{$out}, $spec->{'str'});
-        for my  $line (2 .. $#{$data}) {
+        for my $line (2 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, ' ');
             render($d, $level, $out)
@@ -11975,7 +11995,7 @@ sub Perlito5::Perl5::PrettyPrinter::paren {
 sub Perlito5::Perl5::PrettyPrinter::paren_semicolon {
     my($data, $level, $out) = @_;
     push(@{$out}, $data->[1]);
-    for my  $line (2 .. $#{$data}) {
+    for my $line (2 .. $#{$data}) {
         render($data->[$line], $level, $out)
             if @{$data->[$line]};
         if ($line != $#{$data}) {
@@ -11988,6 +12008,11 @@ sub Perlito5::Perl5::PrettyPrinter::paren_semicolon {
         }
     }
     push(@{$out}, $pair{$data->[1]})
+}
+sub Perlito5::Perl5::PrettyPrinter::label {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1], ':');
+    return()
 }
 sub Perlito5::Perl5::PrettyPrinter::keyword {
     my($data, $level, $out) = @_;
@@ -12011,7 +12036,7 @@ sub Perlito5::Perl5::PrettyPrinter::comment {
 }
 sub Perlito5::Perl5::PrettyPrinter::statement {
     my($data, $level, $out) = @_;
-    for my  $line (1 .. $#{$data}) {
+    for my $line (1 .. $#{$data}) {
         my $d = $data->[$line];
         render($d, $level, $out);
         push(@{$out}, ' ')
@@ -12032,7 +12057,7 @@ sub Perlito5::Perl5::PrettyPrinter::block {
     }
     push(@{$out}, '{', chr(10));
     $level++;
-    for my  $line (1 .. $#{$data}) {
+    for my $line (1 .. $#{$data}) {
         my $d = $data->[$line];
         push(@{$out}, tab($level));
         render($d, $level, $out);
@@ -12045,7 +12070,7 @@ sub Perlito5::Perl5::PrettyPrinter::block {
 }
 sub Perlito5::Perl5::PrettyPrinter::pretty_print {
     my($data, $level, $out) = @_;
-    for my  $line (0 .. $#{$data}) {
+    for my $line (0 .. $#{$data}) {
         my $d = $data->[$line];
         push(@{$out}, tab($level));
         render($d, $level, $out);
@@ -12079,7 +12104,7 @@ package Perlito5::Perl6;
         my $tmp = '';
         return(chr(39) . chr(39))
             if $s eq '';
-        for my  $i (0 .. length($s) - 1) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
@@ -12155,7 +12180,7 @@ package Perlito5::Perl6::LexicalBlock;
             return(Perlito5::Perl6::tab($level) . ';')
         }
         my @str;
-        for my  $decl (@block) {
+        for my $decl (@block) {
             if ($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my') {
                 push(@str, Perlito5::Perl6::tab($level) . $decl->emit_perl6_init())
             }
@@ -12166,7 +12191,7 @@ package Perlito5::Perl6::LexicalBlock;
                 }
             }
         }
-        for my  $decl (@block) {
+        for my $decl (@block) {
             if (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) {
                 push(@str, $decl->emit_perl6($level) . ';')
             }
@@ -12201,7 +12226,7 @@ package Perlito5::AST::CompUnit;
         }
         my $class_name = $self->{'name'};
         my $str = 'package ' . $class_name . '{' . chr(10);
-        for my  $decl (@body) {
+        for my $decl (@body) {
             if ($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')) {
                 $str = $str . '  ' . $decl->emit_perl6_init()
             }
@@ -12212,12 +12237,12 @@ package Perlito5::AST::CompUnit;
                 }
             }
         }
-        for my  $decl (@body) {
+        for my $decl (@body) {
             if ($decl->isa('Perlito5::AST::Sub')) {
                 $str = $str . ($decl)->emit_perl6($level + 1) . ';' . chr(10)
             }
         }
-        for my  $decl (@body) {
+        for my $decl (@body) {
             if (defined($decl) && (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) && (!($decl->isa('Perlito5::AST::Sub')))) {
                 $str = $str . ($decl)->emit_perl6($level + 1) . ';' . chr(10)
             }
@@ -12227,7 +12252,7 @@ package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::emit_perl6_program {
         my $comp_units = shift;
         my $str = '';
-        for my  $comp_unit (@{$comp_units}) {
+        for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_perl6() . chr(10)
         }
         return($str)
@@ -12573,7 +12598,7 @@ package Perlito5::XS;
         my $tmp = '';
         return('""')
             if $s eq '';
-        for my  $i (0 .. length($s) - 1) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
@@ -12601,7 +12626,7 @@ package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::emit_xs_program {
         my $comp_units = $_[0];
         my $str = '#include "EXTERN.h"' . chr(10) . '#include "perl.h"' . chr(10) . '#include "XSUB.h"' . chr(10) . chr(10);
-        for my  $comp_unit (@{$comp_units}) {
+        for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_xs(0)
         }
         $str .= chr(10);
@@ -12769,7 +12794,7 @@ package Perlito5::AST::Apply;
                 $s = $self->{'arguments'}->[0]->{'buf'}
             }
             else {
-                for my  $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
+                for my $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
                     if ($ast->isa('Perlito5::AST::Val::Buf')) {
                         $s .= $ast->{'buf'}
                     }

@@ -15,6 +15,7 @@ my %dispatch = (
     apply           => \&apply,                 # subr(expr)
     call            => \&call,                  # expr->subr(expr)
     comment         => \&comment,               # # comment
+    label           => \&label,                 # L1:
 );
 
 my %pair = (
@@ -170,8 +171,8 @@ sub op_precedence {
 sub statement_need_semicolon {
     my ($data) = @_;
     return 1 if !ref($data);
-    return 0 if $data->[0] eq 'block';
-    return 0 if $data->[0] eq 'comment';
+    return 0
+        if $data->[0] eq 'block' || $data->[0] eq 'comment' || $data->[0] eq 'label';
     if ( $data->[0] eq 'stmt' ) {
         # stmt => [ keyword => 'if' ],
         if ( ref( $data->[1] ) ) {
@@ -309,6 +310,12 @@ sub paren_semicolon {
         }
     }
     push @$out, $pair{ $data->[1] };
+}
+
+sub label {
+    my ( $data, $level, $out ) = @_;
+    push @$out, $data->[1], ":";
+    return;
 }
 
 sub keyword {

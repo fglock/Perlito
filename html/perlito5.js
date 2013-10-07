@@ -7647,7 +7647,6 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 										else {
 											p5pkg["Perlito5::Grammar::Block"].die([['syntax error']], null)
 										};
-										p5pkg["Perlito5::Grammar::Block"].warn([['continue!']], null);
 										(v_continue || (v_continue = new p5HashRef({})))._hash_.p5hset('stmts', ((v_cont || (v_cont = new p5HashRef({})))._hash_.p5hget_array('capture')._array_.p5aget(2)));
 										v_has_continue = (1);
 										(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('to', ((v_cont || (v_cont = new p5HashRef({})))._hash_.p5hget('to')));
