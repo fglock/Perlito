@@ -12849,10 +12849,13 @@ package Perlito5::AST::Apply;
         if ($self->{'code'} eq 'infix:<=>>') {
             return(['op' => $self->{'code'}, Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_perl62(), $self->{'arguments'}->[1]->emit_perl62()])
         }
-        if ($Perlito5::Perl62::PrettyPrinter::op{$self->{'code'}}) {
-            return(['op' => $self->{'code'}, $self->emit_perl62_args()])
+        my $code = $self->{'code'};
+        $code = 'list:<~>'
+            if $code eq 'list:<.>';
+        if ($Perlito5::Perl6::PrettyPrinter::op{$code}) {
+            return(['op' => $code, $self->emit_perl62_args()])
         }
-        if ($self->{'code'} eq 'undef') {
+        if ($code eq 'undef') {
             if (@{$self->{'arguments'}}) {
                 die('TODO - undef(expr)')
             }
