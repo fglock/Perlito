@@ -2,20 +2,37 @@ package Perlito5::Perl5::PrettyPrinter;
 use strict;
 use warnings;
 
+# my %dispatch = (
+#     stmt            => \&statement,             # if (expr) {stms}
+#     stmt_modifier   => \&statement_modifier,    # stmt if expr
+#     block           => \&block,                 # {stmts}
+#     keyword         => \&keyword,               # if
+#     bareword        => \&bareword,              # main
+#     number          => \&number,                # number
+#     op              => \&op,                    # expr
+#     paren           => \&paren,                 # (expr)
+#     paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
+#     apply           => \&apply,                 # subr(expr)
+#     call            => \&call,                  # expr->subr(expr)
+#     comment         => \&comment,               # # comment
+#     label           => \&label,                 # L1:
+# );
+
+# XXX - TODO - workaround initialization order in the javascript backend
 my %dispatch = (
-    stmt            => \&statement,             # if (expr) {stms}
-    stmt_modifier   => \&statement_modifier,    # stmt if expr
-    block           => \&block,                 # {stmts}
-    keyword         => \&keyword,               # if
-    bareword        => \&bareword,              # main
-    number          => \&number,                # number
-    op              => \&op,                    # expr
-    paren           => \&paren,                 # (expr)
-    paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
-    apply           => \&apply,                 # subr(expr)
-    call            => \&call,                  # expr->subr(expr)
-    comment         => \&comment,               # # comment
-    label           => \&label,                 # L1:
+    stmt            => sub { statement(@_) },             # if (expr) {stms}
+    stmt_modifier   => sub { statement_modifier(@_) },    # stmt if expr
+    block           => sub { block(@_) },                 # {stmts}
+    keyword         => sub { keyword(@_) },               # if
+    bareword        => sub { bareword(@_) },              # main
+    number          => sub { number(@_) },                # number
+    op              => sub { op(@_) },                    # expr
+    paren           => sub { paren(@_) },                 # (expr)
+    paren_semicolon => sub { paren_semicolon(@_) },       # (expr;expr;expr)
+    apply           => sub { apply(@_) },                 # subr(expr)
+    call            => sub { call(@_) },                  # expr->subr(expr)
+    comment         => sub { comment(@_) },               # # comment
+    label           => sub { label(@_) },                 # L1:
 );
 
 my %pair = (

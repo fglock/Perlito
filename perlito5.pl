@@ -11890,7 +11890,33 @@ package main;
 package Perlito5::Perl5::PrettyPrinter;
 # use strict
 # use warnings
-my %dispatch = ('stmt' => \&statement, 'stmt_modifier' => \&statement_modifier, 'block' => \&block, 'keyword' => \&keyword, 'bareword' => \&bareword, 'number' => \&number, 'op' => \&op, 'paren' => \&paren, 'paren_semicolon' => \&paren_semicolon, 'apply' => \&apply, 'call' => \&call, 'comment' => \&comment, 'label' => \&label);
+my %dispatch = ('stmt' => sub {
+    statement(@_)
+}, 'stmt_modifier' => sub {
+    statement_modifier(@_)
+}, 'block' => sub {
+    block(@_)
+}, 'keyword' => sub {
+    keyword(@_)
+}, 'bareword' => sub {
+    bareword(@_)
+}, 'number' => sub {
+    number(@_)
+}, 'op' => sub {
+    op(@_)
+}, 'paren' => sub {
+    paren(@_)
+}, 'paren_semicolon' => sub {
+    paren_semicolon(@_)
+}, 'apply' => sub {
+    apply(@_)
+}, 'call' => sub {
+    call(@_)
+}, 'comment' => sub {
+    comment(@_)
+}, 'label' => sub {
+    label(@_)
+});
 my %pair = ('(' => ')', '[' => ']', '{' => '}');
 our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<->>' => {'fix' => 'infix', 'prec' => -1, 'str' => '->'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' x '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'list:<.>' => {'fix' => 'list', 'prec' => 6, 'str' => ' . '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 11, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 14, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' // '}, 'ternary:<? :>' => {'fix' => 'ternary', 'prec' => 16}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 18, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 19, 'str' => ', '}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 20, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 21, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' xor '});
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
@@ -12537,7 +12563,33 @@ package main;
 package Perlito5::Perl6::PrettyPrinter;
 # use strict
 # use warnings
-my %dispatch = ('stmt' => \&statement, 'stmt_modifier' => \&statement_modifier, 'block' => \&block, 'keyword' => \&keyword, 'bareword' => \&bareword, 'number' => \&number, 'op' => \&op, 'paren' => \&paren, 'paren_semicolon' => \&paren_semicolon, 'apply' => \&apply, 'call' => \&call, 'comment' => \&comment, 'label' => \&label);
+my %dispatch = ('stmt' => sub {
+    statement(@_)
+}, 'stmt_modifier' => sub {
+    statement_modifier(@_)
+}, 'block' => sub {
+    block(@_)
+}, 'keyword' => sub {
+    keyword(@_)
+}, 'bareword' => sub {
+    bareword(@_)
+}, 'number' => sub {
+    number(@_)
+}, 'op' => sub {
+    op(@_)
+}, 'paren' => sub {
+    paren(@_)
+}, 'paren_semicolon' => sub {
+    paren_semicolon(@_)
+}, 'apply' => sub {
+    apply(@_)
+}, 'call' => sub {
+    call(@_)
+}, 'comment' => sub {
+    comment(@_)
+}, 'label' => sub {
+    label(@_)
+});
 my %pair = ('(' => ')', '[' => ']', '{' => '}');
 our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
