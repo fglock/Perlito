@@ -12636,6 +12636,357 @@ package Perlito5::AST::Use;
 }
 # use Perlito5::Perl6::Emitter
 package main;
+undef();
+# use Perlito5::AST
+# use strict
+package Perlito5::Perl62;
+{
+    sub Perlito5::Perl62::escape_string {
+        return(Perlito5::Dumper::escape_string($_[0]))
+    }
+    sub Perlito5::Perl62::emit_perl62_block {
+        my $block = $_[0];
+        return(['block', map {
+            defined($_) && $_->emit_perl62()
+        } @{$block}])
+    }
+}
+package Perlito5::AST::CompUnit;
+{
+    sub Perlito5::AST::CompUnit::emit_perl62 {
+        my $self = $_[0];
+        return((['stmt' => ['keyword' => 'package'], ['bareword' => $self->{'name'}]], map {
+            defined($_) && $_->emit_perl62()
+        } @{$self->{'body'}}))
+    }
+    sub Perlito5::AST::CompUnit::emit_perl62_program {
+        my $comp_units = $_[0];
+        return(map {
+            $_->emit_perl62()
+        } @{$comp_units})
+    }
+}
+package Perlito5::AST::Val::Int;
+{
+    sub Perlito5::AST::Val::Int::emit_perl62 {
+        my $self = $_[0];
+        ['number' => $self->{'int'}]
+    }
+}
+package Perlito5::AST::Val::Num;
+{
+    sub Perlito5::AST::Val::Num::emit_perl62 {
+        my $self = $_[0];
+        ['number' => $self->{'num'}]
+    }
+}
+package Perlito5::AST::Val::Buf;
+{
+    sub Perlito5::AST::Val::Buf::emit_perl62 {
+        my $self = $_[0];
+        Perlito5::Perl62::escape_string($self->{'buf'})
+    }
+}
+package Perlito5::AST::Lit::Block;
+{
+    sub Perlito5::AST::Lit::Block::emit_perl62 {
+        my $self = $_[0];
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
+        if ($self->{'name'}) {
+            push(@out, ['stmt' => ['keyword' => $self->{'name'}], Perlito5::Perl62::emit_perl62_block($self->{'stmts'})])
+        }
+        else {
+            push(@out, Perlito5::Perl62::emit_perl62_block($self->{'stmts'}))
+        }
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl62::emit_perl62_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
+    }
+}
+package Perlito5::AST::Index;
+{
+    sub Perlito5::AST::Index::emit_perl62 {
+        my $self = $_[0];
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+            return(['apply' => '[', $self->{'obj'}->emit_perl62(), $self->{'index_exp'}->emit_perl62()])
+        }
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+            return(['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl62()]])
+        }
+        return(['op' => 'infix:<->>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl62()]])
+    }
+}
+package Perlito5::AST::Lookup;
+{
+    sub Perlito5::AST::Lookup::emit_perl62 {
+        my $self = $_[0];
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+            return(['apply' => '{', $self->{'obj'}->emit_perl62(), $self->autoquote($self->{'index_exp'})->emit_perl62()])
+        }
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+            return(['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_perl62(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_perl62()]])
+        }
+        return(['op' => 'infix:<->>', $self->{'obj'}->emit_perl62(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_perl62()]])
+    }
+}
+package Perlito5::AST::Var;
+{
+    sub Perlito5::AST::Var::emit_perl62 {
+        my $self = $_[0];
+        my $str_name = $self->{'name'};
+        $str_name = chr(92) . chr(92)
+            if $str_name eq chr(92);
+        $str_name = chr(92) . '"'
+            if $str_name eq '"';
+        my $perl5_name = $self->perl5_name();
+        my $decl_type;
+        my $decl = $self->perl5_get_decl($perl5_name);
+        if ($decl) {
+            $decl_type = $decl->{'decl'}
+        }
+        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {}
+        my $ns = '';
+        if ($self->{'namespace'}) {
+            return($self->{'namespace'} . '::')
+                if $self->{'sigil'} eq '::';
+            if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {
+                return($self->{'sigil'} . '{' . $self->{'name'} . '}')
+            }
+            else {
+                $ns = $self->{'namespace'} . '::'
+            }
+        }
+        my $c = substr($self->{'name'}, 0, 1);
+        if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_')) {
+            return($self->{'sigil'} . $ns . $self->{'name'})
+        }
+        return($self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}')
+    }
+}
+package Perlito5::AST::Proto;
+{
+    sub Perlito5::AST::Proto::emit_perl62 {
+        my $self = $_[0];
+        return(['bareword' => $self->{'name'}])
+    }
+}
+package Perlito5::AST::Call;
+{
+    sub Perlito5::AST::Call::emit_perl62 {
+        my $self = $_[0];
+        my $invocant = $self->{'invocant'}->emit_perl62();
+        if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
+            return(['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<[ ]>', $self->{'arguments'}->emit_perl62()]])
+        }
+        if ($self->{'method'} eq 'postcircumfix:<{ }>') {
+            return(['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<{ }>', Perlito5::AST::Lookup->autoquote($self->{'arguments'})->emit_perl62()]])
+        }
+        my $meth = $self->{'method'};
+        if ($meth eq 'postcircumfix:<( )>') {
+            if ((ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') || (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>')) {
+                return(['apply' => '(', $invocant, map {
+                    $_->emit_perl62()
+                } @{$self->{'arguments'}}])
+            }
+            $meth = ''
+        }
+        if (ref($meth) eq 'Perlito5::AST::Var') {
+            $meth = $meth->emit_perl62()
+        }
+        if ($meth) {
+            return(['call' => $invocant, $meth, map {
+                $_->emit_perl62()
+            } @{$self->{'arguments'}}])
+        }
+        return(['op' => 'infix:<->>', $invocant, ['op' => 'list:<,>', map {
+            $_->emit_perl62()
+        } @{$self->{'arguments'}}]])
+    }
+}
+package Perlito5::AST::Apply;
+{
+    sub Perlito5::AST::Apply::emit_perl62_args {
+        my $self = $_[0];
+        return(())
+            if !$self->{'arguments'};
+        return(map {
+            $_->emit_perl62()
+        } @{$self->{'arguments'}})
+    }
+    sub Perlito5::AST::Apply::emit_perl62 {
+        my $self = $_[0];
+        if (ref($self->{'code'})) {
+            return(['op' => 'infix:<->>', $self->{'code'}->emit_perl62(), $self->emit_perl62_args()])
+        }
+        if ($self->{'code'} eq 'infix:<=>>') {
+            return(['op' => $self->{'code'}, Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_perl62(), $self->{'arguments'}->[1]->emit_perl62()])
+        }
+        if ($Perlito5::Perl62::PrettyPrinter::op{$self->{'code'}}) {
+            return(['op' => $self->{'code'}, $self->emit_perl62_args()])
+        }
+        my $ns = '';
+        if ($self->{'namespace'}) {
+            $ns = $self->{'namespace'} . '::'
+        }
+        my $code = $ns . $self->{'code'};
+        if ($self->{'code'} eq 'p5:s') {
+            return('s!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2])
+        }
+        if ($self->{'code'} eq 'p5:m') {
+            my $s;
+            if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Val::Buf')) {
+                $s = $self->{'arguments'}->[0]->{'buf'}
+            }
+            else {
+                for my $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
+                    if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                        $s .= $ast->{'buf'}
+                    }
+                    else {
+                        $s .= $ast->emit_perl62()
+                    }
+                }
+            }
+            return('m!' . $s . '!' . $self->{'arguments'}->[1])
+        }
+        if ($self->{'code'} eq 'p5:tr') {
+            return('tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!')
+        }
+        if ($self->{'code'} eq 'package') {
+            return(['stmt' => 'package', ['bareword' => $self->{'namespace'}]])
+        }
+        if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {
+            if ($self->{'special_arg'}) {
+                return(['op' => 'prefix:<' . $code . '>', ['block', map {
+                    $_->emit_perl62()
+                } @{$self->{'special_arg'}->{'stmts'}}], $self->emit_perl62_args()])
+            }
+            return(['apply' => '(', $code, $self->emit_perl62_args()])
+        }
+        if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
+            return(['bareword' => $code])
+        }
+        return(['apply' => '(', $code, $self->emit_perl62_args()])
+    }
+}
+package Perlito5::AST::If;
+{
+    sub Perlito5::AST::If::emit_perl62 {
+        my $self = $_[0];
+        if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
+            return(['stmt_modifier' => $self->{'body'}->emit_perl62(), ['stmt' => 'if', $self->{'cond'}->emit_perl62()]])
+        }
+        if ($self->{'otherwise'} && ref($self->{'otherwise'}) ne 'Perlito5::AST::Lit::Block') {
+            return(['stmt_modifier' => $self->{'otherwise'}->emit_perl62(), ['stmt' => 'unless', $self->{'cond'}->emit_perl62()]])
+        }
+        my @out = (['stmt' => ['keyword' => 'if'], ['paren' => '(', $self->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())]);
+        my $otherwise = $self->{'otherwise'};
+        while ($otherwise && @{$otherwise->{'stmts'}} == 1 && ref($otherwise->{'stmts'}->[0]) eq 'Perlito5::AST::If' && ($otherwise->{'stmts'}->[0]->{'body'} && ref($otherwise->{'stmts'}->[0]->{'body'}) eq 'Perlito5::AST::Lit::Block')) {
+            push(@out, ['stmt' => ['keyword' => 'elsif'], ['paren' => '(', $otherwise->{'stmts'}->[0]->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
+            $otherwise = $otherwise->{'stmts'}->[0]->{'otherwise'}
+        }
+        return(@out)
+            if !($otherwise && scalar(@{$otherwise->stmts()}));
+        push(@out, ['stmt' => ['keyword' => 'else'], Perlito5::Perl62::emit_perl62_block($otherwise->stmts())]);
+        return(@out)
+    }
+}
+package Perlito5::AST::When;
+{
+    sub Perlito5::AST::When::emit_perl62 {
+        my $self = $_[0];
+        return(['stmt' => ['keyword' => 'when'], ['paren' => '(', $self->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())])
+    }
+}
+package Perlito5::AST::While;
+{
+    sub Perlito5::AST::While::emit_perl62 {
+        my $self = $_[0];
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
+        if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
+            return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl62(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl62()]])
+        }
+        push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())]);
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl62::emit_perl62_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
+    }
+}
+package Perlito5::AST::For;
+{
+    sub Perlito5::AST::For::emit_perl62 {
+        my $self = $_[0];
+        my @out;
+        push(@out, ['label' => $self->{'label'}])
+            if $self->{'label'};
+        if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
+            return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl62(), ['stmt' => 'for', $self->{'cond'}->emit_perl62()]])
+        }
+        my $cond;
+        if (ref($self->{'cond'}) eq 'ARRAY') {
+            $cond = ['paren_semicolon' => '(', ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_perl62() : []), ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_perl62() : []), ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_perl62() : [])]
+        }
+        else {
+            $cond = ['paren' => '(', $self->{'cond'}->emit_perl62()]
+        }
+        my @sig;
+        my $sig_ast = $self->{'body'}->sig();
+        if (!$sig_ast) {}
+        else {
+            @sig = $sig_ast->emit_perl62()
+        }
+        push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())]);
+        if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+            push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl62::emit_perl62_block($self->{'continue'}->{'stmts'})])
+        }
+        return(@out)
+    }
+}
+package Perlito5::AST::Decl;
+{
+    sub Perlito5::AST::Decl::emit_perl62 {
+        my $self = $_[0];
+        return(['op' => 'prefix:<' . $self->{'decl'} . '>', ($self->{'type'} ? $self->{'type'} : ()), $self->{'var'}->emit_perl62()])
+    }
+}
+package Perlito5::AST::Sub;
+{
+    sub Perlito5::AST::Sub::emit_perl62 {
+        my $self = $_[0];
+        my @parts;
+        push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]])
+            if defined($self->{'sig'});
+        push(@parts, Perlito5::Perl62::emit_perl62_block($self->{'block'}))
+            if defined($self->{'block'});
+        return(['op' => 'prefix:<sub>', @parts])
+            if !$self->{'name'};
+        return(['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts])
+    }
+}
+package Perlito5::AST::Do;
+{
+    sub Perlito5::AST::Do::emit_perl62 {
+        my $self = $_[0];
+        my $block = $self->simplify()->block();
+        return(['op' => 'prefix:<do>', Perlito5::Perl62::emit_perl62_block($block)])
+    }
+}
+package Perlito5::AST::Use;
+{
+    sub Perlito5::AST::Use::emit_perl62 {
+        my $self = shift;
+        Perlito5::Grammar::Use::emit_time_eval($self);
+        return(['comment' => '# ' . $self->{'code'} . ' ' . $self->{'mod'}])
+    }
+}
+# use Perlito5::Perl6::Emitter2
+package main;
 package Perlito5::Perl6::PrettyPrinter;
 # use strict
 # use warnings
@@ -13478,6 +13829,13 @@ if ($backend && @ARGV) {
                 if ($backend eq 'perl6') {
                     say('# Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
                     print(Perlito5::AST::CompUnit::emit_perl6_program($comp_units))
+                }
+                if ($backend eq 'perl62') {
+                    say('# Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
+                    my @data = Perlito5::AST::CompUnit::emit_perl62_program($comp_units);
+                    my $out = [];
+                    Perlito5::Perl6::PrettyPrinter::pretty_print(\@data, 0, $out);
+                    print(join('', @{$out}), chr(10))
                 }
                 if ($backend eq 'js') {
                     say('// Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
