@@ -12918,10 +12918,10 @@ package Perlito5::AST::If;
         if ($self->{'otherwise'} && ref($self->{'otherwise'}) ne 'Perlito5::AST::Lit::Block') {
             return(['stmt_modifier' => $self->{'otherwise'}->emit_perl62(), ['stmt' => 'unless', $self->{'cond'}->emit_perl62()]])
         }
-        my @out = (['stmt' => ['keyword' => 'if'], ['paren' => '(', $self->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())]);
+        my @out = (['stmt' => ['keyword' => 'if'], $self->{'cond'}->emit_perl62(), Perlito5::Perl62::emit_perl62_block($self->{'body'}->stmts())]);
         my $otherwise = $self->{'otherwise'};
         while ($otherwise && @{$otherwise->{'stmts'}} == 1 && ref($otherwise->{'stmts'}->[0]) eq 'Perlito5::AST::If' && ($otherwise->{'stmts'}->[0]->{'body'} && ref($otherwise->{'stmts'}->[0]->{'body'}) eq 'Perlito5::AST::Lit::Block')) {
-            push(@out, ['stmt' => ['keyword' => 'elsif'], ['paren' => '(', $otherwise->{'stmts'}->[0]->{'cond'}->emit_perl62()], Perlito5::Perl62::emit_perl62_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
+            push(@out, ['stmt' => ['keyword' => 'elsif'], $otherwise->{'stmts'}->[0]->{'cond'}->emit_perl62(), Perlito5::Perl62::emit_perl62_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
             $otherwise = $otherwise->{'stmts'}->[0]->{'otherwise'}
         }
         return(@out)

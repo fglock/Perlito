@@ -349,7 +349,7 @@ package Perlito5::AST::If;
                                       [ stmt => 'unless', $self->{cond}->emit_perl62() ] ];
         }
         my @out = ( [ stmt => [ keyword => 'if' ],
-                      [ paren => '(', $self->{cond}->emit_perl62() ],
+                      $self->{cond}->emit_perl62(),
                       Perlito5::Perl62::emit_perl62_block($self->{body}->stmts)
                     ] );
         my $otherwise = $self->{otherwise};
@@ -361,7 +361,7 @@ package Perlito5::AST::If;
               )
         {
             push @out, [ stmt => [ keyword => 'elsif' ],
-                         [ paren => '(', $otherwise->{stmts}[0]{cond}->emit_perl62() ],
+                         $otherwise->{stmts}[0]{cond}->emit_perl62(),
                          Perlito5::Perl62::emit_perl62_block($otherwise->{stmts}[0]{body}{stmts})
                        ];
             $otherwise = $otherwise->{stmts}[0]{otherwise};
