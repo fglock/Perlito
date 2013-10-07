@@ -6,7 +6,11 @@ use Perlito5::Emitter::Token;
 use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::Regex;
+use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar;
+use Perlito5::Macro;
+use Perlito5::Runtime;
+use Perlito5::Dumper;
 
 use Perlito5::Javascript2::Emitter;
 use Perlito5::Javascript2::Runtime;
@@ -21,17 +25,16 @@ use Perlito5::Javascript3::CORE;
 use Perlito5::Javascript3::IO;
 use Perlito5::Javascript3::Sprintf;
 
-use Perlito5::Macro;
-use Perlito5::Perl5::Emitter;   # old perl5 backend
+use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
 use Perlito5::Perl5::Runtime;
+
 use Perlito5::Perl6::Emitter;
+use Perlito5::Perl6::PrettyPrinter;
+
 use Perlito5::XS::Emitter;
-use Perlito5::Grammar::Precedence;
 ## use Perlito5::Python::Emitter;
 ## use Perlito5::Ruby::Emitter;
-use Perlito5::Runtime;
-use Perlito5::Dumper;
 
 use strict;
 

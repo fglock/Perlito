@@ -3748,6 +3748,7 @@ sub Perlito5::Grammar::Regex::rule {
     $tmp ? $MATCH : 0
 }
 # use Perlito5::Grammar::Regex
+# use Perlito5::Grammar::Precedence
 package main;
 undef();
 package Perlito5::Grammar::String;
@@ -7939,6 +7940,191 @@ sub Perlito5::Grammar::exp_stmts {
 # use Perlito5::Grammar
 package main;
 undef();
+package Perlito5::AST::Apply;
+my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>');
+sub Perlito5::AST::Apply::op_assign {
+    my $self = $_[0];
+    my $code = $self->{'code'};
+    return(0)
+        if ref($code);
+    if (exists($op{$code})) {
+        return(Perlito5::AST::Apply->new('code' => 'infix:<=>', 'arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new('code' => $op{$code}, 'arguments' => $self->{'arguments'})]))
+    }
+    return(0)
+}
+package Perlito5::AST::Do;
+sub Perlito5::AST::Do::simplify {
+    my $self = $_[0];
+    my $block;
+    if ($self->{'block'}->isa('Perlito5::AST::Lit::Block')) {
+        $block = $self->{'block'}->stmts()
+    }
+    else {
+        $block = [$self->{'block'}]
+    }
+    if (scalar(@{$block}) == 1) {
+        my $stmt = $block->[0];
+        if ($stmt->isa('Perlito5::AST::Apply') && $stmt->code() eq 'circumfix:<( )>') {
+            my $args = $stmt->arguments();
+            return(Perlito5::AST::Do->new('block' => $args->[0])->simplify())
+                if @{$args} == 1;
+            return(Perlito5::AST::Do->new('block' => $block))
+        }
+        if ($stmt->isa('Perlito5::AST::Do')) {
+            return($stmt->simplify())
+        }
+    }
+    return(Perlito5::AST::Do->new('block' => $block))
+}
+# use Perlito5::Macro
+package main;
+package Perlito5::strict;
+sub Perlito5::strict::import {
+    $Perlito5::STRICT = 1
+}
+sub Perlito5::strict::unimport {
+    $Perlito5::STRICT = 0
+}
+1;
+package main;
+package Perlito5;
+# use Perlito5::strict
+${chr(15)} = 'perlito5'
+    unless defined(${chr(15)});
+${'main::]'} = 5.014001
+    unless ${'main::]'};
+${'/'} = chr(10)
+    unless defined(${'/'});
+${'\"'} = ' '
+    unless defined(${'\"'});
+${','} = undef
+    unless defined(${','});
+${'!'} = ''
+    unless defined(${'!'});
+${';'} = chr(28)
+    unless defined(${';'});
+${'?'} = 0
+    unless defined(${'?'});
+${'['} = 0
+    unless defined(${'['});
+${chr(22)} = bless({'original' => 'v5.14.1', 'qv' => 1, 'version' => [5, 14, 1]}, 'version')
+    unless defined(${chr(22)});
+our $EXPAND_USE = 1;
+our $STRICT = 0;
+our $WARNINGS = 0;
+our $UTF8 = 0;
+our $BYTES = 0;
+our $CALLER = [];
+our %DATA_SECTION = ();
+our $PKG_NAME = '';
+our $LINE_NUMBER = 0;
+our $FILE_NAME = '';
+our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
+push(@INC, $_)
+    for split(':', ($ENV{'PERL5LIB'} || ''));
+our $SPECIAL_VAR = {'$_' => 'ARG', '$&' => '$MATCH', '$`' => '$PREMATCH', '$' . chr(39) => '$POSTMATCH', '$+' => '$LAST_PAREN_MATCH', '@+' => '@LAST_MATCH_END', '%+' => '%LAST_PAREN_MATCH', '@-' => '@LAST_MATCH_START', '$|' => 'autoflush', '$/' => '$RS', '@_' => '@ARG', '< $' => '$EUID', '$.' => '$NR', '< $< ' => '$UID', '$(' => '$GID', '$#' => undef, '$@' => '$EVAL_ERROR', '$=' => '$FORMAT_LINES_PER_PAGE', '$,' => '$OFS', '$?' => '$CHILD_ERROR', '$*' => undef, '$[' => undef, '$$' => '$PID', '%-' => undef, '$~' => '$FORMAT_NAME', '$-' => '$FORMAT_LINES_LEFT', '$&' => '$MATCH', '$%' => '$FORMAT_PAGE_NUMBER', '$)' => '$EGID', '$]' => undef, '$!' => '$ERRNO', '$;' => '$SUBSEP', '$' . chr(92) => '$ORS', '%!' => undef, '$"' => '$LIST_SEPARATOR', '$_' => '$ARG', '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'};
+our $CORE_OVERRIDABLE = {'say' => 1, 'break' => 1, 'given' => 1, 'when' => 1, 'default' => 1, 'state' => 1, 'lock' => 1};
+our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => undef, 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => chr(92) . '$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => chr(92) . '[@%]', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => undef, 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => chr(92) . '%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => chr(92) . '[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*' . chr(92) . '$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*' . chr(92) . '$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';' . chr(92) . '@', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => chr(92) . '@;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => chr(92) . '@@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => chr(92) . '@@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*' . chr(92) . '$$$', 'CORE::dbmopen' => chr(92) . '%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => chr(92) . '[@%]', 'CORE::chomp' => undef, 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => chr(92) . '[@%]', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';' . chr(92) . '@', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef};
+1;
+# use Perlito5::Runtime
+package main;
+package Perlito5::Dumper;
+sub Perlito5::Dumper::import {
+    my $pkg = shift;
+    my $callpkg = caller(0);
+    *{$callpkg . '::Dumper'} = \&Dumper;
+    return()
+}
+sub Perlito5::Dumper::Dumper {
+    my $seen = {};
+    my $level = '    ';
+    my @out;
+    for my $i (0 .. $#_) {
+        my $pos = '$VAR' . ($i + 1);
+        push(@out, $pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
+    }
+    return(join('', @out))
+}
+sub Perlito5::Dumper::ast_dumper {
+    my $seen = {};
+    my $level = '    ';
+    my $pos = '[TODO - recursive structure in AST is not supported]';
+    return(_dumper($_[0], $level, $seen, $pos))
+}
+sub Perlito5::Dumper::_dumper {
+    my($obj, $tab, $seen, $pos) = @_;
+    return('undef')
+        if !defined($obj);
+    my $ref = ref($obj);
+    return(escape_string($obj))
+        if !$ref;
+    my $as_string = $obj;
+    return($seen->{$as_string})
+        if $seen->{$as_string};
+    $seen->{$as_string} = $pos;
+    my $tab1 = $tab . '    ';
+    if ($ref eq 'ARRAY') {
+        return('[]')
+            unless @{$obj};
+        my @out;
+        for my $i (0 .. $#{$obj}) {
+            my $here = $pos . '->[' . $i . ']';
+            push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+        }
+        return(join('', '[' . chr(10), @out, $tab, ']'))
+    }
+    elsif ($ref eq 'HASH') {
+        return('{}')
+            unless keys(%{$obj});
+        my @out;
+        for my $i (sort(keys(%{$obj}))) {
+            my $here = $pos . '->{' . $i . '}';
+            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+        }
+        return(join('', '{' . chr(10), @out, $tab, '}'))
+    }
+    elsif ($ref eq 'SCALAR') {
+        return(chr(92) . _dumper(${$obj}, $tab1, $seen, $pos))
+    }
+    my @out;
+    for my $i (sort(keys(%{$obj}))) {
+        my $here = $pos . '->{' . $i . '}';
+        push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+    }
+    return(join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')'))
+}
+my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
+sub Perlito5::Dumper::escape_string {
+    my $s = shift;
+    my @out;
+    my $tmp = '';
+    return(chr(39) . chr(39))
+        if $s eq '';
+    return(0 + $s)
+        if (0 + $s) eq $s;
+    for my $i (0 .. length($s) - 1) {
+        my $c = substr($s, $i, 1);
+        if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
+            $tmp = $tmp . $c
+        }
+        else {
+            push(@out, chr(39) . $tmp . chr(39))
+                if $tmp ne '';
+            push(@out, 'chr(' . ord($c) . ')');
+            $tmp = ''
+        }
+    }
+    push(@out, chr(39) . $tmp . chr(39))
+        if $tmp ne '';
+    return(join(' . ', @out))
+}
+sub Perlito5::Dumper::_identity {
+    $_[0] eq $_[1]
+}
+1;
+# use Perlito5::Dumper
+package main;
+undef();
 package Perlito5::AST::CompUnit;
 sub Perlito5::AST::CompUnit::new {
     my $class = shift;
@@ -8210,101 +8396,6 @@ sub Perlito5::AST::Use::mod {
 }
 sub Perlito5::AST::Use::code {
     $_[0]->{'code'}
-}
-1;
-package main;
-package Perlito5::Dumper;
-sub Perlito5::Dumper::import {
-    my $pkg = shift;
-    my $callpkg = caller(0);
-    *{$callpkg . '::Dumper'} = \&Dumper;
-    return()
-}
-sub Perlito5::Dumper::Dumper {
-    my $seen = {};
-    my $level = '    ';
-    my @out;
-    for my $i (0 .. $#_) {
-        my $pos = '$VAR' . ($i + 1);
-        push(@out, $pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
-    }
-    return(join('', @out))
-}
-sub Perlito5::Dumper::ast_dumper {
-    my $seen = {};
-    my $level = '    ';
-    my $pos = '[TODO - recursive structure in AST is not supported]';
-    return(_dumper($_[0], $level, $seen, $pos))
-}
-sub Perlito5::Dumper::_dumper {
-    my($obj, $tab, $seen, $pos) = @_;
-    return('undef')
-        if !defined($obj);
-    my $ref = ref($obj);
-    return(escape_string($obj))
-        if !$ref;
-    my $as_string = $obj;
-    return($seen->{$as_string})
-        if $seen->{$as_string};
-    $seen->{$as_string} = $pos;
-    my $tab1 = $tab . '    ';
-    if ($ref eq 'ARRAY') {
-        return('[]')
-            unless @{$obj};
-        my @out;
-        for my $i (0 .. $#{$obj}) {
-            my $here = $pos . '->[' . $i . ']';
-            push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
-        }
-        return(join('', '[' . chr(10), @out, $tab, ']'))
-    }
-    elsif ($ref eq 'HASH') {
-        return('{}')
-            unless keys(%{$obj});
-        my @out;
-        for my $i (sort(keys(%{$obj}))) {
-            my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
-        }
-        return(join('', '{' . chr(10), @out, $tab, '}'))
-    }
-    elsif ($ref eq 'SCALAR') {
-        return(chr(92) . _dumper(${$obj}, $tab1, $seen, $pos))
-    }
-    my @out;
-    for my $i (sort(keys(%{$obj}))) {
-        my $here = $pos . '->{' . $i . '}';
-        push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
-    }
-    return(join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')'))
-}
-my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
-sub Perlito5::Dumper::escape_string {
-    my $s = shift;
-    my @out;
-    my $tmp = '';
-    return(chr(39) . chr(39))
-        if $s eq '';
-    return(0 + $s)
-        if (0 + $s) eq $s;
-    for my $i (0 .. length($s) - 1) {
-        my $c = substr($s, $i, 1);
-        if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
-            $tmp = $tmp . $c
-        }
-        else {
-            push(@out, chr(39) . $tmp . chr(39))
-                if $tmp ne '';
-            push(@out, 'chr(' . ord($c) . ')');
-            $tmp = ''
-        }
-    }
-    push(@out, chr(39) . $tmp . chr(39))
-        if $tmp ne '';
-    return(join(' . ', @out))
-}
-sub Perlito5::Dumper::_identity {
-    $_[0] eq $_[1]
 }
 1;
 package main;
@@ -11446,45 +11537,6 @@ sub Perlito5::Javascript3::Sprintf::emit_javascript3 {
 # use Perlito5::Javascript3::Sprintf
 package main;
 undef();
-package Perlito5::AST::Apply;
-my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>');
-sub Perlito5::AST::Apply::op_assign {
-    my $self = $_[0];
-    my $code = $self->{'code'};
-    return(0)
-        if ref($code);
-    if (exists($op{$code})) {
-        return(Perlito5::AST::Apply->new('code' => 'infix:<=>', 'arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new('code' => $op{$code}, 'arguments' => $self->{'arguments'})]))
-    }
-    return(0)
-}
-package Perlito5::AST::Do;
-sub Perlito5::AST::Do::simplify {
-    my $self = $_[0];
-    my $block;
-    if ($self->{'block'}->isa('Perlito5::AST::Lit::Block')) {
-        $block = $self->{'block'}->stmts()
-    }
-    else {
-        $block = [$self->{'block'}]
-    }
-    if (scalar(@{$block}) == 1) {
-        my $stmt = $block->[0];
-        if ($stmt->isa('Perlito5::AST::Apply') && $stmt->code() eq 'circumfix:<( )>') {
-            my $args = $stmt->arguments();
-            return(Perlito5::AST::Do->new('block' => $args->[0])->simplify())
-                if @{$args} == 1;
-            return(Perlito5::AST::Do->new('block' => $block))
-        }
-        if ($stmt->isa('Perlito5::AST::Do')) {
-            return($stmt->simplify())
-        }
-    }
-    return(Perlito5::AST::Do->new('block' => $block))
-}
-# use Perlito5::Macro
-package main;
-undef();
 # use Perlito5::AST
 # use strict
 package Perlito5::Perl5;
@@ -12584,6 +12636,253 @@ package Perlito5::AST::Use;
 }
 # use Perlito5::Perl6::Emitter
 package main;
+package Perlito5::Perl6::PrettyPrinter;
+# use strict
+# use warnings
+my %dispatch = ('stmt' => \&statement, 'stmt_modifier' => \&statement_modifier, 'block' => \&block, 'keyword' => \&keyword, 'bareword' => \&bareword, 'number' => \&number, 'op' => \&op, 'paren' => \&paren, 'paren_semicolon' => \&paren_semicolon, 'apply' => \&apply, 'call' => \&call, 'comment' => \&comment, 'label' => \&label);
+my %pair = ('(' => ')', '[' => ']', '{' => '}');
+our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
+$op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
+    for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
+$op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 8, 'str' => $_}
+    for 'do', 'sub', 'my', 'our', 'state', 'local', 'map', 'grep', 'sort';
+my %tab;
+sub Perlito5::Perl6::PrettyPrinter::tab {
+    my $level = $_[0];
+    $tab{$level} //= '    ' x $level
+}
+sub Perlito5::Perl6::PrettyPrinter::render {
+    my($data, $level, $out) = @_;
+    if (ref($data)) {
+        $dispatch{$data->[0]}->($data, $level, $out)
+    }
+    else {
+        push(@{$out}, $data)
+    }
+}
+sub Perlito5::Perl6::PrettyPrinter::op_precedence {
+    my($data) = @_;
+    return(0)
+        if !ref($data);
+    return(0)
+        if $data->[0] ne 'op';
+    return($op{$data->[1]}->{'prec'} || 0)
+}
+sub Perlito5::Perl6::PrettyPrinter::statement_need_semicolon {
+    my($data) = @_;
+    return(1)
+        if !ref($data);
+    return(0)
+        if $data->[0] eq 'block' || $data->[0] eq 'comment' || $data->[0] eq 'label';
+    if ($data->[0] eq 'stmt') {
+        if (ref($data->[1])) {
+            my $dd = $data->[1];
+            if ($dd->[0] eq 'keyword') {
+                return(0)
+                    if ref($data->[-1]) && $data->[-1]->[0] eq 'block'
+            }
+        }
+    }
+    return(1)
+}
+sub Perlito5::Perl6::PrettyPrinter::op_render {
+    my($data, $level, $out, $current_op) = @_;
+    if (ref($data)) {
+        my $this_prec = op_precedence($data);
+        push(@{$out}, '(')
+            if $this_prec && $current_op->{'prec'} && $current_op->{'prec'} < $this_prec;
+        render($data, $level, $out);
+        push(@{$out}, ')')
+            if $this_prec && $current_op->{'prec'} && $current_op->{'prec'} < $this_prec
+    }
+    else {
+        push(@{$out}, $data)
+    }
+}
+sub Perlito5::Perl6::PrettyPrinter::op {
+    my($data, $level, $out) = @_;
+    my $op = $data->[1];
+    my $spec = $op{$op} || die('unknown op: ' . $op);
+    if ($spec->{'fix'} eq 'infix') {
+        op_render($data->[2], $level, $out, $spec);
+        push(@{$out}, $spec->{'str'});
+        op_render($data->[3], $level, $out, $spec)
+    }
+    elsif ($spec->{'fix'} eq 'prefix') {
+        push(@{$out}, $spec->{'str'});
+        op_render($data->[2], $level, $out, $spec)
+    }
+    elsif ($spec->{'fix'} eq 'postfix') {
+        op_render($data->[2], $level, $out, $spec);
+        push(@{$out}, $spec->{'str'})
+    }
+    elsif ($spec->{'fix'} eq 'ternary') {
+        op_render($data->[2], $level, $out, $spec);
+        push(@{$out}, ' ?? ');
+        op_render($data->[3], $level, $out, $spec);
+        push(@{$out}, ' !! ');
+        op_render($data->[4], $level, $out, $spec)
+    }
+    elsif ($spec->{'fix'} eq 'deref') {
+        push(@{$out}, $spec->{'str'}, '(');
+        op_render($data->[2], $level, $out, $spec);
+        push(@{$out}, ')')
+    }
+    elsif ($spec->{'fix'} eq 'circumfix') {
+        push(@{$out}, $spec->{'str'});
+        for my $line (2 .. $#{$data}) {
+            op_render($data->[$line], $level, $out, $spec);
+            push(@{$out}, ', ')
+                if $line != $#{$data}
+        }
+        push(@{$out}, $pair{$spec->{'str'}})
+    }
+    elsif ($spec->{'fix'} eq 'list') {
+        for my $line (2 .. $#{$data}) {
+            op_render($data->[$line], $level, $out, $spec);
+            push(@{$out}, $spec->{'str'})
+                if $line != $#{$data}
+        }
+    }
+    elsif ($spec->{'fix'} eq 'parsed') {
+        push(@{$out}, $spec->{'str'});
+        for my $line (2 .. $#{$data}) {
+            my $d = $data->[$line];
+            push(@{$out}, ' ');
+            render($d, $level, $out)
+        }
+    }
+    else {
+        die('unknown fixity: ' . $spec->{'fix'})
+    }
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::call {
+    my($data, $level, $out) = @_;
+    my @dd = @{$data};
+    shift(@dd);
+    my $open = '(';
+    render(shift(@dd), $level, $out);
+    push(@{$out}, '->');
+    my $d = $dd[0];
+    render($d, $level, $out);
+    $dd[0] = 'list:<,>';
+    push(@{$out}, $open);
+    op(['op' => @dd], $level, $out);
+    push(@{$out}, $pair{$open})
+}
+sub Perlito5::Perl6::PrettyPrinter::apply {
+    my($data, $level, $out) = @_;
+    my @dd = @{$data};
+    shift(@dd);
+    my $open = shift(@dd);
+    my $d = $dd[0];
+    render($d, $level, $out);
+    $dd[0] = 'list:<,>';
+    push(@{$out}, $open);
+    op(['op' => @dd], $level, $out);
+    push(@{$out}, $pair{$open})
+}
+sub Perlito5::Perl6::PrettyPrinter::paren {
+    my($data, $level, $out) = @_;
+    my @dd = @{$data};
+    shift(@dd);
+    my $open = $dd[0];
+    $dd[0] = 'list:<,>';
+    push(@{$out}, $open);
+    op(['op' => @dd], $level, $out);
+    push(@{$out}, $pair{$open})
+}
+sub Perlito5::Perl6::PrettyPrinter::paren_semicolon {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1]);
+    for my $line (2 .. $#{$data}) {
+        render($data->[$line], $level, $out)
+            if @{$data->[$line]};
+        if ($line != $#{$data}) {
+            if (@{$data->[$line + 1]}) {
+                push(@{$out}, '; ')
+            }
+            else {
+                push(@{$out}, ';')
+            }
+        }
+    }
+    push(@{$out}, $pair{$data->[1]})
+}
+sub Perlito5::Perl6::PrettyPrinter::label {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1], ':');
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::keyword {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1]);
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::bareword {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1]);
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::number {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1]);
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::comment {
+    my($data, $level, $out) = @_;
+    push(@{$out}, $data->[1]);
+    return()
+}
+sub Perlito5::Perl6::PrettyPrinter::statement {
+    my($data, $level, $out) = @_;
+    for my $line (1 .. $#{$data}) {
+        my $d = $data->[$line];
+        render($d, $level, $out);
+        push(@{$out}, ' ')
+            if $line != $#{$data}
+    }
+}
+sub Perlito5::Perl6::PrettyPrinter::statement_modifier {
+    my($data, $level, $out) = @_;
+    render($data->[1], $level, $out);
+    push(@{$out}, chr(10), tab($level + 1));
+    render($data->[2], $level, $out)
+}
+sub Perlito5::Perl6::PrettyPrinter::block {
+    my($data, $level, $out) = @_;
+    if (@{$data} == 1) {
+        push(@{$out}, '{}');
+        return()
+    }
+    push(@{$out}, '{', chr(10));
+    $level++;
+    for my $line (1 .. $#{$data}) {
+        my $d = $data->[$line];
+        push(@{$out}, tab($level));
+        render($d, $level, $out);
+        push(@{$out}, ';')
+            if $line != $#{$data} && statement_need_semicolon($d);
+        push(@{$out}, chr(10))
+    }
+    $level--;
+    push(@{$out}, tab($level), '}')
+}
+sub Perlito5::Perl6::PrettyPrinter::pretty_print {
+    my($data, $level, $out) = @_;
+    for my $line (0 .. $#{$data}) {
+        my $d = $data->[$line];
+        push(@{$out}, tab($level));
+        render($d, $level, $out);
+        push(@{$out}, ';')
+            if $line != $#{$data} && statement_need_semicolon($d);
+        push(@{$out}, chr(10))
+    }
+}
+1;
+# use Perlito5::Perl6::PrettyPrinter
+package main;
 undef();
 # use Perlito5::AST
 package Perlito5::XS;
@@ -13036,58 +13335,6 @@ package Perlito5::AST::Use;
     }
 }
 # use Perlito5::XS::Emitter
-# use Perlito5::Grammar::Precedence
-package main;
-package Perlito5::strict;
-sub Perlito5::strict::import {
-    $Perlito5::STRICT = 1
-}
-sub Perlito5::strict::unimport {
-    $Perlito5::STRICT = 0
-}
-1;
-package main;
-package Perlito5;
-# use Perlito5::strict
-${chr(15)} = 'perlito5'
-    unless defined(${chr(15)});
-${'main::]'} = 5.014001
-    unless ${'main::]'};
-${'/'} = chr(10)
-    unless defined(${'/'});
-${'\"'} = ' '
-    unless defined(${'\"'});
-${','} = undef
-    unless defined(${','});
-${'!'} = ''
-    unless defined(${'!'});
-${';'} = chr(28)
-    unless defined(${';'});
-${'?'} = 0
-    unless defined(${'?'});
-${'['} = 0
-    unless defined(${'['});
-${chr(22)} = bless({'original' => 'v5.14.1', 'qv' => 1, 'version' => [5, 14, 1]}, 'version')
-    unless defined(${chr(22)});
-our $EXPAND_USE = 1;
-our $STRICT = 0;
-our $WARNINGS = 0;
-our $UTF8 = 0;
-our $BYTES = 0;
-our $CALLER = [];
-our %DATA_SECTION = ();
-our $PKG_NAME = '';
-our $LINE_NUMBER = 0;
-our $FILE_NAME = '';
-our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
-push(@INC, $_)
-    for split(':', ($ENV{'PERL5LIB'} || ''));
-our $SPECIAL_VAR = {'$_' => 'ARG', '$&' => '$MATCH', '$`' => '$PREMATCH', '$' . chr(39) => '$POSTMATCH', '$+' => '$LAST_PAREN_MATCH', '@+' => '@LAST_MATCH_END', '%+' => '%LAST_PAREN_MATCH', '@-' => '@LAST_MATCH_START', '$|' => 'autoflush', '$/' => '$RS', '@_' => '@ARG', '< $' => '$EUID', '$.' => '$NR', '< $< ' => '$UID', '$(' => '$GID', '$#' => undef, '$@' => '$EVAL_ERROR', '$=' => '$FORMAT_LINES_PER_PAGE', '$,' => '$OFS', '$?' => '$CHILD_ERROR', '$*' => undef, '$[' => undef, '$$' => '$PID', '%-' => undef, '$~' => '$FORMAT_NAME', '$-' => '$FORMAT_LINES_LEFT', '$&' => '$MATCH', '$%' => '$FORMAT_PAGE_NUMBER', '$)' => '$EGID', '$]' => undef, '$!' => '$ERRNO', '$;' => '$SUBSEP', '$' . chr(92) => '$ORS', '%!' => undef, '$"' => '$LIST_SEPARATOR', '$_' => '$ARG', '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'};
-our $CORE_OVERRIDABLE = {'say' => 1, 'break' => 1, 'given' => 1, 'when' => 1, 'default' => 1, 'state' => 1, 'lock' => 1};
-our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => undef, 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => chr(92) . '$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => chr(92) . '[@%]', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => undef, 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => chr(92) . '%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => chr(92) . '[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*' . chr(92) . '$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*' . chr(92) . '$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';' . chr(92) . '@', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => chr(92) . '@;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => chr(92) . '@@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => chr(92) . '@@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*' . chr(92) . '$$$', 'CORE::dbmopen' => chr(92) . '%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => chr(92) . '[@%]', 'CORE::chomp' => undef, 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => chr(92) . '[@%]', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';' . chr(92) . '@', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef};
-1;
-# use Perlito5::Runtime
-# use Perlito5::Dumper
 # use strict
 my $_V5_COMPILER_NAME = 'Perlito5';
 my $_V5_COMPILER_VERSION = '9.0';
