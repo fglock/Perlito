@@ -12297,9 +12297,9 @@ package Perlito5::AST::Var;
             if $str_name eq chr(92);
         $str_name = chr(92) . '"'
             if $str_name eq '"';
-        my $perl5_name = $self->perl5_name();
+        my $perl5_name = $self->perl5_name_perl6();
         my $decl_type;
-        my $decl = $self->perl5_get_decl($perl5_name);
+        my $decl = $self->perl5_get_decl_perl6($perl5_name);
         if ($decl) {
             $decl_type = $decl->{'decl'}
         }
@@ -12320,6 +12320,24 @@ package Perlito5::AST::Var;
             return($self->{'sigil'} . $ns . $self->{'name'})
         }
         return($self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}')
+    }
+    sub Perlito5::AST::Var::perl5_name_perl6 {
+        my $self = shift;
+        my $sigil = $self->{'sigil'};
+        $sigil = '@'
+            if $sigil eq '$#';
+        $sigil . ($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $self->{'name'}
+    }
+    sub Perlito5::AST::Var::perl5_get_decl_perl6 {
+        my $self = shift;
+        my $perl5_name = shift;
+        return({'decl' => 'our'})
+            if substr($perl5_name, 0, 1) eq '&';
+        for (@{$Perlito5::VAR}) {
+            return($_->{$perl5_name})
+                if exists($_->{$perl5_name})
+        }
+        return(undef)
     }
 }
 package Perlito5::AST::Proto;

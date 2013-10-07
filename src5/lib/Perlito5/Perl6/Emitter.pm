@@ -157,10 +157,10 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
-        my $perl5_name = $self->perl5_name;
+        my $perl5_name = $self->perl5_name_perl6;
         # say "looking up $perl5_name";
         my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl( $perl5_name );
+        my $decl = $self->perl5_get_decl_perl6( $perl5_name );
         if ( $decl ) {
             # say "found ", $decl->{decl};
             $decl_type = $decl->{decl};
@@ -200,7 +200,35 @@ package Perlito5::AST::Var;
         }
         return $self->{sigil} . "{'" . $ns . $str_name . "'}"
     }
+    sub perl5_name_perl6 {
+        my $self = shift;
+
+        my $sigil = $self->{sigil};
+        $sigil = '@' if $sigil eq '$#';
+
+        $sigil
+        . ( $self->{namespace}
+          ? $self->{namespace} . '::'
+          : ''
+          )
+        . $self->{name}
+    }
+    sub perl5_get_decl_perl6 {
+        my $self = shift;
+        my $perl5_name = shift;
+
+        # subroutines are never 'my' (but they may be in later versions of Perl5)
+        return { decl => 'our' }
+            if substr($perl5_name, 0, 1) eq '&';
+
+        for ( @{ $Perlito5::VAR } ) {
+            return $_->{$perl5_name}
+                if exists $_->{$perl5_name}
+        }
+        return undef;
+    }
 }
+
 
 package Perlito5::AST::Proto;
 {

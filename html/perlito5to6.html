@@ -80,6 +80,7 @@ print $x[1], "\n";
             catch(err) {
                 document.getElementById('log-result').value += "Error:\n";
                 document.getElementById('log-result').value += err + "\n";
+                // document.getElementById('log-result').value += err.stack + "\n";
                 document.getElementById('log-result').value += "Compilation aborted.\n";
             }
 		}
