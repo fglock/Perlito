@@ -12,6 +12,7 @@ use Perlito5::Macro;
 use Perlito5::Runtime;
 
 use Perlito5::Perl6::Emitter;
+use Perlito5::Perl6::PrettyPrint;
 
 sub compile_p5_to_p6 {
     my $s = shift;
@@ -23,6 +24,15 @@ sub compile_p5_to_p6 {
             Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) )
         ]
     );
+
+    # TODO
+    # say "use v6;";
+    # my @data = Perlito5::AST::CompUnit::emit_perl6_program( $comp_units );
+    # # print Perlito5::Dumper::ast_dumper( \@data );
+    # my $out = [];
+    # Perlito5::Perl6::PrettyPrinter::pretty_print( \@data, 0, $out );
+    # print join( '', @$out ), "\n";
+
 }
 
 1;
