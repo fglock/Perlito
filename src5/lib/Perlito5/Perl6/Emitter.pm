@@ -183,13 +183,14 @@ package Perlito5::AST::Lookup;
            && $self->{obj}->{code} eq 'prefix:<@>'
            )
         {
+            $self->{obj}{sigil} = '%';
             return [ apply => '{', $self->{obj}->emit_perl6(), $self->autoquote($self->{index_exp})->emit_perl6() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
            )
         {
-            $self->{obj}{sigil} = '@';
+            $self->{obj}{sigil} = '%';
             return [ apply => '{', $self->{obj}->emit_perl6(), $self->autoquote($self->{index_exp})->emit_perl6() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')

@@ -19,7 +19,14 @@ Perlito5::Grammar::Statement::add_statement( 'package'  => sub { Perlito5::Gramm
 Perlito5::Grammar::Statement::add_statement( 'format'   => sub { Perlito5::Grammar::Statement->stmt_format( $_[0], $_[1] ) } );
 
 token stmt_yadayada {
-    '...' { die "Unimplemented" }
+    '...' 
+    {
+        $MATCH->{capture} = Perlito5::AST::Apply->new(
+            code      => 'die',
+            namespace => '',
+            arguments => [ Perlito5::AST::Val::Buf->new( buf => 'Unimplemented' ) ],
+        );
+    }
 };
 
 token stmt_format {

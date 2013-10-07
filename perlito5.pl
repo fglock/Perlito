@@ -922,7 +922,7 @@ sub Perlito5::Grammar::Statement::stmt_yadayada {
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
     my $tmp = ((('...' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
-        die('Unimplemented');
+        $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'die', 'namespace' => '', 'arguments' => [Perlito5::AST::Val::Buf->new('buf' => 'Unimplemented')]);
         1
     })));
     $tmp ? $MATCH : 0
@@ -12284,10 +12284,11 @@ package Perlito5::AST::Lookup;
     sub Perlito5::AST::Lookup::emit_perl6 {
         my $self = $_[0];
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') {
+            $self->{'obj'}->{'sigil'} = '%';
             return(['apply' => '{', $self->{'obj'}->emit_perl6(), $self->autoquote($self->{'index_exp'})->emit_perl6()])
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@')) {
-            $self->{'obj'}->{'sigil'} = '@';
+            $self->{'obj'}->{'sigil'} = '%';
             return(['apply' => '{', $self->{'obj'}->emit_perl6(), $self->autoquote($self->{'index_exp'})->emit_perl6()])
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
