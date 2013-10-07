@@ -1037,10 +1037,10 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
-        my $perl5_name = $self->perl5_name_javascript2;
+        my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
         my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl_javascript2( $perl5_name );
+        my $decl = $self->perl5_get_decl( $perl5_name );
         if ( $decl ) {
             # say "found ", $decl->{decl};
             $decl_type = $decl->{decl};
@@ -1186,33 +1186,6 @@ package Perlito5::AST::Var;
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
 
-    sub perl5_name_javascript2 {
-        my $self = shift;
-
-        my $sigil = $self->{sigil};
-        $sigil = '@' if $sigil eq '$#';
-
-        $sigil
-        . ( $self->{namespace}
-          ? $self->{namespace} . '::'
-          : ''
-          )
-        . $self->{name}
-    }
-    sub perl5_get_decl_javascript2 {
-        my $self = shift;
-        my $perl5_name = shift;
-
-        # subroutines are never 'my' (but they may be in later versions of Perl5)
-        return { decl => 'our' }
-            if substr($perl5_name, 0, 1) eq '&';
-
-        for ( @{ $Perlito5::VAR } ) {
-            return $_->{$perl5_name}
-                if exists $_->{$perl5_name}
-        }
-        return undef;
-    }
     sub emit_javascript2_get_decl { () }
 }
 
@@ -1251,10 +1224,10 @@ package Perlito5::AST::Decl;
             #     .       'p5LOCAL.push(function(){ ' . $var_set . ' }) '
             #     .  '}()';
 
-            my $perl5_name = $self->{var}->perl5_name_javascript2;
+            my $perl5_name = $self->{var}->perl5_name;
             # say "looking up $perl5_name";
             my $decl_namespace = '';
-            my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
+            my $decl = $self->{var}->perl5_get_decl( $perl5_name );
             if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
                 die "Can't localize lexical variable $perl5_name";
             }
@@ -1273,7 +1246,7 @@ package Perlito5::AST::Decl;
 
         my $type = $self->{decl};
         my $env = { decl => $type };
-        my $perl5_name = $self->{var}->perl5_name_javascript2;
+        my $perl5_name = $self->{var}->perl5_name;
         if ( $self->{decl} ne 'my' ) {
 
             die "No package name allowed for variable $perl5_name in \"our\""
@@ -1282,7 +1255,7 @@ package Perlito5::AST::Decl;
             if ( $self->{var}{namespace} eq '' ) {
                 # say "looking up $perl5_name";
                 my $decl_namespace = '';
-                my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
+                my $decl = $self->{var}->perl5_get_decl( $perl5_name );
                 if ( $decl && $decl->{decl} eq 'our') {
                     # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
                     $decl_namespace = $decl->{namespace};
@@ -2829,8 +2802,8 @@ package Perlito5::AST::For;
         }
         my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
 
-        my $perl5_name = $v->perl5_name_javascript2;
-        my $pre_declaration = $v->perl5_get_decl_javascript2( $perl5_name );
+        my $perl5_name = $v->perl5_name;
+        my $pre_declaration = $v->perl5_get_decl( $perl5_name );
         if ( $pre_declaration ) {
             # say "found ", $pre_declaration->{decl};
             $decl = $pre_declaration->{decl};
