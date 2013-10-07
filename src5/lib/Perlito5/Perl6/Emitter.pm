@@ -1,18 +1,74 @@
 use v5;
 use Perlito5::AST;
-use Perlito5::Dumper;   # escape_string
 use strict;
 
-package Perlito5::Perl6;
-{
-    sub escape_string {
-        return Perlito5::Dumper::escape_string($_[0]);
-    }
+package Perlito5::Perl6 {
     sub emit_perl6_block {
         my $block = $_[0];
         return [ 'block', 
                  map { defined($_) && $_->emit_perl6() } @$block
                ];
+    }
+
+    my %safe_char = (
+        ' ' => 1,
+        '!' => 1,
+        '"' => 1,
+        '#' => 1,
+        '$' => 1,
+        '%' => 1,
+        '&' => 1,
+        '(' => 1,
+        ')' => 1,
+        '*' => 1,
+        '+' => 1,
+        ',' => 1,
+        '-' => 1,
+        '.' => 1,
+        '/' => 1,
+        ':' => 1,
+        ';' => 1,
+        '<' => 1,
+        '=' => 1,
+        '>' => 1,
+        '?' => 1,
+        '@' => 1,
+        '[' => 1,
+        ']' => 1,
+        '^' => 1,
+        '_' => 1,
+        '`' => 1,
+        '{' => 1,
+        '|' => 1,
+        '}' => 1,
+        '~' => 1,
+    );
+
+    sub escape_string {
+        my $s = shift;
+        my @out;
+        my $tmp = '';
+        return "''" if $s eq '';
+        return 0+$s if (0+$s) eq $s;
+        for my $i (0 .. length($s) - 1) {
+            my $c = substr($s, $i, 1);
+            if  (  ($c ge 'a' && $c le 'z')
+                || ($c ge 'A' && $c le 'Z')
+                || ($c ge '0' && $c le '9')
+                || exists( $safe_char{$c} )
+                )
+            {
+                $tmp = $tmp . $c;
+            }
+            else {
+                push @out, "'$tmp'" if $tmp ne '';
+                push @out, "chr(" . ord($c) . ")";
+                $tmp = '';
+            }
+        }
+        push @out, "'$tmp'" if $tmp ne '';
+        return @out if @out < 2;
+        return [ op => 'list:<~>', @out ];
     }
 }
 
@@ -274,6 +330,7 @@ package Perlito5::AST::Apply;
 
         my $code = $self->{code};
         $code = 'list:<~>' if $code eq 'list:<.>';
+        $code = 'ternary:<?? !!>' if $code eq 'ternary:<? :>';
 
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{arguments}->[0];
@@ -447,7 +504,7 @@ package Perlito5::AST::For;
                     ];
         }
         else {
-            $cond = [ paren => '(', $self->{cond}->emit_perl6() ];
+            $cond = $self->{cond}->emit_perl6();
         }
 
         my @sig;
@@ -456,11 +513,13 @@ package Perlito5::AST::For;
             # $_
         }
         else {
-            @sig = $sig_ast->emit_perl6();
+            $sig_ast = $sig_ast->{var}
+                if ref($sig_ast) eq 'Perlito5::AST::Decl';
+            @sig = ( '->', $sig_ast->emit_perl6() );
         }
         push @out, [ stmt => [ keyword => 'for' ],
-                     @sig,
                      $cond,
+                     @sig,
                      Perlito5::Perl6::emit_perl6_block($self->{body}->stmts)
                    ];
         if ($self->{continue} && @{ $self->{continue}{stmts} }) {

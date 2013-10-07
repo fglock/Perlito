@@ -12153,18 +12153,41 @@ sub Perlito5::Perl5::Runtime::emit_perl5 {
 package main;
 undef();
 # use Perlito5::AST
-# use Perlito5::Dumper
 # use strict
-package Perlito5::Perl6;
 {
-    sub Perlito5::Perl6::escape_string {
-        return(Perlito5::Dumper::escape_string($_[0]))
-    }
+    package Perlito5::Perl6;
     sub Perlito5::Perl6::emit_perl6_block {
         my $block = $_[0];
         return(['block', map {
             defined($_) && $_->emit_perl6()
         } @{$block}])
+    }
+    my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
+    sub Perlito5::Perl6::escape_string {
+        my $s = shift;
+        my @out;
+        my $tmp = '';
+        return(chr(39) . chr(39))
+            if $s eq '';
+        return(0 + $s)
+            if (0 + $s) eq $s;
+        for my $i (0 .. length($s) - 1) {
+            my $c = substr($s, $i, 1);
+            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
+                $tmp = $tmp . $c
+            }
+            else {
+                push(@out, chr(39) . $tmp . chr(39))
+                    if $tmp ne '';
+                push(@out, 'chr(' . ord($c) . ')');
+                $tmp = ''
+            }
+        }
+        push(@out, chr(39) . $tmp . chr(39))
+            if $tmp ne '';
+        return(@out)
+            if @out < 2;
+        return(['op' => 'list:<~>', @out])
     }
 }
 package Perlito5::AST::CompUnit;
@@ -12369,6 +12392,8 @@ package Perlito5::AST::Apply;
         my $code = $self->{'code'};
         $code = 'list:<~>'
             if $code eq 'list:<.>';
+        $code = 'ternary:<?? !!>'
+            if $code eq 'ternary:<? :>';
         if ($code eq 'prefix:<$>') {
             my $arg = $self->{'arguments'}->[0];
             return($special_var{$arg->{'buf'}})
@@ -12491,15 +12516,17 @@ package Perlito5::AST::For;
             $cond = ['paren_semicolon' => '(', ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_perl6() : []), ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_perl6() : []), ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_perl6() : [])]
         }
         else {
-            $cond = ['paren' => '(', $self->{'cond'}->emit_perl6()]
+            $cond = $self->{'cond'}->emit_perl6()
         }
         my @sig;
         my $sig_ast = $self->{'body'}->sig();
         if (!$sig_ast) {}
         else {
-            @sig = $sig_ast->emit_perl6()
+            $sig_ast = $sig_ast->{'var'}
+                if ref($sig_ast) eq 'Perlito5::AST::Decl';
+            @sig = ('->', $sig_ast->emit_perl6())
         }
-        push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
+        push(@out, ['stmt' => ['keyword' => 'for'], $cond, @sig, Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
         if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
             push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl6::emit_perl6_block($self->{'continue'}->{'stmts'})])
         }
