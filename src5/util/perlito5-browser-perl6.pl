@@ -12,7 +12,7 @@ use Perlito5::Macro;
 use Perlito5::Runtime;
 
 use Perlito5::Perl6::Emitter;
-use Perlito5::Perl6::PrettyPrint;
+use Perlito5::Perl6::PrettyPrinter;
 
 sub compile_p5_to_p6 {
     my $s = shift;
