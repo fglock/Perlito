@@ -213,6 +213,11 @@ package Perlito5::AST::Var;
     sub emit_perl6 {
         my $self = $_[0];
 
+        if ( $self->{sigil} eq '$#' ) {
+            my $v = Perlito5::AST::Var->new( %$self, sigil => '@' );
+            return [ op => 'infix:<.>', $v->emit_perl6(), [ keyword => 'end' ] ];
+        }
+
         my $str_name = $self->{name};
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
@@ -345,6 +350,9 @@ package Perlito5::AST::Apply;
         }
         if ($self->{code} eq 'inf' && !$self->{namespace})  { 
             return [ keyword => 'Inf' ];
+        }
+        if ($self->{code} eq 'prefix:<$#>') {
+            return [ op => 'infix:<.>', $self->{arguments}[0]->emit_perl6(), [ keyword => 'end' ] ];
         }
 
         my $code = $self->{code};
