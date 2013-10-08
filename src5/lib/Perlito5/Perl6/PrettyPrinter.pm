@@ -82,6 +82,7 @@ our %op = (
     'infix:<xx>' => { fix => 'infix', prec => 8, str => ' xx ' },
 
     'list:<~>'  => { fix => 'list',  prec => 10, str => ' ~ ' },
+    'infix:<~>'  => { fix => 'infix',  prec => 10, str => ' ~ ' },  # ???
 
     'infix:<<<>' => { fix => 'infix', prec => 12, str => ' << ' },
     'infix:<>>>' => { fix => 'infix', prec => 12, str => ' >> ' },

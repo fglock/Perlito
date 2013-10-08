@@ -83,7 +83,8 @@ package Perlito5::AST::CompUnit;
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{code} eq 'package') {
                 push @out, [ stmt => [ keyword => 'package'], [ bareword => $pkg->{name} ],
                              [ block => map { $_->emit_perl6() } @{ $pkg->{body} } ]
-                           ];
+                           ]
+                    if @{ $pkg->{body} };
                 $pkg = { name => $stmt->{namespace}, body => [] };
             }
             else {
@@ -92,7 +93,8 @@ package Perlito5::AST::CompUnit;
         }
         push @out, [ stmt => [ keyword => 'package'], [ bareword => $pkg->{name} ],
                      [ block => map { $_->emit_perl6() } @{ $pkg->{body} } ]
-                   ];
+                   ]
+            if @{ $pkg->{body} };
         return [ block => @out ];
     }
     sub emit_perl6_program {
@@ -315,6 +317,7 @@ package Perlito5::AST::Apply;
     my %op_translate = (
         'list:<.>'      => 'list:<~>',
         'infix:<.=>'    => 'infix:<~=>',
+        # 'infix:<.>'     => 'infix:<~>',
         'infix:<=~>'    => 'infix:<~~>',
         'ternary:<? :>' => 'ternary:<?? !!>',
     );
