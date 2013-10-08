@@ -129,7 +129,7 @@ our %op = (
     'infix:<x=>'  => { fix => 'infix', prec => 170, str => ' x= ' },
     'infix:<|=>'  => { fix => 'infix', prec => 170, str => ' |= ' },
     'infix:<&=>'  => { fix => 'infix', prec => 170, str => ' &= ' },
-    'infix:<.=>'  => { fix => 'infix', prec => 170, str => ' .= ' },
+    'infix:<.=>'  => { fix => 'infix', prec => 170, str => ' .= ' },    # ???
     'infix:<<<=>' => { fix => 'infix', prec => 170, str => ' <<= ' },
     'infix:<>>=>' => { fix => 'infix', prec => 170, str => ' >>= ' },
     'infix:<%=>'  => { fix => 'infix', prec => 170, str => ' %= ' },
@@ -137,6 +137,7 @@ our %op = (
     'infix:<&&=>' => { fix => 'infix', prec => 170, str => ' &&= ' },
     'infix:<^=>'  => { fix => 'infix', prec => 170, str => ' ^= ' },
     'infix:<//=>' => { fix => 'infix', prec => 170, str => ' //= ' },
+    'infix:<~=>'  => { fix => 'infix', prec => 170, str => ' ~= ' },   
 
     'infix:<=>>'  => { fix => 'infix', prec => 180, str => ' => ' },
 

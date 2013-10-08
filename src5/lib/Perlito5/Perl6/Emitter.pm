@@ -49,7 +49,7 @@ package Perlito5::Perl6 {
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
-        return 0+$s if (0+$s) eq $s;
+        # return 0+$s if (0+$s) eq $s;  # XXX - this breaks with 'nan' (perl6 uses 'NaN')
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if  (  ($c ge 'a' && $c le 'z')
@@ -312,6 +312,12 @@ package Perlito5::AST::Apply;
     my %special_var = (
         chr(15) => '$*OS',  # $^O
     );
+    my %op_translate = (
+        'list:<.>'      => 'list:<~>',
+        'infix:<.=>'    => 'infix:<~=>',
+        'infix:<=~>'    => 'infix:<~~>',
+        'ternary:<? :>' => 'ternary:<?? !!>',
+    );
 
     sub emit_perl6_args {
         my $self = $_[0];
@@ -328,10 +334,15 @@ package Perlito5::AST::Apply;
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl6(),
                      $self->{arguments}[1]->emit_perl6() ]
         }
+        if ($self->{code} eq 'nan' && !$self->{namespace})  { 
+            return [ keyword => 'NaN' ];
+        }
+        if ($self->{code} eq 'inf' && !$self->{namespace})  { 
+            return [ keyword => 'Inf' ];
+        }
 
         my $code = $self->{code};
-        $code = 'list:<~>' if $code eq 'list:<.>';
-        $code = 'ternary:<?? !!>' if $code eq 'ternary:<? :>';
+        $code = $op_translate{$code} if $op_translate{$code};
 
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{arguments}->[0];
