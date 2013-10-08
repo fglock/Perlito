@@ -317,8 +317,9 @@ package Perlito5::AST::Apply;
     my %op_translate = (
         'list:<.>'      => 'list:<~>',
         'infix:<.=>'    => 'infix:<~=>',
-        # 'infix:<.>'     => 'infix:<~>',
         'infix:<=~>'    => 'infix:<~~>',
+        'infix:<!~>'    => 'infix:<!~~>',
+        'infix:<cmp>'   => 'infix:<leq>',
         'ternary:<? :>' => 'ternary:<?? !!>',
     );
 

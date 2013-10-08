@@ -100,6 +100,7 @@ our %op = (
 
     'infix:<<=>>' => { fix => 'infix', prec => 100, str => ' <=> ' },
     'infix:<cmp>' => { fix => 'infix', prec => 100, str => ' cmp ' },
+    'infix:<leq>' => { fix => 'infix', prec => 100, str => ' leq ' },
     'infix:<==>'  => { fix => 'infix', prec => 100, str => ' == ' },
     'infix:<!=>'  => { fix => 'infix', prec => 100, str => ' != ' },
     'infix:<ne>'  => { fix => 'infix', prec => 100, str => ' ne ' },
