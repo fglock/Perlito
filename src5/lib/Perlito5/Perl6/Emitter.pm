@@ -258,7 +258,9 @@ package Perlito5::AST::Var;
         {
             return $self->{sigil} . $ns . $self->{name}
         }
-        return $self->{sigil} . "{'" . $ns . $str_name . "'}"
+        my $str = $self->{sigil} . "{'" . $ns . $str_name . "'}";
+        return '$*PID' if $str eq '${\'$\'}';   # $$
+        return $str;
     }
 }
 

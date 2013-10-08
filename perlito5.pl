@@ -4794,7 +4794,7 @@ sub Perlito5::Grammar::Sigil::term_special_var {
         $len = 2
     }
     elsif (exists($special_var{$s})) {
-        $len = 3
+        $len = length($s)
     }
     else {
         $s = substr($str, $pos, 2);
@@ -12328,7 +12328,10 @@ package Perlito5::AST::Var;
         if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_')) {
             return($self->{'sigil'} . $ns . $self->{'name'})
         }
-        return($self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}')
+        my $str = $self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}';
+        return('$*PID')
+            if $str eq '${' . chr(39) . '$' . chr(39) . '}';
+        return($str)
     }
 }
 package Perlito5::AST::Proto;

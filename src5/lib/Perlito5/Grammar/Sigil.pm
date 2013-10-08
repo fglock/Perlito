@@ -120,7 +120,7 @@ sub term_special_var {
         $len = 2;
     }
     elsif ( exists $special_var{$s} ) {
-        $len = 3;
+        $len = length($s);
     }
     else {
         $s = substr( $str, $pos, 2 );

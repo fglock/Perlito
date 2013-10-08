@@ -6959,7 +6959,7 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 					v_len = (2);
 				}
 				else if ( (Hash_special_var).hasOwnProperty(v_s) ) {
-					v_len = (3);
+					v_len = (p5pkg["Perlito5::Grammar::Sigil"].length([v_s], 0));
 				}
 				else {
 					v_s = (p5pkg["Perlito5::Grammar::Sigil"].substr([v_str, v_pos, 2], 0));
