@@ -1348,10 +1348,10 @@ my $reduce_to_ast = sub {
         if (scalar(@{$num_stack}) < 2) {
             my $v2 = pop_term($num_stack);
             if (ref($v2) eq 'Perlito5::AST::Apply' && $v2->code() eq ('list:<' . $last_op->[1] . '>')) {
-                push(@{$num_stack}, Perlito5::AST::Apply->new('namespace' => $v2->namespace(), 'code' => $v2->code(), 'arguments' => [@{$v2->arguments()}, undef]))
+                push(@{$num_stack}, Perlito5::AST::Apply->new('namespace' => $v2->namespace(), 'code' => $v2->code(), 'arguments' => [@{$v2->arguments()}]))
             }
             else {
-                push(@{$num_stack}, Perlito5::AST::Apply->new('namespace' => '', 'code' => 'list:<' . $last_op->[1] . '>', 'arguments' => [$v2, undef]))
+                push(@{$num_stack}, Perlito5::AST::Apply->new('namespace' => '', 'code' => 'list:<' . $last_op->[1] . '>', 'arguments' => [$v2]))
             }
             return()
         }
