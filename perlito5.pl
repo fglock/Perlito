@@ -12741,7 +12741,7 @@ sub Perlito5::Perl6::PrettyPrinter::call {
     shift(@dd);
     my $open = '(';
     render(shift(@dd), $level, $out);
-    push(@{$out}, '->');
+    push(@{$out}, '.');
     my $d = $dd[0];
     render($d, $level, $out);
     $dd[0] = 'list:<,>';
