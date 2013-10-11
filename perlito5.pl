@@ -12319,7 +12319,7 @@ package Perlito5::AST::Var;
         elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {}
         my $ns = '';
         if ($self->{'namespace'}) {
-            return($self->{'namespace'} . '::')
+            return($self->{'namespace'})
                 if $self->{'sigil'} eq '::';
             if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {
                 return($self->{'sigil'} . '{' . $self->{'name'} . '}')
