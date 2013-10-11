@@ -368,6 +368,7 @@ package Perlito5::AST::Apply;
         'infix:<!~>'    => 'infix:<!~~>',
         'infix:<cmp>'   => 'infix:<leq>',
         'ternary:<? :>' => 'ternary:<?? !!>',
+        'reverse'       => 'flip',
     );
 
     sub emit_perl6_args {
@@ -377,34 +378,42 @@ package Perlito5::AST::Apply;
     }
     sub emit_perl6 {
         my $self = $_[0];   
-        if (ref $self->{code}) {
-            return [ op => 'infix:<.>', $self->{code}->emit_perl6(), $self->emit_perl6_args() ];
-        }
-
         my $code = $self->{code};
 
-        if ($self->{code} eq 'infix:<=>>')  { 
-            return [ op => $self->{code}, 
+        if (ref $code) {
+            return [ op => 'infix:<.>', $code->emit_perl6(), $self->emit_perl6_args() ];
+        }
+
+        if ($code eq 'infix:<=>>')  { 
+            return [ op => $code, 
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl6(),
                      $self->{arguments}[1]->emit_perl6() ]
         }
-        if ($self->{code} eq 'nan' && !$self->{namespace})  { 
+        if ($code eq 'nan' && !$self->{namespace})  { 
             return [ keyword => 'NaN' ];
         }
-        if ($self->{code} eq 'inf' && !$self->{namespace})  { 
+        if ($code eq 'inf' && !$self->{namespace})  { 
             return [ keyword => 'Inf' ];
         }
-        if ($self->{code} eq 'prefix:<$#>') {
+        if ($code eq 'prefix:<$#>') {
             return [ op => 'infix:<.>', $self->{arguments}[0]->emit_perl6(), [ keyword => 'end' ] ];
         }
-        if ( (  $self->{code} eq 'shift' 
-             || $self->{code} eq 'pop'
+        if ( (  $code eq 'shift' 
+             || $code eq 'pop'
              ) 
            && !@{$self->{arguments}}
            )
         {
             # TODO - @ARGV instead of @_ depending on context
             return [ apply => '(', $code, '@_' ];
+        }
+
+        if ($code eq 'infix:<x>' ) {
+            my $arg   = $self->{arguments}->[0];
+            if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>') {
+                # ($v) x $i
+                $code = 'infix:<xx>';
+            }
         }
 
         $code = $op_translate{$code} if $op_translate{$code};
@@ -431,7 +440,7 @@ package Perlito5::AST::Apply;
         if ($self->{namespace}) {
             $ns = $self->{namespace} . '::';
         }
-        my $code = $ns . $self->{code};
+        $code = $ns . $code;
 
         if ($self->{code} eq 'p5:s') {
             my $modifier = $self->{arguments}->[2];
