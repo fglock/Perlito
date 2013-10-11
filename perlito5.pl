@@ -12222,20 +12222,36 @@ package Perlito5::AST::CompUnit;
         my $pkg = {'name' => 'main', 'body' => []};
         for my $stmt (@body) {
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'package') {
-                push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
-                    $_->emit_perl6()
-                } @{$pkg->{'body'}}]])
-                    if @{$pkg->{'body'}};
+                if (@{$pkg->{'body'}}) {
+                    if ($pkg->{'name'} eq 'main') {
+                        push(@out, map {
+                            $_->emit_perl6()
+                        } @{$pkg->{'body'}})
+                    }
+                    else {
+                        push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
+                            $_->emit_perl6()
+                        } @{$pkg->{'body'}}]])
+                    }
+                }
                 $pkg = {'name' => $stmt->{'namespace'}, 'body' => []}
             }
             else {
                 push(@{$pkg->{'body'}}, $stmt)
             }
         }
-        push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
-            $_->emit_perl6()
-        } @{$pkg->{'body'}}]])
-            if @{$pkg->{'body'}};
+        if (@{$pkg->{'body'}}) {
+            if ($pkg->{'name'} eq 'main') {
+                push(@out, map {
+                    $_->emit_perl6()
+                } @{$pkg->{'body'}})
+            }
+            else {
+                push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
+                    $_->emit_perl6()
+                } @{$pkg->{'body'}}]])
+            }
+        }
         return(@out)
     }
 }
