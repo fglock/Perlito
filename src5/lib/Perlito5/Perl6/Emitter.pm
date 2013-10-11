@@ -378,6 +378,9 @@ package Perlito5::AST::Apply;
         if (ref $self->{code}) {
             return [ op => 'infix:<.>', $self->{code}->emit_perl6(), $self->emit_perl6_args() ];
         }
+
+        my $code = $self->{code};
+
         if ($self->{code} eq 'infix:<=>>')  { 
             return [ op => $self->{code}, 
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl6(),
@@ -392,8 +395,16 @@ package Perlito5::AST::Apply;
         if ($self->{code} eq 'prefix:<$#>') {
             return [ op => 'infix:<.>', $self->{arguments}[0]->emit_perl6(), [ keyword => 'end' ] ];
         }
+        if ( (  $self->{code} eq 'shift' 
+             || $self->{code} eq 'pop'
+             ) 
+           && !@{$self->{arguments}}
+           )
+        {
+            # TODO - @ARGV instead of @_ depending on context
+            return [ apply => '(', $code, '@_' ];
+        }
 
-        my $code = $self->{code};
         $code = $op_translate{$code} if $op_translate{$code};
 
         if ( $code eq 'prefix:<$>' ) {

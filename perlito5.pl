@@ -12435,6 +12435,7 @@ package Perlito5::AST::Apply;
         if (ref($self->{'code'})) {
             return(['op' => 'infix:<.>', $self->{'code'}->emit_perl6(), $self->emit_perl6_args()])
         }
+        my $code = $self->{'code'};
         if ($self->{'code'} eq 'infix:<=>>') {
             return(['op' => $self->{'code'}, Perlito5::AST::Lookup->autoquote($self->{'arguments'}->[0])->emit_perl6(), $self->{'arguments'}->[1]->emit_perl6()])
         }
@@ -12447,7 +12448,9 @@ package Perlito5::AST::Apply;
         if ($self->{'code'} eq 'prefix:<$#>') {
             return(['op' => 'infix:<.>', $self->{'arguments'}->[0]->emit_perl6(), ['keyword' => 'end']])
         }
-        my $code = $self->{'code'};
+        if (($self->{'code'} eq 'shift' || $self->{'code'} eq 'pop') && !@{$self->{'arguments'}}) {
+            return(['apply' => '(', $code, '@_'])
+        }
         $code = $op_translate{$code}
             if $op_translate{$code};
         if ($code eq 'prefix:<$>') {
