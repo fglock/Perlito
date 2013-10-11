@@ -263,8 +263,15 @@ package Perlito5::AST::Var;
         {
             return $self->{sigil} . $ns . $self->{name}
         }
-        my $str = $self->{sigil} . "{'" . $ns . $str_name . "'}";
-        return '$*PID' if $str eq '${\'$\'}';   # $$
+
+        my $bareword = $ns . $str_name;
+        if ($self->{sigil} eq '$') {
+            return '$*PID'          if $bareword eq '$';
+            return '$*PROGRAM_NAME' if $bareword eq '0';
+            return '$' . ($bareword - 1) if $bareword >= 1;
+        }
+
+        my $str = $self->{sigil} . "{'" . $bareword . "'}";
         return $str;
     }
 }

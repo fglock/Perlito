@@ -12332,9 +12332,16 @@ package Perlito5::AST::Var;
         if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_')) {
             return($self->{'sigil'} . $ns . $self->{'name'})
         }
-        my $str = $self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}';
-        return('$*PID')
-            if $str eq '${' . chr(39) . '$' . chr(39) . '}';
+        my $bareword = $ns . $str_name;
+        if ($self->{'sigil'} eq '$') {
+            return('$*PID')
+                if $bareword eq '$';
+            return('$*PROGRAM_NAME')
+                if $bareword eq 0;
+            return('$' . ($bareword - 1))
+                if $bareword >= 1
+        }
+        my $str = $self->{'sigil'} . '{' . chr(39) . $bareword . chr(39) . '}';
         return($str)
     }
 }
