@@ -12432,7 +12432,7 @@ package Perlito5::AST::Apply;
         }
         my $code = $ns . $self->{'code'};
         if ($self->{'code'} eq 'p5:s') {
-            return('s!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2])
+            return('s:P5!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2])
         }
         if ($self->{'code'} eq 'p5:m') {
             my $s;
@@ -12449,7 +12449,7 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            return('m!' . $s . '!' . $self->{'arguments'}->[1])
+            return('m:P5!' . $s . '!' . $self->{'arguments'}->[1])
         }
         if ($self->{'code'} eq 'p5:tr') {
             return('tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!')
