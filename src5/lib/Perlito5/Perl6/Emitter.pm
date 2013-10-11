@@ -286,16 +286,17 @@ package Perlito5::AST::Var;
                 $ns = $self->{namespace} . '::';
             }
         }
+        my $bareword = $ns . $str_name;
         my $c = substr($self->{name}, 0, 1);
         if (  ($c ge 'a' && $c le 'z')
            || ($c ge 'A' && $c le 'Z')
            || ($c eq '_')
            ) 
         {
-            return $self->{sigil} . $ns . $self->{name}
+            return '@*ARGS' if $self->{sigil} eq '@' && $bareword eq 'ARGV';
+            return $self->{sigil} . $bareword;
         }
 
-        my $bareword = $ns . $str_name;
         if ($self->{sigil} eq '$') {
             return '"\n"'           if $bareword eq '/';   # XXX
             return '$*PID'          if $bareword eq '$';
