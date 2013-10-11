@@ -4890,10 +4890,15 @@ sub Perlito5::Grammar::Sigil::term_sigil {
         return($caret)
     }
     if ($c1 eq '$') {
-        $m = $self->term_sigil($str, $p);
-        if ($m) {
-            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments' => [$m->{'capture'}->[1]], 'code' => 'prefix:<' . $sigil . '>', 'namespace' => '')];
-            return($m)
+        my $m2 = Perlito5::Grammar::Space->opt_ws($str, $p + 1);
+        my $p2 = $m2->{'to'};
+        my $c2 = substr($str, $p2, 1);
+        if ($c2 ne ',' && $c2 ne ';') {
+            $m = $self->term_sigil($str, $p);
+            if ($m) {
+                $m->{'capture'} = ['term', Perlito5::AST::Apply->new('arguments' => [$m->{'capture'}->[1]], 'code' => 'prefix:<' . $sigil . '>', 'namespace' => '')];
+                return($m)
+            }
         }
     }
     $m = Perlito5::Grammar->optional_namespace_before_ident($str, $p);
