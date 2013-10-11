@@ -12199,7 +12199,7 @@ package Perlito5::AST::CompUnit;
         my $pkg = {'name' => 'main', 'body' => []};
         for my $stmt (@body) {
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'package') {
-                push(@out, ['stmt' => ['keyword' => 'package'], ['bareword' => $pkg->{'name'}], ['block' => map {
+                push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
                     $_->emit_perl6()
                 } @{$pkg->{'body'}}]])
                     if @{$pkg->{'body'}};
@@ -12209,7 +12209,7 @@ package Perlito5::AST::CompUnit;
                 push(@{$pkg->{'body'}}, $stmt)
             }
         }
-        push(@out, ['stmt' => ['keyword' => 'package'], ['bareword' => $pkg->{'name'}], ['block' => map {
+        push(@out, ['stmt' => ['keyword' => 'class'], ['bareword' => $pkg->{'name'}], ['block' => map {
             $_->emit_perl6()
         } @{$pkg->{'body'}}]])
             if @{$pkg->{'body'}};
@@ -12462,7 +12462,7 @@ package Perlito5::AST::Apply;
             return('tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!')
         }
         if ($self->{'code'} eq 'package') {
-            return(['stmt' => 'package', ['bareword' => $self->{'namespace'}]])
+            return(['stmt' => 'class', ['bareword' => $self->{'namespace'}]])
         }
         if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {
             if ($self->{'special_arg'}) {
