@@ -95,7 +95,7 @@ package Perlito5::AST::CompUnit;
                      [ block => map { $_->emit_perl6() } @{ $pkg->{body} } ]
                    ]
             if @{ $pkg->{body} };
-        return [ block => @out ];
+        return @out;
     }
     sub emit_perl6_program {
         my $comp_units = $_[0];
