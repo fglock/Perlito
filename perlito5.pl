@@ -12528,10 +12528,13 @@ package Perlito5::AST::For;
             return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl6(), ['stmt' => 'for', $self->{'cond'}->emit_perl6()]])
         }
         my $cond;
+        my $keyword;
         if (ref($self->{'cond'}) eq 'ARRAY') {
+            $keyword = 'loop';
             $cond = ['paren_semicolon' => '(', ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_perl6() : []), ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_perl6() : []), ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_perl6() : [])]
         }
         else {
+            $keyword = 'for';
             $cond = $self->{'cond'}->emit_perl6()
         }
         my @sig;
@@ -12542,7 +12545,7 @@ package Perlito5::AST::For;
                 if ref($sig_ast) eq 'Perlito5::AST::Decl';
             @sig = ('->', $sig_ast->emit_perl6())
         }
-        push(@out, ['stmt' => ['keyword' => 'for'], $cond, @sig, Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
+        push(@out, ['stmt' => ['keyword' => $keyword], $cond, @sig, Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
         if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
             push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl6::emit_perl6_block($self->{'continue'}->{'stmts'})])
         }

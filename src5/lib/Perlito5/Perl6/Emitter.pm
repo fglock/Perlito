@@ -521,8 +521,10 @@ package Perlito5::AST::For;
         }
 
         my $cond;
+        my $keyword;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
+            $keyword = 'loop';
             $cond = [ paren_semicolon => '(', 
                       ( $self->{cond}[0] ? $self->{cond}[0]->emit_perl6() : [] ),
                       ( $self->{cond}[1] ? $self->{cond}[1]->emit_perl6() : [] ),
@@ -530,6 +532,7 @@ package Perlito5::AST::For;
                     ];
         }
         else {
+            $keyword = 'for';
             $cond = $self->{cond}->emit_perl6();
         }
 
@@ -543,7 +546,7 @@ package Perlito5::AST::For;
                 if ref($sig_ast) eq 'Perlito5::AST::Decl';
             @sig = ( '->', $sig_ast->emit_perl6() );
         }
-        push @out, [ stmt => [ keyword => 'for' ],
+        push @out, [ stmt => [ keyword => $keyword ],
                      $cond,
                      @sig,
                      Perlito5::Perl6::emit_perl6_block($self->{body}->stmts)
