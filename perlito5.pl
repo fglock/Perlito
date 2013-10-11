@@ -12367,6 +12367,8 @@ package Perlito5::AST::Var;
         }
         my $bareword = $ns . $str_name;
         if ($self->{'sigil'} eq '$') {
+            return('"' . chr(92) . 'n"')
+                if $bareword eq '/';
             return('$*PID')
                 if $bareword eq '$';
             return('$*PROGRAM_NAME')
@@ -12475,7 +12477,10 @@ package Perlito5::AST::Apply;
         }
         my $code = $ns . $self->{'code'};
         if ($self->{'code'} eq 'p5:s') {
-            return('s:P5!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2])
+            my $modifier = $self->{'arguments'}->[2];
+            $modifier = ':' . $modifier
+                if $modifier;
+            return('s:P5' . $modifier . '!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!')
         }
         if ($self->{'code'} eq 'p5:m') {
             my $s;
@@ -12492,7 +12497,10 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            return('m:P5!' . $s . '!' . $self->{'arguments'}->[1])
+            my $modifier = $self->{'arguments'}->[1];
+            $modifier = ':' . $modifier
+                if $modifier;
+            return('m:P5' . $modifier . '!' . $s . '!')
         }
         if ($self->{'code'} eq 'p5:tr') {
             return('tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!')
