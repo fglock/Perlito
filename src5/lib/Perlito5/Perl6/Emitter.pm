@@ -301,6 +301,7 @@ package Perlito5::AST::Var;
             return '"\n"'           if $bareword eq '/';   # XXX
             return '$*PID'          if $bareword eq '$';
             return '$*PROGRAM_NAME' if $bareword eq '0';
+            return '$!'             if $bareword eq '@';
             return '$' . ($bareword - 1) if $bareword >= 1;
         }
 
