@@ -5,37 +5,58 @@ package main {
     my $in = eval join( '', <> );
     print Dumper $in;
 
-    my $rule = [ Ref => 'Perlito5::AST::Apply' ];
-    my $result = TreeGrammar::scan( $rule, $in );
-    print "result $result\n";
+    my ( $rule, $result );
 
-    $rule = [
-        Lookup => 'name',
-        [ Value => 'a' ]
-    ];
-    $result = TreeGrammar::scan( $rule, $in );
-    print "result $result\n";
+    # $rule = [ Ref => 'Perlito5::AST::Apply' ];
+    # $result = TreeGrammar::scan( $rule, $in );
+    # print "result $result\n";
 
-    $rule = [
-        And => [
-            Lookup => 'name',
-            [ Value => 'a' ]
-        ],
-        [ Lookup => 'namespace' ],
-        [ Action => sub { $_[0]->{HERE} = '*name is a*' } ],
-    ];
-    $result = TreeGrammar::scan( $rule, $in );
-    print "result $result\n";
+    # $rule = [
+    #     Lookup => 'name',
+    #     [ Value => 'a' ]
+    # ];
+    # $result = TreeGrammar::scan( $rule, $in );
+    # print "result $result\n";
+
+    # $rule = [
+    #     And => [
+    #         Lookup => 'name',
+    #         [ Value => 'a' ]
+    #     ],
+    #     [ Lookup => 'namespace' ],
+    #     [ Action => sub { $_[0]->{HERE} = '*name is a*' } ],
+    # ];
+    # $result = TreeGrammar::scan( $rule, $in );
+    # print "result $result\n";
 
     # print Dumper $in;
 
     $rule = TreeGrammar::AST::named_sub(
-        [ Action => sub { $_[0]->{HERE} = 1 } ],
+        [ Action => sub { $_[0]->{HERE} = '*named sub*' } ],
         [
             Lookup => 'block',
             [
                 Index => 0,
-                TreeGrammar::AST::operator_eq( 'infix:<=>', [ Action => sub { $_[0]->{HERE} = 2 } ], )
+                TreeGrammar::AST::operator_eq(
+                    'infix:<=>',
+                    [ Action => sub { $_[0]->{HERE} = '*set var*' } ],
+                    [
+                        Lookup => 'arguments',
+                        [
+                            And => [
+                                Index => 0,
+                                TreeGrammar::AST::my_var( [ Action => sub { $_[0]->{HERE} = '*my var*' } ] )
+                            ],
+                            [
+                                Index => 1,
+                                TreeGrammar::AST::shift_arg( [ Action => sub { $_[0]->{HERE} = '*shift*' } ] )
+                            ],
+                            [
+                                Action => sub { print "TODO - refactor var into arg list\n" }
+                            ]
+                        ]
+                    ]
+                )
             ]
         ],
     );
@@ -52,8 +73,10 @@ package TreeGrammar::AST {
     sub named_sub {
         [
             Ref => 'Perlito5::AST::Sub',
-            [ And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
-                     [ Progn => @_ ] ]
+            [
+                And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
+                [ Progn => @_ ]
+            ]
         ];
     }
 
@@ -61,10 +84,36 @@ package TreeGrammar::AST {
         my $name = shift;
         [
             Ref => 'Perlito5::AST::Apply',
-            [ And => [ Lookup => 'code', [ Value => $name ] ],
-                     [ Progn => @_ ] ]
+            [
+                And => [ Lookup => 'code', [ Value => $name ] ],
+                [ Progn => @_ ]
+            ]
         ];
     }
+
+    sub my_var {
+        [
+            Ref => 'Perlito5::AST::Decl',
+            [
+                And => [ Lookup => 'decl', [ Value => 'my' ] ],
+                [ Progn => @_ ]
+            ]
+        ];
+    }
+
+    sub shift_arg {
+        [
+            Ref => 'Perlito5::AST::Apply',
+            [
+                And => [ Lookup => 'code', [ Value => 'shift' ] ],
+
+                # TODO - bareword => 1, arguments => [], namespace => ''
+                #     or arguments => [ @_ ]
+                [ Progn => @_ ]
+            ]
+        ];
+    }
+
 }
 
 package TreeGrammar {
@@ -82,7 +131,7 @@ package TreeGrammar {
             Or     => \&Or,
             Not    => \&Not,
             Action => \&Action,
-            Progn  => \&Progn,   # same as in Lisp
+            Progn  => \&Progn,     # same as in Lisp
         );
     }
 
@@ -145,7 +194,7 @@ package TreeGrammar {
 
     sub Ref {
         my ( $rule, $node ) = @_;
-        return if ref($node) ne $rule->[1];
+        return   if ref($node) ne $rule->[1];
         return 1 if !$rule->[2];
         return render( $rule->[2], $node );
     }
