@@ -18,16 +18,52 @@ package main {
 
     $rule = [
         And => [
-                   Lookup => 'name',
-                   [ Value => 'a' ]
-               ],
-               [ Lookup => 'namespace' ],
-               [ Action => sub { $_[0]->{HERE} = 1 } ],
+            Lookup => 'name',
+            [ Value => 'a' ]
+        ],
+        [ Lookup => 'namespace' ],
+        [ Action => sub { $_[0]->{HERE} = '*name is a*' } ],
     ];
+    $result = TreeGrammar::scan( $rule, $in );
+    print "result $result\n";
+
+    # print Dumper $in;
+
+    $rule = TreeGrammar::AST::named_sub(
+        [ Action => sub { $_[0]->{HERE} = 1 } ],
+        [
+            Lookup => 'block',
+            [
+                Index => 0,
+                [
+                    Ref => 'Perlito5::AST::Apply',
+                    [
+                        And => [ Lookup => 'code', [ Value => 'infix:<=>' ] ],
+                        [ Action => sub { $_[0]->{HERE} = 2 } ],
+                    ]
+                ]
+            ]
+        ],
+    );
+
     $result = TreeGrammar::scan( $rule, $in );
     print "result $result\n";
     print Dumper $in;
 
+}
+
+package TreeGrammar::AST {
+    use strict;
+
+    sub named_sub {
+        [
+            Ref => 'Perlito5::AST::Sub',
+            [
+                And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],    # named sub
+                @_
+            ]
+        ];
+    }
 }
 
 package TreeGrammar {
@@ -43,6 +79,7 @@ package TreeGrammar {
             Value  => \&Value,     # Value => '123'
             And    => \&And,
             Or     => \&Or,
+            Not    => \&Not,
             Action => \&Action,
         );
     }
@@ -67,7 +104,15 @@ package TreeGrammar {
     sub Action {
         my ( $rule, $node ) = @_;
         print "match: Action $node\n";
-        $rule->[1]->( $node );
+        $rule->[1]->($node);
+        return { pos => $node };
+    }
+
+    sub Not {
+        my ( $rule, $node ) = @_;
+        my $result;
+        print "match: Not $node\n";
+        render( $rule->[1], $node ) && return;
         return { pos => $node };
     }
 
