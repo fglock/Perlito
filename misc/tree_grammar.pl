@@ -7,58 +7,56 @@ package main {
 
     my ( $rule, $result );
 
-    # $rule = [ Ref => 'Perlito5::AST::Apply' ];
-    # $result = TreeGrammar::scan( $rule, $in );
-    # print "result $result\n";
-
-    # $rule = [
-    #     Lookup => 'name',
-    #     [ Value => 'a' ]
-    # ];
-    # $result = TreeGrammar::scan( $rule, $in );
-    # print "result $result\n";
-
-    # $rule = [
-    #     And => [
-    #         Lookup => 'name',
-    #         [ Value => 'a' ]
-    #     ],
-    #     [ Lookup => 'namespace' ],
-    #     [ Action => sub { $_[0]->{HERE} = '*name is a*' } ],
-    # ];
-    # $result = TreeGrammar::scan( $rule, $in );
-    # print "result $result\n";
-
-    # print Dumper $in;
-
-    $rule = TreeGrammar::AST::named_sub(
-        [ Action => sub { $_[0]->{HERE} = '*named sub*' } ],
+    $rule = TreeGrammar::AST::is_sub(
         [
-            Lookup => 'block',
-            [
-                Index => 0,
-                TreeGrammar::AST::operator_eq(
-                    'infix:<=>',
-                    [ Action => sub { $_[0]->{HERE} = '*set var*' } ],
+            Action => sub {
+                my $sub = $_[0];
+                my $stmts;
+                my $var;
+                TreeGrammar::render(
                     [
-                        Lookup => 'arguments',
+                        Lookup => 'block',
                         [
-                            And => [
-                                Index => 0,
-                                TreeGrammar::AST::my_var( [ Action => sub { $_[0]->{HERE} = '*my var*' } ] )
-                            ],
+                            Progn => [ Action => sub { $stmts = $_[0] } ],
                             [
-                                Index => 1,
-                                TreeGrammar::AST::shift_arg( [ Action => sub { $_[0]->{HERE} = '*shift*' } ] )
-                            ],
-                            [
-                                Action => sub { print "TODO - refactor var into arg list\n" }
+                                Star => [
+                                    Index => 0,
+                                    TreeGrammar::AST::operator_eq(
+                                        'infix:<=>',
+                                        [
+                                            Lookup => 'arguments',
+                                            [
+                                                And => [
+                                                    Index => 0,
+                                                    TreeGrammar::AST::my_var(
+                                                        [
+                                                            Action => sub {
+                                                                $var = $_[0]->{var};
+                                                              }
+                                                        ]
+                                                    )
+                                                ],
+                                                [
+                                                    Index => 1,
+                                                    TreeGrammar::AST::shift_arg()
+                                                ],
+                                                [
+                                                    Action => sub {
+                                                        push @{ $sub->{args} }, $var;
+                                                        shift @$stmts;
+                                                      }
+                                                ]
+                                            ]
+                                        ]
+                                    )
+                                ]
                             ]
                         ]
-                    ]
-                )
-            ]
-        ],
+                    ],
+                    $sub
+                );
+              }
+        ]
     );
 
     $result = TreeGrammar::scan( $rule, $in );
@@ -70,12 +68,19 @@ package main {
 package TreeGrammar::AST {
     use strict;
 
+    sub is_sub {
+        [
+            Ref => 'Perlito5::AST::Sub',
+            ( @_ ? [ Progn => @_ ] : () )
+        ];
+    }
+
     sub named_sub {
         [
             Ref => 'Perlito5::AST::Sub',
             [
                 And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
-                [ Progn => @_ ]
+                ( @_ ? [ Progn => @_ ] : () )
             ]
         ];
     }
@@ -86,7 +91,7 @@ package TreeGrammar::AST {
             Ref => 'Perlito5::AST::Apply',
             [
                 And => [ Lookup => 'code', [ Value => $name ] ],
-                [ Progn => @_ ]
+                ( @_ ? [ Progn => @_ ] : () )
             ]
         ];
     }
@@ -96,7 +101,7 @@ package TreeGrammar::AST {
             Ref => 'Perlito5::AST::Decl',
             [
                 And => [ Lookup => 'decl', [ Value => 'my' ] ],
-                [ Progn => @_ ]
+                ( @_ ? [ Progn => @_ ] : () )
             ]
         ];
     }
@@ -109,7 +114,7 @@ package TreeGrammar::AST {
 
                 # TODO - bareword => 1, arguments => [], namespace => ''
                 #     or arguments => [ @_ ]
-                [ Progn => @_ ]
+                ( @_ ? [ Progn => @_ ] : () )
             ]
         ];
     }
@@ -132,6 +137,7 @@ package TreeGrammar {
             Not    => \&Not,
             Action => \&Action,
             Progn  => \&Progn,     # same as in Lisp
+            Star   => \&Star,      # same as in regex
         );
     }
 
@@ -165,6 +171,14 @@ package TreeGrammar {
         return 1;
     }
 
+    sub Star {
+        my ( $rule, $node ) = @_;
+        my $result;
+        while (1) {
+            render( $rule->[1], $node ) || return;
+        }
+    }
+
     sub Progn {
         my ( $rule, $node ) = @_;
         my $result;
@@ -194,7 +208,7 @@ package TreeGrammar {
 
     sub Ref {
         my ( $rule, $node ) = @_;
-        return   if ref($node) ne $rule->[1];
+        return if ref($node) ne $rule->[1];
         return 1 if !$rule->[2];
         return render( $rule->[2], $node );
     }
