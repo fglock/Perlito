@@ -6,13 +6,28 @@ package main {
     print Dumper $in;
 
     my $rule = [ Ref => 'Perlito5::AST::Apply' ];
-    TreeGrammar::scan( $rule, $in );
+    my $result = TreeGrammar::scan( $rule, $in );
+    print "result $result\n";
 
     $rule = [
         Lookup => 'name',
         [ Value => 'a' ]
     ];
-    TreeGrammar::scan( $rule, $in );
+    $result = TreeGrammar::scan( $rule, $in );
+    print "result $result\n";
+
+    $rule = [
+        And => [
+                   Lookup => 'name',
+                   [ Value => 'a' ]
+               ],
+               [ Lookup => 'namespace' ],
+               [ Action => sub { $_[0]->{HERE} = 1 } ],
+    ];
+    $result = TreeGrammar::scan( $rule, $in );
+    print "result $result\n";
+    print Dumper $in;
+
 }
 
 package TreeGrammar {
@@ -26,23 +41,20 @@ package TreeGrammar {
             Lookup => \&Lookup,    # Lookup => 'namespace'
             Index  => \&Index,     # Index  => '0'
             Value  => \&Value,     # Value => '123'
+            And    => \&And,
+            Or     => \&Or,
+            Action => \&Action,
         );
     }
 
     sub render {
         my ( $rule, $node ) = @_;
-        if ( ref($rule) ) {
-
-            # print "Rule ", Dumper $rule;
-            # print Dumper \%dispatch;
-            return $dispatch{ $rule->[0] }->( $rule, $node );
-        }
-        return;
+        return $dispatch{ $rule->[0] }->( $rule, $node );
     }
 
     sub scan {
         my ( $rule, $node ) = @_;
-        render( $rule, $node );
+        render( $rule, $node ) if $rule;
         if ( ref($node) eq 'ARRAY' ) {
             scan( $rule, $_ ) for @$node;
         }
@@ -52,45 +64,70 @@ package TreeGrammar {
         return;
     }
 
-    sub Ref {
+    sub Action {
         my ( $rule, $node ) = @_;
-        if ( ref($node) eq $rule->[1] ) {
-            print "match: Ref $node\n";
-            return { pos => $node };
+        print "match: Action $node\n";
+        $rule->[1]->( $node );
+        return { pos => $node };
+    }
+
+    sub And {
+        my ( $rule, $node ) = @_;
+        my $result;
+        print "match: And $node\n";
+        for ( @$rule[ 1 .. $#$rule ] ) {
+            $result = render( $_, $node ) or return;
+        }
+        print "fail\n";
+        return $result;
+    }
+
+    sub Or {
+        my ( $rule, $node ) = @_;
+        my $result;
+        for ( @$rule[ 1 .. $#$rule ] ) {
+            $result = render( $_, $node ) and return $result;
         }
         return;
+    }
+
+    sub Ref {
+        my ( $rule, $node ) = @_;
+        return if ref($node) ne $rule->[1];
+        print "match: Ref $node\n";
+        return render( $rule->[2], $node ) if $rule->[2];
+        print "true\n";
+        return { pos => $node };
     }
 
     sub Lookup {
         my ( $rule, $node ) = @_;
-        return if !ref($node) || ref($node) eq 'ARRAY';
-        if ( exists( $node->{ $rule->[1] } ) ) {
-            print "match: Lookup $node\n";
-            return render( $rule->[2], $node->{ $rule->[1] } ) if $rule->[2];
-            return { pos => $node };
-        }
-        return;
+        return
+             if !ref($node)
+          || ref($node) eq 'ARRAY'
+          || !exists( $node->{ $rule->[1] } );
+        print "match: Lookup $node\n";
+        return render( $rule->[2], $node->{ $rule->[1] } ) if $rule->[2];
+        return { pos => $node };
     }
 
-    sub Index  {
+    sub Index {
         my ( $rule, $node ) = @_;
-        return if !ref($node) || ref($node) ne 'ARRAY';
-        if ( exists( $node->[ $rule->[1] ] ) ) {
-            print "match: Index $node\n";
-            return render( $rule->[2], $node->[ $rule->[1] ] ) if $rule->[2];
-            return { pos => $node };
-        }
-        return;
+        return
+             if !ref($node)
+          || ref($node) ne 'ARRAY'
+          || !exists( $node->[ $rule->[1] ] );
+        print "match: Index $node\n";
+        return render( $rule->[2], $node->[ $rule->[1] ] ) if $rule->[2];
+        return { pos => $node };
     }
 
     sub Value {
         my ( $rule, $node ) = @_;
-        return if ref($node);
-        if ( $node eq $rule->[1] ) {
-            print "match: Value $node\n";
-            return { pos => $node };
-        }
-        return;
+        return if ref($node) || $node ne $rule->[1];
+        print "match: Value $node\n";
+        return render( $rule->[2], $node ) if $rule->[2];
+        return { pos => $node };
     }
 
 }
