@@ -35,13 +35,7 @@ package main {
             Lookup => 'block',
             [
                 Index => 0,
-                [
-                    Ref => 'Perlito5::AST::Apply',
-                    [
-                        And => [ Lookup => 'code', [ Value => 'infix:<=>' ] ],
-                        [ Action => sub { $_[0]->{HERE} = 2 } ],
-                    ]
-                ]
+                TreeGrammar::AST::operator_eq( 'infix:<=>', [ Action => sub { $_[0]->{HERE} = 2 } ], )
             ]
         ],
     );
@@ -58,10 +52,17 @@ package TreeGrammar::AST {
     sub named_sub {
         [
             Ref => 'Perlito5::AST::Sub',
-            [
-                And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],    # named sub
-                @_
-            ]
+            [ And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
+                     [ Progn => @_ ] ]
+        ];
+    }
+
+    sub operator_eq {
+        my $name = shift;
+        [
+            Ref => 'Perlito5::AST::Apply',
+            [ And => [ Lookup => 'code', [ Value => $name ] ],
+                     [ Progn => @_ ] ]
         ];
     }
 }
@@ -81,6 +82,7 @@ package TreeGrammar {
             Or     => \&Or,
             Not    => \&Not,
             Action => \&Action,
+            Progn  => \&Progn,   # same as in Lisp
         );
     }
 
@@ -103,27 +105,32 @@ package TreeGrammar {
 
     sub Action {
         my ( $rule, $node ) = @_;
-        print "match: Action $node\n";
         $rule->[1]->($node);
-        return { pos => $node };
+        return 1;
     }
 
     sub Not {
         my ( $rule, $node ) = @_;
         my $result;
-        print "match: Not $node\n";
         render( $rule->[1], $node ) && return;
-        return { pos => $node };
+        return 1;
+    }
+
+    sub Progn {
+        my ( $rule, $node ) = @_;
+        my $result;
+        for ( @$rule[ 1 .. $#$rule ] ) {
+            $result = render( $_, $node );
+        }
+        return $result;
     }
 
     sub And {
         my ( $rule, $node ) = @_;
         my $result;
-        print "match: And $node\n";
         for ( @$rule[ 1 .. $#$rule ] ) {
             $result = render( $_, $node ) or return;
         }
-        print "fail\n";
         return $result;
     }
 
@@ -139,10 +146,8 @@ package TreeGrammar {
     sub Ref {
         my ( $rule, $node ) = @_;
         return if ref($node) ne $rule->[1];
-        print "match: Ref $node\n";
-        return render( $rule->[2], $node ) if $rule->[2];
-        print "true\n";
-        return { pos => $node };
+        return 1 if !$rule->[2];
+        return render( $rule->[2], $node );
     }
 
     sub Lookup {
@@ -151,9 +156,8 @@ package TreeGrammar {
              if !ref($node)
           || ref($node) eq 'ARRAY'
           || !exists( $node->{ $rule->[1] } );
-        print "match: Lookup $node\n";
-        return render( $rule->[2], $node->{ $rule->[1] } ) if $rule->[2];
-        return { pos => $node };
+        return 1 if !$rule->[2];
+        return render( $rule->[2], $node->{ $rule->[1] } );
     }
 
     sub Index {
@@ -162,17 +166,15 @@ package TreeGrammar {
              if !ref($node)
           || ref($node) ne 'ARRAY'
           || !exists( $node->[ $rule->[1] ] );
-        print "match: Index $node\n";
-        return render( $rule->[2], $node->[ $rule->[1] ] ) if $rule->[2];
-        return { pos => $node };
+        return 1 if !$rule->[2];
+        return render( $rule->[2], $node->[ $rule->[1] ] );
     }
 
     sub Value {
         my ( $rule, $node ) = @_;
         return if ref($node) || $node ne $rule->[1];
-        print "match: Value $node\n";
-        return render( $rule->[2], $node ) if $rule->[2];
-        return { pos => $node };
+        return 1 if !$rule->[2];
+        return render( $rule->[2], $node );
     }
 
 }
