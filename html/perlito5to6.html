@@ -27,9 +27,15 @@ HELLO
 my @x = qw/ x y z /;
 print $x[1], "\n";
 
-for my $x (reverse @x) { say $x }
+for my $x ( reverse @x ) { say $x }
 
-for (my $i=0; $i<10; $i++) { say $i }
+for ( my $i = 0 ; $i < 10 ; $i++ ) { say $i }
+
+sub mysub {
+    my $x = shift;
+    my $y = shift;
+    $x + $y;
+}
 
 </textarea><br/>
 	<input type="button" value="Execute" onclick="execute()"/>

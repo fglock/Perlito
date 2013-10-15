@@ -14021,9 +14021,23 @@ return (p5call(p5pkg["Perlito5::AST::Apply"]["v__"], "emit_javascript2_set_list"
 										(function () { throw(p5context([('(' + p5str(p5call(v_v, "emit_javascript2", [], 0)) + ')._hash_.hasOwnProperty(' + p5str(p5call(p5call(v_arg, "autoquote", p5list_to_a((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('index_exp')), 0), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
 									})();
 								};
+								if ( p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Index'], 0)) ) {
+									(function () {
+										var v_v;
+										v_v = (p5call(v_arg, "obj", [], 0));
+										if ( (p5bool(p5call(v_v, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_v, "sigil", [], 0)) == '$')) ) {
+											v_v = (p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', '@', 'namespace', p5call(v_v, "namespace", [], 1), 'name', p5call(v_v, "name", [], 1)), 0));
+											(function () { throw(p5context([('(' + p5str(p5call(v_v, "emit_javascript2", [], 0)) + ').hasOwnProperty(' + p5str(p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('index_exp'), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
+										};
+										(function () { throw(p5context([('(' + p5str(p5call(v_v, "emit_javascript2", [], 0)) + ')._array_.hasOwnProperty(' + p5str(p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('index_exp'), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
+									})();
+								};
 								if ( p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Call'], 0)) ) {
 									if ( (p5str(p5call(v_arg, "method", [], 0)) == 'postcircumfix:<{ }>') ) {
 										(function () { throw(p5context([('(' + p5str(p5call(p5call(v_arg, "invocant", [], 0), "emit_javascript2", [], 0)) + ')._hash_.hasOwnProperty(' + p5str(p5call(p5call(p5pkg["Perlito5::AST::Lookup"], "autoquote", p5list_to_a((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('arguments')), 0), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
+									};
+									if ( (p5str(p5call(v_arg, "method", [], 0)) == 'postcircumfix:<[ ]>') ) {
+										(function () { throw(p5context([('(' + p5str(p5call(p5call(v_arg, "invocant", [], 0), "emit_javascript2", [], 0)) + ')._array_.hasOwnProperty(' + p5str(p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('arguments'), "emit_javascript2", [v_level], 0)) + ')')], p5want)) })();
 									};
 								};
 								if ( (p5bool(p5call(v_arg, "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call(v_arg, "sigil", [], 0)) == '&')) ) {
