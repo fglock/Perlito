@@ -12156,9 +12156,168 @@ sub Perlito5::Perl5::Runtime::emit_perl5 {
 1;
 # use Perlito5::Perl5::Runtime
 package main;
+package Perlito5::TreeGrammar;
+# use Data::Dumper
+# use strict
+my %dispatch = ('Ref' => sub {
+    Ref(@_)
+}, 'Lookup' => sub {
+    Lookup(@_)
+}, 'Index' => sub {
+    Index(@_)
+}, 'Value' => sub {
+    Value(@_)
+}, 'And' => sub {
+    And(@_)
+}, 'Or' => sub {
+    Or(@_)
+}, 'Not' => sub {
+    Not(@_)
+}, 'Action' => sub {
+    Action(@_)
+}, 'Progn' => sub {
+    Progn(@_)
+}, 'Star' => sub {
+    Star(@_)
+});
+sub Perlito5::TreeGrammar::render {
+    my($rule, $node) = @_;
+    return($dispatch{$rule->[0]}->($rule, $node))
+}
+sub Perlito5::TreeGrammar::scan {
+    my($rule, $node) = @_;
+    render($rule, $node)
+        if $rule;
+    if (ref($node) eq 'ARRAY') {
+        scan($rule, $_)
+            for @{$node}
+    }
+    elsif (ref($node)) {
+        scan($rule, $_)
+            for values(%{$node})
+    }
+    return()
+}
+sub Perlito5::TreeGrammar::Action {
+    my($rule, $node) = @_;
+    $rule->[1]->($node);
+    return(1)
+}
+sub Perlito5::TreeGrammar::Not {
+    my($rule, $node) = @_;
+    my $result;
+    render($rule->[1], $node) && return();
+    return(1)
+}
+sub Perlito5::TreeGrammar::Star {
+    my($rule, $node) = @_;
+    my $result;
+    while (1) {
+        render($rule->[1], $node) || return()
+    }
+}
+sub Perlito5::TreeGrammar::Progn {
+    my($rule, $node) = @_;
+    my $result;
+    for (@{$rule}[1 .. $#{$rule}]) {
+        $result = render($_, $node)
+    }
+    return($result)
+}
+sub Perlito5::TreeGrammar::And {
+    my($rule, $node) = @_;
+    my $result;
+    for (@{$rule}[1 .. $#{$rule}]) {
+        $result = render($_, $node) or return()
+    }
+    return($result)
+}
+sub Perlito5::TreeGrammar::Or {
+    my($rule, $node) = @_;
+    my $result;
+    for (@{$rule}[1 .. $#{$rule}]) {
+        $result = render($_, $node) and return($result)
+    }
+    return()
+}
+sub Perlito5::TreeGrammar::Ref {
+    my($rule, $node) = @_;
+    return()
+        if ref($node) ne $rule->[1];
+    return(1)
+        if !$rule->[2];
+    return(render($rule->[2], $node))
+}
+sub Perlito5::TreeGrammar::Lookup {
+    my($rule, $node) = @_;
+    return()
+        if !ref($node) || ref($node) eq 'ARRAY' || !exists($node->{$rule->[1]});
+    return(1)
+        if !$rule->[2];
+    return(render($rule->[2], $node->{$rule->[1]}))
+}
+sub Perlito5::TreeGrammar::Index {
+    my($rule, $node) = @_;
+    return()
+        if !ref($node) || ref($node) ne 'ARRAY' || !exists($node->[$rule->[1]]);
+    return(1)
+        if !$rule->[2];
+    return(render($rule->[2], $node->[$rule->[1]]))
+}
+sub Perlito5::TreeGrammar::Value {
+    my($rule, $node) = @_;
+    return()
+        if ref($node) || $node ne $rule->[1];
+    return(1)
+        if !$rule->[2];
+    return(render($rule->[2], $node))
+}
+1;
+package main;
+package Perlito5::Perl6::TreeGrammar;
+# use Data::Dumper
+# use strict
+# use Perlito5::TreeGrammar
+sub Perlito5::Perl6::TreeGrammar::refactor_sub_arguments {
+    my($class, $in) = @_;
+    my($rule, $result);
+    $rule = Perlito5::Perl6::TreeGrammar::is_sub(['Action' => sub {
+        my $sub = $_[0];
+        my $stmts;
+        my $var;
+        Perlito5::TreeGrammar::render(['Lookup' => 'block', ['Progn' => ['Action' => sub {
+            $stmts = $_[0]
+        }], ['Star' => ['Index' => 0, Perlito5::Perl6::TreeGrammar::operator_eq('infix:<=>', ['Lookup' => 'arguments', ['And' => ['Index' => 0, Perlito5::Perl6::TreeGrammar::my_var(['Action' => sub {
+            $var = $_[0]->{'var'}
+        }])], ['Index' => 1, Perlito5::Perl6::TreeGrammar::shift_arg()], ['Action' => sub {
+            push(@{$sub->{'args'}}, $var);
+            shift(@{$stmts})
+        }]]])]]]], $sub)
+    }]);
+    $result = Perlito5::TreeGrammar::scan($rule, $in)
+}
+sub Perlito5::Perl6::TreeGrammar::is_sub {
+    ['Ref' => 'Perlito5::AST::Sub', (@_ ? ['Progn' => @_] : ())]
+}
+sub Perlito5::Perl6::TreeGrammar::named_sub {
+    ['Ref' => 'Perlito5::AST::Sub', ['And' => ['Lookup' => 'name', ['Not' => ['Value' => '']]], (@_ ? ['Progn' => @_] : ())]]
+}
+sub Perlito5::Perl6::TreeGrammar::operator_eq {
+    my $name = shift;
+    ['Ref' => 'Perlito5::AST::Apply', ['And' => ['Lookup' => 'code', ['Value' => $name]], (@_ ? ['Progn' => @_] : ())]]
+}
+sub Perlito5::Perl6::TreeGrammar::my_var {
+    ['Ref' => 'Perlito5::AST::Decl', ['And' => ['Lookup' => 'decl', ['Value' => 'my']], (@_ ? ['Progn' => @_] : ())]]
+}
+sub Perlito5::Perl6::TreeGrammar::shift_arg {
+    ['Ref' => 'Perlito5::AST::Apply', ['And' => ['Lookup' => 'code', ['Value' => 'shift']], (@_ ? ['Progn' => @_] : ())]]
+}
+1;
+package main;
 undef();
 # use Perlito5::AST
 # use strict
+# use Perlito5::Perl6::TreeGrammar
 {
     package Perlito5::Perl6;
     sub Perlito5::Perl6::emit_perl6_block {
@@ -12629,9 +12788,17 @@ package Perlito5::AST::Sub;
 {
     sub Perlito5::AST::Sub::emit_perl6 {
         my $self = $_[0];
+        Perlito5::Perl6::TreeGrammar->refactor_sub_arguments($self);
         my @parts;
-        push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]])
-            if defined($self->{'sig'});
+        if ($self->{'args'}) {
+            push(@parts, ['paren' => '(', (map {
+                ['var' => $_->emit_perl6(), '?']
+            } @{$self->{'args'}}), ['var' => '*@_']])
+        }
+        else {
+            push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]])
+                if defined($self->{'sig'})
+        }
         push(@parts, Perlito5::Perl6::emit_perl6_block($self->{'block'}))
             if defined($self->{'block'});
         return(['op' => 'prefix:<sub>', @parts])
@@ -12686,6 +12853,8 @@ my %dispatch = ('stmt' => sub {
     comment(@_)
 }, 'label' => sub {
     label(@_)
+}, 'var' => sub {
+    var(@_)
 });
 my %pair = ('(' => ')', '[' => ']', '{' => '}');
 our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<~>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<leq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' leq '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<~=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ~= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'infix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
@@ -12856,6 +13025,11 @@ sub Perlito5::Perl6::PrettyPrinter::paren_semicolon {
         }
     }
     push(@{$out}, $pair{$data->[1]})
+}
+sub Perlito5::Perl6::PrettyPrinter::var {
+    my($data, $level, $out) = @_;
+    push(@{$out}, @{$data}[1 .. $#{$data}]);
+    return()
 }
 sub Perlito5::Perl6::PrettyPrinter::label {
     my($data, $level, $out) = @_;

@@ -1,6 +1,7 @@
 use v5;
 use Perlito5::AST;
 use strict;
+use Perlito5::Perl6::TreeGrammar;
 
 package Perlito5::Perl6 {
     sub emit_perl6_block {
@@ -639,9 +640,24 @@ package Perlito5::AST::Sub;
 {
     sub emit_perl6 {
         my $self = $_[0];
+
+        Perlito5::Perl6::TreeGrammar->refactor_sub_arguments($self);
+
         my @parts;
-        push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
-            if defined $self->{sig};
+
+        if ($self->{args}) {
+            # from refactor_sub_arguments
+
+            push @parts, [ paren => '(', 
+                            ( map {[ var => $_->emit_perl6(), '?' ]} @{$self->{args}} ),
+                            [ var => '*@_' ]
+                         ]
+        }
+        else {
+            push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
+                if defined $self->{sig};
+        }
+
         push @parts, Perlito5::Perl6::emit_perl6_block($self->{block})
             if defined $self->{block};
         return [ op => 'prefix:<sub>', @parts ] if !$self->{name};

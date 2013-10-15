@@ -2,21 +2,6 @@ package Perlito5::Perl6::PrettyPrinter;
 use strict;
 use warnings;
 
-# my %dispatch = (
-#     stmt            => \&statement,             # if (expr) {stms}
-#     stmt_modifier   => \&statement_modifier,    # stmt if expr
-#     block           => \&block,                 # {stmts}
-#     keyword         => \&keyword,               # if
-#     bareword        => \&bareword,              # main
-#     number          => \&number,                # number
-#     op              => \&op,                    # expr
-#     paren           => \&paren,                 # (expr)
-#     paren_semicolon => \&paren_semicolon,       # (expr;expr;expr)
-#     apply           => \&apply,                 # subr(expr)
-#     call            => \&call,                  # expr->subr(expr)
-#     comment         => \&comment,               # # comment
-#     label           => \&label,                 # L1:
-# );
 
 # XXX - TODO - workaround initialization order in the javascript backend
 my %dispatch = (
@@ -33,6 +18,7 @@ my %dispatch = (
     call            => sub { call(@_) },                  # expr->subr(expr)
     comment         => sub { comment(@_) },               # # comment
     label           => sub { label(@_) },                 # L1:
+    var             => sub { var(@_) },                   # $a
 );
 
 my %pair = (
@@ -334,6 +320,12 @@ sub paren_semicolon {
         }
     }
     push @$out, $pair{ $data->[1] };
+}
+
+sub var {
+    my ( $data, $level, $out ) = @_;
+    push @$out, @$data[1..$#$data];
+    return;
 }
 
 sub label {
