@@ -82,6 +82,7 @@ package Perlito5::AST::CompUnit;
         my $pkg = { name => 'main', body => [] };
         for my $stmt (@body) {
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{code} eq 'package') {
+                $Perlito5::PKG_NAME = $stmt->{namespace};
                 push @out, [ stmt => [ keyword => 'class'], [ bareword => $pkg->{name} ],
                              [ block => map { $_->emit_perl6() } @{ $pkg->{body} } ]
                            ]
@@ -105,6 +106,7 @@ package Perlito5::AST::CompUnit;
         my $pkg = { name => 'main', body => [] };
         for my $stmt (@body) {
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{code} eq 'package') {
+                $Perlito5::PKG_NAME = $stmt->{namespace};
                 if ( @{ $pkg->{body} } ) {
                     if ( $pkg->{name} eq 'main' ) {
                         push @out, map { $_->emit_perl6() } @{ $pkg->{body} }
@@ -316,6 +318,9 @@ package Perlito5::AST::Proto;
 {
     sub emit_perl6 {
         my $self = $_[0];
+        if ($self->{name} eq '__PACKAGE__')  { 
+            return [ bareword => $Perlito5::PKG_NAME ];
+        }
         return [ bareword => $self->{name} ];
     }
 }
@@ -396,6 +401,9 @@ package Perlito5::AST::Apply;
         }
         if ($code eq 'inf' && !$self->{namespace})  { 
             return [ keyword => 'Inf' ];
+        }
+        if ($code eq '__PACKAGE__' && !$self->{namespace})  { 
+            return [ bareword => $Perlito5::PKG_NAME ];
         }
         if ($code eq 'prefix:<$#>') {
             return [ op => 'infix:<.>', $self->{arguments}[0]->emit_perl6(), [ keyword => 'end' ] ];
@@ -479,7 +487,10 @@ package Perlito5::AST::Apply;
                  .   '!';
         }
 
-        if ($self->{code} eq 'package')    { return [ stmt => 'class', [ bareword => $self->{namespace} ] ] }
+        if ($self->{code} eq 'package')    { 
+                $Perlito5::PKG_NAME = $self->{namespace};
+                return [ stmt => 'class', [ bareword => $self->{namespace} ] ]
+        }
 
         if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
             if ( $self->{special_arg} ) {
