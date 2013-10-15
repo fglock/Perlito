@@ -12569,7 +12569,7 @@ package Perlito5::AST::Proto;
     sub Perlito5::AST::Proto::emit_perl6 {
         my $self = $_[0];
         if ($self->{'name'} eq '__PACKAGE__') {
-            return(['bareword' => $Perlito5::PKG_NAME])
+            return(['bareword' => '$?PACKAGE'])
         }
         return(['bareword' => $self->{'name'}])
     }
@@ -12609,7 +12609,7 @@ package Perlito5::AST::Call;
 }
 package Perlito5::AST::Apply;
 {
-    my %special_var = (chr(15) => '$*OS');
+    my %special_var = (chr(15) => '$*VM');
     my %op_translate = ('list:<.>' => 'list:<~>', 'infix:<.=>' => 'infix:<~=>', 'infix:<=~>' => 'infix:<~~>', 'infix:<!~>' => 'infix:<!~~>', 'infix:<cmp>' => 'infix:<leq>', 'ternary:<? :>' => 'ternary:<?? !!>', 'reverse' => 'flip');
     sub Perlito5::AST::Apply::emit_perl6_args {
         my $self = $_[0];
@@ -12635,7 +12635,7 @@ package Perlito5::AST::Apply;
             return(['keyword' => 'Inf'])
         }
         if ($code eq '__PACKAGE__' && !$self->{'namespace'}) {
-            return(['bareword' => $Perlito5::PKG_NAME])
+            return(['bareword' => '$?PACKAGE'])
         }
         if ($code eq 'prefix:<$#>') {
             return(['op' => 'infix:<.>', $self->{'arguments'}->[0]->emit_perl6(), ['keyword' => 'end']])
