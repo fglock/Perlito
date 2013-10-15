@@ -243,6 +243,29 @@ TODO list for Perlito5
 
 
 
+* Perl6 backend
+
+-- "given" statement not implemented
+
+-- refactoring sub arguments
+    my $x = $_[0];
+    my ($x, $y, @rest) = @_;    # check if @_ is unused elsewhere in the sub
+
+-- __PACKAGE__
+
+-- specialized refactoring for packages that introduce syntax
+    Try::Tiny
+    List::MoreUtils
+    Moose
+
+-- no strict
+
+-- bless
+
+-- tests
+
+
+
 * Perl5 backend
 
 -- "given" statement not implemented
