@@ -12812,7 +12812,10 @@ package Perlito5::AST::Sub;
             if defined($self->{'block'});
         return(['op' => 'prefix:<sub>', @parts])
             if !$self->{'name'};
-        return(['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts])
+        my $name = $self->{'name'};
+        $name = $self->{'namespace'} . '::' . $name
+            if $Perlito5::PKG_NAME ne $self->{'namespace'};
+        return(['stmt' => ['keyword' => 'sub'], ['bareword' => $name], @parts])
     }
 }
 package Perlito5::AST::Do;
