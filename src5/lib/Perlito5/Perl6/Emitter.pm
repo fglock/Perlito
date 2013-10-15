@@ -662,11 +662,16 @@ package Perlito5::AST::Sub;
             push @parts, [ paren => '(', 
                             ( map {[ var => $_->emit_perl6(), '?' ]} @{$self->{args}} ),
                             [ var => '*@_' ]
-                         ]
+                         ];
         }
         else {
-            push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
-                if defined $self->{sig};
+
+            # TODO - use sig
+
+            # push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
+            #     if defined $self->{sig};
+
+            push @parts, [ paren => '(', [ var => '*@_' ] ];
         }
 
         push @parts, Perlito5::Perl6::emit_perl6_block($self->{block})

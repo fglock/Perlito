@@ -12805,8 +12805,7 @@ package Perlito5::AST::Sub;
             } @{$self->{'args'}}), ['var' => '*@_']])
         }
         else {
-            push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]])
-                if defined($self->{'sig'})
+            push(@parts, ['paren' => '(', ['var' => '*@_']])
         }
         push(@parts, Perlito5::Perl6::emit_perl6_block($self->{'block'}))
             if defined($self->{'block'});
