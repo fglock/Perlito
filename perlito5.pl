@@ -12643,6 +12643,9 @@ package Perlito5::AST::Apply;
         if (($code eq 'shift' || $code eq 'pop') && !@{$self->{'arguments'}}) {
             return(['apply' => '(', $code, '@_'])
         }
+        if ($code eq 'glob' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Val::Buf' && $self->{'arguments'}->[0]->{'buf'} eq '') {
+            return(['apply' => '(', ['keyword' => 'lines']])
+        }
         if ($code eq 'infix:<x>') {
             my $arg = $self->{'arguments'}->[0];
             if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'circumfix:<( )>') {
@@ -12745,7 +12748,7 @@ package Perlito5::AST::When;
 {
     sub Perlito5::AST::When::emit_perl6 {
         my $self = $_[0];
-        return(['stmt' => ['keyword' => 'when'], ['paren' => '(', $self->{'cond'}->emit_perl6()], Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())])
+        return(['stmt' => ['keyword' => 'when'], $self->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())])
     }
 }
 package Perlito5::AST::While;
@@ -12758,7 +12761,7 @@ package Perlito5::AST::While;
         if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block') {
             return(@out, ['stmt_modifier' => $self->{'body'}->emit_perl6(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl6()]])
         }
-        push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_perl6()], Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
+        push(@out, ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
         if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
             push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl6::emit_perl6_block($self->{'continue'}->{'stmts'})])
         }

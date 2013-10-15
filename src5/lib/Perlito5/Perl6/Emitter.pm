@@ -417,6 +417,14 @@ package Perlito5::AST::Apply;
             # TODO - @ARGV instead of @_ depending on context
             return [ apply => '(', $code, '@_' ];
         }
+        if (  $code eq 'glob' 
+           && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Buf'
+           && $self->{arguments}[0]{buf} eq ''
+           )
+        {
+            # TODO - glob or <> depending on context
+            return [ apply => '(', [ keyword => 'lines' ], ];
+        }
 
         if ($code eq 'infix:<x>' ) {
             my $arg   = $self->{arguments}->[0];
@@ -554,7 +562,7 @@ package Perlito5::AST::When;
     sub emit_perl6 {
         my $self = $_[0];
         return [ stmt => [ keyword => 'when' ],
-                 [ paren => '(', $self->{cond}->emit_perl6() ],
+                 $self->{cond}->emit_perl6(),
                  Perlito5::Perl6::emit_perl6_block($self->{body}->stmts)
                ];
     }
@@ -574,7 +582,7 @@ package Perlito5::AST::While;
                                       [ stmt => [ keyword => 'while' ], $self->{cond}->emit_perl6() ] ];
         }
         push @out, [ stmt => [ keyword => 'while' ],
-                     [ paren => '(', $self->{cond}->emit_perl6() ],
+                     $self->{cond}->emit_perl6(),
                      Perlito5::Perl6::emit_perl6_block($self->{body}->stmts)
                    ];
         if ($self->{continue} && @{ $self->{continue}{stmts} }) {
