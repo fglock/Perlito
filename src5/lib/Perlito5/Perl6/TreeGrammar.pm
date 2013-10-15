@@ -84,13 +84,28 @@ sub my_var {
     ];
 }
 
+sub var_is_at {
+    [   Ref => 'Perlito5::AST::Var',
+        [   And => [ Lookup => 'sigil', [ Value => '@' ] ],
+                   [ Lookup => 'name',  [ Value => '_' ] ],
+                   ( @_ ? [ Progn => @_ ] : () )
+        ]
+    ];
+}
+
 sub shift_arg {
     [   Ref => 'Perlito5::AST::Apply',
-        [   And => [ Lookup => 'code', [ Value => 'shift' ] ],
-
-            # TODO - bareword => 1, arguments => [], namespace => ''
-            #     or arguments => [ @_ ]
-            ( @_ ? [ Progn => @_ ] : () )
+        [   And =>  [ Lookup => 'code', [ Value => 'shift' ] ],
+                    [ Or => [ Lookup => 'arguments',
+                                [ Not => [ Index => 0 ] ]   # arg list is empty
+                            ],
+                            [ Lookup => 'arguments',
+                                [ Index => 0,
+                                    var_is_at()             # arg is @_
+                                ]
+                            ],
+                    ],
+                    ( @_ ? [ Progn => @_ ] : () )
         ]
     ];
 }

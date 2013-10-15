@@ -12320,8 +12320,11 @@ sub Perlito5::Perl6::TreeGrammar::operator_eq {
 sub Perlito5::Perl6::TreeGrammar::my_var {
     ['Ref' => 'Perlito5::AST::Decl', ['And' => ['Lookup' => 'decl', ['Value' => 'my']], (@_ ? ['Progn' => @_] : ())]]
 }
+sub Perlito5::Perl6::TreeGrammar::var_is_at {
+    ['Ref' => 'Perlito5::AST::Var', ['And' => ['Lookup' => 'sigil', ['Value' => '@']], ['Lookup' => 'name', ['Value' => '_']], (@_ ? ['Progn' => @_] : ())]]
+}
 sub Perlito5::Perl6::TreeGrammar::shift_arg {
-    ['Ref' => 'Perlito5::AST::Apply', ['And' => ['Lookup' => 'code', ['Value' => 'shift']], (@_ ? ['Progn' => @_] : ())]]
+    ['Ref' => 'Perlito5::AST::Apply', ['And' => ['Lookup' => 'code', ['Value' => 'shift']], ['Or' => ['Lookup' => 'arguments', ['Not' => ['Index' => 0]]], ['Lookup' => 'arguments', ['Index' => 0, var_is_at()]]], (@_ ? ['Progn' => @_] : ())]]
 }
 1;
 package main;
