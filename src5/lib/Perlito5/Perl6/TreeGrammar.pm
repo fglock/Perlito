@@ -1,14 +1,13 @@
-package main {
-    use Data::Dumper;
-    use strict;
-    use Perlito5::TreeGrammar;
+package Perlito5::Perl6::TreeGrammar;
+use Data::Dumper;
+use strict;
+use Perlito5::TreeGrammar;
 
-    my $in = eval join( '', <> );
-    print Dumper $in;
-
+sub refactor_sub_arguments {
+    my ($class, $in) = @_;
     my ( $rule, $result );
-
-    $rule = TreeGrammar::AST::is_sub(
+    
+    $rule = Perlito5::Perl6::TreeGrammar::is_sub(
         [   Action => sub {
                 my $sub = $_[0];
                 my $stmts;
@@ -18,10 +17,10 @@ package main {
                         [   Progn => [ Action => sub { $stmts = $_[0] } ],
                                      [   Star => [
                                              Index => 0,
-                                             TreeGrammar::AST::operator_eq( 'infix:<=>',
+                                             Perlito5::Perl6::TreeGrammar::operator_eq( 'infix:<=>',
                                                  [   Lookup => 'arguments',
                                                      [   And => [   Index => 0,
-                                                                    TreeGrammar::AST::my_var(
+                                                                    Perlito5::Perl6::TreeGrammar::my_var(
                                                                         [   Action => sub {
                                                                                 $var = $_[0]->{var};
                                                                               }
@@ -29,7 +28,7 @@ package main {
                                                                     )
                                                                 ],
                                                                 [   Index => 1,
-                                                                    TreeGrammar::AST::shift_arg()
+                                                                    Perlito5::Perl6::TreeGrammar::shift_arg()
                                                                 ],
                                                                 [   Action => sub {
                                                                         push @{ $sub->{args} }, $var;
@@ -50,56 +49,51 @@ package main {
     );
 
     $result = Perlito5::TreeGrammar::scan( $rule, $in );
-    print "result $result\n";
-    print Dumper $in;
-
+    # print "result $result\n";
+    # print Dumper $in;
 }
 
-package TreeGrammar::AST {
-    use strict;
+sub is_sub {
+    [   Ref => 'Perlito5::AST::Sub',
+        ( @_ ? [ Progn => @_ ] : () )
+    ];
+}
 
-    sub is_sub {
-        [   Ref => 'Perlito5::AST::Sub',
+sub named_sub {
+    [   Ref => 'Perlito5::AST::Sub',
+        [   And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
             ( @_ ? [ Progn => @_ ] : () )
-        ];
-    }
-
-    sub named_sub {
-        [   Ref => 'Perlito5::AST::Sub',
-            [   And => [ Lookup => 'name', [ Not => [ Value => '' ] ] ],
-                ( @_ ? [ Progn => @_ ] : () )
-            ]
-        ];
-    }
-
-    sub operator_eq {
-        my $name = shift;
-        [   Ref => 'Perlito5::AST::Apply',
-            [   And => [ Lookup => 'code', [ Value => $name ] ],
-                ( @_ ? [ Progn => @_ ] : () )
-            ]
-        ];
-    }
-
-    sub my_var {
-        [   Ref => 'Perlito5::AST::Decl',
-            [   And => [ Lookup => 'decl', [ Value => 'my' ] ],
-                ( @_ ? [ Progn => @_ ] : () )
-            ]
-        ];
-    }
-
-    sub shift_arg {
-        [   Ref => 'Perlito5::AST::Apply',
-            [   And => [ Lookup => 'code', [ Value => 'shift' ] ],
-
-                # TODO - bareword => 1, arguments => [], namespace => ''
-                #     or arguments => [ @_ ]
-                ( @_ ? [ Progn => @_ ] : () )
-            ]
-        ];
-    }
-
+        ]
+    ];
 }
 
+sub operator_eq {
+    my $name = shift;
+    [   Ref => 'Perlito5::AST::Apply',
+        [   And => [ Lookup => 'code', [ Value => $name ] ],
+            ( @_ ? [ Progn => @_ ] : () )
+        ]
+    ];
+}
+
+sub my_var {
+    [   Ref => 'Perlito5::AST::Decl',
+        [   And => [ Lookup => 'decl', [ Value => 'my' ] ],
+            ( @_ ? [ Progn => @_ ] : () )
+        ]
+    ];
+}
+
+sub shift_arg {
+    [   Ref => 'Perlito5::AST::Apply',
+        [   And => [ Lookup => 'code', [ Value => 'shift' ] ],
+
+            # TODO - bareword => 1, arguments => [], namespace => ''
+            #     or arguments => [ @_ ]
+            ( @_ ? [ Progn => @_ ] : () )
+        ]
+    ];
+}
+
+1;
 
