@@ -673,11 +673,14 @@ package Perlito5::AST::Sub;
             if defined $self->{block};
         return [ op => 'prefix:<sub>', @parts ] if !$self->{name};
 
-        my $name = $self->{name};
-        $name = $self->{namespace} . "::" . $name
-            if $Perlito5::PKG_NAME ne $self->{namespace};
+        # TODO - 'my' subroutines
 
-        return [ stmt => [ keyword => 'sub' ], [ bareword => $name ], @parts ];
+        my $name = $self->{name};
+        if ( $Perlito5::PKG_NAME ne $self->{namespace} ) {
+            $name = $self->{namespace} . "::" . $name;
+            return [ stmt => [ keyword => 'sub' ], [ bareword => $name ], @parts ];
+        }
+        return [ stmt => [ keyword => 'our' ], [ keyword => 'sub' ], [ bareword => $name ], @parts ];
     }
 }
 
