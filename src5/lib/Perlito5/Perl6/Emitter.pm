@@ -573,6 +573,13 @@ package Perlito5::AST::While;
 {
     sub emit_perl6 {
         my $self = $_[0];
+
+        Perlito5::Perl6::TreeGrammar->refactor_while_glob($self);
+        if (ref($self) ne 'Perlito5::AST::While') {
+            # the node was refactored into something else
+            return $self->emit_perl6();
+        }
+
         my @out;
         push @out, [ label => $self->{label} ]
             if $self->{label};        

@@ -3,6 +3,21 @@ use Data::Dumper;
 use strict;
 use Perlito5::TreeGrammar;
 
+sub refactor_while_glob {
+    my ($class, $in) = @_;
+    Perlito5::TreeGrammar::render(
+        [   Ref => 'Perlito5::AST::While',
+            [ Lookup => 'cond', 
+                 [ And => [ Ref    => 'Perlito5::AST::Apply' ],
+                          [ Lookup => 'code', [ Value => 'glob' ] ],
+                          [ Action => sub { bless $in, 'Perlito5::AST::For' } ]
+                 ]
+            ]
+        ],
+        $in
+    );
+}
+
 sub refactor_sub_arguments {
     my ($class, $in) = @_;
     my ( $rule, $result );

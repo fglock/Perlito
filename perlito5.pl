@@ -12289,6 +12289,12 @@ package Perlito5::Perl6::TreeGrammar;
 # use Data::Dumper
 # use strict
 # use Perlito5::TreeGrammar
+sub Perlito5::Perl6::TreeGrammar::refactor_while_glob {
+    my($class, $in) = @_;
+    Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => 'glob']], ['Action' => sub {
+        bless($in, 'Perlito5::AST::For')
+    }]]]], $in)
+}
 sub Perlito5::Perl6::TreeGrammar::refactor_sub_arguments {
     my($class, $in) = @_;
     my($rule, $result);
@@ -12755,6 +12761,10 @@ package Perlito5::AST::While;
 {
     sub Perlito5::AST::While::emit_perl6 {
         my $self = $_[0];
+        Perlito5::Perl6::TreeGrammar->refactor_while_glob($self);
+        if (ref($self) ne 'Perlito5::AST::While') {
+            return($self->emit_perl6())
+        }
         my @out;
         push(@out, ['label' => $self->{'label'}])
             if $self->{'label'};
