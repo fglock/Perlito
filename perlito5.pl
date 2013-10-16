@@ -12658,6 +12658,12 @@ package Perlito5::AST::Apply;
                 $code = 'infix:<xx>'
             }
         }
+        if (($code eq 'print' || $code eq 'say') && !@{$self->{'arguments'}}) {
+            return(['keyword' => '.' . $code])
+        }
+        if ($code eq 'infix:<..>' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Val::Int' && ref($self->{'arguments'}->[1]) eq 'Perlito5::AST::Val::Int' && $self->{'arguments'}->[0]->{'int'} == 0) {
+            return('^' . ($self->{'arguments'}->[1]->{'int'} + 1))
+        }
         $code = $op_translate{$code}
             if $op_translate{$code};
         if ($code eq 'prefix:<$>') {

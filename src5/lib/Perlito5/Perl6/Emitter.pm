@@ -425,13 +425,29 @@ package Perlito5::AST::Apply;
             # TODO - glob or <> depending on context
             return [ apply => '(', [ keyword => 'lines' ], ];
         }
-
         if ($code eq 'infix:<x>' ) {
             my $arg   = $self->{arguments}->[0];
             if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>') {
                 # ($v) x $i
                 $code = 'infix:<xx>';
             }
+        }
+        if ( (  $code eq 'print' 
+             || $code eq 'say'
+             ) 
+           && !@{$self->{arguments}}
+           )
+        {
+            return [ keyword => '.' . $code ];
+        }
+        if ( $code eq 'infix:<..>' 
+           && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Int'
+           && ref($self->{arguments}[1]) eq 'Perlito5::AST::Val::Int'
+           && $self->{arguments}[0]{int} == 0
+           )
+        {
+            # TODO - add formatting tags
+            return '^' . ($self->{arguments}[1]{int} + 1)
         }
 
         $code = $op_translate{$code} if $op_translate{$code};
