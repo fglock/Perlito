@@ -247,6 +247,8 @@ TODO list for Perlito5
 
 -- <> is lines()
 
+-- 0..$#num to @num.keys
+
 -- choose @*ARGS or @_ in shift() and pop()
 
 -- typeglob assignment
