@@ -12289,6 +12289,14 @@ package Perlito5::Perl6::TreeGrammar;
 # use Data::Dumper
 # use strict
 # use Perlito5::TreeGrammar
+sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
+    die('Unimplemented');
+    my($class, $in) = @_;
+    Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']]->['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Val::Int']->['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['Action' => sub {
+        $in{'name'} = 'p6:prefix:<^>';
+        shift(@{$in->{'arguments'}})
+    }]]]]], $in)
+}
 sub Perlito5::Perl6::TreeGrammar::refactor_while_glob {
     my($class, $in) = @_;
     Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => 'glob']], ['Action' => sub {
