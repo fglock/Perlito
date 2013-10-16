@@ -12293,7 +12293,7 @@ sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
     die('Unimplemented');
     my($class, $in) = @_;
     Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']]->['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Val::Int']->['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['Action' => sub {
-        $in{'name'} = 'p6:prefix:<^>';
+        $in->{'name'} = 'p6:prefix:<^>';
         shift(@{$in->{'arguments'}})
     }]]]]], $in)
 }

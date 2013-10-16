@@ -16,7 +16,7 @@ sub refactor_range_operator {
                                   [ Index => 1,
                                         # TODO   0..$#num to @num.keys
                                                     [ Action => sub {
-                                                        $in{name} = 'p6:prefix:<^>';
+                                                        $in->{name} = 'p6:prefix:<^>';
                                                         shift @{ $in->{arguments} };
                                                       }
                                                     ],
