@@ -120,7 +120,7 @@ sub term_special_var {
         $len = 2;
     }
     elsif ( exists $special_var{$s} ) {
-        $len = 3;
+        $len = length($s);
     }
     else {
         $s = substr( $str, $pos, 2 );
@@ -290,16 +290,22 @@ sub term_sigil {
     }
     if ( $c1 eq '$' ) {
         #  $$ ...
-        $m = $self->term_sigil( $str, $p );
-        if ($m) {
-            $m->{capture} = [ 'term',  
-                    Perlito5::AST::Apply->new( 
-                            'arguments' => [ $m->{capture}[1] ],
-                            'code'      => 'prefix:<' . $sigil . '>', 
-                            'namespace' => ''
-                        )
-                ];
-            return $m;
+        my $m2 = Perlito5::Grammar::Space->opt_ws($str, $p + 1);
+        my $p2 = $m2->{to};
+        my $c2 = substr($str, $p2, 1);
+        if ($c2 ne ',' && $c2 ne ';') {
+            # not $$; not $$,
+            $m = $self->term_sigil( $str, $p );
+            if ($m) {
+                $m->{capture} = [ 'term',  
+                        Perlito5::AST::Apply->new( 
+                                'arguments' => [ $m->{capture}[1] ],
+                                'code'      => 'prefix:<' . $sigil . '>', 
+                                'namespace' => ''
+                            )
+                    ];
+                return $m;
+            }
         }
     }
 

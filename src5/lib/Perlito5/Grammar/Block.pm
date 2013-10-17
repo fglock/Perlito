@@ -61,7 +61,7 @@ sub term_block {
                 }
                 my $cont = Perlito5::Grammar::Expression->term_curly($str, $p);
                 die "syntax error" unless $cont;
-                warn "continue!";
+                # warn "continue!";
 
                 $continue->{stmts} = $cont->{capture}[2];
                 $has_continue = 1;
@@ -145,7 +145,14 @@ token named_sub_def {
             # warn "Subroutine $full_name redefined"
             #     if exists $Perlito5::PROTO->{$full_name};
 
-            $Perlito5::PROTO->{$full_name} = $sig;
+            $Perlito5::PROTO->{$full_name} = $sig;  # TODO - cleanup - replace $PROTO with prototype()
+            # if (!exists(&{$full_name})) {
+            #     # make sure the prototype exists at compile-time
+            #     my $sub = defined($sig)
+            #             ? eval "sub ($sig) { }"
+            #             : eval "sub { }";
+            #     *{$full_name} = $sub;
+            # }
         }
         $MATCH->{capture} = Perlito5::AST::Sub->new(
             name       => $name, 

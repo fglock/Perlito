@@ -4,7 +4,7 @@ PERL5_INC := -I./lib5
 
 # default actions
 
-all : build-5to5 build-5js build-5browser
+all : build-5to5 build-5js build-5browser build-5to6browser
 
 test-all : test-5to5 test-5js
 
@@ -134,7 +134,8 @@ build-6py ::
 # Perl 5
 
 minify ::
-	jsmin < html/perlito5.js > html/perlito5m.js
+	jsmin < html/perlito5.js > html/perlito5.min.js
+	jsmin < html/perlito6.js > html/perlito6.min.js
 
 build-5to5 ::
 	perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
@@ -144,6 +145,9 @@ build-5js ::
 
 build-5browser ::
 	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
+
+build-5to6browser ::
+	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > html/perlito5to6.js
 
 build-5js3 ::
 	perl perlito5.pl -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js

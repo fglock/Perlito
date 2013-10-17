@@ -11,8 +11,12 @@ sub Dumper {
     # old-style Data::Dumper
     my $seen  = {};
     my $level = '    ';
-    my $pos   = '$VAR1';
-    return "$pos = " . _dumper($_[0], $level, $seen, $pos) . ";\n";
+    my @out;
+    for my $i (0 .. $#_) {
+        my $pos   = '$VAR' . ($i + 1);
+        push @out, "$pos = " . _dumper($_[$i], $level, $seen, $pos) . ";\n";
+    }
+    return join('', @out);
 }
 
 sub ast_dumper {
@@ -133,6 +137,7 @@ sub escape_string {
     my @out;
     my $tmp = '';
     return "''" if $s eq '';
+    return 0+$s if (0+$s) eq $s;
     for my $i (0 .. length($s) - 1) {
         my $c = substr($s, $i, 1);
         if  (  ($c ge 'a' && $c le 'z')

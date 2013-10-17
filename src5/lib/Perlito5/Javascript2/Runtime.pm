@@ -232,7 +232,54 @@ function p5call_sub(namespace, name, list, p5want) {
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
 }
 
-function p5scalar_deref(v) {
+function p5sub(fun, prot) {
+    fun._prototype_ = prot;
+    return fun;
+}
+
+function p5sub_exists(name, current_pkg_name) {
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        v = String.fromCharCode(c + 64) + v.substr(1);
+        pkg_name = 'main';
+    }
+    return p5pkg[pkg_name].hasOwnProperty(v) 
+}
+
+function p5sub_prototype(name, current_pkg_name) {
+    if (typeof name === "function") {
+        return name._prototype_;
+    }
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        v = String.fromCharCode(c + 64) + v.substr(1);
+        pkg_name = 'main';
+    }
+    if (p5pkg[pkg_name].hasOwnProperty(v)) {
+        return p5pkg[pkg_name][v]._prototype_
+    }
+    return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
+}
+
+function p5scalar_deref(v, current_pkg_name) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
@@ -240,7 +287,7 @@ function p5scalar_deref(v) {
             pkg_name = pkg_name.join("::");
         }
         else {
-            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+            pkg_name = current_pkg_name;
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
@@ -252,7 +299,7 @@ function p5scalar_deref(v) {
     return v._scalar_;
 }
 
-function p5scalar_deref_set(v, n) {
+function p5scalar_deref_set(v, n, current_pkg_name) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
@@ -260,7 +307,7 @@ function p5scalar_deref_set(v, n) {
             pkg_name = pkg_name.join("::");
         }
         else {
-            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+            pkg_name = current_pkg_name;
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
@@ -347,7 +394,7 @@ function p5typeglob_set(namespace, name, obj) {
     return p5pkg[namespace][name];  // TODO - return GLOB
 }
 
-function p5typeglob_deref_set(v, obj) {
+function p5typeglob_deref_set(v, obj, current_pkg_name) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
@@ -355,7 +402,7 @@ function p5typeglob_deref_set(v, obj) {
             pkg_name = pkg_name.join("::");
         }
         else {
-            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+            pkg_name = current_pkg_name;
         }
         return p5typeglob_set(pkg_name, v, obj);
     }
@@ -687,6 +734,18 @@ p5complement = function(a) {
 p5str_replicate = function(o, n) {
     n = p5num(n);
     return n ? Array(n + 1).join(o) : "";
+};
+
+p5list_replicate = function(o, n) {
+    o = p5list_to_a(o);
+    n = p5num(n);
+    var out = [];
+    for(var i = 0; i < n; i++) {
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
+    }
+    return out;
 };
 
 p5str_inc = function(s) {

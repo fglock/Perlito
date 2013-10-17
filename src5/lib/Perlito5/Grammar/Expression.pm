@@ -248,7 +248,7 @@ my $reduce_to_ast = sub {
                     Perlito5::AST::Apply->new(
                         namespace => $v2->namespace,
                         code      => $v2->code,
-                        arguments => [ @{ $v2->arguments }, undef ],
+                        arguments => [ @{ $v2->arguments } ],
                       );
             }
             else {
@@ -256,7 +256,7 @@ my $reduce_to_ast = sub {
                     Perlito5::AST::Apply->new(
                         namespace => '',
                         code      => 'list:<' . $last_op->[1] . '>',
-                        arguments => [ $v2, undef ],
+                        arguments => [ $v2 ],
                       );
             }
             return;

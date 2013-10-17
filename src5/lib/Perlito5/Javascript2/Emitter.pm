@@ -1037,10 +1037,10 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
-        my $perl5_name = $self->perl5_name_javascript2;
+        my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
         my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl_javascript2( $perl5_name );
+        my $decl = $self->perl5_get_decl( $perl5_name );
         if ( $decl ) {
             # say "found ", $decl->{decl};
             $decl_type = $decl->{decl};
@@ -1186,33 +1186,6 @@ package Perlito5::AST::Var;
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
 
-    sub perl5_name_javascript2 {
-        my $self = shift;
-
-        my $sigil = $self->{sigil};
-        $sigil = '@' if $sigil eq '$#';
-
-        $sigil
-        . ( $self->{namespace}
-          ? $self->{namespace} . '::'
-          : ''
-          )
-        . $self->{name}
-    }
-    sub perl5_get_decl_javascript2 {
-        my $self = shift;
-        my $perl5_name = shift;
-
-        # subroutines are never 'my' (but they may be in later versions of Perl5)
-        return { decl => 'our' }
-            if substr($perl5_name, 0, 1) eq '&';
-
-        for ( @{ $Perlito5::VAR } ) {
-            return $_->{$perl5_name}
-                if exists $_->{$perl5_name}
-        }
-        return undef;
-    }
     sub emit_javascript2_get_decl { () }
 }
 
@@ -1251,10 +1224,10 @@ package Perlito5::AST::Decl;
             #     .       'p5LOCAL.push(function(){ ' . $var_set . ' }) '
             #     .  '}()';
 
-            my $perl5_name = $self->{var}->perl5_name_javascript2;
+            my $perl5_name = $self->{var}->perl5_name;
             # say "looking up $perl5_name";
             my $decl_namespace = '';
-            my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
+            my $decl = $self->{var}->perl5_get_decl( $perl5_name );
             if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
                 die "Can't localize lexical variable $perl5_name";
             }
@@ -1273,7 +1246,7 @@ package Perlito5::AST::Decl;
 
         my $type = $self->{decl};
         my $env = { decl => $type };
-        my $perl5_name = $self->{var}->perl5_name_javascript2;
+        my $perl5_name = $self->{var}->perl5_name;
         if ( $self->{decl} ne 'my' ) {
 
             die "No package name allowed for variable $perl5_name in \"our\""
@@ -1282,7 +1255,7 @@ package Perlito5::AST::Decl;
             if ( $self->{var}{namespace} eq '' ) {
                 # say "looking up $perl5_name";
                 my $decl_namespace = '';
-                my $decl = $self->{var}->perl5_get_decl_javascript2( $perl5_name );
+                my $decl = $self->{var}->perl5_get_decl( $perl5_name );
                 if ( $decl && $decl->{decl} eq 'our') {
                     # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
                     $decl_namespace = $decl->{namespace};
@@ -1558,13 +1531,15 @@ package Perlito5::AST::Apply;
         if ($code eq 'prefix:<$>') {
             return 'p5scalar_deref_set(' 
                 . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
-                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)  . ', '
+                . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
         if ($code eq 'prefix:<*>') {
             return 'p5typeglob_deref_set(' 
                 . Perlito5::Javascript2::to_scalar($self->{arguments}, $level+1) . ', '
-                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)
+                . Perlito5::Javascript2::to_scalar([$arguments], $level+1)       . ', '
+                . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
 
@@ -1673,7 +1648,10 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
-            return 'p5scalar_deref(' . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ')';
+            return 'p5scalar_deref(' 
+                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . ')';
         },
         'prefix:<@>' => sub {
             my $self  = $_[0];
@@ -1847,6 +1825,11 @@ package Perlito5::AST::Apply;
 
         'infix:<x>' => sub {
             my $self = $_[0];
+            my $arg   = $self->{arguments}->[0];
+            if ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>') {
+                # ($v) x $i
+                return 'p5list_replicate(' . join( ', ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
+            }
             'p5str_replicate(' . join( ', ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')';
         },
 
@@ -2355,11 +2338,49 @@ package Perlito5::AST::Apply;
                 }
                 return '(' . $v->emit_javascript2() . ')._hash_.hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . ')';
             }
+            if ($arg->isa( 'Perlito5::AST::Index' )) {
+                my $v = $arg->obj;
+                if (  $v->isa('Perlito5::AST::Var')
+                   && $v->sigil eq '$'
+                   )
+                {
+                    $v = Perlito5::AST::Var->new( sigil => '@', namespace => $v->namespace, name => $v->name );
+                    return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
+                }
+                return '(' . $v->emit_javascript2() . ')._array_.hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
+            }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return '(' . $arg->invocant->emit_javascript2() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . ')';
                 }
+                if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
+                    return '(' . $arg->invocant->emit_javascript2() . ')._array_.hasOwnProperty(' . $arg->{arguments}->emit_javascript2($level) . ')';
+                }
             }
+            if (  $arg->isa('Perlito5::AST::Var')
+               && $arg->sigil eq '&'
+               )
+            {
+                # TODO exist() + 'my sub'
+                my $name = $arg->{name};
+                my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                return 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Javascript2::escape_string($name) . ')';
+            }
+            if (  $arg->isa('Perlito5::AST::Apply')
+               && $arg->{code} eq 'prefix:<&>'
+               )
+            {
+                my $arg2 = $arg->{arguments}->[0];
+                return 'p5sub_exists(' . Perlito5::Javascript2::to_str($arg2) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
+            }
+        },
+
+        'prototype' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            my $arg = $self->{arguments}->[0];
+            return 'p5sub_prototype(' . $arg->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
         },
 
     );
@@ -2795,8 +2816,8 @@ package Perlito5::AST::For;
         }
         my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
 
-        my $perl5_name = $v->perl5_name_javascript2;
-        my $pre_declaration = $v->perl5_get_decl_javascript2( $perl5_name );
+        my $perl5_name = $v->perl5_name;
+        my $pre_declaration = $v->perl5_get_decl( $perl5_name );
         if ( $pre_declaration ) {
             # say "found ", $pre_declaration->{decl};
             $decl = $pre_declaration->{decl};
@@ -2851,9 +2872,13 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =                                 'function (List__, p5want) {' . "\n"
+        my $prototype = defined($self->{sig}) 
+                        ? Perlito5::Javascript2::escape_string($self->{sig}) 
+                        : 'null';
+
+        my $s =                                 'p5sub(function (List__, p5want) {' . "\n"
         . Perlito5::Javascript2::tab($level+1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript2( $level + 1 ) . "\n"
-        . Perlito5::Javascript2::tab($level)   . '}';
+        . Perlito5::Javascript2::tab($level)   . '}, ' . $prototype . ')';
 
         if ( $self->{name} ) {
             return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'

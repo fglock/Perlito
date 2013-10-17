@@ -3,9 +3,9 @@ package Perlito5::Perl5::Runtime;
 sub emit_perl5 {
     return <<'EOT';
 
-package Perlito5::IO;
+use v5.10;
 
-sub slurp {
+sub Perlito5::IO::slurp {
     my $source_filename = shift;
     open FILE, $source_filename
       or die "Cannot read $source_filename\n";

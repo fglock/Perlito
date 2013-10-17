@@ -1028,28 +1028,6 @@ package Perlito5::AST::Var;
 
         $ns . $table->{$self->{sigil}} . $str_name
     }
-    sub perl5_name {
-        my $self = shift;
-
-        my $sigil = $self->{sigil};
-        $sigil = '@' if $sigil eq '$#';
-
-        $sigil
-        . ( $self->{namespace}
-          ? $self->{namespace} . '::'
-          : ''
-          )
-        . $self->{name}
-    }
-    sub perl5_get_decl {
-        my $self = shift;
-        my $perl5_name = shift;
-        for ( @{ $Perlito5::VAR } ) {
-            return $_->{$perl5_name}
-                if exists $_->{$perl5_name}
-        }
-        return undef;
-    }
 }
 
 package Perlito5::AST::Decl;
