@@ -276,6 +276,10 @@ sub call {
     push @$out, '.';
     my $d = $dd[0];
     render( $d, $level, $out );
+    if ($open eq '(' && @dd == 1) {
+        # done if it is an empty list
+        return;
+    }
     $dd[0] = 'list:<,>';
     push @$out, $open;
     op( [ op => @dd ], $level, $out );
@@ -289,6 +293,10 @@ sub apply {
     my $open = shift @dd;
     my $d = $dd[0];
     render( $d, $level, $out );
+    if ($open eq '(' && @dd == 1) {
+        # done if it is an empty list
+        return;
+    }
     $dd[0] = 'list:<,>';
     push @$out, $open;
     op( [ op => @dd ], $level, $out );

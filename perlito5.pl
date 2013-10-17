@@ -13063,6 +13063,9 @@ sub Perlito5::Perl6::PrettyPrinter::call {
     push(@{$out}, '.');
     my $d = $dd[0];
     render($d, $level, $out);
+    if ($open eq '(' && @dd == 1) {
+        return()
+    }
     $dd[0] = 'list:<,>';
     push(@{$out}, $open);
     op(['op' => @dd], $level, $out);
@@ -13075,6 +13078,9 @@ sub Perlito5::Perl6::PrettyPrinter::apply {
     my $open = shift(@dd);
     my $d = $dd[0];
     render($d, $level, $out);
+    if ($open eq '(' && @dd == 1) {
+        return()
+    }
     $dd[0] = 'list:<,>';
     push(@{$out}, $open);
     op(['op' => @dd], $level, $out);
