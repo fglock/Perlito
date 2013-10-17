@@ -12291,11 +12291,26 @@ package Perlito5::Perl6::TreeGrammar;
 # use Perlito5::TreeGrammar
 sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
     my($class, $in) = @_;
-    Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']], ['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Val::Int'], ['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['And' => ['Ref' => 'Perlito5::AST::Val::Int'], ['Action' => sub {
+    Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']], ['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Val::Int'], ['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['Or' => ['And' => ['Ref' => 'Perlito5::AST::Val::Int'], ['Action' => sub {
         $in->{'code'} = 'p6_prefix:<^>';
         $_[0]->{'int'}++;
         shift(@{$in->{'arguments'}})
-    }]]]]]], $in)
+    }]], ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => 'prefix:<$#>']], ['Action' => sub {
+        bless($in, 'Perlito5::AST::Call');
+        delete($in->{'code'});
+        $in->{'method'} = 'keys';
+        shift(@{$in->{'arguments'}});
+        my $invocant = shift(@{$in->{'arguments'}});
+        $in->{'invocant'} = $invocant->{'arguments'}->[0]
+    }]], ['And' => ['Ref' => 'Perlito5::AST::Var'], ['Lookup' => 'sigil', ['Value' => '$#']], ['Action' => sub {
+        bless($in, 'Perlito5::AST::Call');
+        delete($in->{'code'});
+        $in->{'method'} = 'keys';
+        $in->{'arguments'} = [];
+        my $invocant = $_[0];
+        $invocant->{'sigil'} = '@';
+        $in->{'invocant'} = $invocant
+    }]]]]]]], $in)
 }
 sub Perlito5::Perl6::TreeGrammar::refactor_while_glob {
     my($class, $in) = @_;
@@ -12671,6 +12686,9 @@ package Perlito5::AST::Apply;
         }
         if ($code eq 'infix:<..>') {
             Perlito5::Perl6::TreeGrammar->refactor_range_operator($self);
+            if (ref($self) ne 'Perlito5::AST::Apply') {
+                return($self->emit_perl6())
+            }
             $code = $self->{'code'}
         }
         $code = $op_translate{$code}

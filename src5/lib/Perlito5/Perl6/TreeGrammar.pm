@@ -12,15 +12,44 @@ sub refactor_range_operator {
                                                              [  Lookup => 'int', [ Value => 0 ] ]
                                                     ]
                                   ], # first argument is 0
-                                  [ Index => 1,     [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
+                                  [ Index => 1, [ Or =>   
+                                                    # 0 .. 9 ==> ^10
+                                                    [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
                                                              [ Action => sub {
                                                                  $in->{code} = 'p6_prefix:<^>';
                                                                  $_[0]{int}++;
                                                                  shift @{ $in->{arguments} };
                                                                }
                                                              ],
-                                                    ]
-                                        # TODO   0..$#num to @num.keys
+                                                    ],
+                                                    # 0..$#$num to $num.keys
+                                                    [ And => [   Ref =>  'Perlito5::AST::Apply' ],
+                                                             [  Lookup => 'code', [ Value => 'prefix:<$#>' ] ],
+                                                             [ Action => sub {
+                                                                 bless $in, 'Perlito5::AST::Call';
+                                                                 delete $in->{code};
+                                                                 $in->{method} = 'keys';
+                                                                 shift @{ $in->{arguments} };
+                                                                 my $invocant = shift @{ $in->{arguments} };
+                                                                 $in->{invocant} = $invocant->{arguments}[0];
+                                                               }
+                                                             ],
+                                                    ],
+                                                    # 0..$#num to @num.keys
+                                                    [ And => [   Ref =>  'Perlito5::AST::Var' ],
+                                                             [  Lookup => 'sigil', [ Value => '$#' ] ],
+                                                             [ Action => sub {
+                                                                 bless $in, 'Perlito5::AST::Call';
+                                                                 delete $in->{code};
+                                                                 $in->{method} = 'keys';
+                                                                 $in->{arguments} = [];
+                                                                 my $invocant = $_[0];
+                                                                 $invocant->{sigil} = '@';
+                                                                 $in->{invocant} = $invocant;
+                                                               }
+                                                             ],
+                                                    ],
+                                                ]
                                   ],
                         ]
                     ]

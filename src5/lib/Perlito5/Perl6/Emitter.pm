@@ -442,6 +442,10 @@ package Perlito5::AST::Apply;
         }
         if ( $code eq 'infix:<..>' ) {
             Perlito5::Perl6::TreeGrammar->refactor_range_operator($self);
+            if (ref($self) ne 'Perlito5::AST::Apply') {
+                # the node was refactored into something else
+                return $self->emit_perl6();
+            }
             $code = $self->{code};
         }
 
