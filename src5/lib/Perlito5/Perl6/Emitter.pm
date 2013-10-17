@@ -440,14 +440,9 @@ package Perlito5::AST::Apply;
         {
             return [ keyword => '.' . $code ];
         }
-        if ( $code eq 'infix:<..>' 
-           && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Int'
-           && ref($self->{arguments}[1]) eq 'Perlito5::AST::Val::Int'
-           && $self->{arguments}[0]{int} == 0
-           )
-        {
-            # TODO - add formatting tags
-            return '^' . ($self->{arguments}[1]{int} + 1)
+        if ( $code eq 'infix:<..>' ) {
+            Perlito5::Perl6::TreeGrammar->refactor_range_operator($self);
+            $code = $self->{code};
         }
 
         $code = $op_translate{$code} if $op_translate{$code};

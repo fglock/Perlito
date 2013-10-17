@@ -48,6 +48,7 @@ our %op = (
 
     'infix:<**>' => { fix => 'infix', prec => 2, str => '**' },
 
+    'p6_prefix:<^>' => { fix => 'prefix', prec => 3, str => '^' },
     'prefix:<\\>' => { fix => 'prefix', prec => 3, str => '\\' },
     'prefix:<+>'  => { fix => 'prefix', prec => 3, str => '+' },
     'prefix:<->'  => { fix => 'prefix', prec => 3, str => '-' },

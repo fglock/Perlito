@@ -4,39 +4,29 @@ use strict;
 use Perlito5::TreeGrammar;
 
 sub refactor_range_operator {
-    ...
     my ($class, $in) = @_;
     Perlito5::TreeGrammar::render(
-        [ And =>    [   Lookup => 'code', [ Value => 'infix:<..>' ] ]
+        [ And =>    [   Lookup => 'code', [ Value => 'infix:<..>' ] ],
                     [   Lookup => 'arguments', 
-                        [ And =>  [ Index => 0,     [ And => [   Ref =>  'Perlito5::AST::Val::Int' ] 
+                        [ And =>  [ Index => 0,     [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
                                                              [  Lookup => 'int', [ Value => 0 ] ]
                                                     ]
                                   ], # first argument is 0
-                                  [ Index => 1,
+                                  [ Index => 1,     [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
+                                                             [ Action => sub {
+                                                                 $in->{code} = 'p6_prefix:<^>';
+                                                                 $_[0]{int}++;
+                                                                 shift @{ $in->{arguments} };
+                                                               }
+                                                             ],
+                                                    ]
                                         # TODO   0..$#num to @num.keys
-                                                    [ Action => sub {
-                                                        $in->{name} = 'p6:prefix:<^>';
-                                                        shift @{ $in->{arguments} };
-                                                      }
-                                                    ],
                                   ],
                         ]
                     ]
         ],
         $in
     );
-
-    #    if ( $code eq 'infix:<..>' 
-    #       && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Int'
-    #       && ref($self->{arguments}[1]) eq 'Perlito5::AST::Val::Int'
-    #       && $self->{arguments}[0]{int} == 0
-    #       )
-    #    {
-    #        # TODO - add formatting tags
-    #        return '^' . ($self->{arguments}[1]{int} + 1)
-    #    }
-
 }
 
 sub refactor_while_glob {
