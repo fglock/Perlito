@@ -624,6 +624,7 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
                 .  "var p5want;\n"
+                .  "var List__ = [];\n"
                 .  "var " . Perlito5::Javascript2::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my',                      }, # TODO - verify
@@ -1095,7 +1096,7 @@ package Perlito5::AST::Var;
             return Perlito5::Javascript2::escape_string( $self->{namespace} );
         }
         if ( $self->{sigil} eq '&' ) {
-            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]([], '
+            return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"](List__, '
                          .   ($wantarray eq 'list'   ? '1' 
                              :$wantarray eq 'scalar' ? '0' 
                              :$wantarray eq 'void'   ? 'null'

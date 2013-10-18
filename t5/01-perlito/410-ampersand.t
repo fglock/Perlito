@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..28";
+say "1..30";
 
 my $v = 0;
 my $r = 0;
@@ -183,5 +183,15 @@ eval ' $r = &{"with_proto"}->(4) ';
 $e = $@;
 print "not " if !$e;
 print "ok 28 - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
+
+# ampersand, default to @_
+
+$v = 3;
+@_ = (4);
+$r = &with_proto;
+print "not " if $v != 7;
+print "ok 29 - with_proto $v\n";
+print "not " if $r != 7;
+print "ok 30 - with_proto $r\n";
 
 
