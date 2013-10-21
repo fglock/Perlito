@@ -458,6 +458,8 @@ package Perlito5::Javascript2::LexicalBlock;
     sub new { my $class = shift; bless {@_}, $class }
     sub block { $_[0]->{block} }
     sub needs_return { $_[0]->{needs_return} }
+    # top_level - true if this is the main block in a subroutine;
+    #             false if this is an if-block or other block inside a statement.
     sub top_level { $_[0]->{top_level} }
     # sub create_context ... 
 
@@ -624,8 +626,8 @@ package Perlito5::AST::CompUnit;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
                 .  "var p5want;\n"
-                .  "var List__ = [];\n"
-                .  "var " . Perlito5::Javascript2::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
+                .  "var List__ = [];\n";
+                #.  "var " . Perlito5::Javascript2::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my',                      }, # TODO - verify
               '$@'    => { decl => 'our', namespace => 'main' },

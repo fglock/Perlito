@@ -1982,7 +1982,6 @@ CORE.printf = function(List__) {
 
 var p5want;
 var List__ = [];
-var p5100 = p5pkg['main'];
 (function () {
 	p5make_package("Perlito5");
 	// use strict
@@ -9071,12 +9070,12 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 			var v_the_object;
 			var v_expr;
 			(function () {
-					var tmp101 = p5list_to_a(List__);
-					var tmp102 = tmp101.slice(0);
-					v_decl = tmp101.shift();
-					v_the_object = tmp101.shift();
-					v_expr = tmp101.shift();
-					return tmp102
+					var tmp100 = p5list_to_a(List__);
+					var tmp101 = tmp100.slice(0);
+					v_decl = tmp100.shift();
+					v_the_object = tmp100.shift();
+					v_expr = tmp100.shift();
+					return tmp101
 				})();
 			return (p5call(p5pkg["Perlito5::AST::Apply"], "new", ['namespace', '', 'code', v_decl, 'special_arg', v_the_object, 'arguments', v_expr], p5want));
 		}, null));
@@ -11632,13 +11631,13 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 				var v_seen;
 				var v_pos;
 				(function () {
-					var tmp103 = p5list_to_a(List__);
-					var tmp104 = tmp103.slice(0);
-					v_obj = tmp103.shift();
-					v_tab = tmp103.shift();
-					v_seen = tmp103.shift();
-					v_pos = tmp103.shift();
-					return tmp104
+					var tmp102 = p5list_to_a(List__);
+					var tmp103 = tmp102.slice(0);
+					v_obj = tmp102.shift();
+					v_tab = tmp102.shift();
+					v_seen = tmp102.shift();
+					v_pos = tmp102.shift();
+					return tmp103
 				})();
 				if ( !( (v_obj != null)) ) {
 					(function () { throw(p5context(['undef'], p5want)) })()
@@ -12296,7 +12295,7 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 					v_comp_units = (List__.shift());
 					p5make_package("Perlito5")["v_PKG_NAME"] = ('main');
 					var v_str;
-					v_str = (('' + 'var p5want;' + String.fromCharCode(10) + 'var List__ = [];' + String.fromCharCode(10) + 'var ' + p5str(p5pkg["Perlito5::Javascript2"].pkg_new_var([], 0)) + ' = p5pkg[' + String.fromCharCode(39) + p5str(p5make_package("Perlito5")["v_PKG_NAME"]) + String.fromCharCode(39) + '];' + String.fromCharCode(10)));
+					v_str = (('' + 'var p5want;' + String.fromCharCode(10) + 'var List__ = [];' + String.fromCharCode(10)));
 					p5make_package("Perlito5")["v_VAR"] = ((new p5ArrayRef(p5list_to_a((new p5HashRef(p5a_to_h(p5list_to_a('@_', (new p5HashRef({'decl' : 'my'})), '$@', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$|', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$/', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$"', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$,', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$!', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$;', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$?', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$[', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^O', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$^V', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%ENV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '%INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@#', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@ARGV', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '@INC', (new p5HashRef({'decl' : 'our', 'namespace' : 'main'})), '$_', (new p5HashRef({'decl' : 'our', 'namespace' : p5make_package("Perlito5")["v_PKG_NAME"]})), '$a', (new p5HashRef({'decl' : 'our', 'namespace' : p5make_package("Perlito5")["v_PKG_NAME"]})), '$b', (new p5HashRef({'decl' : 'our', 'namespace' : p5make_package("Perlito5")["v_PKG_NAME"]})), '$AUTOLOAD', (new p5HashRef({'decl' : 'our', 'namespace' : p5make_package("Perlito5")["v_PKG_NAME"]}))))))))));
 					p5for_lex(function (v_comp_unit) {
 								v_str = ((p5str(v_str) + p5str(p5call(v_comp_unit, "emit_javascript2", [], 0)) + String.fromCharCode(10)));
@@ -14595,12 +14594,12 @@ return ((p5context([p5pkg["Perlito5::AST::Apply"].ref([p5pkg["Perlito5::AST::App
 			var v_namespace;
 			var v_var_env_js;
 			(function () {
-					var tmp105 = p5list_to_a(List__);
-					var tmp106 = tmp105.slice(0);
-					v_source = tmp105.shift();
-					v_namespace = tmp105.shift();
-					v_var_env_js = tmp105.shift();
-					return tmp106
+					var tmp104 = p5list_to_a(List__);
+					var tmp105 = tmp104.slice(0);
+					v_source = tmp104.shift();
+					v_namespace = tmp104.shift();
+					v_var_env_js = tmp104.shift();
+					return tmp105
 				})();
 			var v_strict_old;
 			v_strict_old = (p5make_package("Perlito5")["v_STRICT"]);
