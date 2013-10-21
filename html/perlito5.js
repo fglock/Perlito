@@ -13713,7 +13713,7 @@ return (p5call(p5pkg["Perlito5::AST::Apply"]["v__"], "emit_javascript2_set_list"
 							var v_wantarray;
 							v_wantarray = (List__.shift());
 							p5make_package("Perlito5")["v_THROW"] = (1);
-							return (p5pkg["Perlito5::Javascript2"].emit_wrap_statement_javascript2([v_wantarray, ('throw((' + p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0), "emit_javascript2", [], 0)) + ')([List__, p5want]))')], p5want));
+							return (p5pkg["Perlito5::Javascript2"].emit_wrap_statement_javascript2([v_wantarray, ('throw(' + p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_.p5aget(0), "emit_javascript2", [], 0)) + ')')], p5want));
 						}, null), 'do', p5sub(function (List__, p5want) {
 							var v_self;
 							v_self = (List__.shift());

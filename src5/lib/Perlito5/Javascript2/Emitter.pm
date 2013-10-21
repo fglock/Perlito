@@ -1991,7 +1991,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
                 $wantarray, 
-                'throw((' . $self->{arguments}->[0]->emit_javascript2() . ')([List__, p5want]))'
+                'throw(' . $self->{arguments}->[0]->emit_javascript2() . ')'
             );
         },
 

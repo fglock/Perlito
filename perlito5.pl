@@ -9588,7 +9588,7 @@ package Perlito5::AST::Apply;
         my $level = shift;
         my $wantarray = shift;
         $Perlito5::THROW = 1;
-        Perlito5::Javascript2::emit_wrap_statement_javascript2($wantarray, 'throw((' . $self->{'arguments'}->[0]->emit_javascript2() . ')([List__, p5want]))')
+        Perlito5::Javascript2::emit_wrap_statement_javascript2($wantarray, 'throw(' . $self->{'arguments'}->[0]->emit_javascript2() . ')')
     }, 'do' => sub {
         my $self = shift;
         my $level = shift;
