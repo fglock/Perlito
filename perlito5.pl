@@ -13753,6 +13753,7 @@ if ($backend && @ARGV) {
         eval(do {
             %INC = ();
             $Perlito5::EXPAND_USE = 0;
+            # no strict
             my $m;
             my $ok;
             eval(do {

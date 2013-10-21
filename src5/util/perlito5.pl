@@ -192,6 +192,9 @@ if ($backend && @ARGV) {
             # partially disable "use"
             $Perlito5::EXPAND_USE = 0;
 
+            # start with no-strict
+            no strict;
+
             my $m;
             my $ok;
             eval {
