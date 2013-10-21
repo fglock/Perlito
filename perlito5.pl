@@ -8694,6 +8694,8 @@ package Perlito5::Javascript2::LexicalBlock;
             }
             my @var_decl = $decl->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
+                my $perl5_name = $arg->{'var'}->perl5_name();
+                if ($Perlito5::VAR->[0]->{$perl5_name}) {}
                 push(@str, $arg->emit_javascript2_init())
             }
             if (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) {
@@ -8703,6 +8705,8 @@ package Perlito5::Javascript2::LexicalBlock;
         if ($self->{'needs_return'} && $last_statement) {
             my @var_decl = $last_statement->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
+                my $perl5_name = $arg->{'var'}->perl5_name();
+                if ($Perlito5::VAR->[0]->{$perl5_name}) {}
                 push(@str, $arg->emit_javascript2_init())
             }
             if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return' && $self->{'top_level'} && @{$last_statement->{'arguments'}}) {

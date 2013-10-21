@@ -12205,6 +12205,9 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 								var List_var_decl= [];
 								List_var_decl = p5list_to_a(p5call(v_decl, "emit_javascript2_get_decl", [], 1));
 								p5for_lex(function (v_arg) {
+										var v_perl5_name;
+										v_perl5_name = (p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('var'), "perl5_name", [], 0));
+										if ( p5bool((p5make_package("Perlito5")["v_VAR"] || (p5make_package("Perlito5")["v_VAR"] = new p5ArrayRef([])))._array_.p5aget_hash(0)._hash_.p5hget(p5str(v_perl5_name))) ) {};
 										List_str.p5push(p5list_to_a(p5call(v_arg, "emit_javascript2_init", [], 1)));
 									}, p5list_to_a(List_var_decl), false, "");
 								if ( !( (p5bool(p5call(v_decl, "isa", ['Perlito5::AST::Decl'], 0)) && (p5str(p5call(v_decl, "decl", [], 0)) == 'my'))) ) {
@@ -12216,6 +12219,9 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 								var List_var_decl= [];
 								List_var_decl = p5list_to_a(p5call(v_last_statement, "emit_javascript2_get_decl", [], 1));
 								p5for_lex(function (v_arg) {
+										var v_perl5_name;
+										v_perl5_name = (p5call((v_arg || (v_arg = new p5HashRef({})))._hash_.p5hget('var'), "perl5_name", [], 0));
+										if ( p5bool((p5make_package("Perlito5")["v_VAR"] || (p5make_package("Perlito5")["v_VAR"] = new p5ArrayRef([])))._array_.p5aget_hash(0)._hash_.p5hget(p5str(v_perl5_name))) ) {};
 										List_str.p5push(p5list_to_a(p5call(v_arg, "emit_javascript2_init", [], 1)));
 									}, p5list_to_a(List_var_decl), false, "");
 								if ( (((p5bool(p5call(v_last_statement, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_last_statement, "code", [], 0)) == 'return')) && p5bool((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('top_level'))) && p5bool((v_last_statement || (v_last_statement = new p5HashRef({})))._hash_.p5hget_array('arguments')._array_)) ) {
