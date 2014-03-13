@@ -17,7 +17,7 @@ TODO list for Perlito6
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
-- option to build binaries (Lisp, Java, Go) or modules (Perl, Lisp, Javascript)
+- option to build binaries (Lisp, Java, Go) or modules (Perl, Lisp, JavaScript)
 
 - add "make" capabilities (test file dates, etc)
 
@@ -26,7 +26,7 @@ TODO list for Perlito6
 - add '-B' option (execute)
 
 
-* Perlito6 in Javascript
+* Perlito6 in JavaScript
 
 - reuse the good parts of Perlito5 data model
 

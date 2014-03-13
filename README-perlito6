@@ -7,7 +7,7 @@ Backends
     Perlito6 can compile Perl 6 programs into one of the 'backend' 
     languages:
 
-        Perl 5, Javascript, Python 2.6
+        Perl 5, JavaScript, Python 2.6
 
     Previous versions of Perlito6 also compile to: Go, Common Lisp, and Ruby 1.9
 
@@ -26,7 +26,7 @@ Source code
 
 USING PERLITO
 
-Using the Javascript backend in the browser
+Using the JavaScript backend in the browser
 
     Open the file 'html/perlito6.html' in a browser (Firefox, Chrome, Safari).
 
@@ -34,7 +34,7 @@ Using the Javascript backend in the browser
 
     http://perlcabal.org/~fglock/perlito6.html
 
-Using the Javascript backend in the command line
+Using the JavaScript backend in the command line
 
     export PERL5LIB=lib5
     perl perlito6.pl -Cjs -e 'class Main { say "hello, World!" }' > tmp.js
@@ -42,7 +42,7 @@ Using the Javascript backend in the command line
 
     Creating a bootstrapped compiler:
 
-    # compile src6/util/perlito6.pl to Javascript, using perlito6.pl:
+    # compile src6/util/perlito6.pl to JavaScript, using perlito6.pl:
     export PERL5LIB=lib5
     perl perlito6.pl -Cjs src6/util/perlito6.pl > perlito6.js
 
@@ -93,7 +93,7 @@ RUNNING TESTS
 
     find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito6.pl -Cperl5 $_ | perl ` '
 
-    Javascript:
+    JavaScript:
 
     find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 perlito6.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
 

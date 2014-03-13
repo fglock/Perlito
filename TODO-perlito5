@@ -185,7 +185,7 @@ TODO list for Perlito5
     emits as ${$x}->[$y];
 
 
-* Javascript backend
+* JavaScript backend
 
 -- check that \(@a) and \@a have different meanings
 
