@@ -145,7 +145,9 @@ token for {
             # (@x)  (my $i = 0; $i < 10; $i++)
 
             '(' 
-                <Perlito5::Grammar::Expression.exp_parse>
+                [ <Perlito5::Grammar::Expression.exp_parse> 
+                || [ <.Perlito5::Grammar::Space.opt_ws> <before ';'> ]
+                ]
                     [ ';' 
                           { $MATCH->{c_style_for} = 1 }
                           [ <Perlito5::Grammar.exp>  || <.Perlito5::Grammar::Space.opt_ws> ]
