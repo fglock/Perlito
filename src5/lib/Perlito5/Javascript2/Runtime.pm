@@ -252,7 +252,7 @@ function p5sub_exists(name, current_pkg_name) {
         v = String.fromCharCode(c + 64) + v.substr(1);
         pkg_name = 'main';
     }
-    return p5pkg[pkg_name].hasOwnProperty(v) 
+    return p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v) 
 }
 
 function p5sub_prototype(name, current_pkg_name) {
