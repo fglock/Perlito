@@ -1067,7 +1067,10 @@ package Perlito5::AST::Var;
                && $self->{sigil} ne '*' 
                )
             {
-                if ( $Perlito5::STRICT ) {
+                if (  $Perlito5::STRICT 
+                   && $self->{name} ne '0'  # $0 @0 %0
+                   && !(0 + $self->{name})  # $1 @2 %3
+                ) {
                     die "Global symbol \"$perl5_name\" requires explicit package name"
                 }
                 # no strict - "auto-declare" the var

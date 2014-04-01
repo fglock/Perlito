@@ -9001,7 +9001,7 @@ package Perlito5::AST::Var;
             $decl_type = $decl->{'decl'}
         }
         elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
-            if ($Perlito5::STRICT) {
+            if ($Perlito5::STRICT && $self->{'name'} ne 0 && !(0 + $self->{'name'})) {
                 die('Global symbol "' . $perl5_name . '" requires explicit package name')
             }
             $decl_type = 'our';

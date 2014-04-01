@@ -12715,7 +12715,7 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 						}
 						else if ( (!( p5bool((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('namespace'))) && (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('sigil')) != '*')) ) {
 							(function () {
-								if ( p5bool(p5make_package("Perlito5")["v_STRICT"]) ) {
+								if ( ((p5bool(p5make_package("Perlito5")["v_STRICT"]) && (p5str((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('name')) != '0')) && !( p5bool((0 + p5num((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('name')))))) ) {
 									p5pkg["Perlito5::AST::Var"].die([[('Global symbol "' + p5str(v_perl5_name) + '" requires explicit package name')]], null);
 								};
 								v_decl_type = ('our');
