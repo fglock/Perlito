@@ -97,7 +97,7 @@ token opt_type {
 
 token var_sigil     { \$ |\% |\@ |\& | \* };
 
-token var_name      { <full_ident> | <Perlito5::Grammar::Number.digit> };
+token var_name      { <full_ident> | <Perlito5::Grammar::Number.digits> };
 
 token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>

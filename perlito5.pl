@@ -7879,10 +7879,10 @@ sub Perlito5::Grammar::var_name {
         }) || (do {
             $MATCH->{'to'} = $pos1;
             (do {
-                my $m2 = Perlito5::Grammar::Number->digit($str, $MATCH->{'to'});
+                my $m2 = Perlito5::Grammar::Number->digits($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Number.digit'} = $m2;
+                    $MATCH->{'Perlito5::Grammar::Number.digits'} = $m2;
                     1
                 }
                 else {
