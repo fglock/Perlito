@@ -403,6 +403,17 @@ TODO list for Perlito5
 -- support all perl5 regex syntax
 -- @v = /x/g
 
+-- regex variables localization in blocks
+
+    $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /(.)/; print $1; } print $1, "\n"; '
+    aba
+    
+    $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ //; print $1; } print $1, "\n"; '
+    abb
+    
+    $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /x/; print $1; } print $1, "\n"; '
+    aaa
+
 -- bug: variable redeclaration does not work
 -- javascript "var" erases the outer value within the whole current lexical scope
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
