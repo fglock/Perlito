@@ -2997,9 +2997,9 @@ sub Perlito5::Grammar::opt_continue_block {
 }
 # use Perlito5::Grammar::Control
 package main;
-package Perlito5::Grammar::Regex;
+package Perlito5::Grammar::Regex6;
 # use Perlito5::Grammar::Precedence
-sub Perlito5::Grammar::Regex::token {
+sub Perlito5::Grammar::Regex6::token {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3024,10 +3024,10 @@ sub Perlito5::Grammar::Regex::token {
             0
         }
     }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-        my $m2 = Perlito5::Grammar::Regex->rule($str, $MATCH->{'to'});
+        my $m2 = Perlito5::Grammar::Regex6->rule($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
-            $MATCH->{'Perlito5::Grammar::Regex.rule'} = $m2;
+            $MATCH->{'Perlito5::Grammar::Regex6.rule'} = $m2;
             1
         }
         else {
@@ -3035,14 +3035,14 @@ sub Perlito5::Grammar::Regex::token {
         }
     }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
-        my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex.rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
+        my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex6.rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
         my $ast = Perlito5::Grammar::Block->named_sub_def($source, 0);
         $MATCH->{'capture'} = Perlito5::Match::flat($ast);
         1
     })));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::term_token {
+sub Perlito5::Grammar::Regex6::term_token {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3074,9 +3074,9 @@ sub Perlito5::Grammar::Regex::term_token {
     $tmp ? $MATCH : 0
 }
 Perlito5::Grammar::Precedence::add_term('token', sub {
-    Perlito5::Grammar::Regex->term_token($_[0], $_[1])
+    Perlito5::Grammar::Regex6->term_token($_[0], $_[1])
 });
-sub Perlito5::Grammar::Regex::any {
+sub Perlito5::Grammar::Regex6::any {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3084,7 +3084,7 @@ sub Perlito5::Grammar::Regex::any {
     my $tmp = (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::literal {
+sub Perlito5::Grammar::Regex6::literal {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3122,7 +3122,7 @@ sub Perlito5::Grammar::Regex::literal {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::metasyntax_exp {
+sub Perlito5::Grammar::Regex6::metasyntax_exp {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3198,7 +3198,7 @@ sub Perlito5::Grammar::Regex::metasyntax_exp {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::string_code {
+sub Perlito5::Grammar::Regex6::string_code {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3262,7 +3262,7 @@ sub Perlito5::Grammar::Regex::string_code {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::parsed_code {
+sub Perlito5::Grammar::Regex6::parsed_code {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3283,7 +3283,7 @@ sub Perlito5::Grammar::Regex::parsed_code {
     })));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::rule_term {
+sub Perlito5::Grammar::Regex6::rule_term {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3498,7 +3498,7 @@ sub Perlito5::Grammar::Regex::rule_term {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::quant_exp {
+sub Perlito5::Grammar::Regex6::quant_exp {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3517,7 +3517,7 @@ sub Perlito5::Grammar::Regex::quant_exp {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::quantifier {
+sub Perlito5::Grammar::Regex6::quantifier {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3591,7 +3591,7 @@ sub Perlito5::Grammar::Regex::quantifier {
     })));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::concat_list {
+sub Perlito5::Grammar::Regex6::concat_list {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3647,7 +3647,7 @@ sub Perlito5::Grammar::Regex::concat_list {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::concat_exp {
+sub Perlito5::Grammar::Regex6::concat_exp {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3669,7 +3669,7 @@ sub Perlito5::Grammar::Regex::concat_exp {
     })));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::or_list_exp {
+sub Perlito5::Grammar::Regex6::or_list_exp {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3725,7 +3725,7 @@ sub Perlito5::Grammar::Regex::or_list_exp {
     }));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::Regex::rule {
+sub Perlito5::Grammar::Regex6::rule {
     my $grammar = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
@@ -3770,7 +3770,7 @@ sub Perlito5::Grammar::Regex::rule {
     })));
     $tmp ? $MATCH : 0
 }
-# use Perlito5::Grammar::Regex
+# use Perlito5::Grammar::Regex6
 # use Perlito5::Grammar::Precedence
 package main;
 undef();

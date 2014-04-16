@@ -362,7 +362,7 @@ sub precedence_parse {
     # the parsing process is based on Perl 6:
     # "Perl 6 "sandwiches" an operator-precedence parser in between two Recursive descent parsers"
     #
-    # see the "token" implementation for the recursive descent parser (Perlito5::Grammar::Regex)
+    # see the "token" implementation for the recursive descent parser (Perlito5::Grammar::Regex6)
     #
     # http://en.wikipedia.org/wiki/Operator-precedence_parser
     # http://en.wikipedia.org/wiki/Shunting-yard_algorithm

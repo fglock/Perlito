@@ -336,7 +336,7 @@ Perlito5::Emitter::Token - Code generator for Perlito Perl 5 grammar
 
 =head1 DESCRIPTION
 
-This module generates Perl 5 code for the Regex compiler.
+This module generates Perl 5 code for the Regex6 compiler.
 
 =head1 AUTHORS
 

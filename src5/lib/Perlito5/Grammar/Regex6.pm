@@ -1,4 +1,4 @@
-package Perlito5::Grammar::Regex;
+package Perlito5::Grammar::Regex6;
 
 use Perlito5::Grammar::Precedence;
 
@@ -20,10 +20,10 @@ use Perlito5::Grammar::Precedence;
 
 token token {
     <Perlito5::Grammar.ident>  <.Perlito5::Grammar::Space.opt_ws> \{
-        <Perlito5::Grammar::Regex.rule>
+        <Perlito5::Grammar::Regex6.rule>
     \}
     {
-        #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex.rule"}))->perl;
+        #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex6.rule"}))->perl;
         my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"})
             . '{ ' .
                 'my $grammar = $_[0]; ' .
@@ -31,7 +31,7 @@ token token {
                 'my $pos     = $_[2]; ' .
                 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
                 'my $tmp = ( ' .
-                    Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex.rule"})->emit_perl5() .
+                    Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6.rule"})->emit_perl5() .
                 '); ' .
                 '$tmp ? $MATCH : 0; '
             . '}';
@@ -47,7 +47,7 @@ token term_token {
                 { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{token})       ] }
 };
 
-Perlito5::Grammar::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex6->term_token($_[0], $_[1]) } );
 
 
 # this is the "grammar grammar"
@@ -189,16 +189,16 @@ token rule {
 
 =head1 NAME
 
-Perlito5::Grammar::Regex - Grammar for Perlito Grammar
+Perlito5::Grammar::Regex6 - Grammar for Perlito Grammar
 
 =head1 SYNOPSIS
 
-    my $match = Perlito5::Grammar::Regex->rule( $source, $pos );
-    Perlito5::Match::flat($match);    # generated Regex AST
+    my $match = Perlito5::Grammar::Regex6->rule( $source, $pos );
+    Perlito5::Match::flat($match);    # generated Regex6 AST
 
 =head1 DESCRIPTION
 
-This module generates a syntax tree for the Regex compiler.
+This module generates a syntax tree for the Regex6 compiler.
 
 This is not useful during runtime, and this module should never be loaded in the compiled programs.
 
