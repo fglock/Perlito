@@ -47,7 +47,10 @@ token rule_term {
          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
 };
 
-token quant_exp  {   '?' | '*' | '+'  };
+token quant_exp  {
+    | '??' | '*?' | '+?'
+    | '?'  | '*'  | '+' 
+};
 
 token quantifier {
     <.ws>? <rule_term> <.ws>?
@@ -73,7 +76,18 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { $MATCH->{capture} = Perlito5::Rul::Concat->new( concat => Perlito5::Match::flat($MATCH->{concat_list}) ) }
+    {
+        $arg = Perlito5::Match::flat($MATCH->{concat_list});
+        if (@$arg < 1) {
+            $MATCH->{capture} = "empty";
+        }
+        elsif (@$arg < 2) {
+            ($MATCH->{capture}) = @$arg;
+        }
+        else {
+            $MATCH->{capture} = Perlito5::Rul::Concat->new( concat => $arg )
+        }
+    }
 };
 
 token or_list_exp {
@@ -89,7 +103,16 @@ token or_list_exp {
 token rule {
     <or_list_exp>
     {
-        $MATCH->{capture} = Perlito5::Rul::Or->new( or_list => Perlito5::Match::flat($MATCH->{or_list_exp}) )
+        $arg = Perlito5::Match::flat($MATCH->{or_list_exp});
+        if (@$arg < 1) {
+            $MATCH->{capture} = "empty";
+        }
+        elsif (@$arg < 2) {
+            ($MATCH->{capture}) = @$arg;
+        }
+        else {
+            $MATCH->{capture} = Perlito5::Rul::Or->new( or_list => $arg )
+        }
     }
 };
 
