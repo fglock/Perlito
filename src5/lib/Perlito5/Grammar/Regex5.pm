@@ -31,6 +31,8 @@ token rule_term {
         { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   '(?{'  <parsed_code>  '})'
         { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
+    |   '(' <rule> ')'
+        { $MATCH->{capture} = Perlito5::Rul::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{rule}), captures => 1 ) }
     |   \\
         [
         | 'c' \[ <Perlito5::Grammar::Number.digits> \]
@@ -48,8 +50,15 @@ token rule_term {
 };
 
 token quant_exp  {
-    | '??' | '*?' | '+?'
-    | '?'  | '*'  | '+' 
+    [
+    | '?'
+    | '*'
+    | '+' 
+    | '{' <Perlito5::Grammar::Number.digits> '}'
+    | '{' <Perlito5::Grammar::Number.digits> ',' '}'
+    | '{' <Perlito5::Grammar::Number.digits> ',' <Perlito5::Grammar::Number.digits> '}'
+    ]
+    [ '?' | '' ]
 };
 
 token quantifier {
