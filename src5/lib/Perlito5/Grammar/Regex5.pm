@@ -23,6 +23,8 @@ token parsed_code {
 };
 
 token rule_term {
+    |   '(?:' <rule> ')'
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
     |   '(?=' <.ws> <rule> ')'
         { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   '(?!' <.ws> <rule> ')'
@@ -40,9 +42,9 @@ token rule_term {
         ]
     |   \.
         { $MATCH->{capture} = Perlito5::Rul::Dot->new() }
-    |   '[' <rule> ']'
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
-
+    |   <!before '.' | '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
+        <any>
+         { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
 };
 
 token quant_exp  {   '?' | '*' | '+'  };
@@ -85,10 +87,8 @@ token or_list_exp {
 };
 
 token rule {
-    # { say 'trying M::G::Perlito5::Rule on ', $s }
     <or_list_exp>
     {
-        # say 'found Perlito5::Rule';
         $MATCH->{capture} = Perlito5::Rul::Or->new( or_list => Perlito5::Match::flat($MATCH->{or_list_exp}) )
     }
 };
