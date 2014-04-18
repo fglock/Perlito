@@ -23,16 +23,24 @@ token parsed_code {
 };
 
 token rule_term {
-    |   '(?:' <rule> ')'
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
-    |   '(?=' <.ws> <rule> ')'
-        { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
-    |   '(?!' <.ws> <rule> ')'
-        { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
-    |   '(?{'  <parsed_code>  '})'
-        { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
+    |   '^'     { $MATCH->{capture} = 'beginning_of_line' }
+    |   '$'     { $MATCH->{capture} = 'end_of_line' }
+    |   '.'     { $MATCH->{capture} = Perlito5::Rul::Dot->new() }
+
+    |   '(?'
+        [   ':' <rule> ')'
+            { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
+        |   '=' <.ws> <rule> ')'
+            { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+        |   '!' <.ws> <rule> ')'
+            { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+        |   '{'  <parsed_code>  '})'
+            { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
+        ]
+
     |   '(' <rule> ')'
         { $MATCH->{capture} = Perlito5::Rul::Subrule->new( metasyntax => Perlito5::Match::flat($MATCH->{rule}), captures => 1 ) }
+
     |   \\
         [
         | 'c' \[ <Perlito5::Grammar::Number.digits> \]
@@ -42,9 +50,8 @@ token rule_term {
         | <any>   #  \e  \E
           { $MATCH->{capture} = Perlito5::Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
         ]
-    |   \.
-        { $MATCH->{capture} = Perlito5::Rul::Dot->new() }
-    |   <!before '.' | '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
+
+    |   <!before '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
         <any>
          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
 };
@@ -58,7 +65,7 @@ token quant_exp  {
     | '{' <Perlito5::Grammar::Number.digits> ',' '}'
     | '{' <Perlito5::Grammar::Number.digits> ',' <Perlito5::Grammar::Number.digits> '}'
     ]
-    [ '?' | '' ]
+    [ '?' | '+' | '' ]
 };
 
 token quantifier {
