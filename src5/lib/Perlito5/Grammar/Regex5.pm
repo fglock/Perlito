@@ -6,20 +6,11 @@ use warnings;
 
 token any { . };
 
-# TODO
-token ws { '' };
-
-# TODO
-token string_code {
+token string_of_code {
     [  \\ .
     |  \{  <.string_code> \}
     |  <!before \} > .
     ]+
-};
-
-token parsed_code {
-    <.string_code>
-    { $MATCH->{capture} = Perlito5::Match::flat($MATCH) }
 };
 
 token rule_term {
@@ -30,12 +21,20 @@ token rule_term {
     |   '(?'
         [   ':' <rule> ')'
             { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
-        |   '=' <.ws> <rule> ')'
+        |   '=' <rule> ')'
             { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
-        |   '!' <.ws> <rule> ')'
+        |   '!' <rule> ')'
             { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
-        |   '{'  <parsed_code>  '})'
-            { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
+        |   '>' <rule> ')'
+            { $MATCH->{capture} = { 'possessive_quantifier' => Perlito5::Match::flat($MATCH->{rule}) } }
+        |   '<' <Perlito5::Grammar.ident> '>' <rule> ')'
+            { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
+                                                         term => Perlito5::Match::flat($MATCH->{rule}) } }
+            }
+        |   '{' <string_of_code>  '})'
+            { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{string_of_code}) ) }
+        |   '#' [ <!before ')' > . ]* ')'
+            { $MATCH->{capture} = 'comment' }
         ]
 
     |   '(' <rule> ')'
@@ -69,8 +68,8 @@ token quant_exp  {
 };
 
 token quantifier {
-    <.ws>? <rule_term> <.ws>?
-    [   <quant_exp> <.ws>?
+    <rule_term> 
+    [   <quant_exp> 
         { $MATCH->{capture} = Perlito5::Rul::Quantifier->new(
                 term    => Perlito5::Match::flat($MATCH->{rule_term}),
                 quant   => Perlito5::Match::flat($MATCH->{quant_exp}),
