@@ -8,9 +8,66 @@ token any { . };
 
 token string_of_code {
     [  \\ .
-    |  \{  <.string_code> \}
-    |  <!before \} > .
+    |  '{'  <.string_of_code> '}'
+    |  <!before '}' > .
     ]+
+};
+
+token posix_character_class {
+    | 'alpha'  
+    | 'alnum'  
+    | 'ascii'  
+    | 'blank'  
+    | 'cntrl'  
+    | 'digit'  
+    | 'graph'  
+    | 'lower'  
+    | 'print'  
+    | 'punct'  
+    | 'space'  
+    | 'upper'  
+    | 'word'
+    | 'xdigit' 
+    # | { die "POSIX class unknown in regex" }
+};
+
+token character {
+    <!before ']' > <any>
+    { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
+};
+
+token character2 {
+    <!before ']' > <any>
+    { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
+};
+
+token character_class {
+        '[:' <posix_character_class> ':]'
+          { $MATCH->{capture} = { posix_character_class => Perlito5::Match::flat($MATCH->{posix_character_class}) } }
+    |
+        '[:^' <posix_character_class> ':]'
+          { $MATCH->{capture} = { negated_posix_character_class => Perlito5::Match::flat($MATCH->{posix_character_class}) } }
+    |  <character>
+        [ '-' <character2>
+          { $MATCH->{capture} = { character_range => [ Perlito5::Match::flat($MATCH->{'character'}),
+                                                       Perlito5::Match::flat($MATCH->{'character2'}), 
+                                                     ]
+          } }
+        | { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'character'}) }
+        ]
+};
+
+token character_class_list {
+    <character_class>
+    [   <character_class_list>
+        { $MATCH->{capture} = [ Perlito5::Match::flat($MATCH->{character_class}),
+                                @{Perlito5::Match::flat($MATCH->{character_class_list})} 
+                              ]
+        }
+    |
+        { $MATCH->{capture} = [ Perlito5::Match::flat($MATCH->{character_class}) ] }
+    ]
+    |   { $MATCH->{capture} = [] }
 };
 
 token verb {
@@ -68,6 +125,35 @@ token rule_term {
           { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) ) }
         | <any>   #  \e  \E
           { $MATCH->{capture} = Perlito5::Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
+        ]
+
+    |   '['
+        [ '^' 
+            [ ']' 
+                [ <character_class_list> ']'
+                  { $MATCH->{capture} = { negated_character_class => [
+                                            { character => ']' },
+                                            @{ Perlito5::Match::flat($MATCH->{character_class_list}) }
+                                          ] 
+                  } }
+                | { die "Unmatched [ in regex" }
+                ]
+            | <character_class_list> ']'
+              { $MATCH->{capture} = { negated_character_class => Perlito5::Match::flat($MATCH->{character_class_list}) } }
+            | { die "Unmatched [ in regex" }
+            ]
+        | ']' 
+            [ <character_class_list> ']'
+              { $MATCH->{capture} = { character_class => [
+                                        { character => ']' },
+                                        @{ Perlito5::Match::flat($MATCH->{character_class_list}) }
+                                      ] 
+              } }
+            | { die "Unmatched [ in regex" }
+            ]
+        | <character_class_list> ']'
+          { $MATCH->{capture} = { character_class => Perlito5::Match::flat($MATCH->{character_class_list}) } }
+        | { die "Unmatched [ in regex" }
         ]
 
     |   <!before '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
