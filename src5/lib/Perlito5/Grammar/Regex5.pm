@@ -77,7 +77,7 @@ token verb {
 token rule_term {
     |   '^'     { $MATCH->{capture} = 'beginning_of_line' }
     |   '$'     { $MATCH->{capture} = 'end_of_line' }
-    |   '.'     { $MATCH->{capture} = Perlito5::Rul::Dot->new() }
+    |   '.'     { $MATCH->{capture} = 'any' }
 
     |   '(' 
         [   '?'
@@ -89,12 +89,18 @@ token rule_term {
                 { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
             |   '>' <rule> ')'
                 { $MATCH->{capture} = { 'possessive_quantifier' => Perlito5::Match::flat($MATCH->{rule}) } }
+            |   '<=' <rule> ')'
+                { $MATCH->{capture} = { 'positive_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
+            |   '<!' <rule> ')'
+                { $MATCH->{capture} = { 'negative_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   '<' <Perlito5::Grammar.ident> '>' <rule> ')'
                 { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
                                                              term => Perlito5::Match::flat($MATCH->{rule}) } }
                 }
             |   '{' <string_of_code>  '})'
-                { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{string_of_code}) ) }
+                { $MATCH->{capture} = { code => Perlito5::Match::flat($MATCH->{string_of_code}) } }
+            |   '?{' <string_of_code>  '})'
+                { $MATCH->{capture} = { postponed_code => Perlito5::Match::flat($MATCH->{string_of_code}) } }
             |   '#' [ <!before ')' > . ]* ')'
                 { $MATCH->{capture} = 'comment' }
             ]
@@ -112,9 +118,7 @@ token rule_term {
                 ]
             ]
         |   <rule> ')'
-            { $MATCH->{capture} = Perlito5::Rul::Subrule->new( 
-                                        metasyntax => Perlito5::Match::flat($MATCH->{rule}), captures => 1 ) 
-            }
+            { $MATCH->{capture} = { capture => Perlito5::Match::flat($MATCH->{rule}) } }
         ]
 
     |   \\
