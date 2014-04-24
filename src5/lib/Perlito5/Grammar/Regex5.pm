@@ -89,9 +89,9 @@ token rule_term {
             [   ':' <rule> ')'
                 { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
             |   '=' <rule> ')'
-                { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+                { $MATCH->{capture} = { 'positive_look_ahead' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   '!' <rule> ')'
-                { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
+                { $MATCH->{capture} = { 'negative_look_ahead' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   '>' <rule> ')'
                 { $MATCH->{capture} = { 'possessive_quantifier' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   '<=' <rule> ')'
@@ -174,7 +174,7 @@ token rule_term {
         | { die "Unmatched [ in regex" }
         ]
 
-    |   <!before '+' | '?' | '\\' | '|' | '*' >
+    |   <!before ')' | '+' | '?' | '\\' | '|' | '*' >
         <any>
          { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
 };
@@ -184,9 +184,10 @@ token quant_exp  {
     | '?'
     | '*'
     | '+' 
-    | '{' <Perlito5::Grammar::Number.digits> '}'
-    | '{' <Perlito5::Grammar::Number.digits> ',' '}'
-    | '{' <Perlito5::Grammar::Number.digits> ',' <Perlito5::Grammar::Number.digits> '}'
+    | '{' <Perlito5::Grammar::Number.digits> [  '}'
+                                             |  ',' '}'
+                                             |  ',' <Perlito5::Grammar::Number.digits> '}'
+                                             ]
     ]
     [ '?' | '+' | '' ]
 };
