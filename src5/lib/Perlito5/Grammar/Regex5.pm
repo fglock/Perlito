@@ -1,8 +1,9 @@
 package Perlito5::Grammar::Regex5;
 
-use Perlito5::Grammar::Precedence;
 use strict;
 use warnings;
+
+our $CAPTURE_ID = 0;
 
 token any { . };
 
@@ -93,9 +94,12 @@ token rule_term {
                 { $MATCH->{capture} = { 'positive_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   '<!' <rule> ')'
                 { $MATCH->{capture} = { 'negative_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
-            |   '<' <Perlito5::Grammar.ident> '>' <rule> ')'
-                { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
-                                                             term => Perlito5::Match::flat($MATCH->{rule}) } }
+            |   { $MATCH->{capture_id} = ++$CAPTURE_ID; }
+                '<' <Perlito5::Grammar.ident> '>' <rule> ')'
+                {
+                  $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
+                                                             term => Perlito5::Match::flat($MATCH->{rule}),
+                                                             id   => $MATCH->{capture_id} } } 
                 }
             |   '{' <string_of_code>  '})'
                 { $MATCH->{capture} = { code => Perlito5::Match::flat($MATCH->{string_of_code}) } }
@@ -106,19 +110,23 @@ token rule_term {
             ]
         |   '*'
             [   ':' <Perlito5::Grammar.ident> ')'
-                { $MATCH->{capture} = { verb => 'MARK',
-                                        name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) }
+                { $MATCH->{capture} = { verb => { tag  => 'MARK',
+                                                  name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) } }
                 }
             |   <verb>
                 [   ':' <Perlito5::Grammar.ident> ')'
-                    { $MATCH->{capture} = { verb => Perlito5::Match::flat($MATCH->{'verb'}),
-                                            name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), }
+                    { $MATCH->{capture} = { verb => { tag => Perlito5::Match::flat($MATCH->{'verb'}),
+                                                      name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), } }
                     }
-                |   { $MATCH->{capture} = { verb => Perlito5::Match::flat($MATCH->{'verb'}) } }
+                |   { $MATCH->{capture} = { verb => { tag => Perlito5::Match::flat($MATCH->{'verb'}) } } }
                 ]
             ]
-        |   <rule> ')'
-            { $MATCH->{capture} = { capture => Perlito5::Match::flat($MATCH->{rule}) } }
+        |   { $MATCH->{capture_id} = ++$CAPTURE_ID; }
+            <rule> ')'
+            {
+              $MATCH->{capture} = { capture => { term => Perlito5::Match::flat($MATCH->{rule}),
+                                                 id   => $MATCH->{capture_id} } } 
+            }
         ]
 
     |   \\
