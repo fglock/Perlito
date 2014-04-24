@@ -120,11 +120,11 @@ token rule_term {
     |   \\
         [
         | 'c' \[ <Perlito5::Grammar::Number.digits> \]
-          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) ) }
+          { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
         | 'c' <Perlito5::Grammar::Number.digits>
-          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) ) }
+          { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
         | <any>   #  \e  \E
-          { $MATCH->{capture} = Perlito5::Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
+          { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
         ]
 
     |   '['
@@ -158,7 +158,7 @@ token rule_term {
 
     |   <!before '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
         <any>
-         { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => Perlito5::Match::flat($MATCH->{any}) ) }
+         { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
 };
 
 token quant_exp  {
@@ -176,10 +176,10 @@ token quant_exp  {
 token quantifier {
     <rule_term> 
     [   <quant_exp> 
-        { $MATCH->{capture} = Perlito5::Rul::Quantifier->new(
+        { $MATCH->{capture} = { quantifier => {
                 term    => Perlito5::Match::flat($MATCH->{rule_term}),
                 quant   => Perlito5::Match::flat($MATCH->{quant_exp}),
-            )
+            } }
         }
     |   { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule_term}) }
     ]
@@ -206,7 +206,7 @@ token concat_exp {
             ($MATCH->{capture}) = @$arg;
         }
         else {
-            $MATCH->{capture} = Perlito5::Rul::Concat->new( concat => $arg )
+            $MATCH->{capture} = { concat_list => $arg }
         }
     }
 };
@@ -232,7 +232,7 @@ token rule {
             ($MATCH->{capture}) = @$arg;
         }
         else {
-            $MATCH->{capture} = Perlito5::Rul::Or->new( or_list => $arg )
+            $MATCH->{capture} = { or_list => $arg }
         }
     }
 };
