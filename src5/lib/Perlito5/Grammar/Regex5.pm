@@ -14,6 +14,10 @@ token string_of_code {
     ]+
 };
 
+token quotemeta {
+    [  <!before \\ 'E' > .  ]*
+};
+
 token posix_character_class {
     | 'alpha'  
     | 'alnum'  
@@ -135,7 +139,9 @@ token rule_term {
           { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
         | 'c' <Perlito5::Grammar::Number.digits>
           { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
-        | <any>   #  \e  \E
+        | 'Q' <quotemeta>
+          { $MATCH->{capture} = { string_as_is => Perlito5::Match::flat($MATCH->{quotemeta}) } }
+        | <any>   #  \e \E
           { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
         ]
 
@@ -168,7 +174,7 @@ token rule_term {
         | { die "Unmatched [ in regex" }
         ]
 
-    |   <!before '(' | ')' | '[' | ']' | '+' | '?' | '\\' | '|' | '*' >
+    |   <!before '+' | '?' | '\\' | '|' | '*' >
         <any>
          { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
 };
