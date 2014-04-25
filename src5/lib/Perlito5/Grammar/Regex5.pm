@@ -86,39 +86,38 @@ token rule_term {
 
     |   '(' 
         [   '?'
-            [   ':' <rule> ')'
+            [   ':' <rule>
                 { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{rule}) }
-            |   '=' <rule> ')'
+            |   '=' <rule>
                 { $MATCH->{capture} = { 'positive_look_ahead' => Perlito5::Match::flat($MATCH->{rule}) } }
-            |   '!' <rule> ')'
+            |   '!' <rule>
                 { $MATCH->{capture} = { 'negative_look_ahead' => Perlito5::Match::flat($MATCH->{rule}) } }
-            |   '>' <rule> ')'
+            |   '>' <rule>
                 { $MATCH->{capture} = { 'possessive_quantifier' => Perlito5::Match::flat($MATCH->{rule}) } }
-            |   '<=' <rule> ')'
+            |   '<=' <rule>
                 { $MATCH->{capture} = { 'positive_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
-            |   '<!' <rule> ')'
+            |   '<!' <rule>
                 { $MATCH->{capture} = { 'negative_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   { $MATCH->{capture_id} = ++$CAPTURE_ID; }
-                '<' <Perlito5::Grammar.ident> '>' <rule> ')'
-                {
-                  $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
+                '<' <Perlito5::Grammar.ident> '>' <rule>
+                { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
                                                              term => Perlito5::Match::flat($MATCH->{rule}),
                                                              id   => $MATCH->{capture_id} } } 
                 }
-            |   '{' <string_of_code>  '})'
+            |   '{' <string_of_code>  '}'
                 { $MATCH->{capture} = { code => Perlito5::Match::flat($MATCH->{string_of_code}) } }
-            |   '?{' <string_of_code>  '})'
+            |   '?{' <string_of_code>  '}'
                 { $MATCH->{capture} = { postponed_code => Perlito5::Match::flat($MATCH->{string_of_code}) } }
-            |   '#' [ <!before ')' > . ]* ')'
+            |   '#' [ <!before ')' > . ]*
                 { $MATCH->{capture} = 'comment' }
             ]
         |   '*'
-            [   ':' <Perlito5::Grammar.ident> ')'
+            [   ':' <Perlito5::Grammar.ident>
                 { $MATCH->{capture} = { verb => { tag  => 'MARK',
                                                   name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) } }
                 }
             |   <verb>
-                [   ':' <Perlito5::Grammar.ident> ')'
+                [   ':' <Perlito5::Grammar.ident>
                     { $MATCH->{capture} = { verb => { tag => Perlito5::Match::flat($MATCH->{'verb'}),
                                                       name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), } }
                     }
@@ -126,56 +125,44 @@ token rule_term {
                 ]
             ]
         |   { $MATCH->{capture_id} = ++$CAPTURE_ID; }
-            <rule> ')'
-            {
-              $MATCH->{capture} = { capture => { term => Perlito5::Match::flat($MATCH->{rule}),
+            <rule>
+            { $MATCH->{capture} = { capture => { term => Perlito5::Match::flat($MATCH->{rule}),
                                                  id   => $MATCH->{capture_id} } } 
             }
         ]
+        [ ')' | { die "Unmatched ( in regex" } ]
 
     |   \\
-        [
-        | 'c' \[ <Perlito5::Grammar::Number.digits> \]
-          { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
-        | 'c' <Perlito5::Grammar::Number.digits>
-          { $MATCH->{capture} = { character => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) } }
-        | 'Q' <quotemeta>
-          { $MATCH->{capture} = { string_as_is => Perlito5::Match::flat($MATCH->{quotemeta}) } }
-        | <any>   #  \e \E
-          { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
+        [ 'c' <any>       { $MATCH->{capture} = { control_character => Perlito5::Match::flat($MATCH->{any}) } }
+        | 'Q' <quotemeta> { $MATCH->{capture} = { string_as_is => Perlito5::Match::flat($MATCH->{quotemeta}) } }
+        | <any>           { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
         ]
 
     |   '['
         [ '^' 
-            [ ']' 
-                [ <character_class_list> ']'
-                  { $MATCH->{capture} = { negated_character_class => [
-                                            { character => ']' },
-                                            @{ Perlito5::Match::flat($MATCH->{character_class_list}) }
-                                          ] 
-                  } }
-                | { die "Unmatched [ in regex" }
-                ]
-            | <character_class_list> ']'
-              { $MATCH->{capture} = { negated_character_class => Perlito5::Match::flat($MATCH->{character_class_list}) } }
-            | { die "Unmatched [ in regex" }
-            ]
-        | ']' 
-            [ <character_class_list> ']'
-              { $MATCH->{capture} = { character_class => [
+            [ ']' <character_class_list>
+              { $MATCH->{capture} = { negated_character_class => [
                                         { character => ']' },
                                         @{ Perlito5::Match::flat($MATCH->{character_class_list}) }
                                       ] 
               } }
-            | { die "Unmatched [ in regex" }
+            | <character_class_list>
+              { $MATCH->{capture} = { negated_character_class => Perlito5::Match::flat($MATCH->{character_class_list}) } }
             ]
-        | <character_class_list> ']'
+        | ']' 
+          <character_class_list>
+          { $MATCH->{capture} = { character_class => [
+                                    { character => ']' },
+                                    @{ Perlito5::Match::flat($MATCH->{character_class_list}) }
+                                  ] 
+          } }
+        | <character_class_list>
           { $MATCH->{capture} = { character_class => Perlito5::Match::flat($MATCH->{character_class_list}) } }
         | { die "Unmatched [ in regex" }
         ]
+        [ ']' | { die "Unmatched [ in regex" } ]
 
-    |   <!before ')' | '+' | '?' | '\\' | '|' | '*' >
-        <any>
+    |   <!before ')' | '+' | '?' | '\\' | '|' | '*' > <any>
          { $MATCH->{capture} = { character => Perlito5::Match::flat($MATCH->{any}) } }
 };
 
