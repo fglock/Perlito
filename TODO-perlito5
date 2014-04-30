@@ -414,6 +414,12 @@ TODO list for Perlito5
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /x/; print $1; } print $1, "\n"; '
     aaa
 
+-- some qr() details
+
+    $ perl -e ' my $x = qr/ \A x /x; my $y = qr/$x y \Q[z]/; use Data::Dumper; print Dumper $x; print Dumper $y; '
+    $VAR1 = qr/(?x-ism: \A x )/;
+    $VAR1 = qr/(?-xism:(?x-ism: \A x ) y \[z\])/;
+
 -- bug: variable redeclaration does not work
 -- javascript "var" erases the outer value within the whole current lexical scope
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
