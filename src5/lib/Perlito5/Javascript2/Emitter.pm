@@ -1869,9 +1869,57 @@ package Perlito5::AST::Apply;
         },
 
         'delete' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            '(delete ' . $self->{arguments}[0]->emit_javascript2() . ')';
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            my $arg = $self->{arguments}->[0];
+            if ($arg->isa( 'Perlito5::AST::Lookup' )) {
+                my $v = $arg->obj;
+                if (  $v->isa('Perlito5::AST::Var')
+                   && $v->sigil eq '$'
+                   )
+                {
+                    $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
+                    return '(delete ' . $v->emit_javascript2() . '[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
+                }
+                return '(delete ' . $v->emit_javascript2() . '._hash_[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
+            }
+            if ($arg->isa( 'Perlito5::AST::Index' )) {
+                my $v = $arg->obj;
+                if (  $v->isa('Perlito5::AST::Var')
+                   && $v->sigil eq '$'
+                   )
+                {
+                    $v = Perlito5::AST::Var->new( sigil => '@', namespace => $v->namespace, name => $v->name );
+                    return '(delete ' . $v->emit_javascript2() . '[' . $arg->{index_exp}->emit_javascript2($level) . '])';
+                }
+                return '(delete ' . $v->emit_javascript2() . '._array_[' . $arg->{index_exp}->emit_javascript2($level) . '])';
+            }
+            if ($arg->isa( 'Perlito5::AST::Call' )) {
+                if ( $arg->method eq 'postcircumfix:<{ }>' ) {
+                    return '(delete ' . $arg->invocant->emit_javascript2() . '._hash_[' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . '])';
+                }
+                if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
+                    return '(delete ' . $arg->invocant->emit_javascript2() . '._array_[' . $arg->{arguments}->emit_javascript2($level) . '])';
+                }
+            }
+            if (  $arg->isa('Perlito5::AST::Var')
+               && $arg->sigil eq '&'
+               )
+            {
+                die 'TODO delete &code';
+                # my $name = $arg->{name};
+                # my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                # return 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Javascript2::escape_string($name) . ')';
+            }
+            if (  $arg->isa('Perlito5::AST::Apply')
+               && $arg->{code} eq 'prefix:<&>'
+               )
+            {
+                die 'TODO delete &$code';
+                # my $arg2 = $arg->{arguments}->[0];
+                # return 'p5sub_exists(' . Perlito5::Javascript2::to_str($arg2) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
+            }
         },
 
         'scalar' => sub {
