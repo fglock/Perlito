@@ -418,7 +418,7 @@ sub string_interpolation_parse {
         if ( $m ) {
             my $obj = Perlito5::Match::flat($m);
             if ( ref($obj) eq 'Perlito5::AST::Val::Buf' ) {
-                $buf .= $obj->{buf};
+                $buf .= apply_quote_flags($obj->{'buf'}, $quote_flags);
                 $obj = undef;
             }
             if ( $obj ) {
@@ -440,7 +440,7 @@ sub string_interpolation_parse {
                     $p = $m->{to};
                 }
                 else {
-                    $buf .= $c;
+                    $buf .= apply_quote_flags($c, $quote_flags);
                 }
             }
             else {
