@@ -332,6 +332,9 @@ sub string_interpolation_parse {
     my $open_delimiter = $_[3];
     my $delimiter      = $_[4];
     my $interpolate    = $_[5];  # 0 - single-quote; 1 - double-quote; 2 - regex
+    my $quote_flags    = $_[6] || {};  # lowercase/uppercase/quotemeta until /E or end-of-string
+
+    # TODO - use $quote_flags->{ 'L' / 'U' / 'Q' }
 
     my $p = $pos;
 
@@ -354,13 +357,26 @@ sub string_interpolation_parse {
         elsif ($balanced && $c eq $open_delimiter) {
             $buf .= $c;
             $p++;
-            $m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate);
+            $m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate, $quote_flags);
             $more = $delimiter;
         }
         elsif ($interpolate && ($c eq '$' || $c eq '@')) {
             $m = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter, $interpolate )
         }
         elsif ($c eq '\\') {
+            if ($interpolate) {
+                if ( $c2 eq 'E' ) {
+                    $quote_flags = {};  # reset all $quote_flags
+                    $p += 2;
+                    next;
+                }
+                elsif ( $c2 eq 'L' || $c2 eq 'U' || $c2 eq 'Q' ) {
+                    # \L \U \Q .. \E - lowercase/uppercase/quotemeta until /E or end-of-string
+                    $quote_flags->{$c2} = 1;
+                    $p += 2;
+                    next;
+                }
+            }
             if ($interpolate == 2) {
                 # regex
                 $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 2) ) }
@@ -693,7 +709,6 @@ sub double_quoted_unescape {
     }
     else {
         # TODO - \N{charname}     - requires "use charnames"
-        # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
         # TODO - \l \u            - uppercase next char
 
         $m = {
