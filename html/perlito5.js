@@ -6515,8 +6515,8 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 										var v_flag_to_reset;
 										v_flag_to_reset = ((v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('last_flag'));
 										if ( p5bool(v_flag_to_reset) ) {
-											(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_flag_to_reset), (0));
-											(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset('last_flag', (0));
+											(delete v_quote_flags._hash_[v_flag_to_reset]);
+											(delete v_quote_flags._hash_['last_flag']);
 										}
 										else {
 											v_quote_flags = ((new p5HashRef({})));

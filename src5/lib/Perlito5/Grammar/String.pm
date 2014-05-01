@@ -388,10 +388,8 @@ sub string_interpolation_parse {
                 if ($c2 eq 'E') {
                     my $flag_to_reset = $quote_flags->{last_flag};
                     if ($flag_to_reset) {
-                        # delete($quote_flags->{$flag_to_reset});
-                        # delete($quote_flags->{last_flag});
-                        $quote_flags->{$flag_to_reset} = 0;
-                        $quote_flags->{last_flag} = 0;
+                        delete($quote_flags->{$flag_to_reset});
+                        delete($quote_flags->{last_flag});
                     }
                     else {
                         $quote_flags = {}
