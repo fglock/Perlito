@@ -6511,12 +6511,37 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 						else if ( (p5str(v_c) == String.fromCharCode(92)) ) {
 							if ( p5bool(v_interpolate) ) {
 								if ( (p5str(v_c2) == 'E') ) {
-									v_quote_flags = ((new p5HashRef({})));
+									(function () {
+										var v_flag_to_reset;
+										v_flag_to_reset = ((v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('last_flag'));
+										if ( p5bool(v_flag_to_reset) ) {
+											(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_flag_to_reset), (0));
+											(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset('last_flag', (0));
+										}
+										else {
+											v_quote_flags = ((new p5HashRef({})));
+										};
+										(v_p = ((p5num(v_p) + 1)));
+										v_c = ('');
+									})();
+								}
+								else if ( (p5str(v_c2) == 'L') ) {
+									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1));
+									(delete (v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('U'));
+									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset('last_flag', (v_c2));
 									(v_p = ((p5num(v_p) + 1)));
 									v_c = ('');
 								}
-								else if ( (((p5str(v_c2) == 'L') || (p5str(v_c2) == 'U')) || (p5str(v_c2) == 'Q')) ) {
+								else if ( (p5str(v_c2) == 'U') ) {
 									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1));
+									(delete (v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('L'));
+									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset('last_flag', (v_c2));
+									(v_p = ((p5num(v_p) + 1)));
+									v_c = ('');
+								}
+								else if ( (p5str(v_c2) == 'Q') ) {
+									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1));
+									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset('last_flag', (v_c2));
 									(v_p = ((p5num(v_p) + 1)));
 									v_c = ('');
 								};

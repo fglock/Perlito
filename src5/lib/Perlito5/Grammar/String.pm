@@ -384,16 +384,40 @@ sub string_interpolation_parse {
         }
         elsif ($c eq '\\') {
             if ($interpolate) {
-                if ( $c2 eq 'E' ) {
-                    $quote_flags = {};  # reset all $quote_flags
+                # \L \U \Q .. \E - lowercase/uppercase/quotemeta until /E or end-of-string
+                if ($c2 eq 'E') {
+                    my $flag_to_reset = $quote_flags->{last_flag};
+                    if ($flag_to_reset) {
+                        # delete($quote_flags->{$flag_to_reset});
+                        # delete($quote_flags->{last_flag});
+                        $quote_flags->{$flag_to_reset} = 0;
+                        $quote_flags->{last_flag} = 0;
+                    }
+                    else {
+                        $quote_flags = {}
+                    }
                     $p += 1;
-                    $c = '';
+                    $c = ''
                 }
-                elsif ( $c2 eq 'L' || $c2 eq 'U' || $c2 eq 'Q' ) {
-                    # \L \U \Q .. \E - lowercase/uppercase/quotemeta until /E or end-of-string
+                elsif ($c2 eq 'L') {
                     $quote_flags->{$c2} = 1;
+                    delete $quote_flags->{U};
+                    $quote_flags->{last_flag} = $c2;
                     $p += 1;
-                    $c = '';
+                    $c = ''
+                }
+                elsif ($c2 eq 'U') {
+                    $quote_flags->{$c2} = 1;
+                    delete $quote_flags->{L};
+                    $quote_flags->{last_flag} = $c2;
+                    $p += 1;
+                    $c = ''
+                }
+                elsif ($c2 eq 'Q') {
+                    $quote_flags->{$c2} = 1;
+                    $quote_flags->{last_flag} = $c2;
+                    $p += 1;
+                    $c = ''
                 }
             }
             if ($c) {

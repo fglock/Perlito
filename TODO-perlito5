@@ -373,6 +373,10 @@ TODO list for Perlito5
     exists 1
     exists 1
 
+-- delete() in src5/lib/Perlito5/Grammar/String.pm doesn't seem to work:
+    delete($quote_flags->{$flag_to_reset});
+    delete($quote_flags->{last_flag});
+
 -- "or" has SCALAR context (Abigail++):
     See: t5/01-perlito/23-eval.t
 
