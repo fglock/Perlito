@@ -11670,7 +11670,7 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 			var v_seen;
 			v_seen = ((new p5HashRef({})));
 			var v_level;
-			v_level = ('    ');
+			v_level = ('');
 			var v_pos;
 			v_pos = ('[TODO - recursive structure in AST is not supported]');
 			return (p5pkg["Perlito5::Dumper"]._dumper(p5list_to_a(List__.p5aget(0), v_level, v_seen, v_pos), p5want));

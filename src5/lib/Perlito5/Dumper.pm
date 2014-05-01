@@ -21,7 +21,7 @@ sub Dumper {
 
 sub ast_dumper {
     my $seen  = {};
-    my $level = '    ';
+    my $level = '';
     my $pos   = '[TODO - recursive structure in AST is not supported]';
     return _dumper($_[0], $level, $seen, $pos);
 }
