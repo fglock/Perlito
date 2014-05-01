@@ -325,6 +325,14 @@ sub tr_quote_parse {
     return $part2;
 }
 
+sub apply_quote_flags {
+    my ($c, $quote_flags) = @_;
+    $c = lc($c) if $quote_flags->{L};
+    $c = uc($c) if $quote_flags->{U};
+    $c = quotemeta($c) if $quote_flags->{Q};
+    return $c;
+}
+
 sub string_interpolation_parse {
     my $self           = $_[0];
     my $str            = $_[1];
@@ -361,37 +369,50 @@ sub string_interpolation_parse {
             $more = $delimiter;
         }
         elsif ($interpolate && ($c eq '$' || $c eq '@')) {
-            $m = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter, $interpolate )
+            my $match = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter, $interpolate );
+            if ($match) {
+                my $ast = $match->{capture};
+                $ast = Perlito5::AST::Apply->new( namespace => '', code => 'lc', arguments => [$ast] )
+                    if $quote_flags->{L};
+                $ast = Perlito5::AST::Apply->new( namespace => '', code => 'uc', arguments => [$ast] )
+                    if $quote_flags->{U};
+                $ast = Perlito5::AST::Apply->new( namespace => '', code => 'quotemeta', arguments => [$ast] )
+                    if $quote_flags->{Q};
+                $match->{capture} = $ast;
+            }
+            $m = $match;
         }
         elsif ($c eq '\\') {
             if ($interpolate) {
                 if ( $c2 eq 'E' ) {
                     $quote_flags = {};  # reset all $quote_flags
-                    $p += 2;
-                    next;
+                    $p += 1;
+                    $c = '';
                 }
                 elsif ( $c2 eq 'L' || $c2 eq 'U' || $c2 eq 'Q' ) {
                     # \L \U \Q .. \E - lowercase/uppercase/quotemeta until /E or end-of-string
                     $quote_flags->{$c2} = 1;
-                    $p += 2;
-                    next;
+                    $p += 1;
+                    $c = '';
                 }
             }
-            if ($interpolate == 2) {
-                # regex
-                $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 2) ) }
-            }
-            elsif ($interpolate == 1) {
-                # double-quotes
-                $m = Perlito5::Grammar::String->double_quoted_unescape( $str, $p );
-            }
-            else {
-                # single-quotes
-                $m =  $c2 eq "\\"
-                    ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
-                    : $c2 eq "'"
-                    ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
-                    : 0;
+            if ($c) {
+                if ($interpolate == 2) {
+                    # regex
+                    $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 2) ) }
+                }
+                elsif ($interpolate == 1) {
+                    # double-quotes
+                    $m = Perlito5::Grammar::String->double_quoted_unescape( $str, $p );
+                }
+                else {
+                    # single-quotes
+                    $m =  $c2 eq "\\"
+                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
+                        : $c2 eq "'"
+                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
+                        : 0;
+                }
             }
         }
         if ( $m ) {
@@ -423,7 +444,7 @@ sub string_interpolation_parse {
                 }
             }
             else {
-                $buf .= $c;
+                $buf .= apply_quote_flags($c, $quote_flags);
             }
         }
     }
