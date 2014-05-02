@@ -133,9 +133,14 @@ token rule_term {
         [ ')' | { die "Unmatched ( in regex" } ]
 
     |   \\
-        [ 'c' <any>       { $MATCH->{capture} = { control_character => Perlito5::Match::flat($MATCH->{any}) } }
-        | 'Q' <quotemeta> { $MATCH->{capture} = { string_as_is => Perlito5::Match::flat($MATCH->{quotemeta}) } }
-        | <any>           { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
+        [
+           # these flags are all preprocessed at "string" level:
+           # \n \t \e \r \f \a \Q \E \L \l \U \u \100 \x \c \N
+
+           # TODO - \1 (backreference) vs. \1 (octal)
+           #        use $CAPTURE_ID to disambiguate
+
+        | <any>     { $MATCH->{capture} = { special_character => Perlito5::Match::flat($MATCH->{any}) } }
         ]
 
     |   '['
