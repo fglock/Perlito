@@ -6576,14 +6576,18 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 									v_c = ('');
 								}
 								else if ( (p5str(v_c2) == 'l') ) {
-									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1));
-									(delete v_quote_flags._hash_['u']);
+									if ( p5bool((v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('u')) ) {}
+									else {
+										(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1))
+									};
 									(v_p = ((p5num(v_p) + 1)));
 									v_c = ('');
 								}
 								else if ( (p5str(v_c2) == 'u') ) {
-									(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1));
-									(delete v_quote_flags._hash_['l']);
+									if ( p5bool((v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hget('l')) ) {}
+									else {
+										(v_quote_flags || (v_quote_flags = new p5HashRef({})))._hash_.p5hset(p5str(v_c2), (1))
+									};
 									(v_p = ((p5num(v_p) + 1)));
 									v_c = ('');
 								};

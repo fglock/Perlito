@@ -4539,14 +4539,14 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                     $c = ''
                 }
                 elsif ($c2 eq 'l') {
-                    $quote_flags->{$c2} = 1;
-                    delete($quote_flags->{'u'});
+                    $quote_flags->{$c2} = 1
+                        unless $quote_flags->{'u'};
                     $p += 1;
                     $c = ''
                 }
                 elsif ($c2 eq 'u') {
-                    $quote_flags->{$c2} = 1;
-                    delete($quote_flags->{'l'});
+                    $quote_flags->{$c2} = 1
+                        unless $quote_flags->{'l'};
                     $p += 1;
                     $c = ''
                 }

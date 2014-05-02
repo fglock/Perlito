@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..64';
+say '1..65';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -279,4 +279,7 @@ $x = "pa";
 # print "# [", join( ", ", map { ord($_) } split //, $r ), "]\n";
 # print "# [", join( ", ", map { ord($_) } split //, $v ), "]\n";
 print 'not ' if $r ne $x;  say "ok 64 - lc with var - $r";
+
+$r = "\u\lAA\l\uaa\u\laa\l\uAA";
+print 'not ' if $r ne 'AAaaAaaA';  say "ok 65 - lc $r";
 
