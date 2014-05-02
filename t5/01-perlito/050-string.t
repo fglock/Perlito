@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..65';
+say '1..68';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -282,4 +282,15 @@ print 'not ' if $r ne $x;  say "ok 64 - lc with var - $r";
 
 $r = "\u\lAA\l\uaa\u\laa\l\uAA";
 print 'not ' if $r ne 'AAaaAaaA';  say "ok 65 - lc $r";
+
+# controls: \c
+
+$r = "\cAA";
+print 'not ' if $r ne "\x{01}A";  say "ok 66 - ctrl-A";
+
+$r = "\caA";
+print 'not ' if $r ne "\x{01}A";  say "ok 67 - ctrl-A";
+
+$r = "\c0A";
+print 'not ' if $r ne "pA";  say "ok 68 - ctrl-0";
 

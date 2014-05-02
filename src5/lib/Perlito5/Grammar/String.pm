@@ -712,7 +712,7 @@ sub double_quoted_unescape {
     elsif ( $c2 eq 'c' ) {
         # \cC = Control-C
         # \c0 = "p"
-        my $c3 = ord( substr($str, $pos+2, 1) ) - ord('A') + 1;
+        my $c3 = ord(uc(substr($str, $pos+2, 1))) - ord('A') + 1;
         $c3 = 128 + $c3 
             if $c3 < 0;
         $m = {
@@ -767,9 +767,12 @@ sub double_quoted_unescape {
             capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
         };
     }
+    elsif ( $c2 eq 'N' ) {
+        #  \N{name}    named Unicode character
+        #  \N{U+263D}  Unicode character     (example: FIRST QUARTER MOON)
+        die "TODO - \\N{charname} not implemented; requires 'use charnames'";
+    }
     else {
-        # TODO - \N{charname}     - requires "use charnames"
-
         $m = {
             'str' => $str,
             'from' => $pos,

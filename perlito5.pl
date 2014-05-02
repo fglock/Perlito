@@ -4746,7 +4746,7 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
         $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($escape_sequence{$c2}))}
     }
     elsif ($c2 eq 'c') {
-        my $c3 = ord(substr($str, $pos + 2, 1)) - ord('A') + 1;
+        my $c3 = ord(uc(substr($str, $pos + 2, 1))) - ord('A') + 1;
         $c3 = 128 + $c3
             if $c3 < 0;
         $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($c3))}
@@ -4783,6 +4783,9 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             if $octal{substr($str, $p, 1)};
         my $tmp = oct(substr($str, $pos + 1, $p - $pos));
         $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($tmp))}
+    }
+    elsif ($c2 eq 'N') {
+        die('TODO - ' . chr(92) . 'N{charname} not implemented; requires ' . chr(39) . 'use charnames' . chr(39))
     }
     else {
         $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Val::Buf->new('buf' => $c2)}
