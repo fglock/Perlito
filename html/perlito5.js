@@ -6844,8 +6844,14 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 							if ( p5bool(Hash_hex.p5hget(p5str(p5pkg["Perlito5::Grammar::String"].uc([p5pkg["Perlito5::Grammar::String"].substr([v_str, v_p, 1], 0)], 0)))) ) {
 								(function (_tmp) { v_p = p5incr_(_tmp); return _tmp })(v_p)
 							};
+							var v_hex_code;
+							v_hex_code = (p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 2), ((p5num(v_p) - p5num(v_pos)) - 2)], 0));
+							if ( p5bool(v_hex_code) ) {}
+							else {
+								v_hex_code = ('0')
+							};
 							var v_tmp;
-							v_tmp = (p5pkg["Perlito5::Grammar::String"].oct([('0x' + p5pkg["Perlito5::Grammar::String"].substr([v_str, (p5num(v_pos) + 2), (p5num(v_p) - p5num(v_pos))], 0))], 0));
+							v_tmp = (p5pkg["Perlito5::Grammar::String"].oct([('0x' + p5str(v_hex_code))], 0));
 							v_m = ((new p5HashRef(p5a_to_h(p5list_to_a('str', v_str, 'from', v_pos, 'to', v_p, 'capture', p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Int"], "new", ['int', v_tmp], 1)))), 'code', 'chr'), 1))))));
 						})();
 					};

@@ -718,7 +718,9 @@ sub double_quoted_unescape {
             my $p = $pos+2;
             $p++ if $hex{ uc substr($str, $p, 1) };
             $p++ if $hex{ uc substr($str, $p, 1) };
-            my $tmp = oct( "0x" . substr($str, $pos+2, $p - $pos) );
+            my $hex_code = substr($str, $pos+2, $p - $pos - 2);
+            $hex_code = "0" unless $hex_code;
+            my $tmp = oct( "0x" . $hex_code );
             $m = {
                 str => $str,
                 from => $pos,

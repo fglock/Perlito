@@ -4735,7 +4735,10 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
                 if $hex{uc(substr($str, $p, 1))};
             $p++
                 if $hex{uc(substr($str, $p, 1))};
-            my $tmp = oct('0x' . substr($str, $pos + 2, $p - $pos));
+            my $hex_code = substr($str, $pos + 2, $p - $pos - 2);
+            $hex_code = 0
+                unless $hex_code;
+            my $tmp = oct('0x' . $hex_code);
             $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Apply->new('arguments' => [Perlito5::AST::Val::Int->new('int' => $tmp)], 'code' => 'chr')}
         }
     }

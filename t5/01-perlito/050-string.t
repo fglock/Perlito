@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..53';
+say '1..55';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -227,4 +227,16 @@ $r = +$v;
 print 'not ' if $r ne '-Z';  say "ok 52 - string positive - $r";
 print 'not ' if $v ne '-Z';  say "ok 53 - string positive - $v";
 
+
+# controls
+
+$r = "\x50";
+print 'not ' if $r ne 'P';  say "ok 54 - hex - $r";
+
+$v = "50";
+$r = "\x$v";
+$x = "\x{0}50";
+# print "# [", join( ", ", map { ord($_) } split //, $r ), "]\n";
+# print "# [", join( ", ", map { ord($_) } split //, $v ), "]\n";
+print 'not ' if $r ne $x;  say "ok 55 - hex without params - $r";
 
