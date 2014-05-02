@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..68';
+say '1..70';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -293,4 +293,13 @@ print 'not ' if $r ne "\x{01}A";  say "ok 67 - ctrl-A";
 
 $r = "\c0A";
 print 'not ' if $r ne "pA";  say "ok 68 - ctrl-0";
+
+# controls: \octal
+
+$r = "\11111111";
+# print "# [", join( ", ", map { ord($_) } split //, $r ), "]\n";
+print 'not ' if $r ne "I11111";  say "ok 69 - octal - $r";
+
+$r = "\1A";
+print 'not ' if $r ne "\x{1}A";  say "ok 70 - octal";
 

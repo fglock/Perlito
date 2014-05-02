@@ -756,10 +756,12 @@ sub double_quoted_unescape {
     }
     elsif ( exists $octal{$c2} ) {
         # "\"+octal        - initial zero is optional; max 3 digit octal (377)
-        my $p = $pos+2;
+        my $p = $pos+1;
         $p++ if $octal{ substr($str, $p, 1) };
         $p++ if $octal{ substr($str, $p, 1) };
-        my $tmp = oct( substr($str, $pos+1, $p - $pos) );
+        $p++ if $octal{ substr($str, $p, 1) };
+        my $oct_code = substr($str, $pos+1, $p - $pos - 1);
+        my $tmp = oct($oct_code);
         $m = {
             str => $str,
             from => $pos,
