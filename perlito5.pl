@@ -4437,6 +4437,16 @@ sub Perlito5::Grammar::String::tr_quote_parse {
 }
 sub Perlito5::Grammar::String::apply_quote_flags {
     my($c, $quote_flags) = @_;
+    return($c)
+        unless length($c);
+    if ($quote_flags->{'l'}) {
+        $c = lcfirst($c);
+        delete($quote_flags->{'l'})
+    }
+    if ($quote_flags->{'u'}) {
+        $c = ucfirst($c);
+        delete($quote_flags->{'u'})
+    }
     $c = lc($c)
         if $quote_flags->{'L'};
     $c = uc($c)
@@ -4476,6 +4486,14 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
             my $match = Perlito5::Grammar::String->double_quoted_var($str, $p, $delimiter, $interpolate);
             if ($match) {
                 my $ast = $match->{'capture'};
+                if ($quote_flags->{'l'}) {
+                    $ast = Perlito5::AST::Apply->new('namespace' => '', 'code' => 'lcfirst', 'arguments' => [$ast]);
+                    delete($quote_flags->{'l'})
+                }
+                if ($quote_flags->{'u'}) {
+                    $ast = Perlito5::AST::Apply->new('namespace' => '', 'code' => 'ucfirst', 'arguments' => [$ast]);
+                    delete($quote_flags->{'u'})
+                }
                 $ast = Perlito5::AST::Apply->new('namespace' => '', 'code' => 'lc', 'arguments' => [$ast])
                     if $quote_flags->{'L'};
                 $ast = Perlito5::AST::Apply->new('namespace' => '', 'code' => 'uc', 'arguments' => [$ast])
@@ -4517,6 +4535,18 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                 elsif ($c2 eq 'Q') {
                     $quote_flags->{$c2} = 1;
                     $quote_flags->{'last_flag'} = $c2;
+                    $p += 1;
+                    $c = ''
+                }
+                elsif ($c2 eq 'l') {
+                    $quote_flags->{$c2} = 1;
+                    delete($quote_flags->{'u'});
+                    $p += 1;
+                    $c = ''
+                }
+                elsif ($c2 eq 'u') {
+                    $quote_flags->{$c2} = 1;
+                    delete($quote_flags->{'l'});
                     $p += 1;
                     $c = ''
                 }
@@ -4730,7 +4760,7 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             $hex_code = 0
                 unless $hex_code;
             my $tmp = oct('0x' . $hex_code);
-            $m = {'str' => $str, 'from' => $pos, 'to' => $p + 1, 'capture' => Perlito5::AST::Apply->new('arguments' => [Perlito5::AST::Val::Int->new('int' => $tmp)], 'code' => 'chr')}
+            $m = {'str' => $str, 'from' => $pos, 'to' => $p + 1, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($tmp))}
         }
         else {
             my $p = $pos + 2;
@@ -4742,7 +4772,7 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
             $hex_code = 0
                 unless $hex_code;
             my $tmp = oct('0x' . $hex_code);
-            $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Apply->new('arguments' => [Perlito5::AST::Val::Int->new('int' => $tmp)], 'code' => 'chr')}
+            $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($tmp))}
         }
     }
     elsif (exists($octal{$c2})) {
@@ -4752,7 +4782,7 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
         $p++
             if $octal{substr($str, $p, 1)};
         my $tmp = oct(substr($str, $pos + 1, $p - $pos));
-        $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Apply->new('arguments' => [Perlito5::AST::Val::Int->new('int' => $tmp)], 'code' => 'chr')}
+        $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Val::Buf->new('buf' => chr($tmp))}
     }
     else {
         $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Val::Buf->new('buf' => $c2)}

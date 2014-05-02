@@ -327,6 +327,15 @@ sub tr_quote_parse {
 
 sub apply_quote_flags {
     my ($c, $quote_flags) = @_;
+    return $c unless length($c);
+    if ($quote_flags->{l}) {
+        $c = lcfirst($c);
+        delete $quote_flags->{l};
+    }
+    if ($quote_flags->{u}) {
+        $c = ucfirst($c);
+        delete $quote_flags->{u};
+    }
     $c = lc($c) if $quote_flags->{L};
     $c = uc($c) if $quote_flags->{U};
     $c = quotemeta($c) if $quote_flags->{Q};
@@ -341,8 +350,6 @@ sub string_interpolation_parse {
     my $delimiter      = $_[4];
     my $interpolate    = $_[5];  # 0 - single-quote; 1 - double-quote; 2 - regex
     my $quote_flags    = $_[6] || {};  # lowercase/uppercase/quotemeta until /E or end-of-string
-
-    # TODO - use $quote_flags->{ 'L' / 'U' / 'Q' }
 
     my $p = $pos;
 
@@ -372,6 +379,14 @@ sub string_interpolation_parse {
             my $match = Perlito5::Grammar::String->double_quoted_var( $str, $p, $delimiter, $interpolate );
             if ($match) {
                 my $ast = $match->{capture};
+                if ($quote_flags->{l}) {
+                    $ast = Perlito5::AST::Apply->new( namespace => '', code => 'lcfirst', arguments => [$ast] );
+                    delete $quote_flags->{l};
+                }
+                if ($quote_flags->{u}) {
+                    $ast = Perlito5::AST::Apply->new( namespace => '', code => 'ucfirst', arguments => [$ast] );
+                    delete $quote_flags->{u};
+                }
                 $ast = Perlito5::AST::Apply->new( namespace => '', code => 'lc', arguments => [$ast] )
                     if $quote_flags->{L};
                 $ast = Perlito5::AST::Apply->new( namespace => '', code => 'uc', arguments => [$ast] )
@@ -385,6 +400,7 @@ sub string_interpolation_parse {
         elsif ($c eq '\\') {
             if ($interpolate) {
                 # \L \U \Q .. \E - lowercase/uppercase/quotemeta until /E or end-of-string
+                # \l \u          - lowercase/uppercase 1 char
                 if ($c2 eq 'E') {
                     my $flag_to_reset = $quote_flags->{last_flag};
                     if ($flag_to_reset) {
@@ -414,6 +430,18 @@ sub string_interpolation_parse {
                 elsif ($c2 eq 'Q') {
                     $quote_flags->{$c2} = 1;
                     $quote_flags->{last_flag} = $c2;
+                    $p += 1;
+                    $c = ''
+                }
+                elsif ($c2 eq 'l') {
+                    $quote_flags->{$c2} = 1;
+                    delete $quote_flags->{u};
+                    $p += 1;
+                    $c = ''
+                }
+                elsif ($c2 eq 'u') {
+                    $quote_flags->{$c2} = 1;
+                    delete $quote_flags->{l};
                     $p += 1;
                     $c = ''
                 }
@@ -707,12 +735,7 @@ sub double_quoted_unescape {
                 str => $str,
                 from => $pos,
                 to => $p + 1,
-                capture => Perlito5::AST::Apply->new(
-                        'arguments' => [
-                            Perlito5::AST::Val::Int->new( 'int' => $tmp ),
-                        ],
-                        'code' => 'chr',
-                    )
+                capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
             };
         }
         else {
@@ -727,12 +750,7 @@ sub double_quoted_unescape {
                 str => $str,
                 from => $pos,
                 to => $p,
-                capture => Perlito5::AST::Apply->new(
-                        'arguments' => [
-                            Perlito5::AST::Val::Int->new( 'int' => $tmp ),
-                        ],
-                        'code' => 'chr',
-                    )
+                capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
             };
         }
     }
@@ -746,17 +764,11 @@ sub double_quoted_unescape {
             str => $str,
             from => $pos,
             to => $p,
-            capture => Perlito5::AST::Apply->new(
-                    'arguments' => [
-                        Perlito5::AST::Val::Int->new( 'int' => $tmp ),
-                    ],
-                    'code' => 'chr',
-                )
+            capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
         };
     }
     else {
         # TODO - \N{charname}     - requires "use charnames"
-        # TODO - \l \u            - uppercase next char
 
         $m = {
             'str' => $str,

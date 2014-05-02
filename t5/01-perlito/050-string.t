@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..58';
+say '1..64';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -228,7 +228,7 @@ print 'not ' if $r ne '-Z';  say "ok 52 - string positive - $r";
 print 'not ' if $v ne '-Z';  say "ok 53 - string positive - $v";
 
 
-# controls
+# controls: \x
 
 $r = "\x50a";
 print 'not ' if $r ne 'Pa';  say "ok 54 - hex - $r";
@@ -255,4 +255,28 @@ $x = "\x{0}a";
 # print "# [", join( ", ", map { ord($_) } split //, $r ), "]\n";
 # print "# [", join( ", ", map { ord($_) } split //, $x ), "]\n";
 print 'not ' if $r ne $x;  say "ok 58 - hex without params - $r";
+
+# controls: \l \u
+
+$r = "\lAA";
+print 'not ' if $r ne 'aA';  say "ok 59 - lc $r";
+
+$r = "\l\n";
+print 'not ' if $r ne "\n";  say "ok 60 - lc";
+
+$r = "\uaa";
+print 'not ' if $r ne 'Aa';  say "ok 61 - uc $r";
+
+$r = "\u\n";
+print 'not ' if $r ne "\n";  say "ok 62 - uc";
+
+$r = "\l\x50a";
+print 'not ' if $r ne "pa";  say "ok 63 - lc";
+
+$v = "\x50a";
+$r = "\l$v";
+$x = "pa";
+# print "# [", join( ", ", map { ord($_) } split //, $r ), "]\n";
+# print "# [", join( ", ", map { ord($_) } split //, $v ), "]\n";
+print 'not ' if $r ne $x;  say "ok 64 - lc with var - $r";
 
