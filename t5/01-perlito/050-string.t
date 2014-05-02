@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..70';
+say '1..71';
 
 my $x = "abcd";
 if (substr($x,1,1) ne "b") {
@@ -302,4 +302,11 @@ print 'not ' if $r ne "I11111";  say "ok 69 - octal - $r";
 
 $r = "\1A";
 print 'not ' if $r ne "\x{1}A";  say "ok 70 - octal";
+
+# controls: \Q \L \U \E \l \u
+
+$v = "123aaAA";
+$r = "\Qa\U[{Exx${v}y\lXz\LC\n\E\n\E\n";
+$x = 'a' . chr(92) . '[' . chr(92) . '{EXX' . quotemeta(uc($v)) . 'YXZc' . chr(92) . chr(10) . chr(92) . chr(10) . chr(10);
+print 'not ' if $r ne $x;  say "ok 71 - nested controls";
 
