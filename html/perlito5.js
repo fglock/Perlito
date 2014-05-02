@@ -7073,7 +7073,7 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 						};
 						(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget_array('capture')._array_.p5aget(1)));
 						v_m = (p5call(v_self, "double_quoted_var_with_subscript", [v_m, v_interpolate], 0));
-						(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'join', 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', ' '], 1), (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')))), 'namespace', ''), 0)));
+						(v_m || (v_m = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'join', 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Var"], "new", ['name', '"', 'sigil', '$', 'namespace', ''], 1), (v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')))), 'namespace', ''), 0)));
 						(function () { throw(p5context([v_m], p5want)) })();
 					})();
 				};

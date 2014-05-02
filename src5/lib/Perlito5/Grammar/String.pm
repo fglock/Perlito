@@ -901,7 +901,7 @@ sub double_quoted_var {
              Perlito5::AST::Apply->new(
                 code      => 'join',
                 arguments => [
-                        Perlito5::AST::Val::Buf->new( buf => ' ' ),
+                        Perlito5::AST::Var->new( name => '"', sigil => '$', namespace => '' ),  # special var $"
                         $m->{capture}
                     ],
                 namespace => ''

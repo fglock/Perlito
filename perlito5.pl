@@ -4878,7 +4878,7 @@ sub Perlito5::Grammar::String::double_quoted_var {
             unless $m;
         $m->{'capture'} = $m->{'capture'}->[1];
         $m = $self->double_quoted_var_with_subscript($m, $interpolate);
-        $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'join', 'arguments' => [Perlito5::AST::Val::Buf->new('buf' => ' '), $m->{'capture'}], 'namespace' => '');
+        $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'join', 'arguments' => [Perlito5::AST::Var->new('name' => '"', 'sigil' => '$', 'namespace' => ''), $m->{'capture'}], 'namespace' => '');
         return($m)
     }
     return(0)
