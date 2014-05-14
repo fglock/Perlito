@@ -431,6 +431,16 @@ TODO list for Perlito5
     $ perl -e ' print "x\Q[\Qx]\Ex\n" '
     x\[x\\\]x\          # '\' is quoted, but 'Q' disappears
 
+-- qr() returns a Regexp object
+
+    {
+        package Regexp;
+        sub x { 123 }
+    }
+    
+    $a = qr//;
+    print $a->x, "\n";  # 123
+
 -- bug: variable redeclaration does not work
 -- javascript "var" erases the outer value within the whole current lexical scope
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
