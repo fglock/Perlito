@@ -90,6 +90,10 @@ package Perlito5::Javascript2;
         join
         list:<.>
         chr
+        lc
+        uc
+        lcfirst
+        ucfirst
     );
     # these operators always return "num"
     our %op_to_num = map +($_ => 1), qw(
@@ -1588,6 +1592,12 @@ package Perlito5::AST::Apply;
         'p5:tr' => sub {
             my $self = $_[0];
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self );
+        },
+        'p5:qr' => sub {
+            my $self  = shift;
+            my $level = shift;
+            # p5qr( $str, $modifier );
+            'p5qr(' . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', "' . ($self->{arguments}[1] || '') . '")';
         },
         '__PACKAGE__' => sub {
             my $self = $_[0];

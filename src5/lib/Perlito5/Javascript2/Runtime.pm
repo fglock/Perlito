@@ -797,6 +797,11 @@ p5negative = function(o) {
     return -o;
 };
 
+p5qr = function(s, modifier) {
+    // TODO
+    CORE.die(["qr() not yet implemented"]);
+};
+
 p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
     var v_old = namespace[var_name];
