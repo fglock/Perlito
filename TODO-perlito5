@@ -473,6 +473,7 @@ TODO list for Perlito5
     See: p5str_inc()
 
 -- finish "overload" implementation
+    See: s5str
 
 -- pack(), unpack()
 -- y()()

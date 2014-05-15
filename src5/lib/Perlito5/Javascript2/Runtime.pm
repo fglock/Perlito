@@ -599,6 +599,12 @@ p5str = function(o) {
             var class_name = '';
             if (o._class_ && typeof o._class_._ref_ === "string") {
                 // blessed reference
+                // test for overload
+                var meth = p5method_lookup('(""', o._class_._ref_, {});
+                if (meth) {
+                    return p5str(meth([o], 1));
+                }
+                // no overload, strigify the reference instead
                 class_name = o._class_._ref_ + '=';
             }
             if (!o._id_) { o._id_ = p5id++ }

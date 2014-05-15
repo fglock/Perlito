@@ -76,6 +76,7 @@ sub pop_term {
     my $v = pop @$num_stack;
     if (ref($v) eq 'ARRAY') {
         # say "# ** processing term ", $v->perl;
+        return $v->[1] if ref($v->[1]);     # optimization - avoid strigifying objects
         if ($v->[1] eq 'methcall_no_params') {
             # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => [] );
