@@ -337,6 +337,10 @@ TODO list for Perlito5
 -- do {} while / do {} until
     execute the loop once, before checking the condition
 
+    # http://blogs.perl.org/users/peter_martini/2014/05/spelunking-why-while-is-my-new-favorite-perl-ism.html
+    while () {}     # infinite loop - while(1)
+    while (()) {}   # no loop
+
 -- 'require v5.006;'
     # Can't locate v5.006 in @INC
 
