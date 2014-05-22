@@ -192,8 +192,12 @@ token while {
             '}' <.Perlito5::Grammar::Space.opt_ws>
     <opt_continue_block>
         {
+            my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.paren_parse"});
+            if ($cond eq '*undef*') {
+                $cond = Perlito5::AST::Val::Int->new( int => 1 );
+            }
             $MATCH->{capture} = Perlito5::AST::While->new( 
-                    cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.paren_parse"}), 
+                    cond  => $cond, 
                     body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )

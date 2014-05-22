@@ -2854,7 +2854,11 @@ sub Perlito5::Grammar::while {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.paren_parse'}), 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => undef), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+        my $cond = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.paren_parse'});
+        if ($cond eq '*undef*') {
+            $cond = Perlito5::AST::Val::Int->new('int' => 1)
+        }
+        $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => $cond, 'body' => Perlito5::AST::Lit::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}), 'sig' => undef), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
         1
     })));
     $tmp ? $MATCH : 0
