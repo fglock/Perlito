@@ -245,6 +245,14 @@ TODO list for Perlito5
 
 * Perl6 backend
 
+-- context: wantarray, return-comma
+        sub x { return 7, 8 }
+    vs. sub x { return (7, 8) }
+
+    use an "out-of-band" parameter to set the call context, like:
+    $v = x( :scalar )   # 8
+    $v = x( :list   )   # 2
+
 -- <> is lines()
 
 -- 0..$#num to @num.keys
