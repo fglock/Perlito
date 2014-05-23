@@ -479,7 +479,7 @@ TODO list for Perlito5
     See: p5str_inc()
 
 -- finish "overload" implementation
-    See: s5str
+    See: p5str
 
 -- pack(), unpack()
 -- y()()
@@ -508,17 +508,6 @@ TODO list for Perlito5
 
 -- flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
-
--- unary minus on strings.
-
-    my $_ = "a"
-    print -$_
-    # -a
-
-    my $foo = '-bar';
-    print $foo;
-    print -$foo;
-    # -bar+bar
 
 
 * Nice to Have

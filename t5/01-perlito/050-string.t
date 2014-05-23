@@ -143,7 +143,7 @@ $r = --$v;
 print 'not ' if $r ne '-6';  say "ok 31 - string decrement - $r";
 print 'not ' if $v ne '-6';  say "ok 32 - string decrement - $v";
 
-# negative
+# unary minus
 
 $v = 'AZ';
 $r = -$v;
@@ -215,7 +215,7 @@ print 'not ' unless $r eq '0.12' || $r eq '+00.12';
                              say "ok 49 - string negative - $r";
 
 
-# positive
+# unary plus
 
 $v = 'AZ';
 $r = +$v;
