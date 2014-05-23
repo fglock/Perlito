@@ -4,6 +4,7 @@ sub emit_perl5 {
     return <<'EOT';
 
 use v5.10;
+use feature 'say';
 
 sub Perlito5::IO::slurp {
     my $source_filename = shift;

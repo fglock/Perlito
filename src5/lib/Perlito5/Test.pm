@@ -1,5 +1,7 @@
 package Perlito5::Test;
 
+use feature 'say';
+
 ### GLOBALS
 
 # globals to keep track of our tests
