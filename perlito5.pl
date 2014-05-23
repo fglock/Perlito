@@ -12930,6 +12930,9 @@ package Perlito5::AST::Apply;
         if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
             return ['bareword' => $code]
         }
+        if ($code eq 'eval') {
+            $code = 'EVAL'
+        }
         return ['apply' => '(', $code, $self->emit_perl6_args()]
     }
 }
