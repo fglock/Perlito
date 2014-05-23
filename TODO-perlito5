@@ -291,9 +291,6 @@ TODO list for Perlito5
 
 -- continue block in block: ' { print 1 } continue { print 2 } '
 
--- emitter bug: significant parenthesis: 
-    t5/01-perlito/12-context.t fails because:
-    " return (4, 5) " instead of " return 4, 5 "
 
 
 * Javascript backend

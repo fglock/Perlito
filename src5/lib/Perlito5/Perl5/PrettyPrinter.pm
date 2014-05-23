@@ -294,6 +294,12 @@ sub apply {
     shift @dd;
     my $open = shift @dd;
     my $d = $dd[0];
+    if ($d eq 'return') {
+        # 'return' should not have 'function' parentheses, because 
+        #    return 4,5     # '5' in scalar context
+        #    return (4,5)   # '2' in scalar context
+        $open = ' ';
+    }
     render( $d, $level, $out );
     $dd[0] = 'list:<,>';
     push @$out, $open;

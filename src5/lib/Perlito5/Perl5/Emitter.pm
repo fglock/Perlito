@@ -134,7 +134,7 @@ package Perlito5::AST::Var;
 
         my $str_name = $self->{name};
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
-        $str_name = '\\"' if $str_name eq '"';     # escape $"
+        $str_name = "\\'" if $str_name eq "'";     # escape $'
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
