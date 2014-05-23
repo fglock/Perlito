@@ -567,7 +567,3 @@ TODO list for Perlito5
 -- Interpreter backend
    this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
 
--- Perl6 backend (started)
-   this is not being maintained; not sure if compiling to Perl6 is the best way
-   maybe compiling directly to Parrot/dotnet/Haskell gives better results
-
