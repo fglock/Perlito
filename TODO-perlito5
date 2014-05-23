@@ -559,19 +559,6 @@ TODO list for Perlito5
     $ perl -lwe '*4 = sub { print "yes" }; 4->()'
     yes
 
--- The "desperation mode" of Perl's loop control constructs which causes them to look up the stack to find a matching label allows some curious behaviors which Test::More takes advantage of, for better or worse.
-    
-    SKIP: {
-        skip() if $something;
-    
-        print "Never printed";
-    }
-    
-    sub skip {
-        no warnings "exiting";
-        last SKIP;
-    }
-
 
 * Deprecate
 
