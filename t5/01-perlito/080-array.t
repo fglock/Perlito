@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..27';
+say '1..29';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -155,4 +155,21 @@ $v = "@unique_elements";
 print "not "
     unless $v eq '1 2 3 4 5 6 7 8 9';
 print "ok 27 - unique_elements $v\n";
+
+{
+    my $v;
+    $v->[2] = 8;
+    if ($$v[2] != 8) {
+        print 'not '
+    }
+    say 'ok 28 - array in a scalar var, alternate syntax # ', $v->[2];
+}
+{
+    my $v;
+    $$v[2] = 8;
+    if ($v->[2] != 8) {
+        print 'not '
+    }
+    say 'ok 29 - array in a scalar var, alternate syntax # ', $v->[2];
+}
 
