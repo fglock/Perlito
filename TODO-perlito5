@@ -295,6 +295,12 @@ TODO list for Perlito5
 
 * Javascript backend
 
+
+-- phase order
+    print x();          # js will try to execute this before the sub declaration
+    sub x { "ok\n"; }
+    #  TypeError: Object [object Object] has no method 'x'
+
 -- dot-decimal strings
     5.4.66.77
     v5.4.66.77
