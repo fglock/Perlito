@@ -258,7 +258,7 @@ package Perlito5::Javascript2;
              && (  exists($op_to_str{ $_[0]->{code} })
                 || exists($op_to_num{ $_[0]->{code} })
                 || exists($op_to_bool{ $_[0]->{code} })
-                || $_[0]->{code} eq 'prefix:<\\>'
+                #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
                 )
              )
     }
@@ -1734,6 +1734,10 @@ package Perlito5::AST::Apply;
                 #     # TODO
                 #     return '(new p5GlobRef(' . $arg->emit_javascript2($level) . '))';
                 # }
+                if ( $arg->{code} eq 'circumfix:<( )>' ) {
+                    # \( @x )
+                    return 'p5_list_of_refs(' . Perlito5::Javascript2::to_list( $arg->{arguments} ) . ')';
+                }
                 if ( $arg->{code} eq 'prefix:<&>' ) {
                     return 'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->{arguments}->[0]->emit_javascript2($level) . ')';
                 }

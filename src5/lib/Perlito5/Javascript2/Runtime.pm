@@ -575,6 +575,15 @@ p5list_to_a = function() {
     return res;
 };
 
+p5_list_of_refs = function(a) {
+    // implements \( @a )
+    var res = [];
+    for (i = 0; i < a.length; i++) {
+        res.push(new p5ScalarRef(a[i]));
+    }
+    return res;
+};
+
 p5a_to_h = function(a) {
     var res = {};
     for (i = 0; i < a.length; i+=2) {
