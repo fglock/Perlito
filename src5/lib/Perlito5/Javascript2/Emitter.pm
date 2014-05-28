@@ -791,6 +791,38 @@ package Perlito5::AST::Index;
                     . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
                 . ')';
         }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a[10, 20]
+            # %$a[0, 2] ==> %{$a}[0,2]
+
+            # "fix" the sigil type
+            my $obj = $self->{obj};
+            $obj->{sigil} = '@'
+                if $obj->{sigil} eq '%';
+            $obj->{code} = 'prefix:<@>'
+                if $obj->{code} eq 'prefix:<%>';
+
+            return
+              '(function (a, v) { '
+                    . 'var src=' . $obj->emit_javascript2($level) . '; '
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(v[i]); '
+                            . 'a.push(src.' . $method . '(v[i])) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
         return $self->emit_javascript2_container($level) . '.' . $method . '(' 
                         . Perlito5::Javascript2::to_num($self->{index_exp}, $level) 
                     . ')';
@@ -921,6 +953,35 @@ package Perlito5::AST::Lookup;
               '(function (a, v) { '
                     . 'var src=' . $v->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(src.p5hget(v[i])) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a{ 'x', 'y' }
+            # %$a{ 'x', 'y' }  ==> %{$a}{ 'x', 'y' }
+            my $v;
+            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+                if $self->{obj}->isa('Perlito5::AST::Var');
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+                if $self->{obj}->isa('Perlito5::AST::Apply');
+            return
+              '(function (a, v) { '
+                    . 'var src=' . $v->emit_javascript2($level) . '; '
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(v[i]); '
                             . 'a.push(src.p5hget(v[i])) '
                     . '}; '
                     . 'return a ' 
