@@ -129,6 +129,14 @@ token named_sub_def {
         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
         my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.prototype"});
         $sig = undef if $sig eq '*undef*';
+
+        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
+        my ($proto) = grep { $_->[0] eq 'prototype' } @$attributes;
+        if ($proto) {
+            $attributes = [grep { $_->[0] ne 'prototype' } @$attributes];
+            $sig = $proto->[1];
+        }
+
         my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"});
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
@@ -159,7 +167,7 @@ token named_sub_def {
             namespace  => $namespace,
             sig        => $sig, 
             block      => $MATCH->{_tmp},
-            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
+            attributes => $attributes,
         ) 
     }
 };
@@ -219,12 +227,20 @@ token anon_sub_def {
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype});
         $sig = undef if $sig eq '*undef*';
+
+        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
+        my ($proto) = grep { $_->[0] eq 'prototype' } @$attributes;
+        if ($proto) {
+            $attributes = [grep { $_->[0] ne 'prototype' } @$attributes];
+            $sig = $proto->[1];
+        }
+
         $MATCH->{capture} = Perlito5::AST::Sub->new(
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
             block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}),
-            attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
+            attributes => $attributes,
         ) 
     }
 };

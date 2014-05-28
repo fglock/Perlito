@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..30";
+say "1..32";
 
 my $v = 0;
 my $r = 0;
@@ -193,5 +193,23 @@ print "not " if $v != 7;
 print "ok 29 - with_proto $v\n";
 print "not " if $r != 7;
 print "ok 30 - with_proto $r\n";
+
+# sanity test with proto attribute
+
+sub with_proto_attr :prototype() {
+    if (@_) {
+        $v += $_[0]
+    }
+    else {
+        $v += 8
+    }
+}
+
+$v = 3;
+$r = with_proto_attr + 4;
+print "not " if $v != 11;
+print "ok 31 - with_proto_attr $v\n";
+print "not " if $r != 15;
+print "ok 32 - with_proto_attr $r\n";
 
 

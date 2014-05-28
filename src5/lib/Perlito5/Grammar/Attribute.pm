@@ -21,15 +21,17 @@ sub opt_attribute {
     my $to;
     while (1) {
 
+        my $attr = [ Perlito5::Match::flat($m), undef ];
         $to = $m->{to};
         my $delimiter = substr( $str, $to, 1 );
         if ($delimiter eq '(') {
             # "ident(params)"
             my $params = Perlito5::Grammar::String->string_interpolation_parse($str, $m->{to} + 1, '(', ')', 0);
             die "syntax error" if !$params;
+            $attr->[1] = Perlito5::Match::flat($params)->{buf};
             $to = $params->{to};
         }
-        push @attributes, substr( $str, $p, $to - $p );
+        push @attributes, $attr;
 
         # check if the attribute list continues
         $ws = Perlito5::Grammar::Space->opt_ws( $str, $to );
