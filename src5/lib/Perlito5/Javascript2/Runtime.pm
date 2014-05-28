@@ -232,11 +232,6 @@ function p5call_sub(namespace, name, list, p5want) {
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
 }
 
-function p5sub(fun, prot) {
-    fun._prototype_ = prot;
-    return fun;
-}
-
 function p5sub_exists(name, current_pkg_name) {
     var v = name;
     var pkg_name = v.split(/::/);

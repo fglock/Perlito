@@ -823,6 +823,30 @@ package Perlito5::AST::Index;
                     . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
                 . ')';
         }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a[10, 20]
+            # %$a[0, 2] ==> %{$a}[0,2]
+            return
+              '(function (a, v) { '
+                    . 'var src=' . $self->{obj}->emit_javascript2($level) . '; '
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(v[i]); '
+                            . 'a.push(src.' . $method . '(v[i])) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
         return $self->emit_javascript2_container($level) . '.' . $method . '(' 
                         . Perlito5::Javascript2::to_num($self->{index_exp}, $level) 
                     . ')';
@@ -953,6 +977,35 @@ package Perlito5::AST::Lookup;
               '(function (a, v) { '
                     . 'var src=' . $v->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(src.p5hget(v[i])) '
+                    . '}; '
+                    . 'return a ' 
+            . '})('
+                    . '[], '
+                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
+                . ')';
+        }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a{ 'x', 'y' }
+            # %$a{ 'x', 'y' }  ==> %{$a}{ 'x', 'y' }
+            my $v;
+            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+                if $self->{obj}->isa('Perlito5::AST::Var');
+            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
+                if $self->{obj}->isa('Perlito5::AST::Apply');
+            return
+              '(function (a, v) { '
+                    . 'var src=' . $v->emit_javascript2($level) . '; '
+                    . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
+                            . 'a.push(v[i]); '
                             . 'a.push(src.p5hget(v[i])) '
                     . '}; '
                     . 'return a ' 
@@ -1417,6 +1470,8 @@ package Perlito5::AST::Proto;
         my $level = shift;
         return Perlito5::Javascript2::pkg()
             if $self->{name} eq '__PACKAGE__';
+        return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
+            if $self->{name} eq '__SUB__';
         'p5pkg["' . $self->{name} . '"]'
     }
     sub emit_javascript2_get_decl { () }
@@ -1663,6 +1718,10 @@ package Perlito5::AST::Apply;
         '__PACKAGE__' => sub {
             my $self = $_[0];
             '"' . $Perlito5::PKG_NAME . '"';
+        },
+        '__SUB__' => sub {
+            my $self = $_[0];
+            $Perlito5::AST::Sub::SUB_REF // '__SUB__'
         },
         'wantarray' => sub {
             my $self = $_[0];
@@ -3019,9 +3078,18 @@ package Perlito5::AST::Sub;
                         ? Perlito5::Javascript2::escape_string($self->{sig}) 
                         : 'null';
 
-        my $s =                                 'p5sub(function (List__, p5want) {' . "\n"
-        . Perlito5::Javascript2::tab($level+1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 ))->emit_javascript2( $level + 1 ) . "\n"
-        . Perlito5::Javascript2::tab($level)   . '}, ' . $prototype . ')';
+        my $sub_ref = 'fun' . Perlito5::Javascript2::get_label();
+        local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
+        my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 )->emit_javascript2( $level + 2 );
+
+        my $s =                                  "(function () {\n"
+        . Perlito5::Javascript2::tab($level+1) .    "var $sub_ref;\n"
+        . Perlito5::Javascript2::tab($level+1) .    "$sub_ref = function (List__, p5want) {\n"
+        . Perlito5::Javascript2::tab($level+2) .        "$js_block\n"
+        . Perlito5::Javascript2::tab($level+1) .    "};\n"
+        . Perlito5::Javascript2::tab($level+1) .    "$sub_ref._prototype_ = $prototype;\n"
+        . Perlito5::Javascript2::tab($level+1) .    "return $sub_ref;\n"
+        . Perlito5::Javascript2::tab($level)   . "})()";
 
         if ( $self->{name} ) {
             return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
