@@ -2505,10 +2505,16 @@ sub Perlito5::Grammar::for {
                             0
                         }
                     }) && (do {
-                        my $m2 = Perlito5::Grammar->var_ident($str, $MATCH->{'to'});
+                        my $tmp = $MATCH;
+                        $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                        my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                        $MATCH = $tmp;
+                        $res ? 1 : 0
+                    }) && (do {
+                        my $m2 = Perlito5::Grammar::Sigil->term_sigil($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
-                            $MATCH->{'Perlito5::Grammar.var_ident'} = $m2;
+                            $MATCH->{'Perlito5::Grammar::Sigil.term_sigil'} = $m2;
                             1
                         }
                         else {
@@ -2516,7 +2522,7 @@ sub Perlito5::Grammar::for {
                         }
                     }) && (do {
                         $MATCH->{'str'} = $str;
-                        $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.var_ident'});
+                        $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
                         1
                     }))
                 })
