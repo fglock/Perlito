@@ -293,7 +293,8 @@ sub emit_perl5 {
         'my $res = ' .
             $self->{rule_exp}->emit_perl5() .
         '; ' .
-        '$MATCH = $res ? $tmp : 0; ' .
+        '$MATCH = $tmp; ' .
+        '$res ? 1 : 0 ' .
     '})'
 }
 sub set_captures_to_array {
@@ -314,7 +315,8 @@ sub emit_perl5 {
         'my $res = ' .
             $self->{rule_exp}->emit_perl5() .
         '; ' .
-        '$MATCH = $res ? 0 : $tmp; ' .
+        '$MATCH = $tmp; ' .
+        '$res ? 0 : 1 ' .
     '})'
 }
 sub set_captures_to_array {

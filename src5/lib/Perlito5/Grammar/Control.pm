@@ -116,11 +116,16 @@ token when {
 token for {
     'for' 'each'?
     [
-        <.Perlito5::Grammar::Space.ws> [ <Perlito5::Grammar::Expression.term_declarator>
-                { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_declarator"})->[1] }
-              | <Perlito5::Grammar.var_ident>
-                { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) }
-              ]
+        [ <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar::Expression.term_declarator>
+            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_declarator"})->[1] }
+        | <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>
+            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.var_ident"}) }
+
+        # | <.Perlito5::Grammar::Space.opt_ws> <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
+        #     { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil.term_sigil"})->[1] }
+
+
+        ]
         <.Perlito5::Grammar::Space.opt_ws> 
             '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
             '{' <.Perlito5::Grammar::Space.opt_ws>
