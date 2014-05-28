@@ -87,6 +87,16 @@ package Perlito5::AST::Index;
         {
             return [ apply => '[', $self->{obj}->emit_perl5(), $self->{index_exp}->emit_perl5() ];
         }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && ( $self->{obj}->sigil eq '%' )
+              )
+           )
+        {
+            return [ apply => '[', $self->{obj}->emit_perl5(), $self->{index_exp}->emit_perl5() ];
+        }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
            )
@@ -112,6 +122,17 @@ package Perlito5::AST::Lookup;
               )
            )
         {
+            return [ apply => '{', $self->{obj}->emit_perl5(), $self->autoquote($self->{index_exp})->emit_perl5() ];
+        }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && ( $self->{obj}->sigil eq '%' )
+              )
+           )
+        {
+            # perl5.20:  %a{ x, y }
             return [ apply => '{', $self->{obj}->emit_perl5(), $self->autoquote($self->{index_exp})->emit_perl5() ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')

@@ -11847,6 +11847,9 @@ package Perlito5::AST::Index;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
             return ['apply' => '[', $self->{'obj'}->emit_perl5(), $self->{'index_exp'}->emit_perl5()]
         }
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '%'))) {
+            return ['apply' => '[', $self->{'obj'}->emit_perl5(), $self->{'index_exp'}->emit_perl5()]
+        }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
             return ['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_perl5(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_perl5()]]
         }
@@ -11858,6 +11861,9 @@ package Perlito5::AST::Lookup;
     sub Perlito5::AST::Lookup::emit_perl5 {
         my $self = $_[0];
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+            return ['apply' => '{', $self->{'obj'}->emit_perl5(), $self->autoquote($self->{'index_exp'})->emit_perl5()]
+        }
+        if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '%'))) {
             return ['apply' => '{', $self->{'obj'}->emit_perl5(), $self->autoquote($self->{'index_exp'})->emit_perl5()]
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
