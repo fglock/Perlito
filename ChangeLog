@@ -1,3 +1,20 @@
+dev  2014-05-30
+
+* Perlito5 (Perl 5 compiler):
+
+- more than 1000 tests!
+- Perl5-to-Perl6 compiler
+- 'perlito5.org' web page moved to github
+- implement 5.20 "prototype" attribute
+- implement 5.20 "hash slices"
+- implement 5.16 "__SUB__"
+- bugfixes:
+-- allow special variables in "for" loop
+-- implement "\( @a )" in p5-js
+-- 'local' now works with subscripted variables
+-- implement '$;'
+-- many more
+
 dev  2012-04-12
 
 * Perlito5 (Perl 5 compiler):
