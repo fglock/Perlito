@@ -75,6 +75,24 @@ sub autoquote {
                )
             if $arg;
     }
+    elsif (  $index->isa('Perlito5::AST::Apply')
+          && ($index->code eq 'list:<,>')
+          )
+    {
+        #  $v{ $a, $b, $c }
+        my $args = $index->arguments;
+        return Perlito5::AST::Apply->new(
+                    code => 'join',
+                    namespace => '', 
+                    arguments => [
+                        Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
+                        map { defined($_) ? $_
+                                          : Perlito5::AST::Val::Buf->new( buf => '' )
+                            }
+                            @$args
+                    ],
+               );
+    }
 
     $index;
 }

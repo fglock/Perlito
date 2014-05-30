@@ -12766,6 +12766,15 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 								(function () { throw(p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', p5call(v_index, "code", [], 1), 'namespace', p5call(v_index, "namespace", [], 1), 'arguments', (new p5ArrayRef(p5list_to_a(p5call(v_self, "autoquote", [v_arg], 1))))), p5want)) })()
 							};
 						})();
+					}
+					else if ( (p5bool(p5call(v_index, "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call(v_index, "code", [], 0)) == 'list:<,>')) ) {
+						(function () {
+							var v_args;
+							v_args = (p5call(v_index, "arguments", [], 0));
+							(function () { throw(p5call(p5pkg["Perlito5::AST::Apply"], "new", p5list_to_a('code', 'join', 'namespace', '', 'arguments', (new p5ArrayRef(p5list_to_a(p5call(p5pkg["Perlito5::AST::Var"], "new", ['name', ';', 'namespace', '', 'sigil', '$'], 1), p5map(p5pkg["Perlito5::AST::Lookup"], function (p5want) {
+return (( (p5pkg["Perlito5::AST::Lookup"]["v__"] != null) ? p5pkg["Perlito5::AST::Lookup"]["v__"] : p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', ''], p5want)));
+}, p5list_to_a((v_args || (v_args = new p5ArrayRef([])))._array_)))))), p5want)) })();
+						})();
 					};
 					return (p5context([v_index], p5want));
 				}
