@@ -354,9 +354,6 @@ TODO list for Perlito5
 -- 'require v5.006;'
     # Can't locate v5.006 in @INC
 
--- expressions in 'local'
-    local $SIG{__WARN__};
-
 -- assign old-self to my / local
     local $Some_Global = $Some_Global;
 
@@ -544,6 +541,8 @@ TODO list for Perlito5
 
 -- local(*{$caller."::a"}) = \my $a;
 -- *{$pkg . "::foo"} = \&bar;
+
+-- local $SIG{__WARN__};
 
 
 * Oddities

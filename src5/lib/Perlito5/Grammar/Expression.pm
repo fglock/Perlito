@@ -434,13 +434,13 @@ token term_declarator {
 };
 
 token term_local {
-    'local' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>
+    'local' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Sigil.term_sigil>
         {
             my $decl = 'local';
             my $type = '';
-
+            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil.term_sigil"})->[1];
             # hijack some string interpolation code to parse the possible subscript
-            $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH->{"Perlito5::Grammar.var_ident"});
+            $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
 
             $MATCH->{capture} = [ 'term', 

@@ -404,26 +404,10 @@ function p5typeglob_deref_set(v, obj, current_pkg_name) {
     CORE.die(["TODO: can't p5typeglob_deref_set()"]);
 }
 
-function p5set_local(namespace, name, sigil) {
-    var vname = sigils[sigil] + name;
-    p5LOCAL.push([namespace, vname, namespace[vname]]);
-
-    if (sigil == '$') {
-        namespace[vname] = null;
-    }
-    else if (sigil == '@') {
-        namespace[vname] = new p5Array([]);
-    }
-    else if (sigil == '%') {
-        namespace[vname] = new p5Hash({});
-    }
-    return namespace[vname];
-}
-
 function p5cleanup_local(idx, value) {
     while (p5LOCAL.length > idx) {
         l = p5LOCAL.pop();
-        l[0][l[1]] = l[2];
+        l();
     }
     return value;
 }

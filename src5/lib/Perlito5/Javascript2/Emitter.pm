@@ -523,11 +523,11 @@ package Perlito5::Javascript2::LexicalBlock;
             my @var_decl = $decl->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
 
-                my $perl5_name = $arg->{'var'}->perl5_name();
-                if ( $Perlito5::VAR->[0]->{$perl5_name} ) {
-                    # TODO - create a new context for the redeclared variable
-                    # print "redeclared $perl5_name\n"
-                }
+                # my $perl5_name = $arg->{'var'}->perl5_name();
+                # if ( $Perlito5::VAR->[0]->{$perl5_name} ) {
+                #     # TODO - create a new context for the redeclared variable
+                #     # print "redeclared $perl5_name\n"
+                # }
 
                 push @str, $arg->emit_javascript2_init;
             }
@@ -943,7 +943,6 @@ package Perlito5::AST::Index;
         }
     }
     sub emit_javascript2_get_decl { 
-        # TODO - index lookups are valid in 'local' declarations
         return ()
     }
 }
@@ -1149,7 +1148,6 @@ package Perlito5::AST::Lookup;
         }
     }
     sub emit_javascript2_get_decl { 
-        # TODO - hash lookups are valid in 'local' declarations
         return ()
     }
 }
@@ -1338,48 +1336,34 @@ package Perlito5::AST::Decl;
         my $self = shift;
 
         if ($self->{decl} eq 'local') {
-
-            # # add support for 'local $x[10]'
-            # # TODO - 'local ($x, $y[10])'
-            #
-            # my $var = $self->{var};
-            # my $sigil = $var->{sigil} || '$';
-            # my $tmp = Perlito5::AST::Var->new(sigil => $sigil, name => '_tmp_');
-            # my $tmp_decl = Perlito5::AST::Decl->new('decl' => 'my', 'type', '', 'var', $tmp);
-            # push @{ $Perlito5::VAR },
-            #     { $sigil . '_tmp_' => { decl => 'my' } };
-            #
-            # my $tmp_set = $tmp->emit_javascript2_set($var);
-            # my $var_set = $var->emit_javascript2_set($tmp);
-            # # print $tmp_set, "\n";
-            # # print $var_set, "\n";
-            #
-            # pop @{ $Perlito5::VAR };
-            #
-            # return 'function(){ '
-            #     .       $tmp_decl->emit_javascript2_init() . '; '
-            #     .       $tmp_set . '; '
-            #     .       'p5LOCAL.push(function(){ ' . $var_set . ' }) '
-            #     .  '}()';
-
-            my $perl5_name = $self->{var}->perl5_name;
-            # say "looking up $perl5_name";
-            my $decl_namespace = '';
-            my $decl = $self->{var}->perl5_get_decl( $perl5_name );
-            if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
-                die "Can't localize lexical variable $perl5_name";
+            # TODO - 'local ($x, $y[10])'
+            my $var = $self->{var};
+            if ( ref($var) eq 'Perlito5::AST::Var' ) {
+                my $perl5_name = $var->perl5_name;
+                my $decl = $var->perl5_get_decl( $perl5_name );
+                if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
+                    die "Can't localize lexical variable $perl5_name";
+                }
             }
-            if ( $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
-                # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
-                $decl_namespace = $decl->{namespace};
+            my $var_set;
+            my $tmp_name  = 'tmp' . Perlito5::Javascript2::get_label();
+            if ( ref($var) eq 'Perlito5::AST::Var' ) {
+                $var_set = $var->emit_javascript2 . ' = v_' . $tmp_name;
             }
-
-            my $ns = 'p5pkg["' . ($self->{var}{namespace} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
-
-            return
-                  'p5set_local(' . $ns . ','
-                               . Perlito5::Javascript2::escape_string($self->{var}{name}) . ','
-                               . Perlito5::Javascript2::escape_string($self->{var}{sigil}) . '); ' 
+            else {
+                my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name);
+                push @{ $Perlito5::VAR }, { ('$' . $tmp_name) => { decl => 'my' } };
+                $var_set = $var->emit_javascript2_set($tmp);
+                pop @{ $Perlito5::VAR };
+            }
+            return '(function(){ '
+                .       'var v_' . $tmp_name . ' = ' . $var->emit_javascript2 . '; '
+                .       'p5LOCAL.push(function(){ ' . $var_set . ' }); '
+                .       'return '
+                .           $var->emit_javascript2_set(
+                                Perlito5::AST::Apply->new( code => 'undef', arguments => [], namespace => '' ) 
+                            ) . '; '
+                .  '})();';
         }
 
         my $type = $self->{decl};
@@ -1594,7 +1578,6 @@ package Perlito5::AST::Call;
         die "don't know how to assign to method ", $self->{method};
     }
     sub emit_javascript2_get_decl { 
-        # TODO - hash and array lookups are valid in 'local' declarations
         return ()
     }
 }
@@ -2088,8 +2071,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-
-            # TODO - bug: this is a side-effect of local($x,$y)
+            # TODO - 'local ($x, $y[10])'
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
