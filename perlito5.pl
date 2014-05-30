@@ -8188,7 +8188,7 @@ package Perlito5;
 # use Perlito5::strict
 ${chr(15)} = 'perlito5'
     unless defined(${chr(15)});
-${'main::]'} = 5.014001
+${'main::]'} = '5.020000'
     unless ${'main::]'};
 ${'/'} = chr(10)
     unless defined(${'/'});

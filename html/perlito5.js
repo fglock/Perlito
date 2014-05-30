@@ -12519,7 +12519,7 @@ return (p5pkg["Perlito5::Match"].flat([p5pkg["Perlito5::Grammar::Number"]["v__"]
 		};
 		if ( p5bool(p5make_package("main")["v_]"]) ) {}
 		else {
-			p5make_package("main")["v_]"] = (5.014001)
+			p5make_package("main")["v_]"] = ('5.020000')
 		};
 		if ( (p5pkg["main"]["v_/"] != null) ) {}
 		else {

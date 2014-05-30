@@ -3,7 +3,7 @@ package Perlito5;
 use Perlito5::strict;
 
 $^O = 'perlito5'    unless defined $^O;
-$]  = 5.014001      unless $];      # $] is defined(), but ${"main::]"} is not
+$]  = '5.020000'    unless $];      # $] is defined(), but ${"main::]"} is not
 $/  = chr(10)       unless defined $/;
 $"  = ' '           unless defined $";
 $,  = undef         unless defined $,;
