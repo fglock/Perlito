@@ -8209,10 +8209,28 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 										var v_full_ident;
 										v_full_ident = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('Perlito5::Grammar.full_ident')), 0));
 										(p5make_package("Perlito5")["v_PACKAGES"] || (p5make_package("Perlito5")["v_PACKAGES"] = new p5HashRef({})))._hash_.p5hset(p5str(v_full_ident), (1));
-										var v_ast;
-										v_ast = (p5call(p5pkg["Perlito5::AST::Use"], "new", p5list_to_a('code', p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('use_decl')), 1), 'mod', v_full_ident, 'arguments', v_list), 0));
-										p5pkg["Perlito5::Grammar::Use"].parse_time_eval([v_ast], null);
-										(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', (v_ast));
+										var v_use_decl;
+										v_use_decl = (p5pkg["Perlito5::Match"].flat(p5list_to_a((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hget('use_decl')), 0));
+										if ( (((p5str(v_use_decl) == 'use') && (p5str(v_full_ident) == 'vars')) && p5bool(v_list)) ) {
+											(function () {
+												var v_code;
+												v_code = (('our (' + p5pkg["Perlito5::Grammar::Use"].join([', ', p5list_to_a((v_list || (v_list = new p5ArrayRef([])))._array_)], 0) + ')'));
+												var v_m;
+												v_m = (p5call(p5pkg["Perlito5::Grammar::Statement"], "statement_parse", [v_code, 0], 0));
+												if ( !( p5bool(v_m)) ) {
+													p5pkg["Perlito5::Grammar::Use"].die([[('not a valid variable name: ' + p5pkg["Perlito5::Grammar::Use"].join([p5pkg["main"]["v_\""], p5list_to_a((v_list || (v_list = new p5ArrayRef([])))._array_)], 0))]], null)
+												};
+												(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', ((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')));
+											})();
+										}
+										else {
+											(function () {
+												var v_ast;
+												v_ast = (p5call(p5pkg["Perlito5::AST::Use"], "new", ['code', v_use_decl, 'mod', v_full_ident, 'arguments', v_list], 0));
+												p5pkg["Perlito5::Grammar::Use"].parse_time_eval([v_ast], null);
+												(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', (v_ast));
+											})();
+										};
 										return (p5context([1], p5want));
 									})()], p5want) })], p5want));
 								})()], p5want) }));

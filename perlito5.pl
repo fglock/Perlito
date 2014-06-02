@@ -5222,9 +5222,19 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
                 my $full_ident = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'});
                 $Perlito5::PACKAGES->{$full_ident} = 1;
-                my $ast = Perlito5::AST::Use->new('code' => Perlito5::Match::flat($MATCH->{'use_decl'}), 'mod' => $full_ident, 'arguments' => $list);
-                parse_time_eval($ast);
-                $MATCH->{'capture'} = $ast;
+                my $use_decl = Perlito5::Match::flat($MATCH->{'use_decl'});
+                if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
+                    my $code = 'our (' . join(', ', @{$list}) . ')';
+                    my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                    die('not a valid variable name: ' . join(${'"'}, @{$list}))
+                        if !$m;
+                    $MATCH->{'capture'} = $m->{'capture'}
+                }
+                else {
+                    my $ast = Perlito5::AST::Use->new('code' => $use_decl, 'mod' => $full_ident, 'arguments' => $list);
+                    parse_time_eval($ast);
+                    $MATCH->{'capture'} = $ast
+                }
                 1
             }))
         })

@@ -17,6 +17,7 @@ my %Perlito_internal_module = (
     encoding       => 'Perlito5::encoding',
     Carp           => 'Perlito5::Carp',
     'Data::Dumper' => 'Perlito5::Dumper',
+    # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
 );
 
 
@@ -60,15 +61,26 @@ token stmt_use {
             my $full_ident = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
             $Perlito5::PACKAGES->{$full_ident} = 1;
 
-            my $ast = Perlito5::AST::Use->new(
-                    code      => Perlito5::Match::flat($MATCH->{use_decl}),
-                    mod       => $full_ident,
-                    arguments => $list
-                );
+            my $use_decl = Perlito5::Match::flat($MATCH->{use_decl});
 
-            parse_time_eval($ast);
-
-            $MATCH->{capture} = $ast;
+            if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
+                my $code = 'our (' . join(', ', @$list) . ')';
+                #say "will do: $code";
+                my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                die "not a valid variable name: @$list"
+                    if !$m;
+                #say Perlito5::Dumper::Dumper($m->{capture});
+                $MATCH->{capture} = $m->{capture};
+            }
+            else {
+                my $ast = Perlito5::AST::Use->new(
+                        code      => $use_decl,
+                        mod       => $full_ident,
+                        arguments => $list
+                    );
+                parse_time_eval($ast);
+                $MATCH->{capture} = $ast;
+            }
         }
     ]
 };
