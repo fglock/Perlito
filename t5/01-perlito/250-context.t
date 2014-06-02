@@ -7,7 +7,7 @@ sub k { my @x = (8, 9); @x }
 
 sub o { my @x = (8, 9); my @y = (11,12); @x, @y } 
 
-print "1..4\n";
+print "1..6\n";
 
 my $x   = x(); 
 my ($y) = x(); 
@@ -39,6 +39,21 @@ $got    = "$x [@x]";
 print "not " if $expect ne $got;
 print "ok 4 - $expect : $got\n"; 
 
+{
+my $x   = (x)[0]; 
+my $expect = "4";
+my $got    = "$x";
+print "not " if $expect ne $got;
+print "ok 5 - $expect : $got\n"; 
+}
+{
+my $x   = (x)[1]; 
+my $expect = "5";
+my $got    = "$x";
+print "not " if $expect ne $got;
+print "ok 6 - $expect : $got\n"; 
+}
+
 # TODO - bug: var declaration inside a list
 #
 # sub n { my @x = 8, 9;   @x } 
@@ -48,6 +63,7 @@ print "ok 4 - $expect : $got\n";
 # $expect = "1 [8]";
 # $got    = "$x [@x]";
 # print "not " if $expect ne $got;
-# print "ok 5 - $expect : $got\n"; 
+# print "ok 7 - $expect : $got\n"; 
 # 
+
 

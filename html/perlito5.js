@@ -14511,6 +14511,9 @@ return (p5context([(p5str((p5pkg["Perlito5::Javascript2::LexicalBlock"]["v__"] |
 							v_self = (List__.shift());
 							var v_level;
 							v_level = (List__.shift());
+							if ( (((p5bool(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "isa", ['Perlito5::AST::Apply'], 0)) && (p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "code", [], 0)) == 'circumfix:<( )>')) && (p5num(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "arguments", [], p5want)._array_) == 1)) && p5bool(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget_hash('obj')._hash_.p5hget_array('arguments')._array_.p5aget(0), "isa", ['Perlito5::AST::Apply'], 0))) ) {
+								(function () { throw(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "emit_javascript2", [v_level, 'list'], p5want)) })();
+							};
 							if ( (p5bool(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "isa", ['Perlito5::AST::Var'], 0)) && (p5str(p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "sigil", [], 0)) == '$')) ) {
 								var v_v;
 								v_v = (p5call(p5pkg["Perlito5::AST::Var"], "new", p5list_to_a('sigil', '@', 'namespace', p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "namespace", [], 1), 'name', p5call((v_self || (v_self = new p5HashRef({})))._hash_.p5hget('obj'), "name", [], 1)), 0));
