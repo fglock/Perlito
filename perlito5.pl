@@ -5230,6 +5230,19 @@ sub Perlito5::Grammar::Use::stmt_use {
                         if !$m;
                     $MATCH->{'capture'} = $m->{'capture'}
                 }
+                elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
+                    my @ast;
+                    while (@{$list}) {
+                        my $name = shift(@{$list});
+                        my $val = shift(@{$list});
+                        my $code = 'sub ' . $name . ' () { ' . Perlito5::Dumper::_dumper($val) . ' }';
+                        my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                        die('not a valid constant: ' . join(${'"'}, @{$list}))
+                            if !$m;
+                        push(@ast, $m->{'capture'})
+                    }
+                    $MATCH->{'capture'} = Perlito5::AST::Lit::Block->new('stmts' => \@ast)
+                }
                 else {
                     my $ast = Perlito5::AST::Use->new('code' => $use_decl, 'mod' => $full_ident, 'arguments' => $list);
                     parse_time_eval($ast);

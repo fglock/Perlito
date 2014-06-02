@@ -18,6 +18,7 @@ my %Perlito_internal_module = (
     Carp           => 'Perlito5::Carp',
     'Data::Dumper' => 'Perlito5::Dumper',
     # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
+    # constant => 'Perlito5::constant',
 );
 
 
@@ -65,12 +66,25 @@ token stmt_use {
 
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
-                #say "will do: $code";
                 my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
                 die "not a valid variable name: @$list"
                     if !$m;
-                #say Perlito5::Dumper::Dumper($m->{capture});
                 $MATCH->{capture} = $m->{capture};
+            }
+            elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
+                my @ast;
+                while (@$list) {
+                    my $name = shift @$list;
+                    my $val  = shift @$list;
+                    my $code = 'sub ' . $name . ' () { ' . Perlito5::Dumper::_dumper($val) . ' }';
+                    # say "will do: $code";
+                    my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                    die "not a valid constant: @$list"
+                        if !$m;
+                    # say Perlito5::Dumper::Dumper($m->{capture});
+                    push @ast, $m->{capture};
+                }
+                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => \@ast );
             }
             else {
                 my $ast = Perlito5::AST::Use->new(
