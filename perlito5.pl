@@ -5232,10 +5232,20 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
                 elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
                     my @ast;
-                    while (@{$list}) {
-                        my $name = shift(@{$list});
-                        my $val = shift(@{$list});
-                        my $code = 'sub ' . $name . ' () { ' . Perlito5::Dumper::_dumper($val) . ' }';
+                    my $name = shift(@{$list});
+                    if (ref($name) eq 'HASH') {
+                        for my $key (sort(keys(%{$name}))) {
+                            my $code = 'sub ' . $key . ' () { ' . Perlito5::Dumper::_dumper($name->{$key}) . ' }';
+                            my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                            die('not a valid constant: ' . join(${'"'}, @{$list}))
+                                if !$m;
+                            push(@ast, $m->{'capture'})
+                        }
+                    }
+                    else {
+                        my $code = 'sub ' . $name . ' () { (' . join(', ', map {
+                            Perlito5::Dumper::_dumper($_)
+                        } @{$list}) . ') }';
                         my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
                         die('not a valid constant: ' . join(${'"'}, @{$list}))
                             if !$m;

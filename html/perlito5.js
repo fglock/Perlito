@@ -8226,20 +8226,34 @@ return (p5call(p5pkg["Perlito5::AST::Val::Buf"], "new", ['buf', p5pkg["Perlito5:
 										else if ( (((p5str(v_use_decl) == 'use') && (p5str(v_full_ident) == 'constant')) && p5bool(v_list)) ) {
 											(function () {
 												var List_ast= [];
-												p5while(function () {
-														var v_name;
-														v_name = ((v_list || (v_list = new p5ArrayRef([])))._array_.shift());
-														var v_val;
-														v_val = ((v_list || (v_list = new p5ArrayRef([])))._array_.shift());
+												var v_name;
+												v_name = ((v_list || (v_list = new p5ArrayRef([])))._array_.shift());
+												if ( (p5str(p5pkg["Perlito5::Grammar::Use"].ref([v_name], 0)) == 'HASH') ) {
+													p5for_lex(function (v_key) {
+															var v_code;
+															v_code = (('sub ' + p5str(v_key) + ' () { ' + p5str(p5pkg["Perlito5::Dumper"]._dumper(p5list_to_a((v_name || (v_name = new p5HashRef({})))._hash_.p5hget(p5str(v_key))), 0)) + ' }'));
+															var v_m;
+															v_m = (p5call(p5pkg["Perlito5::Grammar::Statement"], "statement_parse", [v_code, 0], 0));
+															if ( !( p5bool(v_m)) ) {
+																p5pkg["Perlito5::Grammar::Use"].die([[('not a valid constant: ' + p5pkg["Perlito5::Grammar::Use"].join([p5pkg["main"]["v_\""], p5list_to_a((v_list || (v_list = new p5ArrayRef([])))._array_)], 0))]], null)
+															};
+															List_ast.p5push(p5list_to_a((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')));
+														}, p5list_to_a(p5sort(p5pkg["Perlito5::Grammar::Use"], null, p5list_to_a(p5pkg["Perlito5::Grammar::Use"].keys([(v_name || (v_name = new p5HashRef({})))._hash_], 1)))), false, "");
+												}
+												else {
+													(function () {
 														var v_code;
-														v_code = (('sub ' + p5str(v_name) + ' () { ' + p5str(p5pkg["Perlito5::Dumper"]._dumper([v_val], 0)) + ' }'));
+														v_code = (('sub ' + p5str(v_name) + ' () { (' + p5pkg["Perlito5::Grammar::Use"].join([', ', p5list_to_a(p5map(p5pkg["Perlito5::Grammar::Use"], function (p5want) {
+return (p5pkg["Perlito5::Dumper"]._dumper([p5pkg["Perlito5::Grammar::Use"]["v__"]], p5want));
+}, p5list_to_a((v_list || (v_list = new p5ArrayRef([])))._array_)))], 0) + ') }'));
 														var v_m;
 														v_m = (p5call(p5pkg["Perlito5::Grammar::Statement"], "statement_parse", [v_code, 0], 0));
 														if ( !( p5bool(v_m)) ) {
 															p5pkg["Perlito5::Grammar::Use"].die([[('not a valid constant: ' + p5pkg["Perlito5::Grammar::Use"].join([p5pkg["main"]["v_\""], p5list_to_a((v_list || (v_list = new p5ArrayRef([])))._array_)], 0))]], null)
 														};
 														List_ast.p5push(p5list_to_a((v_m || (v_m = new p5HashRef({})))._hash_.p5hget('capture')));
-													}, function () { return (v_list || (v_list = new p5ArrayRef([])))._array_ }, false, "");
+													})();
+												};
 												(v_MATCH || (v_MATCH = new p5HashRef({})))._hash_.p5hset('capture', (p5call(p5pkg["Perlito5::AST::Lit::Block"], "new", p5list_to_a('stmts', (new p5ArrayRef(List_ast))), 0)));
 											})();
 										}
