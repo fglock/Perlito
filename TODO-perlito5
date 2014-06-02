@@ -18,10 +18,8 @@ TODO list for Perlito5
     overload.pm
     bytes.pm
     integer.pm
-    constant.pm
     lib.pm
     Carp.pm
-    vars.pm
     Tie::Array
     Tie::Hash
     Tie::Scalar

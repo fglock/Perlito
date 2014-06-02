@@ -8,6 +8,7 @@ dev  2014-05-30
 - implement 5.20 "prototype" attribute
 - implement 5.20 "hash slices"
 - implement 5.16 "__SUB__"
+- 'use vars', 'use constant'
 - bugfixes:
 -- allow special variables in "for" loop
 -- implement "\( @a )" in p5-js
