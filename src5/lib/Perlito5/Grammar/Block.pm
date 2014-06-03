@@ -80,6 +80,7 @@ sub term_block {
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
                 if ($block_name eq 'BEGIN') {
                     # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
+                    local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
                     eval substr($str, $block_start, $m->{to} - $block_start);
                     $m->{capture} = 
                         Perlito5::AST::Apply->new(
