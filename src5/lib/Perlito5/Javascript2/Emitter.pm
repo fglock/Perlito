@@ -445,14 +445,17 @@ package Perlito5::Javascript2;
     }
 
     sub emit_wrap_statement_javascript2 {
+        my $level = shift;
         my $wantarray = shift;
         my $argument = shift;
 
         # TODO - enable this optimization
-        # if ($wantarray eq 'void') {
-        #     return $argument;
-        # }
-        return '(function () { ' . $argument . ' })()';
+        if ($wantarray eq 'void') {
+            return $argument;
+        }
+        return                                      "(function () {\n"
+        . Perlito5::Javascript2::tab($level + 1) .      $argument . "\n"
+        . Perlito5::Javascript2::tab($level) .      "})()";
     }
 
 }
@@ -2076,6 +2079,7 @@ package Perlito5::AST::Apply;
             my $wantarray = shift;
             $Perlito5::THROW = 1;
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(new p5_error("break", ""))'
             );
@@ -2087,6 +2091,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(new p5_error("next", "' . $label . '"))'
             );
@@ -2098,6 +2103,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(new p5_error("last", "' . $label . '"))'
             );
@@ -2109,6 +2115,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(new p5_error("redo", "' . $label . '"))'
             );
@@ -2119,6 +2126,7 @@ package Perlito5::AST::Apply;
             my $wantarray = shift;
             $Perlito5::THROW = 1;
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(' . Perlito5::Javascript2::to_runtime_context( $self->{arguments}, $level ) . ')'
             );
@@ -2129,6 +2137,7 @@ package Perlito5::AST::Apply;
             my $wantarray = shift;
             $Perlito5::THROW = 1;
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
+                $level,
                 $wantarray, 
                 'throw(' . $self->{arguments}->[0]->emit_javascript2() . ')'
             );
