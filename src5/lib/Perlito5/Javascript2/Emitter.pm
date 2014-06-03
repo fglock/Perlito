@@ -784,16 +784,15 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . $self->{obj}->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'a.push(src.' . $method . '(v[i])) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'
@@ -815,17 +814,16 @@ package Perlito5::AST::Index;
                 if $obj->{code} eq 'prefix:<%>';
 
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . $obj->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'a.push(v[i]); '
                             . 'a.push(src.' . $method . '(v[i])) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.' . $method . '(' 
                         . Perlito5::Javascript2::to_num($self->{index_exp}, $level) 
@@ -847,7 +845,9 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             return
-              "(function (a, v) {\n"
+              "(function () {\n"
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";\n"
                     . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . ";\n"
                     . 'var tmp' . ";\n"
@@ -857,10 +857,7 @@ package Perlito5::AST::Index;
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.p5aset(' 
                     . Perlito5::Javascript2::to_num($self->{index_exp}, $level+1) . ', ' 
@@ -882,7 +879,9 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             return
-              "(function (a, v) {\n"
+              "(function () {\n"
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . ";\n"
                     . 'var tmp' . ";\n"
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i) {' . "\n"
@@ -891,10 +890,7 @@ package Perlito5::AST::Index;
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.p5aset(' 
                     . Perlito5::Javascript2::to_num($self->{index_exp}, $level+1) . ', ' 
@@ -962,16 +958,15 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . $v->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'a.push(src.p5hget(v[i])) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'
@@ -990,17 +985,16 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . $v->emit_javascript2($level) . '; '
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
                             . 'a.push(v[i]); '
                             . 'a.push(src.p5hget(v[i])) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.' . $method . '('
                 . Perlito5::Javascript2::autoquote($self->{index_exp}, $level)
@@ -1027,7 +1021,9 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";\n"
                     . 'var out=' . $v->emit_javascript2($level) . ";\n"
                     . 'var tmp' . ";\n"
@@ -1037,10 +1033,7 @@ package Perlito5::AST::Lookup;
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.p5hset('
                     . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
@@ -1067,7 +1060,9 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return
-              '(function (a, v) { '
+              '(function () { '
+                    . 'var a = []; '
+                    . 'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . '; '
                     . 'var out=' . $v->emit_javascript2($level) . ";\n"
                     . 'var tmp' . ";\n"
                     . 'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{ '
@@ -1076,10 +1071,7 @@ package Perlito5::AST::Lookup;
                             . 'a.push(tmp) '
                     . '}; '
                     . 'return a ' 
-            . '})('
-                    . '[], '
-                    . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) 
-                . ')';
+            . '})()';
         }
         return $self->emit_javascript2_container($level) . '.p5hset('
                     . Perlito5::Javascript2::autoquote($self->{index_exp}, $level) . ', '
@@ -2186,7 +2178,9 @@ package Perlito5::AST::Apply;
 
             # TODO - test return() from inside eval
 
-                                                           "(function (p5want) {\n"
+                                                           "(function () {\n"
+                . Perlito5::Javascript2::tab($level + 1) .     "var p5want = "
+                        . Perlito5::Javascript2::to_context($wantarray) . ";\n"
                 . Perlito5::Javascript2::tab($level + 1) .     "var r;\n"
                 . Perlito5::Javascript2::tab($level + 1) .     'p5pkg["main"]["v_@"] = "";' . "\n"
                 . Perlito5::Javascript2::tab($level + 1) .     'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';' . "\n"
@@ -2210,10 +2204,7 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::tab($level + 2) .        "}\n"
                 . Perlito5::Javascript2::tab($level + 1) .     "}\n"
                 . Perlito5::Javascript2::tab($level + 1) .     "return r;\n"
-                . Perlito5::Javascript2::tab($level + 0) . "})(" 
-                        . Perlito5::Javascript2::to_context($wantarray)
-                                                         .    ")"
-
+                . Perlito5::Javascript2::tab($level + 0) . "})()"
         },
 
         'undef' => sub {
