@@ -8666,11 +8666,8 @@ package Perlito5::Javascript2;
     sub Perlito5::Javascript2::pkg {
         'p5pkg["' . $Perlito5::PKG_NAME . '"]'
     }
-    sub Perlito5::Javascript2::pkg_new_var {
-        $label{$Perlito5::PKG_NAME} = 'p5' . $label_count++
-    }
     sub Perlito5::Javascript2::get_label {
-        $label_count++
+        'tmp' . $label_count++
     }
     sub Perlito5::Javascript2::tab {
         my $level = shift;
@@ -8680,7 +8677,7 @@ package Perlito5::Javascript2;
     our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
     our %op_infix_js_num = ('infix:<==>' => ' == ', 'infix:<!=>' => ' != ', 'infix:<+>' => ' + ', 'infix:<->' => ' - ', 'infix:<*>' => ' * ', 'infix:</>' => ' / ', 'infix:<>>' => ' > ', 'infix:<<>' => ' < ', 'infix:<>=>' => ' >= ', 'infix:<<=>' => ' <= ', 'infix:<&>' => ' & ', 'infix:<|>' => ' | ', 'infix:<^>' => ' ^ ', 'infix:<>>>' => ' >>> ');
     our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
-    our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst');
+    our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
     our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>');
     my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
     sub Perlito5::Javascript2::escape_string {
@@ -9054,7 +9051,7 @@ package Perlito5::AST::Lit::Block;
         }
         my $init = '';
         if ($self->{'name'} eq 'INIT') {
-            my $tmp = 'p5pkg.main._tmp' . Perlito5::Javascript2::get_label();
+            my $tmp = 'p5pkg.main.' . Perlito5::Javascript2::get_label();
             $init = Perlito5::Javascript2::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
         }
         return 'p5for_lex(' . 'function () {' . chr(10) . $init . Perlito5::Javascript2::tab($level + 2) . $body->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . '[0], ' . $self->emit_javascript2_continue($level) . ', ' . '"' . ($self->{'label'} || '') . '"' . chr(10) . Perlito5::Javascript2::tab($level) . ')'
@@ -9358,7 +9355,7 @@ package Perlito5::AST::Decl;
                 }
             }
             my $var_set;
-            my $tmp_name = 'tmp' . Perlito5::Javascript2::get_label();
+            my $tmp_name = Perlito5::Javascript2::get_label();
             if (ref($var) eq 'Perlito5::AST::Var') {
                 $var_set = $var->emit_javascript2() . ' = v_' . $tmp_name
             }
@@ -9392,7 +9389,7 @@ package Perlito5::AST::Decl;
                 $str = $str . ' = {};'
             }
             elsif ($self->{'var'}->sigil() eq '@') {
-                $str = $str . '= [];'
+                $str = $str . ' = [];'
             }
             else {
                 $str = $str . ';'
@@ -9405,7 +9402,7 @@ package Perlito5::AST::Decl;
                 $str = $str . ' = {};'
             }
             elsif ($self->{'var'}->sigil() eq '@') {
-                $str = $str . '= [];'
+                $str = $str . ' = [];'
             }
             else {
                 return '// our ' . $str
@@ -9855,9 +9852,9 @@ package Perlito5::AST::Apply;
         my $parameters = $self->{'arguments'}->[0];
         my $arguments = $self->{'arguments'}->[1];
         if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
-            my $tmp = 'tmp' . Perlito5::Javascript2::get_label();
-            my $tmp2 = 'tmp' . Perlito5::Javascript2::get_label();
-            return '(function () {' . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'var ' . $tmp . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level + 1) . ';' . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0);' . chr(10) . Perlito5::Javascript2::tab($level + 1) . join(';' . chr(10) . Perlito5::Javascript2::tab($level + 1), (map($_->emit_javascript2_set_list($level + 1, $tmp), @{$parameters->arguments()})), 'return ' . $tmp2) . chr(10) . Perlito5::Javascript2::tab($level) . '})()'
+            my $tmp = Perlito5::Javascript2::get_label();
+            my $tmp2 = Perlito5::Javascript2::get_label();
+            return '(function () {' . chr(10) . Perlito5::Javascript2::tab($level + 1) . join(';' . chr(10) . Perlito5::Javascript2::tab($level + 1), 'var ' . $tmp . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level + 1), 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0)', (map($_->emit_javascript2_set_list($level + 1, $tmp), @{$parameters->arguments()})), 'return ' . $tmp2) . chr(10) . Perlito5::Javascript2::tab($level) . '})()'
         }
         return $parameters->emit_javascript2_set($arguments, $level + 1, $wantarray)
     }, 'break' => sub {
@@ -10355,7 +10352,7 @@ package Perlito5::AST::While;
         my $level = shift;
         my $cond = $self->{'cond'};
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-        return 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level, 0, $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+        return 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level, 'void', $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
     }
     sub Perlito5::AST::While::emit_javascript2_get_decl {
         ()
@@ -10418,7 +10415,7 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
         my $prototype = defined($self->{'sig'}) ? Perlito5::Javascript2::escape_string($self->{'sig'}) : 'null';
-        my $sub_ref = 'fun' . Perlito5::Javascript2::get_label();
+        my $sub_ref = Perlito5::Javascript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $js_block = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'block'}, 'needs_return' => 1, 'top_level' => 1)->emit_javascript2($level + 2);
         my $s = '(function () {' . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'var ' . $sub_ref . ';' . chr(10) . Perlito5::Javascript2::tab($level + 1) . $sub_ref . ' = function (List__, p5want) {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . $js_block . chr(10) . Perlito5::Javascript2::tab($level + 1) . '};' . chr(10) . Perlito5::Javascript2::tab($level + 1) . $sub_ref . '._prototype_ = ' . $prototype . ';' . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'return ' . $sub_ref . ';' . chr(10) . Perlito5::Javascript2::tab($level) . '})()';

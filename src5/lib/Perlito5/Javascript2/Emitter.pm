@@ -9,16 +9,10 @@ package Perlito5::Javascript2;
     my $label_count = 100;
     my %label;
     sub pkg {
-        # this is an optimization to reduce the number of lookups
-        # this breaks eval() because the variable is not always seen at runtime
-        # $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
         'p5pkg["' . $Perlito5::PKG_NAME . '"]'
     }
-    sub pkg_new_var {
-        $label{ $Perlito5::PKG_NAME } = "p5" . $label_count++
-    }
     sub get_label {
-        $label_count++
+        'tmp' . $label_count++
     }
 
     sub tab {
@@ -94,6 +88,7 @@ package Perlito5::Javascript2;
         uc
         lcfirst
         ucfirst
+        ref
     );
     # these operators always return "num"
     our %op_to_num = map +($_ => 1), qw(
@@ -449,7 +444,6 @@ package Perlito5::Javascript2;
         my $wantarray = shift;
         my $argument = shift;
 
-        # TODO - enable this optimization
         if ($wantarray eq 'void') {
             return $argument;
         }
@@ -648,7 +642,6 @@ package Perlito5::AST::CompUnit;
         my $str = ''
                 .  "var p5want;\n"
                 .  "var List__ = [];\n";
-                #.  "var " . Perlito5::Javascript2::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my',                      }, # TODO - verify
               '$@'    => { decl => 'our', namespace => 'main' },
@@ -727,7 +720,7 @@ package Perlito5::AST::Lit::Block;
 
         my $init = "";
         if ($self->{name} eq 'INIT') {
-            my $tmp  = 'p5pkg.main._tmp' . Perlito5::Javascript2::get_label();
+            my $tmp  = 'p5pkg.main.' . Perlito5::Javascript2::get_label();
 
             # INIT-blocks execute only once
             $init = Perlito5::Javascript2::tab($level + 2) . "if ($tmp) { return }; $tmp = 1;\n";
@@ -1305,7 +1298,7 @@ package Perlito5::AST::Decl;
                 }
             }
             my $var_set;
-            my $tmp_name  = 'tmp' . Perlito5::Javascript2::get_label();
+            my $tmp_name  = Perlito5::Javascript2::get_label();
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
                 $var_set = $var->emit_javascript2 . ' = v_' . $tmp_name;
             }
@@ -1353,7 +1346,7 @@ package Perlito5::AST::Decl;
                 $str = $str . ' = {};';
             }
             elsif ($self->{var}->sigil eq '@') {
-                $str = $str . '= [];';
+                $str = $str . ' = [];';
             }
             else {
                 $str = $str . ';';
@@ -1366,7 +1359,7 @@ package Perlito5::AST::Decl;
                 $str = $str . ' = {};';
             }
             elsif ($self->{var}->sigil eq '@') {
-                $str = $str . '= [];';
+                $str = $str . ' = [];';
             }
             else {
                 return '// our ' . $str;
@@ -1671,7 +1664,6 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            # "var " . Perlito5::Javascript2::pkg_new_var() . ' = p5make_package("' . $self->{namespace} . '")';
             'p5make_package("' . $self->{namespace} . '")';
         },
         'infix:<=>>' => sub {
@@ -2055,14 +2047,13 @@ package Perlito5::AST::Apply;
                 # local ($x, $y) = ...
                 # ($x, $y) = ...
 
-                my $tmp  = 'tmp' . Perlito5::Javascript2::get_label();
-                my $tmp2 = 'tmp' . Perlito5::Javascript2::get_label();
-                return
-                                                            "(function () {\n"
-                . Perlito5::Javascript2::tab($level + 1) .      'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ";\n"
-                . Perlito5::Javascript2::tab($level + 1) .      'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);\n"
+                my $tmp  = Perlito5::Javascript2::get_label();
+                my $tmp2 = Perlito5::Javascript2::get_label();
+                return                                      "(function () {\n"
                 . Perlito5::Javascript2::tab($level + 1)
                 . join( ";\n" . Perlito5::Javascript2::tab($level + 1),
+                            'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
+                            'var ' . $tmp2 . ' = ' . $tmp . ".slice(0)",
                             ( map $_->emit_javascript2_set_list($level+1, $tmp),
                                   @{ $parameters->arguments }
                             ),
@@ -2908,7 +2899,7 @@ package Perlito5::AST::While;
                     . "function () {\n"
                     . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
-                    . Perlito5::Javascript2::emit_function_javascript2($level, 0, $cond) . ', '
+                    . Perlito5::Javascript2::emit_function_javascript2($level, 'void', $cond) . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
                     . ')'
@@ -3025,7 +3016,7 @@ package Perlito5::AST::Sub;
                         ? Perlito5::Javascript2::escape_string($self->{sig}) 
                         : 'null';
 
-        my $sub_ref = 'fun' . Perlito5::Javascript2::get_label();
+        my $sub_ref = Perlito5::Javascript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 )->emit_javascript2( $level + 2 );
 
