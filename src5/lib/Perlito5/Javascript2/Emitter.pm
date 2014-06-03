@@ -2056,17 +2056,16 @@ package Perlito5::AST::Apply;
 
                 my $tmp  = Perlito5::Javascript2::get_label();
                 my $tmp2 = Perlito5::Javascript2::get_label();
-                return                                      "(function () {\n"
-                . Perlito5::Javascript2::tab($level + 1)
-                . join( ";\n" . Perlito5::Javascript2::tab($level + 1),
+                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+                    join( ";\n" . Perlito5::Javascript2::tab($level + 1),
                             'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
                             'var ' . $tmp2 . ' = ' . $tmp . ".slice(0)",
                             ( map $_->emit_javascript2_set_list($level+1, $tmp),
                                   @{ $parameters->arguments }
                             ),
                             'return ' . $tmp2,
-                  ) . "\n"
-                . Perlito5::Javascript2::tab($level) .      "})()";
+                    )
+                )
             }
             return $parameters->emit_javascript2_set($arguments, $level+1, $wantarray);
         },
@@ -3015,14 +3014,14 @@ package Perlito5::AST::Sub;
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 )->emit_javascript2( $level + 2 );
 
-        my $s =                                  "(function () {\n"
-        . Perlito5::Javascript2::tab($level+1) .    "var $sub_ref;\n"
-        . Perlito5::Javascript2::tab($level+1) .    "$sub_ref = function (List__, p5want) {\n"
-        . Perlito5::Javascript2::tab($level+2) .        "$js_block\n"
-        . Perlito5::Javascript2::tab($level+1) .    "};\n"
-        . Perlito5::Javascript2::tab($level+1) .    "$sub_ref._prototype_ = $prototype;\n"
-        . Perlito5::Javascript2::tab($level+1) .    "return $sub_ref;\n"
-        . Perlito5::Javascript2::tab($level)   . "})()";
+        my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
+                                                 "var $sub_ref;\n"
+        . Perlito5::Javascript2::tab($level+1) . "$sub_ref = function (List__, p5want) {\n"
+        . Perlito5::Javascript2::tab($level+2) .     "$js_block\n"
+        . Perlito5::Javascript2::tab($level+1) . "};\n"
+        . Perlito5::Javascript2::tab($level+1) . "$sub_ref._prototype_ = $prototype;\n"
+        . Perlito5::Javascript2::tab($level+1) . "return $sub_ref"
+        );
 
         if ( $self->{name} ) {
             return 'p5typeglob_set("' . $self->{namespace} . '", "' . $self->{name} . '", ' . $s . ')'
