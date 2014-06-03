@@ -1,7 +1,7 @@
 use strict;
 use feature 'say';
 
-print "1..12\n";
+print "1..14\n";
 
 eval 'print "ok 1 # say from eval\\n"';
 
@@ -99,5 +99,14 @@ eval {
     my @v = eval " 6, 7, 8 ";
     print "not " if "@v" ne "6 7 8";
     say "ok 12 # @v";
+}
+sub ev { eval " 6, 7, 8 " }
+{
+    my $v = ev;
+    print "not " if $v ne "8";
+    say "ok 13 # $v";
+    my @v = ev;
+    print "not " if "@v" ne "6 7 8";
+    say "ok 14 # @v";
 }
 
