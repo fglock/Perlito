@@ -389,6 +389,14 @@ package Perlito5::Javascript2;
             . ', p5want)'
     }
 
+    sub to_context {
+        my $wantarray = shift;
+         $wantarray eq 'list'   ? '1' 
+        :$wantarray eq 'scalar' ? '0' 
+        :$wantarray eq 'void'   ? 'null'
+        :                         'p5want'
+    }
+
     sub autoquote {
         my $index = shift;
         my $level = shift;
@@ -1184,11 +1192,7 @@ package Perlito5::AST::Var;
         }
         if ( $self->{sigil} eq '&' ) {
             return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"](List__, '
-                         .   ($wantarray eq 'list'   ? '1' 
-                             :$wantarray eq 'scalar' ? '0' 
-                             :$wantarray eq 'void'   ? 'null'
-                             :                         'p5want'
-                             ) 
+                        . Perlito5::Javascript2::to_context($wantarray)
                     . ')';
         }
         if ( $self->{sigil} eq '*' ) {
@@ -1460,11 +1464,7 @@ package Perlito5::AST::Call;
             }
 
             return '(' . $invocant . ')(' . Perlito5::Javascript2::to_list($self->{arguments}) . ', '
-                         .   ($wantarray eq 'list'   ? '1' 
-                             :$wantarray eq 'scalar' ? '0' 
-                             :$wantarray eq 'void'   ? 'null'
-                             :                         'p5want'
-                             ) 
+                        . Perlito5::Javascript2::to_context($wantarray)
                     . ')';
         }
 
@@ -1478,11 +1478,7 @@ package Perlito5::AST::Call;
         return 'p5call(' . $invocant . ', ' 
                          . $meth . ', ' 
                          . Perlito5::Javascript2::to_list($self->{arguments}) . ', '
-                         .   ($wantarray eq 'list'   ? '1' 
-                             :$wantarray eq 'scalar' ? '0' 
-                             :$wantarray eq 'void'   ? 'null'
-                             :                         'p5want'
-                             ) 
+                         . Perlito5::Javascript2::to_context($wantarray)
                   . ')'
     }
 
@@ -2215,11 +2211,7 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::tab($level + 1) .     "}\n"
                 . Perlito5::Javascript2::tab($level + 1) .     "return r;\n"
                 . Perlito5::Javascript2::tab($level + 0) . "})(" 
-                                                         .       ($wantarray eq 'list'   ? '1' 
-                                                                 :$wantarray eq 'scalar' ? '0' 
-                                                                 :$wantarray eq 'void'   ? 'null'
-                                                                 :                         'p5want'
-                                                                 ) 
+                        . Perlito5::Javascript2::to_context($wantarray)
                                                          .    ")"
 
         },
@@ -2702,11 +2694,7 @@ package Perlito5::AST::Apply;
             }
 
             return $code . '([' . join(', ', @out) . '], '
-                .   ($wantarray eq 'list'   ? '1' 
-                    :$wantarray eq 'scalar' ? '0' 
-                    :$wantarray eq 'void'   ? 'null'
-                    :                         'p5want'
-                    ) 
+                        . Perlito5::Javascript2::to_context($wantarray)
                 . ')';
         }
 
@@ -2729,22 +2717,14 @@ package Perlito5::AST::Apply;
                     . '"' . $namespace . '", '
                     . '"' . $name . '", '
                     . $arg_code . ', '
-                    .   ($wantarray eq 'list'   ? '1' 
-                        :$wantarray eq 'scalar' ? '0' 
-                        :$wantarray eq 'void'   ? 'null'
-                        :                         'p5want'
-                        ) 
+                    . Perlito5::Javascript2::to_context($wantarray)
                  . ')';
 
         }
 
         $code . '('
                 . $arg_code . ', '
-                .   ($wantarray eq 'list'   ? '1' 
-                    :$wantarray eq 'scalar' ? '0' 
-                    :$wantarray eq 'void'   ? 'null'
-                    :                         'p5want'
-                    ) 
+                . Perlito5::Javascript2::to_context($wantarray)
               . ')';
 
     }
