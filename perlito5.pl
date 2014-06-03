@@ -9745,7 +9745,7 @@ package Perlito5::AST::Apply;
             return $arg->emit_javascript2($level + 1, 0, 'p5postincr')
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
-            return '(function () { ' . 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' . 'return _tmp ' . '})()'
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' . 'return _tmp ')
         }
         '(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')++'
     }, 'postfix:<-->' => sub {
@@ -9756,7 +9756,7 @@ package Perlito5::AST::Apply;
             return $arg->emit_javascript2($level + 1, 0, 'p5postdecr')
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
-            return '(function () { ' . 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' . 'return _tmp ' . '})()'
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' . 'return _tmp ')
         }
         '(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')--'
     }, 'prefix:<++>' => sub {
@@ -9767,7 +9767,7 @@ package Perlito5::AST::Apply;
             return $arg->emit_javascript2($level + 1, 0, 'p5incr')
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
-            return '(function () { ' . 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' . 'return ' . $arg->emit_javascript2($level) . ' ' . '})()'
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' . 'return ' . $arg->emit_javascript2($level) . ' ')
         }
         '++(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')'
     }, 'prefix:<-->' => sub {
@@ -9778,7 +9778,7 @@ package Perlito5::AST::Apply;
             return $arg->emit_javascript2($level + 1, 0, 'p5decr')
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
-            return '(function () { ' . 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' . 'return ' . $arg->emit_javascript2($level) . ' ' . '})()'
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var _tmp = ' . $arg->emit_javascript2($level) . '; ' . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' . 'return ' . $arg->emit_javascript2($level) . ' ')
         }
         '--(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')'
     }, 'infix:<x>' => sub {
@@ -9797,7 +9797,7 @@ package Perlito5::AST::Apply;
     }, 'infix:<..>' => sub {
         my $self = $_[0];
         my $level = $_[1];
-        '(function () { ' . 'var a = []; ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript2() . ', l=' . $self->{'arguments'}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})()'
+        return Perlito5::Javascript2::emit_wrap_javascript2($level, 'list', 'var a = []; ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript2() . ', l=' . $self->{'arguments'}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ')
     }, 'delete' => sub {
         my $self = shift;
         my $level = shift;
