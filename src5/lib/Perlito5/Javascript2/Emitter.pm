@@ -1296,7 +1296,6 @@ package Perlito5::AST::Decl;
         my $self = shift;
 
         if ($self->{decl} eq 'local') {
-            # TODO - 'local ($x, $y[10])'
             my $var = $self->{var};
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
                 my $perl5_name = $var->perl5_name;
@@ -1833,10 +1832,11 @@ package Perlito5::AST::Apply;
                 &&  $arg->{sigil} eq '$'
                 )
             {
+                my $tmp  = Perlito5::Javascript2::get_label();
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
-                              'var _tmp = ' . $arg->emit_javascript2($level) . '; '
-                            . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' 
-                            . 'return _tmp ' 
+                              'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . '; '
+                            . $arg->emit_javascript2($level) . ' = p5incr_(' . $tmp . '); ' 
+                            . 'return ' . $tmp . ' ' 
                 )
             }
             '(' . join( ' ', map( $_->emit_javascript2, @{ $self->{arguments} } ) ) . ')++';
@@ -1857,10 +1857,11 @@ package Perlito5::AST::Apply;
                 &&  $arg->{sigil} eq '$'
                 )
             {
+                my $tmp  = Perlito5::Javascript2::get_label();
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
-                              'var _tmp = ' . $arg->emit_javascript2($level) . '; '
-                            . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' 
-                            . 'return _tmp ' 
+                              'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . '; '
+                            . $arg->emit_javascript2($level) . ' = p5decr_(' . $tmp . '); ' 
+                            . 'return ' . $tmp . ' ' 
                 )
             }
 
@@ -1881,9 +1882,10 @@ package Perlito5::AST::Apply;
                 &&  $arg->{sigil} eq '$'
                 )
             {
+                my $tmp  = Perlito5::Javascript2::get_label();
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
-                              'var _tmp = ' . $arg->emit_javascript2($level) . '; '
-                            . $arg->emit_javascript2($level) . ' = p5incr_(_tmp); ' 
+                              'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . '; '
+                            . $arg->emit_javascript2($level) . ' = p5incr_(' . $tmp . '); ' 
                             . 'return ' . $arg->emit_javascript2($level) . ' '
                 )
             }
@@ -1905,9 +1907,10 @@ package Perlito5::AST::Apply;
                 &&  $arg->{sigil} eq '$'
                 )
             {
+                my $tmp  = Perlito5::Javascript2::get_label();
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
-                              'var _tmp = ' . $arg->emit_javascript2($level) . '; '
-                            . $arg->emit_javascript2($level) . ' = p5decr_(_tmp); ' 
+                              'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . '; '
+                            . $arg->emit_javascript2($level) . ' = p5decr_(' . $tmp . '); ' 
                             . 'return ' . $arg->emit_javascript2($level) . ' '
                 )
             }
@@ -1937,9 +1940,10 @@ package Perlito5::AST::Apply;
         'infix:<..>' => sub {
             my $self = $_[0];
             my $level = $_[1];
+            my $tmp  = Perlito5::Javascript2::get_label();
             return Perlito5::Javascript2::emit_wrap_javascript2($level, 'list', 
-                  'var a = []; '
-                . 'for (var i=' . $self->{arguments}->[0]->emit_javascript2() . ', l=' . $self->{arguments}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a '
+                  'var ' . $tmp . ' = []; '
+                . 'for (var i=' . $self->{arguments}->[0]->emit_javascript2() . ', l=' . $self->{arguments}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . $tmp . '.push(i) ' . '}; ' . 'return ' . $tmp . ' '
             )
         },
 
@@ -2029,7 +2033,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            # TODO - 'local ($x, $y[10])'
+            # 'local ($x, $y[10])'
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
@@ -3005,6 +3009,7 @@ package Perlito5::AST::Sub;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $prototype = defined($self->{sig}) 
                         ? Perlito5::Javascript2::escape_string($self->{sig}) 
@@ -3041,11 +3046,11 @@ package Perlito5::AST::Do;
         my $wantarray = shift;
 
         my $block = $self->simplify->block;
-        '(' . Perlito5::Javascript2::emit_func_javascript2(
+        Perlito5::Javascript2::emit_wrap_javascript2(
             $level,
             $wantarray, 
             (Perlito5::Javascript2::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray )
-        ) . ')()';
+        )
     }
     sub emit_javascript2_get_decl { () }
 }
