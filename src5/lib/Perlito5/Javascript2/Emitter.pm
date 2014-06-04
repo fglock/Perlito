@@ -2234,6 +2234,24 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::tab($level + 0) . "})()"
         },
 
+        'substr' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            my $length = $self->{arguments}->[2];
+            if ( $length && $length->isa('Perlito5::AST::Val::Int') && $length->{int} > 0 ) {
+                return Perlito5::Javascript2::to_str($self->{arguments}->[0]) 
+                    . '.substr(' . Perlito5::Javascript2::to_num($self->{arguments}->[1]) . ', ' 
+                                 . Perlito5::Javascript2::to_num($self->{arguments}->[2]) . ')'
+            }
+            my $arg_list = Perlito5::Javascript2::to_list_preprocess( $self->{arguments} );
+            my $arg_code = Perlito5::Javascript2::to_list($arg_list);
+            return 'CORE.substr(' 
+                    . $arg_code . ', '
+                    . Perlito5::Javascript2::to_context($wantarray)
+                 . ')';
+        },
+
         'undef' => sub {
             my $self      = shift;
             my $level     = shift;
