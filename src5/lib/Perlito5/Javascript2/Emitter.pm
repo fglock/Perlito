@@ -424,6 +424,15 @@ package Perlito5::Javascript2;
             return $obj->emit_javascript2($level, 0, $type);
         }
 
+        if ( $obj->isa( 'Perlito5::AST::Apply' ) && $obj->code eq 'prefix:<$>' ) {
+            my $arg  = $obj->{arguments}->[0];
+            return 'p5scalar_deref(' 
+                    . $arg->emit_javascript2( $level ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', '
+                    . '"' . $type . '"'      # autovivification type
+                    . ')';
+        }
+ 
         # TODO - Perlito5::AST::Var
 
           '(' .  $obj->emit_javascript2($level)
@@ -1732,8 +1741,9 @@ package Perlito5::AST::Apply;
             my $level = $_[1];
             my $arg  = $self->{arguments}->[0];
             return 'p5scalar_deref(' 
-                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'scalar' ) . ', '
-                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . $arg->emit_javascript2( $level ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', '
+                    . '""'      # autovivification type
                     . ')';
         },
         'prefix:<@>' => sub {

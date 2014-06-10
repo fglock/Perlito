@@ -274,7 +274,7 @@ function p5sub_prototype(name, current_pkg_name) {
     return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
 }
 
-function p5scalar_deref(v, current_pkg_name) {
+function p5scalar_deref(v, current_pkg_name, autoviv_type) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
         if (pkg_name.length > 1) {
@@ -289,7 +289,30 @@ function p5scalar_deref(v, current_pkg_name) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        return p5make_package(pkg_name)["v_"+v];
+        var name = "v_"+v;
+        if (!p5make_package(pkg_name)[name]) {
+            if (autoviv_type == 'array') {
+                p5pkg[pkg_name][name] = new p5ArrayRef([]);
+            }
+            else if (autoviv_type == 'hash') {
+                p5pkg[pkg_name][name] = new p5HashRef([]);
+            }
+            else if (autoviv_type == 'scalar') {
+                p5pkg[pkg_name][name] = new p5ScalarRef([]);
+            }
+        }
+        return p5pkg[pkg_name][name];
+    }
+    if (!v._scalar_) {
+        if (autoviv_type == 'array') {
+            v._scalar_ = new p5ArrayRef([]);
+        }
+        else if (autoviv_type == 'hash') {
+            v._scalar_ = new p5HashRef([]);
+        }
+        else if (autoviv_type == 'scalar') {
+            v._scalar_ = new p5ScalarRef([]);
+        }
     }
     return v._scalar_;
 }
@@ -309,8 +332,9 @@ function p5scalar_deref_set(v, n, current_pkg_name) {
             v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
-        p5make_package(pkg_name)["v_"+v] = n;
-        return p5pkg[pkg_name]["v_"+v];
+        var name = "v_"+v;
+        p5make_package(pkg_name)[name] = n;
+        return p5pkg[pkg_name][name];
     }
     v._scalar_ = n;
     return v._scalar_;
