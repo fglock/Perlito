@@ -1750,19 +1750,28 @@ package Perlito5::AST::Apply;
             my $self  = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-            Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . '._array_';
+            return 'p5array_deref(' 
+                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . ')';
         },
         'prefix:<$#>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-            '(' . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . '._array_.length - 1)';
+            return '(p5array_deref(' 
+                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . ').length - 1)';
         },
         'prefix:<%>' => sub {
             my $self  = $_[0];
             my $level = $_[1];
             my $arg   = $self->{arguments}->[0];
-            Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'hash' ) . '._hash_';
+            return 'p5hash_deref(' 
+                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'hash' ) . ', '
+                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                    . ')';
         },
         'prefix:<&>' => sub {
             my $self  = $_[0];
