@@ -2928,11 +2928,33 @@ package Perlito5::AST::For;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $body =
               ref($self->{body}) ne 'Perlito5::AST::Lit::Block'
             ? [ $self->{body} ]
             : $self->{body}{stmts};
+
+        # extract declarations from 'cond'
+        my @str;
+        unshift @{ $Perlito5::VAR }, {};    # new compile-time lexical frame for 'cond' variables
+        # print Perlito5::Dumper::Dumper($self);
+        # print Perlito5::Dumper::Dumper($self->{cond});
+        my $cond = ref( $self->{cond} ) eq 'ARRAY'
+                   ? $self->{cond}
+                   : [ $self->{cond} ];
+        for my $expr (@$cond) {
+            if ($expr) {
+                my @var_decl = $expr->emit_javascript2_get_decl();
+                for my $arg (@var_decl) {
+                    push @str, $arg->emit_javascript2_init;
+                }
+            }
+        }
+        # print Perlito5::Dumper::Dumper(\@str);
+        # print Perlito5::Dumper::Dumper($Perlito5::VAR);
+
+        unshift @{ $Perlito5::VAR }, {};    # new compile-time lexical frame for the loop variable
 
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
@@ -2941,7 +2963,7 @@ package Perlito5::AST::For;
             # TODO - loop label
             # TODO - continue-block is a syntax error
 
-            return
+            push @str,
                'for ( '
             .  ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript2($level + 1) . '; '  : '; ' )
             .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript2($level + 1) . '; '  : '; ' )
@@ -2950,74 +2972,87 @@ package Perlito5::AST::For;
             .  Perlito5::Javascript2::tab($level + 1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 1) . "\n"
             .  Perlito5::Javascript2::tab($level) . '}'
         }
+        else {
 
-        my $cond = Perlito5::Javascript2::to_list([$self->{cond}], $level + 1);
+            my $cond = Perlito5::Javascript2::to_list([$self->{cond}], $level + 1);
 
-        my $topic;
-        $topic = $self->{body}{sig}
-            if ref($self->{body}) ne 'ARRAY';
-        if (!$topic) {
-            $topic = Perlito5::AST::Decl->new(
-                        decl => 'our',
-                        type => '',
-                        var  => Perlito5::AST::Var->new( name => '_', namespace => '', sigil => '$' ),
-                     );
-        }
-
-        my $decl = '';
-        my $v = $topic;
-        if ($v->{decl}) {
-            $decl = $v->{decl};
-            $v    = $v->{var};
-        }
-        my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
-
-        my $perl5_name = $v->perl5_name;
-        my $pre_declaration = $v->perl5_get_decl( $perl5_name );
-        if ( $pre_declaration ) {
-            # say "found ", $pre_declaration->{decl};
-            $decl = $pre_declaration->{decl};
-        }
-        if ( !$decl && !$v->{namespace} ) {
-            if ( $Perlito5::STRICT ) {
-                die "Global symbol \"$perl5_name\" requires explicit package name"
+            my $topic;
+            $topic = $self->{body}{sig}
+                if ref($self->{body}) ne 'ARRAY';
+            if (!$topic) {
+                $topic = Perlito5::AST::Decl->new(
+                            decl => 'our',
+                            type => '',
+                            var  => Perlito5::AST::Var->new( name => '_', namespace => '', sigil => '$' ),
+                         );
             }
-            $decl = 'our';
+
+            my $decl = '';
+            my $v = $topic;
+            if ($v->{decl}) {
+                $decl = $v->{decl};
+                $v    = $v->{var};
+            }
+            my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
+
+            my $perl5_name = $v->perl5_name;
+            my $pre_declaration = $v->perl5_get_decl( $perl5_name );
+            if ( $pre_declaration ) {
+                # say "found ", $pre_declaration->{decl};
+                $decl = $pre_declaration->{decl};
+            }
+            if ( !$decl && !$v->{namespace} ) {
+                if ( $Perlito5::STRICT ) {
+                    die "Global symbol \"$perl5_name\" requires explicit package name"
+                }
+                $decl = 'our';
+            }
+
+            # mark the variable as "declared"
+            $Perlito5::VAR->[0]{ $perl5_name } = { decl => $decl, namespace => $namespace };
+
+            my $s;
+
+            if ($decl eq 'my' || $decl eq 'state') {
+                my $sig = $v->emit_javascript2( $level + 1 );
+                push @str,
+                        'p5for_lex('
+                        . "function ($sig) {\n"
+                        . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                        . Perlito5::Javascript2::tab($level + 1) . '}, '
+                        .   $cond . ', '
+                        . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
+                        .   '"' . ($self->{label} || "") . '"'
+                        . ')';
+            }
+            else {
+                # use global variable or $_
+                push @str,
+                       'p5for(' 
+                        . 'p5make_package("' . $namespace . '"), '
+                        . '"v_' . $v->{name} . '", '
+                        . 'function () {' . "\n"
+                        . Perlito5::Javascript2::tab($level + 1) .  (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                        . Perlito5::Javascript2::tab($level + 1) . '}, '
+                        .   $cond . ', '
+                        . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
+                        .   '"' . ($self->{label} || "") . '"'
+                        . ')'
+            }
         }
 
-        # mark the variable as "declared"
-        unshift @{ $Perlito5::VAR }, {};
-        $Perlito5::VAR->[0]{ $perl5_name } = { decl => $decl, namespace => $namespace };
+        shift @{ $Perlito5::VAR };  # exit scope of the loop variable
 
-        my $s;
-
-        if ($decl eq 'my' || $decl eq 'state') {
-            my $sig = $v->emit_javascript2( $level + 1 );
-            $s =    'p5for_lex('
-                    . "function ($sig) {\n"
-                    . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
-                    . Perlito5::Javascript2::tab($level + 1) . '}, '
-                    .   $cond . ', '
-                    . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                    .   '"' . ($self->{label} || "") . '"'
-                    . ')';
+        if (keys %{ $Perlito5::VAR->[0] }) {
+            shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
+            # create js scope for 'my' variables
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+               join( "\n" . Perlito5::Javascript2::tab($level), @str ) );
         }
         else {
-            # use global variable or $_
-            $s =   'p5for(' 
-                    . 'p5make_package("' . $namespace . '"), '
-                    . '"v_' . $v->{name} . '", '
-                    . 'function () {' . "\n"
-                    . Perlito5::Javascript2::tab($level + 1) .  (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
-                    . Perlito5::Javascript2::tab($level + 1) . '}, '
-                    .   $cond . ', '
-                    . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                    .   '"' . ($self->{label} || "") . '"'
-                    . ')'
+            shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
+            return join( "\n" . Perlito5::Javascript2::tab($level), @str );
         }
-
-        shift @{ $Perlito5::VAR };
-        return $s;
     }
     sub emit_javascript2_get_decl { () }
 }
