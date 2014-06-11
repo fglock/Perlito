@@ -292,6 +292,9 @@ CORE.split = function(List__) {
     var pattern = List__[0];
     var s       = List__[1];
     var limit   = List__[2];
+    if (s == '') {
+        return []
+    }
     if (typeof pattern === "string") {
         if (pattern == " ") {
             var res = [];
