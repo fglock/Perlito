@@ -302,6 +302,17 @@ TODO list for Perlito5
 * Javascript backend
 
 
+-- reference to scalar doesn't work
+    $ node perlito5.js -Isrc5/lib -I.  -e ' use Data::Dumper; $v = [20, \$v ]; print Dumper ($v) '
+    $VAR1 = [
+            20,
+            \undef,
+        ];
+
+-- indirect object is confused here, maybe a problem at import() time:
+    $ node perlito5.js -Isrc5/lib -I.  -e ' use Data::Dumper; $v = [20, \$v ]; print Dumper $v '
+    Warning: Died: Can't call method Dumper on unblessed reference
+
 -- phase order
     print x();          # js will try to execute this before the sub declaration
     sub x { "ok\n"; }
