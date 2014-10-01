@@ -299,10 +299,10 @@ add_op( 'infix',    '...', $prec );
 add_op( 'infix',    '~~',  $prec, { assoc => 'chain' } );
 
 $prec = $prec - 1;
-add_op( 'infix',    '&&',  $prec );
+add_op( 'infix',    '&&',  $prec, { assoc => 'right' } );
 
 $prec = $prec - 1;
-add_op( 'infix',    '||',  $prec );
+add_op( 'infix',    '||',  $prec, { assoc => 'right' } );
 add_op( 'infix',    '//',  $prec );
 
 $prec = $prec - 1;
