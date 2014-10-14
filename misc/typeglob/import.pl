@@ -16,7 +16,7 @@ use strict;
 # BEGIN { my $x; *X::v = \$x; }
 
 # my $x; *X::v = \$x;
-sub imp { my $x; *X::v = \$x; }
+# sub imp { my $x; *X::v = \$x; }
 
 package X;
 use strict;
@@ -26,8 +26,12 @@ use strict;
 # BEGIN { require "import.pm"; import::import( "import" ); }
 # BEGIN { require "import.pm"; import::export( "import" ); }
 # BEGIN { my $x; *X::v = \$x; }
+# sub imp { my $x; *X::v = \$x; }
 
-BEGIN { Y::imp() }
+BEGIN { 
+    package Y;
+    my $x; *X::v = \$x;
+}
 
 # Y::imp();
 
