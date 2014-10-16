@@ -5090,7 +5090,7 @@ Perlito5::Grammar::Statement::add_statement('no' => sub {
 Perlito5::Grammar::Statement::add_statement('use' => sub {
     Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
 });
-my %Perlito_internal_module = ('strict' => 'Perlito5::strict', 'warnings' => 'Perlito5::warnings', 'utf8' => 'Perlito5::utf8', 'bytes' => 'Perlito5::bytes', 'encoding' => 'Perlito5::encoding', 'Carp' => 'Perlito5::Carp', 'Data::Dumper' => 'Perlito5::Dumper');
+my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5::Dumper');
 sub Perlito5::Grammar::Use::use_decl {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -5300,10 +5300,10 @@ sub Perlito5::Grammar::Use::emit_time_eval {
     my $self = shift;
     if ($self->mod() eq 'strict') {
         if ($self->code() eq 'use') {
-            Perlito5::strict->import()
+            Perlito5X::strict->import()
         }
         elsif ($self->code() eq 'no') {
-            Perlito5::strict->unimport()
+            Perlito5X::strict->unimport()
         }
     }
 }
@@ -8211,17 +8211,8 @@ sub Perlito5::AST::Do::simplify {
 }
 # use Perlito5::Macro
 package main;
-package Perlito5::strict;
-sub Perlito5::strict::import {
-    $Perlito5::STRICT = 1
-}
-sub Perlito5::strict::unimport {
-    $Perlito5::STRICT = 0
-}
-1;
-package main;
 package Perlito5;
-# use Perlito5::strict
+# use strict
 ${chr(15)} = 'perlito5'
     unless defined(${chr(15)});
 ${'main::]'} = '5.020000'

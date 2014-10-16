@@ -1,4 +1,4 @@
-package Perlito5::strict;
+package Perlito5X::strict;
 
 sub import {
     $Perlito5::STRICT = 1;

@@ -10,12 +10,13 @@ Perlito5::Grammar::Statement::add_statement( 'use' => sub { Perlito5::Grammar::U
 
 
 my %Perlito_internal_module = (
-    strict         => 'Perlito5::strict',
-    warnings       => 'Perlito5::warnings',
-    utf8           => 'Perlito5::utf8',
-    bytes          => 'Perlito5::bytes',
-    encoding       => 'Perlito5::encoding',
-    Carp           => 'Perlito5::Carp',
+    strict         => 'Perlito5X::strict',
+    warnings       => 'Perlito5X::warnings',
+    utf8           => 'Perlito5X::utf8',
+    bytes          => 'Perlito5X::bytes',
+    encoding       => 'Perlito5X::encoding',
+    Carp           => 'Perlito5X::Carp',
+    Exporter       => 'Perlito5X::Exporter',
     'Data::Dumper' => 'Perlito5::Dumper',
     # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
     # constant => 'Perlito5::constant',
@@ -176,10 +177,10 @@ sub emit_time_eval {
 
     if ($self->mod eq 'strict') {
         if ($self->code eq 'use') {
-            Perlito5::strict->import();
+            Perlito5X::strict->import();
         }
         elsif ($self->code eq 'no') {
-            Perlito5::strict->unimport();
+            Perlito5X::strict->unimport();
         }
     }
 }

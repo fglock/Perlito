@@ -1,6 +1,6 @@
 package Perlito5;
 
-use Perlito5::strict;
+use strict;
 
 $^O = 'perlito5'    unless defined $^O;
 $]  = '5.020000'    unless $];      # $] is defined(), but ${"main::]"} is not
