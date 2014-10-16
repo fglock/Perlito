@@ -2152,7 +2152,7 @@ package Perlito5::AST::Apply;
             );
         },
         'goto' => sub {
-            my $self = $_[0];
+            my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
             $Perlito5::THROW = 1;
