@@ -6231,6 +6231,18 @@ sub Perlito5::Grammar::Space::start_of_line {
                             0
                         }
                     }))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('encoding' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+                        my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
+                        if ($m2) {
+                            $MATCH->{'to'} = $m2->{'to'};
+                            1
+                        }
+                        else {
+                            0
+                        }
+                    }))
                 })
             })
         }) || (do {
