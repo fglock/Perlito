@@ -10310,6 +10310,9 @@ package Perlito5::AST::Apply;
         if ($self->code() eq 'undef') {
             return $list . '.shift()'
         }
+        if ($self->code() eq 'prefix:<$>') {
+            return 'p5scalar_deref_set(' . Perlito5::Javascript2::emit_javascript2_autovivify($self->{'arguments'}->[0], $level + 1, 'scalar') . ', ' . $list . '.shift()' . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')'
+        }
         die('not implemented: assign to ', $self->code())
     }
     sub Perlito5::AST::Apply::emit_javascript2_get_decl {
