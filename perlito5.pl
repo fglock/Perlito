@@ -5344,6 +5344,14 @@ sub Perlito5::Grammar::Use::expand_use {
     my $m = Perlito5::Grammar->exp_stmts($source, 0);
     die('Syntax Error near ', $m->{'to'})
         if $m->{'to'} != length($source);
+    if ($m->{'to'} != length($source)) {
+        my $pos = $m->{'to'} - 10;
+        $pos = 0
+            if $pos < 0;
+        print('* near: ', substr($source, $pos, 20), chr(10));
+        print('* filename: ' . $realfilename . chr(10));
+        die('Syntax Error near ', $m->{'to'})
+    }
     push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new('name' => 'main', 'body' => Perlito5::Match::flat($m))])})
 }
 sub Perlito5::Grammar::Use::add_comp_unit {
@@ -6234,7 +6242,19 @@ sub Perlito5::Grammar::Space::start_of_line {
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (('encoding' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
-                        my $m2 = $grammar->pod_pod_begin($str, $MATCH->{'to'});
+                        my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
+                        if ($m2) {
+                            $MATCH->{'to'} = $m2->{'to'};
+                            1
+                        }
+                        else {
+                            0
+                        }
+                    }))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('cut' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                        my $m2 = $grammar->to_eol($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
                             1
