@@ -242,6 +242,15 @@ sub expand_use {
     my $m = Perlito5::Grammar->exp_stmts($source, 0);
     die "Syntax Error near ", $m->{to}
         if $m->{to} != length($source);
+
+    if ($m->{'to'} != length($source)) {
+        my $pos = $m->{'to'} - 10;
+        $pos = 0 if $pos < 0;
+        print "* near: ", substr( $source, $pos, 20 ), "\n";
+        print "* filename: $realfilename\n";
+        die('Syntax Error near ', $m->{'to'})
+    }
+
     push @$comp_units, @{ add_comp_unit(
         [
             Perlito5::AST::CompUnit->new(
