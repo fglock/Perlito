@@ -9576,6 +9576,7 @@ package Perlito5::AST::Apply;
         my $op = shift;
         my $var = shift;
         my $regex = shift;
+        my $wantarray = shift;
         if ($regex->isa('Perlito5::AST::Var')) {
             $regex = {'code' => 'p5:m', 'arguments' => [$regex, '']}
         }
@@ -9626,19 +9627,19 @@ package Perlito5::AST::Apply;
     }
     my %emit_js = ('infix:<=~>' => sub {
         my $self = $_[0];
-        emit_regex_javascript2('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+        emit_regex_javascript2('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1], $wantarray)
     }, 'infix:<!~>' => sub {
         my $self = $_[0];
-        emit_regex_javascript2('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+        emit_regex_javascript2('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1], $wantarray)
     }, 'p5:s' => sub {
         my $self = $_[0];
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self)
+        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $wantarray)
     }, 'p5:m' => sub {
         my $self = $_[0];
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self)
+        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $wantarray)
     }, 'p5:tr' => sub {
         my $self = $_[0];
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self)
+        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $wantarray)
     }, 'p5:qr' => sub {
         my $self = shift;
         my $level = shift;
