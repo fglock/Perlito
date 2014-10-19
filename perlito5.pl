@@ -14076,11 +14076,11 @@ while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
     elsif ($ARGV[0] eq '-I') {
         shift(@ARGV);
         my $lib = shift(@ARGV);
-        push(@INC, $lib)
+        unshift(@INC, $lib)
     }
     elsif (substr($ARGV[0], 0, 2) eq '-I') {
         my $lib = substr($ARGV[0], 2);
-        push(@INC, $lib);
+        unshift(@INC, $lib);
         shift(@ARGV)
     }
     elsif (substr($ARGV[0], 0, 2) eq '-C') {
