@@ -2571,6 +2571,31 @@ package Perlito5::AST::Apply;
             return 'p5sub_prototype(' . $arg->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
         },
 
+        'split' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            my @js;
+            my $arg = $self->{arguments}->[0];
+            if ( $arg
+              && $arg->isa('Perlito5::AST::Apply')
+              && $arg->{code} eq 'p5:m'
+            ) {
+                # first argument of split() is a regex
+                push @js, 'new RegExp('
+                        . $arg->{arguments}->[0]->emit_javascript2() . ', '
+                        . '"' . $arg->{arguments}->[1] . '"'
+                    . ')';
+                shift @{ $self->{arguments} };
+            }
+            return 'CORE.split('
+                . '[' . join( ', ',
+                    @js,
+                    map( $_->emit_javascript2, @{ $self->{arguments} } ) )
+                . '], '
+                . Perlito5::Javascript2::to_context($wantarray)
+            . ')';
+        },
     );
 
     sub emit_javascript2 {
