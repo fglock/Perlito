@@ -291,23 +291,31 @@ CORE.ref = function(List__) {
 CORE.split = function(List__) {
     var pattern = List__[0];
     var s       = List__[1];
-    var limit   = List__[2];
+    var limit   = List__[2];    // TODO
     if (s == '') {
         return []
     }
-    if (typeof pattern === "string") {
-        if (pattern == " ") {
-            var res = [];
-            for (var i_ = 0, a_ = s.split(/(?: |\n)+/); i_ < a_.length ; i_++) {
-                if (a_[i_] != "") {
-                    res.push(a_[i_])
-                }
-            }
-            return res;
+    if (typeof pattern === "object" && (pattern instanceof RegExp)) {
+        if (pattern.toString() == "/ /") {
+            pattern = " ";  // special case; see "string" below
         }
-        return s.split(pattern);
+        else {
+            return s.split(pattern);
+        }
     }
-    CORE.die(["not implemented"]);
+    if (typeof pattern !== "string") {
+        pattern = p5str(pattern);
+    }
+    if (pattern == " ") {
+        var res = [];
+        for (var i_ = 0, a_ = s.split(/(?: |\n)+/); i_ < a_.length ; i_++) {
+            if (a_[i_] != "") {
+                res.push(a_[i_])
+            }
+        }
+        return res;
+    }
+    return s.split(pattern);
 };
 
 
