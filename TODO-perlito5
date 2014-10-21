@@ -42,7 +42,7 @@ TODO list for Perlito5
     missing MODIFY_CODE_ATTRIBUTES handlers
 
 -- create __DATA__
-    %Perlito5::DATA_SECTION contains the __DATA__ for each package 
+    %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
 -- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"
@@ -80,7 +80,7 @@ TODO list for Perlito5
     X
 
     $ perl -e ' use strict; my $x = X; print $x '
-    Bareword "X" not allowed while "strict subs" in use 
+    Bareword "X" not allowed while "strict subs" in use
 
     $ perl perlito5.pl -MO=Deparse -e ' ::X::x::y '
     join("", ::{'main::X::'} x main::y);
@@ -113,7 +113,7 @@ TODO list for Perlito5
 -- strict and warnings: create options like 'subs', 'refs'
 
 -- clean up:
-    the several "end_tables" in Expression.pm are duplicating the function of 
+    the several "end_tables" in Expression.pm are duplicating the function of
     $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
 
 -- things that work in perlito5, but which are errors in 'perl'
@@ -122,18 +122,18 @@ TODO list for Perlito5
     "no" not allowed in expression
 
     quotes vs. hash lookups:
-    
+
         $ perl -e '  q}} '
         # ok
-    
+
         $ perl -e ' $x{ q}} } '
         Unmatched right curly bracket at -e line 1, at end of line
-    
+
         $ perl -e ' $x{ q]] } '
         # ok
-    
+
     string interpolation with nested quotes of the same type:
-    
+
         $ perl -e ' " $x{"x"} " '
         String found where operator expected at -e line 1, near "x"} ""
 
@@ -213,7 +213,7 @@ TODO list for Perlito5
     ---
     add test for filetest operators special case:
     ' -f($file).".bak" ' should be equivalent to -f "$file.bak"
-    parses as -(f($file)).".bak" 
+    parses as -(f($file)).".bak"
     but: ' -f ($file).".bak" '
     parses correctly
     This seems to be because there is a rule that \w followed by '(' is a function call;
@@ -233,9 +233,9 @@ TODO list for Perlito5
 
     $ perl -Mstrict  -wle 'print q bJet another perl hacker.b'
     Jet another perl hacker.
-    
+
     Likewise you can write regular expressions:
-    
+
     m xabcx
     # same as m/abc/
 
@@ -293,7 +293,7 @@ TODO list for Perlito5
 
 -- ${^NAME} needs curly-escaping
 
-- fix regex delimiters, or escape the regexes 
+- fix regex delimiters, or escape the regexes
 
 -- continue block in block: ' { print 1 } continue { print 2 } '
 
@@ -354,7 +354,7 @@ TODO list for Perlito5
 -- do {} while / do {} until
     execute the loop once, before checking the condition
 
--- while () {} 
+-- while () {}
     this is implemented - it now needs some tests:
     # http://blogs.perl.org/users/peter_martini/2014/05/spelunking-why-while-is-my-new-favorite-perl-ism.html
     while () {}     # infinite loop - while(1)
@@ -431,10 +431,10 @@ TODO list for Perlito5
 
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /(.)/; print $1; } print $1, "\n"; '
     aba
-    
+
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ //; print $1; } print $1, "\n"; '
     abb
-    
+
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /x/; print $1; } print $1, "\n"; '
     aaa
 
@@ -457,7 +457,7 @@ TODO list for Perlito5
         package Regexp;
         sub x { 123 }
     }
-    
+
     $a = qr//;
     print $a->x, "\n";  # 123
 
@@ -512,12 +512,12 @@ TODO list for Perlito5
     "Perlito 5 JS has syntax errors"
 
     Tried
-    
+
     YUI Compressor online
     and
     Google Closure Compiler
     http://closure-compiler.appspot.com/home
-    
+
     Both failed with syntax errors.
 
 -- flip-flop operator
