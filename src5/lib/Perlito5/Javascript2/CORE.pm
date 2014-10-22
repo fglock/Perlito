@@ -291,7 +291,7 @@ CORE.ref = function(List__) {
 CORE.split = function(List__, want) {
     var pattern = List__[0];
     var s       = p5str(List__[1]);
-    var limit   = p5num(List__[2]);    // TODO
+    var limit   = p5num(List__[2]);
     if (!want) {
         // scalar context
         return p5num(CORE.split(List__, 1));
@@ -308,20 +308,60 @@ CORE.split = function(List__, want) {
         return []
     }
     // make sure pattern is a RegExp
-    if (typeof pattern !== "object" || !(pattern instanceof RegExp)) {
+    if (typeof pattern === "object" && (pattern instanceof RegExp)) {
+        // add "g" modifier
+        pattern = new RegExp(pattern.source, "g");
+    }
+    else {
         pattern = p5str(pattern);
         if (pattern == " ") {
             // single space string is special
             pattern = "(?: |\t|\n)+";
             s = s.replace(/^(?: |\t|\n)+/, "");
         }
-        pattern = new RegExp(pattern, "");
+        pattern = new RegExp(pattern, "g");
     }
     var res = [];
-    for (var i_ = 0, a_ = s.split(pattern); i_ < a_.length ; i_++) {
-        res.push(a_[i_])
+    var count = 0;
+    var pos = 0;
+    var noempty = 0;
+    while (1) {
+        // CORE.say(["limit ",limit,"res.length ", res.length]);
+        if (limit > 0 && limit <= (res.length + 1)) {
+            res.push(s.substr(pos));
+            // CORE.say([ p5pkg["Perlito5::Dumper"].Dumper([ new p5ArrayRef(res) ]) ]);
+            return res;
+        }
+        var m = pattern.exec(s);
+        if (m === null) {
+            // no match
+            res.push(s.substr(pos));
+            // CORE.say([ p5pkg["Perlito5::Dumper"].Dumper([ new p5ArrayRef(res) ]) ]);
+            return res;
+        }
+        // CORE.say([ "** index ", m.index, " matched /", m[0], "/",m[0].length," captured /", m[1], "/ next ", pattern.lastIndex ]);
+        var part = s.substr(pos, m.index + (m[0].length ? 0 : 1) - pos);
+        if (noempty && m[0].length==0) {
+            // CORE.say([ "XX", part, "XX"]);
+            res.pop();
+        }
+        res.push(part)
+        pos = m.index + (m[0].length ? m[0].length : 1);
+        pattern.lastIndex = pos;
+        noempty = 0;
+        if (m[0].length != 0) {
+            noempty = 1;
+        }
+        for (var i = 1; i < m.length ; i++) {
+            if (typeof m[i] != "undefined") {
+                // CORE.say([ p5pkg["Perlito5::Dumper"].Dumper([ m[i] ]) ]);
+                res.push(m[i]);     // captured substrings
+            }
+            else {
+                res.push("");     // captured substrings
+            }
+        }
     }
-    return res;
 };
 
 
