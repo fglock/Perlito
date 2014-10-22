@@ -291,10 +291,18 @@ CORE.ref = function(List__) {
 CORE.split = function(List__, want) {
     var pattern = List__[0];
     var s       = List__[1];
-    var limit   = List__[2];    // TODO
+    var limit   = p5num(List__[2]);    // TODO
     if (!want) {
         // scalar context
         return p5num(CORE.split(List__, 1));
+    }
+    if (limit == 0) {
+        // strip trailing empty strings
+        var res = CORE.split([pattern, s, -1], 1);
+        while (res.length && res[res.length - 1] == '') {
+            res.pop()
+        }
+        return res;
     }
     if (s == '') {
         return []

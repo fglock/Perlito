@@ -2576,8 +2576,10 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $wantarray = shift;
             my @js;
+            push @{ $self->{arguments} }, Perlito5::AST::Val::Buf->new( buf => ' ' )
+                if @{ $self->{arguments} } == 0;
             push @{ $self->{arguments} }, Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' )
-                if @{ $self->{arguments} } < 2;
+                if @{ $self->{arguments} } == 1;
             my $arg = $self->{arguments}->[0];
             if ( $arg
               && $arg->isa('Perlito5::AST::Apply')
