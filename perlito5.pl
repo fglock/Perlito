@@ -10197,6 +10197,8 @@ package Perlito5::AST::Apply;
         my $level = shift;
         my $wantarray = shift;
         my @js;
+        push(@{$self->{'arguments'}}, Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'))
+            if @{$self->{'arguments'}} < 2;
         my $arg = $self->{'arguments'}->[0];
         if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
             push(@js, 'new RegExp(' . $arg->{'arguments'}->[0]->emit_javascript2() . ', ' . '"' . $arg->{'arguments'}->[1] . '"' . ')');
