@@ -162,7 +162,7 @@ CORE.keys = function(List__, p5want) {
             return 0;
         }
         if (typeof o.keys === "function") {
-            return CORE.scalar([o.keys()]);
+            return p5num(o.keys());
         }
         var out = 0;
         for (var i in o) {
@@ -288,10 +288,14 @@ CORE.ref = function(List__) {
     return "";
 };
 
-CORE.split = function(List__) {
+CORE.split = function(List__, want) {
     var pattern = List__[0];
     var s       = List__[1];
     var limit   = List__[2];    // TODO
+    if (!want) {
+        // scalar context
+        return p5num(CORE.split(List__, 1));
+    }
     if (s == '') {
         return []
     }
