@@ -290,7 +290,7 @@ CORE.ref = function(List__) {
 
 CORE.split = function(List__, want) {
     var pattern = List__[0];
-    var s       = List__[1];
+    var s       = p5str(List__[1]);
     var limit   = p5num(List__[2]);    // TODO
     if (!want) {
         // scalar context
@@ -307,22 +307,21 @@ CORE.split = function(List__, want) {
     if (s == '') {
         return []
     }
-    if (typeof pattern === "object" && (pattern instanceof RegExp)) {
-        return s.split(pattern);
-    }
-    if (typeof pattern !== "string") {
+    // make sure pattern is a RegExp
+    if (typeof pattern !== "object" || !(pattern instanceof RegExp)) {
         pattern = p5str(pattern);
-    }
-    if (pattern == " ") {
-        var res = [];
-        for (var i_ = 0, a_ = s.split(/(?: |\t|\n)+/); i_ < a_.length ; i_++) {
-            if (a_[i_] != "") {
-                res.push(a_[i_])
-            }
+        if (pattern == " ") {
+            // single space string is special
+            pattern = "(?: |\t|\n)+";
+            s = s.replace(/^(?: |\t|\n)+/, "");
         }
-        return res;
+        pattern = new RegExp(pattern, "");
     }
-    return s.split(pattern);
+    var res = [];
+    for (var i_ = 0, a_ = s.split(pattern); i_ < a_.length ; i_++) {
+        res.push(a_[i_])
+    }
+    return res;
 };
 
 
