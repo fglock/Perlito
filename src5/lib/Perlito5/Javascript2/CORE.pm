@@ -308,19 +308,14 @@ CORE.split = function(List__, want) {
         return []
     }
     if (typeof pattern === "object" && (pattern instanceof RegExp)) {
-        if (pattern.toString() == "/ /") {
-            pattern = " ";  // special case; see "string" below
-        }
-        else {
-            return s.split(pattern);
-        }
+        return s.split(pattern);
     }
     if (typeof pattern !== "string") {
         pattern = p5str(pattern);
     }
     if (pattern == " ") {
         var res = [];
-        for (var i_ = 0, a_ = s.split(/(?: |\n)+/); i_ < a_.length ; i_++) {
+        for (var i_ = 0, a_ = s.split(/(?: |\t|\n)+/); i_ < a_.length ; i_++) {
             if (a_[i_] != "") {
                 res.push(a_[i_])
             }
