@@ -326,9 +326,7 @@ CORE.split = function(List__, want) {
     }
     pattern = new RegExp(pattern, flags);
     var res = [];
-    var count = 0;
     var pos = 0;
-    var noempty = 0;
     while (1) {
         // CORE.say(["limit ",limit,"res.length ", res.length]);
         if (limit > 0 && limit <= (res.length + 1)) {
@@ -344,26 +342,24 @@ CORE.split = function(List__, want) {
             return res;
         }
         // CORE.say([ "** index ", m.index, " matched /", m[0], "/",m[0].length," captured /", m[1], "/ next ", pattern.lastIndex ]);
-        var part = s.substr(pos, m.index + (m[0].length ? 0 : 1) - pos);
-        if (noempty && m[0].length==0) {
-            // CORE.say([ "XX", part, "XX"]);
-            res.pop();
+        if (m[0].length == 0 && m.index == pos) {
+            // pointer didn't move
+            pattern.lastIndex = pattern.lastIndex + 1;
         }
-        res.push(part)
-        pos = m.index + (m[0].length ? m[0].length : 1);
-        pattern.lastIndex = pos;
-        noempty = 0;
-        if (m[0].length != 0) {
-            noempty = 1;
+        else {
+            var part = s.substr(pos, m.index - pos);
+            res.push(part)
+            pos = m.index + m[0].length;
+            pattern.lastIndex = pos;
         }
         for (var i = 1; i < m.length ; i++) {
             if (typeof m[i] != "undefined") {
                 // CORE.say([ p5pkg["Perlito5::Dumper"].Dumper([ m[i] ]) ]);
                 res.push(m[i]);     // captured substrings
-            }
+            }   
             else {
                 res.push("");     // captured substrings
-            }
+            }   
         }
     }
 };
