@@ -309,8 +309,7 @@ CORE.split = function(List__, want) {
     }
     // make sure pattern is a RegExp
     if (typeof pattern === "object" && (pattern instanceof RegExp)) {
-        // add "g" modifier
-        pattern = new RegExp(pattern.source, "g");
+        pattern = pattern.source;
     }
     else {
         pattern = p5str(pattern);
@@ -319,8 +318,13 @@ CORE.split = function(List__, want) {
             pattern = "(?: |\t|\n)+";
             s = s.replace(/^(?: |\t|\n)+/, "");
         }
-        pattern = new RegExp(pattern, "g");
     }
+    // add "g", "m" modifiers
+    var flags = "g";
+    if (pattern.substr(0, 1) == "^" || pattern.substr(-1,1) == "$") {
+        flags = flags + "m";
+    }
+    pattern = new RegExp(pattern, flags);
     var res = [];
     var count = 0;
     var pos = 0;
