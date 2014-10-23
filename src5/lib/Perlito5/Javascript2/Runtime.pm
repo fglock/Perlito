@@ -868,6 +868,11 @@ p5qr = function(s, modifier) {
     CORE.die(["qr() not yet implemented"]);
 };
 
+p5tr = function(s, search, replace, modifier, want) {
+    // TODO
+    CORE.die(["tr() not yet implemented"]);
+};
+
 p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
     var v_old = namespace[var_name];

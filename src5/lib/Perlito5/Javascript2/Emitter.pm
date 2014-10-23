@@ -1587,9 +1587,13 @@ package Perlito5::AST::Apply;
             }
         }
         elsif ($code eq 'p5:tr') {
-            # TODO: tr/// not implemented
-            $str =  
-                 'p5tr(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $regex_args->[1]->emit_javascript2() . ')'
+            $str = 'p5tr('
+                    . $var->emit_javascript2() . ', '
+                    . $regex_args->[0]->emit_javascript2() . ', '
+                    . $regex_args->[1]->emit_javascript2() . ', '
+                    . '"' . $regex_args->[2] . '", '
+                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                  . ')'
         }
         else {
             die "Error: regex emitter - unknown operator $code";
