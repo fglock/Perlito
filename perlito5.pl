@@ -9597,7 +9597,7 @@ package Perlito5::AST::Apply;
             }
         }
         elsif ($code eq 'p5:tr') {
-            $str = Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var tmp = p5tr(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $regex_args->[1]->emit_javascript2() . ', ' . '"' . $regex_args->[2] . '", ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');' . chr(10) . Perlito5::Javascript2::tab($level + 1) . $var->emit_javascript2() . ' = tmp[0];' . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'return tmp[1]; ')
+            $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5tr(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $regex_args->[1]->emit_javascript2() . ', ' . '"' . $regex_args->[2] . '", ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');' . chr(10) . Perlito5::Javascript2::tab($level + 2) . $var->emit_javascript2() . ' = tmp[0];' . chr(10) . Perlito5::Javascript2::tab($level + 2) . 'return tmp[1]; ')
         }
         else {
             die('Error: regex emitter - unknown operator ' . $code)
