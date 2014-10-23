@@ -869,6 +869,26 @@ p5qr = function(s, modifier) {
 };
 
 p5tr = function(s, search, replace, modifier, want) {
+    var count = 0;
+    if (search.length == 0) {
+        return [s, count]
+    }
+    if (search.length == 1) {
+        var res = s.split("");
+        if (replace.length == 0) {
+            replace = search
+        }
+        if (replace.length > 1) {
+            replace = replace.substr(0,1)
+        }
+        for(var i = 0; i < res.length; i++) {
+            if (res[i] == search) {
+                res[i] = replace;
+                count++;
+            }
+        }
+        return [res.join(''), count]
+    }
     // TODO
     CORE.die(["tr() not yet implemented"]);
 };
