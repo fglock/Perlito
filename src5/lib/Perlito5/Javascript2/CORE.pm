@@ -353,13 +353,7 @@ CORE.split = function(List__, want) {
             pattern.lastIndex = pos;
         }
         for (var i = 1; i < m.length ; i++) {
-            if (typeof m[i] != "undefined") {
-                // CORE.say([ p5pkg["Perlito5::Dumper"].Dumper([ m[i] ]) ]);
-                res.push(m[i]);     // captured substrings
-            }   
-            else {
-                res.push("");     // captured substrings
-            }   
+            res.push(m[i]);     // captured substrings
         }
     }
 };
