@@ -870,27 +870,25 @@ p5qr = function(s, modifier) {
 
 p5tr = function(s, search, replace, modifier, want) {
     var count = 0;
-    if (search.length == 0) {
-        return [s, count]
+    // TODO - expand character lists in spec
+    // TODO - modifiers
+    search = search.split("");
+    replace = replace.split("");
+    while (search.length > replace.length) {
+        replace.push(replace[replace.length-1]);
     }
-    if (search.length == 1) {
-        var res = s.split("");
-        if (replace.length == 0) {
-            replace = search
-        }
-        if (replace.length > 1) {
-            replace = replace.substr(0,1)
-        }
-        for(var i = 0; i < res.length; i++) {
-            if (res[i] == search) {
-                res[i] = replace;
-                count++;
-            }
-        }
-        return [res.join(''), count]
+    var tr = {};
+    for(var i = 0; i < search.length; i++) {
+        tr[search[i]] = replace[i];
     }
-    // TODO
-    CORE.die(["tr() not yet implemented"]);
+    var res = s.split("");
+    for(var i = 0; i < res.length; i++) {
+        if (tr.hasOwnProperty(res[i])) {
+            res[i] = tr[res[i]];
+            count++;
+        }
+    }
+    return [res.join(''), count]
 };
 
 p5for = function(namespace, var_name, func, args, cont, label) {
