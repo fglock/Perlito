@@ -214,10 +214,8 @@ sub expand_use {
     my $stmt = shift;
 
     my $module_name = $stmt->mod;
-    return
-        if $module_name eq 'strict'
-        || $module_name eq 'warnings'
-        || $module_name eq 'feature';
+    return if $module_name eq 'warnings'
+           || $module_name eq 'feature';
 
     $module_name = $Perlito_internal_module{$module_name}
         if exists $Perlito_internal_module{$module_name};

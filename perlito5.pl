@@ -585,6 +585,15 @@ sub Perlito5::Grammar::Precedence::precedence_parse {
 }
 1;
 package main;
+package Perlito5X::strict;
+sub Perlito5X::strict::import {
+    $Perlito5::STRICT = 1
+}
+sub Perlito5X::strict::unimport {
+    $Perlito5::STRICT = 0
+}
+1;
+package main;
 package Perlito5::Grammar::Bareword;
 # use strict
 sub Perlito5::Grammar::Bareword::the_object {
@@ -5333,7 +5342,7 @@ sub Perlito5::Grammar::Use::expand_use {
     my $stmt = shift;
     my $module_name = $stmt->mod();
     return 
-        if $module_name eq 'strict' || $module_name eq 'warnings' || $module_name eq 'feature';
+        if $module_name eq 'warnings' || $module_name eq 'feature';
     $module_name = $Perlito_internal_module{$module_name}
         if exists($Perlito_internal_module{$module_name});
     my $filename = modulename_to_filename($module_name);
@@ -9628,22 +9637,33 @@ package Perlito5::AST::Apply;
     }
     my %emit_js = ('infix:<=~>' => sub {
         my $self = $_[0];
+        my $level = $_[1];
+        my $wantarray = $_[2];
         emit_regex_javascript2('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1], $level, $wantarray)
     }, 'infix:<!~>' => sub {
         my $self = $_[0];
+        my $level = $_[1];
+        my $wantarray = $_[2];
         emit_regex_javascript2('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1], $level, $wantarray)
     }, 'p5:s' => sub {
         my $self = $_[0];
+        my $level = $_[1];
+        my $wantarray = $_[2];
         emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
     }, 'p5:m' => sub {
         my $self = $_[0];
+        my $level = $_[1];
+        my $wantarray = $_[2];
         emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
     }, 'p5:tr' => sub {
         my $self = $_[0];
+        my $level = $_[1];
+        my $wantarray = $_[2];
         emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
     }, 'p5:qr' => sub {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
         'p5qr(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', "' . $self->{'arguments'}->[1] . '")'
     }, '__PACKAGE__' => sub {
         my $self = $_[0];

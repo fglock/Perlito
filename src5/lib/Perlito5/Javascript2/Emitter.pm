@@ -1644,27 +1644,38 @@ package Perlito5::AST::Apply;
     my %emit_js = (
         'infix:<=~>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $wantarray = $_[2];
             emit_regex_javascript2( '=~', $self->{arguments}->[0], $self->{arguments}->[1], $level, $wantarray );
         },
         'infix:<!~>' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $wantarray = $_[2];
             emit_regex_javascript2( '!~', $self->{arguments}->[0], $self->{arguments}->[1], $level, $wantarray );
         },
         'p5:s' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $wantarray = $_[2];
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:m' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $wantarray = $_[2];
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:tr' => sub {
             my $self = $_[0];
+            my $level = $_[1];
+            my $wantarray = $_[2];
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:qr' => sub {
             my $self  = shift;
             my $level = shift;
+            my $wantarray = shift;
             # p5qr( $str, $modifier );
             'p5qr(' . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', "' . $self->{arguments}[1] . '")';
         },
