@@ -8351,6 +8351,9 @@ sub Perlito5::Dumper::_dumper {
     elsif ($ref eq 'SCALAR') {
         return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
     }
+    elsif ($ref eq 'CODE') {
+        return 'sub { "DUMMY" }'
+    }
     my @out;
     for my $i (sort(keys(%{$obj}))) {
         my $here = $pos . '->{' . $i . '}';

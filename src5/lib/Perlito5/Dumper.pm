@@ -68,6 +68,10 @@ sub _dumper {
     elsif ($ref eq 'SCALAR') {
         return "\\" . _dumper($$obj, $tab1, $seen, $pos);
     }
+    elsif ($ref eq 'CODE') {
+        # TODO
+        return 'sub { "DUMMY" }';
+    }
 
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
     # local $@;
