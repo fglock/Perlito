@@ -1677,7 +1677,8 @@ package Perlito5::AST::Apply;
             my $level = shift;
             my $wantarray = shift;
             # p5qr( $str, $modifier );
-            'p5qr(' . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', "' . $self->{arguments}[1] . '")';
+            'p5qr(' . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', '
+                    . Perlito5::Javascript2::to_str( $self->{arguments}[1] ) . ')';
         },
         '__PACKAGE__' => sub {
             my $self = $_[0];

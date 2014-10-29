@@ -233,7 +233,9 @@ sub qr_quote_parse {
 
     $part1->{capture} = Perlito5::AST::Apply->new( 
         code => 'p5:qr',
-        arguments => [ $str_regex, $modifiers ],
+        arguments => [ $str_regex,
+                       Perlito5::AST::Val::Buf->new( buf => $modifiers ),
+                     ],
         namespace => ''
     );
     return $part1;

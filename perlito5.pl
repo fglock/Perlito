@@ -4408,7 +4408,7 @@ sub Perlito5::Grammar::String::qr_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part1->{'to'} = $m->{'to'}
     }
-    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:qr', 'arguments' => [$str_regex, $modifiers], 'namespace' => '');
+    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:qr', 'arguments' => [$str_regex, Perlito5::AST::Val::Buf->new('buf' => $modifiers)], 'namespace' => '');
     return $part1
 }
 sub Perlito5::Grammar::String::qx_quote_parse {
@@ -9667,7 +9667,7 @@ package Perlito5::AST::Apply;
         my $self = shift;
         my $level = shift;
         my $wantarray = shift;
-        'p5qr(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', "' . $self->{'arguments'}->[1] . '")'
+        'p5qr(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . Perlito5::Javascript2::to_str($self->{'arguments'}->[1]) . ')'
     }, '__PACKAGE__' => sub {
         my $self = $_[0];
         '"' . $Perlito5::PKG_NAME . '"'
