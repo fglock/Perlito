@@ -4,6 +4,13 @@ package Perlito5::Grammar::Block;
 use Perlito5::Grammar::Expression;
 use strict;
 
+sub eval_begin_block {
+    # execute "eval" on this block,
+    # without access to compile-time lexical variables.
+    # compile-time globals are still a problem.
+    eval $_[0] 
+}
+
 our %Named_block = (
     BEGIN     => 1,
     UNITCHECK => 1,
@@ -82,7 +89,7 @@ sub term_block {
                     # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
                     local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
                     local $Perlito5::PHASE = 'BEGIN';
-                    eval substr($str, $block_start, $m->{to} - $block_start);
+                    eval_begin_block( substr($str, $block_start, $m->{to} - $block_start) );
                     $m->{capture} = 
                         Perlito5::AST::Apply->new(
                             code => 'undef',

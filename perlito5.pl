@@ -5415,6 +5415,9 @@ package main;
 package Perlito5::Grammar::Block;
 # use Perlito5::Grammar::Expression
 # use strict
+sub Perlito5::Grammar::Block::eval_begin_block {
+    eval($_[0])
+}
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
 Perlito5::Grammar::Precedence::add_term('do' => sub {
     Perlito5::Grammar::Block->term_do($_[0], $_[1])
@@ -5479,7 +5482,7 @@ sub Perlito5::Grammar::Block::term_block {
                 if ($block_name eq 'BEGIN') {
                     local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
                     local $Perlito5::PHASE = 'BEGIN';
-                    eval(substr($str, $block_start, $m->{'to'} - $block_start));
+                    eval_begin_block(substr($str, $block_start, $m->{'to'} - $block_start));
                     $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
                 }
                 else {
