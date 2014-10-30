@@ -10458,9 +10458,28 @@ package Perlito5::AST::While;
     sub Perlito5::AST::While::emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
         my $cond = $self->{'cond'};
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-        return 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level, 'void', $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+        my @str;
+        unshift(@{$Perlito5::VAR}, {});
+        if ($cond) {
+            my @var_decl = $cond->emit_javascript2_get_decl();
+            for my $arg (@var_decl) {
+                push(@str, $arg->emit_javascript2_init())
+            }
+        }
+        unshift(@{$Perlito5::VAR}, {});
+        push(@str, 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level, 'void', $cond) . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')');
+        shift(@{$Perlito5::VAR});
+        if (keys(%{$Perlito5::VAR->[0]})) {
+            shift(@{$Perlito5::VAR});
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, join(chr(10) . Perlito5::Javascript2::tab($level), @str))
+        }
+        else {
+            shift(@{$Perlito5::VAR});
+            return join(chr(10) . Perlito5::Javascript2::tab($level), @str)
+        }
     }
     sub Perlito5::AST::While::emit_javascript2_get_decl {
         ()

@@ -351,10 +351,6 @@ TODO list for Perlito5
 
     After the else, the $color variable is no longer in scope.
 
--- variable declarations in list assignment
-    this code in js is missing the variable declarations:
-    my ( $f, $m ) = each %trace_fields
-
 -- do {} while / do {} until
     execute the loop once, before checking the condition
 

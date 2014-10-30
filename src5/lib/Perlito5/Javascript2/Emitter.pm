@@ -2981,6 +2981,7 @@ package Perlito5::AST::While;
     sub emit_javascript2 {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $cond = $self->{cond};
         my $body =
@@ -2988,14 +2989,40 @@ package Perlito5::AST::While;
             ? [ $self->{body} ]
             : $self->{body}{stmts};
 
-        return 'p5while('
+        # extract declarations from 'cond'
+        my @str;
+        unshift @{ $Perlito5::VAR }, {};    # new compile-time lexical frame for 'cond' variables
+        # print Perlito5::Dumper::Dumper($self);
+        # print Perlito5::Dumper::Dumper($self->{cond});
+        if ($cond) {
+            my @var_decl = $cond->emit_javascript2_get_decl();
+            for my $arg (@var_decl) {
+                push @str, $arg->emit_javascript2_init;
+            }
+        }
+        unshift @{ $Perlito5::VAR }, {};    # new compile-time lexical frame for the loop variable
+
+        push @str, 'p5while('
                     . "function () {\n"
                     . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     . Perlito5::Javascript2::emit_function_javascript2($level, 'void', $cond) . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
                     .   '"' . ($self->{label} || "") . '"'
-                    . ')'
+                    . ')';
+
+        shift @{ $Perlito5::VAR };  # exit scope of the loop variable
+
+        if (keys %{ $Perlito5::VAR->[0] }) {
+            shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
+            # create js scope for 'my' variables
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+               join( "\n" . Perlito5::Javascript2::tab($level), @str ) );
+        }
+        else {
+            shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
+            return join( "\n" . Perlito5::Javascript2::tab($level), @str );
+        }
     }
     sub emit_javascript2_get_decl { () }
 }
