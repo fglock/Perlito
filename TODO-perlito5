@@ -301,6 +301,12 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- constant subroutines
+-- prototype mismatch
+    $ perl -e ' sub X () { 123 } print X, "\n"; eval " sub X { 456 } "; '
+    123
+    Prototype mismatch: sub main::X () vs none at (eval 1) line 1.
+    Constant subroutine X redefined at (eval 1) line 1.
 
 -- reference to scalar doesn't work
     $ node perlito5.js -Isrc5/lib -I.  -e ' use Data::Dumper; $v = [20, \$v ]; print Dumper ($v) '
