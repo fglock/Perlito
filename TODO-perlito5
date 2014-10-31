@@ -324,7 +324,7 @@ TODO list for Perlito5
     sub x { "ok\n"; }
     #  TypeError: Object [object Object] has no method 'x'
 
--- dot-decimal strings
+-- dot-decimal strings / v-strings
     5.4.66.77
     v5.4.66.77
 
@@ -341,10 +341,6 @@ TODO list for Perlito5
 -- pass @_ to &sub
     $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
     # call foo(@_)
-
--- dot-decimal strings / v-strings
-    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
-    BM
 
 -- variable declarations inside condition
     if ((my $color = <STDIN>) =~ /red/i) {
