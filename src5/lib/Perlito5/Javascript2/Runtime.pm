@@ -696,8 +696,20 @@ p5num = function(o) {
     if (o == null) {
         return 0;
     }
-    if (typeof o === "object" && (o instanceof Array)) {
-        return o.length;
+    if (typeof o === "object") {
+        if (o instanceof Array) {
+            return o.length;
+        }
+        if ( o.hasOwnProperty("_ref_") ) {
+            if (o._class_ && typeof o._class_._ref_ === "string") {
+                // blessed reference
+                // test for overload
+                var meth = p5method_lookup('(0+', o._class_._ref_, {});
+                if (meth) {
+                    return p5num(meth([o], 1));
+                }
+            }
+        }
     }
     if (typeof o !== "number") {
         var s = p5str(o).trim();
