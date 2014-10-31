@@ -85,14 +85,16 @@ token val_int {
 token val_vstring {
     <val_int> [ '.' <digits_underscore> ]+
     {
-        my @parts = @{ $MATCH->{digits_underscore} };
+        my @parts = map { Perlito5::AST::Val::Int->new( int => $_ ) }
+                    map { Perlito5::Match::flat($_) }
+                        @{ $MATCH->{digits_underscore} };
         return if @parts < 2;
         $MATCH->{capture} = Perlito5::AST::Apply->new(
                     code      => 'p5:vstring',
                     namespace => '',
                     arguments => [
-                        $MATCH->{val_int}{capture}{int},
-                        map { Perlito5::Match::flat($_) } @parts
+                        $MATCH->{val_int}{capture},
+                        @parts,
                     ],
                );
     }
@@ -101,13 +103,15 @@ token val_vstring {
 token val_version {
     'v' <val_int> [ '.' <digits_underscore> ]*
     {
-        my @parts = @{ $MATCH->{digits_underscore} };
+        my @parts = map { Perlito5::AST::Val::Int->new( int => $_ ) }
+                    map { Perlito5::Match::flat($_) }
+                        @{ $MATCH->{digits_underscore} };
         $MATCH->{capture} = Perlito5::AST::Apply->new(
                     code      => 'p5:vstring',
                     namespace => '',
                     arguments => [
-                        $MATCH->{val_int}{capture}{int},
-                        map { Perlito5::Match::flat($_) } @parts
+                        $MATCH->{val_int}{capture},
+                        @parts,
                     ],
                );
     }
