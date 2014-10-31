@@ -408,14 +408,10 @@ TODO list for Perlito5
 -- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
 -- "default" statement not implemented
 
--- bug: some declarations are not "seen":
-   for ( my $i = 0; $i < 10 ; $i++ ) { print "$i\n" }   # compiles to global $i
-
--- bug: don't emit throw() in term position; javascript requires a function() wrapper because throw() is a statement
-
 -- javascript errors don't show in the global error handler when running in node.js
 
--- "autoload" the compiler if eval-string is used (eval-string needs the compiler at run-time)
+-- "autoload" the compiler if eval-string or require() are used (eval-string needs the compiler at run-time)
+    https://github.com/fglock/Perlito/issues/23
 
 -- symbol variables like $] ${"main::\$"} $#_
 -- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
@@ -480,6 +476,7 @@ TODO list for Perlito5
 
 -- generate more compact code; maybe use more subroutines instead of inlining;
    autovivification is probably the most verbose part of the code.
+   Use less "throw" - it is not (yet?) optimized by V8
 
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
@@ -499,16 +496,11 @@ TODO list for Perlito5
 
 -- pack(), unpack()
 -- y()()
+    add tests
 
 -- BEGIN{} should execute in the environment of the program under compilation
 -- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
     even if the closure was never created or used in the first place
-
--- bug - method call context is disabled, because it breaks bootstrap.
-    in Runtime.pm:
-    function p5call(invocant, method, list, p5want) {
-        list.unshift(invocant);
-        p5want = 0;  // TODO BUG - workaround for broken bootstrap
 
 -- bug https://github.com/fglock/Perlito/issues/10
     "Perlito 5 JS has syntax errors"
