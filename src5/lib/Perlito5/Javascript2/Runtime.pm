@@ -662,7 +662,12 @@ p5str = function(o) {
                 // test for overload
                 var meth = p5method_lookup('(""', o._class_._ref_, {});
                 if (meth) {
-                    return p5str(meth([o], 1));
+                    return p5str(meth([o], 0));
+                }
+                // TODO - test the "fallback" flag
+                meth = p5method_lookup('(0+', o._class_._ref_, {});
+                if (meth) {
+                    return p5str(meth([o], 0));
                 }
                 // no overload, strigify the reference instead
                 class_name = o._class_._ref_ + '=';
@@ -706,7 +711,12 @@ p5num = function(o) {
                 // test for overload
                 var meth = p5method_lookup('(0+', o._class_._ref_, {});
                 if (meth) {
-                    return p5num(meth([o], 1));
+                    return p5num(meth([o], 0));
+                }
+                // TODO - test the "fallback" flag
+                meth = p5method_lookup('(""', o._class_._ref_, {});
+                if (meth) {
+                    return p5num(meth([o], 0));
                 }
             }
         }
