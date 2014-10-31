@@ -506,6 +506,17 @@ TODO list for Perlito5
 -- flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
 
+-- range operator
+    $ perl perlito5.pl -Isrc5/lib  -e ' say "A".."AZ" '
+    ABCDEFGHIJK...XYZAAABACA...AYAZ
+    $ perl perlito5.pl -Isrc5/lib  -e ' say "B".."AZ" '
+    BCDEFGHIJK...XYZAAABACA...AYAZ
+    $ perl perlito5.pl -Isrc5/lib  -e ' say "0".."AZ" '
+    01234567891011...979899
+    $ perl perlito5.pl -Isrc5/lib  -e ' say 0.."AZ" '
+    0
+    $ perl perlito5.pl -Isrc5/lib  -e ' say "A"..10 '
+    012345678910
 
 * Nice to Have
 
