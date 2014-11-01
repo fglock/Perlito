@@ -10447,7 +10447,7 @@ package Perlito5::AST::If;
         if (keys(%{$Perlito5::VAR->[0]})) {
             $level = $old_level;
             shift(@{$Perlito5::VAR});
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, join(chr(10) . Perlito5::Javascript2::tab($level + 1), @str))
+            return ($wantarray eq 'runtime' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, join(chr(10) . Perlito5::Javascript2::tab($level + 1), @str))
         }
         else {
             shift(@{$Perlito5::VAR});

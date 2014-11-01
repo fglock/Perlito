@@ -2952,8 +2952,14 @@ package Perlito5::AST::If;
             $level = $old_level;
             shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
             # create js scope for 'my' variables
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-               join( "\n" . Perlito5::Javascript2::tab($level+1), @str ) );
+            return 
+                  ( $wantarray eq 'runtime'
+                  ? "return "
+                  : ""
+                  )
+                . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+                    join( "\n" . Perlito5::Javascript2::tab($level+1), @str )
+                  );
         }
         else {
             shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
