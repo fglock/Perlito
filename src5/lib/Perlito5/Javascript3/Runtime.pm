@@ -67,7 +67,7 @@ if (typeof p5pkg !== "object") {
 
     p5_error = function (type, v) {
         this.type = type;
-        this.v = v;
+        this.v = this.message = v;
         this.toString = function(){
             if (this.type == 'break') {
                 return 'Can\'t "break" outside a given block'
