@@ -692,6 +692,7 @@ package Perlito5::AST::CompUnit;
               '$^V'   => { decl => 'our', namespace => 'main' },
               '%ENV'  => { decl => 'our', namespace => 'main' },
               '%INC'  => { decl => 'our', namespace => 'main' },
+              '%SIG'  => { decl => 'our', namespace => 'main' },
               '@#'    => { decl => 'our', namespace => 'main' },
               '@ARGV' => { decl => 'our', namespace => 'main' },
               '@INC'  => { decl => 'our', namespace => 'main' },

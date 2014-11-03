@@ -417,6 +417,7 @@ p5pkg["main"]["List_INC"] = [];
 p5pkg["main"]["Hash_INC"] = {};
 p5pkg["main"]["List_ARGV"] = [];
 p5pkg["main"]["Hash_ENV"] = {};
+p5pkg["main"]["Hash_SIG"] = {};
 if (isNode) {
     p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
 
