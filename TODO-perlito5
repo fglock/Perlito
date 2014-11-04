@@ -490,6 +490,11 @@ TODO list for Perlito5
 -- BEGIN{} should execute in the environment of the program under compilation
 -- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
     even if the closure was never created or used in the first place
+-- BEGIN namespace is wrong in js:
+    $ node perlito5.js -Isrc5/lib -I.  -e ' BEGIN { say "in " . __PACKAGE__ } '
+    in Perlito5::Grammar::Block
+    $ perl perlito5.pl -Isrc5/lib -I.  -e ' BEGIN { say "in " . __PACKAGE__ } '
+    in main
 
 -- bug https://github.com/fglock/Perlito/issues/10
     "Perlito 5 JS has syntax errors"
