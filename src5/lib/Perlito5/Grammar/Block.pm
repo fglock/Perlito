@@ -8,7 +8,13 @@ sub eval_begin_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
-    eval $_[0] 
+    local $@;
+    my $code = "package $Perlito5::PKG_NAME;\n"
+             . $_[0];
+    eval $code;
+    # say $code;
+    die "Error in BEGIN block: " . $@
+        if $@;
 }
 
 our %Named_block = (
@@ -87,7 +93,7 @@ sub term_block {
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
                 if ($block_name eq 'BEGIN') {
                     # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
-                    local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;
+                    # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
                     local $Perlito5::PHASE = 'BEGIN';
                     eval_begin_block( substr($str, $block_start, $m->{to} - $block_start) );
                     $m->{capture} = 
