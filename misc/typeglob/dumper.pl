@@ -3,27 +3,16 @@ use Data::Dump::Streamer;
 {
     no strict 'refs';
 
-    foreach my $entry ( keys %main:: ) {
-        print "$entry\n";
-        print "\tscalar is defined\n" if defined ${$entry};
-        print "\tarray  is defined\n" if defined @{$entry};
-        print "\thash   is defined\n" if defined %{$entry};
-        print "\tsub    is defined\n" if defined &{$entry};
-    }
-    print Dump( \*Exporter );
+    my %out;
+
     foreach my $entry ( keys %Exporter:: ) {
-        print "$entry ", Dump($Exporter::{$entry}), "\n";
-        print "\tscalar is defined\n" if defined ${$entry};
-        print "\tarray  is defined\n" if defined @{$entry};
-        print "\thash   is defined\n" if defined %{$entry};
-        print "\tsub    is defined\n" if defined &{$entry};
+    # foreach my $entry ( keys %main:: ) {
+        local *g = $Exporter::{$entry};
+        if ( defined *g{SCALAR} ) { $out{$entry}{SCALAR} = *g{SCALAR} }
+        if ( defined *g{ARRAY} )  { $out{$entry}{ARRAY}  = *g{ARRAY} }
+        if ( defined *g{HASH} )   { $out{$entry}{HASH}   = *g{HASH} }
+        if ( defined *g{CODE} )   { $out{$entry}{CODE}   = *g{CODE} }
     }
+    print Dump( \%out ), "\n";
 }
-
-my $v = {
-    v => 1,
-    d => \&Dump,
-};
-
-print Dump($v);
 
