@@ -5,10 +5,18 @@ use Data::Dump::Streamer;
 
     foreach my $entry ( keys %main:: ) {
         print "$entry\n";
+        print "\tscalar is defined\n" if defined ${$entry};
+        print "\tarray  is defined\n" if defined @{$entry};
+        print "\thash   is defined\n" if defined %{$entry};
+        print "\tsub    is defined\n" if defined &{$entry};
     }
     print Dump( \*Exporter );
     foreach my $entry ( keys %Exporter:: ) {
         print "$entry ", Dump($Exporter::{$entry}), "\n";
+        print "\tscalar is defined\n" if defined ${$entry};
+        print "\tarray  is defined\n" if defined @{$entry};
+        print "\thash   is defined\n" if defined %{$entry};
+        print "\tsub    is defined\n" if defined &{$entry};
     }
 }
 
