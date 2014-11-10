@@ -1,7 +1,10 @@
 
 use Data::Dump::Streamer;
 
-# require "perlito5.pl";
+BEGIN {
+    # the code to be dumped:
+    do "perlito5.pl";
+}
 
 sub dumpme {
     no strict 'refs';
@@ -12,12 +15,13 @@ sub dumpme {
     # my @todo = 'Perlito5::';
 
     $done{"Data::Dump::Streamer::"} = 1;
-    $done{"B::Deparse::"} = 1;
-    $done{"B::"} = 1;
+    $done{"DynaLoader::"} = 1;
+    $done{"Config::"} = 1;
 
     while (@todo) {
         my $namespace = shift(@todo);
         next if $done{$namespace};
+        print "#\n";
         foreach my $entry ( keys %{$namespace} ) {
             if ( length($entry) > 2 && substr( $entry, -2, 2 ) eq '::' ) {
                 if ( $namespace eq 'main::' ) {
@@ -26,6 +30,7 @@ sub dumpme {
                 else {
                     push @todo, $namespace . $entry;
                 }
+                next;
             }
             print "# $namespace $entry\n";
             local *g = ${$namespace}{$entry};
@@ -36,8 +41,15 @@ sub dumpme {
         }
         $done{$namespace} = 1;
     }
-    print Dump( \%out ), "\n";
+    for (keys %out) {
+        print "# [[ $_\n";
+        print Dump( $out{$_} ), "\n";
+        print "# $_ ]]\n\n";
+    }
 }
 
-dumpme();
+BEGIN {
+    dumpme();
+    exit(0);    # don't execute any further
+}
 
