@@ -48,7 +48,7 @@ package Perlito5::Javascript2;
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
-        # 'infix:<%>'  => ' % ',
+        # 'infix:<%>'  => ' % ',    # see p5modulo()
         'infix:<>>'  => ' > ',
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
@@ -57,7 +57,7 @@ package Perlito5::Javascript2;
         'infix:<|>'  => ' | ',
         'infix:<^>'  => ' ^ ',
         'infix:<>>>' => ' >>> ',
-        # 'infix:<<<>' => ' << ',
+        # 'infix:<<<>' => ' << ',   # see p5shift_left()
     );
     # these operators always return "bool"
     our %op_to_bool = map +($_ => 1), qw(
@@ -1697,6 +1697,42 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             'p5make_package("' . $self->{namespace} . '")';
         },
+        'infix:<&&>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5and('
+                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
+                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
+                . ')'
+        },
+        'infix:<and>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5and('
+                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
+                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
+                . ')'
+        },
+        'infix:<||>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5or('
+                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
+                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
+                . ')'
+        },
+        'infix:<or>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5or('
+                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
+                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
+                . ')'
+        },
         'infix:<=>>' => sub {
             my $self      = shift;
             my $level     = shift;
@@ -2659,25 +2695,6 @@ package Perlito5::AST::Apply;
         if (exists $Perlito5::Javascript2::op_prefix_js_str{$code}) {
             return $Perlito5::Javascript2::op_prefix_js_str{$code} . '(' 
                 . Perlito5::Javascript2::to_str($self->{arguments}[0])
-                . ')'
-        }
-
-        if (  $code eq 'infix:<&&>'
-           || $code eq 'infix:<and>'
-           )
-        {
-            return 'p5and' . '('
-                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
-                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
-        }
-        if (  $code eq 'infix:<||>'
-           || $code eq 'infix:<or>'
-           )
-        {
-            return 'p5or' . '('
-                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
-                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         }
 
