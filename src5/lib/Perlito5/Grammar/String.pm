@@ -152,9 +152,12 @@ sub m_quote_parse {
         $part1->{to} = $m->{to};
     }
 
-    $part1->{capture} = Perlito5::AST::Apply->new( 
-        code => 'p5:m',
-        arguments => [ $str_regex, $modifiers ],
+    $part1->{capture} = Perlito5::AST::Apply->new(
+        code      => 'p5:m',
+        arguments => [
+            $str_regex,
+            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+        ],
         namespace => ''
     );
     return $part1;
@@ -202,9 +205,13 @@ sub s_quote_parse {
         $part2->{to} = $m->{to};
     }
 
-    $part2->{capture} = Perlito5::AST::Apply->new( 
-        code => 'p5:s',
-        arguments => [ $str_regex, Perlito5::Match::flat($part2), $modifiers ],
+    $part2->{capture} = Perlito5::AST::Apply->new(
+        code      => 'p5:s',
+        arguments => [
+            $str_regex,
+            Perlito5::Match::flat($part2),
+            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+        ],
         namespace => ''
     );
     return $part2;
@@ -231,11 +238,12 @@ sub qr_quote_parse {
         $part1->{to} = $m->{to};
     }
 
-    $part1->{capture} = Perlito5::AST::Apply->new( 
-        code => 'p5:qr',
-        arguments => [ $str_regex,
-                       Perlito5::AST::Val::Buf->new( buf => $modifiers ),
-                     ],
+    $part1->{capture} = Perlito5::AST::Apply->new(
+        code      => 'p5:qr',
+        arguments => [
+            $str_regex,
+            Perlito5::AST::Val::Buf->new( buf => $modifiers ),
+        ],
         namespace => ''
     );
     return $part1;
@@ -319,9 +327,13 @@ sub tr_quote_parse {
         $part2->{to} = $m->{to};
     }
 
-    $part2->{capture} = Perlito5::AST::Apply->new( 
-        code => 'p5:tr',
-        arguments => [ $str_regex, Perlito5::Match::flat($part2), $modifiers ],
+    $part2->{capture} = Perlito5::AST::Apply->new(
+        code      => 'p5:tr',
+        arguments => [
+            $str_regex,
+            Perlito5::Match::flat($part2),
+            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+        ],
         namespace => ''
     );
     return $part2;

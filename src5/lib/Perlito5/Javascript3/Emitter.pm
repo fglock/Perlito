@@ -1204,7 +1204,7 @@ package Perlito5::AST::Apply;
         my $regex_args = $regex->{arguments};
         if ($code eq 'p5:s') {
             $str = $var->emit_javascript3() 
-                 . '.assign(p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2] . ', '
+                 . '.assign(p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2]->{buf} . ', '
                  .  $regex_args->[1]->emit_javascript3() . '))';
         }
         elsif ($code eq 'p5:m') {
@@ -1215,7 +1215,7 @@ package Perlito5::AST::Apply;
 
                  $str = '(' 
                     . 'p5str(' . $var->emit_javascript3() . ')'
-                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1] . ')'
+                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1]->{buf} . ')'
                     . ' ? 1 : 0)';
             }
             else {
@@ -1223,7 +1223,7 @@ package Perlito5::AST::Apply;
 
                 $str = '(new RegExp('
                         . $ast->emit_javascript3() . ', '
-                        . '"' . $regex_args->[1] . '"'
+                        . '"' . $regex_args->[1]->{buf} . '"'
                     . '))'
                     . '.exec('
                         . 'p5str(' . $var->emit_javascript3() . ')'

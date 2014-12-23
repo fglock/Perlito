@@ -1562,7 +1562,7 @@ package Perlito5::AST::Apply;
         my $regex_args = $regex->{arguments};
         if ($code eq 'p5:s') {
             $str = $var->emit_javascript2() 
-                 . ' = p5str(' . $var->emit_javascript2() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2] . ', '
+                 . ' = p5str(' . $var->emit_javascript2() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2]->{buf} . ', '
                  .  $regex_args->[1]->emit_javascript2() . ')';
         }
         elsif ($code eq 'p5:m') {
@@ -1573,7 +1573,7 @@ package Perlito5::AST::Apply;
 
                  $str = '(' 
                     . 'p5str(' . $var->emit_javascript2() . ')'
-                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1] . ')'
+                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1]->{buf} . ')'
                     . ' ? 1 : 0)';
             }
             else {
@@ -1581,7 +1581,7 @@ package Perlito5::AST::Apply;
 
                 $str = '(new RegExp('
                         . $ast->emit_javascript2() . ', '
-                        . '"' . $regex_args->[1] . '"'
+                        . '"' . $regex_args->[1]->{buf} . '"'
                     . '))'
                     . '.exec('
                         . 'p5str(' . $var->emit_javascript2() . ')'
@@ -1594,7 +1594,7 @@ package Perlito5::AST::Apply;
                     . $var->emit_javascript2() . ', '
                     . $regex_args->[0]->emit_javascript2() . ', '
                     . $regex_args->[1]->emit_javascript2() . ', '
-                    . '"' . $regex_args->[2] . '", '
+                    . '"' . $regex_args->[2]->{buf} . '", '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
                   . ");\n"
             . Perlito5::Javascript2::tab($level + 2) . $var->emit_javascript2() . " = tmp[0];\n"
@@ -2610,7 +2610,7 @@ package Perlito5::AST::Apply;
                 # first argument of split() is a regex
                 push @js, 'new RegExp('
                         . $arg->{arguments}->[0]->emit_javascript2() . ', '
-                        . '"' . $arg->{arguments}->[1] . '"'
+                        . '"' . $arg->{arguments}->[1]->{buf} . '"'
                     . ')';
                 shift @{ $self->{arguments} };
             }

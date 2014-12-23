@@ -4341,7 +4341,7 @@ sub Perlito5::Grammar::String::m_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part1->{'to'} = $m->{'to'}
     }
-    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:m', 'arguments' => [$str_regex, $modifiers], 'namespace' => '');
+    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:m', 'arguments' => [$str_regex, Perlito5::AST::Val::Buf->new('buf' => $modifiers)], 'namespace' => '');
     return $part1
 }
 sub Perlito5::Grammar::String::s_quote_parse {
@@ -4385,7 +4385,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part2->{'to'} = $m->{'to'}
     }
-    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), $modifiers], 'namespace' => '');
+    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Val::Buf->new('buf' => $modifiers)], 'namespace' => '');
     return $part2
 }
 sub Perlito5::Grammar::String::qr_quote_parse {
@@ -4480,7 +4480,7 @@ sub Perlito5::Grammar::String::tr_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part2->{'to'} = $m->{'to'}
     }
-    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), $modifiers], 'namespace' => '');
+    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Val::Buf->new('buf' => $modifiers)], 'namespace' => '');
     return $part2
 }
 sub Perlito5::Grammar::String::apply_quote_flags {
@@ -9607,19 +9607,19 @@ package Perlito5::AST::Apply;
         my $code = $regex->{'code'};
         my $regex_args = $regex->{'arguments'};
         if ($code eq 'p5:s') {
-            $str = $var->emit_javascript2() . ' = p5str(' . $var->emit_javascript2() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2] . ', ' . $regex_args->[1]->emit_javascript2() . ')'
+            $str = $var->emit_javascript2() . ' = p5str(' . $var->emit_javascript2() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2]->{'buf'} . ', ' . $regex_args->[1]->emit_javascript2() . ')'
         }
         elsif ($code eq 'p5:m') {
             my $ast = $regex_args->[0];
             if ($ast->isa('Perlito5::AST::Val::Buf')) {
-                $str = '(' . 'p5str(' . $var->emit_javascript2() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1] . ')' . ' ? 1 : 0)'
+                $str = '(' . 'p5str(' . $var->emit_javascript2() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1]->{'buf'} . ')' . ' ? 1 : 0)'
             }
             else {
-                $str = '(new RegExp(' . $ast->emit_javascript2() . ', ' . '"' . $regex_args->[1] . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript2() . ')' . ')'
+                $str = '(new RegExp(' . $ast->emit_javascript2() . ', ' . '"' . $regex_args->[1]->{'buf'} . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript2() . ')' . ')'
             }
         }
         elsif ($code eq 'p5:tr') {
-            $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5tr(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $regex_args->[1]->emit_javascript2() . ', ' . '"' . $regex_args->[2] . '", ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');' . chr(10) . Perlito5::Javascript2::tab($level + 2) . $var->emit_javascript2() . ' = tmp[0];' . chr(10) . Perlito5::Javascript2::tab($level + 2) . 'return tmp[1]; ')
+            $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5tr(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $regex_args->[1]->emit_javascript2() . ', ' . '"' . $regex_args->[2]->{'buf'} . '", ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');' . chr(10) . Perlito5::Javascript2::tab($level + 2) . $var->emit_javascript2() . ' = tmp[0];' . chr(10) . Perlito5::Javascript2::tab($level + 2) . 'return tmp[1]; ')
         }
         else {
             die('Error: regex emitter - unknown operator ' . $code)
@@ -10237,7 +10237,7 @@ package Perlito5::AST::Apply;
             if @{$self->{'arguments'}} == 1;
         my $arg = $self->{'arguments'}->[0];
         if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
-            push(@js, 'new RegExp(' . $arg->{'arguments'}->[0]->emit_javascript2() . ', ' . '"' . $arg->{'arguments'}->[1] . '"' . ')');
+            push(@js, 'new RegExp(' . $arg->{'arguments'}->[0]->emit_javascript2() . ', ' . '"' . $arg->{'arguments'}->[1]->{'buf'} . '"' . ')');
             shift(@{$self->{'arguments'}})
         }
         return 'CORE.split(' . '[' . join(', ', @js, map($_->emit_javascript2(), @{$self->{'arguments'}})) . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')'
@@ -11372,15 +11372,15 @@ package Perlito5::AST::Apply;
         my $code = $regex->{'code'};
         my $regex_args = $regex->{'arguments'};
         if ($code eq 'p5:s') {
-            $str = $var->emit_javascript3() . '.assign(p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2] . ', ' . $regex_args->[1]->emit_javascript3() . '))'
+            $str = $var->emit_javascript3() . '.assign(p5str(' . $var->emit_javascript3() . ').replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2]->{'buf'} . ', ' . $regex_args->[1]->emit_javascript3() . '))'
         }
         elsif ($code eq 'p5:m') {
             my $ast = $regex_args->[0];
             if ($ast->isa('Perlito5::AST::Val::Buf')) {
-                $str = '(' . 'p5str(' . $var->emit_javascript3() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1] . ')' . ' ? 1 : 0)'
+                $str = '(' . 'p5str(' . $var->emit_javascript3() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1]->{'buf'} . ')' . ' ? 1 : 0)'
             }
             else {
-                $str = '(new RegExp(' . $ast->emit_javascript3() . ', ' . '"' . $regex_args->[1] . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript3() . ')' . ')'
+                $str = '(new RegExp(' . $ast->emit_javascript3() . ', ' . '"' . $regex_args->[1]->{'buf'} . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript3() . ')' . ')'
             }
         }
         elsif ($code eq 'p5:tr') {
@@ -12227,7 +12227,7 @@ package Perlito5::AST::Apply;
         }
         my $code = $ns . $self->{'code'};
         if ($self->{'code'} eq 'p5:s') {
-            return 's!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2]
+            return 's!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2]->{'buf'}
         }
         if ($self->{'code'} eq 'p5:m') {
             my $s;
@@ -12244,7 +12244,7 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            return 'm!' . $s . '!' . $self->{'arguments'}->[1]
+            return 'm!' . $s . '!' . $self->{'arguments'}->[1]->{'buf'}
         }
         if ($self->{'code'} eq 'p5:tr') {
             return 'tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!'
@@ -13212,7 +13212,7 @@ package Perlito5::AST::Apply;
         }
         $code = $ns . $code;
         if ($self->{'code'} eq 'p5:s') {
-            my $modifier = $self->{'arguments'}->[2];
+            my $modifier = $self->{'arguments'}->[2]->{'buf'};
             $modifier = ':' . $modifier
                 if $modifier;
             return 's:P5' . $modifier . '!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!'
@@ -13232,7 +13232,7 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            my $modifier = $self->{'arguments'}->[1];
+            my $modifier = $self->{'arguments'}->[1]->{'buf'};
             $modifier = ':' . $modifier
                 if $modifier;
             return 'm:P5' . $modifier . '!' . $s . '!'

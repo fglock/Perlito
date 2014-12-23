@@ -476,7 +476,7 @@ package Perlito5::AST::Apply;
         $code = $ns . $code;
 
         if ($self->{code} eq 'p5:s') {
-            my $modifier = $self->{arguments}->[2];
+            my $modifier = $self->{arguments}->[2]->{buf};
             $modifier = ':' . $modifier if $modifier;
             return 's:P5' . $modifier 
                  .     '!' . $self->{arguments}->[0]->{buf}   # emit_perl6() 
@@ -499,7 +499,7 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            my $modifier = $self->{arguments}->[1];
+            my $modifier = $self->{arguments}->[1]->{buf};
             $modifier = ':' . $modifier if $modifier;
 
             return 'm:P5' . $modifier . '!' . $s . '!';
