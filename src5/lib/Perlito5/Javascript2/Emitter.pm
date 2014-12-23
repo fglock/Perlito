@@ -2888,7 +2888,6 @@ package Perlito5::AST::Apply;
         }
         if ($code ne 'do' && $code ne 'eval') {
             return ( map  +( $_->emit_javascript2_get_decl ), 
-                     grep +( ref($_) ),
                           @{ $self->{arguments} }
                    )
                 if $self->{arguments};
