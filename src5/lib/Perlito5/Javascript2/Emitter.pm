@@ -300,9 +300,9 @@ package Perlito5::Javascript2;
         }
 
         $interpolate
-        ? ( 'p5list_to_a('
+        ? ( 'p5list_to_a(['
           .   join(', ', map( $_->emit_javascript2($level, $wantarray), @$items ))
-          . ')'
+          . '])'
           )
         : ( '['
           .   join(', ', map( $_->emit_javascript2($level, $wantarray), @$items ))

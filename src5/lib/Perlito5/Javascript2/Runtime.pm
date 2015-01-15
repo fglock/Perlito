@@ -582,7 +582,7 @@ Object.defineProperty( Object.prototype, "p5hget_hash", {
 
 var p5context = function(List__, p5want) {
     if (p5want) {
-        return p5list_to_a.apply(null, List__);
+        return p5list_to_a(List__);
     }
     // scalar: return the last value
     var o = List__;
@@ -594,10 +594,10 @@ var p5context = function(List__, p5want) {
     return o;
 }
 
-var p5list_to_a = function() {
+var p5list_to_a = function(args) {
     var res = [];
-    for (var i = 0; i < arguments.length; i++) {
-        var o = arguments[i];
+    for (var i = 0; i < args.length; i++) {
+        var o = args[i];
         if  (  o == null
             || o._class_    // perl5 blessed reference
             || o._ref_      // perl5 un-blessed reference
@@ -827,7 +827,7 @@ var p5str_replicate = function(o, n) {
 };
 
 var p5list_replicate = function(o, n) {
-    o = p5list_to_a(o);
+    o = p5list_to_a([o]);
     n = p5num(n);
     var out = [];
     for(var i = 0; i < n; i++) {
@@ -1048,7 +1048,7 @@ var p5map = function(namespace, func, args) {
     var out = [];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        var o = p5list_to_a(func(1));
+        var o = p5list_to_a([func(1)]);
         for(var j = 0; j < o.length; j++) {
             out.push(o[j]);
         }
