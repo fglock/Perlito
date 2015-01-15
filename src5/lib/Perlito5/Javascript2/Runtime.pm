@@ -862,6 +862,28 @@ var p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
+var p5range = function(a, b) {
+    var tmp = [];
+    if (typeof a === "number" || typeof b === "number") {
+        a = p5num(a);
+        b = p5num(b);
+        while (a <= b) {
+            tmp.push(a);
+            a++;
+        }
+    }
+    else {
+        a = p5str(a);
+        b = p5str(b);
+        while (  (a.length < b.length)
+              || (a.length == b.length && a <= b) ) {
+            tmp.push(a);
+            a = p5incr_(a);
+        }
+    }
+    return tmp;
+};
+
 var p5negative = function(o) {
     if (o == null) {
         return '-0';
