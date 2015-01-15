@@ -1806,13 +1806,15 @@ package Perlito5::AST::Apply;
                     . ')';
         },
         'prefix:<@>' => sub {
-            my $self  = $_[0];
-            my $level = $_[1];
+            my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            return 'p5array_deref(' 
-                    . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . ', '
-                    . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
-                    . ')';
+            my $s = 'p5array_deref(' 
+                  . Perlito5::Javascript2::emit_javascript2_autovivify( $arg, $level, 'array' ) . ', '
+                  . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
+                  . ')';
+            return $wantarray eq 'scalar'
+                ? "p5num($s)"
+                : $s;
         },
         'prefix:<$#>' => sub {
             my $self  = $_[0];
