@@ -17,7 +17,7 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
-"use strict";
+// "use strict";
 var isNode = typeof require != "undefined";
 
 if (typeof p5pkg !== "object") {
