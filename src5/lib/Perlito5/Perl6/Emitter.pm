@@ -520,7 +520,8 @@ package Perlito5::AST::Apply;
                 # TODO - test 'special_arg' type (scalar, block, ...)
                 return [ op => 'prefix:<' . $code . '>',
                          [ 'block', map { $_->emit_perl6() } @{$self->{special_arg}{stmts}} ],
-                         $self->emit_perl6_args() ]
+                         [ 'op' => 'list:<,>', $self->emit_perl6_args() ],
+                       ]
             }
             return [ apply => '(', $code, $self->emit_perl6_args() ];
         }
