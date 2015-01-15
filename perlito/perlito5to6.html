@@ -52,6 +52,9 @@ sub mysub {
 
 		function execute() {
 
+            var p5is_file = function(s) {
+                return '';
+            };
             p5pkg.CORE.print = function(List__) {
                 var i;
                 for (i = 0; i < List__.length; i++) {
@@ -68,8 +71,8 @@ sub mysub {
                 return true;
             };
             p5pkg["main"]["v_^O"] = "browser";
-            p5pkg["main"]["Hash_INC"]["Perlito5/strict.pm"] = "Perlito5/strict.pm";
-            p5pkg["main"]["Hash_INC"]["Perlito5/warnings.pm"] = "Perlito5/warnings.pm";
+            p5pkg["main"]["Hash_INC"]["Perlito5X/strict.pm"] = "Perlito5X/strict.pm";
+            p5pkg["main"]["Hash_INC"]["Perlito5X/warnings.pm"] = "Perlito5X/warnings.pm";
 
 			var source = document.getElementById('source').value;
             var pos = 0;
