@@ -52,11 +52,12 @@ sub emit_javascript2 {
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
+"use strict";
 var isNode = typeof require != "undefined";
 
 if (typeof p5pkg !== "object") {
-    p5pkg = {};
-    p5LOCAL = [];
+    var p5pkg = {};
+    var p5LOCAL = [];
 
     var universal = function () {};
     p5pkg.UNIVERSAL = new universal();
@@ -86,7 +87,7 @@ if (typeof p5pkg !== "object") {
     p5pkg["CORE::GLOBAL"] = new core_global();
     p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
 
-    p5_error = function (type, v) {
+    var p5_error = function (type, v) {
         this.type = type;
         this.v = this.message = v;
         this.toString = function(){
@@ -365,7 +366,7 @@ function p5array_deref(v, current_pkg_name) {
 }
 
 function p5global_array(pkg_name, name) {
-    v = "List_"+name;
+    var v = "List_"+name;
     if (!p5make_package(pkg_name).hasOwnProperty(v)) {
         p5pkg[pkg_name][v] = [];
     }
@@ -397,7 +398,7 @@ function p5hash_deref(v, current_pkg_name) {
 }
 
 function p5global_hash(pkg_name, name) {
-    v = "Hash_"+name;
+    var v = "Hash_"+name;
     if (!p5make_package(pkg_name).hasOwnProperty(v)) {
         p5pkg[pkg_name][v] = {};
     }
@@ -422,7 +423,7 @@ if (isNode) {
     p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
 
     p5pkg["main"]["Hash_ENV"] = {};
-    for (e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];
+    for (var e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];
 
     p5pkg["main"]["v_$"]       = process.pid;
 } else if (typeof arguments === "object") {
@@ -479,7 +480,7 @@ function p5typeglob_deref_set(v, obj, current_pkg_name) {
 
 function p5cleanup_local(idx, value) {
     while (p5LOCAL.length > idx) {
-        l = p5LOCAL.pop();
+        var l = p5LOCAL.pop();
         l();
     }
     return value;
@@ -579,7 +580,7 @@ Object.defineProperty( Object.prototype, "p5hget_hash", {
 //-------
 
 
-p5context = function(List__, p5want) {
+var p5context = function(List__, p5want) {
     if (p5want) {
         return p5list_to_a.apply(null, List__);
     }
@@ -593,9 +594,9 @@ p5context = function(List__, p5want) {
     return o;
 }
 
-p5list_to_a = function() {
+var p5list_to_a = function() {
     var res = [];
-    for (i = 0; i < arguments.length; i++) {
+    for (var i = 0; i < arguments.length; i++) {
         var o = arguments[i];
         if  (  o == null
             || o._class_    // perl5 blessed reference
@@ -606,7 +607,7 @@ p5list_to_a = function() {
         }
         else if (o instanceof Array) {
             // perl5 array
-            for (j = 0; j < o.length; j++) {
+            for (var j = 0; j < o.length; j++) {
                 res.push(o[j]);
             }
         }
@@ -627,28 +628,28 @@ p5list_to_a = function() {
     return res;
 };
 
-p5_list_of_refs = function(a) {
+var p5_list_of_refs = function(a) {
     // implements \( @a )
     var res = [];
-    for (i = 0; i < a.length; i++) {
+    for (var i = 0; i < a.length; i++) {
         res.push(new p5ScalarRef(a[i]));
     }
     return res;
 };
 
-p5a_to_h = function(a) {
+var p5a_to_h = function(a) {
     var res = {};
-    for (i = 0; i < a.length; i+=2) {
+    for (var i = 0; i < a.length; i+=2) {
         res[p5str(a[i])] = a[i+1];
     }
     return res;
 };
 
-p5idx = function(a, i) {
+var p5idx = function(a, i) {
     return i >= 0 ? i : a.length + i
 };
 
-p5str = function(o) {
+var p5str = function(o) {
     if (o == null) {
         return "";
     }
@@ -698,7 +699,7 @@ p5str = function(o) {
     return o;
 };
 
-p5num = function(o) {
+var p5num = function(o) {
     if (o == null) {
         return 0;
     }
@@ -737,7 +738,7 @@ p5num = function(o) {
     return o;
 };
 
-p5bool = function(o) {
+var p5bool = function(o) {
     if (o) {
         if (typeof o === "boolean") {
             return o;
@@ -761,21 +762,21 @@ p5bool = function(o) {
     return false;
 };
 
-p5incr_ = function(o) {
+var p5incr_ = function(o) {
     if (typeof o === "number") {
         return o + 1;
     }
     return p5str_inc(p5str(o));
 };
 
-p5decr_ = function(o) {
+var p5decr_ = function(o) {
     if (typeof o === "number") {
         return o - 1;
     }
     return p5num(o) - 1;
 };
 
-p5modulo = function(o, k) {
+var p5modulo = function(o, k) {
     var m = o % k;
     if ( k < 0 && m > 0 ) {
         m = m + k;
@@ -786,46 +787,46 @@ p5modulo = function(o, k) {
     return m;
 };
 
-p5shift_left = function(o, k) {
+var p5shift_left = function(o, k) {
     return k < 31 ? o << k : o * Math.pow(2, k);
 };
 
-p5and = function(a, fb) {
+var p5and = function(a, fb) {
     if (p5bool(a)) {
         return fb();
     }
     return a;
 };
 
-p5or = function(a, fb) {
+var p5or = function(a, fb) {
     if (p5bool(a)) {
         return a;
     }
     return fb();
 };
 
-p5defined_or = function(a, fb) {
+var p5defined_or = function(a, fb) {
     if (a == null) {
         return fb();
     }
     return a;
 };
 
-p5cmp = function(a, b) {
+var p5cmp = function(a, b) {
     return a > b ? 1 : a < b ? -1 : 0 
 };
 
-p5complement = function(a) {
+var p5complement = function(a) {
     return a < 0 ? ~a : 4294967295 - a
     // return a < 0 ? ~a : 18446744073709551615 - a
 };
 
-p5str_replicate = function(o, n) {
+var p5str_replicate = function(o, n) {
     n = p5num(n);
     return n ? Array(n + 1).join(o) : "";
 };
 
-p5list_replicate = function(o, n) {
+var p5list_replicate = function(o, n) {
     o = p5list_to_a(o);
     n = p5num(n);
     var out = [];
@@ -837,7 +838,7 @@ p5list_replicate = function(o, n) {
     return out;
 };
 
-p5str_inc = function(s) {
+var p5str_inc = function(s) {
     s = p5str(s);
     if (s.length < 2) {
         if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
@@ -861,7 +862,7 @@ p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
-p5negative = function(o) {
+var p5negative = function(o) {
     if (o == null) {
         return '-0';
     }
@@ -870,7 +871,7 @@ p5negative = function(o) {
     }
     if (typeof o !== "number") {
         var s = p5str(o);
-        s1 = parseFloat(s.trim());
+        var s1 = parseFloat(s.trim());
         if ( isNaN(s1) ) {
             var c = s.substr(0, 1);
             if ( c == '+' ) { s = s.substr(1); return '-' + s }
@@ -886,12 +887,12 @@ p5negative = function(o) {
     return -o;
 };
 
-p5qr = function(s, modifier) {
+var p5qr = function(s, modifier) {
     // TODO
     CORE.die(["qr() not yet implemented"]);
 };
 
-p5tr = function(s, search, replace, modifier, want) {
+var p5tr = function(s, search, replace, modifier, want) {
     var count = 0;
     // TODO - expand character lists in spec
     // TODO - modifiers
@@ -914,7 +915,7 @@ p5tr = function(s, search, replace, modifier, want) {
     return [res.join(''), count]
 };
 
-p5for = function(namespace, var_name, func, args, cont, label) {
+var p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
     var v_old = namespace[var_name];
     for(var i = 0; i < args.length; i++) {
@@ -951,7 +952,7 @@ p5for = function(namespace, var_name, func, args, cont, label) {
     namespace[var_name] = v_old;
 };
 
-p5for_lex = function(func, args, cont, label) {
+var p5for_lex = function(func, args, cont, label) {
     var _redo = false;
     for(var i = 0; i < args.length; i++) {
         try {
@@ -985,7 +986,7 @@ p5for_lex = function(func, args, cont, label) {
     }
 };
 
-p5while = function(func, cond, cont, label) {
+var p5while = function(func, cond, cont, label) {
     var _redo = false;
     while (_redo || p5bool(cond())) {
         _redo = false;
@@ -1020,7 +1021,7 @@ p5while = function(func, cond, cont, label) {
     }
 };
 
-p5map = function(namespace, func, args) {
+var p5map = function(namespace, func, args) {
     var v_old = namespace["v__"];
     var out = [];
     for(var i = 0; i < args.length; i++) {
@@ -1034,7 +1035,7 @@ p5map = function(namespace, func, args) {
     return out;
 };
 
-p5grep = function(namespace, func, args) {
+var p5grep = function(namespace, func, args) {
     var v_old = namespace["v__"];
     var out = [];
     for(var i = 0; i < args.length; i++) {
@@ -1047,7 +1048,7 @@ p5grep = function(namespace, func, args) {
     return out;
 };
 
-p5sort = function(namespace, func, args) {
+var p5sort = function(namespace, func, args) {
     var a_old = namespace["v_a"];
     var b_old = namespace["v_b"];
     var out = 

@@ -73,6 +73,7 @@ CORE.sprintf = function(List__) {
      */
     var parts      = [];
     var paramIndex = 0;
+    var part;
     while ( part = r.exec( format ) ) {
         // Check if an input value has been provided, for the current
         // format string

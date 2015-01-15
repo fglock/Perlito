@@ -113,7 +113,7 @@ Object.defineProperty( Array.prototype, "p5push", {
     }
 });
 
-p5tie_array = function(v, List__) {
+var p5tie_array = function(v, List__) {
     var pkg_name = p5str(List__.shift());
 
     var res = p5call(pkg_name, 'TIEARRAY', List__, null);
@@ -251,7 +251,7 @@ p5tie_array = function(v, List__) {
     return res;
 };
 
-p5untie_array = function(v) {
+var p5untie_array = function(v) {
     if (v.hasOwnProperty('p5untie')) {
         var res = v.p5untie();  // call UNTIE
         delete v.p5aget;

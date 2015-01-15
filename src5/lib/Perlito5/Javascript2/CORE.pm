@@ -220,7 +220,7 @@ CORE.splice = function(List__, p5want) {
         list = p5list_to_a( list, List__[i]);
     }
 
-    out = array.splice.apply(array, list);
+    var out = array.splice.apply(array, list);
     // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
     return p5want ? out : out.pop();
 };

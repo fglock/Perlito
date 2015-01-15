@@ -32,13 +32,13 @@ if (isNode) {
     p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
         var i;
         List__.shift(); // TODO - use IO::FILE
-        for (i = 0; i < List__.length; i++) {
+        for (var i = 0; i < List__.length; i++) {
             process.stdout.write(p5str(List__[i]));
         }
         return 1;
     } );
 
-    p5atime = function(s) {
+    var p5atime = function(s) {
         try {
             var stat = fs.statSync(s); return stat["atime"];
         }
@@ -46,7 +46,7 @@ if (isNode) {
             return '';
         }
     };
-    p5mtime = function(s) {
+    var p5mtime = function(s) {
         try {
             var stat = fs.statSync(s); return stat["mtime"];
         }
@@ -54,7 +54,7 @@ if (isNode) {
             return '';
         }
     };
-    p5ctime = function(s) {
+    var p5ctime = function(s) {
         try {
             var stat = fs.statSync(s); return stat["ctime"];
         }
@@ -62,7 +62,7 @@ if (isNode) {
             return '';
         }
     };
-    p5size = function(s) {
+    var p5size = function(s) {
         try {
             var stat = fs.statSync(s); return stat["size"];
         }
@@ -70,7 +70,7 @@ if (isNode) {
             return '';
         }
     };
-    p5is_file = function(s) {
+    var p5is_file = function(s) {
         try {
             var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
         }
@@ -78,7 +78,7 @@ if (isNode) {
             return '';
         }
     };
-    p5is_directory = function(s) {
+    var p5is_directory = function(s) {
         try {
             var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
         }
@@ -86,7 +86,7 @@ if (isNode) {
             return '';
         }
     };
-    p5file_exists = function(s) {
+    var p5file_exists = function(s) {
         return p5is_file(s) || p5is_directory(s);
     };
 
@@ -150,7 +150,7 @@ if (isNode) {
     p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
         var i;
         List__.shift(); // TODO - use IO::FILE
-        for (i = 0; i < List__.length; i++) {
+        for (var i = 0; i < List__.length; i++) {
             write(p5str(List__[i]));
         }
         return 1;
@@ -171,7 +171,7 @@ if (isNode) {
 CORE.die = function(List__) {
     var i;
     var s = "";
-    for (i = 0; i < List__.length; i++) {
+    for (var i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
     try {
@@ -189,7 +189,7 @@ CORE.say = function(List__) {
 
 CORE.print = function(List__) {
     var i;
-    for (i = 0; i < List__.length; i++) {
+    for (var i = 0; i < List__.length; i++) {
         p5pkg['Perlito5::IO'].print([ 'STDOUT', List__[i] ]);
     }
     return 1;
@@ -198,7 +198,7 @@ CORE.print = function(List__) {
 CORE.warn = function(List__) {
     var i;
     var s = "";
-    for (i = 0; i < List__.length; i++) {
+    for (var i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
     try {
