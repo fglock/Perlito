@@ -2021,8 +2021,11 @@ package Perlito5::AST::Apply;
             my $tmp  = Perlito5::Javascript2::get_label();
             return Perlito5::Javascript2::emit_wrap_javascript2($level, 'list', 
                   'var ' . $tmp . ' = []; '
-                . 'for (var i=' . $self->{arguments}->[0]->emit_javascript2() . ', l=' . $self->{arguments}->[1]->emit_javascript2() . '; ' . 'i<=l; ++i)' . '{ ' . $tmp . '.push(i) ' . '}; ' . 'return ' . $tmp . ' '
-            )
+                . 'for (var i=' . $self->{arguments}->[0]->emit_javascript2() . ', l=' . $self->{arguments}->[1]->emit_javascript2() . '; i<=l; i=p5incr_(i))' . '{ ' 
+                    . $tmp . '.push(i); ' 
+                    . "if (i >= l) { break }; "
+                . '}; ' . 'return ' . $tmp . ' '
+            );
         },
 
         'delete' => sub {
