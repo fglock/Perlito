@@ -12270,7 +12270,7 @@ package Perlito5::AST::Apply;
             if ($self->{'special_arg'}) {
                 return ['op' => 'prefix:<' . $code . '>', ['block', map {
                     $_->emit_perl5()
-                } @{$self->{'special_arg'}->{'stmts'}}], $self->emit_perl5_args()]
+                } @{$self->{'special_arg'}->{'stmts'}}], ['op' => 'list:<,>', $self->emit_perl5_args()]]
             }
             return ['apply' => '(', $code, $self->emit_perl5_args()]
         }
