@@ -1008,17 +1008,16 @@ var p5for_lex = function(func, args, cont, label) {
     }
 };
 
-var p5while = function(func, cond, cont, label) {
-    var _redo = false;
-    while (_redo || p5bool(cond())) {
-        _redo = false;
+var p5while = function(func, cond, cont, label, redo) {
+    while (redo || p5bool(cond())) {
+        redo = false;
         try {
             func()
         }
         catch(err) {
             if (err instanceof p5_error && err.v == label) {
                 if (err.type == 'last') { return }
-                else if (err.type == 'redo') { _redo = true }
+                else if (err.type == 'redo') { redo = true }
                 else if (err.type != 'next') { throw(err) }
             }            
             else {
@@ -1027,12 +1026,12 @@ var p5while = function(func, cond, cont, label) {
         }
         if (cont) {
             try {
-                if (!_redo) { cont() }
+                if (!redo) { cont() }
             }
             catch(err) {
                 if (err instanceof p5_error && err.v == label) {
                     if (err.type == 'last') { return }
-                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type == 'redo') { redo = true }
                     else if (err.type != 'next') { throw(err) }
                 }            
                 else {

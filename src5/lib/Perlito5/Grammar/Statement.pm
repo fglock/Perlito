@@ -135,6 +135,7 @@ my %Modifier = (
     'for'    => 1, 
     'foreach'=> 1, 
     'while'  => 1, 
+    'until'  => 1, 
     'given'  => 1,
 );
 
@@ -200,6 +201,19 @@ sub modifier {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
             capture => Perlito5::AST::While->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
+                body     => $expression,
+            ) 
+        };
+    }
+    if ($modifier eq 'until') {
+        return {
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
+            capture => Perlito5::AST::While->new(
+                cond     => Perlito5::AST::Apply->new(
+                                'arguments' => [ Perlito5::Match::flat($modifier_exp) ],
+                                'code'      => 'prefix:<!>',
+                                'namespace' => '',
+                            ),
                 body     => $expression,
             ) 
         };

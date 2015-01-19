@@ -8,6 +8,7 @@ Perlito5::Grammar::Statement::add_statement( 'for'     => sub { Perlito5::Gramma
 Perlito5::Grammar::Statement::add_statement( 'foreach' => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
 Perlito5::Grammar::Statement::add_statement( 'when'    => sub { Perlito5::Grammar->when( $_[0], $_[1] ) } );
 Perlito5::Grammar::Statement::add_statement( 'while'   => sub { Perlito5::Grammar->while( $_[0], $_[1] ) } );
+Perlito5::Grammar::Statement::add_statement( 'until'   => sub { Perlito5::Grammar->until( $_[0], $_[1] ) } );
 Perlito5::Grammar::Statement::add_statement( 'given'   => sub { Perlito5::Grammar->given( $_[0], $_[1] ) } );
 Perlito5::Grammar::Statement::add_statement( 'unless'  => sub { Perlito5::Grammar->unless( $_[0], $_[1] ) } );
 
@@ -198,6 +199,31 @@ token while {
             }
             $MATCH->{capture} = Perlito5::AST::While->new( 
                     cond  => $cond, 
+                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    continue => $MATCH->{opt_continue_block}{capture}
+                 )
+        }
+};
+
+token until {
+    'until' <.Perlito5::Grammar::Space.opt_ws>
+            '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
+            '{' <.Perlito5::Grammar::Space.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.Perlito5::Grammar::Space.opt_ws>
+            '}' <.Perlito5::Grammar::Space.opt_ws>
+    <opt_continue_block>
+        {
+            my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.paren_parse"});
+            if ($cond eq '*undef*') {
+                $cond = Perlito5::AST::Val::Int->new( int => 1 );
+            }
+            $MATCH->{capture} = Perlito5::AST::While->new( 
+                    cond  => Perlito5::AST::Apply->new(
+                                'arguments' => [ $cond ],
+                                'code'      => 'prefix:<!>',
+                                'namespace' => '',
+                            ),
                     body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )

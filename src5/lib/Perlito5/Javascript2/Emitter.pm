@@ -3036,6 +3036,11 @@ package Perlito5::AST::While;
         my $wantarray = shift;
 
         my $cond = $self->{cond};
+
+        # body is 'Perlito5::AST::Do' in this construct:
+        #   do { ... } while ...;
+        my $do_at_least_once = ref($self->{body}) eq 'Perlito5::AST::Do' ? 1 : 0;
+
         my $body =
               ref($self->{body}) ne 'Perlito5::AST::Lit::Block'
             ? [ $self->{body} ]
@@ -3061,7 +3066,8 @@ package Perlito5::AST::While;
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'void', $cond) . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                    .   '"' . ($self->{label} || "") . '"'
+                    .   '"' . ($self->{label} || "") . '", '
+                    . $do_at_least_once
                     . ')';
 
         if (keys %{ $Perlito5::VAR->[0] }) {

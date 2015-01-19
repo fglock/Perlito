@@ -546,6 +546,7 @@ my $Argument_end_token = {
         'when' => 1,
       
         'while' => 1,
+        'until' => 1,
         # 'elsif' => 1,
       
         'unless' => 1,
@@ -573,6 +574,7 @@ my $List_end_token = {
         'when' => 1,
       
         'while' => 1,
+        'until' => 1,
         'elsif' => 1,
       
         'unless' => 1,
@@ -595,6 +597,7 @@ my $Expr_end_token = {
         'when' => 1,
       
         'while' => 1,
+        'until' => 1,
         'elsif' => 1,
       
         'unless' => 1,
