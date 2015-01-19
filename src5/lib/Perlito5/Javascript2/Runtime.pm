@@ -812,6 +812,10 @@ var p5defined_or = function(a, fb) {
     return a;
 };
 
+var p5xor = function(a, fb) {
+    return p5bool(a) ? !p5bool(fb()) : fb()
+};
+
 var p5cmp = function(a, b) {
     return a > b ? 1 : a < b ? -1 : 0 
 };

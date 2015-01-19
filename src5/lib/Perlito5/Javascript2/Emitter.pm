@@ -1733,6 +1733,15 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         },
+        'infix:<xor>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5xor('
+                . $self->{arguments}->[0]->emit_javascript2($level, 'scalar') . ', '
+                . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
+                . ')'
+        },
         'infix:<=>>' => sub {
             my $self      = shift;
             my $level     = shift;
