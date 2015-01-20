@@ -573,7 +573,7 @@ package Perlito5::Javascript2::LexicalBlock;
                 #     # print "redeclared $perl5_name\n"
                 # }
 
-                push @str, $arg->emit_javascript2_init;
+                push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
 
             if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
@@ -592,7 +592,7 @@ package Perlito5::Javascript2::LexicalBlock;
                     # print "redeclared $perl5_name\n"
                 }
 
-                push @str, $arg->emit_javascript2_init;
+                push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
 
             if  (  $last_statement->isa( 'Perlito5::AST::Apply' ) 
@@ -678,10 +678,10 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript2 {
         my $self = $_[0];
         my $level = $_[1];
-        my $str = "(function () {\n"
-            . Perlito5::Javascript2::tab($level + 1) . Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1 ) . "\n"
-            . Perlito5::Javascript2::tab($level) . "})()\n";
-        return $str;
+        my $wantarray = '';
+        return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+            Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1 )
+        );
     }
     sub emit_javascript2_program {
         my $comp_units = shift;
@@ -1322,6 +1322,8 @@ package Perlito5::AST::Decl;
     }
     sub emit_javascript2_init {
         my $self = shift;
+        my $level = shift;
+        my $wantarray = shift;
 
         if ($self->{decl} eq 'local') {
             my $var = $self->{var};
@@ -1343,14 +1345,13 @@ package Perlito5::AST::Decl;
                 $var_set = $var->emit_javascript2_set($tmp);
                 pop @{ $Perlito5::VAR };
             }
-            return '(function(){ '
-                .       'var v_' . $tmp_name . ' = ' . $var->emit_javascript2 . '; '
-                .       'p5LOCAL.push(function(){ ' . $var_set . ' }); '
-                .       'return '
-                .           $var->emit_javascript2_set(
-                                Perlito5::AST::Apply->new( code => 'undef', arguments => [], namespace => '' ) 
-                            ) . '; '
-                .  '})();';
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+                     'var v_' . $tmp_name . ' = ' . $var->emit_javascript2 . ';',
+                     'p5LOCAL.push(function(){ ' . $var_set . ' });',
+                     'return ' . $var->emit_javascript2_set(
+                                    Perlito5::AST::Apply->new( code => 'undef', arguments => [], namespace => '' ) 
+                                 ) . ';',
+                ) . ';';
         }
 
         my $type = $self->{decl};
@@ -2241,7 +2242,7 @@ package Perlito5::AST::Apply;
             Perlito5::Javascript2::emit_wrap_statement_javascript2(
                 $level,
                 $wantarray, 
-                'throw(' . $self->{arguments}->[0]->emit_javascript2() . ')'
+                'throw(' . $self->{arguments}->[0]->emit_javascript2($level) . ')'
             );
         },
 
@@ -2939,7 +2940,7 @@ package Perlito5::AST::If;
             my @var_decl = $cond->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
                 $level = $old_level + 1;
-                push @str, $arg->emit_javascript2_init;
+                push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
         }
 
@@ -3080,7 +3081,7 @@ package Perlito5::AST::While;
             my @var_decl = $cond->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
                 $level = $old_level + 1;
-                push @str, $arg->emit_javascript2_init;
+                push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
         }
 
@@ -3134,7 +3135,7 @@ package Perlito5::AST::For;
                 my @var_decl = $expr->emit_javascript2_get_decl();
                 for my $arg (@var_decl) {
                     $level = $old_level + 1;
-                    push @str, $arg->emit_javascript2_init;
+                    push @str, $arg->emit_javascript2_init($level, $wantarray);
                 }
             }
         }
