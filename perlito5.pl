@@ -9018,7 +9018,7 @@ package Perlito5::Javascript2;
             emit_func_javascript2($level, $wantarray, $argument->emit_javascript2($level, $wantarray))
         }
         else {
-            emit_func_javascript2($level, $wantarray, 'return ' . $argument->emit_javascript2($level, $wantarray))
+            emit_func_javascript2($level, $wantarray, 'return ' . $argument->emit_javascript2($level + 1, $wantarray))
         }
     }
     sub Perlito5::Javascript2::emit_wrap_statement_javascript2 {
@@ -9116,10 +9116,10 @@ package Perlito5::Javascript2::LexicalBlock;
                 push(@str, $last_statement->emit_javascript2($level, 'runtime'))
             }
             elsif ($has_local) {
-                push(@str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . '));')
+                push(@str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level + 1) . '));')
             }
             else {
-                push(@str, 'return (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level) . ');')
+                push(@str, 'return (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level + 1) . ');')
             }
         }
         if ($has_local) {
@@ -9537,7 +9537,7 @@ package Perlito5::AST::Decl;
                 $var_set = $var->emit_javascript2_set($tmp);
                 pop(@{$Perlito5::VAR})
             }
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var v_' . $tmp_name . ' = ' . $var->emit_javascript2() . ';', 'p5LOCAL.push(function(){ ' . $var_set . ' });', 'return ' . $var->emit_javascript2_set(Perlito5::AST::Apply->new('code' => 'undef', 'arguments' => [], 'namespace' => '')) . ';') . ';'
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var v_' . $tmp_name . ' = ' . $var->emit_javascript2() . ';', 'p5LOCAL.push(function(){ ' . $var_set . ' });', 'return ' . $var->emit_javascript2_set(Perlito5::AST::Apply->new('code' => 'undef', 'arguments' => [], 'namespace' => ''), $level + 1) . ';') . ';'
         }
         my $type = $self->{'decl'};
         my $env = {'decl' => $type};
@@ -9963,7 +9963,7 @@ package Perlito5::AST::Apply;
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
             my $tmp = Perlito5::Javascript2::get_label();
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . ';', $arg->emit_javascript2($level) . ' = p5incr_(' . $tmp . ');', 'return ' . $arg->emit_javascript2($level))
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . ';', $arg->emit_javascript2($level) . ' = p5incr_(' . $tmp . ');', 'return ' . $arg->emit_javascript2($level + 1))
         }
         '++(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')'
     }, 'prefix:<-->' => sub {
@@ -9975,7 +9975,7 @@ package Perlito5::AST::Apply;
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '$') {
             my $tmp = Perlito5::Javascript2::get_label();
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . ';', $arg->emit_javascript2($level) . ' = p5decr_(' . $tmp . ');', 'return ' . $arg->emit_javascript2($level))
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $tmp . ' = ' . $arg->emit_javascript2($level) . ';', $arg->emit_javascript2($level) . ' = p5decr_(' . $tmp . ');', 'return ' . $arg->emit_javascript2($level + 1))
         }
         '--(' . join(' ', map($_->emit_javascript2(), @{$self->{'arguments'}})) . ')'
     }, 'infix:<x>' => sub {
@@ -10103,7 +10103,7 @@ package Perlito5::AST::Apply;
         my $level = shift;
         my $wantarray = shift;
         $Perlito5::THROW = 1;
-        Perlito5::Javascript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(' . Perlito5::Javascript2::to_runtime_context($self->{'arguments'}, $level) . ')')
+        Perlito5::Javascript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(' . Perlito5::Javascript2::to_runtime_context($self->{'arguments'}, $level + 1) . ')')
     }, 'goto' => sub {
         my $self = shift;
         my $level = shift;
