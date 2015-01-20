@@ -2709,12 +2709,12 @@ package Perlito5::AST::Apply;
 
         if (exists $Perlito5::Javascript2::op_infix_js_str{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript2::op_infix_js_str{$code}, map { Perlito5::Javascript2::to_str($_) } @{$self->{arguments}} )
+                . join( $Perlito5::Javascript2::op_infix_js_str{$code}, map { Perlito5::Javascript2::to_str($_, $level) } @{$self->{arguments}} )
                 . ')'
         }
         if (exists $Perlito5::Javascript2::op_infix_js_num{$code}) {
             return '(' 
-                . join( $Perlito5::Javascript2::op_infix_js_num{$code}, map { Perlito5::Javascript2::to_num($_) } @{$self->{arguments}} )
+                . join( $Perlito5::Javascript2::op_infix_js_num{$code}, map { Perlito5::Javascript2::to_num($_, $level) } @{$self->{arguments}} )
                 . ')'
         }
         if (exists $Perlito5::Javascript2::op_prefix_js_str{$code}) {
@@ -3153,14 +3153,14 @@ package Perlito5::AST::For;
                 'for ( '
                     . ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript2($level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[1] ? Perlito5::Javascript2::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
-                    . ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ' '  )
+                    . ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ''  )
                   . ') {',
                   [ 'var _redo = true;',
                     'while(_redo) {',
                       [ '_redo = false;',
                         'try {',
                           [
-                            Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 )->emit_javascript2($level + 1),
+                            Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 )->emit_javascript2($level + 4),
                           ],
                         '}',
                         'catch(err) {',
@@ -3242,7 +3242,7 @@ package Perlito5::AST::For;
                         . 'p5make_package("' . $namespace . '"), '
                         . '"v_' . $v->{name} . '", '
                         . 'function () {' . "\n"
-                        . Perlito5::Javascript2::tab($level + 1) .  (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
+                        . Perlito5::Javascript2::tab($level + 2) .  (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 2) . "\n"
                         . Perlito5::Javascript2::tab($level + 1) . '}, '
                         .   $cond . ', '
                         . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '

@@ -10390,12 +10390,12 @@ package Perlito5::AST::Apply;
             if exists($emit_js{$code});
         if (exists($Perlito5::Javascript2::op_infix_js_str{$code})) {
             return '(' . join($Perlito5::Javascript2::op_infix_js_str{$code}, map {
-                Perlito5::Javascript2::to_str($_)
+                Perlito5::Javascript2::to_str($_, $level)
             } @{$self->{'arguments'}}) . ')'
         }
         if (exists($Perlito5::Javascript2::op_infix_js_num{$code})) {
             return '(' . join($Perlito5::Javascript2::op_infix_js_num{$code}, map {
-                Perlito5::Javascript2::to_num($_)
+                Perlito5::Javascript2::to_num($_, $level)
             } @{$self->{'arguments'}}) . ')'
         }
         if (exists($Perlito5::Javascript2::op_prefix_js_str{$code})) {
@@ -10657,7 +10657,7 @@ package Perlito5::AST::For;
         }
         unshift(@{$Perlito5::VAR}, {});
         if (ref($self->{'cond'}) eq 'ARRAY') {
-            push(@str, Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var label = "' . ($self->{'label'} || '') . '";', 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript2($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Javascript2::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript2($level + 1) . ' ' : ' ') . ') {', ['var _redo = true;', 'while(_redo) {', ['_redo = false;', 'try {', [Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0)->emit_javascript2($level + 1)], '}', 'catch(err) {', ['if (err instanceof p5_error && err.v == label) {', ['if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }', 'else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }', 'else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }'], '}', 'else {', ['throw(err)'], '}'], '}'], '}'], '}'))
+            push(@str, Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var label = "' . ($self->{'label'} || '') . '";', 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript2($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Javascript2::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript2($level + 1) . ' ' : '') . ') {', ['var _redo = true;', 'while(_redo) {', ['_redo = false;', 'try {', [Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0)->emit_javascript2($level + 4)], '}', 'catch(err) {', ['if (err instanceof p5_error && err.v == label) {', ['if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }', 'else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }', 'else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }'], '}', 'else {', ['throw(err)'], '}'], '}'], '}'], '}'))
         }
         else {
             my $cond = Perlito5::Javascript2::to_list([$self->{'cond'}], $level + 1);
@@ -10692,7 +10692,7 @@ package Perlito5::AST::For;
                 push(@str, 'p5for_lex(' . 'function (' . $sig . ') {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')')
             }
             else {
-                push(@str, 'p5for(' . 'p5make_package("' . $namespace . '"), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 1) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')')
+                push(@str, 'p5for(' . 'p5make_package("' . $namespace . '"), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body, 'needs_return' => 0, 'top_level' => 0))->emit_javascript2($level + 2) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')')
             }
         }
         shift(@{$Perlito5::VAR});
