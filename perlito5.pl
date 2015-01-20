@@ -9254,10 +9254,7 @@ package Perlito5::AST::Index;
         return $self->emit_javascript2_container($level) . '.' . $method . '(' . Perlito5::Javascript2::to_num($self->{'index_exp'}, $level) . ')'
     }
     sub Perlito5::AST::Index::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var a = [];', 'var v = ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ';', 'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ';', 'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}, $level, 'array') . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i) {', ['tmp = src.p5aget(i);', 'out.p5aset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
         }
@@ -9323,10 +9320,7 @@ package Perlito5::AST::Lookup;
         return $self->emit_javascript2_container($level) . '.' . $method . '(' . Perlito5::Javascript2::autoquote($self->{'index_exp'}, $level) . ')'
     }
     sub Perlito5::AST::Lookup::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
             $v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name())
@@ -9453,10 +9447,7 @@ package Perlito5::AST::Var;
         $ns . $table->{$self->{'sigil'}} . $str_name
     }
     sub Perlito5::AST::Var::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         my $open = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
         if ($self->sigil() eq '$') {
@@ -9571,10 +9562,7 @@ package Perlito5::AST::Decl;
         }
     }
     sub Perlito5::AST::Decl::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         $self->var()->emit_javascript2_set($arguments, $level, $wantarray)
     }
     sub Perlito5::AST::Decl::emit_javascript2_set_list {
@@ -9649,10 +9637,7 @@ package Perlito5::AST::Call;
         return 'p5call(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript2::to_list($self->{'arguments'}) . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
     }
     sub Perlito5::AST::Call::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
             return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'invocant'}, $level, 'array') . '._array_.p5aset(' . Perlito5::Javascript2::to_num($self->{'arguments'}, $level + 1) . ', ' . Perlito5::Javascript2::to_scalar([$arguments], $level + 1) . ')'
         }
@@ -9716,10 +9701,7 @@ package Perlito5::AST::Apply;
         die('Error: regex emitter')
     }
     sub Perlito5::AST::Apply::emit_javascript2_set {
-        my $self = shift;
-        my $arguments = shift;
-        my $level = shift;
-        my $wantarray = shift;
+        my($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{'code'};
         if ($code eq 'prefix:<$>') {
             return 'p5scalar_deref_set(' . Perlito5::Javascript2::emit_javascript2_autovivify($self->{'arguments'}->[0], $level + 1, 'scalar') . ', ' . Perlito5::Javascript2::to_scalar([$arguments], $level + 1) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')'

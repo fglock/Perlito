@@ -859,10 +859,7 @@ package Perlito5::AST::Index;
                     . ')';
     }
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
+        my ($self, $arguments, $level, $wantarray) = @_;
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1028,10 +1025,7 @@ package Perlito5::AST::Lookup;
             . ')';
     }
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
+        my ($self, $arguments, $level, $wantarray) = @_;
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1248,14 +1242,9 @@ package Perlito5::AST::Var;
     }
 
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
-
+        my ($self, $arguments, $level, $wantarray) = @_;
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
-
         if ( $self->sigil eq '$' ) {
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . $close
         }
@@ -1272,7 +1261,6 @@ package Perlito5::AST::Var;
             .   Perlito5::Javascript2::to_scalar([$arguments], $level+1)
             . ')'
         }
-
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
 
@@ -1396,10 +1384,7 @@ package Perlito5::AST::Decl;
         }
     }
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
+        my ($self, $arguments, $level, $wantarray) = @_;
         $self->var->emit_javascript2_set($arguments, $level, $wantarray);
     }
     sub emit_javascript2_set_list {
@@ -1492,11 +1477,7 @@ package Perlito5::AST::Call;
     }
 
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
-
+        my ($self, $arguments, $level, $wantarray) = @_;
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' )
                     . '._array_.p5aset(' 
@@ -1608,13 +1589,8 @@ package Perlito5::AST::Apply;
     }
 
     sub emit_javascript2_set {
-        my $self      = shift;
-        my $arguments = shift;
-        my $level     = shift;
-        my $wantarray = shift;
-
+        my ($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{code};
-
         if ($code eq 'prefix:<$>') {
             return 'p5scalar_deref_set(' 
                 . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
@@ -1629,7 +1605,6 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
-
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
         $open . $self->emit_javascript2( $level+1 ) . ' = ' . $arguments->emit_javascript2( $level+1 ) . $close;
