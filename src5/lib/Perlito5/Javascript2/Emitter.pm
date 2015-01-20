@@ -14,7 +14,6 @@ package Perlito5::Javascript2;
     sub get_label {
         'tmp' . $label_count++
     }
-
     sub tab {
         my $level = shift;
         "\t" x $level
@@ -668,9 +667,8 @@ package Perlito5::Javascript2::LexicalBlock;
 package Perlito5::AST::CompUnit;
 {
     sub emit_javascript2 {
-        my $self = $_[0];
-        my $level = $_[1];
-        my $wantarray = '';
+        my ($self, $level, $wantarray) = @_;
+        $wantarray = '';
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
             Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1 )
         );
@@ -717,8 +715,7 @@ package Perlito5::AST::CompUnit;
 package Perlito5::AST::Val::Int;
 {
     sub emit_javascript2 {
-        my $self  = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         $self->{int};
     }
     sub emit_javascript2_get_decl { () }
@@ -727,8 +724,7 @@ package Perlito5::AST::Val::Int;
 package Perlito5::AST::Val::Num;
 {
     sub emit_javascript2 {
-        my $self  = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         $self->{num};
     }
     sub emit_javascript2_get_decl { () }
@@ -737,8 +733,7 @@ package Perlito5::AST::Val::Num;
 package Perlito5::AST::Val::Buf;
 {
     sub emit_javascript2 {
-        my $self  = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         Perlito5::Javascript2::escape_string( $self->{buf} );
     }
     sub emit_javascript2_get_decl { () }
@@ -796,10 +791,8 @@ package Perlito5::AST::Lit::Block;
 package Perlito5::AST::Index;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;   # array, hash
+        my ($self, $level, $wantarray, $autovivification_type) = @_;
+        # autovivification_type: array, hash
         my $method = $autovivification_type || 'p5aget';
         $method = 'p5aget_array' if $autovivification_type eq 'array';
         $method = 'p5aget_hash'  if $autovivification_type eq 'hash';
@@ -960,10 +953,8 @@ package Perlito5::AST::Index;
 package Perlito5::AST::Lookup;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;   # array, hash
+        my ($self, $level, $wantarray, $autovivification_type) = @_;
+        # autovivification_type: array, hash
         my $method = $autovivification_type || 'p5hget';
         $method = 'p5hget_array' if $autovivification_type eq 'array';
         $method = 'p5hget_hash'  if $autovivification_type eq 'hash';
@@ -1135,7 +1126,6 @@ package Perlito5::AST::Var;
 
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
-
         my $str_name = $self->{name};
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
@@ -1284,8 +1274,7 @@ package Perlito5::AST::Var;
 package Perlito5::AST::Decl;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         $self->{var}->emit_javascript2( $level );
     }
     sub emit_javascript2_init {
@@ -1400,8 +1389,7 @@ package Perlito5::AST::Decl;
 package Perlito5::AST::Proto;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         return Perlito5::Javascript2::pkg()
             if $self->{name} eq '__PACKAGE__';
         return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
@@ -1414,11 +1402,8 @@ package Perlito5::AST::Proto;
 package Perlito5::AST::Call;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;  # autovivify to 'array'/'hash'
-
+        my ($self, $level, $wantarray, $autovivification_type) = @_;
+        # autovivification_type: array, hash
         my $meth = $self->{method};
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
@@ -2834,8 +2819,7 @@ package Perlito5::AST::If;
 package Perlito5::AST::When;
 {
     sub emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my ($self, $level, $wantarray) = @_;
         my $cond = $self->{cond};
         my $body  = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
 
@@ -3123,7 +3107,6 @@ package Perlito5::AST::Use;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         Perlito5::Grammar::Use::emit_time_eval($self);
-
         if ($wantarray eq 'runtime') {
             return 'p5context([], p5want)';
         }

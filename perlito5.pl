@@ -9146,9 +9146,8 @@ package Perlito5::Javascript2::LexicalBlock;
 package Perlito5::AST::CompUnit;
 {
     sub Perlito5::AST::CompUnit::emit_javascript2 {
-        my $self = $_[0];
-        my $level = $_[1];
-        my $wantarray = '';
+        my($self, $level, $wantarray) = @_;
+        $wantarray = '';
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}, 'needs_return' => 0)->emit_javascript2($level + 1))
     }
     sub Perlito5::AST::CompUnit::emit_javascript2_program {
@@ -9168,8 +9167,7 @@ package Perlito5::AST::CompUnit;
 package Perlito5::AST::Val::Int;
 {
     sub Perlito5::AST::Val::Int::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         $self->{'int'}
     }
     sub Perlito5::AST::Val::Int::emit_javascript2_get_decl {
@@ -9179,8 +9177,7 @@ package Perlito5::AST::Val::Int;
 package Perlito5::AST::Val::Num;
 {
     sub Perlito5::AST::Val::Num::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         $self->{'num'}
     }
     sub Perlito5::AST::Val::Num::emit_javascript2_get_decl {
@@ -9190,8 +9187,7 @@ package Perlito5::AST::Val::Num;
 package Perlito5::AST::Val::Buf;
 {
     sub Perlito5::AST::Val::Buf::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         Perlito5::Javascript2::escape_string($self->{'buf'})
     }
     sub Perlito5::AST::Val::Buf::emit_javascript2_get_decl {
@@ -9231,10 +9227,7 @@ package Perlito5::AST::Lit::Block;
 package Perlito5::AST::Index;
 {
     sub Perlito5::AST::Index::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;
+        my($self, $level, $wantarray, $autovivification_type) = @_;
         my $method = $autovivification_type || 'p5aget';
         $method = 'p5aget_array'
             if $autovivification_type eq 'array';
@@ -9292,10 +9285,7 @@ package Perlito5::AST::Index;
 package Perlito5::AST::Lookup;
 {
     sub Perlito5::AST::Lookup::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;
+        my($self, $level, $wantarray, $autovivification_type) = @_;
         my $method = $autovivification_type || 'p5hget';
         $method = 'p5hget_array'
             if $autovivification_type eq 'array';
@@ -9484,8 +9474,7 @@ package Perlito5::AST::Var;
 package Perlito5::AST::Decl;
 {
     sub Perlito5::AST::Decl::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         $self->{'var'}->emit_javascript2($level)
     }
     sub Perlito5::AST::Decl::emit_javascript2_init {
@@ -9577,8 +9566,7 @@ package Perlito5::AST::Decl;
 package Perlito5::AST::Proto;
 {
     sub Perlito5::AST::Proto::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         return Perlito5::Javascript2::pkg()
             if $self->{'name'} eq '__PACKAGE__';
         return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
@@ -9592,10 +9580,7 @@ package Perlito5::AST::Proto;
 package Perlito5::AST::Call;
 {
     sub Perlito5::AST::Call::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-        my $autovivification_type = shift;
+        my($self, $level, $wantarray, $autovivification_type) = @_;
         my $meth = $self->{'method'};
         if ($meth eq 'postcircumfix:<[ ]>') {
             my $method = $autovivification_type || 'p5aget';
@@ -10438,8 +10423,7 @@ package Perlito5::AST::If;
 package Perlito5::AST::When;
 {
     sub Perlito5::AST::When::emit_javascript2 {
-        my $self = shift;
-        my $level = shift;
+        my($self, $level, $wantarray) = @_;
         my $cond = $self->{'cond'};
         my $body = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
         my $expr = Perlito5::AST::Apply->new('code' => 'infix:<==>', 'arguments' => [Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $cond]);
