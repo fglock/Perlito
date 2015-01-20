@@ -894,9 +894,7 @@ package Perlito5::AST::Index;
                 . ')';
     }
     sub emit_javascript2_set_list {
-        my $self = shift;
-        my $level = shift;
-        my $list = shift;
+        my ($self, $level, $list) = @_;
         my $wantarray = 'list';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
@@ -1070,9 +1068,7 @@ package Perlito5::AST::Lookup;
             . ')';
     }
     sub emit_javascript2_set_list {
-        my $self      = shift;
-        my $level     = shift;
-        my $list      = shift;
+        my ($self, $level, $list) = @_;
         my $wantarray = 'list';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
@@ -1281,10 +1277,7 @@ package Perlito5::AST::Var;
     }
 
     sub emit_javascript2_set_list {
-        my $self = shift;
-        my $level = shift;
-        my $list = shift;
-
+        my ($self, $level, $list) = @_;
         if ( $self->sigil eq '$' ) {
             return $self->emit_javascript2() . ' = ' . $list  . '.shift()'
         }
@@ -1294,7 +1287,6 @@ package Perlito5::AST::Var;
         if ( $self->sigil eq '%' ) {
             return $self->emit_javascript2() . ' = p5a_to_h(' . $list  . '); ' . $list . ' = []'
         }
- 
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
 
@@ -1411,9 +1403,7 @@ package Perlito5::AST::Decl;
         $self->var->emit_javascript2_set($arguments, $level, $wantarray);
     }
     sub emit_javascript2_set_list {
-        my $self = shift;
-        my $level = shift;
-        my $list = shift;
+        my ($self, $level, $list) = @_;
         $self->var->emit_javascript2_set_list($level, $list);
     }
     sub emit_javascript2_get_decl {
@@ -1524,10 +1514,7 @@ package Perlito5::AST::Call;
         die "don't know how to assign to method ", $self->{method};
     }
     sub emit_javascript2_set_list {
-        my $self = shift;
-        my $level = shift;
-        my $list = shift;
-
+        my ($self, $level, $list) = @_;
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{invocant}, $level, 'array' )
                     . '._array_.p5aset(' 
@@ -1650,33 +1637,23 @@ package Perlito5::AST::Apply;
 
     my %emit_js = (
         'infix:<=~>' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            my $wantarray = $_[2];
+            my ($self, $level, $wantarray) = @_;
             emit_regex_javascript2( '=~', $self->{arguments}->[0], $self->{arguments}->[1], $level, $wantarray );
         },
         'infix:<!~>' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            my $wantarray = $_[2];
+            my ($self, $level, $wantarray) = @_;
             emit_regex_javascript2( '!~', $self->{arguments}->[0], $self->{arguments}->[1], $level, $wantarray );
         },
         'p5:s' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            my $wantarray = $_[2];
+            my ($self, $level, $wantarray) = @_;
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:m' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            my $wantarray = $_[2];
+            my ($self, $level, $wantarray) = @_;
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:tr' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
-            my $wantarray = $_[2];
+            my ($self, $level, $wantarray) = @_;
             emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
         },
         'p5:qr' => sub {
@@ -1784,14 +1761,12 @@ package Perlito5::AST::Apply;
             '(' . $self->{arguments}->[0]->emit_javascript2( $level, $wantarray ) . ')';
         },
         'require' => sub {
-            my $self = $_[0];
-            my $level = $_[1];
+            my ($self, $level, $wantarray) = @_;
             'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
                 . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
             . '])';
         },
-
         'prefix:<$>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg  = $self->{arguments}->[0];
@@ -2275,7 +2250,6 @@ package Perlito5::AST::Apply;
                     . Perlito5::Javascript2::to_context($wantarray)
                  . ')';
         },
-
         'undef' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
@@ -2283,7 +2257,6 @@ package Perlito5::AST::Apply;
             }
             return 'null'
         },
-
         'defined' => sub { 
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}[0];
@@ -2306,7 +2279,6 @@ package Perlito5::AST::Apply;
             }
             '(' . $invocant . ' != null)' 
         },
-
         'shift' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
@@ -2314,7 +2286,6 @@ package Perlito5::AST::Apply;
             }
             return 'List__.shift()'
         },
-
         'pop' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
@@ -2322,7 +2293,6 @@ package Perlito5::AST::Apply;
             }
             return 'List__.pop()'
         },
-
         'unshift' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
@@ -2330,7 +2300,6 @@ package Perlito5::AST::Apply;
 
             return $v->emit_javascript2( $level ) . '.p5unshift(' . Perlito5::Javascript2::to_list(\@arguments) . ')';
         },
-
         'push' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
@@ -2338,7 +2307,6 @@ package Perlito5::AST::Apply;
 
             return $v->emit_javascript2( $level ) . '.p5push(' . Perlito5::Javascript2::to_list(\@arguments) . ')';
         },
-
         'tie' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
@@ -2359,7 +2327,6 @@ package Perlito5::AST::Apply;
             }
             return 'p5tie_' . $meth . '(' . $v->emit_javascript2( $level ) . ', ' . Perlito5::Javascript2::to_list(\@arguments) . ')';
         },
-
         'untie' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
@@ -2380,7 +2347,6 @@ package Perlito5::AST::Apply;
             }
             return 'p5untie_' . $meth . '(' . $v->emit_javascript2( $level ) . ')';
         },
-
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
@@ -2404,11 +2370,9 @@ package Perlito5::AST::Apply;
             }
 
             'p5map(' . Perlito5::Javascript2::pkg() . ', '
-
                     . 'function (p5want) {' . "\n"
                     . Perlito5::Javascript2::tab($level+1) . (Perlito5::Javascript2::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript2( $level + 1 ) . "\n"
                     . Perlito5::Javascript2::tab($level) . '}, '
-
                     .   $list
                     . ')';
         },
@@ -2477,7 +2441,6 @@ package Perlito5::AST::Apply;
                     .   $list
                     . ')';
         },
-
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
             'p5defined_or' . '('
@@ -2485,7 +2448,6 @@ package Perlito5::AST::Apply;
                 . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{arguments}->[1]) 
                 . ')'
         },
-
         'exists' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
@@ -2542,7 +2504,6 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             return 'p5sub_prototype(' . $arg->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ')';
         },
-
         'split' => sub {
             my ($self, $level, $wantarray) = @_;
             my @js;
@@ -2608,7 +2569,6 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{namespace}) {
-
             if (  $self->{namespace} eq 'JS' 
                && $code eq 'inline'
                ) 
@@ -2621,7 +2581,6 @@ package Perlito5::AST::Apply;
                     die "JS::inline needs a string constant";
                 }
             }
-
             $code = 'p5pkg["' . $self->{namespace} . '"].' . $code;
         }
         else {
@@ -2763,10 +2722,7 @@ package Perlito5::AST::Apply;
     }
 
     sub emit_javascript2_set_list {
-        my $self = shift;
-        my $level = shift;
-        my $list = shift;
-
+        my ($self, $level, $list) = @_;
         if ( $self->code eq 'undef' ) {
             return $list . '.shift()' 
         }
