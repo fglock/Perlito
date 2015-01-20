@@ -14384,8 +14384,8 @@ if ($backend && @ARGV) {
                 $m = Perlito5::Grammar->exp_stmts($source, 0);
                 $ok = 1
             });
-            if (!$ok || $m->{'to'} != length($source)) {
-                my $error = ${'@'} || ($m->{'to'} != length($source) && 'Syntax Error near ' . $m->{'to'}) || 'Unknown error';
+            if (!$ok || $m->{'to'} < length($source)) {
+                my $error = ${'@'} || ($m->{'to'} < length($source) && 'Syntax Error near ' . $m->{'to'}) || 'Unknown error';
                 warn($error);
                 exit(255)
             }
