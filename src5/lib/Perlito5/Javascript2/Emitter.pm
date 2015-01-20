@@ -827,7 +827,7 @@ package Perlito5::AST::Index;
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . $self->{obj}->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(src.' . $method . '(v[i]))' ],
                     '};',
                     'return a', 
@@ -856,7 +856,7 @@ package Perlito5::AST::Index;
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . $obj->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(v[i]);',
                             'a.push(src.' . $method . '(v[i]))',
                           ],
@@ -889,7 +889,7 @@ package Perlito5::AST::Index;
                     'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";",
                     'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . ";",
                     'var tmp' . ";",
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i) {',
+                    'for (var i=0, l=v.length; i<l; ++i) {',
                           [ 'tmp = src.p5aget(i);',
                             'out.p5aset(v[i], tmp);',
                             'a.push(tmp)',
@@ -923,7 +923,7 @@ package Perlito5::AST::Index;
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . ";",
                     'var tmp' . ";",
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i) {',
+                    'for (var i=0, l=v.length; i<l; ++i) {',
                           [ 'tmp = ' . $list . '.shift();',
                             'out.p5aset(v[i], tmp);',
                             'a.push(tmp)',
@@ -1001,7 +1001,7 @@ package Perlito5::AST::Lookup;
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . $v->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(src.p5hget(v[i]))' ],
                     '};',
                     'return a',
@@ -1027,7 +1027,7 @@ package Perlito5::AST::Lookup;
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . $v->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(v[i]);',
                             'a.push(src.p5hget(v[i]))',
                           ],
@@ -1065,7 +1065,7 @@ package Perlito5::AST::Lookup;
                     'var src=' . Perlito5::Javascript2::to_list([$arguments], $level) . ";",
                     'var out=' . $v->emit_javascript2($level) . ";",
                     'var tmp' . ";",
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'tmp = src.p5hget(i);',
                             'out.p5hset(v[i], tmp);',
                             'a.push(tmp)',
@@ -1104,7 +1104,7 @@ package Perlito5::AST::Lookup;
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . $v->emit_javascript2($level) . ";",
                     'var tmp' . ";",
-                    'for (var i=0, l=v.length; ' . 'i<l; ++i)' . '{',
+                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'tmp = ' . $list . '.shift();',
                             'out.p5hset(v[i], tmp);',
                             'a.push(tmp)',
@@ -3146,19 +3146,41 @@ package Perlito5::AST::For;
 
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
-
-            # TODO - catch next/last/redo
             # TODO - loop label
-            # TODO - continue-block is a syntax error
-
-            push @str,
-               'for ( '
-            .  ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript2($level + 1) . '; '  : '; ' )
-            .  ( $self->{cond}[1] ? $self->{cond}[1]->emit_javascript2($level + 1) . '; '  : '; ' )
-            .  ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ' '  )
-            .  ') {' . "\n" 
-            .  Perlito5::Javascript2::tab($level + 1) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 ))->emit_javascript2($level + 1) . "\n"
-            .  Perlito5::Javascript2::tab($level) . '}'
+            # TODO - make continue-block a syntax error
+            push @str, Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
+                'var label = "' . ($self->{label} || "") . '";',
+                'for ( '
+                    . ( $self->{cond}[0] ? $self->{cond}[0]->emit_javascript2($level + 1) . '; '  : '; ' )
+                    . ( $self->{cond}[1] ? Perlito5::Javascript2::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
+                    . ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ' '  )
+                  . ') {',
+                  [ 'var _redo = true;',
+                    'while(_redo) {',
+                      [ '_redo = false;',
+                        'try {',
+                          [
+                            Perlito5::Javascript2::LexicalBlock->new( block => $body, needs_return => 0, top_level => 0 )->emit_javascript2($level + 1),
+                          ],
+                        '}',
+                        'catch(err) {',
+                          [ 'if (err instanceof p5_error && err.v == label) {',
+                              [ 'if (err.type == \'last\') { return }',
+                                'else if (err.type == \'redo\') { _redo = true }',
+                                'else if (err.type != \'next\') { throw(err) }',
+                              ],
+                            '}',
+                            'else {',
+                              [ 'throw(err)',
+                              ],
+                            '}',
+                          ],
+                        '}',
+                      ],
+                    '}',
+                  ],
+                '}',
+            );
         }
         else {
 
