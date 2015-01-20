@@ -829,7 +829,7 @@ package Perlito5::AST::Index;
                     'var src=' . $self->{obj}->emit_javascript2($level) . ';',
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(src.' . $method . '(v[i]))' ],
-                    '};',
+                    '}',
                     'return a', 
             )
         }
@@ -860,7 +860,7 @@ package Perlito5::AST::Index;
                           [ 'a.push(v[i]);',
                             'a.push(src.' . $method . '(v[i]))',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -894,7 +894,7 @@ package Perlito5::AST::Index;
                             'out.p5aset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -928,7 +928,7 @@ package Perlito5::AST::Index;
                             'out.p5aset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -1003,7 +1003,7 @@ package Perlito5::AST::Lookup;
                     'var src=' . $v->emit_javascript2($level) . ';',
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(src.p5hget(v[i]))' ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -1031,7 +1031,7 @@ package Perlito5::AST::Lookup;
                           [ 'a.push(v[i]);',
                             'a.push(src.p5hget(v[i]))',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -1070,7 +1070,7 @@ package Perlito5::AST::Lookup;
                             'out.p5hset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -1109,7 +1109,7 @@ package Perlito5::AST::Lookup;
                             'out.p5hset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
-                    '};',
+                    '}',
                     'return a',
             )
         }
@@ -1407,7 +1407,7 @@ package Perlito5::AST::Decl;
             #         . '}})()';
             return 'if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
                     . $str
-                    . '};';
+                    . '}';
         }
         elsif ($self->{decl} eq 'state') {
             # TODO
