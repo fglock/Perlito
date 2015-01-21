@@ -289,13 +289,9 @@ TODO list for Perlito5
 -- "given" statement not implemented
 -- "default" statement not implemented
 
--- check that \(@a) and \@a have different meanings
-
 -- ${^NAME} needs curly-escaping
 
 - fix regex delimiters, or escape the regexes
-
--- continue block in block: ' { print 1 } continue { print 2 } '
 
 
 
@@ -338,39 +334,18 @@ TODO list for Perlito5
 
     See: p5scalar_deref() / p5scalar_deref_set() in Perlito5/Javascript2/Runtime.pm
 
--- pass @_ to &sub
-    $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
-    # call foo(@_)
-
--- while () {}
-    this is implemented - it now needs some tests:
-    # http://blogs.perl.org/users/peter_martini/2014/05/spelunking-why-while-is-my-new-favorite-perl-ism.html
-    while () {}     # infinite loop - while(1)
-    while (()) {}   # no loop
-
 -- 'require v5.006;'
     # Can't locate v5.006 in @INC
 
 -- assign old-self to my / local
     local $Some_Global = $Some_Global;
 
--- 'next', 'last' in expression
-    (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)
-    ... ) and last
-
--- 'x' in list context
-    @{$cache}{@$ok} = (1) x @$ok;
-
+-- missing some types of subroutine signatures
 -- '&' prototype
     add tests; see Try::Tiny
 
 -- AUTOLOAD() called from UNIVERSAL autovivifies packages
     add tests
-
--- prototype() can be set by aliasing:
-    *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
-
--- check that \(@a) and \@a have different meanings
 
 -- delete() in the middle of an array turns exists() off:
 
@@ -385,11 +360,7 @@ TODO list for Perlito5
     delete($quote_flags->{$flag_to_reset});
     delete($quote_flags->{last_flag});
 
--- "or" has SCALAR context (Abigail++):
-    See: t5/01-perlito/23-eval.t
-
 -- "~~" operator not implemented; See also "when" implementation
-
 -- "given" statement not implemented
 -- "when" should use a "break" exception inside "given", and a "next" exception inside "for".
 -- "default" statement not implemented
@@ -456,8 +427,6 @@ TODO list for Perlito5
 -- pos($str)
 -- lvalue chomp(), chop()
 
--- missing some types of subroutine signatures
-
 -- bug: variable aliases create copies instead
 
 -- generate more compact code; maybe use more subroutines instead of inlining;
@@ -473,9 +442,6 @@ TODO list for Perlito5
 -- aliasing between lexicals and globals
     $ perl -e 'use strict; my $x = 3; *main::z = \$x; print $main::z; '
     3
-
--- string increment and string ranges
-    See: p5str_inc()
 
 -- finish "overload" implementation
     See: p5str
@@ -502,6 +468,35 @@ TODO list for Perlito5
 
 -- flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
+
+
+* Javascript - implemented but missing more tests
+
+-- prototype() can be set by aliasing:
+    *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
+
+-- "or" has SCALAR context (Abigail++):
+    See: t5/01-perlito/23-eval.t
+
+-- 'next', 'last' in expression
+    (*{"${callpkg}::$sym"} = \&{"${pkg}::$sym"}, next)
+    ... ) and last
+
+-- check that \(@a) and \@a have different meanings
+
+-- 'x' in list context
+    @{$cache}{@$ok} = (1) x @$ok;
+
+-- while () {}
+    this is implemented - it now needs some tests:
+    # http://blogs.perl.org/users/peter_martini/2014/05/spelunking-why-while-is-my-new-favorite-perl-ism.html
+    while () {}     # infinite loop - while(1)
+    while (()) {}   # no loop
+
+-- pass @_ to &sub
+    $ node perlito5.js -I./src5/lib -Cjs -e ' @_ = (1,2);  &foo; '
+    # call foo(@_)
+
 
 * Nice to Have
 
