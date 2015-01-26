@@ -183,20 +183,36 @@ package Perlito5::AST::Lit::Block;
 
 package Perlito5::AST::Index;
 {
+    sub emit_perl6_index {
+        my $self = $_[0];
+        my $index = $self->{index_exp};
+        if (  $index->isa('Perlito5::AST::Apply')
+           && $index->{code} eq 'prefix:<->'
+           )
+        {
+            my $arg = $index->{arguments}[0];
+            if ($arg->isa('Perlito5::AST::Val::Int')) {
+                # [*-1]
+                return [ op => 'infix:<->', [ bareword => '*' ], $arg->emit_perl6() ];
+            }
+        }
+        return $self->{index_exp}->emit_perl6();
+    }
+
     sub emit_perl6 {
         my $self = $_[0];
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<@>'
            )
         {
-            return [ apply => '[', $self->{obj}->emit_perl6(), $self->{index_exp}->emit_perl6() ];
+            return [ apply => '[', $self->{obj}->emit_perl6(), $self->emit_perl6_index ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && ( $self->{obj}->sigil eq '$' || $self->{obj}->sigil eq '@' )
            )
         {
             $self->{obj}{sigil} = '@';
-            return [ apply => '[', $self->{obj}->emit_perl6(), $self->{index_exp}->emit_perl6() ];
+            return [ apply => '[', $self->{obj}->emit_perl6(), $self->emit_perl6_index ];
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->{code} eq 'prefix:<$>'
@@ -204,10 +220,10 @@ package Perlito5::AST::Index;
         {
             # $$a[0] ==> $a[0]
             return [ apply => '[', $self->{obj}{arguments}[0]->emit_perl6(), 
-                                   $self->{index_exp}->emit_perl6() ];
+                                   $self->emit_perl6_index ];
         }
         return [ op => 'infix:<.>', $self->{obj}->emit_perl6(), 
-                 [ op => 'circumfix:<[ ]>', $self->{index_exp}->emit_perl6() ] ];
+                 [ op => 'circumfix:<[ ]>', $self->emit_perl6_index ] ];
     }
 }
 
