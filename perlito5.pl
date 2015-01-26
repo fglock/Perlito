@@ -13125,6 +13125,12 @@ package Perlito5::AST::Apply;
         if ($code eq 'prefix:<$#>') {
             return ['op' => 'infix:<.>', $self->{'arguments'}->[0]->emit_perl6(), ['keyword' => 'end']]
         }
+        if ($code eq 'scalar') {
+            my $arg = $self->{'arguments'}->[0];
+            if ($arg->isa('Perlito5::AST::Var') && $arg->{'sigil'} eq '@') {
+                return ['op' => 'infix:<.>', $arg->emit_perl6(), ['keyword' => 'elems']]
+            }
+        }
         if (($code eq 'shift' || $code eq 'pop') && !@{$self->{'arguments'}}) {
             return ['apply' => '(', $code, '@_']
         }
