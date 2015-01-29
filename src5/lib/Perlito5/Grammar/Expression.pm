@@ -331,7 +331,9 @@ token term_arrow {
         [
         | '(' <paren_parse>   ')'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
         | '[' <square_parse>  ']'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{square_parse})  ] }
-        | '{' <curly_parse>   '}'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
+        | '{' <curly_parse>
+            [ \} | { die 'Missing right curly or square bracket' } ]
+            { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
 
         | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar::Space.opt_ws>
             [ '(' <paren_parse> ')'
@@ -389,8 +391,9 @@ token term_square {
 
 token term_curly {
     '{'  <.Perlito5::Grammar::Space.ws>?
-           <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar::Space.ws>? '}'
-                { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) ] }
+         <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar::Space.ws>?
+    [ \} | { die 'Missing right curly or square bracket' } ]
+    { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) ] }
 };
 
 
@@ -786,7 +789,10 @@ sub circumfix_parse {
             }
         }
         if (!$m) {
-            die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
+            my $msg = "Expected closing delimiter: $delimiter";
+            $msg = 'Missing right curly or square bracket'
+                if $delimiter eq '}' || $delimiter eq ']';
+            die "$msg near ", $last_pos;
         }
         my $v = $m->{capture};
         if ($v->[0] ne 'end') {

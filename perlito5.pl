@@ -1467,7 +1467,19 @@ sub Perlito5::Grammar::Expression::term_arrow {
                 else {
                     0
                 }
-            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+            }) && (do {
+                my $pos1 = $MATCH->{'to'};
+                (do {
+                    '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (do {
+                        $MATCH->{'str'} = $str;
+                        die('Missing right curly or square bracket');
+                        1
+                    })
+                })
+            }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::Match::flat($MATCH->{'curly_parse'})];
                 1
@@ -1683,7 +1695,19 @@ sub Perlito5::Grammar::Expression::term_curly {
             $MATCH = $m
         }
         1
-    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+    }) && (do {
+        my $pos1 = $MATCH->{'to'};
+        (do {
+            '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            (do {
+                $MATCH->{'str'} = $str;
+                die('Missing right curly or square bracket');
+                1
+            })
+        })
+    }) && (do {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = ['postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'})];
         1
@@ -2043,7 +2067,10 @@ sub Perlito5::Grammar::Expression::circumfix_parse {
             }
         }
         if (!$m) {
-            die('Expected closing delimiter: ', $delimiter, ' near ', $last_pos)
+            my $msg = 'Expected closing delimiter: ' . $delimiter;
+            $msg = 'Missing right curly or square bracket'
+                if $delimiter eq '}' || $delimiter eq ']';
+            die($msg . ' near ', $last_pos)
         }
         my $v = $m->{'capture'};
         if ($v->[0] ne 'end') {
