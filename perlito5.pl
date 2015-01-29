@@ -1301,7 +1301,7 @@ sub Perlito5::Grammar::Expression::reduce_postfix {
         return $v
     }
     if ($v->[1] eq 'funcall_no_params') {
-        die('unexpected function call')
+        die('Bareword found where operator expected')
     }
     if ($v->[1] eq 'methcall') {
         my $param_list = expand_list($v->[3]);
