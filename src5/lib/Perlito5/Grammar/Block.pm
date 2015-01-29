@@ -125,7 +125,7 @@ token named_sub_def {
         <.Perlito5::Grammar::Space.opt_ws>
         <Perlito5::Grammar.exp_stmts>
         <.Perlito5::Grammar::Space.opt_ws>
-        [   \}     | { die 'Syntax Error in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
+        [   \}     | { die 'Missing right curly or square bracket in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
         {
             $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
         }
@@ -238,7 +238,7 @@ token anon_sub_def {
         <.Perlito5::Grammar::Space.opt_ws> 
         <Perlito5::Grammar.exp_stmts> 
         <.Perlito5::Grammar::Space.opt_ws>
-    [   \}     | { die 'Syntax Error in anon sub' } ]
+    [   \}     | { die 'Missing right curly or square bracket in anon sub' } ]
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype});
         $sig = undef if $sig eq '*undef*';

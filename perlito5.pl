@@ -5698,7 +5698,7 @@ sub Perlito5::Grammar::Block::named_sub_def {
                     $MATCH->{'to'} = $pos1;
                     (do {
                         $MATCH->{'str'} = $str;
-                        die('Syntax Error in sub ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), chr(39));
+                        die('Missing right curly or square bracket in sub ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), chr(39));
                         1
                     })
                 })
@@ -6044,7 +6044,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
             $MATCH->{'to'} = $pos1;
             (do {
                 $MATCH->{'str'} = $str;
-                die('Syntax Error in anon sub');
+                die('Missing right curly or square bracket in anon sub');
                 1
             })
         })
