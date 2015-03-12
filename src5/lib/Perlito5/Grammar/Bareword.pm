@@ -254,7 +254,6 @@ sub term_bareword {
         my $m = Perlito5::Grammar::Number->val_version( $str, $pos );
         if ($m) {
             $m->{capture} = [ 'term', $m->{capture} ];
-            $m->{to} = $p;
             return $m;
         }
 
