@@ -18,11 +18,7 @@ token unless {
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_curly>
     [
         <.Perlito5::Grammar::Space.opt_ws>
-        'else' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}'
+        'else' <block>
         {
             my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_curly"})->[2];
             if (!defined($body)) {
@@ -30,7 +26,7 @@ token unless {
             }
             $MATCH->{capture} = Perlito5::AST::If->new( 
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_paren"})->[2],
-                body      => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) || [] ),
+                body      => Perlito5::Match::flat($MATCH->{block}),
                 otherwise => Perlito5::AST::Lit::Block->new( stmts => $body),
             )
         }
@@ -54,11 +50,7 @@ token if {
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_curly>
     [
         <.Perlito5::Grammar::Space.opt_ws>
-        'else' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}'
+        'else' <block>
         {
             my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_curly"})->[2];
             if (!defined($body)) {
@@ -67,7 +59,7 @@ token if {
             $MATCH->{capture} = Perlito5::AST::If->new( 
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_paren"})->[2],
                 body      => Perlito5::AST::Lit::Block->new( stmts => $body),
-                otherwise => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) || [] )
+                otherwise => Perlito5::Match::flat($MATCH->{block}),
             )
         }
     |
@@ -155,11 +147,7 @@ token for {
                       ';' [ <Perlito5::Grammar.exp2> || <.Perlito5::Grammar::Space.opt_ws> ]
                     | ''
                     ]
-            ')' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts2>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}' <.Perlito5::Grammar::Space.opt_ws>
+            ')' <block>
         <opt_continue_block>
         {
             my $header;
@@ -177,7 +165,7 @@ token for {
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => $header, 
                     topic => undef, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts2"}), sig => undef ),
+                    body  => Perlito5::Match::flat($MATCH->{block}),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
@@ -186,11 +174,7 @@ token for {
 
 token while {
     'while' <.Perlito5::Grammar::Space.opt_ws>
-            '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}' <.Perlito5::Grammar::Space.opt_ws>
+            '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <block>
     <opt_continue_block>
         {
             my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.paren_parse"});
@@ -199,7 +183,7 @@ token while {
             }
             $MATCH->{capture} = Perlito5::AST::While->new( 
                     cond  => $cond, 
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    body  => Perlito5::Match::flat($MATCH->{block}),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
@@ -207,11 +191,7 @@ token while {
 
 token until {
     'until' <.Perlito5::Grammar::Space.opt_ws>
-            '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}' <.Perlito5::Grammar::Space.opt_ws>
+            '(' <Perlito5::Grammar::Expression.paren_parse>   ')' <block>
     <opt_continue_block>
         {
             my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.paren_parse"});
@@ -224,7 +204,7 @@ token until {
                                 'code'      => 'prefix:<!>',
                                 'namespace' => '',
                             ),
-                    body  => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef ),
+                    body  => Perlito5::Match::flat($MATCH->{block}),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
@@ -246,19 +226,27 @@ token given {
 
 
 token opt_continue_block {
-        'continue' <.Perlito5::Grammar::Space.opt_ws>
-            '{' <.Perlito5::Grammar::Space.opt_ws>
-                <Perlito5::Grammar.exp_stmts>
-                <.Perlito5::Grammar::Space.opt_ws>
-            '}'
+        'continue' <block>
         {
-            $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
+            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{block})
         }
     |
         {
             $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => [], sig => undef )
         }
 };
+
+token block {
+    <.Perlito5::Grammar::Space.opt_ws>
+    '{' <.Perlito5::Grammar::Space.opt_ws>
+        <Perlito5::Grammar.exp_stmts>
+        <.Perlito5::Grammar::Space.opt_ws>
+    '}'
+    {
+        $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
+    }
+};
+
 
 =begin
 
