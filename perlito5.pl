@@ -261,6 +261,11 @@ sub Perlito5::Rul::NotBefore::set_captures_to_array {
 1;
 # use Perlito5::Emitter::Token
 package main;
+package Perlito5X::feature;
+sub Perlito5X::feature::import {}
+sub Perlito5X::feature::unimport {}
+1;
+package main;
 package Perlito5::Grammar::Precedence;
 # use feature
 sub Perlito5::Grammar::Precedence::new {
@@ -5014,7 +5019,7 @@ Perlito5::Grammar::Statement::add_statement('no' => sub {
 Perlito5::Grammar::Statement::add_statement('use' => sub {
     Perlito5::Grammar::Use->stmt_use($_[0], $_[1])
 });
-my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5::Dumper');
+my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5::Dumper');
 sub Perlito5::Grammar::Use::use_decl {
     my $grammar = $_[0];
     my $str = $_[1];
@@ -5196,8 +5201,7 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     my $skip_import = defined($arguments) && @{$arguments} == 0;
     $arguments = []
         unless defined($arguments);
-    if ($module_name eq 'feature') {}
-    elsif ($Perlito5::EXPAND_USE) {
+    if ($Perlito5::EXPAND_USE) {
         $module_name = $Perlito_internal_module{$module_name}
             if exists($Perlito_internal_module{$module_name});
         my $filename = modulename_to_filename($module_name);
@@ -5256,8 +5260,6 @@ sub Perlito5::Grammar::Use::expand_use {
     my $comp_units = shift;
     my $stmt = shift;
     my $module_name = $stmt->mod();
-    return 
-        if $module_name eq 'warnings' || $module_name eq 'feature';
     $module_name = $Perlito_internal_module{$module_name}
         if exists($Perlito_internal_module{$module_name});
     my $filename = modulename_to_filename($module_name);
@@ -12146,6 +12148,15 @@ package Perlito5::AST::Use;
     }
 }
 # use Perlito5::Perl5::Emitter
+package main;
+package Perlito5::warnings;
+sub Perlito5::warnings::import {
+    $Perlito5::WARNINGS = 1
+}
+sub Perlito5::warnings::unimport {
+    $Perlito5::WARNINGS = 0
+}
+1;
 package main;
 package Perlito5::Perl5::PrettyPrinter;
 # use strict

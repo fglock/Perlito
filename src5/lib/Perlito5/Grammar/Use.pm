@@ -12,6 +12,7 @@ Perlito5::Grammar::Statement::add_statement( 'use' => sub { Perlito5::Grammar::U
 my %Perlito_internal_module = (
     strict         => 'Perlito5X::strict',
     warnings       => 'Perlito5X::warnings',
+    feature        => 'Perlito5X::feature',
     utf8           => 'Perlito5X::utf8',
     bytes          => 'Perlito5X::bytes',
     encoding       => 'Perlito5X::encoding',
@@ -129,46 +130,35 @@ sub parse_time_eval {
 
     $arguments = [] unless defined $arguments;
 
-    if (
-       $module_name eq 'feature'
-       )
-    {
-        # not implemented
-    }
-    else {
+    if ( $Perlito5::EXPAND_USE ) {
+        # normal "use" is not disabled, go for it
 
-        if ( $Perlito5::EXPAND_USE ) {
-            # normal "use" is not disabled, go for it
+        $module_name = $Perlito_internal_module{$module_name}
+            if exists $Perlito_internal_module{$module_name};
 
-            $module_name = $Perlito_internal_module{$module_name}
-                if exists $Perlito_internal_module{$module_name};
+        # "require" the module
+        my $filename = modulename_to_filename($module_name);
+        # warn "# require $filename\n";
+        require $filename;
 
-            # "require" the module
-            my $filename = modulename_to_filename($module_name);
-            # warn "# require $filename\n";
-            require $filename;
-
-            if (!$skip_import) {
-                # call import/unimport
-                if ($use_or_not eq 'use') {
-                    if (defined &{$module_name . '::import'}) {
-                        # temporarily set caller() to the current module under compilation
-                        unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                        $module_name->import(@$arguments);
-                        shift @{ $Perlito5::CALLER };
-                    }
-                }
-                elsif ($use_or_not eq 'no') {
-                    if (defined &{$module_name . '::unimport'}) {
-                        unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                        $module_name->unimport(@$arguments);
-                        shift @{ $Perlito5::CALLER };
-                    }
+        if (!$skip_import) {
+            # call import/unimport
+            if ($use_or_not eq 'use') {
+                if (defined &{$module_name . '::import'}) {
+                    # temporarily set caller() to the current module under compilation
+                    unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
+                    $module_name->import(@$arguments);
+                    shift @{ $Perlito5::CALLER };
                 }
             }
-
+            elsif ($use_or_not eq 'no') {
+                if (defined &{$module_name . '::unimport'}) {
+                    unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
+                    $module_name->unimport(@$arguments);
+                    shift @{ $Perlito5::CALLER };
+                }
+            }
         }
-
     }
 }
 
@@ -214,8 +204,6 @@ sub expand_use {
     my $stmt = shift;
 
     my $module_name = $stmt->mod;
-    return if $module_name eq 'warnings'
-           || $module_name eq 'feature';
 
     $module_name = $Perlito_internal_module{$module_name}
         if exists $Perlito_internal_module{$module_name};
