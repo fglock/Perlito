@@ -14,16 +14,11 @@ Perlito5::Grammar::Precedence::add_term( 'return' => sub { Perlito5::Grammar::Ex
 
 
 sub expand_list {
+    # convert internal 'list:<,>' AST into an array of AST
     my $param_list = shift;
     # say "# expand_list: ", $param_list->perl;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->code eq 'list:<,>') {
-        my $args = [];
-        for my $v ( @{$param_list->arguments} ) {
-            if (defined($v)) {
-                push( @$args, $v);
-            }
-        }
-        return $args;
+        return [ grep {defined} @{$param_list->arguments} ];
     }
     elsif ($param_list eq '*undef*') {
         return [];
@@ -34,6 +29,7 @@ sub expand_list {
 }
 
 sub block_or_hash {
+    # convert a block AST into a hash literal AST, if possible
     my $o = shift;
     # say "# block_or_hash? ", $o->perl;
     if (defined($o->sig)) {

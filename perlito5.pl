@@ -1142,13 +1142,9 @@ Perlito5::Grammar::Precedence::add_term('return' => sub {
 sub Perlito5::Grammar::Expression::expand_list {
     my $param_list = shift;
     if (ref($param_list) eq 'Perlito5::AST::Apply' && $param_list->code() eq 'list:<,>') {
-        my $args = [];
-        for my $v (@{$param_list->arguments()}) {
-            if (defined($v)) {
-                push(@{$args}, $v)
-            }
-        }
-        return $args
+        return [grep {
+            defined($_)
+        } @{$param_list->arguments()}]
     }
     elsif ($param_list eq '*undef*') {
         return []
