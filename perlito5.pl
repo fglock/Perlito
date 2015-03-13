@@ -1957,9 +1957,7 @@ my $List_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
 my $Argument_end_token = {',' => 1, '<' => 1, '>' => 1, '=' => 1, '|' => 1, '^' => 1, '?' => 1, '=>' => 1, 'lt' => 1, 'le' => 1, 'gt' => 1, 'ge' => 1, '<=' => 1, '>=' => 1, '==' => 1, '!=' => 1, 'ne' => 1, 'eq' => 1, '..' => 1, '~~' => 1, '&&' => 1, '||' => 1, '+=' => 1, '-=' => 1, '*=' => 1, '/=' => 1, 'x=' => 1, '|=' => 1, '&=' => 1, '.=' => 1, '^=' => 1, '%=' => 1, '//' => 1, '...' => 1, '<=>' => 1, 'cmp' => 1, '<<=' => 1, '>>=' => 1, '||=' => 1, '&&=' => 1, '//=' => 1, '**=' => 1, %{$List_end_token}};
 my $Argument_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
 sub Perlito5::Grammar::Expression::argument_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     my $expr;
     my $last_pos = $pos;
     my $is_first_token = 1;
@@ -2006,9 +2004,7 @@ sub Perlito5::Grammar::Expression::argument_parse {
     return {'str' => $str, 'from' => $pos, 'to' => $last_pos, 'capture' => $result}
 }
 sub Perlito5::Grammar::Expression::list_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     my $expr;
     my $last_pos = $pos;
     my $is_first_token = 1;
@@ -2055,10 +2051,7 @@ sub Perlito5::Grammar::Expression::list_parse {
     return {'str' => $str, 'from' => $pos, 'to' => $last_pos, 'capture' => $result}
 }
 sub Perlito5::Grammar::Expression::circumfix_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $delimiter = $_[3];
+    my($self, $str, $pos, $delimiter) = @_;
     my $expr;
     my $last_pos = $pos;
     my $get_token = sub {
@@ -2093,33 +2086,23 @@ sub Perlito5::Grammar::Expression::circumfix_parse {
     return {'str' => $str, 'from' => $pos, 'to' => $last_pos, 'capture' => $res}
 }
 sub Perlito5::Grammar::Expression::ternary5_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ':')
 }
 sub Perlito5::Grammar::Expression::curly_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, '}')
 }
 sub Perlito5::Grammar::Expression::square_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ']')
 }
 sub Perlito5::Grammar::Expression::paren_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ')')
 }
 sub Perlito5::Grammar::Expression::exp_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my($self, $str, $pos) = @_;
     my $expr;
     my $last_pos = $pos;
     my $lexer_stack = [];

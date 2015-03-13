@@ -577,10 +577,7 @@ my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
 sub argument_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     # say "# argument_parse: input ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
@@ -657,10 +654,7 @@ sub argument_parse {
 
 
 sub list_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     # say "# list_parse: input ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
@@ -737,11 +731,7 @@ sub list_parse {
 }
 
 sub circumfix_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $delimiter = $_[3];
-   
+    my ($self, $str, $pos, $delimiter) = @_;
     # say "# circumfix_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
@@ -789,39 +779,24 @@ sub circumfix_parse {
 }
 
 sub ternary5_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ':');
 }
 sub curly_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, '}');
 }
 sub square_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ']');
 }
 sub paren_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     return $self->circumfix_parse($str, $pos, ')');
 }
 
 sub exp_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-   
+    my ($self, $str, $pos) = @_;
     # say "# exp_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
