@@ -329,8 +329,10 @@ my $reduce_to_ast = sub {
 token term_arrow {
     '->' <.Perlito5::Grammar::Space.opt_ws>
         [
-        | '(' <paren_parse>   ')'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
-        | '[' <square_parse>  ']'                   { $MATCH->{capture} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{square_parse})  ] }
+        | '(' <paren_parse>   ')'
+            { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
+        | '[' <square_parse>  ']'
+            { $MATCH->{capture} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{square_parse})  ] }
         | '{' <curly_parse>
             [ \} | { die 'Missing right curly or square bracket' } ]
             { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
@@ -378,15 +380,17 @@ token term_arrow {
 
 token term_ternary {
     '?'  <ternary5_parse> ':'
-                { $MATCH->{capture} = [ 'op',          '? :', Perlito5::Match::flat($MATCH->{ternary5_parse})  ] }
+        { $MATCH->{capture} = [ 'op',          '? :', Perlito5::Match::flat($MATCH->{ternary5_parse})  ] }
 };
 
 token term_paren {
-    '('  <paren_parse>   ')'        { $MATCH->{capture} = [ 'postfix_or_term',  '( )',   Perlito5::Match::flat($MATCH->{paren_parse})   ] }
+    '('  <paren_parse>   ')'
+        { $MATCH->{capture} = [ 'postfix_or_term',  '( )',   Perlito5::Match::flat($MATCH->{paren_parse})   ] }
 };
 
 token term_square {
-    '['  <square_parse>  ']'      { $MATCH->{capture} = [ 'postfix_or_term',  '[ ]',   Perlito5::Match::flat($MATCH->{square_parse})  ] }
+    '['  <square_parse>  ']'
+        { $MATCH->{capture} = [ 'postfix_or_term',  '[ ]',   Perlito5::Match::flat($MATCH->{square_parse})  ] }
 };
 
 token term_curly {
@@ -456,6 +460,9 @@ token term_local {
 };
 
 token term_return {
+    #        Unlike most named operators, this is also exempt from the
+    #        looks-like-a-function rule, so "return ("foo")."bar"" will cause
+    #        "bar" to be part of the argument to "return". See: perldoc -f return
     'return' <.Perlito5::Grammar::Space.opt_ws> <list_parse>
         {
             my $args = Perlito5::Match::flat($MATCH->{list_parse});
@@ -471,7 +478,7 @@ token term_return {
 
 token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
-    'eval' <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly>
+    'eval' <.Perlito5::Grammar::Space.opt_ws> <term_curly>
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
@@ -488,42 +495,29 @@ token term_eval {
 };
 
 
+my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 my $Expr_end_token = {
         ']' => 1,
         ')' => 1,
         '}' => 1,
         ';' => 1,
-      
-        'if' => 1,
-      
-        'for' => 1,
-      
-        'else' => 1,
-        'when' => 1,
-      
-        'while' => 1,
-        'until' => 1,
-        'elsif' => 1,
-      
-        'unless' => 1,
-      
+        'if'      => 1,
+        'for'     => 1,
+        'else'    => 1,
+        'when'    => 1,
+        'while'   => 1,
+        'until'   => 1,
+        'elsif'   => 1,
+        'unless'  => 1,
         'foreach' => 1,
 };
-my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
-
-
 my $List_end_token = { 
-        ':' => 1,
-      
-        'or' => 1,
-      
+        ':'   => 1,
+        'or'  => 1,
         'and' => 1,
         'xor' => 1,
         %$Expr_end_token,
 };
-my $List_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
-
-
 # end-tokens for named unary operators - used in "Grammar::Bareword" module
 my $Argument_end_token = {
         ',' => 1,
@@ -573,7 +567,6 @@ my $Argument_end_token = {
         '**=' => 1, 
         %$List_end_token,
 };
-my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
 sub list_parser {
@@ -633,7 +626,7 @@ sub list_parser {
         get_token       => $get_token, 
         reduce          => $reduce_to_ast,
         end_token       => $end_token,
-        end_token_chars => $List_end_token_chars,
+        end_token_chars => $Expr_end_token_chars,
     );
     my $res = $prec->precedence_parse;
     # say "# list_lexer return: ", $res->perl;

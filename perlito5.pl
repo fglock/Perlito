@@ -1928,12 +1928,6 @@ sub Perlito5::Grammar::Expression::term_eval {
             0
         }
     }) && (do {
-        my $tmp = $MATCH;
-        $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-        my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
-        $MATCH = $tmp;
-        $res ? 1 : 0
-    }) && (do {
         my $m2 = $grammar->term_curly($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1950,12 +1944,10 @@ sub Perlito5::Grammar::Expression::term_eval {
     })));
     $tmp ? $MATCH : 0
 }
-my $Expr_end_token = {']' => 1, ')' => 1, '}' => 1, ';' => 1, 'if' => 1, 'for' => 1, 'else' => 1, 'when' => 1, 'while' => 1, 'until' => 1, 'elsif' => 1, 'unless' => 1, 'foreach' => 1};
 my $Expr_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
+my $Expr_end_token = {']' => 1, ')' => 1, '}' => 1, ';' => 1, 'if' => 1, 'for' => 1, 'else' => 1, 'when' => 1, 'while' => 1, 'until' => 1, 'elsif' => 1, 'unless' => 1, 'foreach' => 1};
 my $List_end_token = {':' => 1, 'or' => 1, 'and' => 1, 'xor' => 1, %{$Expr_end_token}};
-my $List_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
 my $Argument_end_token = {',' => 1, '<' => 1, '>' => 1, '=' => 1, '|' => 1, '^' => 1, '?' => 1, '=>' => 1, 'lt' => 1, 'le' => 1, 'gt' => 1, 'ge' => 1, '<=' => 1, '>=' => 1, '==' => 1, '!=' => 1, 'ne' => 1, 'eq' => 1, '..' => 1, '~~' => 1, '&&' => 1, '||' => 1, '+=' => 1, '-=' => 1, '*=' => 1, '/=' => 1, 'x=' => 1, '|=' => 1, '&=' => 1, '.=' => 1, '^=' => 1, '%=' => 1, '//' => 1, '...' => 1, '<=>' => 1, 'cmp' => 1, '<<=' => 1, '>>=' => 1, '||=' => 1, '&&=' => 1, '//=' => 1, '**=' => 1, %{$List_end_token}};
-my $Argument_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
 sub Perlito5::Grammar::Expression::list_parser {
     my($self, $str, $pos, $end_token) = @_;
     my $expr;
@@ -1995,7 +1987,7 @@ sub Perlito5::Grammar::Expression::list_parser {
         $is_first_token = 0;
         return $v
     };
-    my $prec = Perlito5::Grammar::Precedence->new('get_token' => $get_token, 'reduce' => $reduce_to_ast, 'end_token' => $end_token, 'end_token_chars' => $List_end_token_chars);
+    my $prec = Perlito5::Grammar::Precedence->new('get_token' => $get_token, 'reduce' => $reduce_to_ast, 'end_token' => $end_token, 'end_token_chars' => $Expr_end_token_chars);
     my $res = $prec->precedence_parse();
     if (scalar(@{$res}) == 0) {
         return {'str' => $str, 'from' => $pos, 'to' => $last_pos, 'capture' => '*undef*'}
