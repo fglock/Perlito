@@ -488,12 +488,44 @@ token term_eval {
 };
 
 
-my $Argument_end_token = {
-        ':' => 1,
+my $Expr_end_token = {
         ']' => 1,
         ')' => 1,
         '}' => 1,
         ';' => 1,
+      
+        'if' => 1,
+      
+        'for' => 1,
+      
+        'else' => 1,
+        'when' => 1,
+      
+        'while' => 1,
+        'until' => 1,
+        'elsif' => 1,
+      
+        'unless' => 1,
+      
+        'foreach' => 1,
+};
+my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
+
+
+my $List_end_token = { 
+        ':' => 1,
+      
+        'or' => 1,
+      
+        'and' => 1,
+        'xor' => 1,
+        %$Expr_end_token,
+};
+my $List_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
+
+
+# end-tokens for named unary operators - used in "Grammar::Bareword" module
+my $Argument_end_token = {
         ',' => 1,
         '<' => 1,   
         '>' => 1,   
@@ -503,8 +535,6 @@ my $Argument_end_token = {
         '^' => 1,   
         '?' => 1,   
       
-        'or' => 1,
-        'if' => 1,
         '=>' => 1,
         'lt' => 1,  
         'le' => 1,  
@@ -532,9 +562,6 @@ my $Argument_end_token = {
         '%=' => 1,  
         '//' => 1,  
      
-        'for' => 1,
-        'and' => 1,
-        'xor' => 1,
         '...' => 1, 
         '<=>' => 1, 
         'cmp' => 1, 
@@ -544,70 +571,9 @@ my $Argument_end_token = {
         '&&=' => 1, 
         '//=' => 1, 
         '**=' => 1, 
-     
-        # 'else' => 1,
-        'when' => 1,
-      
-        'while' => 1,
-        'until' => 1,
-        # 'elsif' => 1,
-      
-        'unless' => 1,
-      
-        'foreach' => 1,
+        %$List_end_token,
 };
 my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
-
-
-my $List_end_token = { 
-        ':' => 1,
-        ']' => 1,
-        ')' => 1,
-        '}' => 1,
-        ';' => 1,
-      
-        'or' => 1,
-        'if' => 1,
-      
-        'for' => 1,
-        'and' => 1,
-        'xor' => 1,
-      
-        'else' => 1,
-        'when' => 1,
-      
-        'while' => 1,
-        'until' => 1,
-        'elsif' => 1,
-      
-        'unless' => 1,
-      
-        'foreach' => 1,
-};
-my $List_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
-
-my $Expr_end_token = {
-        ']' => 1,
-        ')' => 1,
-        '}' => 1,
-        ';' => 1,
-      
-        'if' => 1,
-      
-        'for' => 1,
-      
-        'else' => 1,
-        'when' => 1,
-      
-        'while' => 1,
-        'until' => 1,
-        'elsif' => 1,
-      
-        'unless' => 1,
-      
-        'foreach' => 1,
-};
-my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
 sub argument_parse {
