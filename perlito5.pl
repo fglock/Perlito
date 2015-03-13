@@ -7960,11 +7960,13 @@ sub Perlito5::Grammar::exp_stmts {
     my $str = $_[1];
     my $pos = $_[2];
     push(@PKG, $Perlito5::PKG_NAME);
+    my $has_semicolon;
     my @stmts;
     my $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
     $pos = $m->{'to'};
     while ($m) {
         if (substr($str, $pos, 1) eq ';') {
+            $has_semicolon = 1;
             $m = Perlito5::Grammar::Space->opt_ws($str, $pos + 1);
             $pos = $m->{'to'}
         }
@@ -7974,6 +7976,7 @@ sub Perlito5::Grammar::exp_stmts {
                 push(@stmts, $m->{'capture'});
                 $pos = $m->{'to'};
                 if (substr($str, $pos, 1) eq ';') {
+                    $has_semicolon = 1;
                     $pos = $pos + 1
                 }
                 $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
