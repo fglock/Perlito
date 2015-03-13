@@ -3,17 +3,8 @@ package Perlito5::Grammar::Number;
 use strict;
 use Perlito5::Grammar::Precedence;
 
-Perlito5::Grammar::Precedence::add_term( '.' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '0' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '1' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '2' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '3' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '4' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '5' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '6' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '7' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '8' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( '9' => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } );
+Perlito5::Grammar::Precedence::add_term( $_  => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } )
+    for '.', '0' .. '9';
 
 
 token term_digit {
@@ -46,8 +37,7 @@ token exponent {
 };
 
 token val_num {
-    [
-    |   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
+    [   \. \d [ '_' | \d]*    <.exponent>?    # .10 .10e10
     |      \d [ '_' | \d]*  [ <.exponent>  |   \. <!before \. > [ '_' | \d]*  <.exponent>? ]
     ]
     {
