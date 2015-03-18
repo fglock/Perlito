@@ -1260,10 +1260,16 @@ package Perlito5::AST::Var;
             return $self->emit_javascript2() . ' = ' . $list  . '.shift()'
         }
         if ( $self->sigil eq '@' ) {
-            return $self->emit_javascript2() . ' = ' . $list  . '; ' . $list . ' = []'
+            return join( ";\n" . Perlito5::Javascript2::tab($level),
+                $self->emit_javascript2() . ' = ' . $list,
+                $list . ' = []'
+            );
         }
         if ( $self->sigil eq '%' ) {
-            return $self->emit_javascript2() . ' = p5a_to_h(' . $list  . '); ' . $list . ' = []'
+            return join( ";\n" . Perlito5::Javascript2::tab($level),
+                $self->emit_javascript2() . ' = p5a_to_h(' . $list  . ')',
+                $list . ' = []'
+            );
         }
         die "don't know how to assign to variable ", $self->sigil, $self->name;
     }
@@ -2036,6 +2042,16 @@ package Perlito5::AST::Apply;
                 # local ($x, $y) = ...
                 # ($x, $y) = ...
 
+                if ( $wantarray eq 'void' ) {
+                    my $tmp  = Perlito5::Javascript2::get_label();
+                    return join( ";\n" . Perlito5::Javascript2::tab($level),
+                            'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
+                            ( map $_->emit_javascript2_set_list($level, $tmp),
+                                  @{ $parameters->arguments }
+                            ),
+                    );
+                }
+
                 my $tmp  = Perlito5::Javascript2::get_label();
                 my $tmp2 = Perlito5::Javascript2::get_label();
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
@@ -2045,7 +2061,7 @@ package Perlito5::AST::Apply;
                                   @{ $parameters->arguments }
                             ),
                             'return ' . $tmp2,
-                )
+                );
             }
             return $parameters->emit_javascript2_set($arguments, $level+1, $wantarray);
         },
