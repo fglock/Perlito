@@ -116,9 +116,9 @@ while (substr($ARGV[0], 0, 1) eq '-'
     }
     elsif (uc(substr($ARGV[0], 0, 2)) eq '-M') {
         my $s = $ARGV[0];
-        my $import = 1;
+        my $import = "";
         if (substr($s, 1, 1) eq "m") {
-            $import = 0;
+            $import = "()";
         }
         $s = substr($s, 2);
         my $use = "use";
@@ -126,10 +126,11 @@ while (substr($ARGV[0], 0, 1) eq '-'
             $use = "no";
             $s = substr($s, 1);
         }
-        # TODO - parse options
-        my @options;
-        my $module = $s;
-        push @Use, { use => $use, module => $module, import => $import, options => \@options };
+        if (index($s, "=") > -1) {
+            ($s, $import) = split("=", $s);
+            $import = "split(/,/,q{$import})";
+        }
+        push @Use, { use => $use, module => $s, import => $import };
         shift @ARGV;
     }
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
@@ -194,11 +195,7 @@ if ($backend && @ARGV) {
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;
-        my $init = join("; ", map { "$_->{use} $_->{module}"
-                                    . ( $_->{import}
-                                        ? ""
-                                        : " ()" )
-                                  } @Use );
+        my $init = join( "; ", map { "$_->{use} $_->{module} $_->{import}" } @Use );
         eval "package main; no strict; no warnings; $init; $source; \$@ = undef";
         if ( $@ ) {
             my $error = $@;
