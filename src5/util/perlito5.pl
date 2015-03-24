@@ -46,6 +46,7 @@ my $execute     = 1;
 my $verbose     = 0;
 my $expand_use  = 1;
 my $boilerplate = 1;
+my @Use;
 
 if ($verbose) {
     warn "// Perlito5 compiler";
@@ -67,6 +68,7 @@ perlito5 [switches] [programfile]
     --boilerplate --noboilerplate
                     emits or not boilerplate code
     -e program      one line of program (omit programfile)
+    -[mM][-]module  execute \"use/no module...\" before executing program
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -110,6 +112,19 @@ while (substr($ARGV[0], 0, 1) eq '-'
         $backend = 'perl5';
         $execute = 0;
         $expand_use = 0;
+        shift @ARGV;
+    }
+    elsif (uc(substr($ARGV[0], 0, 2)) eq '-M') {
+        my $s = substr($ARGV[0], 2);
+        my $use = "use";
+        if (substr($s, 0, 1) eq "-") {
+            $use = "no";
+            $s = substr($s, 1);
+        }
+        # TODO - parse options
+        my @options;
+        my $module = $s;
+        push @Use, { use => $use, module => $module, options => \@options };
         shift @ARGV;
     }
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
@@ -174,7 +189,8 @@ if ($backend && @ARGV) {
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;
-        eval "package main; no strict; no warnings; $source; \$@ = undef";
+        my $init = join("; ", map { "$_->{use} $_->{module}" } @Use );
+        eval "package main; no strict; no warnings; $init; $source; \$@ = undef";
         if ( $@ ) {
             my $error = $@;
             warn $error;
