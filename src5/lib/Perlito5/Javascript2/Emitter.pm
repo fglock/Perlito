@@ -428,7 +428,7 @@ package Perlito5::Javascript2;
             return 'p5scalar_deref(' 
                     . $arg->emit_javascript2( $level ) . ', '
                     . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', '
-                    . '"' . $type . '"'      # autovivification type
+                    . Perlito5::Javascript2::escape_string($type)      # autovivification type
                     . ')';
         }
  
@@ -769,7 +769,7 @@ package Perlito5::AST::Lit::Block;
                 . Perlito5::Javascript2::tab($level + 1) . '}, '
                 .   '[0], '
                 . $self->emit_javascript2_continue($level) . ', '
-                .   '"' . ($self->{label} || "") . '"' . "\n"
+                . Perlito5::Javascript2::escape_string($self->{label} || "") . "\n"
                 . Perlito5::Javascript2::tab($level) . ')'
     }
     sub emit_javascript2_continue {
@@ -1246,8 +1246,8 @@ package Perlito5::AST::Var;
         }
         if ( $self->sigil eq '*' ) {
             return 'p5typeglob_set(' 
-            .   '"' . ($self->{namespace} || $Perlito5::PKG_NAME) . '", ' 
-            .   '"' . $self->{name} . '", ' 
+            .   Perlito5::Javascript2::escape_string($self->{namespace} || $Perlito5::PKG_NAME) . ', '
+            .   Perlito5::Javascript2::escape_string($self->{name}) . ', ' 
             .   Perlito5::Javascript2::to_scalar([$arguments], $level+1)
             . ')'
         }
@@ -1458,7 +1458,7 @@ package Perlito5::AST::Call;
             $meth = $meth->emit_javascript2($level, 'scalar');
         }
         else {
-            $meth = '"' . $meth . '"';
+            $meth = Perlito5::Javascript2::escape_string($meth);
         }
         return 'p5call(' . $invocant . ', ' 
                          . $meth . ', ' 
@@ -1540,7 +1540,7 @@ package Perlito5::AST::Apply;
                     . '.match('
                     .   '(new RegExp('
                           . $ast->emit_javascript2() . ', '
-                          . '"' . $regex_args->[1]->{buf} . '"'
+                          . Perlito5::Javascript2::escape_string($regex_args->[1]->{buf})
                     .   '))'
                     . ')'
                     . ' ? 1 : 0)';
@@ -1549,7 +1549,7 @@ package Perlito5::AST::Apply;
                 # run-time interpolation
                 $str = '(new RegExp('
                         . $ast->emit_javascript2() . ', '
-                        . '"' . $regex_args->[1]->{buf} . '"'
+                        . Perlito5::Javascript2::escape_string($regex_args->[1]->{buf})
                     . '))'
                     . '.exec('
                         . 'p5str(' . $var->emit_javascript2() . ')'
@@ -1562,7 +1562,7 @@ package Perlito5::AST::Apply;
                     . $var->emit_javascript2() . ', '
                     . $regex_args->[0]->emit_javascript2() . ', '
                     . $regex_args->[1]->emit_javascript2() . ', '
-                    . '"' . $regex_args->[2]->{buf} . '", '
+                    . Perlito5::Javascript2::escape_string($regex_args->[2]->{buf}) . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
                   . ");",
                 $var->emit_javascript2() . " = tmp[0];",
@@ -1633,7 +1633,7 @@ package Perlito5::AST::Apply;
         },
         '__PACKAGE__' => sub {
             my $self = $_[0];
-            '"' . $Perlito5::PKG_NAME . '"';
+            Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME);
         },
         '__SUB__' => sub {
             my $self = $_[0];
@@ -2171,9 +2171,9 @@ package Perlito5::AST::Apply;
                 my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
                 $eval ='eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' 
                             . Perlito5::Javascript2::to_str($arg) . ", "
-                            . '"' . $Perlito5::PKG_NAME . '", '
+                            . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', '
                             . $var_env_js . ', '
-                            . '"' . $wantarray . '"'
+                            . Perlito5::Javascript2::escape_string($wantarray)
                         . "]))";
             }
 
@@ -2498,7 +2498,7 @@ package Perlito5::AST::Apply;
                 # first argument of split() is a regex
                 push @js, 'new RegExp('
                         . $arg->{arguments}->[0]->emit_javascript2() . ', '
-                        . '"' . $arg->{arguments}->[1]->{buf} . '"'
+                        . Perlito5::Javascript2::escape_string($arg->{arguments}->[1]->{buf})
                     . ')';
                 shift @{ $self->{arguments} };
             }
@@ -2685,8 +2685,8 @@ package Perlito5::AST::Apply;
             my $name = $self->{code};
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
             return 'p5call_sub('
-                    . '"' . $namespace . '", '
-                    . '"' . $name . '", '
+                    . Perlito5::Javascript2::escape_string($namespace) . ', '
+                    . Perlito5::Javascript2::escape_string($name) . ', '
                     . $arg_code . ', '
                     . Perlito5::Javascript2::to_context($wantarray)
                  . ')';
@@ -2903,7 +2903,7 @@ package Perlito5::AST::While;
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'void', $cond) . ', '
                     . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                    .   '"' . ($self->{label} || "") . '", '
+                    . Perlito5::Javascript2::escape_string($self->{label} || "") . ', '
                     . $do_at_least_once
                     . ')';
 
@@ -3041,7 +3041,7 @@ package Perlito5::AST::For;
                         . Perlito5::Javascript2::tab($level + 1) . '}, '
                         .   $cond . ', '
                         . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                        .   '"' . ($self->{label} || "") . '"'
+                        . Perlito5::Javascript2::escape_string($self->{label} || "")
                         . ')';
             }
             else {
@@ -3055,7 +3055,7 @@ package Perlito5::AST::For;
                         . Perlito5::Javascript2::tab($level + 1) . '}, '
                         .   $cond . ', '
                         . Perlito5::AST::Lit::Block::emit_javascript2_continue($self, $level) . ', '
-                        .   '"' . ($self->{label} || "") . '"'
+                        . Perlito5::Javascript2::escape_string($self->{label} || "")
                         . ')'
             }
         }
