@@ -1535,15 +1535,18 @@ package Perlito5::AST::Apply;
             my $ast = $regex_args->[0];
             if ($ast->isa('Perlito5::AST::Val::Buf')) {
                 # constant
-
-                 $str = '(' 
+                $str = '(' 
                     . 'p5str(' . $var->emit_javascript2() . ')'
-                    . '.match(/' . $ast->{buf} . '/' . $regex_args->[1]->{buf} . ')'
+                    . '.match('
+                    .   '(new RegExp('
+                          . $ast->emit_javascript2() . ', '
+                          . '"' . $regex_args->[1]->{buf} . '"'
+                    .   '))'
+                    . ')'
                     . ' ? 1 : 0)';
             }
             else {
                 # run-time interpolation
-
                 $str = '(new RegExp('
                         . $ast->emit_javascript2() . ', '
                         . '"' . $regex_args->[1]->{buf} . '"'

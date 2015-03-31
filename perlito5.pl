@@ -9334,7 +9334,7 @@ package Perlito5::AST::Apply;
         elsif ($code eq 'p5:m') {
             my $ast = $regex_args->[0];
             if ($ast->isa('Perlito5::AST::Val::Buf')) {
-                $str = '(' . 'p5str(' . $var->emit_javascript2() . ')' . '.match(/' . $ast->{'buf'} . '/' . $regex_args->[1]->{'buf'} . ')' . ' ? 1 : 0)'
+                $str = '(' . 'p5str(' . $var->emit_javascript2() . ')' . '.match(' . '(new RegExp(' . $ast->emit_javascript2() . ', ' . '"' . $regex_args->[1]->{'buf'} . '"' . '))' . ')' . ' ? 1 : 0)'
             }
             else {
                 $str = '(new RegExp(' . $ast->emit_javascript2() . ', ' . '"' . $regex_args->[1]->{'buf'} . '"' . '))' . '.exec(' . 'p5str(' . $var->emit_javascript2() . ')' . ')'

@@ -38,13 +38,8 @@ sub more_test {
     #   print "not " unless (testing // 2) == 5;
     #   print "ok 1 # sub and defined-or\n";
 
-    my $v = eval <<TEST;
     print "not " unless (testing //);
     print "ok 2 # sub and match\n";
-    1;
-TEST
-    print "not " unless $v;
-    print "ok 2 - sub and match # TODO Regex parser bug\n";
 
     #
     #   # Search pattern not terminated
