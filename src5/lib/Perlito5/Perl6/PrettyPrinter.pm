@@ -133,7 +133,7 @@ our %op = (
     'list:<,>'    => { fix => 'list', prec => 190, str => ', ' },
     'infix:<:>'   => { fix => 'infix', prec => 190, str => ':' },
 
-    'prefix:<not>' => { fix => 'infix', prec => 200, str => ' not ' },
+    'prefix:<not>' => { fix => 'prefix', prec => 200, str => ' not ' },
 
     'infix:<and>' => { fix => 'infix', prec => 210, str => ' and ' },
 
