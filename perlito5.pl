@@ -9098,7 +9098,7 @@ package Perlito5::AST::Var;
             if ($self->{'sigil'} eq '%') {
                 return 'p5global_hash(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($str_name) . ')'
             }
-            return $ns . '["' . $table->{$self->{'sigil'}} . $str_name . '"]'
+            return $ns . '[' . Perlito5::Javascript2::escape_string($table->{$self->{'sigil'}} . $str_name) . ']'
         }
         if ($self->{'sigil'} eq '$#') {
             return '(' . $ns . $table->{'@'} . $str_name . '.length - 1)'
