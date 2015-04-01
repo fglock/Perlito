@@ -62,13 +62,7 @@ token literal {
 };
 
 token metasyntax_exp {
-    [
-    |  \\ .
-    |  \'  <.literal>     \'
-    |  \{  <.string_code> \}
-    |  \<  <.metasyntax_exp>  \>
-    |  <!before \> > .
-    ]+
+    [   <!before '>' > .   ]+
 };
 
 token string_code {
@@ -109,8 +103,6 @@ token rule_term {
         { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
     |   \\
         [
-        | 'c' \[ <Perlito5::Grammar::Number::digits> \]
-          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::digits"}) ) ) }
         | 'c' <Perlito5::Grammar::Number::digits>
           { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::digits"}) ) ) }
         | <any>
