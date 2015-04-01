@@ -512,7 +512,7 @@ package Perlito5::AST::Apply;
             else {
                 $eval = 
                     '(do { '
-                    .   'my $m = Perlito5::Grammar->exp_stmts(' 
+                    .   'my $m = Perlito5::Grammar::exp_stmts(' 
                     .       $arg->emit_xs( $level + 1, 'scalar' ) . ', 0);'
 
                     .   'my $source; '

@@ -13,11 +13,6 @@ sub add_statement {
         while @Statement_chars < length($name);
 }
 
-# --- TODO - move this to its own module
-Perlito5::Grammar::Statement::add_statement( '...'      => sub { Perlito5::Grammar::Statement->stmt_yadayada( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'package'  => sub { Perlito5::Grammar::Statement->stmt_package( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'format'   => sub { Perlito5::Grammar::Statement->stmt_format( $_[0], $_[1] ) } );
-
 token stmt_yadayada {
     '...' 
     {
@@ -113,9 +108,8 @@ token stmt_package {
 
 
 sub exp_stmt {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
     for my $len ( @Statement_chars ) {
         my $term = substr($str, $pos, $len);
         if (exists($Statement{$term})) {
@@ -140,14 +134,13 @@ my %Modifier = (
 );
 
 sub statement_modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $expression = $_[3]; 
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $expression = $_[2]; 
     for my $len ( @Modifier_chars ) {
         my $term = substr($str, $pos, $len);
         if (exists($Modifier{$term})) {
-            my $m = $self->modifier($str, $pos + $len, $term, $expression);
+            my $m = modifier($str, $pos + $len, $term, $expression);
             return $m if $m;
         }
     }
@@ -155,13 +148,12 @@ sub statement_modifier {
 }
 
 sub modifier {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $modifier = $_[3];
-    my $expression = $_[4]; 
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $modifier = $_[2];
+    my $expression = $_[3]; 
 
-    my $modifier_exp = Perlito5::Grammar::Expression->exp_parse($str, $pos);
+    my $modifier_exp = Perlito5::Grammar::Expression::exp_parse($str, $pos);
     # say "# statement modifier [", Perlito5::Match::flat($modifier), "] exp: ", $modifier_exp->perl;
     if (!$modifier_exp) {
         die "Expected expression after '", Perlito5::Match::flat($modifier), "'";
@@ -235,21 +227,20 @@ sub modifier {
 
 
 sub statement_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
     # say "# statement_parse input: ",$str," at ",$pos;
 
     # the rule for subroutines seems to be: 
     # named subs are statements,
     # anonymous subs are plain terms.
 
-    my $res = $self->exp_stmt($str, $pos);
+    my $res = exp_stmt($str, $pos);
     if ($res) {
         # say "# statement result: ", $res->perl;
         return $res;
     }
-    $res = Perlito5::Grammar::Expression->exp_parse($str, $pos);
+    $res = Perlito5::Grammar::Expression::exp_parse($str, $pos);
     if (!$res) {
         # say "# not a statement or expression";
         return;
@@ -263,8 +254,8 @@ sub statement_parse {
     {
         my $label = $res->{capture}{code};
         # say "label $label";
-        my $ws   = Perlito5::Grammar::Space->opt_ws( $str, $res->{to} + 1 );
-        my $stmt = $self->statement_parse( $str, $ws->{to} );
+        my $ws   = Perlito5::Grammar::Space::opt_ws( $str, $res->{to} + 1 );
+        my $stmt = statement_parse( $str, $ws->{to} );
         if ($stmt) {
             $stmt->{capture}{label} = $label;
             return $stmt;
@@ -280,7 +271,7 @@ sub statement_parse {
     }
 
     # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->{to}, Perlito5::Match::flat($res));
+    my $modifier = statement_modifier($str, $res->{to}, Perlito5::Match::flat($res));
 
     my $p = $modifier ? $modifier->{to} : $res->{to};
     my $terminator = substr($str, $p, 1);
@@ -296,6 +287,12 @@ sub statement_parse {
     }
     return $modifier;
 }
+
+
+Perlito5::Grammar::Statement::add_statement( '...'      => \&stmt_yadayada );
+Perlito5::Grammar::Statement::add_statement( 'package'  => \&stmt_package );
+Perlito5::Grammar::Statement::add_statement( 'format'   => \&stmt_format );
+
 
 1;
 

@@ -4,12 +4,6 @@ package Perlito5::Grammar::Sigil;
 
 use Perlito5::Grammar::Precedence;
 
-Perlito5::Grammar::Precedence::add_term( '$'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( '@'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( '%'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( '&'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( '*'  => sub { Perlito5::Grammar::Sigil->term_sigil($_[0], $_[1]) } );
-
 
 # the special variables list
 # obtained with:
@@ -94,9 +88,8 @@ my %special_var = (
 );
 
 sub term_special_var {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
     my $len = 0;
 
     # TODO:
@@ -171,9 +164,8 @@ my %sigil = (
 );
 
 sub term_sigil {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
 
     my $c1 = substr($str, $pos, 1);
     return unless exists $sigil{$c1};
@@ -185,7 +177,7 @@ sub term_sigil {
         $p++;
     }
 
-    my $m = Perlito5::Grammar::Space->opt_ws($str, $p);
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
     $p = $m->{to};
 
     $c1 = substr($str, $p, 1);
@@ -193,22 +185,22 @@ sub term_sigil {
     if ( $c1 eq '{' ) {
         #  ${ ...
         my $p = $q;
-        $m = Perlito5::Grammar::Space->opt_ws($str, $p);
+        $m = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $m->{to};
 
-        $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+        $m = Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
         if ($m) {
             my $namespace = Perlito5::Match::flat($m);
             my $pos  = $m->{to};
             #  ${name  ...
-            my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
+            my $n = Perlito5::Grammar::var_name( $str, $m->{to} );
             my $name;
             if ($n) {
                 $name = Perlito5::Match::flat($n);
                 $pos  = $n->{to};
             }
             if ($namespace || $name) {
-                my $spc = Perlito5::Grammar::Space->opt_ws($str, $pos);
+                my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
                 # we are parsing:  ${var}  ${var{index}}
                 # create the 'Var' object
                 $m->{capture} = Perlito5::AST::Var->new(
@@ -218,9 +210,9 @@ sub term_sigil {
                 );
                 $m->{to} = $spc->{to};
                 # hijack some string interpolation code to parse the subscript
-                $m = Perlito5::Grammar::String->double_quoted_var_with_subscript($m);
+                $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
                 $m->{capture} = [ 'term', $m->{capture} ];
-                $spc = Perlito5::Grammar::Space->opt_ws($str, $m->{to});
+                $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{to});
                 my $p = $spc->{to};
                 if ( substr($str, $p, 1) eq '}' ) {
                     $m->{to} = $p + 1;
@@ -228,12 +220,12 @@ sub term_sigil {
                 }
             }
         }
-        my $caret = Perlito5::Grammar->caret_char( $str, $p );
+        my $caret = Perlito5::Grammar::caret_char( $str, $p );
         if ( $caret ) {
             #  ${^ ...
             my $p = $caret->{to};
             my $name = Perlito5::Match::flat($caret);
-            $m = Perlito5::Grammar->var_name($str, $p);
+            $m = Perlito5::Grammar::var_name($str, $p);
             if ($m) {
                 $name = $name . Perlito5::Match::flat($m);
                 $p = $m->{to};
@@ -254,7 +246,7 @@ sub term_sigil {
                 return $caret;
             }
         }
-        $m = Perlito5::Grammar::Expression->curly_parse( $str, $p );
+        $m = Perlito5::Grammar::Expression::curly_parse( $str, $p );
         if ($m) {
             #  ${ ... }
             my $p = $m->{to};
@@ -271,7 +263,7 @@ sub term_sigil {
             }
         }
     }
-    my $caret = Perlito5::Grammar->caret_char( $str, $p );
+    my $caret = Perlito5::Grammar::caret_char( $str, $p );
     if ( $caret ) {
         #  $^ ...
         my $name = Perlito5::Match::flat($caret);
@@ -290,12 +282,12 @@ sub term_sigil {
     }
     if ( $c1 eq '$' ) {
         #  $$ ...
-        my $m2 = Perlito5::Grammar::Space->opt_ws($str, $p + 1);
+        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
         my $p2 = $m2->{to};
         my $c2 = substr($str, $p2, 1);
         if ($c2 ne ',' && $c2 ne ';') {
             # not $$; not $$,
-            $m = $self->term_sigil( $str, $p );
+            $m = term_sigil( $str, $p );
             if ($m) {
                 $m->{capture} = [ 'term',  
                         Perlito5::AST::Apply->new( 
@@ -309,11 +301,11 @@ sub term_sigil {
         }
     }
 
-    $m = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+    $m = Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
     if ($m) {
         my $namespace = Perlito5::Match::flat($m);
         #  $name ...
-        my $n = Perlito5::Grammar->var_name( $str, $m->{to} );
+        my $n = Perlito5::Grammar::var_name( $str, $m->{to} );
         if ($n) {
             $n->{capture} = [ 'term', 
                     Perlito5::AST::Var->new(
@@ -338,8 +330,15 @@ sub term_sigil {
     }
 
     #  $! ...
-    return $self->term_special_var( $str, $pos );
+    return term_special_var( $str, $pos );
 };
+
+
+Perlito5::Grammar::Precedence::add_term( '$'  => \&term_sigil );
+Perlito5::Grammar::Precedence::add_term( '@'  => \&term_sigil );
+Perlito5::Grammar::Precedence::add_term( '%'  => \&term_sigil );
+Perlito5::Grammar::Precedence::add_term( '&'  => \&term_sigil );
+Perlito5::Grammar::Precedence::add_term( '*'  => \&term_sigil );
 
 
 1;

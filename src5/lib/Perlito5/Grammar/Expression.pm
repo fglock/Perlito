@@ -5,14 +5,6 @@ use Perlito5::Grammar::Bareword;
 use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Statement;
 
-Perlito5::Grammar::Precedence::add_term( 'my'    => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'our'   => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'eval'  => sub { Perlito5::Grammar::Expression->term_eval( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'state' => sub { Perlito5::Grammar::Expression->term_declarator( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'local' => sub { Perlito5::Grammar::Expression->term_local( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'return' => sub { Perlito5::Grammar::Expression->term_return( $_[0], $_[1] ) } );
-
-
 sub expand_list {
     # convert internal 'list:<,>' AST into an array of AST
     my $param_list = shift;
@@ -443,7 +435,7 @@ token term_local {
             my $type = '';
             $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil.term_sigil"})->[1];
             # hijack some string interpolation code to parse the possible subscript
-            $MATCH = Perlito5::Grammar::String->double_quoted_var_with_subscript($MATCH);
+            $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
 
             $MATCH->{capture} = [ 'term', 
@@ -566,7 +558,7 @@ my $Argument_end_token = {
 
 
 sub list_parser {
-    my ($self, $str, $pos, $end_token) = @_;
+    my ($str, $pos, $end_token) = @_;
     # say "# argument_parse: input ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
@@ -588,9 +580,9 @@ sub list_parser {
             }
         }
         else {
-            my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
             if ($m) {
-                my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+                my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
                 if ($spc) {
                     $m->{to} = $spc->{to};
                 }
@@ -640,24 +632,24 @@ sub list_parser {
 }
 
 sub argument_parse {
-    my ($self, $str, $pos) = @_;
-    return list_parser( $self, $str, $pos, $Argument_end_token );
+    my ($str, $pos) = @_;
+    return list_parser( $str, $pos, $Argument_end_token );
 }
 sub list_parse {
-    my ($self, $str, $pos) = @_;
-    return list_parser( $self, $str, $pos, $List_end_token );
+    my ($str, $pos) = @_;
+    return list_parser( $str, $pos, $List_end_token );
 }
 
 sub circumfix_parse {
-    my ($self, $str, $pos, $delimiter) = @_;
+    my ($str, $pos, $delimiter) = @_;
     # say "# circumfix_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
     my $get_token = sub {
         my $last_is_term = $_[0];
-        my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
+        my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
         if ($m) {
-            my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+            my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
             if ($spc) {
                 $m->{to} = $spc->{to};
             }
@@ -697,24 +689,20 @@ sub circumfix_parse {
 }
 
 sub ternary5_parse {
-    my ($self, $str, $pos) = @_;
-    return $self->circumfix_parse($str, $pos, ':');
+    return circumfix_parse(@_, ':');
 }
 sub curly_parse {
-    my ($self, $str, $pos) = @_;
-    return $self->circumfix_parse($str, $pos, '}');
+    return circumfix_parse(@_, '}');
 }
 sub square_parse {
-    my ($self, $str, $pos) = @_;
-    return $self->circumfix_parse($str, $pos, ']');
+    return circumfix_parse(@_, ']');
 }
 sub paren_parse {
-    my ($self, $str, $pos) = @_;
-    return $self->circumfix_parse($str, $pos, ')');
+    return circumfix_parse(@_, ')');
 }
 
 sub exp_parse {
-    my ($self, $str, $pos) = @_;
+    my ($str, $pos) = @_;
     # say "# exp_parse input: ",$str," at ",$pos;
     my $expr;
     my $last_pos = $pos;
@@ -726,9 +714,9 @@ sub exp_parse {
             $v = pop @$lexer_stack;
         }
         else {
-            my $m = Perlito5::Grammar::Precedence->op_parse($str, $last_pos, $last_is_term);
+            my $m = Perlito5::Grammar::Precedence::op_parse($str, $last_pos, $last_is_term);
             if ($m) {
-                my $spc = Perlito5::Grammar::Space->ws($str, $m->{to});
+                my $spc = Perlito5::Grammar::Space::ws($str, $m->{to});
                 if ($spc) {
                     $m->{to} = $spc->{to};
                 }
@@ -765,6 +753,15 @@ sub exp_parse {
     };
 }
 
+
+Perlito5::Grammar::Precedence::add_term( 'my'    => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'our'   => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'eval'  => \&term_eval );
+Perlito5::Grammar::Precedence::add_term( 'state' => \&term_declarator );
+Perlito5::Grammar::Precedence::add_term( 'local' => \&term_local );
+Perlito5::Grammar::Precedence::add_term( 'return' => \&term_return );
+
+
 1;
 
 =begin
@@ -775,7 +772,7 @@ Perlito5::Grammar::Expression - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    Perlito5::Grammar::Expression->exp_parse($str)
+    Perlito5::Grammar::Expression::exp_parse($str)
 
 =head1 DESCRIPTION
 

@@ -3,10 +3,6 @@ package Perlito5::Grammar::Number;
 use strict;
 use Perlito5::Grammar::Precedence;
 
-Perlito5::Grammar::Precedence::add_term( $_  => sub { Perlito5::Grammar::Number->term_digit( $_[0], $_[1] ) } )
-    for '.', '0' .. '9';
-
-
 token term_digit {
     | <Perlito5::Grammar::Number.val_octal>
         # 0123
@@ -22,12 +18,16 @@ token term_digit {
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_int"}) ]  }
 };
 
+Perlito5::Grammar::Precedence::add_term( $_  => \&term_digit )
+    for '.', '0' .. '9';
+
+
 sub digit {
-    substr( $_[1], $_[2], 1 ) =~ m/\d/
+    substr( $_[0], $_[1], 1 ) =~ m/\d/
     ? {
-        str  => $_[1],
-        from => $_[2],
-        to   => $_[2] + 1,
+        str  => $_[0],
+        from => $_[1],
+        to   => $_[1] + 1,
       }
     : 0;
 }

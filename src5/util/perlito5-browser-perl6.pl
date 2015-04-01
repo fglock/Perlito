@@ -18,7 +18,7 @@ sub compile_p5_to_p6 {
     my $s = shift;
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO    = {};
-    my $ast = Perlito5::Grammar->exp_stmts($s, 0);
+    my $ast = Perlito5::Grammar::exp_stmts($s, 0);
     my @data = Perlito5::AST::CompUnit::emit_perl6_program(
         [
             Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) )

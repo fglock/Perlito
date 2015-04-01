@@ -21,15 +21,14 @@ token the_object {
 };
 
 sub term_bareword {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
 
     my $p = $pos;
-    my $m_namespace = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+    my $m_namespace = Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
     my $namespace = Perlito5::Match::flat($m_namespace);
     $p = $m_namespace->{to};
-    my $m_name      = Perlito5::Grammar->ident( $str, $p );
+    my $m_name      = Perlito5::Grammar::ident( $str, $p );
 
     if (!$m_name) {
         if ($namespace) {
@@ -68,7 +67,7 @@ sub term_bareword {
     # we've got a bareword
 
     # my $has_space_after;
-    my $m = Perlito5::Grammar::Space->ws( $str, $p );
+    my $m = Perlito5::Grammar::Space::ws( $str, $p );
     if ( $m ) {
         # $has_space_after = 1;
         $p = $m->{to};
@@ -92,7 +91,7 @@ sub term_bareword {
 
         # this can be an indirect-object if the next term is a bareword ending with '::'
 
-        $invocant = Perlito5::Grammar->full_ident( $str, $p );
+        $invocant = Perlito5::Grammar::full_ident( $str, $p );
         my $package = Perlito5::Match::flat($invocant);
         if ( $package ) {
             $invocant->{capture} = Perlito5::AST::Var->new(
@@ -118,7 +117,7 @@ sub term_bareword {
 
     }
     else {
-        $invocant = Perlito5::Grammar::Bareword->the_object( $str, $p );
+        $invocant = Perlito5::Grammar::Bareword::the_object( $str, $p );
     }
 
     if ($invocant) {
@@ -127,12 +126,12 @@ sub term_bareword {
 
         # read the parameter list
         my $arg = [];
-        $m = Perlito5::Grammar::Space->ws( $str, $p );
+        $m = Perlito5::Grammar::Space::ws( $str, $p );
         $p = $m->{to} if $m;
         if ( substr($str, $p, 2) eq '->' ) {
         }
         elsif ( substr($str, $p, 1) eq '(' ) {
-            my $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
+            my $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
             if ( $m ) {
                 $arg = $m->{capture}[2];
                 $p   = $m->{to};
@@ -140,7 +139,7 @@ sub term_bareword {
             }
         }
         else {
-            my $m = Perlito5::Grammar::Expression->list_parse( $str, $p );
+            my $m = Perlito5::Grammar::Expression::list_parse( $str, $p );
             if ($m->{capture} ne '*undef*') {
                 $arg = Perlito5::Grammar::Expression::expand_list( $m->{capture} );
                 $p   = $m->{to};
@@ -251,7 +250,7 @@ sub term_bareword {
         ## return $m_name;
 
         # check for vstring: v100.200.300
-        my $m = Perlito5::Grammar::Number->val_version( $str, $pos );
+        my $m = Perlito5::Grammar::Number::val_version( $str, $pos );
         if ($m) {
             $m->{capture} = [ 'term', $m->{capture} ];
             return $m;
@@ -293,7 +292,7 @@ sub term_bareword {
             if ( substr($str, $p, 1) eq '(' ) {
                 $p++;
                 $has_paren = 1;
-                my $m = Perlito5::Grammar::Space->ws( $str, $p );
+                my $m = Perlito5::Grammar::Space::ws( $str, $p );
                 if ($m) {
                     $p = $m->{to}
                 }
@@ -319,7 +318,7 @@ sub term_bareword {
             my $m;
             my $arg;
             if ( substr($str, $p, 1) eq '(' ) {
-                $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
+                $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
                 if ( !$m ) { return $m };
                 $p = $m->{to};
                 $has_paren = 1;
@@ -331,7 +330,7 @@ sub term_bareword {
                 $arg = $v;
             }
             else {
-                $m = Perlito5::Grammar::Expression->argument_parse( $str, $p );
+                $m = Perlito5::Grammar::Expression::argument_parse( $str, $p );
                 $arg = $m->{capture};
                 if ( $arg eq '*undef*' ) {
                     $arg = undef;
@@ -389,7 +388,7 @@ sub term_bareword {
     # maybe it's a subroutine call
 
     if ( substr($str, $p, 1) eq '(' ) {
-        $m = Perlito5::Grammar::Expression->term_paren( $str, $p );
+        $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
         if ( !$m ) { return $m };
         my $arg = $m->{capture}[2];
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
@@ -404,7 +403,7 @@ sub term_bareword {
     }
 
 
-    my $m_list = Perlito5::Grammar::Expression->list_parse( $str, $p );
+    my $m_list = Perlito5::Grammar::Expression::list_parse( $str, $p );
     my $list = $m_list->{capture};
     if ($list ne '*undef*') {
         $m_name->{capture} = [ 'postfix_or_term', 'funcall',

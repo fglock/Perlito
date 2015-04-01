@@ -14,45 +14,45 @@ use Perlito5::Grammar::Attribute;
 use Perlito5::Grammar::Number;
 
 sub word {
-    substr( $_[1], $_[2], 1 ) =~ m/\w/
+    substr( $_[0], $_[1], 1 ) =~ m/\w/
     ? {
-        str  => $_[1],
-        from => $_[2],
-        to   => $_[2] + 1,
+        str  => $_[0],
+        from => $_[1],
+        to   => $_[1] + 1,
       }
     : 0;
 }
 
 sub ident {
     return 
-        if substr( $_[1], $_[2], 1 ) !~ m/\w/
-        || substr( $_[1], $_[2], 1 ) =~ m/\d/;
+        if substr( $_[0], $_[1], 1 ) !~ m/\w/
+        || substr( $_[0], $_[1], 1 ) =~ m/\d/;
     my $m = {
-         str  => $_[1],
-         from => $_[2],
-         to   => $_[2] + 1,
+         str  => $_[0],
+         from => $_[1],
+         to   => $_[1] + 1,
        };
     $m->{to}++
-        while substr( $_[1], $m->{to}, 1 ) =~ m/\w/;
+        while substr( $_[0], $m->{to}, 1 ) =~ m/\w/;
     $m;
 }
 
 sub caret_char {
-    my $c = substr( $_[1], $_[2], 1 );
-    my $pos = $_[2];
+    my $c = substr( $_[0], $_[1], 1 );
+    my $pos = $_[1];
     if ($c eq '^') {
         $pos++;
-        $c = substr( $_[1], $pos, 1 );
+        $c = substr( $_[0], $pos, 1 );
         return 0 if $c lt 'A' || $c gt 'Z';
         $c = chr( ord($c) - ord("A") + 1 );
     }
-    elsif ( Perlito5::Grammar::Space->ws($_[1], $pos) ) {
+    elsif ( Perlito5::Grammar::Space::ws($_[0], $pos) ) {
         return 0;
     }
     return 0 if $c lt "\cA" || $c gt "\cZ";
     return {
-             str  => $_[1],
-             from => $_[2],
+             str  => $_[0],
+             from => $_[1],
              to   => $pos + 1,
              capture => $c,
            }
@@ -112,23 +112,22 @@ token var_ident {
 
 my @PKG;
 sub exp_stmts {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
     push @PKG, $Perlito5::PKG_NAME;
  
     my $has_semicolon;  # TODO - use this to help disambiguate: block vs. hash literal
     my @stmts;
-    my $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
     $pos = $m->{to};
     while ($m) {
         if ( substr($str, $pos, 1) eq ';' ) {
             $has_semicolon = 1;
-            $m = Perlito5::Grammar::Space->opt_ws($str, $pos + 1);
+            $m = Perlito5::Grammar::Space::opt_ws($str, $pos + 1);
             $pos = $m->{to};
         }
         else {
-            $m = Perlito5::Grammar::Statement->statement_parse($str, $pos);
+            $m = Perlito5::Grammar::Statement::statement_parse($str, $pos);
             if ($m) {
                 push @stmts, $m->{capture};
                 $pos = $m->{to};
@@ -136,7 +135,7 @@ sub exp_stmts {
                     $has_semicolon = 1;
                     $pos = $pos + 1;
                 }
-                $m = Perlito5::Grammar::Space->opt_ws($str, $pos);
+                $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
                 $pos = $m->{to};
             }
         }

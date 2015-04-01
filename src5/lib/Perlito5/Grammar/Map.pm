@@ -3,10 +3,6 @@ package Perlito5::Grammar::Map;
 
 use strict;
 
-Perlito5::Grammar::Precedence::add_term( 'map'   => sub { Perlito5::Grammar::Map->term_map_or_grep( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'grep'  => sub { Perlito5::Grammar::Map->term_map_or_grep( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'sort'  => sub { Perlito5::Grammar::Map->term_sort( $_[0], $_[1] ) } );
-
 token map_or_grep { 'map' | 'grep' };
 
 
@@ -140,6 +136,11 @@ token term_sort {
         }
     ]
 };
+
+
+Perlito5::Grammar::Precedence::add_term( 'map'   => \&term_map_or_grep );
+Perlito5::Grammar::Precedence::add_term( 'grep'  => \&term_map_or_grep );
+Perlito5::Grammar::Precedence::add_term( 'sort'  => \&term_sort );
 
 1;
 

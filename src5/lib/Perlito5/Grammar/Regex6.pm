@@ -26,9 +26,8 @@ token token {
         #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex6.rule"}))->perl;
         my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"})
             . '{ ' .
-                'my $grammar = $_[0]; ' .
-                'my $str     = $_[1]; ' .
-                'my $pos     = $_[2]; ' .
+                'my $str     = $_[0]; ' .
+                'my $pos     = $_[1]; ' .
                 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
                 'my $tmp = ( ' .
                     Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6.rule"})->emit_perl5() .
@@ -36,7 +35,7 @@ token token {
                 '$tmp ? $MATCH : 0; '
             . '}';
         #say 'Intermediate code: ', $source;
-        my $ast = Perlito5::Grammar::Block->named_sub_def( $source, 0 );
+        my $ast = Perlito5::Grammar::Block::named_sub_def( $source, 0 );
         # say 'Intermediate ast: ', $ast->flat;
         $MATCH->{capture} = Perlito5::Match::flat($ast);
     }
@@ -47,7 +46,7 @@ token term_token {
                 { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{token})       ] }
 };
 
-Perlito5::Grammar::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex6->term_token($_[0], $_[1]) } );
+Perlito5::Grammar::Precedence::add_term( 'token', \&term_token );
 
 
 # this is the "grammar grammar"
@@ -193,7 +192,7 @@ Perlito5::Grammar::Regex6 - Grammar for Perlito Grammar
 
 =head1 SYNOPSIS
 
-    my $match = Perlito5::Grammar::Regex6->rule( $source, $pos );
+    my $match = Perlito5::Grammar::Regex6::rule( $source, $pos );
     Perlito5::Match::flat($match);    # generated Regex6 AST
 
 =head1 DESCRIPTION

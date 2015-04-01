@@ -25,29 +25,19 @@ our %Named_block = (
     END       => 1,
 );
 
-Perlito5::Grammar::Precedence::add_term( 'do'    => sub { Perlito5::Grammar::Block->term_do( $_[0], $_[1] ) } );
-Perlito5::Grammar::Precedence::add_term( 'sub'   => sub { Perlito5::Grammar::Block->term_anon_sub( $_[0], $_[1] ) } );
-
-Perlito5::Grammar::Statement::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
-Perlito5::Grammar::Statement::add_statement( 'sub'   => sub { Perlito5::Grammar::Block->named_sub($_[0], $_[1]) } );
-Perlito5::Grammar::Statement::add_statement( $_      => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } )
-    for keys %Named_block;
-
-
 sub term_block {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
 
     my $p = $pos;
     my $block_name;
-    my $m_name = Perlito5::Grammar->ident( $str, $p );
+    my $m_name = Perlito5::Grammar::ident( $str, $p );
     if ($m_name) {
         $p = $m_name->{to};
         $block_name = Perlito5::Match::flat($m_name);
     }
 
-    my $ws = Perlito5::Grammar::Space->ws( $str, $p );
+    my $ws = Perlito5::Grammar::Space::ws( $str, $p );
     if ( $ws ) {
         $p = $ws->{to};
     }
@@ -55,11 +45,11 @@ sub term_block {
     if ( substr($str, $p, 1) eq '{' ) {
         # do we recognize a bare block in this position?
         # warn "maybe bareblock at $p";
-        my $m = Perlito5::Grammar::Expression->term_curly($str, $p);
+        my $m = Perlito5::Grammar::Expression::term_curly($str, $p);
         if ($m) {
             my $block_start = $p;
             $p = $m->{to};
-            $ws = Perlito5::Grammar::Space->ws( $str, $p );
+            $ws = Perlito5::Grammar::Space::ws( $str, $p );
             if ( $ws ) {
                 $p = $ws->{to};
             }
@@ -68,11 +58,11 @@ sub term_block {
             if ( !$block_name && substr($str, $p, 8) eq 'continue' ) {
                 # anonymous blocks can have a 'continue' block
                 $p += 8;
-                $ws = Perlito5::Grammar::Space->ws( $str, $p );
+                $ws = Perlito5::Grammar::Space::ws( $str, $p );
                 if ( $ws ) {
                     $p = $ws->{to};
                 }
-                my $cont = Perlito5::Grammar::Expression->term_curly($str, $p);
+                my $cont = Perlito5::Grammar::Expression::term_curly($str, $p);
                 die "syntax error" unless $cont;
                 # warn "continue!";
 
@@ -118,7 +108,7 @@ sub term_block {
 
 token named_sub_def {
     <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
-    <Perlito5::Grammar::Block.prototype> <.Perlito5::Grammar::Space.opt_ws>
+    <Perlito5::Grammar::Block.prototype_> <.Perlito5::Grammar::Space.opt_ws>
     <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
     [
         \{
@@ -142,7 +132,7 @@ token named_sub_def {
     ]
     {
         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
-        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.prototype"});
+        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.prototype_"});
         $sig = undef if $sig eq '*undef*';
 
         my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
@@ -188,26 +178,25 @@ token named_sub_def {
 };
 
 sub named_sub {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
 
     return
         unless substr($str, $pos, 3) eq 'sub';
-    my $ws = Perlito5::Grammar::Space->ws( $str, $pos + 3 );
+    my $ws = Perlito5::Grammar::Space::ws( $str, $pos + 3 );
     return
         unless $ws;
     my $p = $ws->{to};
 
-    my $m_name = Perlito5::Grammar->ident( $str, $p );
+    my $m_name = Perlito5::Grammar::ident( $str, $p );
     return
         unless $m_name;
 
     my $block_name = Perlito5::Match::flat($m_name);
     if (exists $Named_block{$block_name}) {
-        return Perlito5::Grammar::Block->term_block($str, $p);
+        return Perlito5::Grammar::Block::term_block($str, $p);
     }
-    return Perlito5::Grammar::Block->named_sub_def($str, $p);
+    return Perlito5::Grammar::Block::named_sub_def($str, $p);
 }
 
 token term_anon_sub {
@@ -225,14 +214,14 @@ token args_sig {
     [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*
 };
 
-token prototype {
+token prototype_ {
     |   <.Perlito5::Grammar::Space.opt_ws> \( <.Perlito5::Grammar::Space.opt_ws>  <args_sig>  <.Perlito5::Grammar::Space.opt_ws>  \)
         { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
     |   { $MATCH->{capture} = '*undef*' }   # default signature
 };
 
 token anon_sub_def {
-    <prototype> <.Perlito5::Grammar::Space.opt_ws> 
+    <prototype_> <.Perlito5::Grammar::Space.opt_ws> 
     <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
     \{ 
         <.Perlito5::Grammar::Space.opt_ws> 
@@ -240,7 +229,7 @@ token anon_sub_def {
         <.Perlito5::Grammar::Space.opt_ws>
     [   \}     | { die 'Missing right curly or square bracket in anon sub' } ]
     {
-        my $sig  = Perlito5::Match::flat($MATCH->{prototype});
+        my $sig  = Perlito5::Match::flat($MATCH->{prototype_});
         $sig = undef if $sig eq '*undef*';
 
         my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
@@ -259,6 +248,15 @@ token anon_sub_def {
         ) 
     }
 };
+
+
+Perlito5::Grammar::Precedence::add_term( 'do'    => \&term_do );
+Perlito5::Grammar::Precedence::add_term( 'sub'   => \&term_anon_sub );
+
+Perlito5::Grammar::Statement::add_statement( '{'     => \&term_block );
+Perlito5::Grammar::Statement::add_statement( 'sub'   => \&named_sub );
+Perlito5::Grammar::Statement::add_statement( $_      => \&term_block )
+    for keys %Named_block;
 
 
 1;

@@ -5,10 +5,6 @@ use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar;
 use strict;
 
-Perlito5::Grammar::Statement::add_statement( 'no'  => sub { Perlito5::Grammar::Use->stmt_use($_[0], $_[1]) } );
-Perlito5::Grammar::Statement::add_statement( 'use' => sub { Perlito5::Grammar::Use->stmt_use($_[0], $_[1]) } );
-
-
 my %Perlito_internal_module = (
     strict         => 'Perlito5X::strict',
     warnings       => 'Perlito5X::warnings',
@@ -68,7 +64,7 @@ token stmt_use {
 
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
-                my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
                 die "not a valid variable name: @$list"
                     if !$m;
                 $MATCH->{capture} = $m->{capture};
@@ -82,7 +78,7 @@ token stmt_use {
                             .   Perlito5::Dumper::_dumper($name->{$key})
                             . ' }';
                         # say "will do: $code";
-                        my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                        my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
                         die "not a valid constant: @$list"
                             if !$m;
                         # say Perlito5::Dumper::Dumper($m->{capture});
@@ -97,7 +93,7 @@ token stmt_use {
                           )
                         . ') }';
                     # say "will do: $code";
-                    my $m = Perlito5::Grammar::Statement->statement_parse($code, 0);
+                    my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
                     die "not a valid constant: @$list"
                         if !$m;
                     # say Perlito5::Dumper::Dumper($m->{capture});
@@ -119,11 +115,11 @@ token stmt_use {
 };
 
 sub parse_time_eval {
-    my $self = shift;
+    my $ast = shift;
 
-    my $module_name = $self->mod;
-    my $use_or_not  = $self->code;
-    my $arguments   = $self->{arguments};
+    my $module_name = $ast->mod;
+    my $use_or_not  = $ast->code;
+    my $arguments   = $ast->{arguments};
 
     # test for "empty list" (and don't call import)
     my $skip_import = defined($arguments) && @$arguments == 0;
@@ -163,13 +159,13 @@ sub parse_time_eval {
 }
 
 sub emit_time_eval {
-    my $self = shift;
+    my $ast = shift;
 
-    if ($self->mod eq 'strict') {
-        if ($self->code eq 'use') {
+    if ($ast->mod eq 'strict') {
+        if ($ast->code eq 'use') {
             Perlito5X::strict->import();
         }
-        elsif ($self->code eq 'no') {
+        elsif ($ast->code eq 'no') {
             Perlito5X::strict->unimport();
         }
     }
@@ -225,7 +221,7 @@ sub expand_use {
 
     # compile; push AST into comp_units
     # warn $source;
-    my $m = Perlito5::Grammar->exp_stmts($source, 0);
+    my $m = Perlito5::Grammar::exp_stmts($source, 0);
     die "Syntax Error near ", $m->{to}
         if $m->{to} != length($source);
 
@@ -302,6 +298,11 @@ sub require {
         return $result;
     }
 }
+
+
+Perlito5::Grammar::Statement::add_statement( 'no'  => \&stmt_use );
+Perlito5::Grammar::Statement::add_statement( 'use' => \&stmt_use );
+
 
 1;
 

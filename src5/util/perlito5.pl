@@ -220,7 +220,7 @@ if ($backend && @ARGV) {
             my $m;
             my $ok;
             eval {
-                $m = Perlito5::Grammar->exp_stmts($source, 0);
+                $m = Perlito5::Grammar::exp_stmts($source, 0);
                 $ok = 1;
             };
             if (  !$ok

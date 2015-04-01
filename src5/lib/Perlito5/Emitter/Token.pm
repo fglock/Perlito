@@ -163,11 +163,8 @@ sub emit_perl5 {
     my $self = $_[0];
 
     my $s = $self->{metasyntax};
-    $s =~ s{\.}{->}g;
-
-    my $meth = ( 1 + index( $self->{metasyntax}, '.' ) )
-        ? $s
-        : ( '$grammar->' . $self->{metasyntax} );
+    $s =~ s{\.}{::}g;
+    my $meth = $s;
 
     my $code;
     if ($self->{captures} == 1) {

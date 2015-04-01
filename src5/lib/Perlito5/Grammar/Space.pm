@@ -5,7 +5,7 @@ use Perlito5::Grammar::Precedence;
 
 my %space = (
     '#'     => sub {
-                    my $m = Perlito5::Grammar::Space->to_eol($_[0], $_[1]);
+                    my $m = Perlito5::Grammar::Space::to_eol($_[0], $_[1]);
                     $m->{to};
                 },
     chr(9)  => sub { $_[1] },
@@ -13,7 +13,7 @@ my %space = (
                     my $str = $_[0];
                     my $pos = $_[1];
                     $pos++ if substr($str, $pos, 1) eq chr(13);
-                    my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
+                    my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
                     $m->{to};
                 },
     chr(12) => sub { $_[1] },
@@ -21,7 +21,7 @@ my %space = (
                     my $str = $_[0];
                     my $pos = $_[1];
                     $pos++ if substr($str, $pos, 1) eq chr(10);
-                    my $m = Perlito5::Grammar::Space->start_of_line($_[0], $pos);
+                    my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
                     $m->{to};
                 },
     chr(32) => sub { $_[1] },
@@ -53,7 +53,7 @@ sub term_end {
         $p = $p + 8;
         $is_data = 1;
     }
-    my $m = Perlito5::Grammar::Space->to_eol($str, $p);
+    my $m = Perlito5::Grammar::Space::to_eol($str, $p);
     $p = $m->{to};
     if ( substr($str, $p, 1) eq chr(10) ) {
         $p++;
@@ -124,7 +124,6 @@ token start_of_line {
 };
 
 sub ws {
-    my $self = shift;
     my $str = shift;
     my $pos = shift;
     my $p = $pos;
@@ -141,7 +140,6 @@ sub ws {
 }
 
 sub opt_ws {
-    my $self = shift;
     my $str = shift;
     my $pos = shift;
     my $p = $pos;

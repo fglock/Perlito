@@ -11,12 +11,6 @@ our %Print = (
     system => 1,
 );
 
-Perlito5::Grammar::Precedence::add_term( 'print'  => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( 'printf' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( 'say'    => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( 'exec'   => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-Perlito5::Grammar::Precedence::add_term( 'system' => sub { Perlito5::Grammar::Print->term_print($_[0], $_[1]) } );
-
 token print_decl { 'print' | 'printf' | 'say' | 'exec' | 'system' };
 
 token the_object {
@@ -41,7 +35,7 @@ token the_object {
 
     {
         my $pos = $MATCH->{to};
-        my $m = Perlito5::Grammar::Space->ws($MATCH->{str}, $pos);
+        my $m = Perlito5::Grammar::Space::ws($MATCH->{str}, $pos);
         $pos = $m->{to} if $m;
 
         my $s = substr($MATCH->{str}, $pos, 1);
@@ -60,14 +54,14 @@ token the_object {
             return
         }
         if ( $s eq '+' ) {
-            my $m = Perlito5::Grammar::Space->ws($MATCH->{str}, $pos + 1);
+            my $m = Perlito5::Grammar::Space::ws($MATCH->{str}, $pos + 1);
             if ($m) {
                 return 
             }
             # print "space + non-space\n";
         }
         else {
-            my $m = Perlito5::Grammar::Precedence->op_parse($MATCH->{str}, $pos, 1);
+            my $m = Perlito5::Grammar::Precedence::op_parse($MATCH->{str}, $pos, 1);
             my $next_op = $m ? Perlito5::Match::flat($m)->[1] : '';
             my $is_infix = Perlito5::Grammar::Precedence::is_fixity_type('infix', $next_op);
             # print "is_infix $is_infix '$next_op'\n";
@@ -78,15 +72,14 @@ token the_object {
 };
 
 sub typeglob {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
+    my $str = $_[0];
+    my $pos = $_[1];
 
     my $p = $pos;
-    my $m_namespace = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+    my $m_namespace = Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
     my $namespace = Perlito5::Match::flat($m_namespace);
     $p = $m_namespace->{to};
-    my $m_name      = Perlito5::Grammar->ident( $str, $p );
+    my $m_name      = Perlito5::Grammar::ident( $str, $p );
 
     if (!$m_name) {
         if ($namespace) {
@@ -193,6 +186,14 @@ token term_print {
         }
     ]
 };
+
+
+Perlito5::Grammar::Precedence::add_term( 'print'  => \&term_print );
+Perlito5::Grammar::Precedence::add_term( 'printf' => \&term_print );
+Perlito5::Grammar::Precedence::add_term( 'say'    => \&term_print );
+Perlito5::Grammar::Precedence::add_term( 'exec'   => \&term_print );
+Perlito5::Grammar::Precedence::add_term( 'system' => \&term_print );
+
 
 1;
 

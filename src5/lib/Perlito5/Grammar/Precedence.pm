@@ -50,12 +50,12 @@ sub is_ident_middle {
 my @Parsed_op_chars = (2, 1);
 my %Parsed_op = (
       # 1 char
-        '?'  => sub { Perlito5::Grammar::Expression->term_ternary($_[0], $_[1]) },
-        '('  => sub { Perlito5::Grammar::Expression->term_paren($_[0], $_[1]) },
-        '['  => sub { Perlito5::Grammar::Expression->term_square($_[0], $_[1]) },
-        '{'  => sub { Perlito5::Grammar::Expression->term_curly($_[0], $_[1]) },
+        '?'  => sub { Perlito5::Grammar::Expression::term_ternary($_[0], $_[1]) },
+        '('  => sub { Perlito5::Grammar::Expression::term_paren($_[0], $_[1]) },
+        '['  => sub { Perlito5::Grammar::Expression::term_square($_[0], $_[1]) },
+        '{'  => sub { Perlito5::Grammar::Expression::term_curly($_[0], $_[1]) },
       # 2 chars
-        '->' => sub { Perlito5::Grammar::Expression->term_arrow($_[0], $_[1]) },
+        '->' => sub { Perlito5::Grammar::Expression::term_arrow($_[0], $_[1]) },
 );
 
 my @Term_chars;
@@ -74,7 +74,6 @@ my $End_token_chars;
 my %Op;
 my @Op_chars = (3,2,1);
 sub op_parse {
-    my $self = shift;
     my $str  = shift;
     my $pos  = shift;
     my $last_is_term = shift;
@@ -156,7 +155,7 @@ sub op_parse {
         }
     }
 
-    return Perlito5::Grammar::Bareword->term_bareword( $str, $pos );
+    return Perlito5::Grammar::Bareword::term_bareword( $str, $pos );
 }
 
 sub add_op {

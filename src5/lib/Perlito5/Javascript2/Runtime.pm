@@ -11,7 +11,7 @@ sub perl5_to_js {
     local $Perlito5::VAR      = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
 
-    my $match = Perlito5::Grammar->exp_stmts( $source, 0 );
+    my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 
     if ( !$match || $match->{to} != length($source) ) {
         die "Syntax error in eval near pos ", $match->{to};

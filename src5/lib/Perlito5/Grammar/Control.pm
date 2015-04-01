@@ -2,17 +2,6 @@ package Perlito5::Grammar;
 use strict;
 use Perlito5::Grammar::Expression;
 
-
-Perlito5::Grammar::Statement::add_statement( 'if'      => sub { Perlito5::Grammar->if( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'for'     => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'foreach' => sub { Perlito5::Grammar->for( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'when'    => sub { Perlito5::Grammar->when( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'while'   => sub { Perlito5::Grammar->while( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'until'   => sub { Perlito5::Grammar->until( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'given'   => sub { Perlito5::Grammar->given( $_[0], $_[1] ) } );
-Perlito5::Grammar::Statement::add_statement( 'unless'  => sub { Perlito5::Grammar->unless( $_[0], $_[1] ) } );
-
-
 token unless {
     'unless' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_paren>
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_curly>
@@ -45,7 +34,7 @@ token unless {
     ]
 };
 
-token if {
+token if_ {
     'if' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_paren>
        <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Expression.term_curly>
     [
@@ -64,7 +53,7 @@ token if {
         }
     |
         <.Perlito5::Grammar::Space.opt_ws>
-        'els' <if>
+        'els' <if_>
         {
             my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_curly"})->[2];
             if (!defined($body)) {
@@ -73,7 +62,7 @@ token if {
             $MATCH->{capture} = Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.term_paren"})->[2],
                 body      => Perlito5::AST::Lit::Block->new( stmts => $body),
-                otherwise => Perlito5::AST::Lit::Block->new( stmts => [ Perlito5::Match::flat($MATCH->{if}) ] ),
+                otherwise => Perlito5::AST::Lit::Block->new( stmts => [ Perlito5::Match::flat($MATCH->{if_}) ] ),
             )
         }
     |
@@ -235,6 +224,16 @@ token block {
         $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}), sig => undef )
     }
 };
+
+
+Perlito5::Grammar::Statement::add_statement( 'if'      => \&if_ );
+Perlito5::Grammar::Statement::add_statement( 'for'     => \&for );
+Perlito5::Grammar::Statement::add_statement( 'foreach' => \&for );
+Perlito5::Grammar::Statement::add_statement( 'when'    => \&when );
+Perlito5::Grammar::Statement::add_statement( 'while'   => \&while );
+Perlito5::Grammar::Statement::add_statement( 'until'   => \&until );
+Perlito5::Grammar::Statement::add_statement( 'given'   => \&given );
+Perlito5::Grammar::Statement::add_statement( 'unless'  => \&unless );
 
 
 =begin
