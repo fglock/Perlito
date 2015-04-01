@@ -99,8 +99,8 @@ token rule_term {
             |   '<!' <rule>
                 { $MATCH->{capture} = { 'negative_look_behind' => Perlito5::Match::flat($MATCH->{rule}) } }
             |   { $MATCH->{capture_id} = ++$CAPTURE_ID; }
-                '<' <Perlito5::Grammar.ident> '>' <rule>
-                { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}),
+                '<' <Perlito5::Grammar::ident> '>' <rule>
+                { $MATCH->{capture} = { 'named_capture' => { name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}),
                                                              term => Perlito5::Match::flat($MATCH->{rule}),
                                                              id   => $MATCH->{capture_id} } } 
                 }
@@ -112,14 +112,14 @@ token rule_term {
                 { $MATCH->{capture} = 'comment' }
             ]
         |   '*'
-            [   ':' <Perlito5::Grammar.ident>
+            [   ':' <Perlito5::Grammar::ident>
                 { $MATCH->{capture} = { verb => { tag  => 'MARK',
-                                                  name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}) } }
+                                                  name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}) } }
                 }
             |   <verb>
-                [   ':' <Perlito5::Grammar.ident>
+                [   ':' <Perlito5::Grammar::ident>
                     { $MATCH->{capture} = { verb => { tag => Perlito5::Match::flat($MATCH->{'verb'}),
-                                                      name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.ident'}), } }
+                                                      name => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), } }
                     }
                 |   { $MATCH->{capture} = { verb => { tag => Perlito5::Match::flat($MATCH->{'verb'}) } } }
                 ]
@@ -176,9 +176,9 @@ token quant_exp  {
     | '?'
     | '*'
     | '+' 
-    | '{' <Perlito5::Grammar::Number.digits> [  '}'
+    | '{' <Perlito5::Grammar::Number::digits> [  '}'
                                              |  ',' '}'
-                                             |  ',' <Perlito5::Grammar::Number.digits> '}'
+                                             |  ',' <Perlito5::Grammar::Number::digits> '}'
                                              ]
     ]
     [ '?' | '+' | '' ]

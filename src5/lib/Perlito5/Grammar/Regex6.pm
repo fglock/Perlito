@@ -19,18 +19,18 @@ use Perlito5::Grammar::Precedence;
 # "token" is not a Perl5 word, but Perl6 - but it is useful inside the grammar compiler
 
 token token {
-    <Perlito5::Grammar.ident>  <.Perlito5::Grammar::Space.opt_ws> \{
-        <Perlito5::Grammar::Regex6.rule>
+    <Perlito5::Grammar::ident>  <.Perlito5::Grammar::Space::opt_ws> \{
+        <Perlito5::Grammar::Regex6::rule>
     \}
     {
-        #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex6.rule"}))->perl;
-        my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"})
+        #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex6::rule"}))->perl;
+        my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"})
             . '{ ' .
                 'my $str     = $_[0]; ' .
                 'my $pos     = $_[1]; ' .
                 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
                 'my $tmp = ( ' .
-                    Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6.rule"})->emit_perl5() .
+                    Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex6::rule"})->emit_perl5() .
                 '); ' .
                 '$tmp ? $MATCH : 0; '
             . '}';
@@ -42,7 +42,7 @@ token token {
 };
 
 token term_token {
-    'token' <.Perlito5::Grammar::Space.ws> <token>
+    'token' <.Perlito5::Grammar::Space::ws> <token>
                 { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{token})       ] }
 };
 
@@ -87,10 +87,10 @@ token parsed_code {
 
 token rule_term {
     |   '<before'
-        <.Perlito5::Grammar::Space.ws> <rule> \>
+        <.Perlito5::Grammar::Space::ws> <rule> \>
         { $MATCH->{capture} = Perlito5::Rul::Before->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   '<!before'
-        <.Perlito5::Grammar::Space.ws> <rule> \>
+        <.Perlito5::Grammar::Space::ws> <rule> \>
         { $MATCH->{capture} = Perlito5::Rul::NotBefore->new( rule_exp => Perlito5::Match::flat($MATCH->{rule}) ) }
     |   \'
         <literal> \'
@@ -109,10 +109,10 @@ token rule_term {
         { $MATCH->{capture} = Perlito5::Rul::Block->new( closure => Perlito5::Match::flat($MATCH->{parsed_code}) ) }
     |   \\
         [
-        | 'c' \[ <Perlito5::Grammar::Number.digits> \]
-          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) ) }
-        | 'c' <Perlito5::Grammar::Number.digits>
-          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.digits"}) ) ) }
+        | 'c' \[ <Perlito5::Grammar::Number::digits> \]
+          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::digits"}) ) ) }
+        | 'c' <Perlito5::Grammar::Number::digits>
+          { $MATCH->{capture} = Perlito5::Rul::Constant->new( constant => chr( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::digits"}) ) ) }
         | <any>
           #  \e  \E
           { $MATCH->{capture} = Perlito5::Rul::SpecialChar->new( char => Perlito5::Match::flat($MATCH->{any}) ) }
@@ -128,12 +128,12 @@ token rule_term {
 token quant_exp  {   \? | \* | \+  };
 
 token quantifier {
-    <Perlito5::Grammar::Space.opt_ws>
+    <Perlito5::Grammar::Space::opt_ws>
     <rule_term>
-    <Perlito5::Grammar::Space.opt_ws>
+    <Perlito5::Grammar::Space::opt_ws>
     [
         <quant_exp>
-        <Perlito5::Grammar::Space.opt_ws>
+        <Perlito5::Grammar::Space::opt_ws>
         { $MATCH->{capture} = Perlito5::Rul::Quantifier->new(
                 term    => Perlito5::Match::flat($MATCH->{rule_term}),
                 quant   => Perlito5::Match::flat($MATCH->{quant_exp}),
@@ -175,7 +175,7 @@ token or_list_exp {
 };
 
 token rule {
-    [ <.Perlito5::Grammar::Space.ws>? '|' | '' ]
+    [ <.Perlito5::Grammar::Space::ws>? '|' | '' ]
     # { say 'trying M::G::Perlito5::Rule on ', $s }
     <or_list_exp>
     {

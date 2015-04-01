@@ -315,7 +315,7 @@ my $reduce_to_ast = sub {
 };
 
 token term_arrow {
-    '->' <.Perlito5::Grammar::Space.opt_ws>
+    '->' <.Perlito5::Grammar::Space::opt_ws>
         [
         | '(' <paren_parse>   ')'
             { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
@@ -325,14 +325,14 @@ token term_arrow {
             [ \} | { die 'Missing right curly or square bracket' } ]
             { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
 
-        | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar::Space.opt_ws>
+        | '$' <Perlito5::Grammar::ident> <.Perlito5::Grammar::Space::opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall',
                        Perlito5::AST::Var->new(
                                sigil       => '$',
                                namespace   => '',    # TODO - namespace
-                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}),
+                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
                            ),
                        Perlito5::Match::flat($MATCH->{paren_parse}),
                      ]
@@ -342,24 +342,24 @@ token term_arrow {
                        Perlito5::AST::Var->new(
                                sigil       => '$',
                                namespace   => '',    # TODO - namespace
-                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}),
+                               name        => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
                            ),
                       ]
               }
             ]
 
 
-        | <Perlito5::Grammar.full_ident> <.Perlito5::Grammar::Space.opt_ws>
+        | <Perlito5::Grammar::full_ident> <.Perlito5::Grammar::Space::opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{capture} = [ 'postfix_or_term',
                        'methcall',
-                       Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),   # TODO - split namespace
+                       Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"}),   # TODO - split namespace
                        Perlito5::Match::flat($MATCH->{paren_parse}),
                      ]
               }
             | { $MATCH->{capture} = [ 'postfix_or_term',
                         'methcall_no_params',
-                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"})   # TODO - split namespace
+                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"})   # TODO - split namespace
                       ]
               }
             ]
@@ -382,10 +382,10 @@ token term_square {
 };
 
 token term_curly {
-    '{'  <.Perlito5::Grammar::Space.ws>?
-         <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar::Space.ws>?
+    '{'  <.Perlito5::Grammar::Space::ws>?
+         <Perlito5::Grammar::exp_stmts> <.Perlito5::Grammar::Space::ws>?
     [ \} | { die 'Missing right curly or square bracket' } ]
-    { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"}) ] }
+    { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ] }
 };
 
 
@@ -395,45 +395,45 @@ token declarator {
 
 token term_declarator {
     <declarator> 
-    [ <.Perlito5::Grammar::Space.ws> 
+    [ <.Perlito5::Grammar::Space::ws> 
         [
-          <Perlito5::Grammar::Block.named_sub>
+          <Perlito5::Grammar::Block::named_sub>
           {
-            my $sub = $MATCH->{"Perlito5::Grammar::Block.named_sub"}{capture};
+            my $sub = $MATCH->{"Perlito5::Grammar::Block::named_sub"}{capture};
             $sub->{decl} = Perlito5::Match::flat($MATCH->{declarator});
             $MATCH->{capture} = [ 'term', $sub ];
             return $MATCH;
           }
-        | <Perlito5::Grammar.opt_type> 
+        | <Perlito5::Grammar::opt_type> 
         ]
     | ''
     ]
-    <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
-    <Perlito5::Grammar::Attribute.opt_attribute>
+    <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::var_ident>   # my Int $variable
+    <Perlito5::Grammar::Attribute::opt_attribute>
         {
             my $decl = Perlito5::Match::flat($MATCH->{declarator});
-            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.opt_type"});
+            my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
 
             die "No such class $type"
                 if $type && ! $Perlito5::PACKAGES->{$type};
 
-            my $var  = $MATCH->{"Perlito5::Grammar.var_ident"}{capture};
+            my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
             $MATCH->{capture} = [ 'term', 
                 Perlito5::AST::Decl->new(
                     decl => $decl,
                     type => $type,
                     var  => $var,
-                    attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"}),
+                    attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"}),
                 ) ]
         }
 };
 
 token term_local {
-    'local' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Sigil.term_sigil>
+    'local' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Sigil::term_sigil>
         {
             my $decl = 'local';
             my $type = '';
-            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil.term_sigil"})->[1];
+            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
@@ -451,7 +451,7 @@ token term_return {
     #        Unlike most named operators, this is also exempt from the
     #        looks-like-a-function rule, so "return ("foo")."bar"" will cause
     #        "bar" to be part of the argument to "return". See: perldoc -f return
-    'return' <.Perlito5::Grammar::Space.opt_ws> <list_parse>
+    'return' <.Perlito5::Grammar::Space::opt_ws> <list_parse>
         {
             my $args = Perlito5::Match::flat($MATCH->{list_parse});
             $MATCH->{capture} = [ 'term',
@@ -466,7 +466,7 @@ token term_return {
 
 token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
-    'eval' <.Perlito5::Grammar::Space.opt_ws> <term_curly>
+    'eval' <.Perlito5::Grammar::Space::opt_ws> <term_curly>
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(

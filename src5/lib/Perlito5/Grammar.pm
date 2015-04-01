@@ -81,13 +81,13 @@ token optional_namespace_before_ident {
 token exp_stmts2 { <exp_stmts> { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{exp_stmts}) } };
 
 token exp {
-    <Perlito5::Grammar::Expression.exp_parse>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.exp_parse"}) }
+    <Perlito5::Grammar::Expression::exp_parse>
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"}) }
 };
 
 token exp2 {
-    <Perlito5::Grammar::Expression.exp_parse>
-        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.exp_parse"}) }
+    <Perlito5::Grammar::Expression::exp_parse>
+        { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"}) }
 };
 
 token opt_type {
@@ -97,7 +97,7 @@ token opt_type {
 
 token var_sigil     { \$ |\% |\@ |\& | \* };
 
-token var_name      { <full_ident> | <Perlito5::Grammar::Number.digits> };
+token var_name      { <full_ident> | <Perlito5::Grammar::Number::digits> };
 
 token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>

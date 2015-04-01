@@ -4,18 +4,18 @@ use strict;
 use Perlito5::Grammar::Precedence;
 
 token term_digit {
-    | <Perlito5::Grammar::Number.val_octal>
+    | <Perlito5::Grammar::Number::val_octal>
         # 0123
-        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_octal"}) ]  }
-    | <Perlito5::Grammar::Number.val_vstring>
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_octal"}) ]  }
+    | <Perlito5::Grammar::Number::val_vstring>
         # 123.456.789
-        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_vstring"}) ]  }
-    | <Perlito5::Grammar::Number.val_num>
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_vstring"}) ]  }
+    | <Perlito5::Grammar::Number::val_num>
         # 123.456
-        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_num"}) ]  }
-    | <Perlito5::Grammar::Number.val_int>
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_num"}) ]  }
+    | <Perlito5::Grammar::Number::val_int>
         # 123
-        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number.val_int"}) ]  }
+        { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Number::val_int"}) ]  }
 };
 
 Perlito5::Grammar::Precedence::add_term( $_  => \&term_digit )
@@ -56,7 +56,7 @@ token digits_underscore {
 };
 
 token val_octal {
-    '0' [  ['x'|'X'] <.Perlito5::Grammar.word>+   # XXX test for hex digits
+    '0' [  ['x'|'X'] <.Perlito5::Grammar::word>+   # XXX test for hex digits
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
         |  [ '_' | \d]+        # XXX test for octal digits
         ]

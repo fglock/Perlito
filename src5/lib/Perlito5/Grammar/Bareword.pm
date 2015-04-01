@@ -4,19 +4,19 @@ use strict;
 
 
 token the_object {
-        <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
+        <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
             }
     |
-        '{' <Perlito5::Grammar::Expression.curly_parse> '}'
+        '{' <Perlito5::Grammar::Expression::curly_parse> '}'
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.curly_parse'});
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::curly_parse'});
             }
     |
-        <Perlito5::Grammar::Print.typeglob>
+        <Perlito5::Grammar::Print::typeglob>
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Print.typeglob'});
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Print::typeglob'});
             }
 };
 

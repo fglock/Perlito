@@ -161,11 +161,7 @@ sub metasyntax { $_[0]->{metasyntax} }
 sub captures { $_[0]->{captures} }
 sub emit_perl5 {
     my $self = $_[0];
-
-    my $s = $self->{metasyntax};
-    $s =~ s{\.}{::}g;
-    my $meth = $s;
-
+    my $meth = $self->{metasyntax};
     my $code;
     if ($self->{captures} == 1) {
         $code = 'if ($m2) { $MATCH->{to} = $m2->{to}; $MATCH->{\'' . $self->{metasyntax} . '\'} = $m2; 1 } else { 0 }; '

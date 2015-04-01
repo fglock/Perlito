@@ -23,11 +23,11 @@ my %Perlito_internal_module = (
 token use_decl { 'use' | 'no' };
 
 token stmt_use {
-    <use_decl> <.Perlito5::Grammar::Space.ws>
+    <use_decl> <.Perlito5::Grammar::Space::ws>
     [
         # TODO - "use 5"
-        [ <Perlito5::Grammar::Number.val_version>
-        | <Perlito5::Grammar::Number.term_digit>
+        [ <Perlito5::Grammar::Number::val_version>
+        | <Perlito5::Grammar::Number::term_digit>
         ]
         {
             # "use v5"
@@ -40,15 +40,15 @@ token stmt_use {
                                 );
         }
     |
-        <Perlito5::Grammar.full_ident>  [ '-' <Perlito5::Grammar.ident> ]? <Perlito5::Grammar::Expression.list_parse>
+        <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]? <Perlito5::Grammar::Expression::list_parse>
         {
 
-            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression.list_parse"});
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::list_parse"});
             if ($list eq '*undef*') {
                 $list = undef
             }
             else {
-                my $m = $MATCH->{"Perlito5::Grammar::Expression.list_parse"};
+                my $m = $MATCH->{"Perlito5::Grammar::Expression::list_parse"};
                 my $list_code = substr( $str, $m->{from}, $m->{to} - $m->{from} );
 
                 # TODO - set the lexical context for eval
@@ -57,7 +57,7 @@ token stmt_use {
                 $list = \@list;
             }
 
-            my $full_ident = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            my $full_ident = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             $Perlito5::PACKAGES->{$full_ident} = 1;
 
             my $use_decl = Perlito5::Match::flat($MATCH->{use_decl});

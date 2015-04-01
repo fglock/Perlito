@@ -107,22 +107,22 @@ sub term_block {
 }
 
 token named_sub_def {
-    <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
-    <Perlito5::Grammar::Block.prototype_> <.Perlito5::Grammar::Space.opt_ws>
-    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
+    <Perlito5::Grammar::optional_namespace_before_ident> <Perlito5::Grammar::ident>
+    <Perlito5::Grammar::Block::prototype_> <.Perlito5::Grammar::Space::opt_ws>
+    <Perlito5::Grammar::Attribute::opt_attribute> <.Perlito5::Grammar::Space::opt_ws>
     [
         \{
-        <.Perlito5::Grammar::Space.opt_ws>
-        <Perlito5::Grammar.exp_stmts>
-        <.Perlito5::Grammar::Space.opt_ws>
-        [   \}     | { die 'Missing right curly or square bracket in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\'' } ]
+        <.Perlito5::Grammar::Space::opt_ws>
+        <Perlito5::Grammar::exp_stmts>
+        <.Perlito5::Grammar::Space::opt_ws>
+        [   \}     | { die 'Missing right curly or square bracket in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), '\'' } ]
         {
-            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.exp_stmts"});
+            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"});
         }
     |
-        <.Perlito5::Grammar::Statement.statement_parse>
+        <.Perlito5::Grammar::Statement::statement_parse>
         {
-            die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"}), '\''
+            die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), '\''
         }
     |
         {
@@ -131,18 +131,18 @@ token named_sub_def {
         }
     ]
     {
-        my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.ident"});
-        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.prototype_"});
+        my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"});
+        my $sig  = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::prototype_"});
         $sig = undef if $sig eq '*undef*';
 
-        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
+        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"});
         my ($proto) = grep { $_->[0] eq 'prototype' } @$attributes;
         if ($proto) {
             $attributes = [grep { $_->[0] ne 'prototype' } @$attributes];
             $sig = $proto->[1];
         }
 
-        my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"});
+        my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::optional_namespace_before_ident"});
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
             if (!$namespace) {
@@ -200,14 +200,14 @@ sub named_sub {
 }
 
 token term_anon_sub {
-    'sub' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar::Block.anon_sub_def>
-                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block.anon_sub_def"})     ] }
+    'sub' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Block::anon_sub_def>
+                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::anon_sub_def"})     ] }
 };
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <Perlito5::Grammar::Statement.statement_parse>
-                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement.statement_parse'}) ) ] }
+    'do' <.Perlito5::Grammar::Space::ws> <before '{'> <Perlito5::Grammar::Statement::statement_parse>
+                { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement::statement_parse'}) ) ] }
 };
 
 token args_sig {
@@ -215,24 +215,24 @@ token args_sig {
 };
 
 token prototype_ {
-    |   <.Perlito5::Grammar::Space.opt_ws> \( <.Perlito5::Grammar::Space.opt_ws>  <args_sig>  <.Perlito5::Grammar::Space.opt_ws>  \)
+    |   <.Perlito5::Grammar::Space::opt_ws> \( <.Perlito5::Grammar::Space::opt_ws>  <args_sig>  <.Perlito5::Grammar::Space::opt_ws>  \)
         { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
     |   { $MATCH->{capture} = '*undef*' }   # default signature
 };
 
 token anon_sub_def {
-    <prototype_> <.Perlito5::Grammar::Space.opt_ws> 
-    <Perlito5::Grammar::Attribute.opt_attribute> <.Perlito5::Grammar::Space.opt_ws>
+    <prototype_> <.Perlito5::Grammar::Space::opt_ws> 
+    <Perlito5::Grammar::Attribute::opt_attribute> <.Perlito5::Grammar::Space::opt_ws>
     \{ 
-        <.Perlito5::Grammar::Space.opt_ws> 
-        <Perlito5::Grammar.exp_stmts> 
-        <.Perlito5::Grammar::Space.opt_ws>
+        <.Perlito5::Grammar::Space::opt_ws> 
+        <Perlito5::Grammar::exp_stmts> 
+        <.Perlito5::Grammar::Space::opt_ws>
     [   \}     | { die 'Missing right curly or square bracket in anon sub' } ]
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype_});
         $sig = undef if $sig eq '*undef*';
 
-        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute.opt_attribute"});
+        my $attributes = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"});
         my ($proto) = grep { $_->[0] eq 'prototype' } @$attributes;
         if ($proto) {
             $attributes = [grep { $_->[0] ne 'prototype' } @$attributes];
@@ -243,7 +243,7 @@ token anon_sub_def {
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.exp_stmts'}),
+            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'}),
             attributes => $attributes,
         ) 
     }

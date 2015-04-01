@@ -25,9 +25,9 @@ token stmt_yadayada {
 };
 
 token stmt_format {
-    'format' <.Perlito5::Grammar::Space.ws> 
-    [ <Perlito5::Grammar.full_ident>
-    | { $MATCH->{'Perlito5::Grammar.full_ident'} = 'STDOUT' }
+    'format' <.Perlito5::Grammar::Space::ws> 
+    [ <Perlito5::Grammar::full_ident>
+    | { $MATCH->{'Perlito5::Grammar::full_ident'} = 'STDOUT' }
     ]
     {
         # inject a here-doc request - see Perlito5::Grammar::String
@@ -54,29 +54,29 @@ token stmt_format {
                 code      => 'p5:format',
                 namespace => '',
                 arguments => [
-                    Perlito5::Match::flat($MATCH->{'Perlito5::Grammar.full_ident'}),
+                    Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}),
                     $placeholder,
                 ]
             );
     }
-    <.Perlito5::Grammar::Space.opt_ws>
+    <.Perlito5::Grammar::Space::opt_ws>
     '=' 
     # TODO - make sure there are only spaces or comments until the end of the line
-    <.Perlito5::Grammar::Space.ws>  # this will read the 'here-doc' we are expecting
+    <.Perlito5::Grammar::Space::ws>  # this will read the 'here-doc' we are expecting
 };
 
 token stmt_package {
-    'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
+    'package' <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::full_ident>
     [
         # package X { block }
-        <.Perlito5::Grammar::Space.opt_ws>
+        <.Perlito5::Grammar::Space::opt_ws>
         {
             # set the package name before parsing the block
-            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
         }
-        <Perlito5::Grammar::Expression.term_curly> 
+        <Perlito5::Grammar::Expression::term_curly> 
         {
             $MATCH->{capture} = 
                 Perlito5::AST::Lit::Block->new(
@@ -84,16 +84,16 @@ token stmt_package {
                         Perlito5::AST::Apply->new(
                             code      => 'package',
                             arguments => [], 
-                            namespace => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"}),
+                            namespace => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"}),
                         ),
-                        @{ $MATCH->{'Perlito5::Grammar::Expression.term_curly'}{capture}[2] }
+                        @{ $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] }
                     ]
                 );
         }
     |
         # old syntax - set the package name in the same lexical context
         {
-            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar.full_ident"});
+            my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
             $MATCH->{capture} = 

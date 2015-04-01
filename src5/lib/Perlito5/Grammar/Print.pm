@@ -15,15 +15,15 @@ token print_decl { 'print' | 'printf' | 'say' | 'exec' | 'system' };
 
 token the_object {
     [
-        <before '$'> <Perlito5::Grammar::Sigil.term_sigil>
+        <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
             <!before '+'>
             {
-                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil.term_sigil'})->[1];
+                $MATCH->{capture} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
             }
     |
-        <before '{'> <Perlito5::Grammar::Expression.term_curly> 
+        <before '{'> <Perlito5::Grammar::Expression::term_curly> 
             {
-                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression.term_curly'}{capture}[2] );
+                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
             }
     |
         <typeglob>
@@ -148,16 +148,16 @@ sub print_ast {
 
 token term_print {
     <print_decl> 
-    <.Perlito5::Grammar::Space.opt_ws>
+    <.Perlito5::Grammar::Space::opt_ws>
     [
         '('
-            <.Perlito5::Grammar::Space.opt_ws>
+            <.Perlito5::Grammar::Space::opt_ws>
             <the_object>
-            <Perlito5::Grammar::Expression.list_parse>
+            <Perlito5::Grammar::Expression::list_parse>
         ')'
 
         { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
             return if !ref($list);
             $MATCH->{capture} = [
                 'term',
@@ -170,10 +170,10 @@ token term_print {
         }
     |
         <the_object>
-        <Perlito5::Grammar::Expression.list_parse>
+        <Perlito5::Grammar::Expression::list_parse>
 
         { 
-            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression.list_parse'});
+            my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
             return if !ref($list);
             $MATCH->{capture} = [
                 'term',

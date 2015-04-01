@@ -94,7 +94,7 @@ token pod_begin {
 };
 
 token start_of_line {
-    <.Perlito5::Grammar::String.here_doc>
+    <.Perlito5::Grammar::String::here_doc>
     [ '='  [
            |  'pod'      <.pod_pod_begin>
            |  'head'     <.pod_pod_begin>
@@ -107,14 +107,14 @@ token start_of_line {
         [ ' ' | \t ]*
         'line'
         [ ' ' | \t ]+
-        <Perlito5::Grammar::Number.digits>
+        <Perlito5::Grammar::Number::digits>
         [ ' ' | \t ]*
 
         # TODO: optional filename (specified with or without quotes)
 
         <.to_eol>
         {
-            $Perlito5::LINE_NUMBER = 0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number.digits'});
+            $Perlito5::LINE_NUMBER = 0 + Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Number::digits'});
 
             # TODO: filename
             # $Perlito5::FILE_NAME   = ...;

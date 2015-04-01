@@ -5,26 +5,26 @@ package Perlito5::Grammar::String;
 use Perlito5::Grammar::Precedence;
 
 token term_q_quote {
-    [ 'q' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    [ 'q' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     | \'
     ]
     <q_quote_parse>
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{q_quote_parse}) ]  }
 };
 token term_qq_quote {
-    [ 'qq' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    [ 'qq' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     | '"'
     ]
     <qq_quote_parse>
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qq_quote_parse}) ]  }
 };
 token term_qw_quote {
-    'qw' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    'qw' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     <qw_quote_parse>
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qw_quote_parse}) ]  }
 };
 token term_m_quote {
-    [ 'm' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    [ 'm' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     | '/' 
     ]
     <m_quote_parse>
@@ -33,14 +33,14 @@ token term_m_quote {
         }
 };
 token term_s_quote {
-    's' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    's' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     <s_quote_parse>
         { 
             $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{s_quote_parse}) ]  
         }
 };
 token term_qx {
-    [ 'qx' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ] 
+    [ 'qx' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ] 
     | '`'
     ]
     <qx_quote_parse>
@@ -51,14 +51,14 @@ token term_glob {
         { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{glob_quote_parse}) ]  }
 };
 token term_tr_quote {
-    [ 'tr' | 'y' ] [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    [ 'tr' | 'y' ] [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     <tr_quote_parse>
         { 
             $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{tr_quote_parse}) ]  
         }
 };
 token term_qr_quote {
-    'qr' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before '=>' > . ]
+    'qr' [ '#' | <.Perlito5::Grammar::Space::opt_ws> <!before '=>' > . ]
     <qr_quote_parse>
         { 
             $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{qr_quote_parse}) ]  
