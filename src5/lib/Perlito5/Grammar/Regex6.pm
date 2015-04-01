@@ -2,28 +2,19 @@ package Perlito5::Grammar::Regex6;
 
 use Perlito5::Grammar::Precedence;
 
-    # this module implements a Recursive descent parser
-    # using (more or less) the Perl 6 "token" algorithm
-    #
-    # the parsing process is based on Perl 6:
-    # "Perl 6 "sandwiches" an operator-precedence parser in between two Recursive descent parsers"
-    #
-    # see the precedence_parse() implementation for the operator-precedence parser (Perlito5::Grammar::Precedence)
-    #
-    # http://en.wikipedia.org/wiki/Recursive_descent_parser
-    #
-
+# this module implements a Recursive descent parser using (more or less) the Perl 6 "token" syntax
+#
+# http://en.wikipedia.org/wiki/Recursive_descent_parser
 
 # Here we register the "token" keyword as a language term.
 #
 # "token" is not a Perl5 word, but Perl6 - but it is useful inside the grammar compiler
 
-token token {
-    <Perlito5::Grammar::ident>  <.Perlito5::Grammar::Space::opt_ws> \{
+token term_token {
+    'token' <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::ident>  <.Perlito5::Grammar::Space::opt_ws> \{
         <Perlito5::Grammar::Regex6::rule>
     \}
     {
-        #say 'Token was compiled into: ', Perlito5::Match::flat(($MATCH->{"Perlito5::Grammar::Regex6::rule"}))->perl;
         my $source = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"})
             . '{ ' .
                 'my $str     = $_[0]; ' .
@@ -34,23 +25,14 @@ token token {
                 '); ' .
                 '$tmp ? $MATCH : 0; '
             . '}';
-        #say 'Intermediate code: ', $source;
         my $ast = Perlito5::Grammar::Block::named_sub_def( $source, 0 );
-        # say 'Intermediate ast: ', $ast->flat;
-        $MATCH->{capture} = Perlito5::Match::flat($ast);
+        $MATCH->{capture} = [ 'term', Perlito5::Match::flat($ast) ];
     }
-};
-
-token term_token {
-    'token' <.Perlito5::Grammar::Space::ws> <token>
-                { $MATCH->{capture} = [ 'term', Perlito5::Match::flat($MATCH->{token})       ] }
 };
 
 Perlito5::Grammar::Precedence::add_term( 'token', \&term_token );
 
-
 # this is the "grammar grammar"
-
 
 token any { . };
 

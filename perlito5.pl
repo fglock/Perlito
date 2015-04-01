@@ -2761,11 +2761,20 @@ Perlito5::Grammar::Statement::add_statement('unless' => \&unless);
 package main;
 package Perlito5::Grammar::Regex6;
 # use Perlito5::Grammar::Precedence
-sub Perlito5::Grammar::Regex6::token {
+sub Perlito5::Grammar::Regex6::term_token {
     my $str = $_[0];
     my $pos = $_[1];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = (((do {
+    my $tmp = ((('token' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+        if ($m2) {
+            $MATCH->{'to'} = $m2->{'to'};
+            1
+        }
+        else {
+            0
+        }
+    }) && (do {
         my $m2 = Perlito5::Grammar::ident($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2798,37 +2807,7 @@ sub Perlito5::Grammar::Regex6::token {
         $MATCH->{'str'} = $str;
         my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}) . '{ ' . 'my $str     = $_[0]; ' . 'my $pos     = $_[1]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex6::rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
         my $ast = Perlito5::Grammar::Block::named_sub_def($source, 0);
-        $MATCH->{'capture'} = Perlito5::Match::flat($ast);
-        1
-    })));
-    $tmp ? $MATCH : 0
-}
-sub Perlito5::Grammar::Regex6::term_token {
-    my $str = $_[0];
-    my $pos = $_[1];
-    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((('token' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
-        my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        my $m2 = token($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            $MATCH->{'token'} = $m2;
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::Match::flat($MATCH->{'token'})];
+        $MATCH->{'capture'} = ['term', Perlito5::Match::flat($ast)];
         1
     })));
     $tmp ? $MATCH : 0
