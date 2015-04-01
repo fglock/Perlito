@@ -295,14 +295,11 @@ sub precedence_parse {
     my $last      = ['op', '*start*'];
     my $last_is_term = 0;
     my $token     = $get_token->($last_is_term);
-    # say "# precedence get_token: (0) ", $token->perl;
     if ($token->[0] eq 'space') {
         $token = $get_token->($last_is_term)
     }
     while ((defined($token)) && ($token->[0] ne 'end')) {
         my $token_is_term = is_term($token);
-        # say "# precedence      last: (1) ", $last->perl;
-        # say "# precedence get_token: (1) ", $token->perl;
         if (($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') )) {
             # allow (,,,)
             push( @$num_stack, ['term', undef] );
@@ -360,7 +357,6 @@ sub precedence_parse {
         $last = $token;
         $last_is_term = $token_is_term;
         $token = $get_token->($last_is_term);
-        # say "# precedence get_token: (2) ", $token->perl;
         if ($token->[0] eq 'space') {
             $token = $get_token->($last_is_term);
         }

@@ -154,12 +154,10 @@ sub modifier {
     my $expression = $_[3]; 
 
     my $modifier_exp = Perlito5::Grammar::Expression::exp_parse($str, $pos);
-    # say "# statement modifier [", Perlito5::Match::flat($modifier), "] exp: ", $modifier_exp->perl;
     if (!$modifier_exp) {
         die "Expected expression after '", Perlito5::Match::flat($modifier), "'";
     }
     # TODO - require a statement terminator
-    # say "# statement_parse modifier result: ", $modifier_exp->perl;
 
     if ($modifier eq 'if') {
         return {
@@ -237,7 +235,6 @@ sub statement_parse {
 
     my $res = exp_stmt($str, $pos);
     if ($res) {
-        # say "# statement result: ", $res->perl;
         return $res;
     }
     $res = Perlito5::Grammar::Expression::exp_parse($str, $pos);
@@ -281,7 +278,6 @@ sub statement_parse {
         && $terminator ne '';
 
     if (!$modifier) {
-        # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
         return $res;
     }

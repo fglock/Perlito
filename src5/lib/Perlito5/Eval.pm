@@ -126,7 +126,6 @@ sub eval {
         $ns = $self->{namespace} . '::';
     }
     my $code = $ns . $self->{code};
-    # warn "Perlito5::AST::Apply ", $env->perl, " code: '", $code, "'";
     for my $e ( @{$env} ) {
         if (exists( $e->{ $code } )) {
             return ($e->{ $code }->( $env, $self->{arguments} ));

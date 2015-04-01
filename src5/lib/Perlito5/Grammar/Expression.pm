@@ -8,7 +8,6 @@ use Perlito5::Grammar::Statement;
 sub expand_list {
     # convert internal 'list:<,>' AST into an array of AST
     my $param_list = shift;
-    # say "# expand_list: ", $param_list->perl;
     if ( ref( $param_list ) eq 'Perlito5::AST::Apply' && $param_list->code eq 'list:<,>') {
         return [ grep {defined} @{$param_list->arguments} ];
     }
@@ -23,7 +22,6 @@ sub expand_list {
 sub block_or_hash {
     # convert a block AST into a hash literal AST, if possible
     my $o = shift;
-    # say "# block_or_hash? ", $o->perl;
     if (defined($o->sig)) {
         # say "#  has sig -- not a block";
         return $o
@@ -63,71 +61,51 @@ sub pop_term {
     my $num_stack = shift;
     my $v = pop @$num_stack;
     if (ref($v) eq 'ARRAY') {
-        # say "# ** processing term ", $v->perl;
         return $v->[1] if ref($v->[1]);     # optimization - avoid strigifying objects
         if ($v->[1] eq 'methcall_no_params') {
-            # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => [] );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'funcall_no_params') {
-            # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
             $v = Perlito5::AST::Apply->new( code => $v->[3], namespace => $v->[2], arguments => [], bareword => 1 );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'methcall') {
-            # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
             my $param_list = expand_list( ($v->[3]) );
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => $param_list );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'funcall') {
-            # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
             my $param_list = expand_list( ($v->[4]) );
             $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq '( )') {
-            # say "#   Plain parentheses ", ($v->[2])->perl;
             my $param_list = expand_list($v->[2]);
             $v = Perlito5::AST::Apply->new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq '[ ]') {
-            # say "#   Array ", ($v->[2])->perl;
             my $param_list = expand_list($v->[2]);
             $v = Perlito5::AST::Apply->new( code => 'circumfix:<[ ]>', arguments => $param_list, namespace => '' );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq 'block') {
-            # say "#   Block, Hash, or Pair ", ($v->[2])->perl;
             $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
             $v = block_or_hash($v);
             # TODO: $v = Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => $v->[2] );
             return $v;
         }
         if ($v->[1] eq '.( )') {
-            # say "#   Params ", ($v->[2])->perl;
-            # say "#     v:     ", $v->perl;
             $v = Perlito5::AST::Call->new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v->[2] );
             return $v;
         }
         if ($v->[1] eq '.[ ]') {
-            # say "#   Perlito5::AST::Index ", ($v->[2])->perl;
             $v = Perlito5::AST::Index->new( obj => undef, index_exp => $v->[2] );
-            # say "#     ", $v->perl;
             return $v;
         }
         if ($v->[1] eq '.{ }') {
-            # say "#   Perlito5::AST::Lookup ", ($v->[2])->perl;
             $v = Perlito5::AST::Lookup->new( obj => undef, index_exp => $v->[2] );
-            # say "#     ", $v->perl;
             return $v;
         }
         return $v->[1];
@@ -139,11 +117,7 @@ sub reduce_postfix {
     my $op = shift;
     my $value = shift;
     my $v = $op;
-    # say "# ** reduce_postfix ", $op->perl;
-    # say "#      value: ", $value->perl;
-    # say "#      v:     ", $v->perl;
     if ($v->[1] eq 'methcall_no_params') {
-        # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
         $v = Perlito5::AST::Call->new( invocant => $value, method => $v->[2], arguments => [] );
         return $v;
     }
@@ -151,7 +125,6 @@ sub reduce_postfix {
         die "Bareword found where operator expected";
     }
     if ($v->[1] eq 'methcall') {
-        # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
         my $param_list = expand_list($v->[3]);
         $v = Perlito5::AST::Call->new( invocant => $value, method => $v->[2], arguments => $param_list );
         return $v;
@@ -160,7 +133,6 @@ sub reduce_postfix {
         die "unexpected function call";
     }
     if ($v->[1] eq '( )') {
-        # say "#   Params ", ($v->[2])->perl;
         my $param_list = expand_list($v->[2]);
         if ( ref($value) eq 'Perlito5::AST::Apply' && !(defined($value->arguments))) {
             $value->{arguments} = $param_list;
@@ -174,13 +146,10 @@ sub reduce_postfix {
         return $v;
     }
     if ($v->[1] eq '[ ]') {
-        # say "#   Perlito5::AST::Index ", ($v->[2])->perl;
         $v = Perlito5::AST::Index->new( obj => $value, index_exp => $v->[2] );
-        # say "#     ", $v->perl;
         return $v;
     }
     if ($v->[1] eq 'block') {
-        # say "#   Perlito5::AST::Lookup (was Block)", ($v->[2])->perl;
         $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => ($v->[2])[0] );
         return $v;
     }
@@ -207,7 +176,6 @@ my $reduce_to_ast = sub {
 
     my $last_op = shift @$op_stack;
     # say "# reduce_to_ast ";
-    # say "#     last_op: ", $last_op->perl;
     # say "#   num_stack: ", $num_stack;
     if ($last_op->[0] eq 'prefix') {
         push @$num_stack,
@@ -280,7 +248,6 @@ my $reduce_to_ast = sub {
         }
         my $v2 = pop_term($num_stack);
         my $arg = [ pop_term($num_stack), $v2 ];
-        # say "# assoc chain: ", $arg->perl;
         push @$num_stack,
                 Perlito5::AST::Apply->new(
                     namespace => '',
@@ -587,7 +554,6 @@ sub list_parser {
                     $m->{to} = $spc->{to};
                 }
             }
-            # say "# list lexer got: " . $m->perl;
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
@@ -604,8 +570,6 @@ sub list_parser {
                 $last_pos = $m->{to};
             }
         }
-        # say "# list_lexer got " . $v->perl;
-        # say "# list_lexer " . $v->perl;
         $last_token_was_space = ($v->[0] eq 'space');
         $is_first_token = 0;
         return $v;
@@ -617,7 +581,6 @@ sub list_parser {
         end_token_chars => $Expr_end_token_chars,
     );
     my $res = $prec->precedence_parse;
-    # say "# list_lexer return: ", $res->perl;
     if (scalar(@$res) == 0) {
         return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
@@ -664,7 +627,6 @@ sub circumfix_parse {
         if ($v->[0] ne 'end') {
             $last_pos = $m->{to};
         }
-        # say "# circumfix_lexer " . $v->perl;
         return $v;
     };
 
@@ -678,7 +640,6 @@ sub circumfix_parse {
     );
     my $res = $prec->precedence_parse;
     $res = pop_term($res);
-    # say "# circumfix_parse return: ", $res->perl;
     if (!(defined($res))) {
         # can't return undef in a capture (BUG in Match object?)
         $res = '*undef*';
@@ -721,7 +682,6 @@ sub exp_parse {
                     $m->{to} = $spc->{to};
                 }
             }
-            # say "# exp lexer got: " . $m->perl;
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
@@ -730,7 +690,6 @@ sub exp_parse {
                 $last_pos = $m->{to};
             }
         }
-        # say "# exp_lexer got " . $v->perl;
         return $v;
     };
     my $prec = Perlito5::Grammar::Precedence->new(
@@ -746,7 +705,6 @@ sub exp_parse {
         return 0;
     }
     my $result = pop_term($res);
-    # say "# exp_parse result: ", $result->perl;
     return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => $result
