@@ -1,7 +1,7 @@
 #!./perl
 
 #print "1..57\n";
-print "1..46\n";
+print "1..47\n";
 
 $x = 'x';
 
@@ -237,16 +237,16 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
   print "ok $test\n";
   ++$test;
 
-##  # This isn't actually a lex test, but it's testing the same feature
-##  sub makearray {
-##    my @array = ('fish', 'dog', 'carrot');
-##    *R::crackers = \@array;
-##  }
-##
-##  eval(q{makearray(); ">@R::crackers<" eq ">fish dog carrot<"})
-##    || print "# $@", "not ";
-##  print "ok $test\n";
-##  ++$test;
+  # This isn't actually a lex test, but it's testing the same feature
+  sub makearray {
+    my @array = ('fish', 'dog', 'carrot');
+    *R::crackers = \@array;
+  }
+
+  eval(q{makearray(); ">@R::crackers<" eq ">fish dog carrot<"})
+    || print "# $@", "not ";
+  print "ok $test\n";
+  ++$test;
 }
 ## 
  # Tests 52-54
@@ -259,7 +259,7 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
      xyz::bar => 1,
  );
  
- my $test = 43;
+ my $test = 44;
  print ((exists $str{foo}      ? "" : "not ")."ok $test\n"); ++$test;
  print ((exists $str{bar}      ? "" : "not ")."ok $test\n"); ++$test;
  print ((exists $str{xyz::bar} ? "" : "not ")."ok $test\n"); ++$test;
@@ -274,4 +274,4 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 # Is "[~" scanned correctly?
 @a = (1,2,3);
 print "not " unless($a[~~2] == 3);
-print "ok 46\n";
+print "ok 47\n";
