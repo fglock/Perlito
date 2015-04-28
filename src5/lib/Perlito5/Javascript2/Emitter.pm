@@ -1736,6 +1736,14 @@ package Perlito5::AST::Apply;
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
             . '])';
         },
+        'select' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'p5pkg["CORE"]["select"]([' 
+                . ( $self->{arguments}[0]{bareword}
+                  ? Perlito5::Javascript2::to_str( $self->{arguments}[0] )
+                  : $self->{arguments}[0]->emit_javascript2( $level, 'scalar' ) )
+            . '])';
+        },
         'prefix:<$>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg  = $self->{arguments}->[0];

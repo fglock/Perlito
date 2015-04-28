@@ -31,9 +31,10 @@ if (isNode) {
 
     p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
         var i;
-        List__.shift(); // TODO - use IO::FILE
+        var filehandle = List__.shift(); // TODO - use IO::FILE
         for (var i = 0; i < List__.length; i++) {
             process.stdout.write(p5str(List__[i]));
+            // TODO - fs.writeSync(1, ...
         }
         return 1;
     } );
@@ -167,6 +168,14 @@ if (isNode) {
         p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
     });
 }
+
+CORE.select = function(List__) {
+    if (List__.length == 1) {
+        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[List__[0]];
+        p5pkg["Perlito5"].v_SELECT = v || List__[0];
+    }
+    return p5pkg["Perlito5"].v_SELECT;
+};
 
 CORE.die = function(List__) {
     var i;
