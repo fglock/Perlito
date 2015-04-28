@@ -9708,7 +9708,7 @@ package Perlito5::AST::Apply;
                     if (@in || !$optional) {
                         my $arg = shift(@in);
                         if ($arg->{'bareword'}) {
-                            push(@out, 'p5pkg[' . Perlito5::Javascript2::escape_string(($arg->{'namespace'} || $Perlito5::PKG_NAME)) . ']["f_' . $arg->{'code'} . '"]')
+                            push(@out, Perlito5::Javascript2::escape_string($arg->{'code'}))
                         }
                         else {
                             push(@out, $arg->emit_javascript2($level, 'scalar'))
