@@ -29,12 +29,24 @@ if (isNode) {
 
     var fs = require("fs");
 
-    p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
+    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
         var i;
-        var filehandle = List__.shift(); // TODO - use IO::FILE
-        for (var i = 0; i < List__.length; i++) {
-            process.stdout.write(p5str(List__[i]));
-            // TODO - fs.writeSync(1, ...
+        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[filehandle] || filehandle;
+        var handle_id = p5pkg[v].file_handle.id;
+        if (handle_id == 0) {
+            for (var i = 0; i < List__.length; i++) {
+                process.stdout.write(p5str(List__[i]));
+            }
+        }
+        else if (handle_id == 1) {
+            for (var i = 0; i < List__.length; i++) {
+                process.stderr.write(p5str(List__[i]));
+            }
+        }
+        else {
+            for (var i = 0; i < List__.length; i++) {
+                fs.writeSync(handle_id, p5str(List__[i]));
+            }
         }
         return 1;
     } );
@@ -148,9 +160,8 @@ if (isNode) {
 
 } else {
     // not running in node.js
-    p5typeglob_set("Perlito5::IO", "print", function (List__, p5want) {
+    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
         var i;
-        List__.shift(); // TODO - use IO::FILE
         for (var i = 0; i < List__.length; i++) {
             write(p5str(List__[i]));
         }
@@ -171,8 +182,8 @@ if (isNode) {
 
 CORE.select = function(List__) {
     if (List__.length == 1) {
-        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[List__[0]];
-        p5pkg["Perlito5"].v_SELECT = v || List__[0];
+        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[List__[0]] || List__[0];
+        p5pkg["Perlito5"].v_SELECT = v;
     }
     return p5pkg["Perlito5"].v_SELECT;
 };
@@ -197,10 +208,7 @@ CORE.say = function(List__) {
 };
 
 CORE.print = function(List__) {
-    var i;
-    for (var i = 0; i < List__.length; i++) {
-        p5pkg['Perlito5::IO'].print([ 'STDOUT', List__[i] ]);
-    }
+    p5pkg['Perlito5::IO'].print( 'STDOUT', List__);
     return 1;
 };
 
@@ -214,7 +222,7 @@ CORE.warn = function(List__) {
         s = s + "\n" + new Error().stack;
     }
     catch(err) { }
-    p5pkg['Perlito5::IO'].print([ 'STDERR', "Warning: " + s + "\n"]);
+    p5pkg['Perlito5::IO'].print( 'STDERR', [ "Warning: " + s + "\n"]);
 };
 
 

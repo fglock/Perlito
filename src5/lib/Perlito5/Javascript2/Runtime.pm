@@ -408,8 +408,10 @@ function p5global_hash(pkg_name, name) {
 p5make_package("main");
 p5make_package("Perlito5");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
-p5pkg["Perlito5"].Hash_FILEHANDLE = { "main::STDOUT" : 0, "main::STDERR" : 1, "main::STDIN" : 2 };
 p5pkg["Perlito5"].Hash_SpecialFilehandle = { "STDOUT" : "main::STDOUT", "STDERR" : "main::STDERR", "STDIN" : "main::STDIN" };
+p5make_package("main::STDOUT").file_handle = { id : 0 };
+p5make_package("main::STDERR").file_handle = { id : 1 };
+p5make_package("main::STDIN").file_handle = { id : 2 };
 p5pkg["Perlito5"].v_SELECT = "main::STDOUT";
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|

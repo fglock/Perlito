@@ -2334,6 +2334,45 @@ package Perlito5::AST::Apply;
             }
             return 'p5untie_' . $meth . '(' . $v->emit_javascript2( $level ) . ')';
         },
+        'print' => sub {
+            my ($self, $level, $wantarray) = @_;
+            if ( !$self->{namespace} && $self->{bareword} ) {
+                # print/say have no prototype; the default argument is $_
+                $self->{arguments} = [
+                    Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+                ];
+            }
+            my @in  = @{$self->{arguments}};
+            my $fun;
+            if ( $self->{special_arg} ) {
+                $fun  = $self->{special_arg}->emit_javascript2( $level );
+            }
+            else {
+                $fun  = '"STDOUT"';
+            }
+            my $list = Perlito5::Javascript2::to_list(\@in);
+            'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
+        },
+        'say' => sub {
+            my ($self, $level, $wantarray) = @_;
+            if ( !$self->{namespace} && $self->{bareword} ) {
+                # print/say have no prototype; the default argument is $_
+                $self->{arguments} = [
+                    Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+                ];
+            }
+            my @in  = @{$self->{arguments}};
+            push @in, Perlito5::AST::Val::Buf->new( buf => "\n" );
+            my $fun;
+            if ( $self->{special_arg} ) {
+                $fun  = $self->{special_arg}->emit_javascript2( $level );
+            }
+            else {
+                $fun  = '"STDOUT"';
+            }
+            my $list = Perlito5::Javascript2::to_list(\@in);
+            'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
@@ -2603,17 +2642,6 @@ package Perlito5::AST::Apply;
                 }
                 $may_need_autoload = 1;
             }
-        }
-
-        if (  ($self->{code} eq 'say' || $self->{code} eq 'print')
-           && !$self->{namespace} 
-           && $self->{bareword}
-           )
-        {
-            # print/say have no prototype; the default argument is $_
-            $self->{arguments} = [
-                Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
-            ];
         }
 
         if ($sig) {
