@@ -472,10 +472,6 @@ TODO list for Perlito5
 
 * Javascript - implemented but missing more tests
 
--- printf FILEHANDLE
-    $ nodejs perlito5.js -Isrc5/lib -e ' printf STDERR "%d\n", 123 '
-    Warning: Died: Undefined subroutine &main::STDERR
-
 -- prototype() can be set by aliasing:
     *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
 

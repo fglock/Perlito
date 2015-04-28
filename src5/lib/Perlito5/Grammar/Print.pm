@@ -11,7 +11,7 @@ our %Print = (
     system => 1,
 );
 
-token print_decl { 'print' | 'printf' | 'say' | 'exec' | 'system' };
+token print_decl { 'printf' | 'print' | 'say' | 'exec' | 'system' };
 
 token the_object {
     [

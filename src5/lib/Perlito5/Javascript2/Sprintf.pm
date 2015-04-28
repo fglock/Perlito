@@ -28,8 +28,8 @@ sub emit_javascript2 {
  */
 
 CORE.sprintf = function(List__) {
-    var format = List__[0];
-    var list = List__[1];
+    var format = List__.shift();
+    var list = List__;
 
     // Check for format definition
     if ( typeof format != 'string' ) {

@@ -2373,6 +2373,19 @@ package Perlito5::AST::Apply;
             my $list = Perlito5::Javascript2::to_list(\@in);
             'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
         },
+        'printf' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $fun;
+            if ( $self->{special_arg} ) {
+                $fun  = $self->{special_arg}->emit_javascript2( $level );
+            }
+            else {
+                $fun  = '"STDOUT"';
+            }
+            my $list = Perlito5::Javascript2::to_list(\@in);
+            'p5pkg["Perlito5::IO"].print(' . $fun . ', CORE.sprintf(' . $list . '))';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
