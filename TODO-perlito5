@@ -297,6 +297,16 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- resolve "filehandle" methods
+    $ perl -e ' package X; open(X, ">", "x"); X->print(1234) '
+    $ cat x
+    1234
+
+    $ nodejs perlito5.js -Isrc5/lib -Cjs -e ' package X; open(X, ">", "x"); X->print(1234) '
+        p5make_package('X');
+        p5pkg['X'].open([p5pkg['X']["f_X"], '>', ['x']], null);
+        p5call(p5pkg['X'], 'print', [1234], null);
+
 -- constant subroutines
 -- prototype mismatch
     $ perl -e ' sub X () { 123 } print X, "\n"; eval " sub X { 456 } "; '
