@@ -2362,7 +2362,6 @@ package Perlito5::AST::Apply;
                 ];
             }
             my @in  = @{$self->{arguments}};
-            push @in, Perlito5::AST::Val::Buf->new( buf => "\n" );
             my $fun;
             if ( $self->{special_arg} ) {
                 $fun  = $self->{special_arg}->emit_javascript2( $level );
@@ -2371,7 +2370,7 @@ package Perlito5::AST::Apply;
                 $fun  = '"STDOUT"';
             }
             my $list = Perlito5::Javascript2::to_list(\@in);
-            'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
+            'p5pkg["Perlito5::IO"].say(' . $fun . ', ' . $list . ')';
         },
         'printf' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2384,7 +2383,7 @@ package Perlito5::AST::Apply;
                 $fun  = '"STDOUT"';
             }
             my $list = Perlito5::Javascript2::to_list(\@in);
-            'p5pkg["Perlito5::IO"].print(' . $fun . ', CORE.sprintf(' . $list . '))';
+            'p5pkg["Perlito5::IO"].printf(' . $fun . ', ' . $list . ')';
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;

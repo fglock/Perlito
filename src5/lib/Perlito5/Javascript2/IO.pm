@@ -31,7 +31,7 @@ if (isNode) {
 
     p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
         var i;
-        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[filehandle] || filehandle;
+        var v = filehandle;
         var handle_id = p5pkg[v].file_handle.id;
         if (handle_id == 0) {
             for (var i = 0; i < List__.length; i++) {
@@ -180,9 +180,19 @@ if (isNode) {
     });
 }
 
+p5typeglob_set("Perlito5::IO", "say", function (filehandle, List__, p5want) {
+    p5pkg['Perlito5::IO'].print( filehandle, List__);
+    p5pkg['Perlito5::IO'].print( filehandle, ["\n"]);
+    return 1;
+} );
+p5typeglob_set("Perlito5::IO", "printf", function (filehandle, List__, p5want) {
+    p5pkg["Perlito5::IO"].print( filehandle, CORE.sprintf(List__));
+    return 1;
+} );
+
 CORE.select = function(List__) {
     if (List__.length == 1) {
-        var v = p5pkg["Perlito5"].Hash_SpecialFilehandle[List__[0]] || List__[0];
+        var v = List__[0];
         p5pkg["Perlito5"].v_SELECT = v;
     }
     return p5pkg["Perlito5"].v_SELECT;
@@ -203,13 +213,13 @@ CORE.die = function(List__) {
 };
 
 CORE.say = function(List__) {
-    CORE.print(List__);
-    return CORE.print(["\n"]);
+    return p5pkg['Perlito5::IO'].say( 'STDOUT', List__);
 };
-
 CORE.print = function(List__) {
-    p5pkg['Perlito5::IO'].print( 'STDOUT', List__);
-    return 1;
+    return p5pkg['Perlito5::IO'].print( 'STDOUT', List__);
+};
+CORE.printf = function(List__) {
+    return p5pkg['Perlito5::IO'].printf( 'STDOUT', List__);
 };
 
 CORE.warn = function(List__) {

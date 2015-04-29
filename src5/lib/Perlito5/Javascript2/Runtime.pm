@@ -208,6 +208,11 @@ function p5call(invocant, method, list, p5want) {
             p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
         }
 
+        if (method == "print" || method == "printf" || method == "say") {
+            list.shift();
+            return p5pkg['Perlito5::IO'][method]( invocant._class_._ref_, list, p5want);
+        }
+
         pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', "UNIVERSAL", {});
         if (pkg_name) {
             p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
@@ -408,10 +413,13 @@ function p5global_hash(pkg_name, name) {
 p5make_package("main");
 p5make_package("Perlito5");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
-p5pkg["Perlito5"].Hash_SpecialFilehandle = { "STDOUT" : "main::STDOUT", "STDERR" : "main::STDERR", "STDIN" : "main::STDIN" };
 p5make_package("main::STDOUT").file_handle = { id : 0 };
 p5make_package("main::STDERR").file_handle = { id : 1 };
 p5make_package("main::STDIN").file_handle = { id : 2 };
+p5make_package("STDOUT");
+p5pkg["STDOUT"] = p5pkg["main::STDOUT"];
+p5pkg["STDERR"] = p5pkg["main::STDERR"];
+p5pkg["STDIN"] = p5pkg["main::STDIN"];
 p5pkg["Perlito5"].v_SELECT = "main::STDOUT";
 p5pkg["main"]["v_@"] = [];      // $@
 p5pkg["main"]["v_|"] = 0;       // $|

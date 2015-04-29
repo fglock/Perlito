@@ -209,10 +209,6 @@ CORE.sprintf = function(List__) {
     return newString;
 };
 
-CORE.printf = function(List__) {
-    return CORE.print([ CORE.sprintf(List__) ]);
-};
-
 EOT
 } # end of emit_javascript2()
 
