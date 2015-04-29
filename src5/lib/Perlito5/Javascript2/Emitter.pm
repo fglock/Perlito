@@ -2399,7 +2399,7 @@ package Perlito5::AST::Apply;
             if (ref($fun) ne 'Perlito5::AST::Apply') {
                 # doesn't look like STDERR or FILE
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
-                    $fun->emit_javascript2( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "Perlito5::IO" ]);',
+                    $fun->emit_javascript2( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);',
                     'return CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
                 );
             }

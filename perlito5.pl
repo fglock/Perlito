@@ -9519,7 +9519,7 @@ package Perlito5::AST::Apply;
         my $fun = shift(@in);
         my $s = '';
         if (ref($fun) ne 'Perlito5::AST::Apply') {
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, $fun->emit_javascript2($level) . ' = CORE.bless([ {file_handle : {id : null}}, "Perlito5::IO" ]);', 'return CORE.open(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level) . ')')
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, $fun->emit_javascript2($level) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);', 'return CORE.open(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level) . ')')
         }
         else {
             return 'CORE.open(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level) . ')'
