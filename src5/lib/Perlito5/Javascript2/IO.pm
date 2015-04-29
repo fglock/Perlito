@@ -32,7 +32,19 @@ if (isNode) {
     p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
-            var handle_id = p5pkg[v].file_handle.id;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
             if (handle_id == 0) {
                 for (var i = 0; i < List__.length; i++) {
                     process.stdout.write(p5str(List__[i]));
@@ -59,7 +71,19 @@ if (isNode) {
     p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
-            var handle_id = p5pkg[v].file_handle.id;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
             if (handle_id == 0) {
                 process.stdout.close();
             }
@@ -69,7 +93,7 @@ if (isNode) {
             else {
                 fs.closeSync(handle_id);
             }
-            p5pkg[v].file_handle.id = nil;
+            pkg.file_handle.id = nil;
             return 1;
         }
         catch(err) {
@@ -82,10 +106,17 @@ if (isNode) {
         try {
             var filehandle = List__.shift();
             var flags = List__.shift();
-            var list = List__.shift();
-            var path = list.shift();
+            var path = List__.shift();
             var v = filehandle;
-            var pkg = p5make_package(v);
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
             if (!pkg.file_handle) {
                 pkg.file_handle = {};
             }
@@ -115,7 +146,7 @@ if (isNode) {
                 CORE.die([ "don't know what to do with MODE '", flags, "'" ]);
             }
             var id = fs.openSync(path, flags);
-            p5pkg[v].file_handle.id = id;
+            pkg.file_handle.id = id;
             return 1;
         }
         catch(err) {

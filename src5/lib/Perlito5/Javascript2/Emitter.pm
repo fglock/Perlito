@@ -2391,6 +2391,22 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             'p5pkg["Perlito5::IO"].close(' . $fun->emit_javascript2( $level ) . ', [])';
         },
+        'open' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            my $s = '';
+            if (ref($fun) ne 'Perlito5::AST::Apply') {
+                # doesn't look like STDERR or FILE
+                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
+                    $fun->emit_javascript2( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "Perlito5::IO" ]);',
+                    'return CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
+                );
+            }
+            else {
+                return 'CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
+            }
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
