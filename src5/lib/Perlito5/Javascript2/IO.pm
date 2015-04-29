@@ -68,6 +68,35 @@ if (isNode) {
         }
     } );
 
+    p5typeglob_set("Perlito5::IO", "read", function (filehandle, List__, p5want) {
+        try {
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            var buffer = List__.shift();
+            var length = List__.shift();
+            var offset = List__.shift();  // optional
+            var position = null;
+            var bytes_read = fs.readSync(handle_id, buffer, offset, length, position);
+            return bytes_read;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return null;
+        }
+    } );
+
     p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
