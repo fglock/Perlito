@@ -208,7 +208,7 @@ function p5call(invocant, method, list, p5want) {
             p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
         }
 
-        if (method == "print" || method == "printf" || method == "say") {
+        if (method == "print" || method == "printf" || method == "say" || method == "close") {
             list.shift();
             return p5pkg['Perlito5::IO'][method]( invocant._class_._ref_, list, p5want);
         }

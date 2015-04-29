@@ -2385,6 +2385,12 @@ package Perlito5::AST::Apply;
             my $list = Perlito5::Javascript2::to_list(\@in);
             'p5pkg["Perlito5::IO"].printf(' . $fun . ', ' . $list . ')';
         },
+        'close' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            'p5pkg["Perlito5::IO"].close(' . $fun->emit_javascript2( $level ) . ', [])';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};

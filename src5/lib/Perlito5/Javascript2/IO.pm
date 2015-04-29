@@ -30,7 +30,6 @@ if (isNode) {
     var fs = require("fs");
 
     p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
-        var i;
         var v = filehandle;
         var handle_id = p5pkg[v].file_handle.id;
         if (handle_id == 0) {
@@ -49,6 +48,27 @@ if (isNode) {
             }
         }
         return 1;
+    } );
+
+    p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
+        try {
+            var v = filehandle;
+            var handle_id = p5pkg[v].file_handle.id;
+            if (handle_id == 0) {
+                process.stdout.close();
+            }
+            else if (handle_id == 1) {
+                process.stderr.close();
+            }
+            else {
+                fs.closeSync(handle_id);
+            }
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return '';
+        }
     } );
 
     var p5atime = function(s) {
@@ -109,17 +129,6 @@ if (isNode) {
             return 1;
         }
         catch(err) {
-            return '';
-        }
-    };
-
-    CORE.close = function(List__) {
-        try {
-            fs.closeSync(p5str(List__[0]));
-            return 1;
-        }
-        catch(err) {
-            p5pkg["main"]["v_!"] = err;
             return '';
         }
     };
