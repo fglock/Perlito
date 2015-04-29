@@ -174,7 +174,7 @@ function p5method_lookup(method, class_name, seen) {
 }
 
 function p5call(invocant, method, list, p5want) {
-
+    var invocant_original = invocant;
     if (typeof invocant === "string") {
         list.unshift(invocant);
         invocant = p5make_package(invocant);
@@ -210,7 +210,7 @@ function p5call(invocant, method, list, p5want) {
 
         if (method == "print" || method == "printf" || method == "say" || method == "close") {
             list.shift();
-            return p5pkg['Perlito5::IO'][method]( invocant._class_._ref_, list, p5want);
+            return p5pkg['Perlito5::IO'][method]( invocant_original, list, p5want);
         }
 
         pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', "UNIVERSAL", {});

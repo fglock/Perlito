@@ -106,7 +106,17 @@ if (isNode) {
         try {
             var filehandle = List__.shift();
             var flags = List__.shift();
-            var path = List__.shift();
+            var path;
+            if (List__.length) {
+                path = List__.shift();
+            }
+            else {
+                // 2-argument open
+                var re = new RegExp("^([<>+|])(.*)$", "");
+                var capture = re.exec(flags);
+                flags = capture[1];
+                path = capture[2];
+            }
             var v = filehandle;
             var pkg;
             if (CORE.ref([v])) {
