@@ -167,12 +167,25 @@ if (isNode) {
         }
         var separator = p5pkg["main"]["v_/"];  // input record separator
         var buf = pkg.file_handle.readline_buffer;
-        var pos = buf.indexOf(separator);
-        while ( pos < 0 && !pkg.file_handle.eof ) {
-            var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
-            buf = buf + r[1];
+        var pos;
+
+        if (separator) {
             pos = buf.indexOf(separator);
+            while ( pos < 0 && !pkg.file_handle.eof ) {
+                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
+                buf = buf + r[1];
+                pos = buf.indexOf(separator);
+            }
         }
+        else {
+            // no separator
+            pos = -1;
+            while ( !pkg.file_handle.eof ) {
+                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
+                buf = buf + r[1];
+            }
+        }
+
         if (pos < 0) {
             pkg.file_handle.readline_buffer = '';
             return buf;
@@ -466,6 +479,9 @@ CORE.print = function(List__) {
 };
 CORE.printf = function(List__) {
     return p5pkg['Perlito5::IO'].printf( 'STDOUT', List__);
+};
+CORE.readline = function(List__, p5want) {
+    return p5pkg['Perlito5::IO'].readline(List__, p5want);
 };
 
 CORE.warn = function(List__) {
