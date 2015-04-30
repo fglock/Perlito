@@ -68,6 +68,7 @@ if (isNode) {
         }
     } );
 
+    var p5_extra_buffer_size = 100;
     p5typeglob_set("Perlito5::IO", "read", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
@@ -85,12 +86,47 @@ if (isNode) {
                 pkg.file_handle = {};
             }
             var handle_id = pkg.file_handle.id;
-            var offset = 0;
-            var buffer = new Buffer(length);
-            var position = null;
-            var bytes_read = fs.readSync(handle_id, buffer, offset, length, position);
-            var s = buffer.toString('utf-8', 0, bytes_read);
-            return [bytes_read, s];
+
+            if (!pkg.file_handle.buffer) {
+                // we don't have any data yet
+                var length_wanted = length + 2 * p5_extra_buffer_size;
+                var buffer = new Buffer(length_wanted);
+                var bytes_read = fs.readSync(handle_id, buffer, 0, length_wanted, null);
+                if (bytes_read < length_wanted) {
+                    pkg.file_handle.buffer_eof = 1;
+                }
+                pkg.file_handle.buffer = buffer;
+                pkg.file_handle.buffer_start = 0;
+                pkg.file_handle.buffer_end = bytes_read;
+                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;
+            }
+            else if (pkg.file_handle.buffer_length > (length + p5_extra_buffer_size)) {
+                // we have enough data
+            }
+            else if (!pkg.file_handle.buffer_eof) {
+                // we have some data; append more data to the internal buffer
+                var length_wanted = length + 2 * p5_extra_buffer_size;
+                var buffer = new Buffer(pkg.file_handle.buffer_length + length_wanted);
+                pkg.file_handle.buffer.copy(buffer, 0, pkg.file_handle.buffer_start, pkg.file_handle.buffer_end);
+                var bytes_read = fs.readSync(handle_id, buffer, pkg.file_handle.buffer_length, length_wanted, null);
+                if (bytes_read < length_wanted) {
+                    pkg.file_handle.buffer_eof = 1;
+                }
+                pkg.file_handle.buffer = buffer;
+                pkg.file_handle.buffer_start = 0;
+                pkg.file_handle.buffer_end = pkg.file_handle.buffer_length + bytes_read;
+                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;
+            }
+
+            var s = pkg.file_handle.buffer.toString('utf-8', pkg.file_handle.buffer_start, pkg.file_handle.buffer_end).substr(0, length);
+
+            // how many bytes we actually used
+            var buffer_used = Buffer.byteLength(s, 'utf-8');
+
+            pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
+            pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
+
+            return [s.length, s];
         }
         catch(err) {
             p5pkg["main"]["v_!"] = err;
