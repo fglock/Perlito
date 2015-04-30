@@ -156,7 +156,7 @@ if (isNode) {
         var separator = p5pkg["main"]["v_/"];  // input record separator
         var buf = pkg.file_handle.readline_buffer;
         var pos = buf.indexOf(separator);
-        while ( pos < 0 && !CORE.eof([filehandle]) ) {
+        while ( pos < 0 && !pkg.file_handle.eof ) {
             var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
             buf = buf + r[1];
             pos = buf.indexOf(separator);
@@ -224,7 +224,7 @@ if (isNode) {
             if (handle_id == null) {
                 return 1;  // file is not open
             }
-            return pkg.file_handle.eof && pkg.file_handle.readline_buffer.length = 0;
+            return pkg.file_handle.eof && pkg.file_handle.readline_buffer.length == 0;
         }
         catch(err) {
             p5pkg["main"]["v_!"] = err;
