@@ -126,6 +126,10 @@ if (isNode) {
             pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
             pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
 
+            if ( pkg.file_handle.buffer_eof && pkg.file_handle.buffer_length <= 0 ) {
+                pkg.file_handle.eof = 1;
+            }
+
             return [s.length, s];
         }
         catch(err) {
@@ -167,6 +171,34 @@ if (isNode) {
             return '';
         }
     } );
+
+    CORE.eof = function(List__) {
+        try {
+            var filehandle = List__.shift();
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            if (handle_id == null) {
+                return 1;  // file is not open
+            }
+            return pkg.file_handle.eof;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return '';
+        }
+    };
 
     CORE.open = function(List__) {
         try {
