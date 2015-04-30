@@ -2395,9 +2395,8 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            my $s = '';
             if (ref($fun) ne 'Perlito5::AST::Apply') {
-                # doesn't look like STDERR or FILE
+                # doesn't look like STDERR or FILE; initialize the variable with a GLOB
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
                     $fun->emit_javascript2( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);',
                     'return CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
@@ -2406,6 +2405,20 @@ package Perlito5::AST::Apply;
             else {
                 return 'CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
             }
+        },
+        'read' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # read FILEHANDLE,SCALAR,LENGTH,OFFSET
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            my $scalar = shift(@in);
+            my $length = shift(@in);
+            my $s = '';
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
+                'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_javascript2( $level ) . ', [' . $length->emit_javascript2( $level ) . ']);',
+                $scalar->emit_javascript2( $level ) . ' = r[1];',
+                'return r[0]',
+            );
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;

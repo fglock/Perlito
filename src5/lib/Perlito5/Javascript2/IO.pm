@@ -71,6 +71,7 @@ if (isNode) {
     p5typeglob_set("Perlito5::IO", "read", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
+            var length = List__.shift();
             var pkg;
             if (CORE.ref([v])) {
                 // looks like a filehandle
@@ -84,16 +85,16 @@ if (isNode) {
                 pkg.file_handle = {};
             }
             var handle_id = pkg.file_handle.id;
-            var buffer = List__.shift();
-            var length = List__.shift();
-            var offset = List__.shift();  // optional
+            var offset = 0;
+            var buffer = new Buffer(length);
             var position = null;
             var bytes_read = fs.readSync(handle_id, buffer, offset, length, position);
-            return bytes_read;
+            var s = buffer.toString('utf-8', 0, bytes_read);
+            return [bytes_read, s];
         }
         catch(err) {
             p5pkg["main"]["v_!"] = err;
-            return null;
+            return [];
         }
     } );
 
