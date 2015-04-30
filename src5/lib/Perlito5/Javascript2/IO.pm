@@ -140,6 +140,18 @@ if (isNode) {
 
     p5typeglob_set("Perlito5::IO", "readline", function (List__, p5want) {
         var filehandle = List__.shift();
+
+        if (p5want) {
+            var out = [];
+            while (1) {
+                var s = p5pkg["Perlito5::IO"].readline([filehandle], 0);
+                if (s == '') {
+                    return out;
+                }
+                out.push(s);
+            }
+        }
+
         var v = filehandle;
         var pkg;
         if (CORE.ref([v])) {
@@ -165,8 +177,8 @@ if (isNode) {
             pkg.file_handle.readline_buffer = '';
             return buf;
         }
-        var s = buf.substr(0, pos);
-        pkg.file_handle.readline_buffer = buf.substr(pos + 1);
+        var s = buf.substr(0, pos + separator.length);
+        pkg.file_handle.readline_buffer = buf.substr(pos + separator.length);
         return s;
     } );
 
