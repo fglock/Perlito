@@ -138,6 +138,38 @@ if (isNode) {
         }
     } );
 
+    p5typeglob_set("Perlito5::IO", "readline", function (List__, p5want) {
+        var filehandle = List__.shift();
+        var v = filehandle;
+        var pkg;
+        if (CORE.ref([v])) {
+            // looks like a filehandle
+            pkg = v;
+        }
+        else {
+            // looks like a package name
+            pkg = p5make_package(v);
+        }
+        if (!pkg.file_handle) {
+            pkg.file_handle = {};
+        }
+        var separator = p5pkg["main"]["v_/"];  // input record separator
+        var buf = pkg.file_handle.readline_buffer;
+        var pos = buf.indexOf(separator);
+        while ( pos < 0 && !CORE.eof([filehandle]) ) {
+            var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
+            buf = buf + r[1];
+            pos = buf.indexOf(separator);
+        }
+        if (pos < 0) {
+            pkg.file_handle.readline_buffer = '';
+            return buf;
+        }
+        var s = buf.substr(0, pos);
+        pkg.file_handle.readline_buffer = buf.substr(pos + 1);
+        return s;
+    } );
+
     p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
         try {
             var v = filehandle;
@@ -192,7 +224,7 @@ if (isNode) {
             if (handle_id == null) {
                 return 1;  // file is not open
             }
-            return pkg.file_handle.eof;
+            return pkg.file_handle.eof && pkg.file_handle.readline_buffer.length = 0;
         }
         catch(err) {
             p5pkg["main"]["v_!"] = err;
@@ -255,6 +287,7 @@ if (isNode) {
             }
             var id = fs.openSync(path, flags);
             pkg.file_handle.id = id;
+            pkg.file_handle.readline_buffer = '';
             return 1;
         }
         catch(err) {
