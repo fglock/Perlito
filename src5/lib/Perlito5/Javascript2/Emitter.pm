@@ -2413,12 +2413,19 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             my $scalar = shift(@in);
             my $length = shift(@in);
-            my $s = '';
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
                 'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_javascript2( $level ) . ', [' . $length->emit_javascript2( $level ) . ']);',
                 $scalar->emit_javascript2( $level ) . ' = r[1];',
                 'return r[0]',
             );
+        },
+        '<glob>' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # readline FILEHANDLE
+            # TODO - special cases; see 'readline' and '<>' in "perldoc perlop"
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            return 'CORE.readline([' . $fun->emit_javascript2( $level ) . '])';
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;

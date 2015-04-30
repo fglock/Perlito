@@ -440,7 +440,7 @@ package Perlito5::AST::Apply;
             # TODO - @ARGV instead of @_ depending on context
             return [ apply => '(', $code, '@_' ];
         }
-        if (  $code eq 'glob' 
+        if (  $code eq '<glob>' 
            && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Buf'
            && $self->{arguments}[0]{buf} eq ''
            )

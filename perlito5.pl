@@ -4000,7 +4000,7 @@ sub Perlito5::Grammar::String::glob_quote_parse {
         if exists($pair{$delimiter});
     my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ($m) {
-        $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'glob', 'arguments' => [Perlito5::Match::flat($m)], 'namespace' => '')
+        $m->{'capture'} = Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::Match::flat($m)], 'namespace' => '')
     }
     return $m
 }
@@ -9529,8 +9529,12 @@ package Perlito5::AST::Apply;
         my $fun = shift(@in);
         my $scalar = shift(@in);
         my $length = shift(@in);
-        my $s = '';
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_javascript2($level) . ', [' . $length->emit_javascript2($level) . ']);', $scalar->emit_javascript2($level) . ' = r[1];', 'return r[0]')
+    }, '<glob>' => sub {
+        my($self, $level, $wantarray) = @_;
+        my @in = @{$self->{'arguments'}};
+        my $fun = shift(@in);
+        return 'CORE.readline([' . $fun->emit_javascript2($level) . '])'
     }, 'map' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
@@ -12196,7 +12200,7 @@ sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
 }
 sub Perlito5::Perl6::TreeGrammar::refactor_while_glob {
     my($class, $in) = @_;
-    Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => 'glob']], ['Action' => sub {
+    Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => '<glob>']], ['Action' => sub {
         bless($in, 'Perlito5::AST::For')
     }]]]], $in)
 }
@@ -12571,7 +12575,7 @@ package Perlito5::AST::Apply;
         if (($code eq 'shift' || $code eq 'pop') && !@{$self->{'arguments'}}) {
             return ['apply' => '(', $code, '@_']
         }
-        if ($code eq 'glob' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Val::Buf' && $self->{'arguments'}->[0]->{'buf'} eq '') {
+        if ($code eq '<glob>' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Val::Buf' && $self->{'arguments'}->[0]->{'buf'} eq '') {
             return ['apply' => '(', ['keyword' => 'lines']]
         }
         if ($code eq 'infix:<x>') {

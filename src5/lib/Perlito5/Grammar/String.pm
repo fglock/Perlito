@@ -252,7 +252,7 @@ sub glob_quote_parse {
     my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ( $m ) {
         $m->{capture} = Perlito5::AST::Apply->new(
-                code      => 'glob',
+                code      => '<glob>',
                 arguments => [ Perlito5::Match::flat($m) ],
                 namespace => '',
             );

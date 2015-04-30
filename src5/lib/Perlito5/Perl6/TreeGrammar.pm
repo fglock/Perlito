@@ -64,7 +64,7 @@ sub refactor_while_glob {
         [   Ref => 'Perlito5::AST::While',
             [ Lookup => 'cond', 
                  [ And => [ Ref    => 'Perlito5::AST::Apply' ],
-                          [ Lookup => 'code', [ Value => 'glob' ] ],
+                          [ Lookup => 'code', [ Value => '<glob>' ] ],
                           [ Action => sub { bless $in, 'Perlito5::AST::For' } ]
                  ]
             ]
