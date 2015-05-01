@@ -4017,7 +4017,7 @@ sub Perlito5::Grammar::String::glob_quote_parse {
         }
         return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Var->new('sigil' => $sigil, 'name' => Perlito5::Match::flat($m_name), 'namespace' => $namespace)], 'namespace' => '')}
     }
-    my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
+    my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1);
     if ($m) {
         $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'glob', 'arguments' => [Perlito5::Match::flat($m)], 'namespace' => '')
     }
