@@ -311,8 +311,7 @@ if (isNode) {
                 CORE.die([ "don't know what to do with MODE '", flags, "'" ]);
             }
             var id = fs.openSync(path, flags);
-            pkg.file_handle.id = id;
-            pkg.file_handle.readline_buffer = '';
+            pkg.file_handle = { id : id, readline_buffer : '' };
             return 1;
         }
         catch(err) {
