@@ -267,7 +267,7 @@ if (isNode) {
             }
             else {
                 // 2-argument open
-                var re = new RegExp("^([<>+|])(.*)$", "");
+                var re = new RegExp("^([<>+|]*)(.*)$", "");
                 var capture = re.exec(flags);
                 flags = capture[1];
                 path = capture[2];
@@ -425,17 +425,6 @@ if (isNode) {
             write(p5str(List__[i]));
         }
         return 1;
-    });
-    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
-        var filename = List__[0];
-        if (typeof readFile == "function") {
-            return readFile(filename);
-        }
-        if (typeof read == "function") {
-            // v8
-            return read(filename);
-        }
-        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
     });
 }
 

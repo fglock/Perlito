@@ -181,7 +181,12 @@ if ($backend && @ARGV) {
         if ($verbose) {
             warn "// source from file: ", $ARGV[0];
         }
-        $source = Perlito5::IO::slurp( shift @ARGV );
+        my $source_filename = shift @ARGV;
+        open FILE, '<', $source_filename
+          or die "Cannot read $source_filename: $!\n";
+        local $/ = undef;
+        $source = <FILE>;
+        close FILE;
     }
 
     if ($verbose) {

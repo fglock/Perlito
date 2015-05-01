@@ -811,22 +811,6 @@ p5a_to_h = function(a) {
 
 if (isNode) {
     var fs = require("fs");
-    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
-        var filename = p5str(List__[0]);
-        return fs.readFileSync(filename, "utf8");
-    });
-} else {
-    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
-        var filename = p5str(List__[0]);
-        if (typeof readFile == "function") {
-            return readFile(filename);
-        }
-        if (typeof read == "function") {
-            // v8
-            return read(filename);
-        }
-        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
-    });
 }
 
 p5context = function(List__, p5want) {

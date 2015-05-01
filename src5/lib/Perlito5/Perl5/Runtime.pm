@@ -6,16 +6,6 @@ sub emit_perl5 {
 use v5.10;
 use feature 'say';
 
-sub Perlito5::IO::slurp {
-    my $source_filename = shift;
-    open FILE, $source_filename
-      or die "Cannot read $source_filename\n";
-    local $/ = undef;
-    $source = <FILE>;
-    close FILE;
-    return $source;
-}
-
 EOT
 }
 

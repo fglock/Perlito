@@ -217,7 +217,11 @@ sub expand_use {
 
     # warn "// now loading: ", $realfilename;
     # load source
-    my $source = Perlito5::IO::slurp( $realfilename );
+    open FILE, '<', $realfilename
+      or die "Cannot read $realfilename: $!\n";
+    local $/ = undef;
+    my $source = <FILE>;
+    close FILE;
 
     # compile; push AST into comp_units
     # warn $source;
