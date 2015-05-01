@@ -3998,9 +3998,28 @@ sub Perlito5::Grammar::String::glob_quote_parse {
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter}
         if exists($pair{$delimiter});
+    if (substr($str, $pos, 1) eq '>') {
+        return {'str' => $str, 'from' => $pos, 'to' => $pos + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [], 'namespace' => '')}
+    }
+    my $p = $pos;
+    my $sigil = '::';
+    if (substr($str, $p, 1) eq '$') {
+        $sigil = '$';
+        $p++
+    }
+    my $m_namespace = Perlito5::Grammar::optional_namespace_before_ident($str, $p);
+    my $namespace = Perlito5::Match::flat($m_namespace);
+    $p = $m_namespace->{'to'};
+    my $m_name = Perlito5::Grammar::ident($str, $p);
+    if ($m_name && substr($str, $m_name->{'to'}, 1) eq '>') {
+        if ($sigil eq '::') {
+            return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Apply->new('code' => Perlito5::Match::flat($m_name), 'arguments' => [], 'namespace' => $namespace, 'bareword' => 1)], 'namespace' => '')}
+        }
+        return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Var->new('sigil' => $sigil, 'name' => Perlito5::Match::flat($m_name), 'namespace' => $namespace)], 'namespace' => '')}
+    }
     my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ($m) {
-        $m->{'capture'} = Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::Match::flat($m)], 'namespace' => '')
+        $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'glob', 'arguments' => [Perlito5::Match::flat($m)], 'namespace' => '')
     }
     return $m
 }
