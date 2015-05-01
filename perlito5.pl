@@ -3,16 +3,6 @@
 use v5.10;
 use feature 'say';
 
-sub Perlito5::IO::slurp {
-    my $source_filename = shift;
-    open FILE, $source_filename
-      or die "Cannot read $source_filename\n";
-    local $/ = undef;
-    $source = <FILE>;
-    close FILE;
-    return $source;
-}
-
 package main;
 undef();
 package Perlito5;
@@ -9543,6 +9533,7 @@ package Perlito5::AST::Apply;
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, $fun->emit_javascript2($level) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);', 'return CORE.open(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level) . ')')
         }
         else {
+            $Perlito5::STRICT = 0;
             return 'CORE.open(' . Perlito5::Javascript2::to_list($self->{'arguments'}, $level) . ')'
         }
     }, 'read' => sub {
@@ -9726,6 +9717,9 @@ package Perlito5::AST::Apply;
             }
             else {
                 if ($self->{'bareword'}) {
+                    if ($Perlito5::STRICT) {
+                        die('Bareword ' . Perlito5::Javascript2::escape_string($name) . ' not allowed while "strict subs" in use')
+                    }
                     return Perlito5::Javascript2::escape_string(($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)
                 }
                 $may_need_autoload = 1
