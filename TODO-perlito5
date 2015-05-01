@@ -23,6 +23,7 @@ TODO list for Perlito5
     Tie::Array
     Tie::Hash
     Tie::Scalar
+    Symbol
 
     alternately, check $^H for strictness - such that perl's own strict.pm just works
     and ${^WARNING_BITS} for warnings

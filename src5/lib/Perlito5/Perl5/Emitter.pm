@@ -318,6 +318,10 @@ package Perlito5::AST::Apply;
             return [ apply => '(', $code, $self->emit_perl5_args() ];
         }
 
+        if ($code eq '<glob>') {
+            return [ paren => '<', $self->emit_perl5_args() ];
+        }
+
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return [ bareword => $code ];
         }
