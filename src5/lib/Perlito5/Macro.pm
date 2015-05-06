@@ -16,7 +16,7 @@ sub empty_while_filehandle {
     #
     #     unshift(@ARGV, '-') unless @ARGV;
     #     while ($ARGV = shift) {
-    #         open(ARGV, $ARGV);
+    #         open(ARGV, $ARGV) or die $!;
     #         while (<ARGV>) {
     #             ...         # code for each line
     #         }
@@ -71,18 +71,35 @@ sub empty_while_filehandle {
                         bless({
                             'arguments' => [
                                 bless({
-                                    'arguments' => [],
-                                    'bareword' => 1,
-                                    'code' => 'ARGV',
+                                    'arguments' => [
+                                        bless({
+                                            'arguments' => [],
+                                            'bareword' => 1,
+                                            'code' => 'ARGV',
+                                            'namespace' => '',
+                                        }, 'Perlito5::AST::Apply'),
+                                        bless({
+                                            'name' => 'ARGV',
+                                            'namespace' => '',
+                                            'sigil' => '$',
+                                        }, 'Perlito5::AST::Var'),
+                                    ],
+                                    'code' => 'open',
                                     'namespace' => '',
                                 }, 'Perlito5::AST::Apply'),
                                 bless({
-                                    'name' => 'ARGV',
+                                    'arguments' => [
+                                        bless({
+                                            'name' => '!',
+                                            'namespace' => '',
+                                            'sigil' => '$',
+                                        }, 'Perlito5::AST::Var'),
+                                    ],
+                                    'code' => 'die',
                                     'namespace' => '',
-                                    'sigil' => '$',
-                                }, 'Perlito5::AST::Var'),
+                                }, 'Perlito5::AST::Apply'),
                             ],
-                            'code' => 'open',
+                            'code' => 'infix:<or>',
                             'namespace' => '',
                         }, 'Perlito5::AST::Apply'),
                         bless({
