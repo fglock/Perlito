@@ -8444,9 +8444,15 @@ package Perlito5::Javascript2::LexicalBlock;
         my($self, $level, $wantarray) = @_;
         my $original_level = $level;
         my @block;
-        for (@{$self->{'block'}}) {
-            if (defined($_)) {
-                push(@block, $_)
+        for my $stmt (@{$self->{'block'}}) {
+            if (defined($stmt)) {
+                my @m = Perlito5::Macro::empty_while_filehandle($stmt);
+                if (@m) {
+                    push(@block, @m)
+                }
+                else {
+                    push(@block, $stmt)
+                }
             }
         }
         if (!@block) {

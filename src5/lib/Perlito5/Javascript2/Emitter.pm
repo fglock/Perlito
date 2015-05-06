@@ -520,9 +520,16 @@ package Perlito5::Javascript2::LexicalBlock;
         my $original_level = $level;
 
         my @block;
-        for (@{$self->{block}}) {
-            if (defined($_)) {
-                push @block, $_
+        for my $stmt (@{$self->{block}}) {
+            if (defined($stmt)) {
+                # check if stmt needs macro expansions
+                my @m = Perlito5::Macro::empty_while_filehandle($stmt);     # while (<>) {...}
+                if (@m) {
+                    push @block, @m;
+                }
+                else {
+                    push @block, $stmt;
+                }
             }
         }
         if (!@block) {
