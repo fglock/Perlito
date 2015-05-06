@@ -7692,6 +7692,22 @@ sub Perlito5::Grammar::exp_stmts {
 # use Perlito5::Grammar
 package main;
 undef();
+package Perlito5::Macro;
+# use strict
+sub Perlito5::Macro::empty_while_filehandle {
+    my $self = $_[0];
+    return 
+        if !($self->isa('Perlito5::AST::While'));
+    return 
+        if !($self->{'cond'}->isa('Perlito5::AST::Apply'));
+    return 
+        if !($self->{'cond'}->{'code'} eq '<glob>');
+    return 
+        if !(@{$self->{'cond'}->{'arguments'}} == 0);
+    my $body = $self->{'body'};
+    my $continue = $self->{'continue'};
+    return bless({'cond' => bless({'name' => 'ARGV', 'namespace' => '', 'sigil' => '@'}, 'Perlito5::AST::Var'), 'otherwise' => bless({'arguments' => [bless({'name' => 'ARGV', 'namespace' => '', 'sigil' => '@'}, 'Perlito5::AST::Var'), bless({'buf' => '-'}, 'Perlito5::AST::Val::Buf')], 'code' => 'unshift', 'namespace' => ''}, 'Perlito5::AST::Apply')}, 'Perlito5::AST::If'), bless({'body' => bless({'sig' => undef, 'stmts' => [bless({'arguments' => [bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply'), bless({'name' => 'ARGV', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var')], 'code' => 'open', 'namespace' => ''}, 'Perlito5::AST::Apply'), bless({'body' => $body, 'cond' => bless({'arguments' => [bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'code' => '<glob>', 'namespace' => ''}, 'Perlito5::AST::Apply'), 'continue' => $continue}, 'Perlito5::AST::While')]}, 'Perlito5::AST::Lit::Block'), 'cond' => bless({'arguments' => [bless({'name' => 'ARGV', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var'), bless({'arguments' => [], 'bareword' => 1, 'code' => 'shift', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply'), 'continue' => bless({'sig' => undef, 'stmts' => []}, 'Perlito5::AST::Lit::Block')}, 'Perlito5::AST::While')
+}
 package Perlito5::AST::Apply;
 my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>');
 sub Perlito5::AST::Apply::op_assign {
