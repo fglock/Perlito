@@ -15,7 +15,7 @@ sub empty_while_filehandle {
     # is equivalent to the following Perl-like pseudo code:
     #
     #     unshift(@ARGV, '-') unless @ARGV;
-    #     while ($ARGV = shift) {
+    #     while ($ARGV = shift @ARGV) {
     #         open(ARGV, $ARGV) or die $!;
     #         while (<ARGV>) {
     #             ...         # code for each line
@@ -128,7 +128,13 @@ sub empty_while_filehandle {
                             'sigil' => '$',
                         }, 'Perlito5::AST::Var'),
                         bless({
-                            'arguments' => [],
+                            'arguments' => [
+                                bless({
+                                    'name' => 'ARGV',
+                                    'namespace' => '',
+                                    'sigil' => '@',
+                                }, 'Perlito5::AST::Var'),
+                            ],
                             'bareword' => 1,
                             'code' => 'shift',
                             'namespace' => '',
