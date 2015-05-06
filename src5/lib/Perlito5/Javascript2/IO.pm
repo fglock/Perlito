@@ -451,12 +451,14 @@ CORE.die = function(List__) {
     for (var i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
-    try {
-        s = s + "\n" + new Error().stack;
+    if (s.substr(-1, 1) != "\n") {
+        try {
+            s = s + "\n" + new Error().stack + "\n";
+        }
+        catch(err) { }
     }
-    catch(err) { }
-    p5pkg["main"]["v_@"] = "Died: " + s;
-    throw(new p5_error("die", "Died: " + s));
+    p5pkg["main"]["v_@"] = s;
+    throw(new p5_error("die", s));
 };
 
 CORE.say = function(List__) {
@@ -478,11 +480,13 @@ CORE.warn = function(List__) {
     for (var i = 0; i < List__.length; i++) {
         s = s + p5str(List__[i]);
     }
-    try {
-        s = s + "\n" + new Error().stack;
+    if (s.substr(-1, 1) != "\n") {
+        try {
+            s = s + "\n" + new Error().stack + "\n";
+        }
+        catch(err) { }
     }
-    catch(err) { }
-    p5pkg['Perlito5::IO'].print( 'STDERR', [ "Warning: " + s + "\n"]);
+    p5pkg['Perlito5::IO'].print( 'STDERR', [s]);
 };
 
 
