@@ -522,14 +522,7 @@ package Perlito5::Javascript2::LexicalBlock;
         my @block;
         for my $stmt (@{$self->{block}}) {
             if (defined($stmt)) {
-                # check if stmt needs macro expansions
-                my @m = Perlito5::Macro::empty_while_filehandle($stmt);     # while (<>) {...}
-                if (@m) {
-                    push @block, @m;
-                }
-                else {
-                    push @block, $stmt;
-                }
+                push @block, $stmt;
             }
         }
         if (!@block) {
@@ -2435,7 +2428,13 @@ package Perlito5::AST::Apply;
             # readline FILEHANDLE
             # TODO - special cases; see 'readline' and '<>' in "perldoc perlop"
             my @in  = @{$self->{arguments}};
-            my $fun = shift(@in);
+            my $fun = shift(@in)
+                || bless({
+                       'arguments' => [],
+                       'bareword' => 1,
+                       'code' => 'ARGV',
+                       'namespace' => '',
+                   }, 'Perlito5::AST::Apply');
             return 'CORE.readline([' . $fun->emit_javascript2( $level ) . '])';
         },
         'map' => sub {

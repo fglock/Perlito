@@ -416,7 +416,7 @@ p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5make_package("main::STDOUT").file_handle = { id : 0 };
 p5make_package("main::STDERR").file_handle = { id : 1 };
 p5make_package("main::STDIN").file_handle = { id : 2, readline_buffer : '' };
-p5make_package("STDOUT");
+p5make_package("ARGV").file_handle = { id : null };
 p5pkg["STDOUT"] = p5pkg["main::STDOUT"];
 p5pkg["STDERR"] = p5pkg["main::STDERR"];
 p5pkg["STDIN"] = p5pkg["main::STDIN"];

@@ -138,6 +138,7 @@ if (isNode) {
         }
     } );
 
+    var p5ARGV = 0;
     p5typeglob_set("Perlito5::IO", "readline", function (List__, p5want) {
         var filehandle = List__.shift();
 
@@ -161,6 +162,20 @@ if (isNode) {
         else {
             // looks like a package name
             pkg = p5make_package(v);
+            if (v == "ARGV") {
+                // ARGV is magical
+                if (pkg.file_handle.id == null) {
+                    if (!p5ARGV) {
+                        if (p5pkg["main"]["List_ARGV"].length == 0) {
+                            p5pkg["main"]["List_ARGV"].push('-');
+                        }
+                    }
+                    p5ARGV = 1;
+                    // TODO - open $ARGV[1], ...
+                    var filename = p5pkg["main"]["List_ARGV"].shift();
+                    CORE.open([ "ARGV", "<", filename ]) || CORE.die([ p5pkg["main"]["v_!"] ]);
+                }
+            }
         }
         if (!pkg.file_handle) {
             pkg.file_handle = {};

@@ -2,157 +2,8 @@ use v5;
 package Perlito5::Macro;
 use strict;
 
-
-sub empty_while_filehandle {
-    my $self = $_[0];
-
-    # The loop
-    #
-    #     while (<>) {
-    #         ...                     # code for each line
-    #     }
-    #
-    # is equivalent to the following Perl-like pseudo code:
-    #
-    #     unshift(@ARGV, '-') unless @ARGV;
-    #     while ($ARGV = shift @ARGV) {
-    #         open(ARGV, $ARGV) or die $!;
-    #         while (<ARGV>) {
-    #             ...         # code for each line
-    #         }
-    #     }
-    #
-
-    # Process the input:
-    #   bless({
-    #       'cond' => bless({
-    #           'arguments' => [],
-    #           'code' => '<glob>',
-    #           'namespace' => '',
-    #       }, 'Perlito5::AST::Apply'),
-    #       'body' => ...
-    #       'continue' => ...
-    #   }, 'Perlito5::AST::While');
-    #
-    return if !($self->isa('Perlito5::AST::While'));
-    return if !($self->{cond}->isa('Perlito5::AST::Apply'));
-    return if !($self->{cond}->{code} eq '<glob>');
-    return if !(@{ $self->{cond}->{arguments} } == 0);
-    my $body = $self->{body};
-    my $continue = $self->{continue};
-
-    return 
-            bless({
-                'cond' => bless({
-                    'name' => 'ARGV',
-                    'namespace' => '',
-                    'sigil' => '@',
-                }, 'Perlito5::AST::Var'),
-                'otherwise' => bless({
-                    'arguments' => [
-                        bless({
-                            'name' => 'ARGV',
-                            'namespace' => '',
-                            'sigil' => '@',
-                        }, 'Perlito5::AST::Var'),
-                        bless({
-                            'buf' => '-',
-                        }, 'Perlito5::AST::Val::Buf'),
-                    ],
-                    'code' => 'unshift',
-                    'namespace' => '',
-                }, 'Perlito5::AST::Apply'),
-            }, 'Perlito5::AST::If'),
-
-            bless({
-                'body' => bless({
-                    'sig' => undef,
-                    'stmts' => [
-                        bless({
-                            'arguments' => [
-                                bless({
-                                    'arguments' => [
-                                        bless({
-                                            'arguments' => [],
-                                            'bareword' => 1,
-                                            'code' => 'ARGV',
-                                            'namespace' => '',
-                                        }, 'Perlito5::AST::Apply'),
-                                        bless({
-                                            'name' => 'ARGV',
-                                            'namespace' => '',
-                                            'sigil' => '$',
-                                        }, 'Perlito5::AST::Var'),
-                                    ],
-                                    'code' => 'open',
-                                    'namespace' => '',
-                                }, 'Perlito5::AST::Apply'),
-                                bless({
-                                    'arguments' => [
-                                        bless({
-                                            'name' => '!',
-                                            'namespace' => '',
-                                            'sigil' => '$',
-                                        }, 'Perlito5::AST::Var'),
-                                    ],
-                                    'code' => 'die',
-                                    'namespace' => '',
-                                }, 'Perlito5::AST::Apply'),
-                            ],
-                            'code' => 'infix:<or>',
-                            'namespace' => '',
-                        }, 'Perlito5::AST::Apply'),
-                        bless({
-                            'body' => $body,
-                            'cond' => bless({
-                                'arguments' => [
-                                    bless({
-                                        'arguments' => [],
-                                        'bareword' => 1,
-                                        'code' => 'ARGV',
-                                        'namespace' => '',
-                                    }, 'Perlito5::AST::Apply'),
-                                ],
-                                'code' => '<glob>',
-                                'namespace' => '',
-                            }, 'Perlito5::AST::Apply'),
-                            'continue' => $continue,
-                        }, 'Perlito5::AST::While'),
-                    ],
-                }, 'Perlito5::AST::Lit::Block'),
-                'cond' => bless({
-                    'arguments' => [
-                        bless({
-                            'name' => 'ARGV',
-                            'namespace' => '',
-                            'sigil' => '$',
-                        }, 'Perlito5::AST::Var'),
-                        bless({
-                            'arguments' => [
-                                bless({
-                                    'name' => 'ARGV',
-                                    'namespace' => '',
-                                    'sigil' => '@',
-                                }, 'Perlito5::AST::Var'),
-                            ],
-                            'bareword' => 1,
-                            'code' => 'shift',
-                            'namespace' => '',
-                        }, 'Perlito5::AST::Apply'),
-                    ],
-                    'code' => 'infix:<=>',
-                    'namespace' => '',
-                }, 'Perlito5::AST::Apply'),
-                'continue' => bless({
-                    'sig' => undef,
-                    'stmts' => [],
-                }, 'Perlito5::AST::Lit::Block'),
-            }, 'Perlito5::AST::While');
-
-}
-
-
 package Perlito5::AST::Apply;
+use strict;
 
 my %op = (
     'infix:<+=>'  => 'infix:<+>',
@@ -191,6 +42,8 @@ sub op_assign {
 
 
 package Perlito5::AST::Do;
+use strict;
+
 sub simplify {
     my $self = $_[0];
 
