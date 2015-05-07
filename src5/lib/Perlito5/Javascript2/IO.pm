@@ -300,15 +300,15 @@ if (isNode) {
             }
             else {
                 // looks like a package name
-                if (v == "-") {
+                pkg = p5make_package(v);
+                if (path == "-") {
                     if (flags == '>' || flags == '>>' || flags == '+>' || flags == '+>>') {
-                        v = "STDOUT";
+                        pkg.file_handle = p5pkg["STDOUT"].file_handle;
                     }
                     else {
-                        v = "STDIN";
+                        pkg.file_handle = p5pkg["STDIN"].file_handle;
                     }
                 }
-                pkg = p5make_package(v);
             }
             if (!pkg.file_handle) {
                 pkg.file_handle = {};
