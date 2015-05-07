@@ -146,7 +146,7 @@ if (isNode) {
             var out = [];
             while (1) {
                 var s = p5pkg["Perlito5::IO"].readline([filehandle], 0);
-                if (s == '') {
+                if (s == null) {
                     return out;
                 }
                 out.push(s);
@@ -180,6 +180,11 @@ if (isNode) {
         if (!pkg.file_handle) {
             pkg.file_handle = {};
         }
+
+        if (CORE.eof([v])) {
+            return null;
+        }
+
         var separator = p5pkg["main"]["v_/"];  // input record separator
         var buf = pkg.file_handle.readline_buffer;
         var pos;
