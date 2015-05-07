@@ -50,7 +50,7 @@ if (isNode) {
                     process.stdout.write(p5str(List__[i]));
                 }
             }
-            else if (handle_id == 1) {
+            else if (handle_id == 2) {
                 for (var i = 0; i < List__.length; i++) {
                     process.stderr.write(p5str(List__[i]));
                 }
@@ -234,7 +234,7 @@ if (isNode) {
             if (handle_id == 0) {
                 process.stdout.close();
             }
-            else if (handle_id == 1) {
+            else if (handle_id == 2) {
                 process.stderr.close();
             }
             else {
