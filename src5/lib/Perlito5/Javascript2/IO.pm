@@ -126,7 +126,12 @@ if (isNode) {
             pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
             pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
 
-            if ( pkg.file_handle.buffer_eof && pkg.file_handle.buffer_length <= 0 ) {
+            if ( handle_id == 1) {
+                // STDIN
+                pkg.file_handle.buffer_eof = (s.length ? 0 : 1);
+                pkg.file_handle.eof = (s.length ? 0 : 1);
+            }
+            else if ( pkg.file_handle.buffer_eof && pkg.file_handle.buffer_length <= 0 ) {
                 pkg.file_handle.eof = 1;
             }
 
@@ -208,10 +213,20 @@ if (isNode) {
 
         if (pos < 0) {
             pkg.file_handle.readline_buffer = '';
+            if (!buf.length) {
+                pkg.file_handle.readline_buffer = '';
+                pkg.file_handle.eof = 1;
+                return null
+            }
             return buf;
         }
         var s = buf.substr(0, pos + separator.length);
         pkg.file_handle.readline_buffer = buf.substr(pos + separator.length);
+        if (!s.length) {
+            pkg.file_handle.readline_buffer = '';
+            pkg.file_handle.eof = 1;
+            return null
+        }
         return s;
     } );
 
