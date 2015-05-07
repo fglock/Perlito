@@ -45,7 +45,7 @@ if (isNode) {
                 pkg.file_handle = {};
             }
             var handle_id = pkg.file_handle.id;
-            if (handle_id == 0) {
+            if (handle_id == 1) {
                 for (var i = 0; i < List__.length; i++) {
                     process.stdout.write(p5str(List__[i]));
                 }
@@ -246,7 +246,7 @@ if (isNode) {
                 pkg.file_handle = {};
             }
             var handle_id = pkg.file_handle.id;
-            if (handle_id == 0) {
+            if (handle_id == 1) {
                 process.stdout.close();
             }
             else if (handle_id == 2) {
