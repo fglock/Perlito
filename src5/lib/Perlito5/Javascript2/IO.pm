@@ -126,7 +126,7 @@ if (isNode) {
             pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
             pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
 
-            if ( handle_id == 1) {
+            if ( handle_id == 0) {
                 // STDIN
                 pkg.file_handle.buffer_eof = (s.length ? 0 : 1);
                 pkg.file_handle.eof = (s.length ? 0 : 1);
