@@ -280,6 +280,14 @@ if (isNode) {
             }
             else {
                 // looks like a package name
+                if (v == "-") {
+                    if (flags == '>' || flags == '>>' || flags == '+>' || flags == '+>>') {
+                        v = "STDOUT";
+                    }
+                    else {
+                        v = "STDIN";
+                    }
+                }
                 pkg = p5make_package(v);
             }
             if (!pkg.file_handle) {
@@ -287,6 +295,9 @@ if (isNode) {
             }
             var handle_id = pkg.file_handle.id;
             if (handle_id != null) {
+                if (handle_id < 2) {
+                    return 1;   // STDIN, STDOUT, STDERR
+                }
                 p5pkg["Perlito5::IO"].close(filehandle, []);
             }
             if (flags == '>') {
