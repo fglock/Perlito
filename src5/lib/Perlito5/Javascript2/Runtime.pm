@@ -910,11 +910,11 @@ var p5negative = function(o) {
     }
     if (typeof o !== "number") {
         var s = p5str(o);
+        var c = s.substr(0, 1);
+        if ( c == '+' ) { s = s.substr(1); return '-' + s }
+        if ( c == '-' ) { s = s.substr(1); return '+' + s }
         var s1 = parseFloat(s.trim());
         if ( isNaN(s1) ) {
-            var c = s.substr(0, 1);
-            if ( c == '+' ) { s = s.substr(1); return '-' + s }
-            if ( c == '-' ) { s = s.substr(1); return '+' + s }
             if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
                 if ( s.trim().substr(0,1) == "-" ) { return 0 };
                 return '-0';
