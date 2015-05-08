@@ -46,6 +46,9 @@ my $execute     = 1;
 my $verbose     = 0;
 my $expand_use  = 1;
 my $boilerplate = 1;
+my $wrapper_begin = '';
+my $wrapper_end = '';
+my $wrapper_priority = 0;
 my @Use;
 
 if ($verbose) {
@@ -133,6 +136,24 @@ while (substr($ARGV[0], 0, 1) eq '-'
         push @Use, { use => $use, module => $s, import => $import };
         shift @ARGV;
     }
+    elsif (($ARGV[0] eq '-n')) {
+        if ($wrapper_priority < 1) {
+            $wrapper_begin = ' LINE: while (<>) { ';
+            $wrapper_end   = ' } ';
+            $wrapper_priority = 1;
+        }
+        shift @ARGV;
+    }
+    elsif (($ARGV[0] eq '-p')) {
+        if ($wrapper_priority < 2) {
+            $wrapper_begin = ' LINE: while (<>) { ';
+            $wrapper_end   = ' } continue { '
+                           .      ' print or die "-p destination: $!\n"; '
+                           . ' } ';
+            $wrapper_priority = 2;
+        }
+        shift @ARGV;
+    }
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
         $backend = '';
         say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
@@ -197,11 +218,24 @@ if ($backend && @ARGV) {
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO    = {};
 
+    if ($wrapper_begin) {
+        $source = " $wrapper_begin;
+                    $source;
+                    $wrapper_end
+                  ";
+    }
+
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;
         my $init = join( "; ", map { "$_->{use} $_->{module} $_->{import}" } @Use );
-        eval "package main; no strict; no warnings; $init; $source; \$@ = undef";
+        eval "  package main;
+                no strict;
+                no warnings;
+                $init;
+                $source;
+                \$@ = undef
+            ";
         if ( $@ ) {
             my $error = $@;
             warn $error;

@@ -2665,7 +2665,16 @@ sub Perlito5::Grammar::opt_continue_block {
     my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
         (do {
-            ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+            (do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
                 my $m2 = block($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -13581,6 +13590,9 @@ my $execute = 1;
 my $verbose = 0;
 my $expand_use = 1;
 my $boilerplate = 1;
+my $wrapper_begin = '';
+my $wrapper_end = '';
+my $wrapper_priority = 0;
 my @Use;
 if ($verbose) {
     warn('// Perlito5 compiler');
@@ -13631,6 +13643,22 @@ while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
             $import = 'split(/,/,q{' . $import . '})'
         }
         push(@Use, {'use' => $use, 'module' => $s, 'import' => $import});
+        shift(@ARGV)
+    }
+    elsif (($ARGV[0] eq '-n')) {
+        if ($wrapper_priority < 1) {
+            $wrapper_begin = ' LINE: while (<>) { ';
+            $wrapper_end = ' } ';
+            $wrapper_priority = 1
+        }
+        shift(@ARGV)
+    }
+    elsif (($ARGV[0] eq '-p')) {
+        if ($wrapper_priority < 2) {
+            $wrapper_begin = ' LINE: while (<>) { ';
+            $wrapper_end = ' } continue { ' . ' print or die "-p destination: $!' . chr(92) . 'n"; ' . ' } ';
+            $wrapper_priority = 2
+        }
         shift(@ARGV)
     }
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
@@ -13692,13 +13720,16 @@ if ($backend && @ARGV) {
     }
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO = {};
+    if ($wrapper_begin) {
+        $source = ' ' . $wrapper_begin . ';' . chr(10) . '                    ' . $source . ';' . chr(10) . '                    ' . $wrapper_end . chr(10) . '                  '
+    }
     if ($execute) {
         $Perlito5::EXPAND_USE = 1;
         local ${'@'};
         my $init = join('; ', map {
             $_->{'use'} . ' ' . $_->{'module'} . ' ' . $_->{'import'}
         } @Use);
-        eval('package main; no strict; no warnings; ' . $init . '; ' . $source . '; $@ = undef');
+        eval('  package main;' . chr(10) . '                no strict;' . chr(10) . '                no warnings;' . chr(10) . '                ' . $init . ';' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
         if (${'@'}) {
             my $error = ${'@'};
             warn($error);

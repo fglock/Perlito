@@ -204,7 +204,7 @@ token given {
 
 
 token opt_continue_block {
-        'continue' <block>
+        <.Perlito5::Grammar::Space::opt_ws> 'continue' <block>
         {
             $MATCH->{capture} = Perlito5::Match::flat($MATCH->{block})
         }
