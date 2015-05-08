@@ -156,7 +156,7 @@ boot-5js ::
 	time nodejs perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
 
 test-5js ::
-	prove -r -e 'nodejs perlito5.js -I./src5/lib' t5
+	prove -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
 boot-5to5 ::
 	time perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl

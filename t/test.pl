@@ -404,36 +404,36 @@ sub within ($$$@) {
 ####    $test = $test + 1; # don't use ++
 ####    $retval;
 ####  }
-####  
-####  # Note: can't pass multipart messages since we try to
-####  # be compatible with Test::More::skip().
-####  sub skip {
-####      my $why = shift;
-####      my $n    = @_ ? shift : 1;
-####      for (1..$n) {
-####          _print "ok $test # skip $why\n";
-####          $test = $test + 1;
-####      }
-####      local $^W = 0;
-####      last SKIP;
-####  }
-####  
-####  sub skip_if_miniperl {
-####      skip(@_) if is_miniperl();
-####  }
-####  
-####  sub todo_skip {
-####      my $why = shift;
-####      my $n   = @_ ? shift : 1;
-####  
-####      for (1..$n) {
-####          _print "not ok $test # TODO & SKIP $why\n";
-####          $test = $test + 1;
-####      }
-####      local $^W = 0;
-####      last TODO;
-####  }
-####  
+
+# Note: can't pass multipart messages since we try to
+# be compatible with Test::More::skip().
+sub skip {
+    my $why = shift;
+    my $n    = @_ ? shift : 1;
+    for (1..$n) {
+        _print "ok $test # skip $why\n";
+        $test = $test + 1;
+    }
+    local $^W = 0;
+    last SKIP;
+}
+
+sub skip_if_miniperl {
+    skip(@_) if is_miniperl();
+}
+ 
+sub todo_skip {
+    my $why = shift;
+    my $n   = @_ ? shift : 1;
+
+    for (1..$n) {
+        _print "not ok $test # TODO & SKIP $why\n";
+        $test = $test + 1;
+    }
+    local $^W = 0;
+    last TODO;
+}
+
 ####  sub eq_array {
 ####      my ($ra, $rb) = @_;
 ####      return 0 unless $#$ra == $#$rb;
