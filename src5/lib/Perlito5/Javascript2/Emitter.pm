@@ -2410,6 +2410,25 @@ package Perlito5::AST::Apply;
                 return 'CORE.open(' . Perlito5::Javascript2::to_list( $self->{arguments}, $level ) . ')'
             }
         },
+        'chomp' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # TODO - chomp assignment: chomp($answer = <STDIN>)
+            my $v  = $self->{arguments}[0] || Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' );
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
+                'var r = p5chomp(' . $v->emit_javascript2( $level ) . ');',
+                $v->emit_javascript2( $level ) . ' = r[1];',
+                'return r[0]',
+            );
+        },
+        'chop' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $v  = $self->{arguments}[0] || Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' );
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
+                'var r = p5chop(' . $v->emit_javascript2( $level ) . ');',
+                $v->emit_javascript2( $level ) . ' = r[1];',
+                'return r[0]',
+            );
+        },
         'read' => sub {
             my ($self, $level, $wantarray) = @_;
             # read FILEHANDLE,SCALAR,LENGTH,OFFSET

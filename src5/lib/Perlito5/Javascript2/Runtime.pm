@@ -954,6 +954,24 @@ var p5tr = function(s, search, replace, modifier, want) {
     return [res.join(''), count]
 };
 
+var p5chop = function(s) {
+    // TODO - array, hash
+    return [s.substr(-1,1), s.substr(0,s.length-1)]
+};
+
+var p5chomp = function(s) {
+    // TODO - array, hash
+    // TODO - special cases of $/ - empty string, reference
+    var sep = p5pkg["main"]["v_/"];  // $/
+    var c = s.substr(-sep.length);
+    if (c == sep) {
+        return [c.length, s.substr(0,s.length-sep.length)]
+    }
+    else {
+        return [0, s]
+    }
+};
+
 var p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
     var v_old = namespace[var_name];
