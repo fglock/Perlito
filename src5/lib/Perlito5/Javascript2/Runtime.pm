@@ -963,7 +963,7 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
             func()
         }
         catch(err) {
-            if (err instanceof p5_error && err.v == label) {
+            if (err instanceof p5_error && (err.v == label || err.v == '')) {
                 if (err.type == 'last') { return }
                 else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
@@ -977,7 +977,7 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
                 if (!_redo) { cont() }
             }
             catch(err) {
-                if (err instanceof p5_error && err.v == label) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
                     if (err.type == 'last') { return }
                     else if (err.type == 'redo') { _redo = true }
                     else if (err.type != 'next') { throw(err) }
@@ -998,7 +998,7 @@ var p5for_lex = function(func, args, cont, label) {
             func(args[i])
         }
         catch(err) {
-            if (err instanceof p5_error && err.v == label) {
+            if (err instanceof p5_error && (err.v == label || err.v == '')) {
                 if (err.type == 'last') { return }
                 else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
@@ -1012,7 +1012,7 @@ var p5for_lex = function(func, args, cont, label) {
                 if (!_redo) { cont() }
             }
             catch(err) {
-                if (err instanceof p5_error && err.v == label) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
                     if (err.type == 'last') { return }
                     else if (err.type == 'redo') { _redo = true }
                     else if (err.type != 'next') { throw(err) }
@@ -1032,7 +1032,7 @@ var p5while = function(func, cond, cont, label, redo) {
             func()
         }
         catch(err) {
-            if (err instanceof p5_error && err.v == label) {
+            if (err instanceof p5_error && (err.v == label || err.v == '')) {
                 if (err.type == 'last') { return }
                 else if (err.type == 'redo') { redo = true }
                 else if (err.type != 'next') { throw(err) }
@@ -1046,7 +1046,7 @@ var p5while = function(func, cond, cont, label, redo) {
                 if (!redo) { cont() }
             }
             catch(err) {
-                if (err instanceof p5_error && err.v == label) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
                     if (err.type == 'last') { return }
                     else if (err.type == 'redo') { redo = true }
                     else if (err.type != 'next') { throw(err) }

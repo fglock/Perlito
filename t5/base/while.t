@@ -1,6 +1,6 @@
 #!./perl
 
-print "1..4\n";
+print "1..5\n";
 
 # very basic tests of while
 
@@ -30,4 +30,14 @@ while (0) {
     $x = 1;
 }
 if ($x == 0) { print "ok 4\n"; } else { print "not ok 4\n";}
+
+# setup a label, but don't use it
+$x = 0;
+LINE:
+while ($x != 5) {
+    $x = $x + 1;
+    next;
+    print "not ";
+}
+print "ok 5\n";
 

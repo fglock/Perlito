@@ -3097,7 +3097,7 @@ package Perlito5::AST::For;
                           ],
                         '}',
                         'catch(err) {',
-                          [ 'if (err instanceof p5_error && err.v == label) {',
+                          [ 'if (err instanceof p5_error && (err.v == label || err.v == \'\')) {',
                               [ 'if (err.type == \'last\') { return }',
                                 'else if (err.type == \'redo\') { _redo = true }',
                                 'else if (err.type != \'next\') { throw(err) }',
