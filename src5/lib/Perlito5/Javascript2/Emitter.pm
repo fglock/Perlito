@@ -2984,6 +2984,29 @@ package Perlito5::AST::While;
             ? [ $self->{body} ]
             : $self->{body}{stmts};
 
+        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{code} eq '<glob>')) {
+            # while (<>) ...  is rewritten as  while ( defined($_ = <>) ) { ...
+            $cond = bless({
+                    'arguments' => [
+                        bless({
+                            'arguments' => [
+                                bless({
+                                    'name' => '_',
+                                    'namespace' => '',
+                                    'sigil' => '$',
+                                }, 'Perlito5::AST::Var'),
+                                $cond,
+                            ],
+                            'code' => 'infix:<=>',
+                            'namespace' => '',
+                        }, 'Perlito5::AST::Apply'),
+                    ],
+                    'bareword' => '',
+                    'code' => 'defined',
+                    'namespace' => '',
+                }, 'Perlito5::AST::Apply');
+        }
+
         # extract declarations from 'cond'
         my @str;
         my $old_level = $level;

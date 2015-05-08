@@ -9891,6 +9891,9 @@ package Perlito5::AST::While;
         my $cond = $self->{'cond'};
         my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Do' ? 1 : 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Lit::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
+        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq '<glob>')) {
+            $cond = bless({'arguments' => [bless({'arguments' => [bless({'name' => '_', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply')
+        }
         my @str;
         my $old_level = $level;
         unshift(@{$Perlito5::VAR}, {});
