@@ -2413,7 +2413,7 @@ package Perlito5::AST::Apply;
         'chomp' => sub {
             my ($self, $level, $wantarray) = @_;
             # TODO - chomp assignment: chomp($answer = <STDIN>)
-            my $v  = $self->{arguments}[0] || Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' );
+            my $v  = $self->{arguments}[0];
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
                 'var r = p5chomp(' . $v->emit_javascript2( $level ) . ');',
                 $v->emit_javascript2( $level ) . ' = r[1];',
@@ -2422,7 +2422,7 @@ package Perlito5::AST::Apply;
         },
         'chop' => sub {
             my ($self, $level, $wantarray) = @_;
-            my $v  = $self->{arguments}[0] || Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' );
+            my $v  = $self->{arguments}[0];
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray,
                 'var r = p5chop(' . $v->emit_javascript2( $level ) . ');',
                 $v->emit_javascript2( $level ) . ' = r[1];',
