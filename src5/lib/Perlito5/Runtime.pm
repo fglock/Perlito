@@ -113,7 +113,7 @@ our $CORE_OVERRIDABLE = {
 
 our $CORE_PROTO = {
           'CORE::shutdown' => '*$',
-          'CORE::chop' => undef,
+          'CORE::chop' => '$',      # original 'undef',
           'CORE::lstat' => '*',
           'CORE::rename' => '$$',
           'CORE::lock' => '\\$',
@@ -292,7 +292,7 @@ our $CORE_PROTO = {
           'CORE::prototype' => undef,
           'CORE::getprotobynumber' => '$',
           'CORE::values' => '\\[@%]',
-          'CORE::chomp' => undef,
+          'CORE::chomp' => '$',     # original 'undef',
           'CORE::ioctl' => '*$$',
           'CORE::eof' => ';*',
           'CORE::crypt' => '$$',
