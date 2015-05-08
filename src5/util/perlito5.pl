@@ -59,19 +59,21 @@ if ($verbose) {
 my $help_message = "
 perlito5 [switches] [programfile]
   switches:
+    -e program      one line of program (omit programfile)
     -h --help
-    --verbose
+    -Idirectory     specify \@INC/include directory (several -I's allowed)
+    -[mM][-]module  execute \"use/no module...\" before executing program
+    -n              assume \"while (<>) { ... }\" loop around program
+    -p              assume loop like -n but print line also, like sed
     -V --version
     -v
-    -Idirectory     specify \@INC/include directory (several -I's allowed)
+    --verbose
     -Ctarget        target backend: js, perl5, perl6, xs
     -Cast-perl5     emits a dump of the abstract syntax tree
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
     --boilerplate --noboilerplate
                     emits or not boilerplate code
-    -e program      one line of program (omit programfile)
-    -[mM][-]module  execute \"use/no module...\" before executing program
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -86,6 +88,17 @@ Complete documentation for Perl, including FAQ lists, should be found on
 this system using "man perl" or "perldoc perl".  If you have access to the
 Internet, point your browser at http://www.perl.org/, the Perl Home Page.
 EOT
+
+sub chomp_switch {
+    # split switches like "-pie" into "-p -i -e"
+    my $s = substr($ARGV[0], 2);
+    if ($s) {
+        $ARGV[0] = "-$s";
+    }
+    else {
+        shift @ARGV;
+    }
+}
 
 while (substr($ARGV[0], 0, 1) eq '-'
     && substr($ARGV[0], 0, 2) ne '-e'
@@ -136,15 +149,15 @@ while (substr($ARGV[0], 0, 1) eq '-'
         push @Use, { use => $use, module => $s, import => $import };
         shift @ARGV;
     }
-    elsif (($ARGV[0] eq '-n')) {
+    elsif (substr($ARGV[0], 0, 2) eq '-n') {
         if ($wrapper_priority < 1) {
             $wrapper_begin = ' LINE: while (<>) { ';
             $wrapper_end   = ' } ';
             $wrapper_priority = 1;
         }
-        shift @ARGV;
+        chomp_switch();
     }
-    elsif (($ARGV[0] eq '-p')) {
+    elsif (substr($ARGV[0], 0, 2) eq '-p') {
         if ($wrapper_priority < 2) {
             $wrapper_begin = ' LINE: while (<>) { ';
             $wrapper_end   = ' } continue { '
@@ -152,7 +165,7 @@ while (substr($ARGV[0], 0, 1) eq '-'
                            . ' } ';
             $wrapper_priority = 2;
         }
-        shift @ARGV;
+        chomp_switch();
     }
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
         $backend = '';
