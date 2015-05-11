@@ -2156,7 +2156,7 @@ package Perlito5::AST::Apply;
                         )
                     ]
                 );
-            my $js = $ast->emit_javascript2( $level );
+            my $js = $ast->emit_javascript2( $level, $wantarray );
             $Perlito5::STRICT = $tmp_strict;
             return $js;
         },

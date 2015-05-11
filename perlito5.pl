@@ -9442,7 +9442,7 @@ package Perlito5::AST::Apply;
         my $tmp_strict = $Perlito5::STRICT;
         $Perlito5::STRICT = 0;
         my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'slurp', 'namespace' => 'Perlito5::IO', 'arguments' => $self->{'arguments'})]);
-        my $js = $ast->emit_javascript2($level);
+        my $js = $ast->emit_javascript2($level, $wantarray);
         $Perlito5::STRICT = $tmp_strict;
         return $js
     }, 'eval' => sub {
