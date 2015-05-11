@@ -385,11 +385,11 @@ sub within ($$$@) {
 ####      local $Level = $Level + 1;
 ####      _ok($pass, _where(), $name, @mess);
 ####  }
-####  
-####  sub pass {
-####      _ok(1, '', @_);
-####  }
-####  
+
+sub pass {
+    _ok(1, '', @_);
+}
+
 ####  sub fail {
 ####      _ok(0, _where(), @_);
 ####  }

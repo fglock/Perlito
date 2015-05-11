@@ -1730,6 +1730,36 @@ sub Perlito5::Grammar::Expression::term_declarator {
     })));
     $tmp ? $MATCH : 0
 }
+sub Perlito5::Grammar::Expression::term_not {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+    my $tmp = ((('not' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+        if ($m2) {
+            $MATCH->{'to'} = $m2->{'to'};
+            1
+        }
+        else {
+            0
+        }
+    }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $m2 = paren_parse($str, $MATCH->{'to'});
+        if ($m2) {
+            $MATCH->{'to'} = $m2->{'to'};
+            $MATCH->{'paren_parse'} = $m2;
+            1
+        }
+        else {
+            0
+        }
+    }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        $MATCH->{'str'} = $str;
+        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'prefix:<not>', 'arguments' => Perlito5::Match::flat($MATCH->{'paren_parse'}), 'namespace' => '')];
+        1
+    })));
+    $tmp ? $MATCH : 0
+}
 sub Perlito5::Grammar::Expression::term_local {
     my $str = $_[0];
     my $pos = $_[1];
@@ -1975,6 +2005,7 @@ Perlito5::Grammar::Precedence::add_term('eval' => \&term_eval);
 Perlito5::Grammar::Precedence::add_term('state' => \&term_declarator);
 Perlito5::Grammar::Precedence::add_term('local' => \&term_local);
 Perlito5::Grammar::Precedence::add_term('return' => \&term_return);
+Perlito5::Grammar::Precedence::add_term('not' => \&term_not);
 1;
 # use Perlito5::Grammar::Expression
 package main;
