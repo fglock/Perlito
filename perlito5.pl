@@ -4522,6 +4522,9 @@ sub Perlito5::Grammar::String::double_quoted_var {
         $m->{'capture'} = $var;
         return $m
     }
+    elsif ($c eq '$' && substr($str, $pos + 1, 1) eq '$' && !Perlito5::Grammar::word($str, $pos + 2)) {
+        return {'str' => $str, 'capture' => Perlito5::AST::Var->new('name' => '$', 'sigil' => '$', 'namespace' => ''), 'from' => $pos, 'to' => $pos + 2}
+    }
     elsif ($c eq '$' && substr($str, $pos + 1, length($delimiter)) ne $delimiter) {
         my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
         return $m

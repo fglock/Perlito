@@ -929,6 +929,22 @@ sub double_quoted_var {
         $m->{capture} = $var;
         return $m;
     }
+    elsif ($c eq '$'
+          && substr($str, $pos+1, 1) eq '$'
+          && !Perlito5::Grammar::word($str, $pos+2)
+          )
+    {
+        # "$$a" -> ${$a}
+        # "$$1" -> ${$1}
+        # "$$_" -> ${$_}
+        # "$$." -> $$ . "."
+        return {
+            str => $str,
+            capture => Perlito5::AST::Var->new( name => '$', sigil => '$', namespace => '' ),  # special var $$
+            from => $pos,
+            to => $pos+2,
+        };
+    }
     elsif ($c eq '$' && substr($str, $pos+1, length($delimiter)) ne $delimiter)
     {
         # TODO - this only covers simple expressions
