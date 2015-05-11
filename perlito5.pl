@@ -1755,7 +1755,7 @@ sub Perlito5::Grammar::Expression::term_not {
         }
     }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'prefix:<not>', 'arguments' => Perlito5::Match::flat($MATCH->{'paren_parse'}), 'namespace' => '')];
+        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'prefix:<not>', 'arguments' => expand_list(Perlito5::Match::flat($MATCH->{'paren_parse'})), 'namespace' => '')];
         1
     })));
     $tmp ? $MATCH : 0
@@ -9183,7 +9183,11 @@ package Perlito5::AST::Apply;
     }, 'prefix:<not>' => sub {
         my $self = shift;
         my $level = shift;
-        '!( ' . Perlito5::Javascript2::to_bool($self->{'arguments'}->[0], $level) . ')'
+        my $arg = pop(@{$self->{'arguments'}});
+        if (!$arg) {
+            return 'true'
+        }
+        '!( ' . Perlito5::Javascript2::to_bool($arg, $level) . ')'
     }, 'prefix:<~>' => sub {
         my $self = $_[0];
         'p5complement( ' . Perlito5::Javascript2::to_num($self->{'arguments'}->[0]) . ')'

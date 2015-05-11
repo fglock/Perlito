@@ -401,7 +401,7 @@ token term_not {
             $MATCH->{capture} = [ 'term', 
                 Perlito5::AST::Apply->new(
                     code      => 'prefix:<not>',
-                    arguments => Perlito5::Match::flat($MATCH->{paren_parse}),
+                    arguments => expand_list( Perlito5::Match::flat($MATCH->{paren_parse}) ),
                     namespace => '',
                 ) ]
         }

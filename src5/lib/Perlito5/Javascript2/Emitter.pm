@@ -1715,7 +1715,11 @@ package Perlito5::AST::Apply;
         'prefix:<not>' => sub {
             my $self      = shift;
             my $level     = shift;
-            '!( ' . Perlito5::Javascript2::to_bool( $self->{arguments}->[0], $level ) . ')';
+            my $arg = pop(@{$self->{arguments}});
+            if (!$arg) {
+                return 'true';
+            }
+            '!( ' . Perlito5::Javascript2::to_bool( $arg, $level ) . ')';
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
