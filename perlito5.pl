@@ -5301,7 +5301,7 @@ sub Perlito5::Grammar::Block::term_do {
     my $pos = $_[1];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
     my $tmp = ((('do' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
-        my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
             1
@@ -5316,19 +5316,40 @@ sub Perlito5::Grammar::Block::term_do {
         $MATCH = $tmp;
         $res ? 1 : 0
     }) && (do {
-        my $m2 = Perlito5::Grammar::Statement::statement_parse($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            $MATCH->{'Perlito5::Grammar::Statement::statement_parse'} = $m2;
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement::statement_parse'}))];
-        1
+        my $pos1 = $MATCH->{'to'};
+        (do {
+            ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block' => Perlito5::AST::Lit::Block->new('stmts' => []))];
+                1
+            })
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            ((do {
+                my $m2 = Perlito5::Grammar::Statement::statement_parse($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Statement::statement_parse'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement::statement_parse'}))];
+                1
+            }))
+        })
     })));
     $tmp ? $MATCH : 0
 }
