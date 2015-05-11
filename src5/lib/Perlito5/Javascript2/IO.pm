@@ -255,7 +255,7 @@ if (isNode) {
             else {
                 fs.closeSync(handle_id);
             }
-            pkg.file_handle.id = nil;
+            pkg.file_handle.id = null;
             return 1;
         }
         catch(err) {
