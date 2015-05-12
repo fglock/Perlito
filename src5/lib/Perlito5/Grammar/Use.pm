@@ -303,6 +303,25 @@ sub require {
     }
 }
 
+sub do_file {
+    my $filename = shift;
+    eval {
+        filename_lookup($filename);
+        1;
+    } or do {
+        $INC{$filename} = undef;
+        $@ = '';
+        $! = 'No such file or directory';
+        return 'undef';
+    };
+    my $realfilename = $INC{$filename};
+    open FILE, '<', $realfilename
+      or die "Cannot read $realfilename: $!\n";
+    local $/ = undef;
+    my $source = <FILE>;
+    close FILE;
+    return $source;
+}
 
 Perlito5::Grammar::Statement::add_statement( 'no'  => \&stmt_use );
 Perlito5::Grammar::Statement::add_statement( 'use' => \&stmt_use );

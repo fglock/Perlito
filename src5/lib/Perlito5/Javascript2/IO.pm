@@ -458,10 +458,6 @@ if (isNode) {
         }
     };
 
-    p5typeglob_set("Perlito5::IO", "slurp", function(List__) {
-        return fs.readFileSync(List__[0],"utf8");
-    });
-
 } else {
     // not running in node.js
     p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
