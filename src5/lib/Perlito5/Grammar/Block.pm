@@ -206,16 +206,8 @@ token term_anon_sub {
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar::Space::opt_ws> <before '{'> 
-    [ '{' <.Perlito5::Grammar::Space::opt_ws> '}'
-        { $MATCH->{capture} = [ 'term',
-            Perlito5::AST::Do->new(
-                block => Perlito5::AST::Lit::Block->new(stmts => [])
-            ) ]
-        }
-    | <Perlito5::Grammar::Statement::statement_parse>
-        { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Statement::statement_parse'}) ) ] }
-    ]
+    'do' <Perlito5::Grammar::block>
+        { $MATCH->{capture} = [ 'term', Perlito5::AST::Do->new( block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}) ) ] }
 };
 
 token args_sig {
