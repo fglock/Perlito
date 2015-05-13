@@ -895,6 +895,23 @@ var p5range = function(a, b) {
     else {
         a = p5str(a);
         b = p5str(b);
+        var c = a.substr(0, 1);
+        if ( c == '+' ) {
+            if (a == "+") {
+                return [a]
+            }
+            a = a.substr(1)
+        }
+        else if ( c == '-' ) {
+            if (a == "-") {
+                return [a]
+            }
+            return p5range(p5num(a), b)
+        }
+        c = b.substr(0, 1);
+        if ( c == '+' ) {
+            b = b.substr(1)
+        }
         while (  (a.length < b.length)
               || (a.length == b.length && a <= b) ) {
             tmp.push(a);
