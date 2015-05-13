@@ -472,7 +472,12 @@ package Perlito5::Javascript2;
 
     sub emit_function_javascript2 {
         my ($level, $wantarray, $argument) = @_;
-        if ( $argument->isa( 'Perlito5::AST::Apply' ) && $argument->code eq 'return' ) {
+        if (  $argument->isa( 'Perlito5::AST::Apply' )
+           && (  $argument->code eq 'return'
+              || $argument->code eq 'last'
+              || $argument->code eq 'next'
+              || $argument->code eq 'redo' ) )
+        {
             emit_func_javascript2( $level, $wantarray,
                 $argument->emit_javascript2($level, $wantarray)
             );

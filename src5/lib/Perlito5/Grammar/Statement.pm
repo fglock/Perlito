@@ -162,18 +162,26 @@ sub modifier {
     if ($modifier eq 'if') {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp),
-                body      => $expression,
+            capture => Perlito5::AST::Apply->new(
+                'arguments' => [
+                    Perlito5::Match::flat($modifier_exp),
+                    $expression,
+                ],
+                'code' => 'infix:<&&>',
+                'namespace' => '',
             ),
         };
     }
     if ($modifier eq 'unless') {
         return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::If->new(
-                cond      => Perlito5::Match::flat($modifier_exp),
-                otherwise => $expression, 
+            capture => Perlito5::AST::Apply->new(
+                'arguments' => [
+                    Perlito5::Match::flat($modifier_exp),
+                    $expression,
+                ],
+                'code' => 'infix:<||>',
+                'namespace' => '',
             ),
         };
     }
