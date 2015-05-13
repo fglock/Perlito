@@ -599,10 +599,13 @@ var p5context = function(List__, p5want) {
     }
     // scalar: return the last value
     var o = List__;
-    while (o instanceof Array) {
+    if (o instanceof Array) {
         o =   o.length
             ? o[o.length-1]
             : null;
+    }
+    if (o instanceof Array) {
+        o =   o.length
     }
     return o;
 }
