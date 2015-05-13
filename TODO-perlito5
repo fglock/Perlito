@@ -113,10 +113,6 @@ TODO list for Perlito5
 
 -- strict and warnings: create options like 'subs', 'refs'
 
--- clean up:
-    the several "end_tables" in Expression.pm are duplicating the function of
-    $Precedence in Precedence.pm - Expression.pm should use $Precedence directly.
-
 -- things that work in perlito5, but which are errors in 'perl'
 
     $ perl -e ' my @things= map {  no warnings; 123 } @list; '
@@ -252,6 +248,8 @@ TODO list for Perlito5
 
 
 * Perl6 backend
+
+-- keep comments
 
 -- context: wantarray, return-comma
         sub x { return 7, 8 }
@@ -434,8 +432,11 @@ TODO list for Perlito5
 -- lvalue ternary: ($a_or_b ? $a : $b) = $c;
 -- lvalue substr()
 -- 4-arguments substr()
+-- lvalue pos($str)
 -- pos($str)
 -- lvalue chomp(), chop()
+-- lvalue $#a
+-- lvalue subroutine
 
 -- bug: variable aliases create copies instead
 
@@ -510,6 +511,8 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- keep comments
+
 -- debugging symbols
 -- line numbers in error messages
 
@@ -551,8 +554,8 @@ TODO list for Perlito5
 
 * Deprecate
 
--- remove unused features from src5/lib/Perlito5/Grammar/Regex.pm
-
 -- Interpreter backend
    this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
+
+   alternately, use the interpreter to compute constant foldings
 
