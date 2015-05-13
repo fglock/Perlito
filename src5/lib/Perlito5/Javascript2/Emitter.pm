@@ -2252,7 +2252,14 @@ package Perlito5::AST::Apply;
         'undef' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
-                return '(' . $self->{arguments}->[0]->emit_javascript2 . ' = null)'
+                my $arg = $self->{arguments}[0];
+                if (  ref( $arg ) eq 'Perlito5::AST::Var' 
+                   && $arg->{sigil} eq '&'
+                   )
+                {
+                    return '(delete p5pkg[' . Perlito5::Javascript2::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Javascript2::escape_string($arg->{name} ) . '])';
+                }
+                return '(' . $arg->emit_javascript2 . ' = null)'
             }
             return 'null'
         },
