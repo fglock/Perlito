@@ -926,9 +926,10 @@ var p5range = function(a, b, p5want, id, three_dots) {
     // flip-flop operator
     var v;
     if (p5range_state[id]) {
-        v = p5range_state[id]++;
+        v = ++p5range_state[id];
         if (p5bool(b)) {
             p5range_state[id] = 0;
+            v = v + "E0";
         }
         return v;
     }
@@ -938,8 +939,9 @@ var p5range = function(a, b, p5want, id, three_dots) {
             p5range_state[id]++;
             v = p5range_state[id];
         }
-        if (!three_dots && p5bool(b)) {
+        if (v && !three_dots && p5bool(b)) {
             p5range_state[id] = 0;
+            v = v + "E0";
         }
         return v;
     }
