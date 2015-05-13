@@ -390,10 +390,10 @@ sub pass {
     _ok(1, '', @_);
 }
 
-####  sub fail {
-####      _ok(0, _where(), @_);
-####  }
-####  
+sub fail {
+    _ok(0, _where(), @_);
+}
+
 ####  sub curr_test {
 ####      $test = shift if @_;
 ####      return $test;
