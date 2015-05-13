@@ -384,13 +384,10 @@ TODO list for Perlito5
 -- @v = /x/g
 
 -- regex variables localization in blocks
-
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /(.)/; print $1; } print $1, "\n"; '
     aba
-
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ //; print $1; } print $1, "\n"; '
     abb
-
     $ perl -e ' "a" =~ /(.)/; print $1; { "b" =~ /x/; print $1; } print $1, "\n"; '
     aaa
 
@@ -408,12 +405,10 @@ TODO list for Perlito5
     x\[x\\\]x\          # '\' is quoted, but 'Q' disappears
 
 -- qr() returns a Regexp object
-
     {
         package Regexp;
         sub x { 123 }
     }
-
     $a = qr//;
     print $a->x, "\n";  # 123
 
@@ -421,6 +416,14 @@ TODO list for Perlito5
 -- javascript "var" erases the outer value within the whole current lexical scope
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables
+   possible fix: initialize variables to null
+-- add tests using closures, to check that the redeclared variable is a different variable
+    $ perl   -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
+    10
+    [space]
+    $ nodejs perlito5.js -Isrc5/lib  -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
+    10
+    10
 
 -- lvalue ternary: ($a_or_b ? $a : $b) = $c;
 -- lvalue substr()
@@ -432,6 +435,7 @@ TODO list for Perlito5
 -- lvalue subroutine
 
 -- bug: variable aliases create copies instead
+    for (@x) { $_++ }   # doesn't change @x
 
 -- generate more compact code; maybe use more subroutines instead of inlining;
    autovivification is probably the most verbose part of the code.
@@ -439,10 +443,6 @@ TODO list for Perlito5
 
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
--- add symbol tables for scalar, array and hash
--- references to typeglobs:
-    $ perl -e ' print ref(\*main) '
-    GLOB
 -- aliasing between lexicals and globals
     $ perl -e 'use strict; my $x = 3; *main::z = \$x; print $main::z; '
     3
@@ -456,23 +456,16 @@ TODO list for Perlito5
 -- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
     even if the closure was never created or used in the first place
 
--- bug https://github.com/fglock/Perlito/issues/10
-    "Perlito 5 JS has syntax errors"
-
-    Tried
-
-    YUI Compressor online
-    and
-    Google Closure Compiler
-    http://closure-compiler.appspot.com/home
-
-    Both failed with syntax errors.
-
 -- flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
 
 
 * Javascript - implemented but missing more tests
+
+-- add symbol tables for scalar, array and hash
+-- references to typeglobs:
+    $ perl -e ' print ref(\*main) '
+    GLOB
 
 -- prototype() can be set by aliasing:
     *x = sub ($$) { 123 }; *y = *x;  print prototype(\&y)   # $$
@@ -530,6 +523,18 @@ TODO list for Perlito5
 -- *{$pkg . "::foo"} = \&bar;
 
 -- local $SIG{__WARN__};
+
+-- bug https://github.com/fglock/Perlito/issues/10
+    "Perlito 5 JS has syntax errors"
+
+    Tried
+
+    YUI Compressor online
+    and
+    Google Closure Compiler
+    http://closure-compiler.appspot.com/home
+
+    Both failed with syntax errors.
 
 
 * Oddities
