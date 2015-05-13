@@ -8546,11 +8546,8 @@ package Perlito5::AST::Index;
             return $self->{'obj'}->emit_javascript2($level, 'list')
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '$') {
-            my $v = Perlito5::AST::Var->new('sigil' => '@', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name());
+            my $v = Perlito5::AST::Var->new(%{$self->{'obj'}}, 'sigil' => '@');
             return $v->emit_javascript2($level)
-        }
-        elsif ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-            return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'array') . '._array_'
         }
         else {
             return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}, $level, 'array') . '._array_'
@@ -8610,11 +8607,8 @@ package Perlito5::AST::Lookup;
             return $v->emit_javascript2($level)
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '$') {
-            my $v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name());
+            my $v = Perlito5::AST::Var->new(%{$self->{'obj'}}, 'sigil' => '%');
             return $v->emit_javascript2($level)
-        }
-        elsif ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-            return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}->{'arguments'}->[0], $level, 'hash') . '._hash_'
         }
         else {
             return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}, $level, 'hash') . '._hash_'
