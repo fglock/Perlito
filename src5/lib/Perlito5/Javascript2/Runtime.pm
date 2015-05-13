@@ -882,43 +882,50 @@ var p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
-var p5range = function(a, b) {
-    var tmp = [];
-    if (typeof a === "number" || typeof b === "number") {
-        a = p5num(a);
-        b = p5num(b);
-        while (a <= b) {
-            tmp.push(a);
-            a++;
-        }
-    }
-    else {
-        a = p5str(a);
-        b = p5str(b);
-        var c = a.substr(0, 1);
-        if ( c == '+' ) {
-            if (a == "+") {
-                return [a]
+var p5range_state = {};
+var p5range = function(a, b, p5want, id, three_dots) {
+    if (p5want) {
+        // list context
+        var tmp = [];
+        if (typeof a === "number" || typeof b === "number") {
+            a = p5num(a);
+            b = p5num(b);
+            while (a <= b) {
+                tmp.push(a);
+                a++;
             }
-            a = a.substr(1)
         }
-        else if ( c == '-' ) {
-            if (a == "-") {
-                return [a]
+        else {
+            a = p5str(a);
+            b = p5str(b);
+            var c = a.substr(0, 1);
+            if ( c == '+' ) {
+                if (a == "+") {
+                    return [a]
+                }
+                a = a.substr(1)
             }
-            return p5range(p5num(a), b)
+            else if ( c == '-' ) {
+                if (a == "-") {
+                    return [a]
+                }
+                return p5range(p5num(a), b, p5want, id, three_dots)
+            }
+            c = b.substr(0, 1);
+            if ( c == '+' ) {
+                b = b.substr(1)
+            }
+            while (  (a.length < b.length)
+                  || (a.length == b.length && a <= b) ) {
+                tmp.push(a);
+                a = p5incr_(a);
+            }
         }
-        c = b.substr(0, 1);
-        if ( c == '+' ) {
-            b = b.substr(1)
-        }
-        while (  (a.length < b.length)
-              || (a.length == b.length && a <= b) ) {
-            tmp.push(a);
-            a = p5incr_(a);
-        }
+        return tmp;
     }
-    return tmp;
+    // flip-flop operator
+    CORE.die([ "TODO: flip-flop operator" ]);
+    // return p5range_state[id];
 };
 
 var p5negative = function(o) {

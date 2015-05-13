@@ -1966,9 +1966,21 @@ package Perlito5::AST::Apply;
         'infix:<..>' => sub {
             my ($self, $level, $wantarray) = @_;
             return 'p5range(' . $self->{arguments}->[0]->emit_javascript2($level) . ', '
-                              . $self->{arguments}->[1]->emit_javascript2($level) . ')';
+                              . $self->{arguments}->[1]->emit_javascript2($level) . ', '
+                              . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ', '
+                              . '"' . Perlito5::Javascript2::get_label() . '"' . ', '
+                              . '0'
+                        . ')'
         },
-
+        'infix:<...>' => sub {
+            my ($self, $level, $wantarray) = @_;
+            return 'p5range(' . $self->{arguments}->[0]->emit_javascript2($level) . ', '
+                              . $self->{arguments}->[1]->emit_javascript2($level) . ', '
+                              . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ', '
+                              . '"' . Perlito5::Javascript2::get_label() . '"' . ', '
+                              . '1'
+                        . ')'
+        },
         'delete' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
