@@ -8538,6 +8538,10 @@ package Perlito5::AST::Index;
     sub Perlito5::AST::Index::emit_javascript2_container {
         my $self = shift;
         my $level = shift;
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+            my $v = Perlito5::AST::Apply->new(%{$self->{'obj'}}, 'code' => 'prefix:<@>');
+            return $v->emit_javascript2($level)
+        }
         if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>' && @{$self->{'obj'}->arguments()} == 1 && $self->{'obj'}->{'arguments'}->[0]->isa('Perlito5::AST::Apply')) {
             return $self->{'obj'}->emit_javascript2($level, 'list')
         }
@@ -8601,6 +8605,10 @@ package Perlito5::AST::Lookup;
     sub Perlito5::AST::Lookup::emit_javascript2_container {
         my $self = shift;
         my $level = shift;
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+            my $v = Perlito5::AST::Apply->new(%{$self->{'obj'}}, 'code' => 'prefix:<%>');
+            return $v->emit_javascript2($level)
+        }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '$') {
             my $v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name());
             return $v->emit_javascript2($level)

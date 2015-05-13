@@ -924,6 +924,14 @@ package Perlito5::AST::Index;
         my $self = shift;
         my $level = shift;
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # ${"Exporter::Cache"}[2]
+            my $v = Perlito5::AST::Apply->new( %{$self->{obj}}, code => 'prefix:<@>' );
+            return $v->emit_javascript2($level);
+        }
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->code eq 'circumfix:<( )>'
            && @{ $self->{obj}->arguments } == 1
            && $self->{obj}->{arguments}[0]->isa('Perlito5::AST::Apply')
@@ -1097,6 +1105,14 @@ package Perlito5::AST::Lookup;
     sub emit_javascript2_container {
         my $self = shift;
         my $level = shift;
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # ${"Exporter::Cache"}{x}
+            my $v = Perlito5::AST::Apply->new( %{$self->{obj}}, code => 'prefix:<%>' );
+            return $v->emit_javascript2($level);
+        }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'
            )

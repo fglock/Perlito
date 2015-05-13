@@ -335,13 +335,6 @@ TODO list for Perlito5
     $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
     BM
 
--- autovivification of fully-qualified array and hash globals
-    $#{"Exporter::Cache"};
-
-    ${"Exporter::Cache"}[2] = 3;
-
-    See: p5scalar_deref() / p5scalar_deref_set() in Perlito5/Javascript2/Runtime.pm
-
 -- 'require v5.006;'
     # Can't locate v5.006 in @INC
 
@@ -458,8 +451,6 @@ TODO list for Perlito5
     See: p5str
 
 -- pack(), unpack()
--- y()()
-    add tests
 
 -- BEGIN{} should execute in the environment of the program under compilation
 -- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
