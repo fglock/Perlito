@@ -205,6 +205,7 @@ while (substr($ARGV[0], 0, 1) eq '-'
 
 if ($backend && @ARGV) {
     local $Perlito5::FILE_NAME = $ARGV[0];
+    local $Perlito5::LINE_NUMBER = 1;
     if ($ARGV[0] eq '-e') {
         shift @ARGV;
         if ($verbose) {

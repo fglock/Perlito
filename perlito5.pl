@@ -726,6 +726,9 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             if ($name eq '__FILE__') {
                 $m_name->{'capture'} = ['term', Perlito5::AST::Val::Buf->new('buf' => $Perlito5::FILE_NAME)]
             }
+            elsif ($name eq '__LINE__') {
+                $m_name->{'capture'} = ['term', Perlito5::AST::Val::Int->new('int' => $Perlito5::LINE_NUMBER)]
+            }
             else {
                 $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => ($has_paren == 0))]
             }
@@ -4880,6 +4883,7 @@ sub Perlito5::Grammar::Use::expand_use {
     my $filename = modulename_to_filename($module_name);
     filename_lookup($filename) eq 'done' && return ;
     local $Perlito5::FILE_NAME = $filename;
+    local $Perlito5::LINE_NUMBER = 1;
     my $realfilename = $INC{$filename};
     open(FILE, '<', $realfilename) or die('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
     local ${'/'} = undef;
@@ -13494,6 +13498,7 @@ while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
 }
 if ($backend && @ARGV) {
     local $Perlito5::FILE_NAME = $ARGV[0];
+    local $Perlito5::LINE_NUMBER = 1;
     if ($ARGV[0] eq '-e') {
         shift(@ARGV);
         if ($verbose) {
