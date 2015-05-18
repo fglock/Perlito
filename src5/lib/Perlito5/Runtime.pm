@@ -346,6 +346,9 @@ our $CORE_PROTO = {
           'CORE::xor'    => undef,
           'CORE::not'    => undef,
           'CORE::cmp'    => undef,
+
+          'CORE::__FILE__' => '',
+          'CORE::__LINE__' => '',
         };  
 1;          
 

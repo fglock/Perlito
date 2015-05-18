@@ -301,8 +301,16 @@ sub term_bareword {
                 }
                 $p++;
             }
-            # TODO - "subs with empty protos are candidates for inlining"
-            $m_name->{capture} = [ 'term', 
+            if ($name eq '__FILE__') {
+                $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Val::Buf->new(
+                        buf   => $Perlito5::FILE_NAME,
+                    )
+                ];
+            }
+            else {
+                # TODO - "subs with empty protos are candidates for inlining"
+                $m_name->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
                         code      => $name,
                         namespace => $namespace,
@@ -310,6 +318,7 @@ sub term_bareword {
                         bareword  => ($has_paren == 0)
                     )
                 ];
+            }
             $m_name->{to} = $p;
             return $m_name;
         }

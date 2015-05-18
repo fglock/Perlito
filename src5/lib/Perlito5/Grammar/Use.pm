@@ -213,6 +213,7 @@ sub expand_use {
      
     # TODO - look for a precompiled version
 
+    local $Perlito5::FILE_NAME = $filename;
     my $realfilename = $INC{$filename};
 
     # warn "// now loading: ", $realfilename;
