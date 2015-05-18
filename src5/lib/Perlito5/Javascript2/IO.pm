@@ -495,6 +495,10 @@ CORE.die = function(List__) {
     }
     if (s.substr(-1, 1) != "\n") {
         try {
+            if (s == "") {
+                s = "Died";
+            }
+            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;
             s = s + "\n" + new Error().stack + "\n";
         }
         catch(err) { }
@@ -524,6 +528,10 @@ CORE.warn = function(List__) {
     }
     if (s.substr(-1, 1) != "\n") {
         try {
+            if (s == "") {
+                s = "Warning: something's wrong";
+            }
+            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;
             s = s + "\n" + new Error().stack + "\n";
         }
         catch(err) { }
