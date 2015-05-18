@@ -2,6 +2,13 @@ package Perlito5::Grammar::Space;
 
 use Perlito5::Grammar::Precedence;
 
+my %line_index;
+sub count_line {
+    my $pos = $_[0];
+    return if $pos < $line_index{$Perlito5::FILE_NAME};
+    $line_index{$Perlito5::FILE_NAME} = $pos + 1;
+    $Perlito5::LINE_NUMBER++;
+}
 
 my %space = (
     '#'     => sub {
@@ -12,6 +19,7 @@ my %space = (
     chr(10) => sub {
                     my $str = $_[0];
                     my $pos = $_[1];
+                    count_line($pos);
                     $pos++ if substr($str, $pos, 1) eq chr(13);
                     my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
                     $m->{to};
@@ -20,7 +28,10 @@ my %space = (
     chr(13) => sub {
                     my $str = $_[0];
                     my $pos = $_[1];
-                    $pos++ if substr($str, $pos, 1) eq chr(10);
+                    if (substr($str, $pos, 1) eq chr(10)) {
+                        count_line($pos);
+                        $pos++;
+                    }
                     my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
                     $m->{to};
                 },
@@ -56,12 +67,16 @@ sub term_end {
     my $m = Perlito5::Grammar::Space::to_eol($str, $p);
     $p = $m->{to};
     if ( substr($str, $p, 1) eq chr(10) ) {
+        count_line($p);
         $p++;
         $p++ if substr($str, $p, 1) eq chr(13);
     }
     elsif ( substr($str, $p, 1) eq chr(13) ) {
         $p++;
-        $p++ if substr($str, $p, 1) eq chr(10);
+        if (substr($str, $p, 1) eq chr(10)) {
+            count_line($p);
+            $p++;
+        }
     }
     if ($is_data) {
         $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = substr($_[0], $p);

@@ -5489,6 +5489,13 @@ Perlito5::Grammar::Statement::add_statement($_ => \&term_block)
 package main;
 package Perlito5::Grammar::Space;
 # use Perlito5::Grammar::Precedence
+my %line_index;
+sub Perlito5::Grammar::Space::count_line {
+    my $pos = $_[0];
+    $pos < $line_index{$Perlito5::FILE_NAME} && return ;
+    $line_index{$Perlito5::FILE_NAME} = $pos + 1;
+    $Perlito5::LINE_NUMBER++
+}
 my %space = ('#' => sub {
     my $m = Perlito5::Grammar::Space::to_eol($_[0], $_[1]);
     $m->{'to'}
@@ -5497,6 +5504,7 @@ my %space = ('#' => sub {
 }, chr(10) => sub {
     my $str = $_[0];
     my $pos = $_[1];
+    count_line($pos);
     substr($str, $pos, 1) eq chr(13) && $pos++;
     my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
     $m->{'to'}
@@ -5505,7 +5513,10 @@ my %space = ('#' => sub {
 }, chr(13) => sub {
     my $str = $_[0];
     my $pos = $_[1];
-    substr($str, $pos, 1) eq chr(10) && $pos++;
+    if (substr($str, $pos, 1) eq chr(10)) {
+        count_line($pos);
+        $pos++
+    }
     my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
     $m->{'to'}
 }, chr(32) => sub {
@@ -5536,12 +5547,16 @@ sub Perlito5::Grammar::Space::term_end {
     my $m = Perlito5::Grammar::Space::to_eol($str, $p);
     $p = $m->{'to'};
     if (substr($str, $p, 1) eq chr(10)) {
+        count_line($p);
         $p++;
         substr($str, $p, 1) eq chr(13) && $p++
     }
     elsif (substr($str, $p, 1) eq chr(13)) {
         $p++;
-        substr($str, $p, 1) eq chr(10) && $p++
+        if (substr($str, $p, 1) eq chr(10)) {
+            count_line($p);
+            $p++
+        }
     }
     if ($is_data) {
         $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = substr($_[0], $p)
@@ -13522,6 +13537,7 @@ if ($backend && @ARGV) {
     }
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO = {};
+    $source = chr(10) . '# line 1' . chr(10) . $source;
     if ($wrapper_begin) {
         $source = ' ' . $wrapper_begin . ';' . chr(10) . '                    ' . $source . ';' . chr(10) . '                    ' . $wrapper_end . chr(10) . '                  '
     }

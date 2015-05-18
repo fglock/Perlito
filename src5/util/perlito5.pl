@@ -233,6 +233,9 @@ if ($backend && @ARGV) {
     $Perlito5::PKG_NAME = 'main';
     $Perlito5::PROTO    = {};
 
+    $source = "\n# line 1\n"
+            . $source;
+
     if ($wrapper_begin) {
         $source = " $wrapper_begin;
                     $source;
