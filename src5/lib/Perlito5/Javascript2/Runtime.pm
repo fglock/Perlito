@@ -438,7 +438,8 @@ if (isNode) {
     p5pkg["main"]["Hash_ENV"] = {};
     for (var e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];
 
-    p5pkg["main"]["v_$"]       = process.pid;
+    p5pkg["main"]["v_$"] = process.pid;   // $$
+    p5scalar_deref_set(String.fromCharCode(24), process.argv[0]);  // $^X
 } else if (typeof arguments === "object") {
     p5pkg["main"]["List_ARGV"] = arguments;
 }
