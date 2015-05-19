@@ -250,9 +250,30 @@ sub glob_quote_parse {
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     # Special cases:
     # <>                 - no arguments, read from @ARGV
+    # <<>>               - no arguments, read from @ARGV using 3-args open
     # <FILE>             - file
     # <$var>             - file
     # < anything else >  - is a glob() call
+
+    if ( substr( $str, $pos, 3 ) eq '<>>' ) {
+        return {
+            str  => $str, 
+            from => $pos, 
+            to   => $pos + 3, 
+            capture => Perlito5::AST::Apply->new(
+                code      => '<glob>',
+                arguments => [
+                    Perlito5::AST::Apply->new(
+                        code      => '<>',
+                        arguments => [],
+                        namespace => '',
+                        bareword  => 1,
+                    )
+                ],
+                namespace => '',
+            ),
+        };
+    }
 
     if ( substr( $str, $pos, 1 ) eq '>' ) {
         return {
@@ -983,6 +1004,7 @@ Perlito5::Grammar::Precedence::add_term( "'"  => \&term_q_quote );
 Perlito5::Grammar::Precedence::add_term( '"'  => \&term_qq_quote );
 Perlito5::Grammar::Precedence::add_term( '/'  => \&term_m_quote );
 Perlito5::Grammar::Precedence::add_term( '<'  => \&term_glob );
+Perlito5::Grammar::Precedence::add_term( '<<>>' => \&term_glob );
 Perlito5::Grammar::Precedence::add_term( '<<' => \&here_doc_wanted );
 Perlito5::Grammar::Precedence::add_term( '`'  => \&term_qx );
 Perlito5::Grammar::Precedence::add_term( 'm'  => \&term_m_quote );

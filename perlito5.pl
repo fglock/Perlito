@@ -4004,6 +4004,9 @@ sub Perlito5::Grammar::String::glob_quote_parse {
     my $delimiter = substr($str, $pos - 1, 1);
     my $open_delimiter = $delimiter;
     exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
+    if (substr($str, $pos, 3) eq '<>>') {
+        return {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Apply->new('code' => '<>', 'arguments' => [], 'namespace' => '', 'bareword' => 1)], 'namespace' => '')}
+    }
     if (substr($str, $pos, 1) eq '>') {
         return {'str' => $str, 'from' => $pos, 'to' => $pos + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [], 'namespace' => '')}
     }
@@ -4489,6 +4492,7 @@ Perlito5::Grammar::Precedence::add_term(chr(39) => \&term_q_quote);
 Perlito5::Grammar::Precedence::add_term('"' => \&term_qq_quote);
 Perlito5::Grammar::Precedence::add_term('/' => \&term_m_quote);
 Perlito5::Grammar::Precedence::add_term('<' => \&term_glob);
+Perlito5::Grammar::Precedence::add_term('<<>>' => \&term_glob);
 Perlito5::Grammar::Precedence::add_term('<<' => \&here_doc_wanted);
 Perlito5::Grammar::Precedence::add_term('`' => \&term_qx);
 Perlito5::Grammar::Precedence::add_term('m' => \&term_m_quote);
