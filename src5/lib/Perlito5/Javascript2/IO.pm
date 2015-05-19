@@ -418,6 +418,17 @@ if (isNode) {
         return p5is_file(s) || p5is_directory(s);
     };
 
+    CORE.binmode = function(List__) {
+        try {
+            // TODO
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return '';
+        }
+    };
+
     CORE.rmdir = function(List__) {
         try {
             fs.rmdir(p5str(List__[0]));
