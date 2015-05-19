@@ -13415,6 +13415,8 @@ sub Perlito5::chomp_switch {
         shift(@ARGV)
     }
 }
+push(@Use, 'no warnings');
+push(@Use, 'no strict');
 while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
     if ($ARGV[0] eq '--verbose') {
         $verbose = 1;
@@ -13457,8 +13459,20 @@ while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
             ($s, $import) = split('=', $s);
             $import = 'split(/,/,q{' . $import . '})'
         }
-        push(@Use, {'use' => $use, 'module' => $s, 'import' => $import});
+        push(@Use, $use . ' ' . $s . ' ' . $import);
         shift(@ARGV)
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-w') {
+        push(@Use, 'use warnings');
+        chomp_switch()
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-W') {
+        push(@Use, 'use warnings');
+        chomp_switch()
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-X') {
+        push(@Use, 'no warnings');
+        chomp_switch()
     }
     elsif (substr($ARGV[0], 0, 2) eq '-n') {
         if ($wrapper_priority < 1) {
@@ -13544,10 +13558,8 @@ if ($backend && @ARGV) {
     if ($execute) {
         $Perlito5::EXPAND_USE = 1;
         local ${'@'};
-        my $init = join('; ', map {
-            $_->{'use'} . ' ' . $_->{'module'} . ' ' . $_->{'import'}
-        } @Use);
-        eval('  package main;' . chr(10) . '                no strict;' . chr(10) . '                no warnings;' . chr(10) . '                ' . $init . ';' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
+        my $init = join('; ', @Use);
+        eval('  package main;' . chr(10) . '                ' . $init . ';' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
         if (${'@'}) {
             my $error = ${'@'};
             warn($error);
