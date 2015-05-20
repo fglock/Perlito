@@ -349,7 +349,7 @@ sub Perlito5::Grammar::Precedence::op_parse {
         if (exists($Op{$op})) {
             my $c1 = substr($str, $pos + $len - 1, 1);
             my $c2 = substr($str, $pos + $len, 1);
-            if (!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '&' && $c2 eq '&')) {
+            if ((!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '&' && $c2 eq '&')) || ($c1 eq 'x' && $c2 ge 0 && $c2 le 9)) {
                 if (exists($Operator->{'infix'}->{$op}) && !exists($Operator->{'prefix'}->{$op}) && !$last_is_term) {}
                 else {
                     return {'str' => $str, 'from' => $pos, 'to' => $pos + $len, 'capture' => ['op', $op]}

@@ -127,14 +127,17 @@ sub op_parse {
         if (exists($Op{$op})) {
             my $c1 = substr($str, $pos + $len - 1, 1);
             my $c2 = substr($str, $pos + $len, 1);
-            if (
-                  !(is_ident_middle($c1) && is_ident_middle($c2))
-               && !($c1 eq '&' && $c2 eq '&')
-               ) 
+            if (   (  !(is_ident_middle($c1) && is_ident_middle($c2))   # "and" can't be followed by "_"
+                   && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
+                   ) 
+                || (  $c1 eq 'x' && $c2 ge '0' && $c2 le '9'            # "x3" is ok, parses as "x 3"
+                   )
+               )
             {
                 # it looks like an operator, and it is not one of these cases:
-                #   and_more
-                #   and(...)
+                #   and -> and_more
+                #   &   -> &&
+                #   x   -> x3  ok!
 
                 if (  exists($Operator->{infix}{$op}) 
                    && !exists($Operator->{prefix}{$op})
