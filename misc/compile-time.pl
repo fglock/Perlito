@@ -78,4 +78,29 @@ push @RUN, sub {
 };
 $_->() for @RUN;
 
+#-----------------------
+
+    # $COMPILE::f;           # do: my ...
+                    # skip: $f = shift;
+    sub f1 { $COMPILE::f }   # do: sub ...
+    sub f0 {
+        *f0 = sub {
+                my $f = shift;
+                # skip: sub ... *moved outside*
+                # skip: BEGIN ... *moved outside*
+              };
+        # skip: my ...
+        $COMPILE::f = shift;
+        # skip: sub ... *moved outside*
+        # skip: BEGIN ... *moved outside*
+    }
+    $COMPILE::f = 5;         # do: BEGIN ... *side effect*  *moved down*
+    print "part 3 again, unrolled\n"; # *moved down*
+    print f1, "\n"; # 5
+    f0(10);
+    print f1, "\n"; # 10
+    f0(20);
+    print f1, "\n"; # still 10
+
+
 __END__
