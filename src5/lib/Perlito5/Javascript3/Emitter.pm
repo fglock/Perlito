@@ -679,11 +679,18 @@ package Perlito5::AST::CompUnit;
         return $str;
     }
     sub emit_javascript3_program {
-        my $comp_units = shift;
+        my ($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
-        my $str = ''
-                .  "var p5want = null;\n"
-                .  "var " . Perlito5::Javascript3::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
+        my $str;
+        if ( $options{expand_use} ) {
+            $str .= Perlito5::Javascript3::Runtime->emit_javascript2();
+            $str .= Perlito5::Javascript3::Array->emit_javascript2();
+            $str .= Perlito5::Javascript3::CORE->emit_javascript2();
+            $str .= Perlito5::Javascript3::IO->emit_javascript2();
+            $str .= Perlito5::Javascript3::Sprintf->emit_javascript2();
+        }
+        $str .= "var p5want = null;\n"
+             .  "var " . Perlito5::Javascript3::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
               '$@'    => { decl => 'our', namespace => 'main' },

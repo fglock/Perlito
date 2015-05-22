@@ -679,11 +679,18 @@ package Perlito5::AST::CompUnit;
         );
     }
     sub emit_javascript2_program {
-        my $comp_units = shift;
+        my ($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
-        my $str = ''
-                .  "var p5want;\n"
-                .  "var List__ = [];\n";
+        my $str;
+        if ( $options{expand_use} ) {
+            $str .= Perlito5::Javascript2::Runtime->emit_javascript2();
+            $str .= Perlito5::Javascript2::Array->emit_javascript2();
+            $str .= Perlito5::Javascript2::CORE->emit_javascript2();
+            $str .= Perlito5::Javascript2::IO->emit_javascript2();
+            $str .= Perlito5::Javascript2::Sprintf->emit_javascript2();
+        }
+        $str .= "var p5want;\n"
+             .  "var List__ = [];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my',                      }, # TODO - verify
               '$@'    => { decl => 'our', namespace => 'main' },

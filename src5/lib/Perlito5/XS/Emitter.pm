@@ -85,7 +85,9 @@ package Perlito5::AST::CompUnit;
     }
     sub emit_xs_program {
         my $comp_units = $_[0];
-
+        # if ( $expand_use ) {
+        #    print Perlito5::XS::Runtime->emit_xs();
+        # }
         my $str = "#include \"EXTERN.h\"\n"
                 . "#include \"perl.h\"\n"
                 . "#include \"XSUB.h\"\n"
