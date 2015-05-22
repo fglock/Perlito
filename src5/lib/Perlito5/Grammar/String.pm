@@ -104,7 +104,7 @@ sub qw_quote_parse {
     if ( $m ) {
         $m->{capture} = Perlito5::AST::Apply->new(
                 code      => 'list:<,>',
-                arguments => [ map( Perlito5::AST::Val::Buf->new( buf => $_ ), split(' ', Perlito5::Match::flat($m)->{buf})) ],
+                arguments => [ map( Perlito5::AST::Buf->new( buf => $_ ), split(' ', Perlito5::Match::flat($m)->{buf})) ],
                 namespace => '',
             );
     }
@@ -135,7 +135,7 @@ sub m_quote_parse {
         code      => 'p5:m',
         arguments => [
             $str_regex,
-            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+            Perlito5::AST::Buf->new( buf => $modifiers )
         ],
         namespace => ''
     );
@@ -152,7 +152,7 @@ sub s_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+    my $str_regex = Perlito5::AST::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
 
     my $part2;
     my $m;
@@ -188,7 +188,7 @@ sub s_quote_parse {
         arguments => [
             $str_regex,
             Perlito5::Match::flat($part2),
-            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+            Perlito5::AST::Buf->new( buf => $modifiers )
         ],
         namespace => ''
     );
@@ -219,7 +219,7 @@ sub qr_quote_parse {
         code      => 'p5:qr',
         arguments => [
             $str_regex,
-            Perlito5::AST::Val::Buf->new( buf => $modifiers ),
+            Perlito5::AST::Buf->new( buf => $modifiers ),
         ],
         namespace => ''
     );
@@ -358,7 +358,7 @@ sub tr_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+    my $str_regex = Perlito5::AST::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
 
     my $part2;
     my $m;
@@ -394,7 +394,7 @@ sub tr_quote_parse {
         arguments => [
             $str_regex,
             Perlito5::Match::flat($part2),
-            Perlito5::AST::Val::Buf->new( buf => $modifiers )
+            Perlito5::AST::Buf->new( buf => $modifiers )
         ],
         namespace => ''
     );
@@ -524,7 +524,7 @@ sub string_interpolation_parse {
             if ($c) {
                 if ($interpolate == 2) {
                     # regex
-                    $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 2) ) }
+                    $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Buf->new( buf => substr($str, $p, 2) ) }
                 }
                 elsif ($interpolate == 1) {
                     # double-quotes
@@ -533,22 +533,22 @@ sub string_interpolation_parse {
                 else {
                     # single-quotes
                     $m =  $c2 eq "\\"
-                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "\\" ) }
+                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Buf->new( buf => "\\" ) }
                         : $c2 eq "'"
-                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Val::Buf->new( buf => "'" ) }
+                        ? { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Buf->new( buf => "'" ) }
                         : 0;
                 }
             }
         }
         if ( $m ) {
             my $obj = Perlito5::Match::flat($m);
-            if ( ref($obj) eq 'Perlito5::AST::Val::Buf' ) {
+            if ( ref($obj) eq 'Perlito5::AST::Buf' ) {
                 $buf .= apply_quote_flags($obj->{'buf'}, $quote_flags);
                 $obj = undef;
             }
             if ( $obj ) {
                 if ( length $buf ) {
-                    push @args, Perlito5::AST::Val::Buf->new( buf => $buf );
+                    push @args, Perlito5::AST::Buf->new( buf => $buf );
                     $buf = '';
                 }
                 push @args, $obj;
@@ -574,7 +574,7 @@ sub string_interpolation_parse {
         }
     }
     if ( length $buf ) {
-        push @args, Perlito5::AST::Val::Buf->new( buf => $buf );
+        push @args, Perlito5::AST::Buf->new( buf => $buf );
     }
 
     die "Can't find string terminator '$delimiter' anywhere before EOF"
@@ -584,7 +584,7 @@ sub string_interpolation_parse {
 
     my $ast;
     if (!@args) {
-        $ast = Perlito5::AST::Val::Buf->new( buf => '' )
+        $ast = Perlito5::AST::Buf->new( buf => '' )
     }
     elsif (@args == 1) {
         $ast = $args[0];
@@ -711,7 +711,7 @@ sub here_doc {
         while ( $p < length($str) ) {
             if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
                 # this will put the text in the right place in the AST
-                push @$result, Perlito5::AST::Val::Buf->new(buf => substr($str, $pos, $p - $pos));
+                push @$result, Perlito5::AST::Buf->new(buf => substr($str, $pos, $p - $pos));
                 $p += length($delimiter);
                 # say "$p ", length($str);
                 my $m = newline( $str, $p );
@@ -745,7 +745,7 @@ sub here_doc {
             $p += length($delimiter);
             $m = newline( $str, $p );
             if ( $p >= length($str) || $m ) {
-                push @$result, Perlito5::AST::Val::Buf->new( buf => '' );
+                push @$result, Perlito5::AST::Buf->new( buf => '' );
                 $p = $m->{to} if $m;
                 return {
                     'str' => $str, 'from' => $pos, 'to' => $p
@@ -758,7 +758,7 @@ sub here_doc {
         $m = string_interpolation_parse($str, $pos, '', "\n" . $delimiter . "\n", 1);
         if ( $m ) {
             push @$result, Perlito5::Match::flat($m);
-            push @$result, Perlito5::AST::Val::Buf->new( buf => "\n" );
+            push @$result, Perlito5::AST::Buf->new( buf => "\n" );
             $m->{to} = $m->{to} - 1;
             return $m;
         }
@@ -778,7 +778,7 @@ sub double_quoted_unescape {
             'str' => $str,
             'from' => $pos,
             'to' => $pos+2,
-            capture => Perlito5::AST::Val::Buf->new( buf => chr($escape_sequence{$c2}) ),
+            capture => Perlito5::AST::Buf->new( buf => chr($escape_sequence{$c2}) ),
         };
     }
     elsif ( $c2 eq 'c' ) {
@@ -791,7 +791,7 @@ sub double_quoted_unescape {
             'str' => $str,
             'from' => $pos,
             'to' => $pos+3,
-            capture => Perlito5::AST::Val::Buf->new( buf => chr($c3) ),
+            capture => Perlito5::AST::Buf->new( buf => chr($c3) ),
         };
     }
     elsif ( $c2 eq 'x' ) {
@@ -807,7 +807,7 @@ sub double_quoted_unescape {
                 str => $str,
                 from => $pos,
                 to => $p + 1,
-                capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
+                capture => Perlito5::AST::Buf->new( buf => chr($tmp) ),
             };
         }
         else {
@@ -822,7 +822,7 @@ sub double_quoted_unescape {
                 str => $str,
                 from => $pos,
                 to => $p,
-                capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
+                capture => Perlito5::AST::Buf->new( buf => chr($tmp) ),
             };
         }
     }
@@ -838,7 +838,7 @@ sub double_quoted_unescape {
             str => $str,
             from => $pos,
             to => $p,
-            capture => Perlito5::AST::Val::Buf->new( buf => chr($tmp) ),
+            capture => Perlito5::AST::Buf->new( buf => chr($tmp) ),
         };
     }
     elsif ( $c2 eq 'N' ) {
@@ -851,7 +851,7 @@ sub double_quoted_unescape {
             'str' => $str,
             'from' => $pos,
             'to' => $pos+2,
-            capture => Perlito5::AST::Val::Buf->new( buf => $c2 ),
+            capture => Perlito5::AST::Buf->new( buf => $c2 ),
         };
     }
     return $m;

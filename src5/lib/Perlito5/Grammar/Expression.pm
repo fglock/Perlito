@@ -91,7 +91,7 @@ sub pop_term {
             return $v;
         }
         if ($v->[1] eq 'block') {
-            $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
+            $v = Perlito5::AST::Block->new( stmts => $v->[2], sig => $v->[3] );
             $v = block_or_hash($v);
             # TODO: $v = Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => $v->[2] );
             return $v;
@@ -452,7 +452,7 @@ token term_eval {
                     code      => 'eval',
                     arguments => [
                         Perlito5::AST::Do->new(
-                            block => Perlito5::AST::Lit::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
+                            block => Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
                         )
                     ], 
                     namespace => ''

@@ -16,7 +16,7 @@ token term_map_or_grep {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code        => Perlito5::Match::flat($MATCH->{map_or_grep}),
-                    special_arg => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] ),
+                    special_arg => Perlito5::AST::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] ),
                     arguments   => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}{capture}), 
                     namespace   => ''
                  )
@@ -31,7 +31,7 @@ token term_map_or_grep {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code        => Perlito5::Match::flat($MATCH->{map_or_grep}),
-                    special_arg => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] ),
+                    special_arg => Perlito5::AST::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] ),
                     arguments   => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}{capture}), 
                     namespace   => ''
                  )
@@ -66,7 +66,7 @@ token term_sort {
             # sort BLOCK LIST
             <Perlito5::Grammar::Expression::term_curly> 
             {
-                $MATCH->{_tmp} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
+                $MATCH->{_tmp} = Perlito5::AST::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
             }
         |
             # sort SUBNAME LIST
@@ -111,7 +111,7 @@ token term_sort {
             # sort '(' <opt_ws> BLOCK LIST ')'
             <Perlito5::Grammar::Expression::term_curly> 
             {
-                $MATCH->{_tmp} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
+                $MATCH->{_tmp} = Perlito5::AST::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
             }
         |
             # sort '(' VAR LIST ')'

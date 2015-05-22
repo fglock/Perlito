@@ -12,7 +12,7 @@ sub eval {
     return;
 }
 
-package Perlito5::AST::Val::Int;
+package Perlito5::AST::Int;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -20,7 +20,7 @@ sub eval {
 }
 
 
-package Perlito5::AST::Val::Num;
+package Perlito5::AST::Num;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -28,7 +28,7 @@ sub eval {
 }
 
 
-package Perlito5::AST::Val::Buf;
+package Perlito5::AST::Buf;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -36,7 +36,7 @@ sub eval {
 }
 
 
-package Perlito5::AST::Lit::Block;
+package Perlito5::AST::Block;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];

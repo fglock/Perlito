@@ -1157,7 +1157,7 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
                         new p5HashRef(new p5Hash({
                             stmts:   p5pkg["Perlito5::Match"].flat([match])
                         })),
-                        p5pkg["Perlito5::AST::Lit::Block"]
+                        p5pkg["Perlito5::AST::Block"]
                     ])
         })),
         p5pkg["Perlito5::AST::Do"]

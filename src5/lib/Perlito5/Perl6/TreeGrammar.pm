@@ -8,13 +8,13 @@ sub refactor_range_operator {
     Perlito5::TreeGrammar::render(
         [ And =>    [   Lookup => 'code', [ Value => 'infix:<..>' ] ],
                     [   Lookup => 'arguments', 
-                        [ And =>  [ Index => 0,     [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
+                        [ And =>  [ Index => 0,     [ And => [   Ref =>  'Perlito5::AST::Int' ],
                                                              [  Lookup => 'int', [ Value => 0 ] ]
                                                     ]
                                   ], # first argument is 0
                                   [ Index => 1, [ Or =>   
                                                     # 0 .. 9 ==> ^10
-                                                    [ And => [   Ref =>  'Perlito5::AST::Val::Int' ],
+                                                    [ And => [   Ref =>  'Perlito5::AST::Int' ],
                                                              [ Action => sub {
                                                                  $in->{code} = 'p6_prefix:<^>';
                                                                  $_[0]{int}++;

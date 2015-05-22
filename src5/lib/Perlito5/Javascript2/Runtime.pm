@@ -18,7 +18,7 @@ sub perl5_to_js {
     }
 
     my $ast = Perlito5::AST::Do->new(
-                block => Perlito5::AST::Lit::Block->new(
+                block => Perlito5::AST::Block->new(
                             stmts => $match->{capture},
                          ),
               );

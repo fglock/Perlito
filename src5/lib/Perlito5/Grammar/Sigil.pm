@@ -234,7 +234,7 @@ sub term_sigil {
                 $caret->{capture} = [ 'term', 
                         Perlito5::AST::Apply->new(
                             'arguments' => [
-                                Perlito5::AST::Val::Buf->new(
+                                Perlito5::AST::Buf->new(
                                     'buf' => $name,
                                 )
                             ],
@@ -270,7 +270,7 @@ sub term_sigil {
         $caret->{capture} = [ 'term',  
                     Perlito5::AST::Apply->new(
                         'arguments' => [
-                            Perlito5::AST::Val::Buf->new(
+                            Perlito5::AST::Buf->new(
                                 'buf' => $name,
                             )
                         ],

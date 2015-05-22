@@ -48,7 +48,7 @@ sub simplify {
     my $self = $_[0];
 
     my $block;
-    if ($self->{block}->isa('Perlito5::AST::Lit::Block')) {
+    if ($self->{block}->isa('Perlito5::AST::Block')) {
         $block = $self->{block}->stmts;
     }
     else {

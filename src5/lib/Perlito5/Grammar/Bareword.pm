@@ -303,14 +303,14 @@ sub term_bareword {
             }
             if ($name eq '__FILE__') {
                 $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Val::Buf->new(
+                    Perlito5::AST::Buf->new(
                         buf => $Perlito5::FILE_NAME,
                     )
                 ];
             }
             elsif ($name eq '__LINE__') {
                 $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Val::Int->new(
+                    Perlito5::AST::Int->new(
                         int => $Perlito5::LINE_NUMBER,
                     )
                 ];

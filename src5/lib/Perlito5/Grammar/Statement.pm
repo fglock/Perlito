@@ -19,7 +19,7 @@ token stmt_yadayada {
         $MATCH->{capture} = Perlito5::AST::Apply->new(
             code      => 'die',
             namespace => '',
-            arguments => [ Perlito5::AST::Val::Buf->new( buf => 'Unimplemented' ) ],
+            arguments => [ Perlito5::AST::Buf->new( buf => 'Unimplemented' ) ],
         );
     }
 };
@@ -79,7 +79,7 @@ token stmt_package {
         <Perlito5::Grammar::Expression::term_curly> 
         {
             $MATCH->{capture} = 
-                Perlito5::AST::Lit::Block->new(
+                Perlito5::AST::Block->new(
                     stmts => [
                         Perlito5::AST::Apply->new(
                             code      => 'package',

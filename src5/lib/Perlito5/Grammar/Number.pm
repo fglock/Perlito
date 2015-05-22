@@ -43,7 +43,7 @@ token val_num {
     {
         my $s = Perlito5::Match::flat($MATCH);
         $s =~ s/_//g;
-        $MATCH->{capture} = Perlito5::AST::Val::Num->new( num => $s ) 
+        $MATCH->{capture} = Perlito5::AST::Num->new( num => $s ) 
     }
 };
 
@@ -60,7 +60,7 @@ token val_octal {
         |  ['b'|'B'] [ '_' | '0' | '1' ]+
         |  [ '_' | \d]+        # XXX test for octal digits
         ]
-        { $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
+        { $MATCH->{capture} = Perlito5::AST::Int->new( int => oct(lc(Perlito5::Match::flat($MATCH))) ) }
 };
 
 token val_int {
@@ -68,14 +68,14 @@ token val_int {
         {
             my $s = Perlito5::Match::flat($MATCH);
             $s =~ s/_//g;
-            $MATCH->{capture} = Perlito5::AST::Val::Int->new( int => $s )
+            $MATCH->{capture} = Perlito5::AST::Int->new( int => $s )
         }
 };
 
 token val_vstring {
     <val_int> [ '.' <digits_underscore> ]+
     {
-        my @parts = map { Perlito5::AST::Val::Int->new( int => $_ ) }
+        my @parts = map { Perlito5::AST::Int->new( int => $_ ) }
                     map { Perlito5::Match::flat($_) }
                         @{ $MATCH->{digits_underscore} };
         return if @parts < 2;
@@ -93,7 +93,7 @@ token val_vstring {
 token val_version {
     'v' <val_int> [ '.' <digits_underscore> ]*
     {
-        my @parts = map { Perlito5::AST::Val::Int->new( int => $_ ) }
+        my @parts = map { Perlito5::AST::Int->new( int => $_ ) }
                     map { Perlito5::Match::flat($_) }
                         @{ $MATCH->{digits_underscore} };
         $MATCH->{capture} = Perlito5::AST::Apply->new(

@@ -8,25 +8,25 @@ sub body { $_[0]->{body} }
 
 
 
-package Perlito5::AST::Val::Int;
+package Perlito5::AST::Int;
 sub new { my $class = shift; bless {@_}, $class }
 sub int { $_[0]->{int} }
 
 
 
-package Perlito5::AST::Val::Num;
+package Perlito5::AST::Num;
 sub new { my $class = shift; bless {@_}, $class }
 sub num { $_[0]->{num} }
 
 
 
-package Perlito5::AST::Val::Buf;
+package Perlito5::AST::Buf;
 sub new { my $class = shift; bless {@_}, $class }
 sub buf { $_[0]->{buf} }
 
 
 
-package Perlito5::AST::Lit::Block;
+package Perlito5::AST::Block;
 sub new { my $class = shift; bless {@_}, $class }
 sub sig { $_[0]->{sig} }
 sub stmts { $_[0]->{stmts} }
@@ -60,7 +60,7 @@ sub autoquote {
     {
         my $full_name = ($index->{namespace} ? $index->{namespace} . '::' : "") . $index->{code};
         if ( !exists $Perlito5::PROTO->{$full_name} ) {
-            return Perlito5::AST::Val::Buf->new( buf => $full_name );
+            return Perlito5::AST::Buf->new( buf => $full_name );
         }
     }
     elsif (  $index->isa('Perlito5::AST::Apply')
@@ -87,7 +87,7 @@ sub autoquote {
                     arguments => [
                         Perlito5::AST::Var->new( name => ';', namespace => '', sigil => '$' ),
                         map { defined($_) ? $_
-                                          : Perlito5::AST::Val::Buf->new( buf => '' )
+                                          : Perlito5::AST::Buf->new( buf => '' )
                             }
                             @$args
                     ],

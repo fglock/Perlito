@@ -98,7 +98,7 @@ package Perlito5::AST::CompUnit;
     }
 }
 
-package Perlito5::AST::Val::Int;
+package Perlito5::AST::Int;
 {
     sub emit_xs {
         my $self  = $_[0];
@@ -107,7 +107,7 @@ package Perlito5::AST::Val::Int;
     }
 }
 
-package Perlito5::AST::Val::Num;
+package Perlito5::AST::Num;
 {
     sub emit_xs {
         my $self  = $_[0];
@@ -116,7 +116,7 @@ package Perlito5::AST::Val::Num;
     }
 }
 
-package Perlito5::AST::Val::Buf;
+package Perlito5::AST::Buf;
 {
     sub emit_xs {
         my $self  = $_[0];
@@ -125,7 +125,7 @@ package Perlito5::AST::Val::Buf;
     }
 }
 
-package Perlito5::AST::Lit::Block;
+package Perlito5::AST::Block;
 {
     sub emit_xs {
         my $self = $_[0];
@@ -379,12 +379,12 @@ package Perlito5::AST::Apply;
         if ($self->{code} eq 'p5:m') {
 
             my $s;
-            if ($self->{arguments}->[0]->isa('Perlito5::AST::Val::Buf')) {
+            if ($self->{arguments}->[0]->isa('Perlito5::AST::Buf')) {
                 $s = $self->{arguments}->[0]->{buf}
             }
             else {
                 for my $ast (@{$self->{arguments}[0]{arguments}}) {
-                    if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                    if ($ast->isa('Perlito5::AST::Buf')) {
                         $s .= $ast->{buf}
                     }
                     else {

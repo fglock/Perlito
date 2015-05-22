@@ -23,7 +23,7 @@ token the_object {
     |
         <before '{'> <Perlito5::Grammar::Expression::term_curly> 
             {
-                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
+                $MATCH->{capture} = Perlito5::AST::Block->new( stmts => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] );
             }
     |
         <typeglob>

@@ -99,7 +99,7 @@ token stmt_use {
                     # say Perlito5::Dumper::Dumper($m->{capture});
                     push @ast, $m->{capture};
                 }
-                $MATCH->{capture} = Perlito5::AST::Lit::Block->new( stmts => \@ast );
+                $MATCH->{capture} = Perlito5::AST::Block->new( stmts => \@ast );
             }
             else {
                 my $ast = Perlito5::AST::Use->new(

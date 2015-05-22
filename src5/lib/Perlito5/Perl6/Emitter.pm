@@ -137,7 +137,7 @@ package Perlito5::AST::CompUnit;
     }
 }
 
-package Perlito5::AST::Val::Int;
+package Perlito5::AST::Int;
 {
     sub emit_perl6 {
         my $self  = $_[0];
@@ -145,7 +145,7 @@ package Perlito5::AST::Val::Int;
     }
 }
 
-package Perlito5::AST::Val::Num;
+package Perlito5::AST::Num;
 {
     sub emit_perl6 {
         my $self  = $_[0];
@@ -153,7 +153,7 @@ package Perlito5::AST::Val::Num;
     }
 }
 
-package Perlito5::AST::Val::Buf;
+package Perlito5::AST::Buf;
 {
     sub emit_perl6 {
         my $self  = $_[0];
@@ -161,7 +161,7 @@ package Perlito5::AST::Val::Buf;
     }
 }
 
-package Perlito5::AST::Lit::Block;
+package Perlito5::AST::Block;
 {
     sub emit_perl6 {
         my $self = $_[0];
@@ -191,7 +191,7 @@ package Perlito5::AST::Index;
            )
         {
             my $arg = $index->{arguments}[0];
-            if ($arg->isa('Perlito5::AST::Val::Int')) {
+            if ($arg->isa('Perlito5::AST::Int')) {
                 # [*-1]
                 return [ op => 'infix:<->', [ bareword => '*' ], $arg->emit_perl6() ];
             }
@@ -441,7 +441,7 @@ package Perlito5::AST::Apply;
             return [ apply => '(', $code, '@_' ];
         }
         if (  $code eq '<glob>' 
-           && ref($self->{arguments}[0]) eq 'Perlito5::AST::Val::Buf'
+           && ref($self->{arguments}[0]) eq 'Perlito5::AST::Buf'
            && $self->{arguments}[0]{buf} eq ''
            )
         {
@@ -477,7 +477,7 @@ package Perlito5::AST::Apply;
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{arguments}->[0];
             return $special_var{$arg->{buf}}
-                if $arg->isa('Perlito5::AST::Val::Buf') && exists $special_var{$arg->{buf}};
+                if $arg->isa('Perlito5::AST::Buf') && exists $special_var{$arg->{buf}};
         }
 
         if ( $Perlito5::Perl6::PrettyPrinter::op{ $code } ) {
@@ -509,12 +509,12 @@ package Perlito5::AST::Apply;
         }
         if ($self->{code} eq 'p5:m') {
             my $s;
-            if ($self->{arguments}->[0]->isa('Perlito5::AST::Val::Buf')) {
+            if ($self->{arguments}->[0]->isa('Perlito5::AST::Buf')) {
                 $s = $self->{arguments}->[0]->{buf}
             }
             else {
                 for my $ast (@{$self->{arguments}[0]{arguments}}) {
-                    if ($ast->isa('Perlito5::AST::Val::Buf')) {
+                    if ($ast->isa('Perlito5::AST::Buf')) {
                         $s .= $ast->{buf}
                     }
                     else {
@@ -563,11 +563,11 @@ package Perlito5::AST::If;
 {
     sub emit_perl6 {
         my $self = $_[0]; 
-        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Block') {
             return [ stmt_modifier => $self->{body}->emit_perl6(),
                                       [ stmt => 'if', $self->{cond}->emit_perl6() ] ];
         }
-        if ($self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Lit::Block') {
+        if ($self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Block') {
             return [ stmt_modifier => $self->{otherwise}->emit_perl6(),
                                       [ stmt => 'unless', $self->{cond}->emit_perl6() ] ];
         }
@@ -580,7 +580,7 @@ package Perlito5::AST::If;
         while ( $otherwise
               && @{ $otherwise->{stmts} } == 1 
               && ref($otherwise->{stmts}[0]) eq 'Perlito5::AST::If'
-              && ($otherwise->{stmts}[0]{body} && ref($otherwise->{stmts}[0]{body}) eq 'Perlito5::AST::Lit::Block')
+              && ($otherwise->{stmts}[0]{body} && ref($otherwise->{stmts}[0]{body}) eq 'Perlito5::AST::Block')
               )
         {
             push @out, [ stmt => [ keyword => 'elsif' ],
@@ -625,7 +625,7 @@ package Perlito5::AST::While;
         my @out;
         push @out, [ label => $self->{label} ]
             if $self->{label};        
-        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Block') {
             return @out,
                    [ stmt_modifier => $self->{body}->emit_perl6(),
                                       [ stmt => [ keyword => 'while' ], $self->{cond}->emit_perl6() ] ];
@@ -649,7 +649,7 @@ package Perlito5::AST::For;
         push @out, [ label => $self->{label} ]
             if $self->{label};        
 
-        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Lit::Block') {
+        if ($self->{body} && ref($self->{body}) ne 'Perlito5::AST::Block') {
             return @out,
                    [ stmt_modifier => $self->{body}->emit_perl6(),
                                       [ stmt => 'for', $self->{cond}->emit_perl6() ] ];

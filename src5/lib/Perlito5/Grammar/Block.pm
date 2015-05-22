@@ -53,7 +53,7 @@ sub term_block {
             if ( $ws ) {
                 $p = $ws->{to};
             }
-            my $continue = Perlito5::AST::Lit::Block->new(stmts => [] );
+            my $continue = Perlito5::AST::Block->new(stmts => [] );
             my $has_continue = 0;
             if ( !$block_name && substr($str, $p, 8) eq 'continue' ) {
                 # anonymous blocks can have a 'continue' block
@@ -76,11 +76,11 @@ sub term_block {
             # TODO - this is not recognized as a statement: { 123 => 4;}
             # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
 
-            $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
+            $v = Perlito5::AST::Block->new( stmts => $v->[2], sig => $v->[3] );
             $v = Perlito5::Grammar::Expression::block_or_hash($v)
                 unless $has_continue || $block_name;
 
-            if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
+            if ( ref($v) eq 'Perlito5::AST::Block' ) {
                 if ($block_name eq 'BEGIN') {
                     # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
                     # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
