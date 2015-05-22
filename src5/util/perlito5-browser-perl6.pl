@@ -1,16 +1,8 @@
 package Perlito5;
-
 use strict;
 use warnings;
 
-use Perlito5::Match;
-use Perlito5::Grammar;
-use Perlito5::Grammar::Control;
-use Perlito5::Grammar::Precedence;
-use Perlito5::Grammar::Expression;
-use Perlito5::Macro;
-use Perlito5::Runtime;
-
+use Perlito5::Compiler;
 use Perlito5::Perl6::Emitter;
 use Perlito5::Perl6::PrettyPrinter;
 

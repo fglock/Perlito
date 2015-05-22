@@ -1,15 +1,9 @@
 use v5;
 
 package Perlito5;
-use Perlito5::Match;
-use Perlito5::Emitter::Token;
-use Perlito5::Grammar::Expression;
-use Perlito5::Grammar::Control;
+use Perlito5::Compiler;
 use Perlito5::Grammar::Regex6;
-use Perlito5::Grammar::Precedence;
-use Perlito5::Grammar;
-use Perlito5::Macro;
-use Perlito5::Runtime;
+use Perlito5::Emitter::Token;
 use Perlito5::Dumper;
 
 use Perlito5::Javascript2::Emitter;
