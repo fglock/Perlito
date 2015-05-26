@@ -445,14 +445,14 @@ token term_return {
 
 token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
-    'eval' <.Perlito5::Grammar::Space::opt_ws> <term_curly>
+    'eval' <Perlito5::Grammar::block>
         {
             $MATCH->{capture} = [ 'term',
                  Perlito5::AST::Apply->new(
                     code      => 'eval',
                     arguments => [
                         Perlito5::AST::Do->new(
-                            block => Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($MATCH->{term_curly})->[2] ),
+                            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"}),
                         )
                     ], 
                     namespace => ''
