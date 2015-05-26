@@ -469,7 +469,7 @@ package Perlito5::AST::Sub;
         my @parts;
         push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
             if defined $self->{sig};
-        push @parts, Perlito5::Perl5::emit_perl5_block($self->{block})
+        push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts})
             if defined $self->{block};
         return [ op => 'prefix:<sub>', @parts ] if !$self->{name};
         return [ stmt => [ keyword => 'sub' ], [ bareword => $self->{namespace} . "::" . $self->{name} ], @parts ];

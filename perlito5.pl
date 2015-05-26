@@ -4178,49 +4178,19 @@ sub Perlito5::Grammar::Block::named_sub_def {
     }) && (do {
         my $pos1 = $MATCH->{'to'};
         (do {
-            ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+            (do {
+                my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::block'} = $m2;
                     1
                 }
                 else {
                     0
                 }
-            }) && (do {
-                my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::exp_stmts'} = $m2;
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                my $pos1 = $MATCH->{'to'};
-                (do {
-                    '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-                }) || (do {
-                    $MATCH->{'to'} = $pos1;
-                    (do {
-                        $MATCH->{'str'} = $str;
-                        die('Missing right curly or square bracket in sub ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), chr(39));
-                        1
-                    })
-                })
             }) && (do {
                 $MATCH->{'str'} = $str;
-                $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'});
+                $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'});
                 1
             })
         }) || (do {
@@ -4491,54 +4461,15 @@ sub Perlito5::Grammar::Block::anon_sub_def {
             0
         }
     }) && (do {
-        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+        my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
+            $MATCH->{'Perlito5::Grammar::block'} = $m2;
             1
         }
         else {
             0
         }
-    }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            $MATCH->{'Perlito5::Grammar::exp_stmts'} = $m2;
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        my $pos1 = $MATCH->{'to'};
-        (do {
-            '}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})
-        }) || (do {
-            $MATCH->{'to'} = $pos1;
-            (do {
-                $MATCH->{'str'} = $str;
-                die('Missing right curly or square bracket in anon sub');
-                1
-            })
-        })
     }) && (do {
         $MATCH->{'str'} = $str;
         my $sig = Perlito5::Match::flat($MATCH->{'prototype_'});
@@ -4553,7 +4484,7 @@ sub Perlito5::Grammar::Block::anon_sub_def {
             } @{$attributes}];
             $sig = $proto->[1]
         }
-        $MATCH->{'capture'} = Perlito5::AST::Sub->new('name' => undef, 'namespace' => undef, 'sig' => $sig, 'block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'}), 'attributes' => $attributes);
+        $MATCH->{'capture'} = Perlito5::AST::Sub->new('name' => undef, 'namespace' => undef, 'sig' => $sig, 'block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}), 'attributes' => $attributes);
         1
     })));
     $tmp ? $MATCH : 0
@@ -9925,7 +9856,7 @@ package Perlito5::AST::Sub;
         my $prototype = defined($self->{'sig'}) ? Perlito5::Javascript2::escape_string($self->{'sig'}) : 'null';
         my $sub_ref = Perlito5::Javascript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
-        my $js_block = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'block'}, 'needs_return' => 1, 'top_level' => 1)->emit_javascript2($level + 2);
+        my $js_block = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'block'}->{'stmts'}, 'needs_return' => 1, 'top_level' => 1)->emit_javascript2($level + 2);
         my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
         if ($self->{'name'}) {
             return 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . $s . ')'
@@ -11662,7 +11593,7 @@ package Perlito5::AST::Sub;
         my $self = $_[0];
         my @parts;
         defined($self->{'sig'}) && push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
-        defined($self->{'block'}) && push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}));
+        defined($self->{'block'}) && push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
         !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
         return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts]
     }
@@ -12641,7 +12572,7 @@ package Perlito5::AST::Sub;
         else {
             push(@parts, ['paren' => '(', ['var' => '*@_']])
         }
-        defined($self->{'block'}) && push(@parts, Perlito5::Perl6::emit_perl6_block($self->{'block'}));
+        defined($self->{'block'}) && push(@parts, Perlito5::Perl6::emit_perl6_block($self->{'block'}->{'stmts'}));
         !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
         my $is_our = 1;
         $self->{'decl'} eq 'my' && ($is_our = 0);

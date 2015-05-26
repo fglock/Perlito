@@ -731,7 +731,7 @@ package Perlito5::AST::Sub;
             push @parts, [ paren => '(', [ var => '*@_' ] ];
         }
 
-        push @parts, Perlito5::Perl6::emit_perl6_block($self->{block})
+        push @parts, Perlito5::Perl6::emit_perl6_block($self->{block}{stmts})
             if defined $self->{block};
         return [ op => 'prefix:<sub>', @parts ] if !$self->{name};
 

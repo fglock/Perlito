@@ -111,13 +111,9 @@ token named_sub_def {
     <Perlito5::Grammar::Block::prototype_> <.Perlito5::Grammar::Space::opt_ws>
     <Perlito5::Grammar::Attribute::opt_attribute> <.Perlito5::Grammar::Space::opt_ws>
     [
-        \{
-        <.Perlito5::Grammar::Space::opt_ws>
-        <Perlito5::Grammar::exp_stmts>
-        <.Perlito5::Grammar::Space::opt_ws>
-        [   \}     | { die 'Missing right curly or square bracket in sub \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), '\'' } ]
+        <Perlito5::Grammar::block>
         {
-            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"});
+            $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"});
         }
     |
         <.Perlito5::Grammar::Statement::statement_parse>
@@ -222,12 +218,8 @@ token prototype_ {
 
 token anon_sub_def {
     <prototype_> <.Perlito5::Grammar::Space::opt_ws> 
-    <Perlito5::Grammar::Attribute::opt_attribute> <.Perlito5::Grammar::Space::opt_ws>
-    \{ 
-        <.Perlito5::Grammar::Space::opt_ws> 
-        <Perlito5::Grammar::exp_stmts> 
-        <.Perlito5::Grammar::Space::opt_ws>
-    [   \}     | { die 'Missing right curly or square bracket in anon sub' } ]
+    <Perlito5::Grammar::Attribute::opt_attribute>
+    <Perlito5::Grammar::block>
     {
         my $sig  = Perlito5::Match::flat($MATCH->{prototype_});
         $sig = undef if $sig eq '*undef*';
@@ -243,7 +235,7 @@ token anon_sub_def {
             name  => undef, 
             namespace => undef,
             sig   => $sig, 
-            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'}),
+            block => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}),
             attributes => $attributes,
         ) 
     }

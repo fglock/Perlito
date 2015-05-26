@@ -3268,7 +3268,7 @@ package Perlito5::AST::Sub;
 
         my $sub_ref = Perlito5::Javascript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
-        my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}, needs_return => 1, top_level => 1 )->emit_javascript2( $level + 2 );
+        my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}{stmts}, needs_return => 1, top_level => 1 )->emit_javascript2( $level + 2 );
 
         my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
             "var $sub_ref;",
