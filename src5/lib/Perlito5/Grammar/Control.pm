@@ -110,7 +110,6 @@ token for {
             $body->{sig} = $MATCH->{_tmp};
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}), 
-                    topic => undef, 
                     body  => $body,
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
@@ -146,7 +145,6 @@ token for {
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => $header, 
-                    topic => undef, 
                     body  => Perlito5::Match::flat($MATCH->{block}),
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
