@@ -102,5 +102,31 @@ $_->() for @RUN;
     f0(20);
     print f1, "\n"; # still 10
 
+#-----------------------
+
+    {
+        my $g;
+                        # skip: $g = shift;
+        sub g1 { $g }   # do: sub ...
+        sub g0 {
+            *g0 = sub {
+                    my $g = shift;
+                    # skip: sub ... *moved outside*
+                    # skip: BEGIN ... *moved outside*
+                  };
+            # skip: my ...
+            $g = shift;
+            # skip: sub ... *moved outside*
+            # skip: BEGIN ... *moved outside*
+        }
+        $g = 5;         # do: BEGIN ... *side effect*  *moved down*
+    }
+    print "part 3 again, unrolled, use lexicals\n"; # *moved down*
+    print g1, "\n"; # 5
+    g0(10);
+    print g1, "\n"; # 10
+    g0(20);
+    print g1, "\n"; # still 10
+
 
 __END__
