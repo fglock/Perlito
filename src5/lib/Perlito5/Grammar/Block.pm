@@ -25,85 +25,71 @@ our %Named_block = (
     END       => 1,
 );
 
-sub term_block {
+sub anon_block {
+    my $str = $_[0];
+    my $pos = $_[1];
+
+    my $p = $pos;
+    my $m = Perlito5::Grammar::block( $str, $p );
+    return if !$m;
+    $p = $m->{to};
+    my $block = Perlito5::Match::flat($m);
+   
+    # anonymous blocks can have a 'continue' block
+    $m = Perlito5::Grammar::opt_continue_block( $str, $p );
+    $p = $m->{to};
+    my $continue = Perlito5::Match::flat($m);
+
+    my $v = $block;
+
+    # TODO - this is not recognized as a statement: { 123 => 4;}
+    # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
+    $v = Perlito5::Grammar::Expression::block_or_hash($v)
+        unless $continue->{is_continue};
+    $m->{capture} = $v;
+    if ( $continue->{is_continue} ) {
+        $m->{capture}{continue} = $continue;
+    }
+    return $m;
+}
+
+sub special_named_block {
     my $str = $_[0];
     my $pos = $_[1];
 
     my $p = $pos;
     my $block_name;
     my $m_name = Perlito5::Grammar::ident( $str, $p );
-    if ($m_name) {
-        $p = $m_name->{to};
-        $block_name = Perlito5::Match::flat($m_name);
+    return if !$m_name;
+    $p = $m_name->{to};
+    $block_name = Perlito5::Match::flat($m_name);
+
+    my $ws = Perlito5::Grammar::Space::opt_ws( $str, $p );
+    $p = $ws->{to};
+
+    my $block_start = $p;
+    my $m = Perlito5::Grammar::block( $str, $p );
+    return if !$m;
+    $p = $m->{to};
+    my $block = Perlito5::Match::flat($m);
+   
+    if ($block_name eq 'BEGIN') {
+        # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
+        # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
+        local $Perlito5::PHASE = 'BEGIN';
+        eval_begin_block( substr($str, $block_start, $m->{to} - $block_start) );
+        $m->{capture} = 
+            Perlito5::AST::Apply->new(
+                code => 'undef',
+                namespace => '',
+                arguments => []
+            );
     }
-
-    my $ws = Perlito5::Grammar::Space::ws( $str, $p );
-    if ( $ws ) {
-        $p = $ws->{to};
+    else {
+        $m->{capture} = $block;
+        $m->{capture}{name} = $block_name;
     }
-
-    if ( substr($str, $p, 1) eq '{' ) {
-        # do we recognize a bare block in this position?
-        # warn "maybe bareblock at $p";
-        my $m = Perlito5::Grammar::Expression::term_curly($str, $p);
-        if ($m) {
-            my $block_start = $p;
-            $p = $m->{to};
-            $ws = Perlito5::Grammar::Space::ws( $str, $p );
-            if ( $ws ) {
-                $p = $ws->{to};
-            }
-            my $continue = Perlito5::AST::Block->new(stmts => [] );
-            my $has_continue = 0;
-            if ( !$block_name && substr($str, $p, 8) eq 'continue' ) {
-                # anonymous blocks can have a 'continue' block
-                $p += 8;
-                $ws = Perlito5::Grammar::Space::ws( $str, $p );
-                if ( $ws ) {
-                    $p = $ws->{to};
-                }
-                my $cont = Perlito5::Grammar::Expression::term_curly($str, $p);
-                die "syntax error" unless $cont;
-                # warn "continue!";
-
-                $continue->{stmts} = $cont->{capture}[2];
-                $has_continue = 1;
-                $m->{to} = $cont->{to};
-            }
-
-            my $v = Perlito5::Match::flat($m);
-
-            # TODO - this is not recognized as a statement: { 123 => 4;}
-            # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
-
-            $v = Perlito5::AST::Block->new( stmts => $v->[2], sig => $v->[3] );
-            $v = Perlito5::Grammar::Expression::block_or_hash($v)
-                unless $has_continue || $block_name;
-
-            if ( ref($v) eq 'Perlito5::AST::Block' ) {
-                if ($block_name eq 'BEGIN') {
-                    # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
-                    # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
-                    local $Perlito5::PHASE = 'BEGIN';
-                    eval_begin_block( substr($str, $block_start, $m->{to} - $block_start) );
-                    $m->{capture} = 
-                        Perlito5::AST::Apply->new(
-                            code => 'undef',
-                            namespace => '',
-                            arguments => []
-                        );
-                }
-                else {
-                    $v->{name} = $block_name;
-                    $m->{capture} = $v;
-                    $m->{capture}{continue} = $continue;
-                }
-                return $m;
-            }
-        }
-    }
-
-    return 0;
+    return $m;
 }
 
 token named_sub_def {
@@ -190,7 +176,7 @@ sub named_sub {
 
     my $block_name = Perlito5::Match::flat($m_name);
     if (exists $Named_block{$block_name}) {
-        return Perlito5::Grammar::Block::term_block($str, $p);
+        return Perlito5::Grammar::Block::anon_block($str, $p);
     }
     return Perlito5::Grammar::Block::named_sub_def($str, $p);
 }
@@ -245,9 +231,9 @@ token anon_sub_def {
 Perlito5::Grammar::Precedence::add_term( 'do'    => \&term_do );
 Perlito5::Grammar::Precedence::add_term( 'sub'   => \&term_anon_sub );
 
-Perlito5::Grammar::Statement::add_statement( '{'     => \&term_block );
+Perlito5::Grammar::Statement::add_statement( '{'     => \&anon_block );
 Perlito5::Grammar::Statement::add_statement( 'sub'   => \&named_sub );
-Perlito5::Grammar::Statement::add_statement( $_      => \&term_block )
+Perlito5::Grammar::Statement::add_statement( $_      => \&special_named_block )
     for keys %Named_block;
 
 
@@ -261,7 +247,7 @@ Perlito5::Grammar::Block - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    term_block($str)
+    anon_block($str)
 
 =head1 DESCRIPTION
 

@@ -2482,6 +2482,7 @@ sub Perlito5::Grammar::opt_continue_block {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'block'});
+                $MATCH->{'capture'}->{'is_continue'} = 1;
                 1
             })
         }) || (do {
@@ -4056,62 +4057,51 @@ sub Perlito5::Grammar::Block::eval_begin_block {
     ${'@'} && die('Error in BEGIN block: ' . ${'@'})
 }
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
-sub Perlito5::Grammar::Block::term_block {
+sub Perlito5::Grammar::Block::anon_block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $p = $pos;
+    my $m = Perlito5::Grammar::block($str, $p);
+    !$m && return ;
+    $p = $m->{'to'};
+    my $block = Perlito5::Match::flat($m);
+    $m = Perlito5::Grammar::opt_continue_block($str, $p);
+    $p = $m->{'to'};
+    my $continue = Perlito5::Match::flat($m);
+    my $v = $block;
+    $continue->{'is_continue'} || ($v = Perlito5::Grammar::Expression::block_or_hash($v));
+    $m->{'capture'} = $v;
+    if ($continue->{'is_continue'}) {
+        $m->{'capture'}->{'continue'} = $continue
+    }
+    return $m
+}
+sub Perlito5::Grammar::Block::special_named_block {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
     my $block_name;
     my $m_name = Perlito5::Grammar::ident($str, $p);
-    if ($m_name) {
-        $p = $m_name->{'to'};
-        $block_name = Perlito5::Match::flat($m_name)
+    !$m_name && return ;
+    $p = $m_name->{'to'};
+    $block_name = Perlito5::Match::flat($m_name);
+    my $ws = Perlito5::Grammar::Space::opt_ws($str, $p);
+    $p = $ws->{'to'};
+    my $block_start = $p;
+    my $m = Perlito5::Grammar::block($str, $p);
+    !$m && return ;
+    $p = $m->{'to'};
+    my $block = Perlito5::Match::flat($m);
+    if ($block_name eq 'BEGIN') {
+        local $Perlito5::PHASE = 'BEGIN';
+        eval_begin_block(substr($str, $block_start, $m->{'to'} - $block_start));
+        $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
     }
-    my $ws = Perlito5::Grammar::Space::ws($str, $p);
-    if ($ws) {
-        $p = $ws->{'to'}
+    else {
+        $m->{'capture'} = $block;
+        $m->{'capture'}->{'name'} = $block_name
     }
-    if (substr($str, $p, 1) eq '{') {
-        my $m = Perlito5::Grammar::Expression::term_curly($str, $p);
-        if ($m) {
-            my $block_start = $p;
-            $p = $m->{'to'};
-            $ws = Perlito5::Grammar::Space::ws($str, $p);
-            if ($ws) {
-                $p = $ws->{'to'}
-            }
-            my $continue = Perlito5::AST::Block->new('stmts' => []);
-            my $has_continue = 0;
-            if (!$block_name && substr($str, $p, 8) eq 'continue') {
-                $p += 8;
-                $ws = Perlito5::Grammar::Space::ws($str, $p);
-                if ($ws) {
-                    $p = $ws->{'to'}
-                }
-                my $cont = Perlito5::Grammar::Expression::term_curly($str, $p);
-                $cont || die('syntax error');
-                $continue->{'stmts'} = $cont->{'capture'}->[2];
-                $has_continue = 1;
-                $m->{'to'} = $cont->{'to'}
-            }
-            my $v = Perlito5::Match::flat($m);
-            $v = Perlito5::AST::Block->new('stmts' => $v->[2], 'sig' => $v->[3]);
-            $has_continue || $block_name || ($v = Perlito5::Grammar::Expression::block_or_hash($v));
-            if (ref($v) eq 'Perlito5::AST::Block') {
-                if ($block_name eq 'BEGIN') {
-                    local $Perlito5::PHASE = 'BEGIN';
-                    eval_begin_block(substr($str, $block_start, $m->{'to'} - $block_start));
-                    $m->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
-                }
-                else {
-                    $v->{'name'} = $block_name;
-                    $m->{'capture'} = $v;
-                    $m->{'capture'}->{'continue'} = $continue
-                }
-                return $m
-            }
-        }
-    }
-    return 0
+    return $m
 }
 sub Perlito5::Grammar::Block::named_sub_def {
     my $str = $_[0];
@@ -4256,7 +4246,7 @@ sub Perlito5::Grammar::Block::named_sub {
     $m_name || return ;
     my $block_name = Perlito5::Match::flat($m_name);
     if (exists($Named_block{$block_name})) {
-        return Perlito5::Grammar::Block::term_block($str, $p)
+        return Perlito5::Grammar::Block::anon_block($str, $p)
     }
     return Perlito5::Grammar::Block::named_sub_def($str, $p)
 }
@@ -4491,9 +4481,9 @@ sub Perlito5::Grammar::Block::anon_sub_def {
 }
 Perlito5::Grammar::Precedence::add_term('do' => \&term_do);
 Perlito5::Grammar::Precedence::add_term('sub' => \&term_anon_sub);
-Perlito5::Grammar::Statement::add_statement('{' => \&term_block);
+Perlito5::Grammar::Statement::add_statement('{' => \&anon_block);
 Perlito5::Grammar::Statement::add_statement('sub' => \&named_sub);
-Perlito5::Grammar::Statement::add_statement($_ => \&term_block)
+Perlito5::Grammar::Statement::add_statement($_ => \&special_named_block)
     for keys(%Named_block);
 1;
 package main;
