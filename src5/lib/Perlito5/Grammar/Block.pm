@@ -176,7 +176,7 @@ sub named_sub {
 
     my $block_name = Perlito5::Match::flat($m_name);
     if (exists $Named_block{$block_name}) {
-        return Perlito5::Grammar::Block::anon_block($str, $p);
+        return Perlito5::Grammar::Block::special_named_block($str, $p);
     }
     return Perlito5::Grammar::Block::named_sub_def($str, $p);
 }
