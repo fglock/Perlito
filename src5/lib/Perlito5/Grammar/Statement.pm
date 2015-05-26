@@ -76,7 +76,7 @@ token stmt_package {
             $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
         }
-        <Perlito5::Grammar::Expression::term_curly> 
+        <Perlito5::Grammar::block> 
         {
             $MATCH->{capture} = 
                 Perlito5::AST::Block->new(
@@ -86,7 +86,7 @@ token stmt_package {
                             arguments => [], 
                             namespace => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"}),
                         ),
-                        @{ $MATCH->{'Perlito5::Grammar::Expression::term_curly'}{capture}[2] }
+                        @{ $MATCH->{'Perlito5::Grammar::block'}{capture}{stmts} }
                     ]
                 );
         }

@@ -734,10 +734,10 @@ sub Perlito5::Grammar::Statement::stmt_package {
                 $Perlito5::PKG_NAME = $name;
                 1
             }) && (do {
-                my $m2 = Perlito5::Grammar::Expression::term_curly($str, $MATCH->{'to'});
+                my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Expression::term_curly'} = $m2;
+                    $MATCH->{'Perlito5::Grammar::block'} = $m2;
                     1
                 }
                 else {
@@ -745,7 +745,7 @@ sub Perlito5::Grammar::Statement::stmt_package {
                 }
             }) && (do {
                 $MATCH->{'str'} = $str;
-                $MATCH->{'capture'} = Perlito5::AST::Block->new('stmts' => [Perlito5::AST::Apply->new('code' => 'package', 'arguments' => [], 'namespace' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'})), @{$MATCH->{'Perlito5::Grammar::Expression::term_curly'}->{'capture'}->[2]}]);
+                $MATCH->{'capture'} = Perlito5::AST::Block->new('stmts' => [Perlito5::AST::Apply->new('code' => 'package', 'arguments' => [], 'namespace' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'})), @{$MATCH->{'Perlito5::Grammar::block'}->{'capture'}->{'stmts'}}]);
                 1
             })
         }) || (do {
@@ -1597,19 +1597,10 @@ sub Perlito5::Grammar::Expression::term_eval {
     my $pos = $_[1];
     my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
     my $tmp = ((('eval' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
-        my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+        my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
-            1
-        }
-        else {
-            0
-        }
-    }) && (do {
-        my $m2 = term_curly($str, $MATCH->{'to'});
-        if ($m2) {
-            $MATCH->{'to'} = $m2->{'to'};
-            $MATCH->{'term_curly'} = $m2;
+            $MATCH->{'Perlito5::Grammar::block'} = $m2;
             1
         }
         else {
@@ -1617,7 +1608,7 @@ sub Perlito5::Grammar::Expression::term_eval {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => Perlito5::AST::Block->new('stmts' => Perlito5::Match::flat($MATCH->{'term_curly'})->[2]))], 'namespace' => '')];
+        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}))], 'namespace' => '')];
         1
     })));
     $tmp ? $MATCH : 0
