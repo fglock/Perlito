@@ -4,31 +4,31 @@ use Perlito5::Grammar::Expression;
 
 token unless {
     'unless' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-       <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_curly>
+       <.Perlito5::Grammar::Space::opt_ws> <block>
     [
         <.Perlito5::Grammar::Space::opt_ws>
-        'else' <block>
+        'else' <block2>
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{capture} = Perlito5::AST::If->new( 
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
-                body      => Perlito5::Match::flat($MATCH->{block}),
-                otherwise => Perlito5::AST::Block->new( stmts => $body),
+                body      => Perlito5::Match::flat($MATCH->{block2}),
+                otherwise => $body,
             )
         }
     |
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'unless'";
             }
             $MATCH->{capture} = Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
                 body      => Perlito5::AST::Block->new(stmts => [ ]),
-                otherwise => Perlito5::AST::Block->new(stmts => $body),
+                otherwise => $body,
              )
         }
     ]
@@ -36,44 +36,44 @@ token unless {
 
 token if_ {
     'if' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-       <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_curly>
+       <.Perlito5::Grammar::Space::opt_ws> <block>
     [
         <.Perlito5::Grammar::Space::opt_ws>
-        'else' <block>
+        'else' <block2>
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{capture} = Perlito5::AST::If->new( 
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
-                body      => Perlito5::AST::Block->new( stmts => $body),
-                otherwise => Perlito5::Match::flat($MATCH->{block}),
+                body      => $body,
+                otherwise => Perlito5::Match::flat($MATCH->{block2}),
             )
         }
     |
         <.Perlito5::Grammar::Space::opt_ws>
         'els' <if_>
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{capture} = Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
-                body      => Perlito5::AST::Block->new( stmts => $body),
+                body      => $body,
                 otherwise => Perlito5::AST::Block->new( stmts => [ Perlito5::Match::flat($MATCH->{if_}) ] ),
             )
         }
     |
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{capture} = Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
-                body      => Perlito5::AST::Block->new(stmts => $body),
+                body      => $body,
                 otherwise => Perlito5::AST::Block->new(stmts => [ ]),
              )
         }
@@ -82,15 +82,15 @@ token if_ {
 
 token when {
     'when' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-         <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_curly>
+         <.Perlito5::Grammar::Space::opt_ws> <block>
         {
-            my $body = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_curly"})->[2];
+            my $body = Perlito5::Match::flat($MATCH->{block});
             if (!defined($body)) {
                 die "Missing code block in 'when'";
             }
             $MATCH->{capture} = Perlito5::AST::When->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
-                body      => Perlito5::AST::Block->new(stmts => $body),
+                body      => $body,
              )
         }
 };
@@ -212,17 +212,39 @@ token opt_continue_block {
         }
 };
 
-token block {
-    <.Perlito5::Grammar::Space::opt_ws>
-    '{' <.Perlito5::Grammar::Space::opt_ws>
-        <Perlito5::Grammar::exp_stmts>
-        <.Perlito5::Grammar::Space::opt_ws>
-    '}'
-    {
-        $MATCH->{capture} = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}), sig => undef )
+sub block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( substr($str, $pos, 1) ne '{' ) {
+        return
     }
-};
+    $pos++;
+    unshift @Perlito5::SCOPE, {};   # start new lexical scope
+    $m = Perlito5::Grammar::exp_stmts($str, $pos);
+    if (!$m) {
+        shift @Perlito5::SCOPE;
+        return
+    }
+    $pos = $m->{to};
+    my $capture = Perlito5::Match::flat($m);
+    $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( substr($str, $pos, 1) ne '}' ) {
+        shift @Perlito5::SCOPE;
+        return
+    }
+    $m->{to} = $pos + 1;
+    $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
+    # end of lexical scope
+    shift @Perlito5::SCOPE;
+    return $m;
+}
 
+sub block2 {
+    block(@_)
+}
 
 Perlito5::Grammar::Statement::add_statement( 'if'      => \&if_ );
 Perlito5::Grammar::Statement::add_statement( 'for'     => \&for );
