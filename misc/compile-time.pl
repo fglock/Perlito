@@ -68,7 +68,8 @@ push @RUN, sub {
         # skip: my ...
         $COMPILE::k = shift;
         # skip: sub ... *moved outside*
-        # skip: BEGIN ... *moved outside*
+        # BEGIN executes here
+        # skip: BEGIN side effect *moved outside*
 
         # eval '$k';    # TODO !!!
         eval '$COMPILE::k';
@@ -100,7 +101,8 @@ $_->() for @RUN;
         # skip: my ...
         $COMPILE::f = shift;
         # skip: sub ... *moved outside*
-        # skip: BEGIN ... *moved outside*
+        # BEGIN executes here
+        # skip: BEGIN side effect *moved outside*
 
         # eval '$f';    # TODO !!!
         eval '$COMPILE::f';
@@ -130,7 +132,8 @@ $_->() for @RUN;
             # skip: my ...
             $g = shift;
             # skip: sub ... *moved outside*
-            # skip: BEGIN ... *moved outside*
+            # BEGIN executes here
+            # skip: BEGIN side effect *moved outside*
             eval '$g';
         }
         $g = 5;         # do: BEGIN ... *side effect*  *moved down*
