@@ -3,7 +3,6 @@ package Perlito5;
 use strict;
 
 $^O = 'perlito5'    unless defined $^O;
-$]  = '5.020000'    unless $];      # $] is defined(), but ${"main::]"} is not
 $/  = chr(10)       unless defined $/;
 $"  = ' '           unless defined $";
 $,  = undef         unless defined $,;
@@ -11,9 +10,10 @@ $!  = ''            unless defined $!;
 $;  = chr(28)       unless defined $;;
 $?  = 0             unless defined $?;
 $[  = 0             unless defined $[;
-$^V = bless( { 'original' => 'v5.14.1',
+$]  = '5.020000'    unless $];      # $] is defined(), but ${"main::]"} is not
+$^V = bless( { 'original' => 'v5.20.0',
                'qv'       => 1,
-               'version'  => [ 5, 14, 1 ]
+               'version'  => [ 5, 20, 0 ]
              }, 'version' )
                     unless defined $^V;
 

@@ -31,8 +31,19 @@ token stmt_use {
         ]
         {
             # "use v5"
-            # TODO - check version
+            # check version
+            my $match = $MATCH->{"Perlito5::Grammar::Number::val_version"}
+                     || $MATCH->{"Perlito5::Grammar::Number::term_digit"};
 
+            # TODO: normalize - maybe number or v-string
+            # my $version = Perlito5::Match::flat($match);
+
+            my $version = substr($str, $match->{from}, $match->{to} - $match->{from});
+            $version =~ s/^v//;
+
+            if ($version gt $]) {
+                die "Perl v$version required--this is only v$]";
+            }
             $MATCH->{capture} = Perlito5::AST::Apply->new(
                                    code => 'undef',
                                    namespace => '',
@@ -278,8 +289,13 @@ sub require {
     my $is_bareword = shift;
 
     if ($filename ge "0" && $filename le "9999") {
-        # maybe number or v-string
-        # TODO - check version
+        # "require v5"
+        # check version
+        # TODO: normalize - maybe number or v-string
+        my $version = $filename;
+        if ($version gt $]) {
+            die "Perl v$version required--this is only v$]";
+        }
         return;
     }
 

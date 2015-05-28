@@ -3763,6 +3763,12 @@ sub Perlito5::Grammar::Use::stmt_use {
                 })
             }) && (do {
                 $MATCH->{'str'} = $str;
+                my $match = $MATCH->{'Perlito5::Grammar::Number::val_version'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'};
+                my $version = substr($str, $match->{'from'}, $match->{'to'} - $match->{'from'});
+                $version =~ s!^v!!;
+                if ($version gt ${'main::]'}) {
+                    die('Perl v' . $version . ' required--this is only v' . ${'main::]'})
+                }
                 $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
                 1
             })
@@ -3971,6 +3977,10 @@ sub Perlito5::Grammar::Use::require {
     my $filename = shift;
     my $is_bareword = shift;
     if ($filename ge 0 && $filename le 9999) {
+        my $version = $filename;
+        if ($version gt ${'main::]'}) {
+            die('Perl v' . $version . ' required--this is only v' . ${'main::]'})
+        }
         return 
     }
     if ($is_bareword) {
@@ -6663,7 +6673,6 @@ package main;
 package Perlito5;
 # use strict
 defined(${chr(15)}) || (${chr(15)} = 'perlito5');
-${'main::]'} || (${'main::]'} = '5.020000');
 defined(${'/'}) || (${'/'} = chr(10));
 defined(${'"'}) || (${'"'} = ' ');
 defined(${','}) || (${','} = undef);
@@ -6671,7 +6680,8 @@ defined(${'!'}) || (${'!'} = '');
 defined(${';'}) || (${';'} = chr(28));
 defined(${'?'}) || (${'?'} = 0);
 defined(${'['}) || (${'['} = 0);
-defined(${chr(22)}) || (${chr(22)} = bless({'original' => 'v5.14.1', 'qv' => 1, 'version' => [5, 14, 1]}, 'version'));
+${'main::]'} || (${'main::]'} = '5.020000');
+defined(${chr(22)}) || (${chr(22)} = bless({'original' => 'v5.20.0', 'qv' => 1, 'version' => [5, 20, 0]}, 'version'));
 our $EXPAND_USE = 1;
 our $STRICT = 0;
 our $WARNINGS = 0;
