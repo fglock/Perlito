@@ -459,6 +459,17 @@ TODO list for Perlito5
 -- flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)
 
+-- caller() in nodejs and Chrome:
+
+    $ nodejs perlito5.js -Isrc5/lib -I. -e ' sub x { print JS::inline("new Error().stack") }; sub yy { x() }; my $f = sub { yy() }; $f->() '
+
+  "Error
+    at tmp104 [as x] (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:10:63)
+    at tmp105 [as yy] (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:18:26)
+    at tmp106 (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:27:28)
+    at eval (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:32:7)
+    ..."
+
 
 * Javascript - implemented but missing more tests
 
