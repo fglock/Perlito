@@ -4,7 +4,7 @@ print "part 1\n";
 
 {
     my $x = 10;
-    sub x { $x }
+    sub x { $x; eval '$x' }
 }
 
 BEGIN {
@@ -19,7 +19,7 @@ print "part 2\n";
 
 sub y0 {
     my $y = shift;
-    sub y1 { $y }
+    sub y1 { $y; eval '$y' }
 }
 
 
@@ -35,7 +35,7 @@ print "part 3\n";
 
 sub z0 {
     my $z = shift;
-    sub z1 { $z }
+    sub z1 { $z; eval '$z' }
     BEGIN { $z = 5 }
 }
 
@@ -62,11 +62,16 @@ push @RUN, sub {
                 my $k = shift;
                 # skip: sub ... *moved outside*
                 # skip: BEGIN ... *moved outside*
+
+                eval '$k';
               };
         # skip: my ...
         $COMPILE::k = shift;
         # skip: sub ... *moved outside*
         # skip: BEGIN ... *moved outside*
+
+        # eval '$k';    # TODO !!!
+        eval '$COMPILE::k';
     }
 }
 push @RUN, sub {
@@ -80,6 +85,7 @@ $_->() for @RUN;
 
 #-----------------------
 
+    #pragma: alias $COMPILE::f, $f
     # $COMPILE::f;           # do: my ...
                     # skip: $f = shift;
     sub f1 { $COMPILE::f }   # do: sub ...
@@ -88,13 +94,19 @@ $_->() for @RUN;
                 my $f = shift;
                 # skip: sub ... *moved outside*
                 # skip: BEGIN ... *moved outside*
+
+                eval '$f';
               };
         # skip: my ...
         $COMPILE::f = shift;
         # skip: sub ... *moved outside*
         # skip: BEGIN ... *moved outside*
+
+        # eval '$f';    # TODO !!!
+        eval '$COMPILE::f';
     }
     $COMPILE::f = 5;         # do: BEGIN ... *side effect*  *moved down*
+    #pragma: unalias $COMPILE::f, $f
     print "part 3 again, unrolled\n"; # *moved down*
     print f1, "\n"; # 5
     f0(10);
@@ -113,11 +125,13 @@ $_->() for @RUN;
                     my $g = shift;
                     # skip: sub ... *moved outside*
                     # skip: BEGIN ... *moved outside*
+                    eval '$g';
                   };
             # skip: my ...
             $g = shift;
             # skip: sub ... *moved outside*
             # skip: BEGIN ... *moved outside*
+            eval '$g';
         }
         $g = 5;         # do: BEGIN ... *side effect*  *moved down*
     }
