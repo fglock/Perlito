@@ -2060,7 +2060,7 @@ package Perlito5::AST::Apply;
         },
         'our' => sub {
             my ($self, $level, $wantarray) = @_;
-            # this is a side-effect of my($x,$y)
+            # this is a side-effect of our($x,$y)
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'local' => sub {
@@ -2481,7 +2481,7 @@ package Perlito5::AST::Apply;
                 'return r[0]',
             );
         },
-        '<glob>' => sub {
+        'readline' => sub {
             my ($self, $level, $wantarray) = @_;
             # readline FILEHANDLE
             # TODO - special cases; see 'readline' and '<>' in "perldoc perlop"
@@ -3042,7 +3042,7 @@ package Perlito5::AST::While;
             ? [ $self->{body} ]
             : $self->{body}{stmts};
 
-        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{code} eq '<glob>')) {
+        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{code} eq 'readline')) {
             # while (<>) ...  is rewritten as  while ( defined($_ = <>) ) { ...
             $cond = bless({
                     'arguments' => [

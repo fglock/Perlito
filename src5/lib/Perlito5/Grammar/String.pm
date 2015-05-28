@@ -261,7 +261,7 @@ sub glob_quote_parse {
             from => $pos, 
             to   => $pos + 3, 
             capture => Perlito5::AST::Apply->new(
-                code      => '<glob>',
+                code      => 'readline',
                 arguments => [
                     Perlito5::AST::Apply->new(
                         code      => '<>',
@@ -281,7 +281,7 @@ sub glob_quote_parse {
             from => $pos, 
             to   => $pos + 1, 
             capture => Perlito5::AST::Apply->new(
-                code      => '<glob>',
+                code      => 'readline',
                 arguments => [],
                 namespace => '',
             ),
@@ -306,7 +306,7 @@ sub glob_quote_parse {
                 from => $pos, 
                 to   => $m_name->{to} + 1, 
                 capture => Perlito5::AST::Apply->new(
-                    code      => '<glob>',
+                    code      => 'readline',
                     arguments => [
                         Perlito5::AST::Apply->new(
                             code      => Perlito5::Match::flat($m_name),
@@ -324,7 +324,7 @@ sub glob_quote_parse {
             from => $pos, 
             to   => $m_name->{to} + 1, 
             capture => Perlito5::AST::Apply->new(
-                code      => '<glob>',
+                code      => 'readline',
                 arguments => [
                     Perlito5::AST::Var->new(
                         sigil     => $sigil,

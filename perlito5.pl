@@ -3048,10 +3048,10 @@ sub Perlito5::Grammar::String::glob_quote_parse {
     my $open_delimiter = $delimiter;
     exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
     if (substr($str, $pos, 3) eq '<>>') {
-        return {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Apply->new('code' => '<>', 'arguments' => [], 'namespace' => '', 'bareword' => 1)], 'namespace' => '')}
+        return {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Apply->new('code' => 'readline', 'arguments' => [Perlito5::AST::Apply->new('code' => '<>', 'arguments' => [], 'namespace' => '', 'bareword' => 1)], 'namespace' => '')}
     }
     if (substr($str, $pos, 1) eq '>') {
-        return {'str' => $str, 'from' => $pos, 'to' => $pos + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [], 'namespace' => '')}
+        return {'str' => $str, 'from' => $pos, 'to' => $pos + 1, 'capture' => Perlito5::AST::Apply->new('code' => 'readline', 'arguments' => [], 'namespace' => '')}
     }
     my $p = $pos;
     my $sigil = '::';
@@ -3065,9 +3065,9 @@ sub Perlito5::Grammar::String::glob_quote_parse {
     my $m_name = Perlito5::Grammar::ident($str, $p);
     if ($m_name && substr($str, $m_name->{'to'}, 1) eq '>') {
         if ($sigil eq '::') {
-            return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Apply->new('code' => Perlito5::Match::flat($m_name), 'arguments' => [], 'namespace' => $namespace, 'bareword' => 1)], 'namespace' => '')}
+            return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => 'readline', 'arguments' => [Perlito5::AST::Apply->new('code' => Perlito5::Match::flat($m_name), 'arguments' => [], 'namespace' => $namespace, 'bareword' => 1)], 'namespace' => '')}
         }
-        return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => '<glob>', 'arguments' => [Perlito5::AST::Var->new('sigil' => $sigil, 'name' => Perlito5::Match::flat($m_name), 'namespace' => $namespace)], 'namespace' => '')}
+        return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply->new('code' => 'readline', 'arguments' => [Perlito5::AST::Var->new('sigil' => $sigil, 'name' => Perlito5::Match::flat($m_name), 'namespace' => $namespace)], 'namespace' => '')}
     }
     my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1);
     if ($m) {
@@ -9372,7 +9372,7 @@ package Perlito5::AST::Apply;
         my $scalar = shift(@in);
         my $length = shift(@in);
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_javascript2($level) . ', [' . $length->emit_javascript2($level) . ']);', $scalar->emit_javascript2($level) . ' = r[1];', 'return r[0]')
-    }, '<glob>' => sub {
+    }, 'readline' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
         my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply');
@@ -9706,7 +9706,7 @@ package Perlito5::AST::While;
         my $cond = $self->{'cond'};
         my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Do' ? 1 : 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq '<glob>')) {
+        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq 'readline')) {
             $cond = bless({'arguments' => [bless({'arguments' => [bless({'name' => '_', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply')
         }
         my @str;
@@ -11455,7 +11455,7 @@ package Perlito5::AST::Apply;
             }
             return ['apply' => '(', $code, $self->emit_perl5_args()]
         }
-        if ($code eq '<glob>') {
+        if ($code eq 'readline') {
             return ['paren' => '<', $self->emit_perl5_args()]
         }
         if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
@@ -11981,7 +11981,7 @@ sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
 }
 sub Perlito5::Perl6::TreeGrammar::refactor_while_glob {
     my($class, $in) = @_;
-    Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => '<glob>']], ['Action' => sub {
+    Perlito5::TreeGrammar::render(['Ref' => 'Perlito5::AST::While', ['Lookup' => 'cond', ['And' => ['Ref' => 'Perlito5::AST::Apply'], ['Lookup' => 'code', ['Value' => 'readline']], ['Action' => sub {
         bless($in, 'Perlito5::AST::For')
     }]]]], $in)
 }
@@ -12339,7 +12339,7 @@ package Perlito5::AST::Apply;
         if (($code eq 'shift' || $code eq 'pop') && !@{$self->{'arguments'}}) {
             return ['apply' => '(', $code, '@_']
         }
-        if ($code eq '<glob>' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Buf' && $self->{'arguments'}->[0]->{'buf'} eq '') {
+        if ($code eq 'readline' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Buf' && $self->{'arguments'}->[0]->{'buf'} eq '') {
             return ['apply' => '(', ['keyword' => 'lines']]
         }
         if ($code eq 'infix:<x>') {
