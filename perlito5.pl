@@ -3976,8 +3976,9 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 sub Perlito5::Grammar::Use::require {
     my $filename = shift;
     my $is_bareword = shift;
-    if ($filename ge 0 && $filename le 9999) {
+    if (($filename ge 0 && $filename le 9999) || ($filename ge 'v0' && $filename le 'v9999')) {
         my $version = $filename;
+        $version =~ s!^v!!;
         if ($version gt ${'main::]'}) {
             die('Perl v' . $version . ' required--this is only v' . ${'main::]'})
         }

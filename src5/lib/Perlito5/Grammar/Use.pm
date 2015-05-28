@@ -288,11 +288,15 @@ sub require {
     my $filename = shift;
     my $is_bareword = shift;
 
-    if ($filename ge "0" && $filename le "9999") {
+    if (  ($filename ge "0" && $filename le "9999")
+       || ($filename ge "v0" && $filename le "v9999")
+       )
+    {
         # "require v5"
         # check version
         # TODO: normalize - maybe number or v-string
         my $version = $filename;
+        $version =~ s/^v//;
         if ($version gt $]) {
             die "Perl v$version required--this is only v$]";
         }
