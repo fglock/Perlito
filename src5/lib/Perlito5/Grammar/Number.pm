@@ -75,17 +75,14 @@ token val_int {
 token val_vstring {
     <val_int> [ '.' <digits_underscore> ]+
     {
-        my @parts = map { Perlito5::AST::Int->new( int => $_ ) }
-                    map { Perlito5::Match::flat($_) }
+        my @parts = map { Perlito5::Match::flat($_) }
                         @{ $MATCH->{digits_underscore} };
         return if @parts < 2;
-        $MATCH->{capture} = Perlito5::AST::Apply->new(
-                    code      => 'p5:vstring',
-                    namespace => '',
-                    arguments => [
-                        $MATCH->{val_int}{capture},
-                        @parts,
-                    ],
+        $MATCH->{capture} = Perlito5::AST::Buf->new(
+                    buf => join( '', map { chr($_) }
+                                        $MATCH->{val_int}{capture}{int},
+                                        @parts,
+                               ),
                );
     }
 };
@@ -93,16 +90,13 @@ token val_vstring {
 token val_version {
     'v' <val_int> [ '.' <digits_underscore> ]*
     {
-        my @parts = map { Perlito5::AST::Int->new( int => $_ ) }
-                    map { Perlito5::Match::flat($_) }
+        my @parts = map { Perlito5::Match::flat($_) }
                         @{ $MATCH->{digits_underscore} };
-        $MATCH->{capture} = Perlito5::AST::Apply->new(
-                    code      => 'p5:vstring',
-                    namespace => '',
-                    arguments => [
-                        $MATCH->{val_int}{capture},
-                        @parts,
-                    ],
+        $MATCH->{capture} = Perlito5::AST::Buf->new(
+                    buf => join( '', map { chr($_) }
+                                        $MATCH->{val_int}{capture}{int},
+                                        @parts,
+                               ),
                );
     }
 };

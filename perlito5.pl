@@ -6125,12 +6125,12 @@ sub Perlito5::Grammar::Number::val_vstring {
     }) && (do {
         $MATCH->{'str'} = $str;
         my @parts = map {
-            Perlito5::AST::Int->new('int' => $_)
-        } map {
             Perlito5::Match::flat($_)
         } @{$MATCH->{'digits_underscore'}};
         @parts < 2 && return ;
-        $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:vstring', 'namespace' => '', 'arguments' => [$MATCH->{'val_int'}->{'capture'}, @parts]);
+        $MATCH->{'capture'} = Perlito5::AST::Buf->new('buf' => join('', map {
+            chr($_)
+        } $MATCH->{'val_int'}->{'capture'}->{'int'}, @parts));
         1
     })));
     $tmp ? $MATCH : 0
@@ -6184,11 +6184,11 @@ sub Perlito5::Grammar::Number::val_version {
     }) && (do {
         $MATCH->{'str'} = $str;
         my @parts = map {
-            Perlito5::AST::Int->new('int' => $_)
-        } map {
             Perlito5::Match::flat($_)
         } @{$MATCH->{'digits_underscore'}};
-        $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:vstring', 'namespace' => '', 'arguments' => [$MATCH->{'val_int'}->{'capture'}, @parts]);
+        $MATCH->{'capture'} = Perlito5::AST::Buf->new('buf' => join('', map {
+            chr($_)
+        } $MATCH->{'val_int'}->{'capture'}->{'int'}, @parts));
         1
     })));
     $tmp ? $MATCH : 0
