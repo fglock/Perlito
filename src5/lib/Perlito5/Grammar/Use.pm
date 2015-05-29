@@ -25,25 +25,14 @@ token use_decl { 'use' | 'no' };
 token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space::ws>
     [
-        # TODO - "use 5"
-        [ <Perlito5::Grammar::Number::val_version>
-        | <Perlito5::Grammar::Number::term_digit>
-        ]
+        'v'? <Perlito5::Grammar::Number::term_digit>
         {
-            # "use v5"
-            # check version
-            my $match = $MATCH->{"Perlito5::Grammar::Number::val_version"}
-                     || $MATCH->{"Perlito5::Grammar::Number::term_digit"};
-
-            # TODO: normalize - maybe number or v-string
-            # my $version = Perlito5::Match::flat($match);
-
-            my $version = substr($str, $match->{from}, $match->{to} - $match->{from});
-            $version =~ s/^v//;
-
-            if ($version gt $]) {
-                die "Perl v$version required--this is only v$]";
-            }
+            # "use v5", "use 5"
+            # check perl version
+            my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{buf}
+                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{int}
+                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{num};
+            test_perl_version($version);
             $MATCH->{capture} = Perlito5::AST::Apply->new(
                                    code => 'undef',
                                    namespace => '',
@@ -124,6 +113,26 @@ token stmt_use {
         }
     ]
 };
+
+sub test_perl_version {
+    my $version = shift;
+    $version =~ s/^v//;
+    if ($version && ord(substr($version,0,1)) < 10) {
+        # v-string to string
+        my @v = split(//,$version);
+        push @v, chr(0) while @v < 3;
+        $version = sprintf("%d.%03d%03d", map { ord($_) } @v);
+    }
+    else {
+        my @v = split(/\./,$version);
+        $v[1] = '0' . $v[1] while length($v[1]) < 3;
+        $v[1] = $v[1] . '0' while length($v[1]) < 6;
+        $version = join('.', @v);
+    }
+    if ($version gt $]) {
+        die "Perl v$version required--this is only v$]";
+    }
+}
 
 sub parse_time_eval {
     my $ast = shift;
@@ -290,16 +299,12 @@ sub require {
 
     if (  ($filename ge "0" && $filename le "9999")
        || ($filename ge "v0" && $filename le "v9999")
+       || (ord(substr($filename,0,1)) < 10)     # v-string
        )
     {
         # "require v5"
-        # check version
-        # TODO: normalize - maybe number or v-string
-        my $version = $filename;
-        $version =~ s/^v//;
-        if ($version gt $]) {
-            die "Perl v$version required--this is only v$]";
-        }
+        # check perl version
+        test_perl_version($filename);
         return;
     }
 

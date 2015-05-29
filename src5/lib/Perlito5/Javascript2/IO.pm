@@ -498,7 +498,8 @@ p5typeglob_set("Perlito5::IO", "say", function (filehandle, List__, p5want) {
     return 1;
 } );
 p5typeglob_set("Perlito5::IO", "printf", function (filehandle, List__, p5want) {
-    p5pkg["Perlito5::IO"].print( filehandle, CORE.sprintf(List__));
+    var format = List__.shift();
+    p5pkg["Perlito5::IO"].print( filehandle, CORE.sprintf([format, List__]));
     return 1;
 } );
 

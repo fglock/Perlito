@@ -29,7 +29,7 @@ sub emit_javascript2 {
 
 CORE.sprintf = function(List__) {
     var format = List__.shift();
-    var list = List__;
+    var list = List__.shift();
 
     // Check for format definition
     if ( typeof format != 'string' ) {
