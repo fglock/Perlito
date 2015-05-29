@@ -707,7 +707,7 @@ package Perlito5::AST::Do;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $block = $self->simplify->block;
+        my $block = $self->block->{stmts};
           "(do \{\n"
         .   join(";\n", map( defined($_) && Perlito5::XS::tab($level) . $_->emit_xs( $level + 1 ), @$block )) . "\n"
         . Perlito5::XS::tab($level) . "})"

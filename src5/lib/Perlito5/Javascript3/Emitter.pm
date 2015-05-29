@@ -2251,7 +2251,7 @@ package Perlito5::AST::Do;
         my $level = shift;
         my $wantarray = shift;
 
-        my $block = $self->simplify->block;
+        my $block = $self->block->{stmts};
         return
               '(function () {' . "\n"
             .   (Perlito5::Javascript3::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript3( $level + 1, $wantarray ) . "\n"

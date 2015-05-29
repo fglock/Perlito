@@ -6713,30 +6713,6 @@ sub Perlito5::AST::Apply::op_assign {
     }
     return 0
 }
-package Perlito5::AST::Do;
-# use strict
-sub Perlito5::AST::Do::simplify {
-    my $self = $_[0];
-    my $block;
-    if ($self->{'block'}->isa('Perlito5::AST::Block')) {
-        $block = $self->{'block'}->stmts()
-    }
-    else {
-        $block = [$self->{'block'}]
-    }
-    if (scalar(@{$block}) == 1) {
-        my $stmt = $block->[0];
-        if ($stmt->isa('Perlito5::AST::Apply') && $stmt->code() eq 'circumfix:<( )>') {
-            my $args = $stmt->arguments();
-            @{$args} == 1 && return Perlito5::AST::Do->new('block' => $args->[0])->simplify();
-            return Perlito5::AST::Do->new('block' => $block)
-        }
-        if ($stmt->isa('Perlito5::AST::Do')) {
-            return $stmt->simplify()
-        }
-    }
-    return Perlito5::AST::Do->new('block' => $block)
-}
 package main;
 package Perlito5;
 # use strict
@@ -9929,7 +9905,7 @@ package Perlito5::AST::Do;
 {
     sub Perlito5::AST::Do::emit_javascript2 {
         my($self, $level, $wantarray) = @_;
-        my $block = $self->simplify()->block();
+        my $block = $self->block()->{'stmts'};
         Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, (Perlito5::Javascript2::LexicalBlock->new('block' => $block, 'needs_return' => 1))->emit_javascript2($level + 1, $wantarray))
     }
     sub Perlito5::AST::Do::emit_javascript2_get_decl {
@@ -11276,7 +11252,7 @@ package Perlito5::AST::Do;
         my $self = shift;
         my $level = shift;
         my $wantarray = shift;
-        my $block = $self->simplify()->block();
+        my $block = $self->block()->{'stmts'};
         return '(function () {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block' => $block, 'needs_return' => 1))->emit_javascript3($level + 1, $wantarray) . chr(10) . Perlito5::Javascript3::tab($level) . '})()'
     }
 }
@@ -11658,7 +11634,7 @@ package Perlito5::AST::Do;
 {
     sub Perlito5::AST::Do::emit_perl5 {
         my $self = $_[0];
-        my $block = $self->simplify()->block();
+        my $block = $self->block()->{'stmts'};
         return ['op' => 'prefix:<do>', Perlito5::Perl5::emit_perl5_block($block)]
     }
 }
@@ -12649,7 +12625,7 @@ package Perlito5::AST::Do;
 {
     sub Perlito5::AST::Do::emit_perl6 {
         my $self = $_[0];
-        my $block = $self->simplify()->block();
+        my $block = $self->block()->{'stmts'};
         return ['op' => 'prefix:<do>', Perlito5::Perl6::emit_perl6_block($block)]
     }
 }
@@ -13370,7 +13346,7 @@ package Perlito5::AST::Do;
     sub Perlito5::AST::Do::emit_xs {
         my $self = $_[0];
         my $level = $_[1];
-        my $block = $self->simplify()->block();
+        my $block = $self->block()->{'stmts'};
         '(do {' . chr(10) . join(';' . chr(10), map(defined($_) && Perlito5::XS::tab($level) . $_->emit_xs($level + 1), @{$block})) . chr(10) . Perlito5::XS::tab($level) . '})'
     }
 }

@@ -3293,7 +3293,7 @@ package Perlito5::AST::Do;
 {
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
-        my $block = $self->simplify->block;
+        my $block = $self->block->{stmts};
         Perlito5::Javascript2::emit_wrap_javascript2(
             $level,
             $wantarray, 
