@@ -328,16 +328,6 @@ TODO list for Perlito5
     sub x { "ok\n"; }
     #  TypeError: Object [object Object] has no method 'x'
 
--- dot-decimal strings / v-strings
-    5.4.66.77
-    v5.4.66.77
-
-    $ perl -e ' my $v =  5.4.66.77 ; print $v, "\n"; require $v '
-    BM
-
--- 'require v5.006;'
-    # Can't locate v5.006 in @INC
-
 -- assign old-self to my / local
     local $Some_Global = $Some_Global;
 
