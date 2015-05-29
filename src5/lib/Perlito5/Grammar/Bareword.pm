@@ -266,6 +266,17 @@ sub term_bareword {
     my $has_paren = 0;
     if ( defined $sig ) {
 
+        if ( substr($sig, 0, 1) eq '&' ) {
+            my $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
+            if (!$m) {
+                die "Type of arg to $name must be block or sub {}";
+            }
+            $p = $m->{to};
+            # TODO
+            print Perlito5::Dumper::Dumper($m->{capture});
+            die "TODO";
+        }
+
         if ( substr($sig, 0, 1) eq ';' ) {
             # argument is optional - shift(), pop()
 
@@ -438,6 +449,28 @@ sub term_bareword {
         ];
     return $m_name;
 }
+
+token prototype_is_ampersand {
+    # prototype is '&'
+    |   'sub' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Block::anon_sub_def>
+            #  sub{block}  sub(proto){block}
+            { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Block::anon_sub_def"}) }
+    |   <Perlito5::Grammar::block>
+            #  {block}
+            { $MATCH->{capture} = 
+                Perlito5::AST::Sub->new(
+                   'attributes' => [],
+                   'block'      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"}),
+                   'name'       => undef,
+                   'namespace'  => undef,
+                   'sig'        => undef,
+                );
+            }
+    |   <before '\\' <.Perlito5::Grammar::Space::opt_ws> '&' >
+            #  \&sub
+            <Perlito5::Grammar::Expression::argument_parse>
+            { $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::argument_parse"}) }
+};
 
 1;
 
