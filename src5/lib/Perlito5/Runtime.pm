@@ -351,5 +351,26 @@ our $CORE_PROTO = {
           'CORE::__FILE__' => '',
           'CORE::__LINE__' => '',
         };  
+
+# this is the routine executed by statements like 'require 5.20' and 'use v5.20'
+sub test_perl_version {
+    my $version = shift;
+    $version =~ s/^v//;
+    if ($version && ord(substr($version,0,1)) < 10) {
+        # v-string to string
+        my @v = split(//,$version);
+        push @v, chr(0) while @v < 3;
+        $version = sprintf("%d.%03d%03d", map { ord($_) } @v);
+    }
+    else {
+        my @v = split(/\./,$version);
+        $v[1] = $v[1] . '0' while length($v[1]) < 3;
+        $version = join('.', @v);
+    }
+    if ($version gt $]) {
+        die "Perl v$version required--this is only v$]";
+    }
+}
+
 1;          
 

@@ -3709,6 +3709,79 @@ sub Perlito5::Grammar::Use::use_decl {
     }));
     $tmp ? $MATCH : 0
 }
+sub Perlito5::Grammar::Use::term_require {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+    my $tmp = ((('require' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
+        my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+        if ($m2) {
+            $MATCH->{'to'} = $m2->{'to'};
+            1
+        }
+        else {
+            0
+        }
+    }) && (do {
+        my $pos1 = $MATCH->{'to'};
+        (do {
+            (do {
+                my $m2 = Perlito5::Grammar::Number::val_version($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Number::val_version'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                my $version = $MATCH->{'Perlito5::Grammar::Number::val_version'}->{'capture'};
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$version])];
+                1
+            })
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            ((do {
+                my $m2 = Perlito5::Grammar::Number::term_digit($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Number::term_digit'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                my $version = $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1];
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$version])];
+                1
+            }))
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            ((do {
+                my $m2 = Perlito5::Grammar::full_ident($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::full_ident'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                my $module_name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
+                my $filename = modulename_to_filename($module_name);
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'require', 'namespace' => '', 'arguments' => [Perlito5::AST::Buf->new('buf' => $filename)])];
+                1
+            }))
+        })
+    })));
+    $tmp ? $MATCH : 0
+}
 sub Perlito5::Grammar::Use::stmt_use {
     my $str = $_[0];
     my $pos = $_[1];
@@ -3736,12 +3809,25 @@ sub Perlito5::Grammar::Use::stmt_use {
         my $pos1 = $MATCH->{'to'};
         (do {
             (do {
-                my $m = $MATCH;
-                if (!('v' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
-                    $MATCH = $m
+                my $m2 = Perlito5::Grammar::Number::val_version($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Number::val_version'} = $m2;
+                    1
                 }
-                1
+                else {
+                    0
+                }
             }) && (do {
+                $MATCH->{'str'} = $str;
+                my $version = $MATCH->{'Perlito5::Grammar::Number::val_version'}->{'capture'}->{'buf'};
+                Perlito5::test_perl_version($version);
+                $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
+                1
+            })
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            ((do {
                 my $m2 = Perlito5::Grammar::Number::term_digit($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -3754,10 +3840,10 @@ sub Perlito5::Grammar::Use::stmt_use {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 my $version = $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'buf'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'int'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'num'};
-                test_perl_version($version);
+                Perlito5::test_perl_version($version);
                 $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
                 1
-            })
+            }))
         }) || (do {
             $MATCH->{'to'} = $pos1;
             ((do {
@@ -3850,32 +3936,16 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
                 1
             }))
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            (do {
+                $MATCH->{'str'} = $str;
+                die('Syntax error');
+                1
+            })
         })
     })));
     $tmp ? $MATCH : 0
-}
-sub Perlito5::Grammar::Use::test_perl_version {
-    my $version = shift;
-    $version =~ s!^v!!;
-    if ($version && ord(substr($version, 0, 1)) < 10) {
-        my @v = split(m!!, $version);
-        push(@v, chr(0))
-            while @v < 3;
-        $version = sprintf('%d.%03d%03d', map {
-            ord($_)
-        } @v)
-    }
-    else {
-        my @v = split(m!\.!, $version);
-        $v[1] = 0 . $v[1]
-            while length($v[1]) < 3;
-        $v[1] = $v[1] . 0
-            while length($v[1]) < 6;
-        $version = join('.', @v)
-    }
-    if ($version gt ${'main::]'}) {
-        die('Perl v' . $version . ' required--this is only v' . ${'main::]'})
-    }
 }
 sub Perlito5::Grammar::Use::parse_time_eval {
     my $ast = shift;
@@ -3984,15 +4054,6 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 }
 sub Perlito5::Grammar::Use::require {
     my $filename = shift;
-    my $is_bareword = shift;
-    if (($filename ge 0 && $filename le 9999) || ($filename ge 'v0' && $filename le 'v9999') || (ord(substr($filename, 0, 1)) < 10)) {
-        test_perl_version($filename);
-        return 
-    }
-    if ($is_bareword) {
-        $Perlito5::PACKAGES->{$filename} = 1;
-        $filename = modulename_to_filename($filename)
-    }
     filename_lookup($filename) eq 'done' && return ;
     my $result = do($INC{$filename});
     if (${'@'}) {
@@ -4028,6 +4089,7 @@ sub Perlito5::Grammar::Use::do_file {
 }
 Perlito5::Grammar::Statement::add_statement('no' => \&stmt_use);
 Perlito5::Grammar::Statement::add_statement('use' => \&stmt_use);
+Perlito5::Grammar::Precedence::add_term('require' => \&term_require);
 1;
 package main;
 package Perlito5::Grammar::Block;
@@ -6705,6 +6767,27 @@ push(@INC, $_)
 our $SPECIAL_VAR = {'$_' => 'ARG', '$&' => '$MATCH', '$`' => '$PREMATCH', '$' . chr(39) => '$POSTMATCH', '$+' => '$LAST_PAREN_MATCH', '@+' => '@LAST_MATCH_END', '%+' => '%LAST_PAREN_MATCH', '@-' => '@LAST_MATCH_START', '$|' => 'autoflush', '$/' => '$RS', '@_' => '@ARG', '< $' => '$EUID', '$.' => '$NR', '< $< ' => '$UID', '$(' => '$GID', '$#' => undef, '$@' => '$EVAL_ERROR', '$=' => '$FORMAT_LINES_PER_PAGE', '$,' => '$OFS', '$?' => '$CHILD_ERROR', '$*' => undef, '$[' => undef, '$$' => '$PID', '%-' => undef, '$~' => '$FORMAT_NAME', '$-' => '$FORMAT_LINES_LEFT', '$&' => '$MATCH', '$%' => '$FORMAT_PAGE_NUMBER', '$)' => '$EGID', '$]' => undef, '$!' => '$ERRNO', '$;' => '$SUBSEP', '$' . chr(92) => '$ORS', '%!' => undef, '$"' => '$LIST_SEPARATOR', '$_' => '$ARG', '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'};
 our $CORE_OVERRIDABLE = {'say' => 1, 'break' => 1, 'given' => 1, 'when' => 1, 'default' => 1, 'state' => 1, 'lock' => 1};
 our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => '_', 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => chr(92) . '$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => chr(92) . '[@%]', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => ';$', 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => chr(92) . '%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => chr(92) . '[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*' . chr(92) . '$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*' . chr(92) . '$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';' . chr(92) . '@', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => chr(92) . '@;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => chr(92) . '@@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => chr(92) . '@@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*' . chr(92) . '$$$', 'CORE::dbmopen' => chr(92) . '%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => chr(92) . '[@%]', 'CORE::chomp' => '_', 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => chr(92) . '[@%]', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';' . chr(92) . '@', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef, 'CORE::__FILE__' => '', 'CORE::__LINE__' => ''};
+sub Perlito5::test_perl_version {
+    my $version = shift;
+    $version =~ s!^v!!;
+    if ($version && ord(substr($version, 0, 1)) < 10) {
+        my @v = split(m!!, $version);
+        push(@v, chr(0))
+            while @v < 3;
+        $version = sprintf('%d.%03d%03d', map {
+            ord($_)
+        } @v)
+    }
+    else {
+        my @v = split(m!\.!, $version);
+        $v[1] = $v[1] . 0
+            while length($v[1]) < 3;
+        $version = join('.', @v)
+    }
+    if ($version gt ${'main::]'}) {
+        die('Perl v' . $version . ' required--this is only v' . ${'main::]'})
+    }
+}
 1;
 package main;
 package Perlito5::Compiler;

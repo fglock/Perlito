@@ -22,17 +22,67 @@ my %Perlito_internal_module = (
 
 token use_decl { 'use' | 'no' };
 
+token term_require {
+    # require BAREWORD
+    'require' <.Perlito5::Grammar::Space::ws>
+    [
+        <Perlito5::Grammar::Number::val_version>
+        {
+            # "use v5", "use v5.8" - check perl version
+            my $version = $MATCH->{"Perlito5::Grammar::Number::val_version"}{capture};
+            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
+                                   code => 'test_perl_version',
+                                   namespace => 'Perlito5',
+                                   arguments => [ $version ]
+                                ) ];
+        }
+    |
+        <Perlito5::Grammar::Number::term_digit>
+        {
+            # "use 5", "use 5.8" - check perl version
+            my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1];
+            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
+                                   code => 'test_perl_version',
+                                   namespace => 'Perlito5',
+                                   arguments => [ $version ]
+                                ) ];
+        }
+    |
+        <Perlito5::Grammar::full_ident>
+        {
+            my $module_name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+            my $filename = modulename_to_filename($module_name);
+            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
+                                   code      => 'require',
+                                   namespace => '',
+                                   arguments => [ Perlito5::AST::Buf->new( buf => $filename ) ],
+                                ) ];
+        }
+    ]
+};
+
 token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space::ws>
     [
-        'v'? <Perlito5::Grammar::Number::term_digit>
+        <Perlito5::Grammar::Number::val_version>
         {
-            # "use v5", "use 5"
-            # check perl version
+            # "use v5", "use v5.8" - check perl version
+            my $version = $MATCH->{"Perlito5::Grammar::Number::val_version"}{capture}{buf};
+            Perlito5::test_perl_version($version);
+            $MATCH->{capture} = Perlito5::AST::Apply->new(
+                                   code => 'undef',
+                                   namespace => '',
+                                   arguments => []
+                                );
+        }
+    |
+        <Perlito5::Grammar::Number::term_digit>
+        {
+            # "use 5", "use 5.8" - check perl version
             my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{buf}
                        || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{int}
                        || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{num};
-            test_perl_version($version);
+            Perlito5::test_perl_version($version);
             $MATCH->{capture} = Perlito5::AST::Apply->new(
                                    code => 'undef',
                                    namespace => '',
@@ -111,28 +161,10 @@ token stmt_use {
                 $MATCH->{capture} = $ast;
             }
         }
+    |
+        { die "Syntax error" }
     ]
 };
-
-sub test_perl_version {
-    my $version = shift;
-    $version =~ s/^v//;
-    if ($version && ord(substr($version,0,1)) < 10) {
-        # v-string to string
-        my @v = split(//,$version);
-        push @v, chr(0) while @v < 3;
-        $version = sprintf("%d.%03d%03d", map { ord($_) } @v);
-    }
-    else {
-        my @v = split(/\./,$version);
-        $v[1] = '0' . $v[1] while length($v[1]) < 3;
-        $v[1] = $v[1] . '0' while length($v[1]) < 6;
-        $version = join('.', @v);
-    }
-    if ($version gt $]) {
-        die "Perl v$version required--this is only v$]";
-    }
-}
 
 sub parse_time_eval {
     my $ast = shift;
@@ -295,29 +327,9 @@ sub add_comp_unit {
 
 sub require {
     my $filename = shift;
-    my $is_bareword = shift;
-
-    if (  ($filename ge "0" && $filename le "9999")
-       || ($filename ge "v0" && $filename le "v9999")
-       || (ord(substr($filename,0,1)) < 10)     # v-string
-       )
-    {
-        # "require v5"
-        # check perl version
-        test_perl_version($filename);
-        return;
-    }
-
-    if ($is_bareword) {
-        $Perlito5::PACKAGES->{$filename} = 1;
-        $filename = modulename_to_filename($filename);
-    }
-
     return 
         if filename_lookup($filename) eq "done";
-
     my $result = do $INC{$filename};
-
     if ($@) {
         $INC{$filename} = undef;
         die $@;
@@ -352,6 +364,7 @@ sub do_file {
 
 Perlito5::Grammar::Statement::add_statement( 'no'  => \&stmt_use );
 Perlito5::Grammar::Statement::add_statement( 'use' => \&stmt_use );
+Perlito5::Grammar::Precedence::add_term( 'require' => \&term_require );
 
 
 1;
