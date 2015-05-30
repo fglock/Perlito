@@ -332,8 +332,6 @@ TODO list for Perlito5
     local $Some_Global = $Some_Global;
 
 -- missing some types of subroutine signatures
--- '&' prototype
-    add tests; see Try::Tiny
 
 -- AUTOLOAD() called from UNIVERSAL autovivifies packages
     add tests
@@ -462,6 +460,9 @@ TODO list for Perlito5
 
 
 * Javascript - implemented but missing more tests
+
+-- '&' prototype
+    add tests; see Try::Tiny
 
 -- add symbol tables for scalar, array and hash
 -- references to typeglobs:
