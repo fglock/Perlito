@@ -485,16 +485,18 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         my $m;
         my $capture;
         if ($sig_part eq '&') {
-            $sig = substr($sig, 1);
             $m = Perlito5::Grammar::Space::ws($str, $p);
             $m && ($p = $m->{'to'});
-            $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
-            $m && ($capture = $m->{'capture'});
-            if (!$m) {
-                die('Type of arg ' . $arg_index . ' to ' . $name . ' must be block or sub {}')
+            if (substr($str, $p, 1) ne '(') {
+                $sig = substr($sig, 1);
+                $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
+                $m && ($capture = $m->{'capture'});
+                if (!$m) {
+                    die('Type of arg ' . $arg_index . ' to ' . $name . ' must be block or sub {}')
+                }
+                $p = $m->{'to'};
+                push(@args, $capture)
             }
-            $p = $m->{'to'};
-            push(@args, $capture)
         }
         if (substr($sig, 0, 1) eq ';') {
             if (substr($str, $p, 2) eq '//') {

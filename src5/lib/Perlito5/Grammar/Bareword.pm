@@ -274,18 +274,20 @@ sub term_bareword {
         my $capture;
 
         if ($sig_part eq '&') {
-            $sig = substr($sig, 1);
             $m = Perlito5::Grammar::Space::ws( $str, $p );
             $p = $m->{to} if $m;
-            $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
-            $capture = $m->{capture} if $m;
-            if (!$m) {
-                die "Type of arg $arg_index to $name must be block or sub {}";
+            if ( substr($str, $p, 1) ne '(' ) {
+                $sig = substr($sig, 1);
+                $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
+                $capture = $m->{capture} if $m;
+                if (!$m) {
+                    die "Type of arg $arg_index to $name must be block or sub {}";
+                }
+                $p = $m->{to};
+                push @args, $capture;
+                # there is no comma after first '&'
+                # but '(' is allowed here
             }
-            $p = $m->{to};
-            push @args, $capture;
-            # there is no comma after first '&'
-            # but '(' is allowed here
         }
 
         ### SIG:
