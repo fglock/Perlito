@@ -197,6 +197,8 @@ token args_sig {
 };
 
 token prototype_ {
+    |   <.Perlito5::Grammar::Space::opt_ws> \( <.Perlito5::Grammar::Space::opt_ws>  '_'  <.Perlito5::Grammar::Space::opt_ws>  \)
+        { $MATCH->{capture} = "_" }
     |   <.Perlito5::Grammar::Space::opt_ws> \( <.Perlito5::Grammar::Space::opt_ws>  <args_sig>  <.Perlito5::Grammar::Space::opt_ws>  \)
         { $MATCH->{capture} = "" . Perlito5::Match::flat($MATCH->{args_sig}) }
     |   { $MATCH->{capture} = '*undef*' }   # default signature

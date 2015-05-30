@@ -478,14 +478,23 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     }
     my $has_paren = 0;
     if (defined($sig)) {
-        if (substr($sig, 0, 1) eq '&') {
-            my $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
+        my $arg_index = 1;
+        my $optional = 0;
+        my @args;
+        my $sig_part = substr($sig, 0, 1);
+        my $m;
+        my $capture;
+        if ($sig_part eq '&') {
+            $sig = substr($sig, 1);
+            $m = Perlito5::Grammar::Space::ws($str, $p);
+            $m && ($p = $m->{'to'});
+            $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
+            $m && ($capture = $m->{'capture'});
             if (!$m) {
-                die('Type of arg to ' . $name . ' must be block or sub {}')
+                die('Type of arg ' . $arg_index . ' to ' . $name . ' must be block or sub {}')
             }
             $p = $m->{'to'};
-            print(Perlito5::Dumper::Dumper($m->{'capture'}));
-            die('TODO')
+            push(@args, $capture)
         }
         if (substr($sig, 0, 1) eq ';') {
             if (substr($str, $p, 2) eq '//') {
@@ -514,7 +523,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 $m_name->{'capture'} = ['term', Perlito5::AST::Int->new('int' => $Perlito5::LINE_NUMBER)]
             }
             else {
-                $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => ($has_paren == 0))]
+                $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0))]
             }
             $m_name->{'to'} = $p;
             return $m_name
@@ -547,7 +556,6 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     $arg = $v
                 }
             }
-            my @args;
             if (defined($arg)) {
                 push(@args, $arg);
                 $has_paren = 1
@@ -4510,6 +4518,40 @@ sub Perlito5::Grammar::Block::prototype_ {
     my $tmp = ((do {
         my $pos1 = $MATCH->{'to'};
         (do {
+            ((do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = '_';
+                1
+            }))
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
             ((do {
                 my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                 if ($m2) {

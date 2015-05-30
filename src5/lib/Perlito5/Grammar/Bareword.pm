@@ -265,17 +265,89 @@ sub term_bareword {
 
     my $has_paren = 0;
     if ( defined $sig ) {
+        my $arg_index = 1;
+        my $optional = 0;
+        my @args;
 
-        if ( substr($sig, 0, 1) eq '&' ) {
-            my $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
+        my $sig_part = substr($sig, 0, 1);
+        my $m;
+        my $capture;
+
+        if ($sig_part eq '&') {
+            $sig = substr($sig, 1);
+            $m = Perlito5::Grammar::Space::ws( $str, $p );
+            $p = $m->{to} if $m;
+            $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
+            $capture = $m->{capture} if $m;
             if (!$m) {
-                die "Type of arg to $name must be block or sub {}";
+                die "Type of arg $arg_index to $name must be block or sub {}";
             }
             $p = $m->{to};
-            # TODO
-            print Perlito5::Dumper::Dumper($m->{capture});
-            die "TODO";
+            push @args, $capture;
+            # there is no comma after first '&'
+            # but '(' is allowed here
         }
+
+        ### SIG:
+        ### while ($sig) {
+        ###     # TODO: 'code' => 'circumfix:<( )>',
+        ###     # TODO: comma
+        ###     $m = Perlito5::Grammar::Space::ws( $str, $p );
+        ###     $p = $m->{to} if $m;
+        ###     $m = Perlito5::Grammar::Bareword::prototype_is_dollar( $str, $p );
+        ###     $capture = $m->{capture} if $m;
+        ###     if ($sig_part eq '_') {
+        ###         if (!$m) {
+        ###             $capture = Perlito5::AST::Var->new(
+        ###                     namespace => '',
+        ###                     name      => '_',
+        ###                     sigil     => '$'
+        ###                 );
+        ###         }
+        ###         else {
+        ###             $p = $m->{to};
+        ###         }
+        ###         print Perlito5::Dumper::Dumper($capture);
+        ###     }
+        ###     elsif ($sig_part eq '$') {
+        ###         if (!$m) {
+        ###             last SIG if $optional;
+        ###             die "Not enough arguments for $name";
+        ###         }
+        ###         $p = $m->{to};
+        ###         push @args, $capture;
+        ###     }
+        ###     elsif ($sig_part eq '&') {
+        ###         if (!$m) {
+        ###             last SIG if $optional;
+        ###             die "Type of arg $arg_index to $name must be sub {}";
+        ###         }
+        ###         $p = $m->{to};
+        ###         push @args, $capture;
+        ###     }
+        ###     elsif ($sig_part eq '*') {
+        ###         # TODO
+        ###         #   stat FILEHANDLE
+        ###         #   stat EXPR
+        ###         #   stat DIRHANDLE
+        ###         #   If EXPR is omitted, it stats $_.
+        ###         die "TODO: '*' sig";
+        ###         push @args, $capture;
+        ###     }
+        ###     elsif ($sig_part eq ';') {
+        ###         $optional = 1;
+        ###         next SIG;
+        ###     }
+        ###     else {
+        ###         die "don't know what to do with sig '$sig_part'";
+        ###     }
+        ### }
+        ### continue {
+        ###     $sig_part = substr($sig, 0, 1);
+        ###     $sig = substr($sig, 1);
+        ### }
+        ### print Perlito5::Dumper::Dumper(\@args);
+        ### die "TODO";
 
         if ( substr($sig, 0, 1) eq ';' ) {
             # argument is optional - shift(), pop()
@@ -332,7 +404,7 @@ sub term_bareword {
                     Perlito5::AST::Apply->new(
                         code      => $name,
                         namespace => $namespace,
-                        arguments => [],
+                        arguments => \@args,
                         bareword  => ($has_paren == 0)
                     )
                 ];
@@ -369,7 +441,6 @@ sub term_bareword {
                     $arg = $v;
                 }
             }
-            my @args;
             if ( defined $arg ) {
                 push @args, $arg;
                 $has_paren = 1;
@@ -449,6 +520,12 @@ sub term_bareword {
         ];
     return $m_name;
 }
+
+### sub prototype_is_dollar {
+###     my $m = Perlito5::Grammar::Expression::argument_parse(@_);
+###     return if $m->{capture} eq '*undef*';
+###     return $m;
+### }
 
 token prototype_is_ampersand {
     # prototype is '&'
