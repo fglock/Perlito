@@ -11,10 +11,9 @@ sub eval_begin_block {
     local $@;
     my $code = "package $Perlito5::PKG_NAME;\n"
              . $_[0];
-    eval $code;
     # say $code;
-    die "Error in BEGIN block: " . $@
-        if $@;
+    eval "{ $code }; 1"
+    or die "Error in BEGIN block: " . $@;
 }
 
 our %Named_block = (

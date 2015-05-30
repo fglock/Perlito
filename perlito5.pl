@@ -4255,8 +4255,7 @@ package Perlito5::Grammar::Block;
 sub Perlito5::Grammar::Block::eval_begin_block {
     local ${'@'};
     my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . $_[0];
-    eval($code);
-    ${'@'} && die('Error in BEGIN block: ' . ${'@'})
+    eval('{ ' . $code . ' }; 1') or die('Error in BEGIN block: ' . ${'@'})
 }
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
 sub Perlito5::Grammar::Block::anon_block {
