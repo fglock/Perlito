@@ -3820,6 +3820,50 @@ sub Perlito5::Grammar::Use::use_decl {
     }));
     $tmp ? $MATCH : 0
 }
+sub Perlito5::Grammar::Use::version_string {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+    my $tmp = ((do {
+        my $pos1 = $MATCH->{'to'};
+        (do {
+            ((do {
+                my $m2 = Perlito5::Grammar::Number::val_version($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Number::val_version'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = $MATCH->{'Perlito5::Grammar::Number::val_version'}->{'capture'};
+                1
+            }))
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            ((do {
+                my $m2 = Perlito5::Grammar::Number::term_digit($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'Perlito5::Grammar::Number::term_digit'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                my $version = $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'buf'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'int'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'num'};
+                $MATCH->{'capture'} = Perlito5::AST::Buf->new('buf' => $version);
+                1
+            }))
+        })
+    }));
+    $tmp ? $MATCH : 0
+}
 sub Perlito5::Grammar::Use::term_require {
     my $str = $_[0];
     my $pos = $_[1];
@@ -3837,10 +3881,10 @@ sub Perlito5::Grammar::Use::term_require {
         my $pos1 = $MATCH->{'to'};
         (do {
             ((do {
-                my $m2 = Perlito5::Grammar::Number::val_version($str, $MATCH->{'to'});
+                my $m2 = version_string($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Number::val_version'} = $m2;
+                    $MATCH->{'version_string'} = $m2;
                     1
                 }
                 else {
@@ -3848,26 +3892,7 @@ sub Perlito5::Grammar::Use::term_require {
                 }
             }) && (do {
                 $MATCH->{'str'} = $str;
-                my $version = $MATCH->{'Perlito5::Grammar::Number::val_version'}->{'capture'};
-                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$version])];
-                1
-            }))
-        }) || (do {
-            $MATCH->{'to'} = $pos1;
-            ((do {
-                my $m2 = Perlito5::Grammar::Number::term_digit($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Number::term_digit'} = $m2;
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                $MATCH->{'str'} = $str;
-                my $version = $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1];
-                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$version])];
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$MATCH->{'version_string'}->{'capture'}])];
                 1
             }))
         }) || (do {
@@ -3920,10 +3945,10 @@ sub Perlito5::Grammar::Use::stmt_use {
         my $pos1 = $MATCH->{'to'};
         (do {
             ((do {
-                my $m2 = Perlito5::Grammar::Number::val_version($str, $MATCH->{'to'});
+                my $m2 = version_string($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Number::val_version'} = $m2;
+                    $MATCH->{'version_string'} = $m2;
                     1
                 }
                 else {
@@ -3931,26 +3956,7 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
             }) && (do {
                 $MATCH->{'str'} = $str;
-                my $version = $MATCH->{'Perlito5::Grammar::Number::val_version'}->{'capture'}->{'buf'};
-                Perlito5::test_perl_version($version);
-                $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
-                1
-            }))
-        }) || (do {
-            $MATCH->{'to'} = $pos1;
-            ((do {
-                my $m2 = Perlito5::Grammar::Number::term_digit($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::Number::term_digit'} = $m2;
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                $MATCH->{'str'} = $str;
-                my $version = $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'buf'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'int'} || $MATCH->{'Perlito5::Grammar::Number::term_digit'}->{'capture'}->[1]->{'num'};
+                my $version = $MATCH->{'version_string'}->{'capture'}->{'buf'};
                 Perlito5::test_perl_version($version);
                 $MATCH->{'capture'} = Perlito5::AST::Apply->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
                 1
@@ -3989,6 +3995,45 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
                 1
             }) && (do {
+                my $m = $MATCH;
+                if (!((do {
+                    my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && (do {
+                    my $m2 = version_string($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        if (exists($MATCH->{'version_string'})) {
+                            push(@{$MATCH->{'version_string'}}, $m2)
+                        }
+                        else {
+                            $MATCH->{'version_string'} = [$m2]
+                        }
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && (do {
+                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }))) {
+                    $MATCH = $m
+                }
+                1
+            }) && (do {
                 my $m2 = Perlito5::Grammar::Expression::list_parse($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -4000,6 +4045,7 @@ sub Perlito5::Grammar::Use::stmt_use {
                 }
             }) && (do {
                 $MATCH->{'str'} = $str;
+                my $version = $MATCH->{'version_string'}->[0]->{'capture'}->{'buf'};
                 my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
                 if ($list eq '*undef*') {
                     $list = undef

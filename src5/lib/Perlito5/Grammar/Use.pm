@@ -22,35 +22,32 @@ my %Perlito_internal_module = (
 
 token use_decl { 'use' | 'no' };
 
+token version_string {
+        <Perlito5::Grammar::Number::val_version>
+        {   # "v5", "v5.8", "v5.8.1"
+            $MATCH->{capture} = $MATCH->{"Perlito5::Grammar::Number::val_version"}{capture};
+        }
+    |   <Perlito5::Grammar::Number::term_digit>
+        {   # "5", "5.8", "5.8.1", "5.008_001"
+            my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{buf}
+                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{int}
+                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{num};
+            $MATCH->{capture} = Perlito5::AST::Buf->new( buf => $version );
+        }
+}; 
+
 token term_require {
     # require BAREWORD
     'require' <.Perlito5::Grammar::Space::ws>
-    [
-        <Perlito5::Grammar::Number::val_version>
-        {
-            # "use v5", "use v5.8" - check perl version
-            my $version = $MATCH->{"Perlito5::Grammar::Number::val_version"}{capture};
-            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
+    [   <version_string>
+        {   $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
                                    code => 'test_perl_version',
                                    namespace => 'Perlito5',
-                                   arguments => [ $version ]
+                                   arguments => [ $MATCH->{"version_string"}{capture} ]
                                 ) ];
         }
-    |
-        <Perlito5::Grammar::Number::term_digit>
-        {
-            # "use 5", "use 5.8" - check perl version
-            my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1];
-            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
-                                   code => 'test_perl_version',
-                                   namespace => 'Perlito5',
-                                   arguments => [ $version ]
-                                ) ];
-        }
-    |
-        <Perlito5::Grammar::full_ident>
-        {
-            my $module_name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+    |   <Perlito5::Grammar::full_ident>
+        {   my $module_name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             my $filename = modulename_to_filename($module_name);
             $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
                                    code      => 'require',
@@ -64,10 +61,9 @@ token term_require {
 token stmt_use {
     <use_decl> <.Perlito5::Grammar::Space::ws>
     [
-        <Perlito5::Grammar::Number::val_version>
-        {
-            # "use v5", "use v5.8" - check perl version
-            my $version = $MATCH->{"Perlito5::Grammar::Number::val_version"}{capture}{buf};
+        <version_string>
+        {   # "use v5", "use v5.8" - check perl version
+            my $version = $MATCH->{"version_string"}{capture}{buf};
             Perlito5::test_perl_version($version);
             $MATCH->{capture} = Perlito5::AST::Apply->new(
                                    code => 'undef',
@@ -76,22 +72,12 @@ token stmt_use {
                                 );
         }
     |
-        <Perlito5::Grammar::Number::term_digit>
+        <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]?
+            [ <.Perlito5::Grammar::Space::ws> <version_string> <.Perlito5::Grammar::Space::opt_ws> ]?
+            <Perlito5::Grammar::Expression::list_parse>
         {
-            # "use 5", "use 5.8" - check perl version
-            my $version = $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{buf}
-                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{int}
-                       || $MATCH->{"Perlito5::Grammar::Number::term_digit"}{capture}[1]{num};
-            Perlito5::test_perl_version($version);
-            $MATCH->{capture} = Perlito5::AST::Apply->new(
-                                   code => 'undef',
-                                   namespace => '',
-                                   arguments => []
-                                );
-        }
-    |
-        <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]? <Perlito5::Grammar::Expression::list_parse>
-        {
+            # TODO - test the module version
+            my $version = $MATCH->{"version_string"}[0]{capture}{buf};
 
             my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::list_parse"});
             if ($list eq '*undef*') {
