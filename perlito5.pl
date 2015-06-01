@@ -4212,7 +4212,7 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 sub Perlito5::Grammar::Use::require {
     my $filename = shift;
     filename_lookup($filename) eq 'done' && return ;
-    my $result = do($INC{$filename});
+    my $result = do($filename);
     if (${'@'}) {
         $INC{$filename} = undef;
         die(${'@'})

@@ -315,7 +315,7 @@ sub require {
     my $filename = shift;
     return 
         if filename_lookup($filename) eq "done";
-    my $result = do $INC{$filename};
+    my $result = do $filename;
     if ($@) {
         $INC{$filename} = undef;
         die $@;
