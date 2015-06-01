@@ -3,7 +3,7 @@ use v5;
 package Perlito5::Javascript2::Runtime;
 
 sub perl5_to_js {
-    my ($source, $namespace, $var_env_js) = @_;
+    my ($source, $namespace, $var_env_js, $want) = @_;
 
     # say "source: [" . $source . "]";
 
@@ -24,7 +24,7 @@ sub perl5_to_js {
               );
 
     # say "ast: [" . ast . "]";
-    my $js_code = $ast->emit_javascript2(0);
+    my $js_code = $ast->emit_javascript2(0, $want);
     # say "js-source: [" . $js_code . "]";
 
     $Perlito5::STRICT   = $strict_old;

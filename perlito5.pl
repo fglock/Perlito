@@ -9234,7 +9234,7 @@ package Perlito5::AST::Apply;
         '(' . $self->{'arguments'}->[0]->emit_javascript2($level, $wantarray) . ')'
     }, 'require' => sub {
         my($self, $level, $wantarray) = @_;
-        'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . ($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0) . '])'
+        'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . ($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0) . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')'
     }, 'select' => sub {
         my($self, $level, $wantarray) = @_;
         'p5pkg["CORE"]["select"]([' . ($self->{'arguments'}->[0]->{'bareword'} ? Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) : $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar')) . '])'
@@ -10127,7 +10127,7 @@ package main;
 undef();
 package Perlito5::Javascript2::Runtime;
 sub Perlito5::Javascript2::Runtime::perl5_to_js {
-    my($source, $namespace, $var_env_js) = @_;
+    my($source, $namespace, $var_env_js, $want) = @_;
     my $strict_old = $Perlito5::STRICT;
     local $Perlito5::VAR = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
@@ -10136,7 +10136,7 @@ sub Perlito5::Javascript2::Runtime::perl5_to_js {
         die('Syntax error in eval near pos ', $match->{'to'})
     }
     my $ast = Perlito5::AST::Do->new('block' => Perlito5::AST::Block->new('stmts' => $match->{'capture'}));
-    my $js_code = $ast->emit_javascript2(0);
+    my $js_code = $ast->emit_javascript2(0, $want);
     $Perlito5::STRICT = $strict_old;
     return $js_code
 }

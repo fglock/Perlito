@@ -1754,7 +1754,7 @@ package Perlito5::AST::Apply;
             'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
                 . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 
-            . '])';
+            . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')';
         },
         'select' => sub {
             my ($self, $level, $wantarray) = @_;
