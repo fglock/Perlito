@@ -498,12 +498,10 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 push(@args, $capture)
             }
         }
-        if (substr($sig, 0, 1) eq ';') {
-            if (substr($str, $p, 2) eq '//') {
-                $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => 1)];
-                $m_name->{'to'} = $p;
-                return $m_name
-            }
+        if (substr($sig, 0, 1) eq ';' && substr($str, $p, 2) eq '//') {
+            $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => 1)];
+            $m_name->{'to'} = $p;
+            return $m_name
         }
         if ($sig eq '') {
             if (substr($str, $p, 1) eq '(') {
@@ -565,6 +563,25 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             else {
                 $sig eq '$' && die('Not enough arguments for ' . $name);
                 $sig eq '_' && push(@args, Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))
+            }
+            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0))];
+            return $m
+        }
+        if ($sig eq ';@') {
+            if (substr($str, $p, 1) eq '(') {
+                $m = Perlito5::Grammar::Expression::term_paren($str, $p);
+                $has_paren = 1;
+                my $arg = $m->{'capture'}->[2];
+                $arg = Perlito5::Grammar::Expression::expand_list($arg);
+                push(@args, @{$arg})
+            }
+            else {
+                $m = Perlito5::Grammar::Expression::list_parse($str, $p);
+                my $arg = $m->{'capture'};
+                if ($arg ne '*undef*') {
+                    $arg = Perlito5::Grammar::Expression::expand_list($arg);
+                    push(@args, @{$arg})
+                }
             }
             $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0))];
             return $m

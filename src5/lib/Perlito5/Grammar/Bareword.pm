@@ -290,6 +290,67 @@ sub term_bareword {
             }
         }
 
+        if ( substr($sig, 0, 1) eq ';' && substr($str, $p, 2) eq '//' ) {
+            # argument is optional - shift(), pop() followed by //
+            #
+            # special case - see test t5/01-perlito/25-syntax-defined-or.t
+            # we don't want '//' to be an argument (match) but an operator (defined-or)
+            # so we return 'bareword'
+            $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => [],
+                        bareword  => 1,
+                    )
+                ];
+            $m_name->{to} = $p;
+            return $m_name;
+        }
+
+        if ( $sig eq '' ) {
+            # empty sig - we allow (), but only if it is empty
+            if ( substr($str, $p, 1) eq '(' ) {
+                $p++;
+                $has_paren = 1;
+                my $m = Perlito5::Grammar::Space::ws( $str, $p );
+                if ($m) {
+                    $p = $m->{to}
+                }
+                if ( substr($str, $p, 1) ne ')' ) {
+                    die "syntax error near ", substr( $str, $pos, 10 );
+                }
+                $p++;
+            }
+            if ($name eq '__FILE__') {
+                $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Buf->new(
+                        buf => $Perlito5::FILE_NAME,
+                    )
+                ];
+            }
+            elsif ($name eq '__LINE__') {
+                $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Int->new(
+                        int => $Perlito5::LINE_NUMBER,
+                    )
+                ];
+            }
+            else {
+                # TODO - "subs with empty protos are candidates for inlining"
+                $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => \@args,
+                        bareword  => ($has_paren == 0)
+                    )
+                ];
+            }
+            $m_name->{to} = $p;
+            return $m_name;
+        }
+
         ### SIG:
         ### while ($sig) {
         ###     # TODO: 'code' => 'circumfix:<( )>',
@@ -351,70 +412,6 @@ sub term_bareword {
         ### print Perlito5::Dumper::Dumper(\@args);
         ### die "TODO";
 
-        if ( substr($sig, 0, 1) eq ';' ) {
-            # argument is optional - shift(), pop()
-
-            if ( substr($str, $p, 2) eq '//' ) {
-                # special case - see test t5/01-perlito/25-syntax-defined-or.t
-                # we don't want '//' to be an argument (match) but an operator (defined-or)
-                # so we return 'bareword'
-
-                $m_name->{capture} = [ 'term', 
-                        Perlito5::AST::Apply->new(
-                            code      => $name,
-                            namespace => $namespace,
-                            arguments => [],
-                            bareword  => 1,
-                        )
-                    ];
-                $m_name->{to} = $p;
-                return $m_name;
-            }
-        }
-
-        if ( $sig eq '' ) {
-            # empty sig - we allow (), but only if it is empty
-            if ( substr($str, $p, 1) eq '(' ) {
-                $p++;
-                $has_paren = 1;
-                my $m = Perlito5::Grammar::Space::ws( $str, $p );
-                if ($m) {
-                    $p = $m->{to}
-                }
-                if ( substr($str, $p, 1) ne ')' ) {
-                    die "syntax error near ", substr( $str, $pos, 10 );
-                }
-                $p++;
-            }
-            if ($name eq '__FILE__') {
-                $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Buf->new(
-                        buf => $Perlito5::FILE_NAME,
-                    )
-                ];
-            }
-            elsif ($name eq '__LINE__') {
-                $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Int->new(
-                        int => $Perlito5::LINE_NUMBER,
-                    )
-                ];
-            }
-            else {
-                # TODO - "subs with empty protos are candidates for inlining"
-                $m_name->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
-                        code      => $name,
-                        namespace => $namespace,
-                        arguments => \@args,
-                        bareword  => ($has_paren == 0)
-                    )
-                ];
-            }
-            $m_name->{to} = $p;
-            return $m_name;
-        }
-
         if ( $sig eq '_' || $sig eq '$' || $sig eq ';$' ) {
             my $m;
             my $arg;
@@ -457,6 +454,33 @@ sub term_bareword {
                         )
                     if $sig eq '_';
                 # ';$' --> ignore the missing arg
+            }
+            $m->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => \@args,
+                        bareword  => ($has_paren == 0)
+                    )
+                ];
+            return $m;
+        }
+
+        if ( $sig eq ';@' ) {
+            if ( substr($str, $p, 1) eq '(' ) {
+                $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
+                $has_paren = 1;
+                my $arg = $m->{capture}[2];
+                $arg = Perlito5::Grammar::Expression::expand_list( $arg );
+                push @args, @$arg;
+            }
+            else {
+                $m = Perlito5::Grammar::Expression::list_parse( $str, $p );
+                my $arg = $m->{capture};
+                if ($arg ne '*undef*') {
+                    $arg = Perlito5::Grammar::Expression::expand_list( $arg );
+                    push @args, @$arg;
+                }
             }
             $m->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
