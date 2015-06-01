@@ -1751,6 +1751,14 @@ package Perlito5::AST::Apply;
         },
         'require' => sub {
             my ($self, $level, $wantarray) = @_;
+            my $arg  = $self->{arguments}->[0];
+            if ($arg->{is_version_string}) {
+                # require VERSION
+                return 'p5pkg["Perlito5"]["test_perl_version"]([' 
+                        . Perlito5::Javascript2::to_str( $self->{arguments}[0] )
+                    . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')';
+            }
+            # require FILE
             'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
                 . Perlito5::Javascript2::to_str( $self->{arguments}[0] ) . ', ' 
                 . ($self->{arguments}[0]{bareword} ? 1 : 0) 

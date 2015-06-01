@@ -40,10 +40,12 @@ token term_require {
     # require BAREWORD
     'require' <.Perlito5::Grammar::Space::ws>
     [   <version_string>
-        {   $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
-                                   code => 'test_perl_version',
-                                   namespace => 'Perlito5',
-                                   arguments => [ $MATCH->{"version_string"}{capture} ]
+        {   my $version = $MATCH->{"version_string"}{capture};
+            $version->{is_version_string} = 1;  # AST annotation
+            $MATCH->{capture} = [ 'term', Perlito5::AST::Apply->new(
+                                   code      => 'require',
+                                   namespace => '',
+                                   arguments => [ $version ],
                                 ) ];
         }
     |   <Perlito5::Grammar::full_ident>

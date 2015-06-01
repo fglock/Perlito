@@ -3892,7 +3892,9 @@ sub Perlito5::Grammar::Use::term_require {
                 }
             }) && (do {
                 $MATCH->{'str'} = $str;
-                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'test_perl_version', 'namespace' => 'Perlito5', 'arguments' => [$MATCH->{'version_string'}->{'capture'}])];
+                my $version = $MATCH->{'version_string'}->{'capture'};
+                $version->{'is_version_string'} = 1;
+                $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'require', 'namespace' => '', 'arguments' => [$version])];
                 1
             }))
         }) || (do {
@@ -9234,6 +9236,10 @@ package Perlito5::AST::Apply;
         '(' . $self->{'arguments'}->[0]->emit_javascript2($level, $wantarray) . ')'
     }, 'require' => sub {
         my($self, $level, $wantarray) = @_;
+        my $arg = $self->{'arguments'}->[0];
+        if ($arg->{'is_version_string'}) {
+            return 'p5pkg["Perlito5"]["test_perl_version"]([' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')'
+        }
         'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . ($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0) . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')'
     }, 'select' => sub {
         my($self, $level, $wantarray) = @_;
