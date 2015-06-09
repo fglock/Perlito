@@ -172,6 +172,8 @@ sub parse_time_eval {
         $module_name = $Perlito_internal_module{$module_name}
             if exists $Perlito_internal_module{$module_name};
 
+        my $current_module_name = $Perlito5::PKG_NAME;
+
         # "require" the module
         my $filename = modulename_to_filename($module_name);
         # warn "# require $filename\n";
@@ -182,8 +184,8 @@ sub parse_time_eval {
             if ($use_or_not eq 'use') {
                 if (defined &{$module_name . '::import'}) {
                     # make sure that caller() points to the current module under compilation
-                    unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                    eval "package $Perlito5::PKG_NAME;\n"
+                    unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
+                    eval "package $current_module_name;\n"
                        . '$module_name->import(@$arguments); 1'
                     or die $@;
                     shift @{ $Perlito5::CALLER };
@@ -192,8 +194,8 @@ sub parse_time_eval {
             elsif ($use_or_not eq 'no') {
                 if (defined &{$module_name . '::unimport'}) {
                     # make sure that caller() points to the current module under compilation
-                    unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                    eval "package $Perlito5::PKG_NAME;\n"
+                    unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
+                    eval "package $current_module_name;\n"
                        . '$module_name->unimport(@$arguments); 1'
                     or die $@;
                     shift @{ $Perlito5::CALLER };
