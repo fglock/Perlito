@@ -257,6 +257,9 @@ function p5sub_exists(name, current_pkg_name) {
 }
 
 function p5sub_prototype(name, current_pkg_name) {
+    if (!name) {
+        return null;
+    }
     if (typeof name === "function") {
         return name._prototype_;
     }
