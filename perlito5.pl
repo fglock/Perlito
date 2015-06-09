@@ -4138,14 +4138,14 @@ sub Perlito5::Grammar::Use::parse_time_eval {
             if ($use_or_not eq 'use') {
                 if (defined(&{$module_name . '::import'})) {
                     unshift(@{$Perlito5::CALLER}, [$Perlito5::PKG_NAME]);
-                    $module_name->import(@{$arguments});
+                    eval('package ' . $Perlito5::PKG_NAME . ';' . chr(10) . '$module_name->import(@$arguments); 1') or die(${'@'});
                     shift(@{$Perlito5::CALLER})
                 }
             }
             elsif ($use_or_not eq 'no') {
                 if (defined(&{$module_name . '::unimport'})) {
                     unshift(@{$Perlito5::CALLER}, [$Perlito5::PKG_NAME]);
-                    $module_name->unimport(@{$arguments});
+                    eval('package ' . $Perlito5::PKG_NAME . ';' . chr(10) . '$module_name->unimport(@$arguments); 1') or die(${'@'});
                     shift(@{$Perlito5::CALLER})
                 }
             }

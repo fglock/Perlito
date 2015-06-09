@@ -181,16 +181,21 @@ sub parse_time_eval {
             # call import/unimport
             if ($use_or_not eq 'use') {
                 if (defined &{$module_name . '::import'}) {
-                    # temporarily set caller() to the current module under compilation
+                    # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                    $module_name->import(@$arguments);
+                    eval "package $Perlito5::PKG_NAME;\n"
+                       . '$module_name->import(@$arguments); 1'
+                    or die $@;
                     shift @{ $Perlito5::CALLER };
                 }
             }
             elsif ($use_or_not eq 'no') {
                 if (defined &{$module_name . '::unimport'}) {
+                    # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $Perlito5::PKG_NAME ];
-                    $module_name->unimport(@$arguments);
+                    eval "package $Perlito5::PKG_NAME;\n"
+                       . '$module_name->unimport(@$arguments); 1'
+                    or die $@;
                     shift @{ $Perlito5::CALLER };
                 }
             }
