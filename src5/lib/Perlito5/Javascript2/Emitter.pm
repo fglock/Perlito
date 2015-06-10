@@ -1542,9 +1542,17 @@ package Perlito5::AST::Apply;
         my $code = $regex->{code};
         my $regex_args = $regex->{arguments};
         if ($code eq 'p5:s') {
-            $str = $var->emit_javascript2() 
-                 . ' = p5str(' . $var->emit_javascript2() . ').replace(/' . $regex_args->[0]->{buf} . '/' . $regex_args->[2]->{buf} . ', '
-                 .  $regex_args->[1]->emit_javascript2() . ')';
+            $str = Perlito5::Javascript2::emit_wrap_javascript2($level+1, $wantarray, 
+                "var tmp = p5s("
+                    . $var->emit_javascript2() . ', '
+                    . $regex_args->[0]->emit_javascript2() . ', '
+                    . $regex_args->[1]->emit_javascript2() . ', '
+                    . Perlito5::Javascript2::escape_string($regex_args->[2]->{buf}) . ', '
+                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                  . ");",
+                $var->emit_javascript2() . " = tmp[0];",
+                "return tmp[1];",
+            );
         }
         elsif ($code eq 'p5:m') {
 

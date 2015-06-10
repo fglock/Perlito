@@ -981,6 +981,36 @@ var p5qr = function(s, modifier) {
     CORE.die(["qr() not yet implemented"]);
 };
 
+var p5s = function(s, search, replace, modifier, want) {
+    // TODO - captures
+    CORE.say([ s, search, replace, modifier, want ]);
+    var count = null;
+    var re = new RegExp(search, modifier);
+    var res = [];
+    var myArray;
+    var last_index = 0;
+    while ((myArray = re.exec(s)) !== null) {
+        if (myArray.index > last_index) {
+            res.push(s.substr(last_index, myArray.index - last_index));
+        }
+        res.push(replace);
+        last_index = re.lastIndex;
+        if (last_index == 0) {
+            count = 1;
+            last_index = myArray.index + myArray[0].length;
+            if (s.length > last_index) {
+                res.push(s.substr(last_index, s.length - last_index));
+            }
+            return [res.join(''), count]
+        }
+        count++;
+    }
+    if (s.length > last_index) {
+        res.push(s.substr(last_index, s.length - last_index));
+    }
+    return [res.join(''), count]
+};
+
 var p5tr = function(s, search, replace, modifier, want) {
     var count = 0;
     // TODO - expand character lists in spec
