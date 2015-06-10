@@ -9292,6 +9292,12 @@ package Perlito5::AST::Apply;
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
         if ($arg->isa('Perlito5::AST::Apply')) {
+            if ($arg->{'code'} eq 'prefix:<@>') {
+                return '(new p5ArrayRef(' . $arg->emit_javascript2($level) . '))'
+            }
+            if ($arg->{'code'} eq 'prefix:<%>') {
+                return '(new p5HashRef(' . $arg->emit_javascript2($level) . '))'
+            }
             if ($arg->{'code'} eq 'circumfix:<( )>') {
                 return 'p5_list_of_refs(' . Perlito5::Javascript2::to_list($arg->{'arguments'}) . ')'
             }

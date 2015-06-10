@@ -1825,14 +1825,12 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
             if ( $arg->isa('Perlito5::AST::Apply') ) {
-                # if ( $arg->{code} eq '@' ) {
-                #     # TODO
-                #     return '(new p5ArrayRef(' . $arg->emit_javascript2($level) . '))';
-                # }
-                # if ( $arg->{code} eq '%' ) {
-                #     # TODO
-                #     return '(new p5HashRef(' . $arg->emit_javascript2($level) . '))';
-                # }
+                if ( $arg->{code} eq 'prefix:<@>' ) {
+                    return '(new p5ArrayRef(' . $arg->emit_javascript2($level) . '))';
+                }
+                if ( $arg->{code} eq 'prefix:<%>' ) {
+                    return '(new p5HashRef(' . $arg->emit_javascript2($level) . '))';
+                }
                 # if ( $arg->{code} eq '*' ) {
                 #     # TODO
                 #     return '(new p5GlobRef(' . $arg->emit_javascript2($level) . '))';
