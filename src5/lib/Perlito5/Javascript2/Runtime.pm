@@ -983,7 +983,6 @@ var p5qr = function(s, modifier) {
 
 var p5s = function(s, search, replace, modifier, want) {
     // TODO - captures
-    CORE.say([ s, search, replace, modifier, want ]);
     var count = null;
     var re = new RegExp(search, modifier);
     var res = [];
