@@ -2209,10 +2209,12 @@ package Perlito5::AST::Apply;
 
             my $arg = $self->{arguments}->[0];
             my $eval;
-            if ($arg->isa( "Perlito5::AST::Do" )) {
+            if ($arg->isa( "Perlito5::AST::Block" )) {
                 # eval block
 
-                $eval = $arg->emit_javascript2( $level + 1, $wantarray );
+                $eval = Perlito5::AST::Do->new(
+                            block => $arg
+                        )->emit_javascript2( $level + 1, $wantarray );
             }
             else {
                 # eval string

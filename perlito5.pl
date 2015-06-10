@@ -1730,7 +1730,7 @@ sub Perlito5::Grammar::Expression::term_eval {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}))], 'namespace' => '')];
+        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'})], 'namespace' => '')];
         1
     })));
     $tmp ? $MATCH : 0
@@ -4247,10 +4247,10 @@ sub Perlito5::Grammar::Use::require {
 }
 sub Perlito5::Grammar::Use::do_file {
     my $filename = shift;
-    eval(do {
+    eval {
         filename_lookup($filename);
         1
-    }) or do {
+    } or do {
         $INC{$filename} = undef;
         ${'@'} = '';
         ${'!'} = 'No such file or directory';
@@ -9493,8 +9493,8 @@ package Perlito5::AST::Apply;
         $Perlito5::THROW = 1;
         my $arg = $self->{'arguments'}->[0];
         my $eval;
-        if ($arg->isa('Perlito5::AST::Do')) {
-            $eval = $arg->emit_javascript2($level + 1, $wantarray)
+        if ($arg->isa('Perlito5::AST::Block')) {
+            $eval = Perlito5::AST::Do->new('block' => $arg)->emit_javascript2($level + 1, $wantarray)
         }
         else {
             my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
@@ -11753,6 +11753,9 @@ package Perlito5::AST::Apply;
             }
             return ['apply' => '(', $code, $self->emit_perl5_args()]
         }
+        if ($code eq 'eval' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
+            return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
+        }
         if ($code eq 'readline') {
             return ['paren' => '<', $self->emit_perl5_args()]
         }
@@ -11906,7 +11909,7 @@ our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefi
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
     for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
 $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 8, 'str' => $_}
-    for 'do', 'sub', 'my', 'our', 'state', 'local', 'map', 'grep', 'sort';
+    for 'do', 'sub', 'my', 'our', 'state', 'local', 'eval', 'map', 'grep', 'sort';
 my %tab;
 sub Perlito5::Perl5::PrettyPrinter::tab {
     my $level = $_[0];
@@ -13768,16 +13771,16 @@ if ($backend && @ARGV) {
         }
     }
     else {
-        eval(do {
+        eval {
             %INC = ();
             $bootstrapping && ($Perlito5::EXPAND_USE = 0);
             # no strict
             my $m;
             my $ok;
-            eval(do {
+            eval {
                 $m = Perlito5::Grammar::exp_stmts($source, 0);
                 $ok = 1
-            });
+            };
             if (!$ok || $m->{'to'} < length($source)) {
                 my $error = ${'@'} || ($m->{'to'} < length($source) && 'Syntax Error near ' . $m->{'to'}) || 'Unknown error';
                 warn($error);
@@ -13787,10 +13790,10 @@ if ($backend && @ARGV) {
                 my $comp_units;
                 if ($expand_use) {
                     my $ok;
-                    eval(do {
+                    eval {
                         $comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m));
                         $ok = 1
-                    });
+                    };
                     if (!$ok) {
                         my $error = ${'@'} || 'Unknown error loading a module';
                         warn($error);
@@ -13851,7 +13854,7 @@ if ($backend && @ARGV) {
                 }
             }
             ${'@'} = undef
-        })
+        }
     }
     if (${'@'}) {
         my $error = ${'@'};

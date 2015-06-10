@@ -451,9 +451,7 @@ token term_eval {
                  Perlito5::AST::Apply->new(
                     code      => 'eval',
                     arguments => [
-                        Perlito5::AST::Do->new(
-                            block => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"}),
-                        )
+                        Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::block"}),
                     ], 
                     namespace => ''
                  )
