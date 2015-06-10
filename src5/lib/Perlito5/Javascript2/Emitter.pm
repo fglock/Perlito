@@ -2244,6 +2244,7 @@ package Perlito5::AST::Apply;
                 ),
                 "var r;",
                 'p5pkg["main"]["v_@"] = "";',
+                'var p5strict = p5pkg["Perlito5"]["v_STRICT"];',
                 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';',
                 "try {",
                     [ 'r = ' . $eval . "",
@@ -2269,6 +2270,7 @@ package Perlito5::AST::Apply;
                    "}",
                  ],
                 "}",
+                'p5pkg["Perlito5"]["v_STRICT"] = p5strict;',
                 "return r;",
             );
         },
