@@ -7,11 +7,11 @@ package main;
 undef();
 package Perlito5;
 package main;
-package Perlito5X::strict;
-sub Perlito5X::strict::import {
+package strict;
+sub strict::import {
     $Perlito5::STRICT = 1
 }
-sub Perlito5X::strict::unimport {
+sub strict::unimport {
     $Perlito5::STRICT = 0
 }
 1;
@@ -33,9 +33,9 @@ sub Perlito5::Match::flat {
 }
 1;
 package main;
-package Perlito5X::feature;
-sub Perlito5X::feature::import {}
-sub Perlito5X::feature::unimport {}
+package feature;
+sub feature::import {}
+sub feature::unimport {}
 1;
 package main;
 package Perlito5::Grammar::Precedence;
@@ -4157,10 +4157,10 @@ sub Perlito5::Grammar::Use::emit_time_eval {
     my $ast = shift;
     if ($ast->mod() eq 'strict') {
         if ($ast->code() eq 'use') {
-            Perlito5X::strict->import()
+            strict->import()
         }
         elsif ($ast->code() eq 'no') {
-            Perlito5X::strict->unimport()
+            strict->unimport()
         }
     }
 }

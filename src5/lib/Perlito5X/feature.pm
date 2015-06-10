@@ -1,4 +1,4 @@
-package Perlito5X::feature;
+package feature;
 
 sub import {
     # TODO

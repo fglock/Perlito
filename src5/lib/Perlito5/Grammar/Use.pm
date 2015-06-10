@@ -210,10 +210,10 @@ sub emit_time_eval {
 
     if ($ast->mod eq 'strict') {
         if ($ast->code eq 'use') {
-            Perlito5X::strict->import();
+            strict->import();
         }
         elsif ($ast->code eq 'no') {
-            Perlito5X::strict->unimport();
+            strict->unimport();
         }
     }
 }
