@@ -138,28 +138,28 @@ minify ::
 	jsmin < html/perlito6.js > html/perlito6.min.js
 
 build-5to5 ::
-	perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
+	perl perlito5.pl --bootstrapping -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && cp perlito5-new.pl perlito5.pl
 
 build-5js ::
-	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
 build-5browser ::
-	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser.pl > html/perlito5.js
 
 build-5to6browser ::
-	perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > html/perlito5to6.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs src5/util/perlito5-browser-perl6.pl > html/perlito5to6.js
 
 build-5js3 ::
-	perl perlito5.pl -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js
+	perl perlito5.pl --bootstrapping -I./src5/lib -Cjs3 src5/util/perlito5.pl > perlito5.js
 
 boot-5js ::
-	time nodejs perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
+	time nodejs perlito5.js --bootstrapping -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
 
 test-5js ::
 	prove -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
 boot-5to5 ::
-	time perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
+	time perl perlito5.pl --bootstrapping -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
 
 test-5to5 ::
 	prove -r -e 'perl perlito5.pl -I./src5/lib ' t5

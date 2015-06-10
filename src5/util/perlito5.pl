@@ -40,6 +40,7 @@ my $execute     = 1;
 my $verbose     = 0;
 my $expand_use  = 1;
 my $boilerplate = 1;
+my $bootstrapping = 0;
 my $wrapper_begin = '';
 my $wrapper_end = '';
 my $wrapper_priority = 0;
@@ -68,6 +69,7 @@ perlito5 [switches] [programfile]
                     expand 'use' statements at compile time
     --boilerplate --noboilerplate
                     emits or not boilerplate code
+    --bootstrapping set this when compiling the compiler
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
@@ -207,6 +209,10 @@ while (substr($ARGV[0], 0, 1) eq '-'
         $boilerplate = 0;
         shift @ARGV;
     }
+    elsif ($ARGV[0] eq '--bootstrapping') {
+        $bootstrapping = 1;
+        shift @ARGV;
+    }
     else {
         die "Unrecognized switch: $ARGV[0]  (-h will show valid options).\n";
     }
@@ -276,7 +282,8 @@ if ($backend && @ARGV) {
             %INC = ();
 
             # partially disable "use"
-            $Perlito5::EXPAND_USE = 0;
+            $Perlito5::EXPAND_USE = 0
+                if $bootstrapping;
 
             # start with no-strict
             no strict;

@@ -13592,6 +13592,7 @@ my $execute = 1;
 my $verbose = 0;
 my $expand_use = 1;
 my $boilerplate = 1;
+my $bootstrapping = 0;
 my $wrapper_begin = '';
 my $wrapper_end = '';
 my $wrapper_priority = 0;
@@ -13600,7 +13601,7 @@ if ($verbose) {
     warn('// Perlito5 compiler');
     warn('// ARGV: ' . join(${'"'}, @ARGV))
 }
-my $help_message = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10) . '    -h --help' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -[mM][-]module  execute "use/no module..." before executing program' . chr(10) . '    -n              assume "while (<>) { ... }" loop around program' . chr(10) . '    -p              assume loop like -n but print line also, like sed' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    --verbose' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6, xs' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    --boilerplate --noboilerplate' . chr(10) . '                    emits or not boilerplate code' . chr(10);
+my $help_message = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10) . '    -h --help' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -[mM][-]module  execute "use/no module..." before executing program' . chr(10) . '    -n              assume "while (<>) { ... }" loop around program' . chr(10) . '    -p              assume loop like -n but print line also, like sed' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    --verbose' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6, xs' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    --boilerplate --noboilerplate' . chr(10) . '                    emits or not boilerplate code' . chr(10) . '    --bootstrapping set this when compiling the compiler' . chr(10);
 my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.' . chr(10) . chr(10) . 'The Perl language is Copyright 1987-2012, Larry Wall' . chr(10) . 'The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . chr(10) . 'Perl may be copied only under the terms of either the Artistic License or the' . chr(10) . 'GNU General Public License, which may be found in the Perl 5 source kit.' . chr(10) . chr(10) . 'Complete documentation for Perl, including FAQ lists, should be found on' . chr(10) . 'this system using "man perl" or "perldoc perl".  If you have access to the' . chr(10) . 'Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . chr(10);
 sub Perlito5::chomp_switch {
     my $s = substr($ARGV[0], 2);
@@ -13717,6 +13718,10 @@ while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
         $boilerplate = 0;
         shift(@ARGV)
     }
+    elsif ($ARGV[0] eq '--bootstrapping') {
+        $bootstrapping = 1;
+        shift(@ARGV)
+    }
     else {
         die('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10))
     }
@@ -13765,7 +13770,7 @@ if ($backend && @ARGV) {
     else {
         eval(do {
             %INC = ();
-            $Perlito5::EXPAND_USE = 0;
+            $bootstrapping && ($Perlito5::EXPAND_USE = 0);
             # no strict
             my $m;
             my $ok;
