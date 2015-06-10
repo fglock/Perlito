@@ -169,9 +169,6 @@ sub parse_time_eval {
     if ( $Perlito5::EXPAND_USE ) {
         # normal "use" is not disabled, go for it
 
-        $module_name = $Perlito_internal_module{$module_name}
-            if exists $Perlito_internal_module{$module_name};
-
         my $current_module_name = $Perlito5::PKG_NAME;
 
         # "require" the module
@@ -220,6 +217,8 @@ sub emit_time_eval {
 
 sub modulename_to_filename {
     my $s = shift;
+    $s = $Perlito_internal_module{$s}
+        if exists $Perlito_internal_module{$s};
     $s =~ s{::}{/}g;
     return $s . '.pm';
 }
@@ -247,9 +246,6 @@ sub expand_use {
     my $stmt = shift;
 
     my $module_name = $stmt->mod;
-
-    $module_name = $Perlito_internal_module{$module_name}
-        if exists $Perlito_internal_module{$module_name};
 
     my $filename = modulename_to_filename($module_name);
 

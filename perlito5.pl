@@ -4131,7 +4131,6 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     my $skip_import = defined($arguments) && @{$arguments} == 0;
     defined($arguments) || ($arguments = []);
     if ($Perlito5::EXPAND_USE) {
-        exists($Perlito_internal_module{$module_name}) && ($module_name = $Perlito_internal_module{$module_name});
         my $current_module_name = $Perlito5::PKG_NAME;
         my $filename = modulename_to_filename($module_name);
         require($filename);
@@ -4166,6 +4165,7 @@ sub Perlito5::Grammar::Use::emit_time_eval {
 }
 sub Perlito5::Grammar::Use::modulename_to_filename {
     my $s = shift;
+    exists($Perlito_internal_module{$s}) && ($s = $Perlito_internal_module{$s});
     $s =~ s!::!/!g;
     return $s . '.pm'
 }
@@ -4188,7 +4188,6 @@ sub Perlito5::Grammar::Use::expand_use {
     my $comp_units = shift;
     my $stmt = shift;
     my $module_name = $stmt->mod();
-    exists($Perlito_internal_module{$module_name}) && ($module_name = $Perlito_internal_module{$module_name});
     my $filename = modulename_to_filename($module_name);
     filename_lookup($filename) eq 'done' && return ;
     local $Perlito5::FILE_NAME = $filename;
