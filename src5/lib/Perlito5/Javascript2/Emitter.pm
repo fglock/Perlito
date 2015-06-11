@@ -2806,6 +2806,9 @@ package Perlito5::AST::Apply;
                     push @out, Perlito5::Javascript2::to_list(\@in) if @in || !$optional;
                     @in = ();
                 }
+                elsif ($c eq '&') {
+                    push @out, shift(@in)->emit_javascript2( $level, 'scalar' );
+                }
                 elsif ($c eq '*') {
                     if (@in || !$optional) {
                         my $arg = shift @in;
