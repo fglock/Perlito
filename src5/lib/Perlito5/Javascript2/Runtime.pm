@@ -675,7 +675,7 @@ var p5str = function(o) {
     }
     if (typeof o === "object") {
         if (o instanceof Array) {
-            return CORE.join(["", o]);
+            return CORE.join([""].concat(o));
         }
         if ( o.hasOwnProperty("_ref_") ) {
             var class_name = '';

@@ -2793,6 +2793,8 @@ package Perlito5::AST::Apply;
 
             # TODO - generate the right prototype
 
+            my $close = ']';
+
             my $optional = 0;
             while (length $sig) {
                 my $c = substr($sig, 0, 1);
@@ -2803,7 +2805,8 @@ package Perlito5::AST::Apply;
                     push @out, shift(@in)->emit_javascript2( $level, 'scalar' ) if @in || !$optional;
                 }
                 elsif ($c eq '@') {
-                    push @out, Perlito5::Javascript2::to_list(\@in) if @in || !$optional;
+                    $close = '].concat(' . Perlito5::Javascript2::to_list(\@in) . ')'
+                        if @in || !$optional;
                     @in = ();
                 }
                 elsif ($c eq '&') {
@@ -2844,7 +2847,7 @@ package Perlito5::AST::Apply;
                 $sig = substr($sig, 1);
             }
 
-            return $code . '([' . join(', ', @out) . '], '
+            return $code . '([' . join(', ', @out) . $close . ', '
                         . Perlito5::Javascript2::to_context($wantarray)
                 . ')';
         }

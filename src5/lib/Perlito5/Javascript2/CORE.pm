@@ -193,7 +193,7 @@ CORE.each = function(List__, p5want) {
 };
 
 CORE.reverse = function(List__) {
-    var o = List__[0];
+    var o = List__;
     if (o == null) {
         return "";
     }
@@ -228,9 +228,8 @@ CORE.splice = function(List__, p5want) {
 };
 
 CORE.join = function(List__) {
-    var s = List__[0];
-    var o = List__[1];
-    return o.join(s);
+    var s = List__.shift();
+    return List__.join(s);
 };
 
 CORE.index = function(List__) {

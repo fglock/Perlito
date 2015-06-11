@@ -1,4 +1,4 @@
-package Perlito5::Carp;
+package Carp;
 
 #       carp    - warn of errors (from perspective of caller)
 sub carp {
