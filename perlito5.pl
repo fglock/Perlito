@@ -3827,7 +3827,7 @@ package Perlito5::Grammar::Use;
 # use Perlito5::Grammar::Precedence
 # use Perlito5::Grammar
 # use strict
-my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5::Dumper');
+my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper');
 sub Perlito5::Grammar::Use::use_decl {
     my $str = $_[0];
     my $pos = $_[1];
@@ -7912,22 +7912,6 @@ sub Perlito5::Rul::NotBefore::set_captures_to_array {
 # use Perlito5::Emitter::Token
 package main;
 package Perlito5::Dumper;
-sub Perlito5::Dumper::import {
-    my $pkg = shift;
-    my $callpkg = caller(0);
-    *{$callpkg . '::Dumper'} = \&Dumper;
-    return 
-}
-sub Perlito5::Dumper::Dumper {
-    my $seen = {};
-    my $level = '    ';
-    my @out;
-    for my $i (0 .. $#_) {
-        my $pos = '$VAR' . ($i + 1);
-        push(@out, $pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
-    }
-    return join('', @out)
-}
 sub Perlito5::Dumper::ast_dumper {
     my $seen = {};
     my $level = '';
@@ -12153,6 +12137,26 @@ sub Perlito5::Perl5::Runtime::emit_perl5 {
 }
 1;
 # use Perlito5::Perl5::Runtime
+package main;
+package Data::Dumper;
+# use Perlito5::Dumper
+sub Data::Dumper::import {
+    my $pkg = shift;
+    my $callpkg = caller(0);
+    *{$callpkg . '::Dumper'} = \&Dumper;
+    return 
+}
+sub Data::Dumper::Dumper {
+    my $seen = {};
+    my $level = '    ';
+    my @out;
+    for my $i (0 .. $#_) {
+        my $pos = '$VAR' . ($i + 1);
+        push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
+    }
+    return join('', @out)
+}
+1;
 package main;
 package Perlito5::TreeGrammar;
 # use Data::Dumper

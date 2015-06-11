@@ -10,7 +10,7 @@ TODO list for Perlito5
 
 -- Test (implemented as Perlito5::Test)
 
--- Data::Dumper (implemented as Perlito5::Dumper)
+-- Data::Dumper (implemented as Perlito5X::Dumper)
 
 -- create perlito5-specific libs for:
     feature.pm
@@ -305,6 +305,18 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- DESTROY
+    Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
+
+    $ nodejs perlito5.js -Isrc5/lib -I. -I /usr/local/lib/perl5/site_perl/5.20.0  -e ' use Try::Tiny; try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } ' 
+    this
+    catched
+    
+    $ perl -e ' use Try::Tiny;  try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } ' 
+    this
+    catched
+    done
+
 -- constant subroutines
 -- prototype mismatch
     $ perl -e ' sub X () { 123 } print X, "\n"; eval " sub X { 456 } "; '
@@ -318,10 +330,6 @@ TODO list for Perlito5
             20,
             \undef,
         ];
-
--- indirect object is confused here, maybe a problem at import() time:
-    $ node perlito5.js -Isrc5/lib -I.  -e ' use Data::Dumper; $v = [20, \$v ]; print Dumper $v '
-    Warning: Died: Can't call method Dumper on unblessed reference
 
 -- phase order
     print x();          # js will try to execute this before the sub declaration

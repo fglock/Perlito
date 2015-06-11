@@ -1,24 +1,5 @@
 package Perlito5::Dumper;
 
-sub import {
-    my $pkg     = shift;
-    my $callpkg = caller(0);
-    *{ $callpkg . "::Dumper" } = \&Dumper;
-    return;
-}
-
-sub Dumper {
-    # old-style Data::Dumper
-    my $seen  = {};
-    my $level = '    ';
-    my @out;
-    for my $i (0 .. $#_) {
-        my $pos   = '$VAR' . ($i + 1);
-        push @out, "$pos = " . _dumper($_[$i], $level, $seen, $pos) . ";\n";
-    }
-    return join('', @out);
-}
-
 sub ast_dumper {
     my $seen  = {};
     my $level = '';
@@ -26,6 +7,7 @@ sub ast_dumper {
     return _dumper($_[0], $level, $seen, $pos);
 }
 
+# Note: this is called from Perlito5X/Dumper.pm
 sub _dumper {
     my ($obj, $tab, $seen, $pos) = @_;
 

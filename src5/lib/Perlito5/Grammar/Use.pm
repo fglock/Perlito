@@ -14,7 +14,7 @@ my %Perlito_internal_module = (
     encoding       => 'Perlito5X::encoding',
     Carp           => 'Perlito5X::Carp',
     Exporter       => 'Perlito5X::Exporter',
-    'Data::Dumper' => 'Perlito5::Dumper',
+    'Data::Dumper' => 'Perlito5X::Dumper',
     # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
     # constant => 'Perlito5::constant',
 );
