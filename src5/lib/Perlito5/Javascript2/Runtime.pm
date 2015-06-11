@@ -277,7 +277,7 @@ function p5sub_prototype(name, current_pkg_name) {
         v = String.fromCharCode(c + 64) + v.substr(1);
         pkg_name = 'main';
     }
-    if (p5pkg[pkg_name].hasOwnProperty(v)) {
+    if (p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v)) {
         return p5pkg[pkg_name][v]._prototype_
     }
     return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]

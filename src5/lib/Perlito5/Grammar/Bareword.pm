@@ -77,6 +77,13 @@ sub term_bareword {
     my $invocant;
     my $is_subroutine_name;
     my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
+
+    {
+        # workaround for bootstrapping: $Perlito5::PROTO is not set when executing under the 'C-perl' compiler
+        my $p = eval { prototype($effective_name) };
+        $Perlito5::PROTO->{$effective_name} = $p if $p;
+    }
+
     if ( exists( $Perlito5::Grammar::Print::Print{$name} ) ) {
         $invocant = undef;
     }
