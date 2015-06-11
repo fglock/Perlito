@@ -9866,14 +9866,14 @@ package Perlito5::AST::Apply;
                     $optional = 1
                 }
                 elsif ($c eq '$' || $c eq '_') {
-                    (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level, 'scalar'))
+                    (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'scalar'))
                 }
                 elsif ($c eq '@') {
-                    (@in || !$optional) && ($close = '].concat(' . Perlito5::Javascript2::to_list(\@in) . ')');
+                    (@in || !$optional) && ($close = '].concat(' . Perlito5::Javascript2::to_list(\@in, $level + 1) . ')');
                     @in = ()
                 }
                 elsif ($c eq '&') {
-                    push(@out, shift(@in)->emit_javascript2($level, 'scalar'))
+                    push(@out, shift(@in)->emit_javascript2($level + 1, 'scalar'))
                 }
                 elsif ($c eq '*') {
                     if (@in || !$optional) {
@@ -9882,26 +9882,26 @@ package Perlito5::AST::Apply;
                             push(@out, Perlito5::Javascript2::escape_string($arg->{'code'}))
                         }
                         else {
-                            push(@out, $arg->emit_javascript2($level, 'scalar'))
+                            push(@out, $arg->emit_javascript2($level + 1, 'scalar'))
                         }
                     }
                 }
                 elsif ($c eq chr(92)) {
                     if (substr($sig, 0, 2) eq chr(92) . '$') {
                         $sig = substr($sig, 1);
-                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level, 'scalar'))
+                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'scalar'))
                     }
                     elsif (substr($sig, 0, 2) eq chr(92) . '@' || substr($sig, 0, 2) eq chr(92) . '%') {
                         $sig = substr($sig, 1);
-                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level, 'list'))
+                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                     }
                     elsif (substr($sig, 0, 5) eq chr(92) . '[@%]') {
                         $sig = substr($sig, 4);
-                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level, 'list'))
+                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                     }
                     elsif (substr($sig, 0, 6) eq chr(92) . '[$@%]') {
                         $sig = substr($sig, 5);
-                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level, 'list'))
+                        (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                     }
                 }
                 $sig = substr($sig, 1)

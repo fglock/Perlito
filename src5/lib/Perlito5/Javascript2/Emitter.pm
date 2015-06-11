@@ -2802,15 +2802,15 @@ package Perlito5::AST::Apply;
                     $optional = 1;
                 }
                 elsif ($c eq '$' || $c eq '_') {
-                    push @out, shift(@in)->emit_javascript2( $level, 'scalar' ) if @in || !$optional;
+                    push @out, shift(@in)->emit_javascript2( $level + 1, 'scalar' ) if @in || !$optional;
                 }
                 elsif ($c eq '@') {
-                    $close = '].concat(' . Perlito5::Javascript2::to_list(\@in) . ')'
+                    $close = '].concat(' . Perlito5::Javascript2::to_list(\@in, $level + 1) . ')'
                         if @in || !$optional;
                     @in = ();
                 }
                 elsif ($c eq '&') {
-                    push @out, shift(@in)->emit_javascript2( $level, 'scalar' );
+                    push @out, shift(@in)->emit_javascript2( $level + 1, 'scalar' );
                 }
                 elsif ($c eq '*') {
                     if (@in || !$optional) {
@@ -2819,29 +2819,29 @@ package Perlito5::AST::Apply;
                             push @out, Perlito5::Javascript2::escape_string($arg->{code});
                         }
                         else {
-                            push @out, $arg->emit_javascript2( $level, 'scalar' );
+                            push @out, $arg->emit_javascript2( $level + 1, 'scalar' );
                         }
                     }
                 }
                 elsif ($c eq '\\') {
                     if (substr($sig, 0, 2) eq '\\$') {
                         $sig = substr($sig, 1);
-                        push @out, shift(@in)->emit_javascript2( $level, 'scalar' ) if @in || !$optional;
+                        push @out, shift(@in)->emit_javascript2( $level + 1, 'scalar' ) if @in || !$optional;
                     }
                     elsif (substr($sig, 0, 2) eq '\\@'
                         || substr($sig, 0, 2) eq '\\%'
                         )
                     {
                         $sig = substr($sig, 1);
-                        push @out, shift(@in)->emit_javascript2( $level, 'list' ) if @in || !$optional;
+                        push @out, shift(@in)->emit_javascript2( $level + 1, 'list' ) if @in || !$optional;
                     }
                     elsif (substr($sig, 0, 5) eq '\\[@%]') {
                         $sig = substr($sig, 4);
-                        push @out, shift(@in)->emit_javascript2( $level, 'list' ) if @in || !$optional;
+                        push @out, shift(@in)->emit_javascript2( $level + 1, 'list' ) if @in || !$optional;
                     }
                     elsif (substr($sig, 0, 6) eq '\\[$@%]') {
                         $sig = substr($sig, 5);
-                        push @out, shift(@in)->emit_javascript2( $level, 'list' ) if @in || !$optional;
+                        push @out, shift(@in)->emit_javascript2( $level + 1, 'list' ) if @in || !$optional;
                     }
                 }
                 $sig = substr($sig, 1);

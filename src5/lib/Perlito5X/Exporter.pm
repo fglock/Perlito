@@ -14,7 +14,7 @@ sub import {
     my $pkg     = shift;
     my $callpkg = caller($ExportLevel);
 
-    say "import: from $pkg to $callpkg [@_]";
+    # say "import: from $pkg to $callpkg [@_]";
 
     if ( $pkg eq "Exporter" and @_ and $_[0] eq "import" ) {
         *{ $callpkg . "::import" } = \&import;
