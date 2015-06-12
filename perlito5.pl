@@ -9382,7 +9382,7 @@ package Perlito5::AST::Apply;
     }, 'infix:<x>' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
-        if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'circumfix:<( )>') {
+        if (ref($arg) eq 'Perlito5::AST::Apply' && ($arg->{'code'} eq 'circumfix:<( )>' || $arg->{'code'} eq 'list:<,>')) {
             return 'p5list_replicate(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'list') . ',' . Perlito5::Javascript2::to_num($self->{'arguments'}->[1], $level) . ')'
         }
         'p5str_replicate(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0], $level) . ',' . Perlito5::Javascript2::to_num($self->{'arguments'}->[1], $level) . ')'
