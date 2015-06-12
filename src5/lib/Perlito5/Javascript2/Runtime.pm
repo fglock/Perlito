@@ -846,7 +846,7 @@ var p5complement = function(a) {
 };
 
 var p5str_replicate = function(o, n) {
-    n = Math.floor(p5num(n));
+    n = Math.floor(n);
     return n > 0 ? Array(n + 1).join(o) : "";
 };
 
