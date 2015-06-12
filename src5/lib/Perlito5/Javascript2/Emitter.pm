@@ -2850,14 +2850,13 @@ package Perlito5::AST::Apply;
                 . ')';
         }
 
-        my @args = ();
         my $arg_list = Perlito5::Javascript2::to_list_preprocess( $self->{arguments} );
-        push @args, $_->emit_javascript2( $level )
-            for @$arg_list;
 
         my $arg_code = 
             $self->{code} eq 'scalar'      # scalar() is special
-            ? '[' . join(', ', @args) . ']'
+            ?   '['
+              .   join(', ', map( $_->emit_javascript2($level), @$arg_list ))
+              . ']'
             : Perlito5::Javascript2::to_list($arg_list);
 
 

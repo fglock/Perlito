@@ -9912,11 +9912,8 @@ package Perlito5::AST::Apply;
             }
             return $code . '([' . join(', ', @out) . $close . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
         }
-        my @args = ();
         my $arg_list = Perlito5::Javascript2::to_list_preprocess($self->{'arguments'});
-        push(@args, $_->emit_javascript2($level))
-            for @{$arg_list};
-        my $arg_code = $self->{'code'} eq 'scalar' ? '[' . join(', ', @args) . ']' : Perlito5::Javascript2::to_list($arg_list);
+        my $arg_code = $self->{'code'} eq 'scalar' ? '[' . join(', ', map($_->emit_javascript2($level), @{$arg_list})) . ']' : Perlito5::Javascript2::to_list($arg_list);
         if ($may_need_autoload) {
             my $name = $self->{'code'};
             my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
