@@ -16,6 +16,7 @@ my %op = (
     'infix:<&=>'  => 'infix:<&>',
     'infix:<//=>' => 'infix:<//>',
     'infix:<.=>'  => 'list:<.>',
+    'infix:<x=>'  => 'infix:<x>',
 );
 
 sub op_assign {
