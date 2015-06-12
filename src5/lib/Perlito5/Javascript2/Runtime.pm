@@ -981,6 +981,26 @@ var p5qr = function(s, modifier) {
     CORE.die(["qr() not yet implemented"]);
 };
 
+var p5m = function(s, search, modifier, want) {
+    // TODO - captures
+    var re = new RegExp(search, modifier);
+    var res = [];
+    var myArray;
+    while ((myArray = re.exec(s)) !== null) {
+        var m = myArray.shift();
+        if (myArray.length) {
+            res = res.concat(myArray);
+        }
+        else {
+            res.push(m);
+        }
+        if (re.lastIndex == 0) {
+            return (want ? res : res.length)
+        }
+    }
+    return (want ? res : res.length)
+};
+
 var p5s = function(s, search, replace, modifier, want) {
     // TODO - captures
     var count = null;

@@ -1555,30 +1555,12 @@ package Perlito5::AST::Apply;
             );
         }
         elsif ($code eq 'p5:m') {
-
-            my $ast = $regex_args->[0];
-            if ($ast->isa('Perlito5::AST::Buf')) {
-                # constant
-                $str = '(' 
-                    . 'p5str(' . $var->emit_javascript2() . ')'
-                    . '.match('
-                    .   '(new RegExp('
-                          . $ast->emit_javascript2() . ', '
-                          . Perlito5::Javascript2::escape_string($regex_args->[1]->{buf})
-                    .   '))'
-                    . ')'
-                    . ' ? 1 : 0)';
-            }
-            else {
-                # run-time interpolation
-                $str = '(new RegExp('
-                        . $ast->emit_javascript2() . ', '
-                        . Perlito5::Javascript2::escape_string($regex_args->[1]->{buf})
-                    . '))'
-                    . '.exec('
-                        . 'p5str(' . $var->emit_javascript2() . ')'
-                    . ')';
-            }
+            $str = 'p5m('
+                    . $var->emit_javascript2() . ', '
+                    . $regex_args->[0]->emit_javascript2() . ', '
+                    . Perlito5::Javascript2::escape_string($regex_args->[1]->{buf}) . ', '
+                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                  . ")";
         }
         elsif ($code eq 'p5:tr') {
             $str = Perlito5::Javascript2::emit_wrap_javascript2($level+1, $wantarray, 
