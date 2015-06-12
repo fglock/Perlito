@@ -175,19 +175,39 @@ sub s_quote_parse {
         return $part2 unless $part2;
     }
 
-    $p = $part2->{to};
+    $p = $part2->{'to'};
     my $modifiers = '';
     $m = Perlito5::Grammar::ident($str, $p);
-    if ( $m ) {
+    if ($m) {
         $modifiers = Perlito5::Match::flat($m);
-        $part2->{to} = $m->{to};
     }
 
+    my $replace;
+    if ($modifiers =~ /e/) {
+        # $part2 is code
+        delete $part2->{capture};
+        $replace = Perlito5::Match::flat($part2);       # get the original source code
+        $replace = substr($replace, 0, -1);             # remove closing delimiter
+        $replace = '{' . $replace . '}';                # make a "block"
+        my $m = Perlito5::Grammar::block($replace, 0);  # parse the block
+        if (!$m) {
+            die "syntax error";
+        }
+        $replace = Perlito5::Match::flat($m);
+    }
+    else {
+        # $part2 is string
+        $replace = Perlito5::Match::flat($part2);
+    }
+
+    if ($m) {
+        $part2->{'to'} = $m->{'to'}
+    }
     $part2->{capture} = Perlito5::AST::Apply->new(
         code      => 'p5:s',
         arguments => [
             $str_regex,
-            Perlito5::Match::flat($part2),
+            $replace,
             Perlito5::AST::Buf->new( buf => $modifiers )
         ],
         namespace => ''

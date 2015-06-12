@@ -3137,10 +3137,27 @@ sub Perlito5::Grammar::String::s_quote_parse {
     my $modifiers = '';
     $m = Perlito5::Grammar::ident($str, $p);
     if ($m) {
-        $modifiers = Perlito5::Match::flat($m);
+        $modifiers = Perlito5::Match::flat($m)
+    }
+    my $replace;
+    if ($modifiers =~ m!e!) {
+        delete($part2->{'capture'});
+        $replace = Perlito5::Match::flat($part2);
+        $replace = substr($replace, 0, -1);
+        $replace = '{' . $replace . '}';
+        my $m = Perlito5::Grammar::block($replace, 0);
+        if (!$m) {
+            die('syntax error')
+        }
+        $replace = Perlito5::Match::flat($m)
+    }
+    else {
+        $replace = Perlito5::Match::flat($part2)
+    }
+    if ($m) {
         $part2->{'to'} = $m->{'to'}
     }
-    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Buf->new('buf' => $modifiers)], 'namespace' => '');
+    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, $replace, Perlito5::AST::Buf->new('buf' => $modifiers)], 'namespace' => '');
     return $part2
 }
 sub Perlito5::Grammar::String::qr_quote_parse {
