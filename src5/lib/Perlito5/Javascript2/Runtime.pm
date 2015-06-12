@@ -1001,7 +1001,7 @@ var p5m = function(s, search, modifier, want) {
     return (want ? res : res.length)
 };
 
-var p5s = function(s, search, replace, modifier, want) {
+var p5s = function(s, search, fun_replace, modifier, want) {
     // TODO - captures
     var count = null;
     var re = new RegExp(search, modifier);
@@ -1012,7 +1012,7 @@ var p5s = function(s, search, replace, modifier, want) {
         if (myArray.index > last_index) {
             res.push(s.substr(last_index, myArray.index - last_index));
         }
-        res.push(replace);
+        res.push(fun_replace());
         last_index = re.lastIndex;
         if (last_index == 0) {
             count = 1;
