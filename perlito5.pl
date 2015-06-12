@@ -3149,7 +3149,10 @@ sub Perlito5::Grammar::String::s_quote_parse {
         if (!$m) {
             die('syntax error')
         }
-        $replace = Perlito5::Match::flat($m)
+        $replace = Perlito5::Match::flat($m);
+        if ($modifiers =~ m!ee!) {
+            $replace = Perlito5::AST::Block->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => $replace)], 'bareword' => '', 'namespace' => '')])
+        }
     }
     else {
         $replace = Perlito5::Match::flat($part2)
