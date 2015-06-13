@@ -117,9 +117,11 @@ sub m_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+    my $interpolate = 2;
+    $interpolate = 3 if $delimiter eq "'";
 
     # TODO - call the regex compiler
-    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
     return $part1 unless $part1;
     my $str_regex = $part1->{capture};
 
@@ -239,9 +241,11 @@ sub qr_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+    my $interpolate = 2;
+    $interpolate = 3 if $delimiter eq "'";
 
     # TODO - call the regex compiler
-    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
     return $part1 unless $part1;
     my $str_regex = $part1->{capture};
 
@@ -461,8 +465,10 @@ sub string_interpolation_parse {
     my $pos            = $_[1];
     my $open_delimiter = $_[2];
     my $delimiter      = $_[3];
-    my $interpolate    = $_[4];  # 0 - single-quote; 1 - double-quote; 2 - regex
+    my $interpolate    = $_[4];  # 0 - single-quote; 1 - double-quote; 2 - regex; 3 - single-quote regex
     my $quote_flags    = $_[5] || {};  # lowercase/uppercase/quotemeta until /E or end-of-string
+
+    my $interpolate_vars = ($interpolate == 1 || $interpolate == 2);
 
     my $p = $pos;
 
@@ -488,7 +494,7 @@ sub string_interpolation_parse {
             $m = string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate, $quote_flags);
             $more = $delimiter;
         }
-        elsif ($interpolate && ($c eq '$' || $c eq '@')) {
+        elsif ($interpolate_vars && ($c eq '$' || $c eq '@')) {
             my $match = Perlito5::Grammar::String::double_quoted_var( $str, $p, $delimiter, $interpolate );
             if ($match) {
                 my $ast = $match->{capture};

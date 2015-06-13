@@ -3092,7 +3092,9 @@ sub Perlito5::Grammar::String::m_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    my $interpolate = 2;
+    $delimiter eq chr(39) && ($interpolate = 3);
+    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
     $part1 || return $part1;
     my $str_regex = $part1->{'capture'};
     my $p = $part1->{'to'};
@@ -3170,7 +3172,9 @@ sub Perlito5::Grammar::String::qr_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 2);
+    my $interpolate = 2;
+    $delimiter eq chr(39) && ($interpolate = 3);
+    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
     $part1 || return $part1;
     my $str_regex = $part1->{'capture'};
     my $p = $part1->{'to'};
@@ -3290,6 +3294,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     my $delimiter = $_[3];
     my $interpolate = $_[4];
     my $quote_flags = $_[5] || {};
+    my $interpolate_vars = ($interpolate == 1 || $interpolate == 2);
     my $p = $pos;
     my $balanced = $open_delimiter && exists($pair{$open_delimiter});
     my @args;
@@ -3309,7 +3314,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
             $m = string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate, $quote_flags);
             $more = $delimiter
         }
-        elsif ($interpolate && ($c eq '$' || $c eq '@')) {
+        elsif ($interpolate_vars && ($c eq '$' || $c eq '@')) {
             my $match = Perlito5::Grammar::String::double_quoted_var($str, $p, $delimiter, $interpolate);
             if ($match) {
                 my $ast = $match->{'capture'};
