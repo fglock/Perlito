@@ -92,13 +92,13 @@ sub _diag {
     my @mess = _comment(@_);
     $TODO ? _print(@mess) : _print_stderr(@mess);
 }
-####  
-####  # Use this instead of "print STDERR" when outputting failure diagnostic
-####  # messages
-####  sub diag {
-####      _diag(@_);
-####  }
-####  
+
+# Use this instead of "print STDERR" when outputting failure diagnostic
+# messages
+sub diag {
+    _diag(@_);
+}
+
 # Use this instead of "print" when outputting informational messages
 sub note {
     print "in note\n";

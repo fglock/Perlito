@@ -62,7 +62,12 @@ CORE.ord = function(List__) {
 
 CORE.oct = function(List__) {
     var v = List__[0];
-    var b = v.substr(0,2);
+
+    var b = v.substr(0,1);
+    if (b == "b" || b == "B" || b == "x" || b == "X") {
+        v = "0" + v;
+    }
+    b = v.substr(0,2);
 
     for(var i = 2; i < v.length; i++) {
         if (v.substr(i,2) == "__") {
@@ -73,18 +78,30 @@ CORE.oct = function(List__) {
     var re = new RegExp('_', 'g');
     v = v.replace(re, "");
 
-    for(var i = 2; i < v.length; i++) {
-        var c = v.substr(i,1);
-        if (c >= "0" && c <= "9" || c >= "A" && c <= "F" || c >= "a" && c <= "f") {}
-        else {
-            v = v.substr(0, i);
+    if (b == "0b" || b == "0B") {
+        for(var i = 2; i < v.length; i++) {
+            var c = v.substr(i,1);
+            if (c >= "0" && c <= "1") {}
+            else {
+                v = v.substr(0, i);
+            }
         }
+        if (v.length == 2) { return 0 }
+        return parseInt(v.substr(2), 2);
     }
 
-    if (v == "0x") { return 0 }
+    if (b == "0x" || b == "0X") {
+        for(var i = 2; i < v.length; i++) {
+            var c = v.substr(i,1);
+            if (c >= "0" && c <= "9" || c >= "A" && c <= "F" || c >= "a" && c <= "f") {}
+            else {
+                v = v.substr(0, i);
+            }
+        }
+        if (v.length == 2) { return 0 }
+        return parseInt(v.substr(2), 16);
+    }
 
-    if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }
-    if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }
     return parseInt(v, 8);
 };
 
