@@ -60,8 +60,20 @@ CORE.ord = function(List__) {
     return p5str(List__[0]).charCodeAt(0);
 };
 
+CORE.hex = function(List__) {
+    var v = List__[0];
+    var b1 = v.substr(0,1);
+    var b2 = v.substr(0,2);
+    if (b1 == "x" || b1 == "X" || b2 == "0x" || b2 == "0X") {
+        return CORE.oct(List__);
+    }
+    v = "0x" + v;
+    return CORE.oct([v]);
+};
+
 CORE.oct = function(List__) {
     var v = List__[0];
+    v = v.trim();
 
     var b = v.substr(0,1);
     if (b == "b" || b == "B" || b == "x" || b == "X") {
