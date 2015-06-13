@@ -415,6 +415,7 @@ function p5global_hash(pkg_name, name) {
 
 p5make_package("main");
 p5make_package("Perlito5");
+p5make_package("Regex");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5make_package("main::STDIN").file_handle = { id : 0, readline_buffer : '' };
 p5make_package("main::STDOUT").file_handle = { id : 1 };
@@ -981,9 +982,10 @@ var p5negative = function(o) {
     return -o;
 };
 
-var p5qr = function(s, modifier) {
-    // TODO
-    CORE.die(["qr() not yet implemented"]);
+var p5qr = function(search, modifier) {
+    // TODO - "Regex" stringification
+    var re = new RegExp(search, modifier);
+    return CORE.bless([(new p5ScalarRef(re)), 'Regex']);
 };
 
 var p5m = function(s, search, modifier, want) {
