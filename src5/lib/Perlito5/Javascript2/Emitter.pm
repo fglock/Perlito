@@ -1971,7 +1971,9 @@ package Perlito5::AST::Apply;
                 # qw( 1 2 3 ) x $i
                 return 'p5list_replicate('
                            . $self->{arguments}->[0]->emit_javascript2($level, 'list') . ','
-                           . Perlito5::Javascript2::to_num($self->{arguments}->[1], $level) . ')'
+                           . Perlito5::Javascript2::to_num($self->{arguments}->[1], $level) . ', '
+                           . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                        . ')'
             }
             'p5str_replicate('
                            . Perlito5::Javascript2::to_str($self->{arguments}->[0], $level) . ','

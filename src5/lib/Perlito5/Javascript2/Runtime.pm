@@ -850,16 +850,21 @@ var p5str_replicate = function(o, n) {
     return n > 0 ? Array(n + 1).join(o) : "";
 };
 
-var p5list_replicate = function(o, n) {
+var p5list_replicate = function(o, n, want) {
     o = p5list_to_a([o]);
     n = p5num(n);
+
+    if (!want) {
+        return p5str_replicate(o.pop(), n);   // scalar context
+    }
+
     var out = [];
     for(var i = 0; i < n; i++) {
         for(var j = 0; j < o.length; j++) {
             out.push(o[j]);
         }
     }
-    return out;
+    return (want ? out : out.length)
 };
 
 var p5str_inc = function(s) {
