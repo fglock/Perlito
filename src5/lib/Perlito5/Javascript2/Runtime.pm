@@ -990,7 +990,15 @@ var p5qr = function(search, modifier) {
 
 var p5m = function(s, search, modifier, want) {
     // TODO - captures
-    var re = new RegExp(search, modifier);
+    var re;
+    if (search.hasOwnProperty('_scalar_')) {
+        // search is a Regex object
+        re = search._scalar_;
+    }
+    else {
+        re = new RegExp(search, modifier);
+    }
+
     var res = [];
     var myArray;
     while ((myArray = re.exec(s)) !== null) {
@@ -1011,7 +1019,15 @@ var p5m = function(s, search, modifier, want) {
 var p5s = function(s, search, fun_replace, modifier, want) {
     // TODO - captures
     var count = null;
-    var re = new RegExp(search, modifier);
+    var re;
+    if (search.hasOwnProperty('_scalar_')) {
+        // search is a Regex object
+        re = search._scalar_;
+    }
+    else {
+        re = new RegExp(search, modifier);
+    }
+
     var res = [];
     var myArray;
     var last_index = 0;
