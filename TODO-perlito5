@@ -31,6 +31,12 @@ TODO list for Perlito5
 
 * Parser
 
+-- prototypes can change during compilation
+
+    $ perl -e ' my @x; sub z0 ($$@) { zz(99, @_) } sub zz ($$$@) { print "@_\n" } @x=(9,4,6); zz(8,5,@x); z0(8,5,@x); '
+    8 5 3           # zz prototype is '$$$@'
+    99 8 5 9 4 6    # zz prototype was '@' when z0 was compiled
+
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
