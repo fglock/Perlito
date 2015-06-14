@@ -601,7 +601,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         }
         my $arg = $m->{'capture'}->[2];
         $arg = Perlito5::Grammar::Expression::expand_list($arg);
-        $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => $arg)];
+        $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => $arg, 'proto' => $sig)];
         return $m
     }
     my $m_list = Perlito5::Grammar::Expression::list_parse($str, $p);
@@ -9863,6 +9863,7 @@ package Perlito5::AST::Apply;
                 }
                 $may_need_autoload = 1
             }
+            (exists($self->{'proto'})) && ($sig = $self->{'proto'})
         }
         if ($sig) {
             my @out = ();

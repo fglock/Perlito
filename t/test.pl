@@ -367,24 +367,24 @@ sub within ($$$@) {
     _ok($pass, _where(), $name, @mess);
 }
 
-####  # Note: this isn't quite as fancy as Test::More::like().
-####  
-####  sub like   ($$@) { like_yn (0,@_) }; # 0 for -
-####  sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
-####  
-####  sub like_yn ($$$@) {
-####      my ($flip, undef, $expected, $name, @mess) = @_;
-####      my $pass;
-####      $pass = $_[1] =~ /$expected/ if !$flip;
-####      $pass = $_[1] !~ /$expected/ if $flip;
-####      unless ($pass) {
-####  	unshift(@mess, "#      got '$_[1]'\n",
-####  		$flip
-####  		? "# expected !~ /$expected/\n" : "# expected /$expected/\n");
-####      }
-####      local $Level = $Level + 1;
-####      _ok($pass, _where(), $name, @mess);
-####  }
+# Note: this isn't quite as fancy as Test::More::like().
+
+sub like   ($$@) { like_yn (0,@_) }; # 0 for -
+sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
+
+sub like_yn ($$$@) {
+    my ($flip, undef, $expected, $name, @mess) = @_;
+    my $pass;
+    $pass = $_[1] =~ /$expected/ if !$flip;
+    $pass = $_[1] !~ /$expected/ if $flip;
+    unless ($pass) {
+	unshift(@mess, "#      got '$_[1]'\n",
+		$flip
+		? "# expected !~ /$expected/\n" : "# expected /$expected/\n");
+    }
+    local $Level = $Level + 1;
+    _ok($pass, _where(), $name, @mess);
+}
 
 sub pass {
     _ok(1, '', @_);

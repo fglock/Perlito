@@ -2784,6 +2784,9 @@ package Perlito5::AST::Apply;
                 }
                 $may_need_autoload = 1;
             }
+            # is there a sig override
+            $sig = $self->{proto}
+                if (exists $self->{proto});
         }
 
         if ($sig) {

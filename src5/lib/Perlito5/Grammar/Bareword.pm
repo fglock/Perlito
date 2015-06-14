@@ -527,7 +527,8 @@ sub term_bareword {
                 Perlito5::AST::Apply->new(
                     code      => $name,
                     namespace => $namespace,
-                    arguments => $arg
+                    arguments => $arg,
+                    proto     => $sig,     # remember the proto at the time this was parsed
                 )
             ];
         return $m;
