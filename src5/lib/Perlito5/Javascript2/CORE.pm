@@ -62,6 +62,13 @@ CORE.ord = function(List__) {
 
 CORE.hex = function(List__) {
     var v = List__[0];
+
+    for(var i = 0; i < v.length; i++) {
+        if (v.charCodeAt(i) > 255) {
+            CORE.die(["Wide character in hex"]);
+        }
+    }
+
     var b1 = v.substr(0,1);
     var b2 = v.substr(0,2);
     if (b1 == "x" || b1 == "X" || b2 == "0x" || b2 == "0X") {
@@ -74,6 +81,12 @@ CORE.hex = function(List__) {
 CORE.oct = function(List__) {
     var v = List__[0];
     v = v.trim();
+
+    for(var i = 0; i < v.length; i++) {
+        if (v.charCodeAt(i) > 255) {
+            CORE.die(["Wide character in oct"]);
+        }
+    }
 
     var b = v.substr(0,1);
     if (b == "b" || b == "B" || b == "x" || b == "X") {
