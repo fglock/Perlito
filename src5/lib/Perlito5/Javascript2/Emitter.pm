@@ -613,10 +613,24 @@ package Perlito5::Javascript2::LexicalBlock;
             }
             else {
                 if ( $has_local ) {
-                    push @str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level+1) . '));';
+                    push @str, 'return p5cleanup_local(local_idx, ('
+                        . ( $wantarray eq 'runtime'
+                          ? Perlito5::Javascript2::to_runtime_context([$last_statement], $level+1)
+                          : $wantarray eq 'scalar'
+                          ? Perlito5::Javascript2::to_scalar([$last_statement], $level+1)
+                          : $last_statement->emit_javascript2($level, $wantarray)
+                          )
+                    . '));';
                 }
                 else {
-                    push @str, 'return (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level+1) . ');';
+                    push @str, 'return ('
+                        . ( $wantarray eq 'runtime'
+                          ? Perlito5::Javascript2::to_runtime_context([$last_statement], $level+1)
+                          : $wantarray eq 'scalar'
+                          ? Perlito5::Javascript2::to_scalar([$last_statement], $level+1)
+                          : $last_statement->emit_javascript2($level, $wantarray)
+                          )
+                    . ');';
                 }
             }
         }
