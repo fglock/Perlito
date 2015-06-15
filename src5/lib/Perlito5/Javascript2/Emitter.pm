@@ -673,7 +673,6 @@ package Perlito5::AST::CompUnit;
 {
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
-        $wantarray = '';
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
             Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}, needs_return => 0 )->emit_javascript2( $level + 1, $wantarray )
         );
@@ -681,6 +680,8 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript2_program {
         my ($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
+        my $level = 0;
+        my $wantarray = 'void';
         my $str;
         if ( $options{expand_use} ) {
             $str .= Perlito5::Javascript2::Runtime->emit_javascript2();
@@ -717,7 +718,7 @@ package Perlito5::AST::CompUnit;
             }
         ];
         for my $comp_unit ( @$comp_units ) {
-            $str = $str . $comp_unit->emit_javascript2() . "\n";
+            $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . "\n";
         }
         return $str;
     }

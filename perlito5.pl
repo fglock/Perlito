@@ -8646,12 +8646,13 @@ package Perlito5::AST::CompUnit;
 {
     sub Perlito5::AST::CompUnit::emit_javascript2 {
         my($self, $level, $wantarray) = @_;
-        $wantarray = '';
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}, 'needs_return' => 0)->emit_javascript2($level + 1, $wantarray))
     }
     sub Perlito5::AST::CompUnit::emit_javascript2_program {
         my($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
+        my $level = 0;
+        my $wantarray = 'void';
         my $str;
         if ($options{'expand_use'}) {
             $str .= Perlito5::Javascript2::Runtime->emit_javascript2();
@@ -8663,7 +8664,7 @@ package Perlito5::AST::CompUnit;
         $str .= 'var p5want;' . chr(10) . 'var List__ = [];' . chr(10);
         $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$/' => {'decl' => 'our', 'namespace' => 'main'}, '$"' => {'decl' => 'our', 'namespace' => 'main'}, '$,' => {'decl' => 'our', 'namespace' => 'main'}, '$!' => {'decl' => 'our', 'namespace' => 'main'}, '$;' => {'decl' => 'our', 'namespace' => 'main'}, '$?' => {'decl' => 'our', 'namespace' => 'main'}, '$[' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '$^V' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '%SIG' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$AUTOLOAD' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
         for my $comp_unit (@{$comp_units}) {
-            $str = $str . $comp_unit->emit_javascript2() . chr(10)
+            $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . chr(10)
         }
         return $str
     }
