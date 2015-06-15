@@ -757,7 +757,7 @@ package Perlito5::AST::Block;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         my $body;
-        if ($wantarray eq 'runtime') {
+        if ($wantarray ne 'void') {
             $body = Perlito5::Javascript2::LexicalBlock->new( block => $self->{stmts}, needs_return => 1 );
         }
         else {
@@ -2952,7 +2952,7 @@ package Perlito5::AST::If;
             ? $self->{body} # may be undef
             : (!@{ $self->{body}->stmts })
             ? undef
-            : $wantarray eq 'runtime'
+            : $wantarray ne 'void'
             ? Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 1 )
             : Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, needs_return => 0, create_context => 1 );
         my $otherwise =
@@ -2960,7 +2960,7 @@ package Perlito5::AST::If;
             ? $self->{otherwise}  # may be undef
             : (!@{ $self->{otherwise}->stmts })
             ? undef
-            : $wantarray eq 'runtime'
+            : $wantarray ne 'void'
             ? Perlito5::Javascript2::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 1 )
             : Perlito5::Javascript2::LexicalBlock->new( block => $self->{otherwise}->stmts, needs_return => 0, create_context => 1 );
  
@@ -2998,7 +2998,7 @@ package Perlito5::AST::If;
             shift @{ $Perlito5::VAR };  # exit scope of the 'cond' variables
             # create js scope for 'my' variables
             return 
-                  ( $wantarray eq 'runtime'
+                  ( $wantarray ne 'void'
                   ? "return "
                   : ""
                   )
@@ -3336,7 +3336,7 @@ package Perlito5::AST::Use;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        if ($wantarray eq 'runtime') {
+        if ($wantarray ne 'void') {
             return 'p5context([], p5want)';
         }
         else {

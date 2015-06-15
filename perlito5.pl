@@ -8707,7 +8707,7 @@ package Perlito5::AST::Block;
     sub Perlito5::AST::Block::emit_javascript2 {
         my($self, $level, $wantarray) = @_;
         my $body;
-        if ($wantarray eq 'runtime') {
+        if ($wantarray ne 'void') {
             $body = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'stmts'}, 'needs_return' => 1)
         }
         else {
@@ -9970,8 +9970,8 @@ package Perlito5::AST::If;
                 push(@str, $arg->emit_javascript2_init($level, $wantarray))
             }
         }
-        my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? $self->{'body'} : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray eq 'runtime' ? Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 1) : Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
-        my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray eq 'runtime' ? Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'otherwise'}->stmts(), 'needs_return' => 1) : Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'otherwise'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
+        my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? $self->{'body'} : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 1) : Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
+        my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'otherwise'}->stmts(), 'needs_return' => 1) : Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'otherwise'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
         my $s = 'if ( ' . Perlito5::Javascript2::to_bool($cond, $level + 1) . ' ) {';
         if ($body) {
             $s = $s . chr(10) . Perlito5::Javascript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level) . '}'
@@ -9991,7 +9991,7 @@ package Perlito5::AST::If;
         if (keys(%{$Perlito5::VAR->[0]})) {
             $level = $old_level;
             shift(@{$Perlito5::VAR});
-            return ($wantarray eq 'runtime' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
+            return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }
         else {
             shift(@{$Perlito5::VAR});
@@ -10161,7 +10161,7 @@ package Perlito5::AST::Use;
     sub Perlito5::AST::Use::emit_javascript2 {
         my($self, $level, $wantarray) = @_;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        if ($wantarray eq 'runtime') {
+        if ($wantarray ne 'void') {
             return 'p5context([], p5want)'
         }
         else {
