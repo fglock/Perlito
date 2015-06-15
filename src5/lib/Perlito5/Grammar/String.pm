@@ -684,7 +684,10 @@ sub here_doc_wanted {
                 # say "got a $type here-doc delimiter: [$delimiter]";
             }
             else {
-                die 'Use of bare << to mean <<"" is deprecated';
+                warn 'Use of bare << to mean <<"" is deprecated'
+                    if $Perlito5::WARNINGS;
+                $delimiter = '';
+                $type = 'double_quote';
             }
         }
     }

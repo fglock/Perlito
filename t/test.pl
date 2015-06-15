@@ -394,16 +394,16 @@ sub fail {
     _ok(0, _where(), @_);
 }
 
-####  sub curr_test {
-####      $test = shift if @_;
-####      return $test;
-####  }
-####  
-####  sub next_test {
-####    my $retval = $test;
-####    $test = $test + 1; # don't use ++
-####    $retval;
-####  }
+sub curr_test {
+    $test = shift if @_;
+    return $test;
+}
+
+sub next_test {
+  my $retval = $test;
+  $test = $test + 1; # don't use ++
+  $retval;
+}
 
 # Note: can't pass multipart messages since we try to
 # be compatible with Test::More::skip().

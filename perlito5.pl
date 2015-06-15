@@ -3467,7 +3467,9 @@ sub Perlito5::Grammar::String::here_doc_wanted {
                 $type = $quote eq chr(92) ? 'single_quote' : 'double_quote'
             }
             else {
-                die('Use of bare << to mean <<"" is deprecated')
+                $Perlito5::WARNINGS && warn('Use of bare << to mean <<"" is deprecated');
+                $delimiter = '';
+                $type = 'double_quote'
             }
         }
     }
