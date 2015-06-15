@@ -284,24 +284,24 @@ sub is ($$@) {
     _ok($pass, _where(), $name, @mess);
 }
 
-####  sub isnt ($$@) {
-####      my ($got, $isnt, $name, @mess) = @_;
-####  
-####      my $pass;
-####      if( !defined $got || !defined $isnt ) {
-####          # undef only matches undef
-####          $pass = defined $got || defined $isnt;
-####      }
-####      else {
-####          $pass = $got ne $isnt;
-####      }
-####  
-####      unless( $pass ) {
-####          unshift(@mess, "# it should not be "._qq($got)."\n",
-####                         "# but it is.\n");
-####      }
-####      _ok($pass, _where(), $name, @mess);
-####  }
+sub isnt ($$@) {
+    my ($got, $isnt, $name, @mess) = @_;
+
+    my $pass;
+    if( !defined $got || !defined $isnt ) {
+        # undef only matches undef
+        $pass = defined $got || defined $isnt;
+    }
+    else {
+        $pass = $got ne $isnt;
+    }
+
+    unless( $pass ) {
+        unshift(@mess, "# it should not be "._qq($got)."\n",
+                       "# but it is.\n");
+    }
+    _ok($pass, _where(), $name, @mess);
+}
 
 sub cmp_ok ($$$@) {
     my($got, $type, $expected, $name, @mess) = @_;
@@ -1071,45 +1071,45 @@ sub todo_skip {
 ####  }
 ####  
 ####  
-####  sub isa_ok ($$;$) {
-####      my($object, $class, $obj_name) = @_;
-####  
-####      my $diag;
-####      $obj_name = 'The object' unless defined $obj_name;
-####      my $name = "$obj_name isa $class";
-####      if( !defined $object ) {
-####          $diag = "$obj_name isn't defined";
-####      }
-####      elsif( !ref $object ) {
-####          $diag = "$obj_name isn't a reference";
-####      }
-####      else {
-####          # We can't use UNIVERSAL::isa because we want to honor isa() overrides
-####          local($@, $!);  # eval sometimes resets $!
-####          my $rslt = eval { $object->isa($class) };
-####          if( $@ ) {
-####              if( $@ =~ /^Can't call method "isa" on unblessed reference/ ) {
-####                  if( !UNIVERSAL::isa($object, $class) ) {
-####                      my $ref = ref $object;
-####                      $diag = "$obj_name isn't a '$class' it's a '$ref'";
-####                  }
-####              } else {
-####                  die <<WHOA;
-####  WHOA! I tried to call ->isa on your object and got some weird error.
-####  This should never happen.  Please contact the author immediately.
-####  Here's the error.
-####  $@
-####  WHOA
-####              }
-####          }
-####          elsif( !$rslt ) {
-####              my $ref = ref $object;
-####              $diag = "$obj_name isn't a '$class' it's a '$ref'";
-####          }
-####      }
-####  
-####      _ok( !$diag, _where(), $name );
-####  }
+sub isa_ok ($$;$) {
+    my($object, $class, $obj_name) = @_;
+
+    my $diag;
+    $obj_name = 'The object' unless defined $obj_name;
+    my $name = "$obj_name isa $class";
+    if( !defined $object ) {
+        $diag = "$obj_name isn't defined";
+    }
+    elsif( !ref $object ) {
+        $diag = "$obj_name isn't a reference";
+    }
+    else {
+        # We can't use UNIVERSAL::isa because we want to honor isa() overrides
+        local($@, $!);  # eval sometimes resets $!
+        my $rslt = eval { $object->isa($class) };
+        if( $@ ) {
+            if( $@ =~ /^Can't call method "isa" on unblessed reference/ ) {
+                if( !UNIVERSAL::isa($object, $class) ) {
+                    my $ref = ref $object;
+                    $diag = "$obj_name isn't a '$class' it's a '$ref'";
+                }
+            } else {
+                die <<WHOA;
+WHOA! I tried to call ->isa on your object and got some weird error.
+This should never happen.  Please contact the author immediately.
+Here's the error.
+$@
+WHOA
+            }
+        }
+        elsif( !$rslt ) {
+            my $ref = ref $object;
+            $diag = "$obj_name isn't a '$class' it's a '$ref'";
+        }
+    }
+
+    _ok( !$diag, _where(), $name );
+}
 ####  
 ####  # Purposefully avoiding a closure.
 ####  sub __capture {
