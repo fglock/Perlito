@@ -290,7 +290,11 @@ CORE.splice = function(List__, p5want) {
 
 CORE.join = function(List__) {
     var s = List__.shift();
-    return List__.join(s);
+    var o = [];
+    for (var i = 0; i < List__.length; i++) {
+        o.push(p5str(List__[i]));
+    }
+    return o.join(s);
 };
 
 CORE.index = function(List__) {
