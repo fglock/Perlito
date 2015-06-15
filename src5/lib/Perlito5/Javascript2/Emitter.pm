@@ -609,7 +609,7 @@ package Perlito5::Javascript2::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
             {
-                push @str, $last_statement->emit_javascript2($level, 'runtime');
+                push @str, $last_statement->emit_javascript2($level, $wantarray);
             }
             else {
                 if ( $has_local ) {

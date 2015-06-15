@@ -8607,7 +8607,7 @@ package Perlito5::Javascript2::LexicalBlock;
                 $last_statement = $last_statement->{'arguments'}->[0]
             }
             if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Block') || $last_statement->isa('Perlito5::AST::Use') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto' || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
-                push(@str, $last_statement->emit_javascript2($level, 'runtime'))
+                push(@str, $last_statement->emit_javascript2($level, $wantarray))
             }
             elsif ($has_local) {
                 push(@str, 'return p5cleanup_local(local_idx, (' . Perlito5::Javascript2::to_runtime_context([$last_statement], $level + 1) . '));')
