@@ -830,14 +830,18 @@ package Perlito5::AST::Index;
            || (  $self->{obj}->isa('Perlito5::AST::Var')
               && $self->{obj}->sigil eq '@'
               )
+           || (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->code eq 'circumfix:<( )>'
+              )
            )
         {
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
+            # (4,5,6)[0,2]
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $self->{obj}->emit_javascript2($level) . ';',
+                    'var src=' . $self->{obj}->emit_javascript2($level, 'list') . ';',
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(src.' . $method . '(v[i]))' ],
                     '}',
@@ -866,7 +870,7 @@ package Perlito5::AST::Index;
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
                     'var a = [];',
                     'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $obj->emit_javascript2($level) . ';',
+                    'var src=' . $obj->emit_javascript2($level, 'list') . ';',
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'a.push(v[i]);',
                             'a.push(src.' . $method . '(v[i]))',
