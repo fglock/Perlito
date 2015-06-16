@@ -838,15 +838,10 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             # (4,5,6)[0,2]
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-                    'var a = [];',
-                    'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $self->{obj}->emit_javascript2($level, 'list') . ';',
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'a.push(src.' . $method . '(v[i]))' ],
-                    '}',
-                    'return a', 
-            )
+            return 'p5list_slice('
+                        . $self->{obj}->emit_javascript2($level, 'list') . ','
+                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level)
+                   . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'

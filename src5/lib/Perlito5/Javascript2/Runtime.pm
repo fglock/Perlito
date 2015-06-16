@@ -868,6 +868,16 @@ var p5list_replicate = function(o, n, want) {
     return (want ? out : out.length)
 };
 
+var p5list_slice = function(o, ix) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        if (ix[i] < o.length) {
+            out[i] = o[ix[i]];
+        }
+    }
+    return out
+}
+
 var p5str_inc = function(s) {
     s = p5str(s);
     if (s.length < 2) {
