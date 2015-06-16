@@ -868,14 +868,44 @@ var p5list_replicate = function(o, n, want) {
     return (want ? out : out.length)
 };
 
-var p5list_slice = function(o, ix) {
+var p5list_slice = function(o, ix, want) {
     var out = [];
     for (var i=0, l=ix.length; i<l; ++i) {
         if (ix[i] < o.length) {
             out[i] = o[ix[i]];
         }
     }
-    return out
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5hash_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out.push(ix[i]);
+        out.push(o[ix[i]]);
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5list_lookup_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out[i] = o[ix[i]];
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5hash_lookup_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out.push(ix[i]);
+        out.push(o[ix[i]]);
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
 }
 
 var p5str_inc = function(s) {

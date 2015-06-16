@@ -839,8 +839,9 @@ package Perlito5::AST::Index;
             # @$a[0, 2] ==> @{$a}[0,2]
             # (4,5,6)[0,2]
             return 'p5list_slice('
-                        . $self->{obj}->emit_javascript2($level, 'list') . ','
-                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level)
+                        . $self->{obj}->emit_javascript2($level, 'list') . ', '
+                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ', '
+                        . Perlito5::Javascript2::to_context($wantarray)
                    . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
@@ -862,17 +863,11 @@ package Perlito5::AST::Index;
             $obj->{code} = 'prefix:<@>'
                 if $obj->{code} eq 'prefix:<%>';
 
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-                    'var a = [];',
-                    'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $obj->emit_javascript2($level, 'list') . ';',
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'a.push(v[i]);',
-                            'a.push(src.' . $method . '(v[i]))',
-                          ],
-                    '}',
-                    'return a',
-            )
+            return 'p5hash_slice('
+                        . $self->{obj}->emit_javascript2($level, 'list') . ', '
+                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ', '
+                        . Perlito5::Javascript2::to_context($wantarray)
+                   . ')';
         }
         return $self->emit_javascript2_container($level) . '.' . $method . '(' 
                         . Perlito5::Javascript2::to_num($self->{index_exp}, $level) 
@@ -1000,15 +995,12 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-                    'var a = [];',
-                    'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $v->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'a.push(src.p5hget(v[i]))' ],
-                    '}',
-                    'return a',
-            )
+
+            return 'p5list_lookup_slice('
+                        . $v->emit_javascript2($level, 'list') . ', '
+                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ', '
+                        . Perlito5::Javascript2::to_context($wantarray)
+                   . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'
@@ -1026,17 +1018,12 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-                    'var a = [];',
-                    'var v = ' . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . $v->emit_javascript2($level) . ';',
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'a.push(v[i]);',
-                            'a.push(src.p5hget(v[i]))',
-                          ],
-                    '}',
-                    'return a',
-            )
+
+            return 'p5hash_lookup_slice('
+                        . $v->emit_javascript2($level, 'list') . ', '
+                        . Perlito5::Javascript2::to_list([$self->{index_exp}], $level) . ', '
+                        . Perlito5::Javascript2::to_context($wantarray)
+                   . ')'
         }
         return $self->emit_javascript2_container($level) . '.' . $method . '('
                 . Perlito5::Javascript2::autoquote($self->{index_exp}, $level)
@@ -1156,8 +1143,8 @@ package Perlito5::AST::Var;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         my $str_name = $self->{name};
-        $str_name = '\\\\' if $str_name eq '\\';   # escape $\
-        $str_name = '\\"' if $str_name eq '"';     # escape $"
+        # $str_name = '\\\\' if $str_name eq '\\';   # escape $\
+        # $str_name = '\\"' if $str_name eq '"';     # escape $"
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
