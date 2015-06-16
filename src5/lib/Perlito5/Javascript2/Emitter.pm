@@ -531,7 +531,12 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
         if (!@block) {
-            return 'null;';
+            if ($self->{needs_return}) {
+                return 'return []'      if $wantarray eq 'list';
+                return 'return null'    if $wantarray eq 'scalar';
+                return 'return p5want ? [] : null' if $wantarray eq 'runtime';
+            }
+            return 'null;';         # void
         }
         my @str;
         my $has_local = $self->has_decl("local");

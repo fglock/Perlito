@@ -8564,6 +8564,11 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
         if (!@block) {
+            if ($self->{'needs_return'}) {
+                $wantarray eq 'list' && return 'return []';
+                $wantarray eq 'scalar' && return 'return null';
+                $wantarray eq 'runtime' && return 'return p5want ? [] : null'
+            }
             return 'null;'
         }
         my @str;
