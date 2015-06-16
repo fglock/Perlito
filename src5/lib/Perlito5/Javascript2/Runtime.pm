@@ -910,9 +910,9 @@ var p5hash_lookup_slice = function(o, ix, want) {
 
 var p5str_inc = function(s) {
     s = p5str(s);
-    // if (s.match(/^[0123456789]/)) {
-    //     return p5num(s)+1;
-    // }
+    if (s.match(/^[0123456789]/)) {
+        return p5str(p5num(s)+1);
+    }
     if (s.length < 2) {
         if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
             return String.fromCharCode(s.charCodeAt(0) + 1);
