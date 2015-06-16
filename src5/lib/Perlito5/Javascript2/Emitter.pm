@@ -957,12 +957,10 @@ package Perlito5::AST::Index;
         }
         if (  $self->{obj}->isa('Perlito5::AST::Apply')
            && $self->{obj}->code eq 'circumfix:<( )>'
-           && @{ $self->{obj}->arguments } == 1
-           && $self->{obj}->{arguments}[0]->isa('Perlito5::AST::Apply')
            )
         {
-            # say Perlito5::Dumper::Dumper $self->{obj};
-            return $self->{obj}->emit_javascript2($level, 'list');
+            # the expression inside () returns a list
+            return Perlito5::Javascript2::to_list([$self->{obj}], $level);
         }
         if (  $self->{obj}->isa('Perlito5::AST::Var')
            && $self->{obj}->sigil eq '$'

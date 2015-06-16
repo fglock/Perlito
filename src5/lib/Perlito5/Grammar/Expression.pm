@@ -150,7 +150,7 @@ sub reduce_postfix {
         return $v;
     }
     if ($v->[1] eq 'block') {
-        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => ($v->[2])[0] );
+        $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $v->[2][0] );
         return $v;
     }
     if ($v->[1] eq '.( )') {

@@ -1120,7 +1120,7 @@ sub Perlito5::Grammar::Expression::reduce_postfix {
         return $v
     }
     if ($v->[1] eq 'block') {
-        $v = Perlito5::AST::Lookup->new('obj' => $value, 'index_exp' => ($v->[2])->[0]);
+        $v = Perlito5::AST::Lookup->new('obj' => $value, 'index_exp' => $v->[2]->[0]);
         return $v
     }
     if ($v->[1] eq '.( )') {
@@ -8773,8 +8773,8 @@ package Perlito5::AST::Index;
             my $v = Perlito5::AST::Apply->new(%{$self->{'obj'}}, 'code' => 'prefix:<@>');
             return $v->emit_javascript2($level)
         }
-        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>' && @{$self->{'obj'}->arguments()} == 1 && $self->{'obj'}->{'arguments'}->[0]->isa('Perlito5::AST::Apply')) {
-            return $self->{'obj'}->emit_javascript2($level, 'list')
+        if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>') {
+            return Perlito5::Javascript2::to_list([$self->{'obj'}], $level)
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '$') {
             my $v = Perlito5::AST::Var->new(%{$self->{'obj'}}, 'sigil' => '@');
