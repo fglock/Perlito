@@ -41,6 +41,49 @@ sub op_assign {
     return 0;
 }
 
+my %op_auto = (
+    'prefix:<++>'  => 1,
+    'prefix:<-->'  => 1,
+    'postfix:<++>' => 1,
+    'postfix:<-->' => 1,
+);
+
+sub op_auto {
+    my $self = $_[0];
+
+    my $code = $self->{code};
+    return 0 if ref($code);
+
+    if (exists( $op_auto{$code} )) {
+        #   ++( $v = 2 )
+        #   do { $v = 2; ++$v }
+
+        my $paren = $self->{arguments}[0];
+        if ($paren->{code} eq 'circumfix:<( )>') {
+
+            my $arg = $paren->{arguments}[-1];
+            if ($arg->{code} eq 'infix:<=>') {
+
+                my $var = $arg->{arguments}[0];
+
+                return Perlito5::AST::Do->new(
+                    block => Perlito5::AST::Block->new(
+                        stmts => [
+                            $paren,     # assignment
+                            Perlito5::AST::Apply->new(
+                                code => $code,  # autoincrement
+                                arguments => [ $var ],
+                            ),
+                        ],
+                    ),
+                );
+            }
+        }
+    }
+
+    return 0;
+}
+
 
 =begin
 

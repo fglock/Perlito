@@ -2706,7 +2706,12 @@ package Perlito5::AST::Apply;
 
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
+
         my $apply = $self->op_assign();
+        if ($apply) {
+            return $apply->emit_javascript2( $level );
+        }
+        my $apply = $self->op_auto();
         if ($apply) {
             return $apply->emit_javascript2( $level );
         }
