@@ -413,9 +413,13 @@ function p5global_hash(pkg_name, name) {
     return p5pkg[pkg_name][v];
 }
 
+// regex globals
+p5make_package("Regex");
+var p5_last_regex = new RegExp("", "");
+var p5_regex_capture = [];
+
 p5make_package("main");
 p5make_package("Perlito5");
-p5make_package("Regex");
 p5pkg["Perlito5"].v_PKG_NAME = "main";
 p5make_package("main::STDIN").file_handle = { id : 0, readline_buffer : '' };
 p5make_package("main::STDOUT").file_handle = { id : 1 };
@@ -1042,12 +1046,14 @@ var p5m = function(s, search, modifier, want) {
         re = new RegExp(search, modifier);
     }
 
+    p5_regex_capture = [];
     var res = [];
     var myArray;
     while ((myArray = re.exec(s)) !== null) {
         var m = myArray.shift();
         if (myArray.length) {
             res = res.concat(myArray);
+            p5_regex_capture = p5_regex_capture.concat(myArray);
         }
         else {
             res.push(m);
@@ -1071,10 +1077,13 @@ var p5s = function(s, search, fun_replace, modifier, want) {
         re = new RegExp(search, modifier);
     }
 
+    p5_regex_capture = [];
     var res = [];
     var myArray;
     var last_index = 0;
     while ((myArray = re.exec(s)) !== null) {
+        myArray.shift();
+        p5_regex_capture = [].concat(myArray);
         if (myArray.index > last_index) {
             res.push(s.substr(last_index, myArray.index - last_index));
         }

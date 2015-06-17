@@ -16,4 +16,4 @@ my $x;
 $x='123'; 
 
 print "not " if $1 ne 'abc';
-print "ok 1 # TODO safe match vars make /g slow\n";
+print "ok 1 # safe match vars make /g slow\n";

@@ -539,8 +539,13 @@ package Perlito5::Javascript2::LexicalBlock;
             return 'null;';         # void
         }
         my @str;
-        # regex variables like '$1' are implicitly 'local'
-        my $has_local = $self->has_decl("local") || $self->emit_javascript2_has_regex();
+        my $has_local = $self->has_decl("local");
+        my $has_regex = 0;
+        if (grep {$_->emit_javascript2_has_regex()} @block) {
+            # regex variables like '$1' are implicitly 'local'
+            $has_local = 1;
+            $has_regex = 1;
+        }
         my $create_context = $self->{create_context} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
@@ -641,7 +646,15 @@ package Perlito5::Javascript2::LexicalBlock;
             }
         }
         if ( $has_local ) {
-            unshift @str, 'var local_idx = p5LOCAL.length;';
+            unshift @str, (
+                    'var local_idx = p5LOCAL.length;',
+                    ( $has_regex
+                      ? ( 'var regex_tmp = p5_regex_capture;',
+                          'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
+                      )
+                      : ()
+                    )
+                );
             push    @str, 'p5cleanup_local(local_idx, null);';
         }
         my $out;
@@ -1179,6 +1192,12 @@ package Perlito5::AST::Var;
                 $self->{namespace} = $Perlito5::PKG_NAME;
 
                 my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
+
+                if ($sigil eq '$' && $self->{name} > 0) {
+                    # regex captures
+                    return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
+                }
+
                 my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
 
                 if ($sigil eq '@') {
