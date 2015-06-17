@@ -539,7 +539,8 @@ package Perlito5::Javascript2::LexicalBlock;
             return 'null;';         # void
         }
         my @str;
-        my $has_local = $self->has_decl("local");
+        # regex variables like '$1' are implicitly 'local'
+        my $has_local = $self->has_decl("local") || $self->emit_javascript2_has_regex();
         my $create_context = $self->{create_context} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
@@ -685,7 +686,7 @@ package Perlito5::Javascript2::LexicalBlock;
         shift @{ $Perlito5::VAR };
         return $out;
     }
-
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::CompUnit;
@@ -742,6 +743,7 @@ package Perlito5::AST::CompUnit;
         return $str;
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Int;
@@ -751,6 +753,7 @@ package Perlito5::AST::Int;
         $self->{int};
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Num;
@@ -760,6 +763,7 @@ package Perlito5::AST::Num;
         $self->{num};
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Buf;
@@ -769,6 +773,7 @@ package Perlito5::AST::Buf;
         Perlito5::Javascript2::escape_string( $self->{buf} );
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Block;
@@ -819,6 +824,7 @@ package Perlito5::AST::Block;
             . Perlito5::Javascript2::tab($level + 1) . '}'
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Index;
@@ -972,9 +978,8 @@ package Perlito5::AST::Index;
             return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'array' ) . '._array_';
         }
     }
-    sub emit_javascript2_get_decl { 
-        return ()
-    }
+    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Lookup;
@@ -1131,9 +1136,8 @@ package Perlito5::AST::Lookup;
             return Perlito5::Javascript2::emit_javascript2_autovivify( $self->{obj}, $level, 'hash' ) . '._hash_';
         }
     }
-    sub emit_javascript2_get_decl { 
-        return ()
-    }
+    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Var;
@@ -1296,6 +1300,7 @@ package Perlito5::AST::Var;
     }
 
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Decl;
@@ -1411,6 +1416,7 @@ package Perlito5::AST::Decl;
         my $self = shift;
         return ($self);
     }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Proto;
@@ -1424,6 +1430,7 @@ package Perlito5::AST::Proto;
         'p5pkg[' . Perlito5::Javascript2::escape_string($self->{name} ) . ']'
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Call;
@@ -1524,9 +1531,8 @@ package Perlito5::AST::Call;
         }
         die "don't know how to assign to method ", $self->{method};
     }
-    sub emit_javascript2_get_decl { 
-        return ()
-    }
+    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Apply;
@@ -2933,6 +2939,14 @@ package Perlito5::AST::Apply;
         }
         return ()
     }
+    sub emit_javascript2_has_regex {
+        my $self      = shift;
+        my $code = $self->{code};
+        if ($code eq 'p5:m' || $code eq 'p5:s' || $code eq 'infix:<=~>' || $code eq 'infix:<!~>') {
+            return 1;
+        }
+        return ()
+    }
 }
 
 package Perlito5::AST::If;
@@ -3027,6 +3041,7 @@ package Perlito5::AST::If;
         #     if $self->{otherwise} && ref($self->{otherwise}) ne 'Perlito5::AST::Block';
         return ();
     }
+    sub emit_javascript2_has_regex { () }
 }
 
 
@@ -3060,6 +3075,7 @@ package Perlito5::AST::When;
         return $s;
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 
@@ -3137,6 +3153,7 @@ package Perlito5::AST::While;
         }
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::For;
@@ -3292,6 +3309,7 @@ package Perlito5::AST::For;
         }
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Sub;
@@ -3323,6 +3341,7 @@ package Perlito5::AST::Sub;
         }
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Do;
@@ -3337,6 +3356,7 @@ package Perlito5::AST::Do;
         )
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 package Perlito5::AST::Use;
@@ -3352,6 +3372,7 @@ package Perlito5::AST::Use;
         }
     }
     sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
 }
 
 =begin
