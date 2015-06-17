@@ -1148,7 +1148,9 @@ var p5chomp = function(s) {
 
 var p5for = function(namespace, var_name, func, args, cont, label) {
     var _redo = false;
+    var local_idx = p5LOCAL.length;
     var v_old = namespace[var_name];
+    p5LOCAL.push(function(){ namespace[var_name] = v_old });
     for(var i = 0; i < args.length; i++) {
         namespace[var_name] = args[i];
         try {
@@ -1156,7 +1158,10 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
         }
         catch(err) {
             if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                if (err.type == 'last') { return }
+                if (err.type == 'last') {
+                    p5cleanup_local(local_idx, null);
+                    return
+                }
                 else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
             }
@@ -1170,7 +1175,10 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                    if (err.type == 'last') { return }
+                    if (err.type == 'last') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
                     else if (err.type == 'redo') { _redo = true }
                     else if (err.type != 'next') { throw(err) }
                 }            
@@ -1179,19 +1187,23 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
                 }
             }
        }
-   }
-    namespace[var_name] = v_old;
+    }
+    p5cleanup_local(local_idx, null);
 };
 
 var p5for_lex = function(func, args, cont, label) {
     var _redo = false;
+    var local_idx = p5LOCAL.length;
     for(var i = 0; i < args.length; i++) {
         try {
             func(args[i])
         }
         catch(err) {
             if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                if (err.type == 'last') { return }
+                if (err.type == 'last') {
+                    p5cleanup_local(local_idx, null);
+                    return
+                }
                 else if (err.type == 'redo') { i--; _redo = true }
                 else if (err.type != 'next') { throw(err) }
             }            
@@ -1205,7 +1217,10 @@ var p5for_lex = function(func, args, cont, label) {
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                    if (err.type == 'last') { return }
+                    if (err.type == 'last') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
                     else if (err.type == 'redo') { _redo = true }
                     else if (err.type != 'next') { throw(err) }
                 }            
@@ -1215,9 +1230,11 @@ var p5for_lex = function(func, args, cont, label) {
             }
         }
     }
+    p5cleanup_local(local_idx, null);
 };
 
 var p5while = function(func, cond, cont, label, redo) {
+    var local_idx = p5LOCAL.length;
     while (redo || p5bool(cond())) {
         redo = false;
         try {
@@ -1225,7 +1242,10 @@ var p5while = function(func, cond, cont, label, redo) {
         }
         catch(err) {
             if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                if (err.type == 'last') { return }
+                if (err.type == 'last') {
+                    p5cleanup_local(local_idx, null);
+                    return
+                }
                 else if (err.type == 'redo') { redo = true }
                 else if (err.type != 'next') { throw(err) }
             }            
@@ -1239,7 +1259,10 @@ var p5while = function(func, cond, cont, label, redo) {
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                    if (err.type == 'last') { return }
+                    if (err.type == 'last') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
                     else if (err.type == 'redo') { redo = true }
                     else if (err.type != 'next') { throw(err) }
                 }            
@@ -1249,6 +1272,7 @@ var p5while = function(func, cond, cont, label, redo) {
             }
         }
     }
+    p5cleanup_local(local_idx, null);
 };
 
 var p5map = function(namespace, func, args) {

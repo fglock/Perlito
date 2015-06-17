@@ -313,15 +313,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- BUG - local
-    exiting a block with 'last' doesn't retrieve previous 'local' values:
-
-    $ nodejs perlito5.js -Isrc5/lib -I. -It  -e ' $_ = "abc"; /(b)/; print "$1\n"; { print "$1\n"; /(c)/; print "$1\n"; last; } print "$1\n"; '
-    b
-    b
-    c
-    c
-
 -- DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
 
@@ -485,6 +476,14 @@ TODO list for Perlito5
 
 
 * Javascript - implemented but missing more tests
+
+-- local
+   add tests:  exiting a block with 'last' doesn't retrieve previous 'local' values:
+    $ nodejs perlito5.js -Isrc5/lib -I. -It  -e ' $_ = "abc"; /(b)/; print "$1\n"; { print "$1\n"; /(c)/; print "$1\n"; last; } print "$1\n"; '
+    b
+    b
+    c
+    c
 
 -- '&' prototype
     add tests; see Try::Tiny
