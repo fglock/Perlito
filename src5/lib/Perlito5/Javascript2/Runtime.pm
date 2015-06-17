@@ -1082,7 +1082,7 @@ var p5s = function(s, search, fun_replace, modifier, want) {
     var myArray;
     var last_index = 0;
     while ((myArray = re.exec(s)) !== null) {
-        myArray.shift();
+        var m = myArray.shift();
         p5_regex_capture = [].concat(myArray);
         if (myArray.index > last_index) {
             res.push(s.substr(last_index, myArray.index - last_index));
@@ -1091,7 +1091,7 @@ var p5s = function(s, search, fun_replace, modifier, want) {
         last_index = re.lastIndex;
         if (last_index == 0) {
             count = 1;
-            last_index = myArray.index + myArray[0].length;
+            last_index = myArray.index + m.length;
             if (s.length > last_index) {
                 res.push(s.substr(last_index, s.length - last_index));
             }
