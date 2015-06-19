@@ -1153,14 +1153,15 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
 
     ast = p5pkg.CORE.bless([
         new p5HashRef(new p5Hash({
-            block:  p5pkg.CORE.bless([
+            code: "do",
+            arguments: [ p5pkg.CORE.bless([
                         new p5HashRef(new p5Hash({
                             stmts:   p5pkg["Perlito5::Match"].flat([match])
                         })),
                         p5pkg["Perlito5::AST::Block"]
-                    ])
+                    ]) ]
         })),
-        p5pkg["Perlito5::AST::Do"]
+        p5pkg["Perlito5::AST::Apply"]
     ]);
 
     // CORE.say(["ast: [" + ast + "]"]);

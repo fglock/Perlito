@@ -203,24 +203,12 @@ sub attributes { $_[0]->{attributes} }
 
 
 
-package Perlito5::AST::Sig;
-sub new { my $class = shift; bless {@_}, $class }
-sub positional { $_[0]->{positional} }
-
-
-
 package Perlito5::AST::Sub;
 sub new { my $class = shift; bless {@_}, $class }
 sub name { $_[0]->{name} }
 sub sig { $_[0]->{sig} }
 sub block { $_[0]->{block} }
 sub attributes { $_[0]->{attributes} }
-
-
-
-package Perlito5::AST::Do;
-sub new { my $class = shift; bless {@_}, $class }
-sub block { $_[0]->{block} }
 
 
 

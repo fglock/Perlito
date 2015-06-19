@@ -3369,21 +3369,6 @@ package Perlito5::AST::Sub;
     sub emit_javascript2_has_regex { () }
 }
 
-package Perlito5::AST::Do;
-{
-    sub emit_javascript2 {
-        my ($self, $level, $wantarray) = @_;
-        my $block = $self->block->{stmts};
-        Perlito5::Javascript2::emit_wrap_javascript2(
-            $level,
-            $wantarray, 
-            (Perlito5::Javascript2::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray )
-        )
-    }
-    sub emit_javascript2_get_decl { () }
-    sub emit_javascript2_has_regex { () }
-}
-
 package Perlito5::AST::Use;
 {
     sub emit_javascript2 {

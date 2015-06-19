@@ -508,7 +508,7 @@ package Perlito5::AST::Apply;
         if ($code eq 'eval') {
             my $arg = $self->{arguments}->[0];
             my $eval;
-            if ($arg->isa( "Perlito5::AST::Do" )) {
+            if ($arg->isa( "Perlito5::AST::Block" )) {
                 $eval = $arg->emit_xs( $level + 1 );     # TODO -, $wantarray );
             }
             else {
@@ -698,19 +698,6 @@ package Perlito5::AST::Sub;
           'void ' . $name . "()\n"
         . "PPCODE:\n"
         .   join(";\n", map( Perlito5::XS::tab($level+1) . $_->emit_xs( $level + 1 ), @{$self->{block}} )) . ";\n"
-    }
-}
-
-package Perlito5::AST::Do;
-{
-    sub emit_xs {
-        my $self = $_[0];
-        my $level = $_[1];
-        
-        my $block = $self->block->{stmts};
-          "(do \{\n"
-        .   join(";\n", map( defined($_) && Perlito5::XS::tab($level) . $_->emit_xs( $level + 1 ), @$block )) . "\n"
-        . Perlito5::XS::tab($level) . "})"
     }
 }
 

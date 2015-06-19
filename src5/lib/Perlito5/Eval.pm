@@ -131,6 +131,13 @@ sub eval {
             return ($e->{ $code }->( $env, $self->{arguments} ));
         }
     }
+
+    # # TODO - do BLOCK
+    # my $env1 = [ {}, @$env ];
+    # for my $stmt ( @{$self->{block}} ) {
+    #     $stmt->eval($env1);
+    # }
+
     warn "Interpreter runtime error: subroutine '", $code, "()' not found";
 }
 
@@ -225,18 +232,6 @@ sub eval {
         ($env->[0]){$self->{name}} = $sub;
     }
     return $sub;
-}
-
-
-package Perlito5::AST::Do;
-sub eval {
-    my $self = $_[0];
-    my $env = $_[1];
-
-    my $env1 = [ {}, @$env ];
-    for my $stmt ( @{$self->{block}} ) {
-        $stmt->eval($env1);
-    }
 }
 
 

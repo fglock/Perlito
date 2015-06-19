@@ -1680,10 +1680,14 @@ package Perlito5::AST::Apply;
 
             my $arg = $self->{arguments}->[0];
             my $eval;
-            if ($arg->isa( "Perlito5::AST::Do" )) {
-                # eval block
-
-                $eval = $arg->emit_javascript3( $level + 1, $wantarray );
+            if ($arg->isa( "Perlito5::AST::Block" )) {
+                # do BLOCK
+                my $block = $arg->{stmts};
+                return Perlito5::Javascript3::emit_wrap_javascript3(
+                    $level,
+                    $wantarray, 
+                    (Perlito5::Javascript3::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray )
+                )
             }
             else {
                 # eval string
@@ -2241,21 +2245,6 @@ package Perlito5::AST::Sub;
         else {
             return $s;
         }
-    }
-}
-
-package Perlito5::AST::Do;
-{
-    sub emit_javascript3 {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-
-        my $block = $self->block->{stmts};
-        return
-              '(function () {' . "\n"
-            .   (Perlito5::Javascript3::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript3( $level + 1, $wantarray ) . "\n"
-            . Perlito5::Javascript3::tab($level) . '})()'
     }
 }
 

@@ -753,15 +753,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Do;
-{
-    sub emit_perl6 {
-        my $self = $_[0];
-        my $block = $self->block->{stmts};
-        return [ op => 'prefix:<do>', Perlito5::Perl6::emit_perl6_block($block) ];
-    }
-}
-
 package Perlito5::AST::Use;
 {
     sub emit_perl6 {
