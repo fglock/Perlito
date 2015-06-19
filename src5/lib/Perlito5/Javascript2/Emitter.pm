@@ -3073,7 +3073,7 @@ package Perlito5::AST::When;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         my $cond = $self->{cond};
-        my $body  = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1 );
+        my $body  = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts );
 
         # TODO - transform EXPR into ($_ ~~ EXPR)
 
