@@ -3153,7 +3153,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
         }
         $replace = Perlito5::Match::flat($m);
         if ($modifiers =~ m!ee!) {
-            $replace = Perlito5::AST::Block->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Do->new('block' => $replace)], 'bareword' => '', 'namespace' => '')])
+            $replace = Perlito5::AST::Block->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply->new('code' => 'eval', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [$replace])], 'bareword' => '', 'namespace' => '')])
         }
     }
     else {
@@ -4549,7 +4549,7 @@ sub Perlito5::Grammar::Block::term_do {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Do->new('block' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'}))];
+        $MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'})])];
         1
     })));
     $tmp ? $MATCH : 0
@@ -6970,7 +6970,7 @@ sub Perlito5::AST::Apply::op_auto {
             my $arg = $paren->{'arguments'}->[-1];
             if ($arg->{'code'} eq 'infix:<=>') {
                 my $var = $arg->{'arguments'}->[0];
-                return Perlito5::AST::Do->new('block' => Perlito5::AST::Block->new('stmts' => [$paren, Perlito5::AST::Apply->new('code' => $code, 'arguments' => [$var])]))
+                return Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [Perlito5::AST::Block->new('stmts' => [$paren, Perlito5::AST::Apply->new('code' => $code, 'arguments' => [$var])])])
             }
         }
     }
@@ -9217,7 +9217,7 @@ package Perlito5::AST::Apply;
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{'buf'};
             if (ref($replace) eq 'Perlito5::AST::Block') {
-                $replace = Perlito5::AST::Do->new('block' => $replace);
+                $replace = Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [$replace]);
                 $modifier =~ s!e!!g
             }
             $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5s(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . Perlito5::Javascript2::emit_function_javascript2($level + 2, $wantarray, $replace) . ', ' . Perlito5::Javascript2::escape_string($modifier) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');', $var->emit_javascript2() . ' = tmp[0];', 'return tmp[1];')
@@ -9567,6 +9567,11 @@ package Perlito5::AST::Apply;
         Perlito5::Javascript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(' . $self->{'arguments'}->[0]->emit_javascript2($level) . ')')
     }, 'do' => sub {
         my($self, $level, $wantarray) = @_;
+        my $arg = $self->{'arguments'}->[0];
+        if ($arg->isa('Perlito5::AST::Block')) {
+            my $block = $arg->{'stmts'};
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, (Perlito5::Javascript2::LexicalBlock->new('block' => $block, 'needs_return' => 1))->emit_javascript2($level + 1, $wantarray))
+        }
         my $tmp_strict = $Perlito5::STRICT;
         $Perlito5::STRICT = 0;
         my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})]);
@@ -9579,7 +9584,7 @@ package Perlito5::AST::Apply;
         my $arg = $self->{'arguments'}->[0];
         my $eval;
         if ($arg->isa('Perlito5::AST::Block')) {
-            $eval = Perlito5::AST::Do->new('block' => $arg)->emit_javascript2($level + 1, $wantarray)
+            $eval = Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [$arg])->emit_javascript2($level + 1, $wantarray)
         }
         else {
             my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
@@ -10077,8 +10082,7 @@ package Perlito5::AST::If;
         }
     }
     sub Perlito5::AST::If::emit_javascript2_get_decl {
-        my $self = shift;
-        return ()
+        ()
     }
     sub Perlito5::AST::If::emit_javascript2_has_regex {
         ()
@@ -10107,7 +10111,7 @@ package Perlito5::AST::While;
     sub Perlito5::AST::While::emit_javascript2 {
         my($self, $level, $wantarray) = @_;
         my $cond = $self->{'cond'};
-        my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Do' ? 1 : 0;
+        my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do' ? 1 : 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
         if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq 'readline')) {
             $cond = bless({'arguments' => [bless({'arguments' => [bless({'name' => '_', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply')
@@ -10284,7 +10288,7 @@ sub Perlito5::Javascript2::Runtime::perl5_to_js {
     if (!$match || $match->{'to'} != length($source)) {
         die('Syntax error in eval near pos ', $match->{'to'})
     }
-    my $ast = Perlito5::AST::Do->new('block' => Perlito5::AST::Block->new('stmts' => $match->{'capture'}));
+    my $ast = Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [Perlito5::AST::Block->new('stmts' => $match->{'capture'})]);
     my $js_code = $ast->emit_javascript2(0, $want);
     $Perlito5::STRICT = $strict_old;
     return $js_code
@@ -11873,7 +11877,7 @@ package Perlito5::AST::Apply;
             }
             return ['apply' => '(', $code, $self->emit_perl5_args()]
         }
-        if ($code eq 'eval' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
+        if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
             return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
         }
         if ($code eq 'readline') {

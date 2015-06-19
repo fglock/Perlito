@@ -1575,8 +1575,9 @@ package Perlito5::AST::Apply;
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{buf};
             if (ref($replace) eq 'Perlito5::AST::Block') {
-                $replace = Perlito5::AST::Do->new(
-                            block => $replace
+                $replace = Perlito5::AST::Apply->new(
+                            code => 'do',
+                            arguments => [$replace]
                         );
                 $modifier =~ s/e//g;
             }
@@ -2213,7 +2214,19 @@ package Perlito5::AST::Apply;
 
         'do' => sub {
             my ($self, $level, $wantarray) = @_;
-            # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
+
+            my $arg = $self->{arguments}->[0];
+            if ($arg->isa( "Perlito5::AST::Block" )) {
+                # do BLOCK
+                my $block = $arg->{stmts};
+                return Perlito5::Javascript2::emit_wrap_javascript2(
+                    $level,
+                    $wantarray, 
+                    (Perlito5::Javascript2::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript2( $level + 1, $wantarray )
+                )
+            }
+
+            # do EXPR
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
             my $ast =
@@ -2242,8 +2255,9 @@ package Perlito5::AST::Apply;
             if ($arg->isa( "Perlito5::AST::Block" )) {
                 # eval block
 
-                $eval = Perlito5::AST::Do->new(
-                            block => $arg
+                $eval = Perlito5::AST::Apply->new(
+                            code => 'do',
+                            arguments => [$arg]
                         )->emit_javascript2( $level + 1, $wantarray );
             }
             else {
@@ -3096,9 +3110,9 @@ package Perlito5::AST::While;
         my ($self, $level, $wantarray) = @_;
         my $cond = $self->{cond};
 
-        # body is 'Perlito5::AST::Do' in this construct:
+        # body is 'Perlito5::AST::Apply' in this construct:
         #   do { ... } while ...;
-        my $do_at_least_once = ref($self->{body}) eq 'Perlito5::AST::Do' ? 1 : 0;
+        my $do_at_least_once = ref($self->{body}) eq 'Perlito5::AST::Apply' && $self->{body}{code} eq 'do' ? 1 : 0;
 
         my $body =
               ref($self->{body}) ne 'Perlito5::AST::Block'

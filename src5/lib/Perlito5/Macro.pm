@@ -66,8 +66,9 @@ sub op_auto {
 
                 my $var = $arg->{arguments}[0];
 
-                return Perlito5::AST::Do->new(
-                    block => Perlito5::AST::Block->new(
+                return Perlito5::AST::Apply->new(
+                    code => 'do',
+                    arguments => [ Perlito5::AST::Block->new(
                         stmts => [
                             $paren,     # assignment
                             Perlito5::AST::Apply->new(
@@ -75,7 +76,7 @@ sub op_auto {
                                 arguments => [ $var ],
                             ),
                         ],
-                    ),
+                    ) ],
                 );
             }
         }

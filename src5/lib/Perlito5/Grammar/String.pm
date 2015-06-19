@@ -204,8 +204,9 @@ sub s_quote_parse {
                                 Perlito5::AST::Apply->new(
                                     'code' => 'eval',
                                     'arguments' => [
-                                        Perlito5::AST::Do->new(
-                                            'block' => $replace,
+                                        Perlito5::AST::Apply->new(
+                                            'code' => 'do',
+                                            'arguments' => [$replace],
                                         ),
                                     ],
                                     'bareword' => '',

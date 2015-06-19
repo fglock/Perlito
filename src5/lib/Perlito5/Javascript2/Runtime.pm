@@ -17,10 +17,11 @@ sub perl5_to_js {
         die "Syntax error in eval near pos ", $match->{to};
     }
 
-    my $ast = Perlito5::AST::Do->new(
-                block => Perlito5::AST::Block->new(
+    my $ast = Perlito5::AST::Apply->new(
+                code => 'do',
+                arguments => [ Perlito5::AST::Block->new(
                             stmts => $match->{capture},
-                         ),
+                         ) ],
               );
 
     # say "ast: [" . ast . "]";

@@ -318,7 +318,7 @@ package Perlito5::AST::Apply;
             return [ apply => '(', $code, $self->emit_perl5_args() ];
         }
 
-        if ($code eq 'eval' && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
+        if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
             return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
         }
 
