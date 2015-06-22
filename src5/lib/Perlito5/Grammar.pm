@@ -110,6 +110,16 @@ token var_ident {
     }
 };
 
+sub block {
+    Perlito5::Grammar::Block::block(@_)
+}
+sub block2 {
+    Perlito5::Grammar::Block::block(@_)
+}
+sub opt_continue_block {
+    Perlito5::Grammar::Block::opt_continue_block(@_)
+}
+
 my @PKG;
 sub exp_stmts {
     my $str = $_[0];

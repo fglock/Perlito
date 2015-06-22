@@ -4,6 +4,42 @@ package Perlito5::Grammar::Block;
 use Perlito5::Grammar::Expression;
 use strict;
 
+our %Named_block = (
+    BEGIN     => 1,
+    UNITCHECK => 1,
+    CHECK     => 1,
+    INIT      => 1,
+    END       => 1,
+);
+
+sub block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( substr($str, $pos, 1) ne '{' ) {
+        return
+    }
+    $pos++;
+    unshift @Perlito5::SCOPE, {};   # start new lexical scope
+    $m = Perlito5::Grammar::exp_stmts($str, $pos);
+    if (!$m) {
+        die "syntax error";
+    }
+    $pos = $m->{to};
+    my $capture = Perlito5::Match::flat($m);
+    $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{to};
+    if ( substr($str, $pos, 1) ne '}' ) {
+        die "syntax error";
+    }
+    $m->{to} = $pos + 1;
+    $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
+    # end of lexical scope
+    shift @Perlito5::SCOPE;
+    return $m;
+}
+
 sub eval_begin_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
@@ -16,13 +52,17 @@ sub eval_begin_block {
     or die "Error in BEGIN block: " . $@;
 }
 
-our %Named_block = (
-    BEGIN     => 1,
-    UNITCHECK => 1,
-    CHECK     => 1,
-    INIT      => 1,
-    END       => 1,
-);
+token opt_continue_block {
+        <.Perlito5::Grammar::Space::opt_ws> 'continue' <block>
+        {
+            $MATCH->{capture} = Perlito5::Match::flat($MATCH->{block});
+            $MATCH->{capture}{is_continue} = 1;
+        }
+    |
+        {
+            $MATCH->{capture} = Perlito5::AST::Block->new( stmts => [], sig => undef )
+        }
+};
 
 sub anon_block {
     my $str = $_[0];

@@ -2554,78 +2554,6 @@ sub Perlito5::Grammar::given {
     })));
     $tmp ? $MATCH : 0
 }
-sub Perlito5::Grammar::opt_continue_block {
-    my $str = $_[0];
-    my $pos = $_[1];
-    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-    my $tmp = ((do {
-        my $pos1 = $MATCH->{'to'};
-        (do {
-            ((do {
-                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    1
-                }
-                else {
-                    0
-                }
-            }) && ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
-                my $m2 = block($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'block'} = $m2;
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                $MATCH->{'str'} = $str;
-                $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'block'});
-                $MATCH->{'capture'}->{'is_continue'} = 1;
-                1
-            }))
-        }) || (do {
-            $MATCH->{'to'} = $pos1;
-            (do {
-                $MATCH->{'str'} = $str;
-                $MATCH->{'capture'} = Perlito5::AST::Block->new('stmts' => [], 'sig' => undef);
-                1
-            })
-        })
-    }));
-    $tmp ? $MATCH : 0
-}
-sub Perlito5::Grammar::block {
-    my $str = $_[0];
-    my $pos = $_[1];
-    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
-    $pos = $m->{'to'};
-    if (substr($str, $pos, 1) ne '{') {
-        return 
-    }
-    $pos++;
-    unshift(@Perlito5::SCOPE, {});
-    $m = Perlito5::Grammar::exp_stmts($str, $pos);
-    if (!$m) {
-        die('syntax error')
-    }
-    $pos = $m->{'to'};
-    my $capture = Perlito5::Match::flat($m);
-    $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
-    $pos = $m->{'to'};
-    if (substr($str, $pos, 1) ne '}') {
-        die('syntax error')
-    }
-    $m->{'to'} = $pos + 1;
-    $m->{'capture'} = Perlito5::AST::Block->new('stmts' => $capture, 'sig' => undef);
-    shift(@Perlito5::SCOPE);
-    return $m
-}
-sub Perlito5::Grammar::block2 {
-    block(@_)
-}
 Perlito5::Grammar::Statement::add_statement('if' => \&if_);
 Perlito5::Grammar::Statement::add_statement('for' => \&for);
 Perlito5::Grammar::Statement::add_statement('foreach' => \&for);
@@ -4302,12 +4230,81 @@ package main;
 package Perlito5::Grammar::Block;
 # use Perlito5::Grammar::Expression
 # use strict
+our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
+sub Perlito5::Grammar::Block::block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{'to'};
+    if (substr($str, $pos, 1) ne '{') {
+        return 
+    }
+    $pos++;
+    unshift(@Perlito5::SCOPE, {});
+    $m = Perlito5::Grammar::exp_stmts($str, $pos);
+    if (!$m) {
+        die('syntax error')
+    }
+    $pos = $m->{'to'};
+    my $capture = Perlito5::Match::flat($m);
+    $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
+    $pos = $m->{'to'};
+    if (substr($str, $pos, 1) ne '}') {
+        die('syntax error')
+    }
+    $m->{'to'} = $pos + 1;
+    $m->{'capture'} = Perlito5::AST::Block->new('stmts' => $capture, 'sig' => undef);
+    shift(@Perlito5::SCOPE);
+    return $m
+}
 sub Perlito5::Grammar::Block::eval_begin_block {
     local ${'@'};
     my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . $_[0];
     eval('{ ' . $code . ' }; 1') or die('Error in BEGIN block: ' . ${'@'})
 }
-our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
+sub Perlito5::Grammar::Block::opt_continue_block {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+    my $tmp = ((do {
+        my $pos1 = $MATCH->{'to'};
+        (do {
+            ((do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+                my $m2 = block($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    $MATCH->{'block'} = $m2;
+                    1
+                }
+                else {
+                    0
+                }
+            }) && (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'block'});
+                $MATCH->{'capture'}->{'is_continue'} = 1;
+                1
+            }))
+        }) || (do {
+            $MATCH->{'to'} = $pos1;
+            (do {
+                $MATCH->{'str'} = $str;
+                $MATCH->{'capture'} = Perlito5::AST::Block->new('stmts' => [], 'sig' => undef);
+                1
+            })
+        })
+    }));
+    $tmp ? $MATCH : 0
+}
 sub Perlito5::Grammar::Block::anon_block {
     my $str = $_[0];
     my $pos = $_[1];
@@ -6908,6 +6905,15 @@ sub Perlito5::Grammar::var_ident {
         1
     })));
     $tmp ? $MATCH : 0
+}
+sub Perlito5::Grammar::block {
+    Perlito5::Grammar::Block::block(@_)
+}
+sub Perlito5::Grammar::block2 {
+    Perlito5::Grammar::Block::block(@_)
+}
+sub Perlito5::Grammar::opt_continue_block {
+    Perlito5::Grammar::Block::opt_continue_block(@_)
 }
 my @PKG;
 sub Perlito5::Grammar::exp_stmts {
