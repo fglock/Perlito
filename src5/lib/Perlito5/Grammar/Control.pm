@@ -201,16 +201,14 @@ sub block {
     unshift @Perlito5::SCOPE, {};   # start new lexical scope
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
-        shift @Perlito5::SCOPE;
-        return
+        die "syntax error";
     }
     $pos = $m->{to};
     my $capture = Perlito5::Match::flat($m);
     $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
     $pos = $m->{to};
     if ( substr($str, $pos, 1) ne '}' ) {
-        shift @Perlito5::SCOPE;
-        return
+        die "syntax error";
     }
     $m->{to} = $pos + 1;
     $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
