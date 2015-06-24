@@ -388,6 +388,9 @@ if ($backend && @ARGV) {
                     eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
                     print $@;
                 }
+                elsif ($backend eq '_comp') {
+                    say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
+                }
                 else {
                     die "don't know what to do with backend '$backend'";
                 }

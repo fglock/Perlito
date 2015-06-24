@@ -519,6 +519,31 @@ TODO list for Perlito5
     # call foo(@_)
 
 
+* Compile-time execution environment
+
+-- work in progress
+
+-- special backend option "_comp" dumps the compile-time execution environment:
+
+    $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
+    {
+        'block' => [
+            {
+                'block' => [],
+            },
+            {
+                'block' => [
+                    {
+                        'block' => [],
+                    },
+                ],
+                'name' => 'main::x',
+                'type' => 'sub',
+            },
+        ],
+    }
+
+
 * Nice to Have
 
 -- keep comments

@@ -4240,7 +4240,9 @@ sub Perlito5::Grammar::Block::block {
         return 
     }
     $pos++;
-    unshift(@Perlito5::SCOPE, {});
+    my $new_scope = {'block' => []};
+    push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
+    local $Perlito5::SCOPE = $new_scope;
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
         die('syntax error')
@@ -4254,7 +4256,6 @@ sub Perlito5::Grammar::Block::block {
     }
     $m->{'to'} = $pos + 1;
     $m->{'capture'} = Perlito5::AST::Block->new('stmts' => $capture, 'sig' => undef);
-    shift(@Perlito5::SCOPE);
     return $m
 }
 sub Perlito5::Grammar::Block::eval_begin_block {
@@ -4476,7 +4477,12 @@ sub Perlito5::Grammar::Block::named_sub_def {
                 $namespace = $name eq '_' ? 'main' : $Perlito5::PKG_NAME
             }
             my $full_name = $namespace . '::' . $name;
-            $Perlito5::PROTO->{$full_name} = $sig
+            $Perlito5::PROTO->{$full_name} = $sig;
+            if ($MATCH->{'_tmp'}) {
+                my $block = $Perlito5::SCOPE->{'block'}->[-1];
+                $block->{'type'} = 'sub';
+                $block->{'name'} = $full_name
+            }
         }
         $MATCH->{'capture'} = Perlito5::AST::Sub->new('name' => $name, 'namespace' => $namespace, 'sig' => $sig, 'block' => $MATCH->{'_tmp'}, 'attributes' => $attributes);
         1
@@ -7003,7 +7009,7 @@ our %DATA_SECTION = ();
 our $PKG_NAME = '';
 our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
-our @SCOPE = ();
+our $SCOPE = {'block' => []};
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
     for split(':', ($ENV{'PERL5LIB'} || ''));
@@ -13930,6 +13936,9 @@ if ($backend && @ARGV) {
                 elsif ($backend eq 'ast-pretty') {
                     eval('use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1');
                     print(${'@'})
+                }
+                elsif ($backend eq '_comp') {
+                    say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
                 }
                 else {
                     die('don' . chr(39) . 't know what to do with backend ' . chr(39) . $backend . chr(39))

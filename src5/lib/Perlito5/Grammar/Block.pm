@@ -21,7 +21,11 @@ sub block {
         return
     }
     $pos++;
-    unshift @Perlito5::SCOPE, {};   # start new lexical scope
+
+    my $new_scope = { block => [] };
+    push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new lexical scope
+    local $Perlito5::SCOPE = $new_scope;
+
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
         die "syntax error";
@@ -36,7 +40,6 @@ sub block {
     $m->{to} = $pos + 1;
     $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
     # end of lexical scope
-    shift @Perlito5::SCOPE;
     return $m;
 }
 
@@ -187,6 +190,12 @@ token named_sub_def {
             #             : eval "sub { }";
             #     *{$full_name} = $sub;
             # }
+
+            if ($MATCH->{_tmp}) {
+                my $block = $Perlito5::SCOPE->{block}[-1];
+                $block->{type} = 'sub';
+                $block->{name} = $full_name;
+            }
         }
         $MATCH->{capture} = Perlito5::AST::Sub->new(
             name       => $name, 
