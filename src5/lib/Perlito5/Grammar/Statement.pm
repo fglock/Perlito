@@ -233,6 +233,29 @@ sub modifier {
 
 
 sub statement_parse {
+    my $block_pos = scalar @{ $Perlito5::SCOPE->{block} };
+    my $m = statement_parse_inner(@_);
+
+    return $m if $block_pos == scalar @{ $Perlito5::SCOPE->{block} };
+
+    # check variable declarations
+    # print "env: ", Data::Dumper::Dumper( $Perlito5::SCOPE->{block} );
+    my @new_decl;
+    while ( $block_pos < scalar @{ $Perlito5::SCOPE->{block} } ) {
+        unshift @new_decl, pop(@{ $Perlito5::SCOPE->{block} });
+    }
+    # print "look: ", Data::Dumper::Dumper(\@new_decl);
+    for my $item ( @new_decl ) {
+        if (ref($item) eq 'Perlito5::AST::Var') {
+            my $look = Perlito5::Grammar::Block::lookup_variable($item);
+        }
+    }
+    push @{ $Perlito5::SCOPE->{block} }, @new_decl;
+
+    return $m;
+}
+
+sub statement_parse_inner {
     my $str = $_[0];
     my $pos = $_[1];
     # say "# statement_parse input: ",$str," at ",$pos;

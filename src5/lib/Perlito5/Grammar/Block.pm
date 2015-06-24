@@ -12,6 +12,29 @@ our %Named_block = (
     END       => 1,
 );
 
+sub lookup_variable {
+    # search for a variable declaration in the compile-time scope
+    my $var = shift;
+
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $block = $scope->{block};
+    if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
+        # lookup in the inner scope first
+        my $look = lookup_variable($var, $block->[-1]);
+        return $look if $look;
+    }
+    for my $item (reverse @$block) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} && $item->{name} eq $var->{name}) {
+            # TODO - namespace, sigil
+            # TODO - $a[10]  $#a  ${"a"}
+            # TODO - check "strict"
+            # print "found name: $var->{name} decl: $item->{_decl}\n";
+            return $item;
+        }
+    }
+    return;
+}
+
 sub block {
     my $str = $_[0];
     my $pos = $_[1];

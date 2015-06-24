@@ -956,6 +956,22 @@ sub Perlito5::Grammar::Statement::modifier {
     die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
 }
 sub Perlito5::Grammar::Statement::statement_parse {
+    my $block_pos = scalar(@{$Perlito5::SCOPE->{'block'}});
+    my $m = statement_parse_inner(@_);
+    $block_pos == scalar(@{$Perlito5::SCOPE->{'block'}}) && return $m;
+    my @new_decl;
+    while ($block_pos < scalar(@{$Perlito5::SCOPE->{'block'}})) {
+        unshift(@new_decl, pop(@{$Perlito5::SCOPE->{'block'}}))
+    }
+    for my $item (@new_decl) {
+        if (ref($item) eq 'Perlito5::AST::Var') {
+            my $look = Perlito5::Grammar::Block::lookup_variable($item)
+        }
+    }
+    push(@{$Perlito5::SCOPE->{'block'}}, @new_decl);
+    return $m
+}
+sub Perlito5::Grammar::Statement::statement_parse_inner {
     my $str = $_[0];
     my $pos = $_[1];
     my $res = exp_stmt($str, $pos);
@@ -4244,6 +4260,21 @@ package Perlito5::Grammar::Block;
 # use Perlito5::Grammar::Expression
 # use strict
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
+sub Perlito5::Grammar::Block::lookup_variable {
+    my $var = shift;
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $block = $scope->{'block'};
+    if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
+        my $look = lookup_variable($var, $block->[-1]);
+        $look && return $look
+    }
+    for my $item (reverse(@{$block})) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'name'} eq $var->{'name'}) {
+            return $item
+        }
+    }
+    return 
+}
 sub Perlito5::Grammar::Block::block {
     my $str = $_[0];
     my $pos = $_[1];
