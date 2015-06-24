@@ -25,11 +25,14 @@ sub lookup_variable {
     }
     for my $item (reverse @$block) {
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} && $item->{name} eq $var->{name}) {
-            # TODO - namespace, sigil
+            my $sigil = $var->{_real_sigil} || $var->{sigil};
+            # TODO - namespace
             # TODO - $a[10]  $#a  ${"a"}
             # TODO - check "strict"
-            # print "found name: $var->{name} decl: $item->{_decl}\n";
-            return $item;
+            if ($sigil eq $item->{sigil}) {
+                # print "found name: $item->{sigil} $item->{name} decl: $item->{_decl}\n";
+                return $item;
+            }
         }
     }
     return;

@@ -146,10 +146,16 @@ sub reduce_postfix {
         return $v;
     }
     if ($v->[1] eq '[ ]') {
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq '$') {
+            $value->{_real_sigil} = '@';
+        }
         $v = Perlito5::AST::Index->new( obj => $value, index_exp => $v->[2] );
         return $v;
     }
     if ($v->[1] eq 'block') {
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq '$') {
+            $value->{_real_sigil} = '%';
+        }
         $v = Perlito5::AST::Lookup->new( obj => $value, index_exp => $v->[2][0] );
         return $v;
     }
