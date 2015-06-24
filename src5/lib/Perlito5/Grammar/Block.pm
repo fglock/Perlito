@@ -114,7 +114,11 @@ sub special_named_block {
     return if !$m;
     $p = $m->{to};
     my $block = Perlito5::Match::flat($m);
-   
+ 
+    my $compile_block = $Perlito5::SCOPE->{block}[-1];
+    $compile_block->{type} = 'sub';
+    $compile_block->{name} = $block_name;
+  
     if ($block_name eq 'BEGIN') {
         # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work

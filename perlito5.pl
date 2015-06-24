@@ -4354,6 +4354,9 @@ sub Perlito5::Grammar::Block::special_named_block {
     !$m && return ;
     $p = $m->{'to'};
     my $block = Perlito5::Match::flat($m);
+    my $compile_block = $Perlito5::SCOPE->{'block'}->[-1];
+    $compile_block->{'type'} = 'sub';
+    $compile_block->{'name'} = $block_name;
     if ($block_name eq 'BEGIN') {
         local $Perlito5::PHASE = 'BEGIN';
         eval_begin_block(substr($str, $block_start, $m->{'to'} - $block_start));
