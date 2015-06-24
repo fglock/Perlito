@@ -1141,10 +1141,16 @@ sub Perlito5::Grammar::Expression::reduce_postfix {
         return $v
     }
     if ($v->[1] eq '[ ]') {
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+            $value->{'_real_sigil'} = '@'
+        }
         $v = Perlito5::AST::Index->new('obj' => $value, 'index_exp' => $v->[2]);
         return $v
     }
     if ($v->[1] eq 'block') {
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+            $value->{'_real_sigil'} = '%'
+        }
         $v = Perlito5::AST::Lookup->new('obj' => $value, 'index_exp' => $v->[2]->[0]);
         return $v
     }
@@ -3602,7 +3608,11 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
             $p = $m_index->{'to'};
             if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
                 $p++;
-                $m_index->{'capture'} = Perlito5::AST::Index->new('obj' => $m_var->{'capture'}, 'index_exp' => $exp);
+                my $value = $m_var->{'capture'};
+                if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+                    $value->{'_real_sigil'} = '@'
+                }
+                $m_index->{'capture'} = Perlito5::AST::Index->new('obj' => $value, 'index_exp' => $exp);
                 $m_index->{'to'} = $p;
                 return double_quoted_var_with_subscript($m_index, $interpolate)
             }
@@ -3610,7 +3620,11 @@ sub Perlito5::Grammar::String::double_quoted_var_with_subscript {
     }
     $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
     if ($m_index) {
-        $m_index->{'capture'} = Perlito5::AST::Lookup->new('obj' => $m_var->{'capture'}, 'index_exp' => Perlito5::Match::flat($m_index)->[2]->[0]);
+        my $value = $m_var->{'capture'};
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+            $value->{'_real_sigil'} = '%'
+        }
+        $m_index->{'capture'} = Perlito5::AST::Lookup->new('obj' => $value, 'index_exp' => Perlito5::Match::flat($m_index)->[2]->[0]);
         return double_quoted_var_with_subscript($m_index, $interpolate)
     }
     return $m_var
@@ -4270,7 +4284,10 @@ sub Perlito5::Grammar::Block::lookup_variable {
     }
     for my $item (reverse(@{$block})) {
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'name'} eq $var->{'name'}) {
-            return $item
+            my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+            if ($sigil eq $item->{'sigil'}) {
+                return $item
+            }
         }
     }
     return 

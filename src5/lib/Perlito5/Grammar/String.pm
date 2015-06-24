@@ -961,8 +961,12 @@ sub double_quoted_var_with_subscript {
             $p = $m_index->{to};
             if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
                 $p++;
+                my $value = $m_var->{capture};
+                if (ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq '$') {
+                    $value->{_real_sigil} = '@';
+                }
                 $m_index->{capture} = Perlito5::AST::Index->new(
-                        obj       => $m_var->{capture},
+                        obj       => $value,
                         index_exp => $exp,
                     );
                 $m_index->{to} = $p;
@@ -972,8 +976,12 @@ sub double_quoted_var_with_subscript {
     }
     $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
     if ($m_index) {
+        my $value = $m_var->{capture};
+        if (ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq '$') {
+            $value->{_real_sigil} = '%';
+        }
         $m_index->{capture} = Perlito5::AST::Lookup->new(
-                obj       => $m_var->{capture},
+                obj       => $value,
                 index_exp => Perlito5::Match::flat($m_index)->[2][0],
             );
         return double_quoted_var_with_subscript($m_index, $interpolate);
