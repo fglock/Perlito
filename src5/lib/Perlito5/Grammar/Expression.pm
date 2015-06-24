@@ -378,21 +378,21 @@ token term_declarator {
     <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::var_ident>   # my Int $variable
     <Perlito5::Grammar::Attribute::opt_attribute>
         {
-            my $decl = Perlito5::Match::flat($MATCH->{declarator});
+            my $declarator = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
 
             die "No such class $type"
                 if $type && ! $Perlito5::PACKAGES->{$type};
 
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
+            $var->{_decl} = $declarator;
             my $decl = Perlito5::AST::Decl->new(
-                    decl => $decl,
+                    decl => $declarator,
                     type => $type,
                     var  => $var,
                     attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"}),
                 );
             $MATCH->{capture} = [ 'term', $decl ];
-            push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
         }
 };
 
@@ -411,19 +411,19 @@ token term_not {
 token term_local {
     'local' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Sigil::term_sigil>
         {
-            my $decl = 'local';
+            my $declarator = 'local';
             my $type = '';
             $MATCH->{capture} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
+            $var->{_decl} = $declarator;
             my $decl = Perlito5::AST::Decl->new(
-                    decl => $decl,
+                    decl => $declarator,
                     type => $type,
                     var  => $var
                 );
             $MATCH->{capture} = [ 'term', $decl ];
-            push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
         }
 };
 

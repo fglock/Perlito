@@ -100,7 +100,12 @@ sub autoquote {
 
 
 package Perlito5::AST::Var;
-sub new { my $class = shift; bless {@_}, $class }
+sub new {
+    my ($class, %args) = @_;
+    my $var = bless \%args, $class;
+    push @{ $Perlito5::SCOPE->{block} }, $var;
+    return $var;
+}
 sub sigil { $_[0]->{sigil} }
 sub namespace { $_[0]->{namespace} }
 sub name { $_[0]->{name} }

@@ -606,7 +606,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 if (ref($var) eq 'Perlito5::AST::Apply' && $var->{'code'} eq 'undef') {}
                 else {
                     my $decl = Perlito5::AST::Decl->new('decl' => $name, 'type' => '', 'var' => $var, 'attributes' => []);
-                    push(@{$Perlito5::SCOPE->{'block'}}, {'decl' => $decl})
+                    $var->{'_decl'} = $name
                 }
             }
         }
@@ -1624,13 +1624,13 @@ sub Perlito5::Grammar::Expression::term_declarator {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        my $decl = Perlito5::Match::flat($MATCH->{'declarator'});
+        my $declarator = Perlito5::Match::flat($MATCH->{'declarator'});
         my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::opt_type'});
         $type && !$Perlito5::PACKAGES->{$type} && die('No such class ' . $type);
         my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
-        my $decl = Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
+        $var->{'_decl'} = $declarator;
+        my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
         $MATCH->{'capture'} = ['term', $decl];
-        push(@{$Perlito5::SCOPE->{'block'}}, {'decl' => $decl});
         1
     })));
     $tmp ? $MATCH : 0
@@ -1690,14 +1690,14 @@ sub Perlito5::Grammar::Expression::term_local {
         }
     }) && (do {
         $MATCH->{'str'} = $str;
-        my $decl = 'local';
+        my $declarator = 'local';
         my $type = '';
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
         $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
         my $var = $MATCH->{'capture'};
-        my $decl = Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var);
+        $var->{'_decl'} = $declarator;
+        my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var);
         $MATCH->{'capture'} = ['term', $decl];
-        push(@{$Perlito5::SCOPE->{'block'}}, {'decl' => $decl});
         1
     })));
     $tmp ? $MATCH : 0
@@ -8148,8 +8148,10 @@ sub Perlito5::AST::Lookup::autoquote {
 }
 package Perlito5::AST::Var;
 sub Perlito5::AST::Var::new {
-    my $class = shift;
-    bless({@_}, $class)
+    my($class, %args) = @_;
+    my $var = bless(\%args, $class);
+    push(@{$Perlito5::SCOPE->{'block'}}, $var);
+    return $var
 }
 sub Perlito5::AST::Var::sigil {
     $_[0]->{'sigil'}

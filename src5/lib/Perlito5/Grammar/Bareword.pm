@@ -540,7 +540,7 @@ sub term_bareword {
                             var  => $var,
                             attributes => [],
                         );
-                    push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
+                    $var->{_decl} = $name;
                 }
             }
         }
