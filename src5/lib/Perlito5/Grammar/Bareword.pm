@@ -523,6 +523,27 @@ sub term_bareword {
         if ( !$m ) { return $m };
         my $arg = $m->{capture}[2];
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
+        if  (   $name eq 'local'
+            ||  $name eq 'my'
+            ||  $name eq 'state'
+            ||  $name eq 'our'
+            )
+        {
+            for my $var (@$arg) {
+                if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
+                    # "local (undef)" is a no-op
+                }
+                else {
+                    my $decl = Perlito5::AST::Decl->new(
+                            decl => $name,
+                            type => '',
+                            var  => $var,
+                            attributes => [],
+                        );
+                    push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
+                }
+            }
+        }
         $m->{capture} = [ 'term', 
                 Perlito5::AST::Apply->new(
                     code      => $name,
