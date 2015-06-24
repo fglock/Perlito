@@ -118,8 +118,37 @@ $_->() for @RUN;
 
 #-----------------------
 
+    # fails to compile
+    print z1, "\n"; # 5
+---> No comma allowed after filehandle at x.pl line 2.
+    z0(10);
+    print z1, "\n"; # 10
+    z0(20);
+    print z1, "\n"; # still 10
+    sub z0 {
+        my $z = shift;
+        sub z1 { $z; eval '$z' }
+        BEGIN { $z = 5 }
+    }
+
+
+    # original code
+    sub z0 {
+        my $z = shift;
+        sub z1 { $z; eval '$z' }
+        BEGIN { $z = 5 }
+    }
+    print z1, "\n"; # 5
+    z0(10);
+    print z1, "\n"; # 10
+    z0(20);
+    print z1, "\n"; # still 10
+
+  
+    # after compile-time env
     {
-        my $g;
+        my $g = 5;  # BEGIN ... *side effect* on a captured lexical
+
                         # skip: $g = shift;
         sub g1 { $g }   # do: sub ...
         sub g0 {
@@ -136,9 +165,7 @@ $_->() for @RUN;
             # skip: BEGIN side effect *moved outside*
             eval '$g';
         }
-        $g = 5;         # do: BEGIN ... *side effect*  *moved down*
     }
-    print "part 3 again, unrolled, use lexicals\n"; # *moved down*
     print g1, "\n"; # 5
     g0(10);
     print g1, "\n"; # 10

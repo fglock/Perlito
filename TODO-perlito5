@@ -543,6 +543,9 @@ TODO list for Perlito5
         ],
     }
 
+    $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e ' local (undef, undef, @_) ; { 123 } sub x { 456; { my $x = 3 } } local $y; INIT { 123 } BEGIN { $Perlito5::SCOPE->{block}[-1]{xxx} = 3 }'
+        change the environment using a BEGIN block
+
 
 * Nice to Have
 
