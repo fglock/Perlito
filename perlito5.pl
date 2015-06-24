@@ -964,7 +964,13 @@ sub Perlito5::Grammar::Statement::statement_parse {
         unshift(@new_decl, pop(@{$Perlito5::SCOPE->{'block'}}))
     }
     for my $item (@new_decl) {
-        if (ref($item) eq 'Perlito5::AST::Var') {}
+        if (ref($item) eq 'Perlito5::AST::Var') {
+            my $var = $item;
+            my $look = Perlito5::Grammar::Block::lookup_variable($var);
+            if ($Perlito5::STRICT) {
+                if (!$look) {}
+            }
+        }
     }
     push(@{$Perlito5::SCOPE->{'block'}}, @new_decl);
     return $m
