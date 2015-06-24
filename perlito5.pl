@@ -3746,15 +3746,17 @@ sub Perlito5::Grammar::Sigil::term_sigil {
             }
             if ($namespace || $name) {
                 my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
-                $m->{'capture'} = Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => $name);
-                $m->{'to'} = $spc->{'to'};
-                $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
-                $m->{'capture'} = ['term', $m->{'capture'}];
-                $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{'to'});
-                my $p = $spc->{'to'};
-                if (substr($str, $p, 1) eq '}') {
-                    $m->{'to'} = $p + 1;
-                    return $m
+                if (substr($str, $pos, 1) eq '{' || substr($str, $pos, 1) eq '[' || substr($str, $pos, 1) eq '}') {
+                    $m->{'capture'} = Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => $name);
+                    $m->{'to'} = $spc->{'to'};
+                    $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
+                    $m->{'capture'} = ['term', $m->{'capture'}];
+                    $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{'to'});
+                    my $p = $spc->{'to'};
+                    if (substr($str, $p, 1) eq '}') {
+                        $m->{'to'} = $p + 1;
+                        return $m
+                    }
                 }
             }
         }
@@ -4283,14 +4285,14 @@ package Perlito5::Grammar::Block;
 # use Perlito5::Grammar::Expression
 # use strict
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
-our %Special_var = ('ARGV' => 1, 'INC' => 1, '_' => 1);
+our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, '_' => 1);
 sub Perlito5::Grammar::Block::lookup_variable {
     my $var = shift;
     $var->{'namespace'} && return $var;
     $var->{'_decl'} && return $var;
     $var->{'sigil'} eq '&' && return $var;
     my $c = substr($var->{'name'}, 0, 1);
-    if ($Special_var{$var->{'name'}} || $c lt 'A' || $c gt 'z') {
+    if ($Special_var{$var->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         return $var
     }
     my $scope = shift() // $Perlito5::BASE_SCOPE;

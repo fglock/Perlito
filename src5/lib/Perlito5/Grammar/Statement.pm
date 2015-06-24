@@ -251,8 +251,8 @@ sub statement_parse {
             my $look = Perlito5::Grammar::Block::lookup_variable($var);
             if ( $Perlito5::STRICT ) {
                 if (!$look) {
-            ##         my $sigil = $var->{_real_sigil} || $var->{sigil};
-            ##         die 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
+                    ## my $sigil = $var->{_real_sigil} || $var->{sigil};
+                    ## die 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
                 }
             }
         }

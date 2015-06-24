@@ -15,6 +15,7 @@ our %Named_block = (
 our %Special_var = (
     ARGV => 1,
     INC  => 1,
+    ENV  => 1,
     _    => 1,
 );
 
@@ -27,7 +28,7 @@ sub lookup_variable {
     return $var if $var->{sigil} eq '&';    # &sub - TODO
 
     my $c = substr($var->{name}, 0, 1);
-    if ( $Special_var{ $var->{name} } || $c lt 'A' || $c gt 'z') {
+    if ( $Special_var{ $var->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         # special variable
         return $var;
     }

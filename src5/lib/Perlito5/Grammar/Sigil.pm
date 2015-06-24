@@ -201,22 +201,25 @@ sub term_sigil {
             }
             if ($namespace || $name) {
                 my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
-                # we are parsing:  ${var}  ${var{index}}
-                # create the 'Var' object
-                $m->{capture} = Perlito5::AST::Var->new(
-                    sigil       => $sigil,
-                    namespace   => $namespace,
-                    name        => $name,
-                );
-                $m->{to} = $spc->{to};
-                # hijack some string interpolation code to parse the subscript
-                $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
-                $m->{capture} = [ 'term', $m->{capture} ];
-                $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{to});
-                my $p = $spc->{to};
-                if ( substr($str, $p, 1) eq '}' ) {
-                    $m->{to} = $p + 1;
-                    return $m;
+                if (substr($str, $pos, 1) eq '{' || substr($str, $pos, 1) eq '[' || substr($str, $pos, 1) eq '}') {
+                    # we are not parsing:  ${subr()}
+                    # we are parsing:  ${var}  ${var{index}}
+                    # create the 'Var' object
+                    $m->{capture} = Perlito5::AST::Var->new(
+                        sigil       => $sigil,
+                        namespace   => $namespace,
+                        name        => $name,
+                    );
+                    $m->{to} = $spc->{to};
+                    # hijack some string interpolation code to parse the subscript
+                    $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
+                    $m->{capture} = [ 'term', $m->{capture} ];
+                    $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{to});
+                    my $p = $spc->{to};
+                    if ( substr($str, $p, 1) eq '}' ) {
+                        $m->{to} = $p + 1;
+                        return $m;
+                    }
                 }
             }
         }
