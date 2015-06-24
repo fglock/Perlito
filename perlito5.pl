@@ -1619,7 +1619,9 @@ sub Perlito5::Grammar::Expression::term_declarator {
         my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::opt_type'});
         $type && !$Perlito5::PACKAGES->{$type} && die('No such class ' . $type);
         my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}))];
+        my $decl = Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
+        $MATCH->{'capture'} = ['term', $decl];
+        push(@{$Perlito5::SCOPE->{'block'}}, {'decl' => $decl});
         1
     })));
     $tmp ? $MATCH : 0
@@ -1684,7 +1686,9 @@ sub Perlito5::Grammar::Expression::term_local {
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
         $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
         my $var = $MATCH->{'capture'};
-        $MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var)];
+        my $decl = Perlito5::AST::Decl->new('decl' => $decl, 'type' => $type, 'var' => $var);
+        $MATCH->{'capture'} = ['term', $decl];
+        push(@{$Perlito5::SCOPE->{'block'}}, {'decl' => $decl});
         1
     })));
     $tmp ? $MATCH : 0
@@ -7009,7 +7013,8 @@ our %DATA_SECTION = ();
 our $PKG_NAME = '';
 our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
-our $SCOPE = {'block' => []};
+our $BASE_SCOPE = {'block' => []};
+our $SCOPE = $BASE_SCOPE;
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
     for split(':', ($ENV{'PERL5LIB'} || ''));

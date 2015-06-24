@@ -27,7 +27,9 @@ our %DATA_SECTION = ();   # contents of the __DATA__ sections per package
 our $PKG_NAME     = '';   # current package being compiled
 our $LINE_NUMBER  = 0;    # current line number being compiled
 our $FILE_NAME    = '';   # current file name being compiled
-our $SCOPE        = { block => [] };   # information about the current scope being compiled
+
+our $BASE_SCOPE   = { block => [] };    # information about the current compilation process
+our $SCOPE        = $BASE_SCOPE;        # information about the current block being compiled
 
 # list of packages that "exist" - this is used by the indirect-object parser
 our $PACKAGES = {

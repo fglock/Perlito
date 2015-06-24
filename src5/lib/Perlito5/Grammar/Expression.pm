@@ -385,13 +385,14 @@ token term_declarator {
                 if $type && ! $Perlito5::PACKAGES->{$type};
 
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
-            $MATCH->{capture} = [ 'term', 
-                Perlito5::AST::Decl->new(
+            my $decl = Perlito5::AST::Decl->new(
                     decl => $decl,
                     type => $type,
                     var  => $var,
                     attributes => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Attribute::opt_attribute"}),
-                ) ]
+                );
+            $MATCH->{capture} = [ 'term', $decl ];
+            push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
         }
 };
 
@@ -416,13 +417,13 @@ token term_local {
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
-
-            $MATCH->{capture} = [ 'term', 
-                Perlito5::AST::Decl->new(
+            my $decl = Perlito5::AST::Decl->new(
                     decl => $decl,
                     type => $type,
                     var  => $var
-                ) ]
+                );
+            $MATCH->{capture} = [ 'term', $decl ];
+            push @{ $Perlito5::SCOPE->{block} }, { 'decl' => $decl };
         }
 };
 
