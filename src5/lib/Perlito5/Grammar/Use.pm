@@ -107,6 +107,15 @@ token stmt_use {
                     if !$m;
                 $MATCH->{capture} = $m->{capture};
             }
+            elsif ($full_ident eq 'strict') {
+                $Perlito5::STRICT = ( $use_decl eq 'no' ? 0 : 1 );      # TODO - options
+                my $ast = Perlito5::AST::Use->new(
+                        code      => $use_decl,
+                        mod       => $full_ident,
+                        arguments => $list
+                    );
+                $MATCH->{capture} = $ast;
+            }
             elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
                 my @ast;
                 my $name = shift @$list;

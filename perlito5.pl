@@ -964,9 +964,7 @@ sub Perlito5::Grammar::Statement::statement_parse {
         unshift(@new_decl, pop(@{$Perlito5::SCOPE->{'block'}}))
     }
     for my $item (@new_decl) {
-        if (ref($item) eq 'Perlito5::AST::Var') {
-            my $look = Perlito5::Grammar::Block::lookup_variable($item)
-        }
+        if (ref($item) eq 'Perlito5::AST::Var') {}
     }
     push(@{$Perlito5::SCOPE->{'block'}}, @new_decl);
     return $m
@@ -4086,6 +4084,11 @@ sub Perlito5::Grammar::Use::stmt_use {
                     !$m && die('not a valid variable name: ' . join(${'"'}, @{$list}));
                     $MATCH->{'capture'} = $m->{'capture'}
                 }
+                elsif ($full_ident eq 'strict') {
+                    $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
+                    my $ast = Perlito5::AST::Use->new('code' => $use_decl, 'mod' => $full_ident, 'arguments' => $list);
+                    $MATCH->{'capture'} = $ast
+                }
                 elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
                     my @ast;
                     my $name = shift(@{$list});
@@ -4274,8 +4277,16 @@ package Perlito5::Grammar::Block;
 # use Perlito5::Grammar::Expression
 # use strict
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
+our %Special_var = ('ARGV' => 1, 'INC' => 1, '_' => 1);
 sub Perlito5::Grammar::Block::lookup_variable {
     my $var = shift;
+    $var->{'namespace'} && return $var;
+    $var->{'_decl'} && return $var;
+    $var->{'sigil'} eq '&' && return $var;
+    my $c = substr($var->{'name'}, 0, 1);
+    if ($Special_var{$var->{'name'}} || $c lt 'A' || $c gt 'z') {
+        return $var
+    }
     my $scope = shift() // $Perlito5::BASE_SCOPE;
     my $block = $scope->{'block'};
     if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {

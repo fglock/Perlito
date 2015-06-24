@@ -12,9 +12,25 @@ our %Named_block = (
     END       => 1,
 );
 
+our %Special_var = (
+    ARGV => 1,
+    INC  => 1,
+    _    => 1,
+);
+
 sub lookup_variable {
     # search for a variable declaration in the compile-time scope
     my $var = shift;
+
+    return $var if $var->{namespace};       # global variable
+    return $var if $var->{_decl};           # predeclared variable
+    return $var if $var->{sigil} eq '&';    # &sub - TODO
+
+    my $c = substr($var->{name}, 0, 1);
+    if ( $Special_var{ $var->{name} } || $c lt 'A' || $c gt 'z') {
+        # special variable
+        return $var;
+    }
 
     my $scope = shift() // $Perlito5::BASE_SCOPE;
     my $block = $scope->{block};
@@ -35,6 +51,7 @@ sub lookup_variable {
             }
         }
     }
+    # print "not found\n";
     return;
 }
 

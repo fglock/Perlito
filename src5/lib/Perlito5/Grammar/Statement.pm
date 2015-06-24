@@ -247,7 +247,14 @@ sub statement_parse {
     # print "look: ", Data::Dumper::Dumper(\@new_decl);
     for my $item ( @new_decl ) {
         if (ref($item) eq 'Perlito5::AST::Var') {
-            my $look = Perlito5::Grammar::Block::lookup_variable($item);
+    ##        my $var = $item;
+    ##        my $look = Perlito5::Grammar::Block::lookup_variable($var);
+    ##        if ( $Perlito5::STRICT ) {
+    ##            if (!$look) {
+    ##                my $sigil = $var->{_real_sigil} || $var->{sigil};
+    ##                die 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
+    ##            }
+    ##        }
         }
     }
     push @{ $Perlito5::SCOPE->{block} }, @new_decl;
