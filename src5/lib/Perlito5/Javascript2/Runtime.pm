@@ -374,14 +374,6 @@ function p5array_deref(v, current_pkg_name) {
     return v._array_;
 }
 
-function p5global_array(pkg_name, name) {
-    var v = "List_"+name;
-    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
-        p5pkg[pkg_name][v] = [];
-    }
-    return p5pkg[pkg_name][v];
-}
-
 function p5hash_deref(v, current_pkg_name) {
     if (typeof v === "string") {
         var pkg_name = v.split(/::/);
@@ -404,14 +396,6 @@ function p5hash_deref(v, current_pkg_name) {
         return p5pkg[pkg_name][name];
     }
     return v._hash_;
-}
-
-function p5global_hash(pkg_name, name) {
-    var v = "Hash_"+name;
-    if (!p5make_package(pkg_name).hasOwnProperty(v)) {
-        p5pkg[pkg_name][v] = {};
-    }
-    return p5pkg[pkg_name][v];
 }
 
 // regex globals

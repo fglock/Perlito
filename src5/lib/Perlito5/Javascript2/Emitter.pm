@@ -1160,11 +1160,39 @@ package Perlito5::AST::Var;
         '&' => '',
     };
 
+    sub emit_javascript2_global {
+        my ($self, $level, $wantarray) = @_;
+        my $str_name = $self->{name};
+        my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
+
+        if ($sigil eq '$' && $self->{name} > 0) {
+            # regex captures
+            return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
+        }
+
+        my $s = 'p5make_package(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ')[' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
+
+        if ($sigil eq '@') {
+            $s = $s . ' || (' . $s . ' = [])';  # init
+            $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
+            if ( $self->{sigil} eq '@' && $wantarray eq 'scalar' ) {
+                $s .= '.length';
+            }
+        }
+        elsif ($sigil eq '%') {
+            $s = $s . ' || (' . $s . ' = {})';  # init
+            $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
+        }
+
+        if ($self->{sigil} eq '$#') {
+            return '(' . $s . '.length - 1)';
+        }
+        return $s;
+    }
+
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         my $str_name = $self->{name};
-        # $str_name = '\\\\' if $str_name eq '\\';   # escape $\
-        # $str_name = '\\"' if $str_name eq '"';     # escape $"
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
@@ -1188,32 +1216,7 @@ package Perlito5::AST::Var;
                 # no strict - "auto-declare" the var
                 $decl_type = 'our';
                 $self->{namespace} = $Perlito5::PKG_NAME;
-
-                my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
-
-                if ($sigil eq '$' && $self->{name} > 0) {
-                    # regex captures
-                    return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
-                }
-
-                my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
-
-                if ($sigil eq '@') {
-                    $s = $s . ' || (' . $s . ' = [])';  # init
-                    $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
-                    if ( $self->{sigil} eq '@' && $wantarray eq 'scalar' ) {
-                        $s .= '.length';
-                    }
-                }
-                elsif ($sigil eq '%') {
-                    $s = $s . ' || (' . $s . ' = {})';  # init
-                    $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{namespace} ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
-                }
-
-                if ($self->{sigil} eq '$#') {
-                    return '(' . $s . '.length - 1)';
-                }
-                return $s;
+                return $self->emit_javascript2_global($level, $wantarray);
             }
         }
 
@@ -1253,17 +1256,7 @@ package Perlito5::AST::Var;
 
         my $ns = '';
         if ($self->{namespace}) {
-            $ns = 'p5make_package(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ')';
-            if ($self->{sigil} eq '$#') {
-                return '(p5global_array(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ', ' . Perlito5::Javascript2::escape_string($str_name) . ').length - 1)';
-            }
-            if ($self->{sigil} eq '@') {
-                return 'p5global_array(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ', ' . Perlito5::Javascript2::escape_string($str_name) . ')';
-            }
-            if ($self->{sigil} eq '%') {
-                return 'p5global_hash(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ', ' . Perlito5::Javascript2::escape_string($str_name) . ')';
-            }
-            return $ns . '[' . Perlito5::Javascript2::escape_string($table->{$self->{sigil}} . $str_name) . ']'
+            return $self->emit_javascript2_global($level, $wantarray);
         }
 
         if ($self->{sigil} eq '$#') {
