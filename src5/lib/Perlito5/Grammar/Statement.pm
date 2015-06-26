@@ -232,33 +232,41 @@ sub modifier {
 }
 
 
-sub statement_parse {
-    my $block_pos = scalar @{ $Perlito5::SCOPE->{block} };
-    my $m = statement_parse_inner(@_);
+sub check_variable_declarations {
+    # examine the variables that were used in the last statement
+    # - check if the variables were declared
+    # - insert the variables in the current compile-time scope
 
-    return $m if $block_pos == scalar @{ $Perlito5::SCOPE->{block} };
-
-    # check variable declarations
     # print "env: ", Data::Dumper::Dumper( $Perlito5::SCOPE->{block} );
-    my @new_decl;
-    while ( $block_pos < scalar @{ $Perlito5::SCOPE->{block} } ) {
-        unshift @new_decl, pop(@{ $Perlito5::SCOPE->{block} });
-    }
-    # print "look: ", Data::Dumper::Dumper(\@new_decl);
-    for my $item ( @new_decl ) {
+    for my $item ( @Perlito5::SCOPE_STMT ) {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
             my $look = Perlito5::Grammar::Block::lookup_variable($var);
             if ( $Perlito5::STRICT ) {
                 if (!$look) {
-                    ## my $sigil = $var->{_real_sigil} || $var->{sigil};
-                    ## die 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
+                    # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
+                    my $sigil = $var->{_real_sigil} || $var->{sigil};
+                    # TODO - die()
+                    # warn 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
                 }
             }
         }
     }
-    push @{ $Perlito5::SCOPE->{block} }, @new_decl;
+    push @{ $Perlito5::SCOPE->{block} }, @Perlito5::SCOPE_STMT;
+}
 
+sub statement_parse {
+    ## my $str = $_[0];
+    ## my $pos = $_[1];
+    ## my $stmt = substr($str, $pos, 30);
+    ## warn "statement_parse: [ $stmt ] in $Perlito5::PKG_NAME\n";
+
+    local @Perlito5::SCOPE_STMT;
+
+    my $m = statement_parse_inner(@_);
+
+    return $m if !@Perlito5::SCOPE_STMT;
+    check_variable_declarations();
     return $m;
 }
 

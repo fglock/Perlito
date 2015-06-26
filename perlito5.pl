@@ -955,24 +955,25 @@ sub Perlito5::Grammar::Statement::modifier {
     }
     die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
 }
-sub Perlito5::Grammar::Statement::statement_parse {
-    my $block_pos = scalar(@{$Perlito5::SCOPE->{'block'}});
-    my $m = statement_parse_inner(@_);
-    $block_pos == scalar(@{$Perlito5::SCOPE->{'block'}}) && return $m;
-    my @new_decl;
-    while ($block_pos < scalar(@{$Perlito5::SCOPE->{'block'}})) {
-        unshift(@new_decl, pop(@{$Perlito5::SCOPE->{'block'}}))
-    }
-    for my $item (@new_decl) {
+sub Perlito5::Grammar::Statement::check_variable_declarations {
+    for my $item (@Perlito5::SCOPE_STMT) {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
             my $look = Perlito5::Grammar::Block::lookup_variable($var);
             if ($Perlito5::STRICT) {
-                if (!$look) {}
+                if (!$look) {
+                    my $sigil = $var->{'_real_sigil'} || $var->{'sigil'}
+                }
             }
         }
     }
-    push(@{$Perlito5::SCOPE->{'block'}}, @new_decl);
+    push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT)
+}
+sub Perlito5::Grammar::Statement::statement_parse {
+    local @Perlito5::SCOPE_STMT;
+    my $m = statement_parse_inner(@_);
+    !@Perlito5::SCOPE_STMT && return $m;
+    check_variable_declarations();
     return $m
 }
 sub Perlito5::Grammar::Statement::statement_parse_inner {
@@ -2207,6 +2208,10 @@ sub Perlito5::Grammar::for {
                     }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::term_declarator'})->[1];
+                        my $new_scope = {'block' => []};
+                        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
+                        $MATCH->{'_saved_scope'} = $Perlito5::SCOPE;
+                        Perlito5::Grammar::Statement::check_variable_declarations();
                         1
                     }))
                 }) || (do {
@@ -2286,6 +2291,7 @@ sub Perlito5::Grammar::for {
                 my $body = Perlito5::Match::flat($MATCH->{'block'});
                 $body->{'sig'} = $MATCH->{'_tmp'};
                 $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'}), 'body' => $body, 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+                $Perlito5::SCOPE = $MATCH->{'_saved_scope'};
                 1
             }))
         }) || (do {
@@ -8217,7 +8223,7 @@ package Perlito5::AST::Var;
 sub Perlito5::AST::Var::new {
     my($class, %args) = @_;
     my $var = bless(\%args, $class);
-    push(@{$Perlito5::SCOPE->{'block'}}, $var);
+    push(@Perlito5::SCOPE_STMT, $var);
     return $var
 }
 sub Perlito5::AST::Var::sigil {
