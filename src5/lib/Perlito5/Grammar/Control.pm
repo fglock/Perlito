@@ -3,8 +3,10 @@ use strict;
 use Perlito5::Grammar::Expression;
 
 token unless {
-    'unless' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-       <.Perlito5::Grammar::Space::opt_ws> <block>
+    'unless' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
+        <Perlito5::Grammar::Expression::term_paren>
+        <.Perlito5::Grammar::Space::opt_ws> <block>
     [
         <.Perlito5::Grammar::Space::opt_ws>
         'else' <block2>
@@ -24,11 +26,14 @@ token unless {
              )
         }
     ]
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token if_ {
-    'if' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-       <.Perlito5::Grammar::Space::opt_ws> <block>
+    'if' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
+        <Perlito5::Grammar::Expression::term_paren>
+        <.Perlito5::Grammar::Space::opt_ws> <block>
     [
         <.Perlito5::Grammar::Space::opt_ws>
         'else' <block2>
@@ -58,26 +63,26 @@ token if_ {
              )
         }
     ]
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token when {
-    'when' <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::Expression::term_paren>
-         <.Perlito5::Grammar::Space::opt_ws> <block>
+    'when' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
+        <Perlito5::Grammar::Expression::term_paren>
+        <.Perlito5::Grammar::Space::opt_ws> <block>
         {
             $MATCH->{capture} = Perlito5::AST::When->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
                 body      => Perlito5::Match::flat($MATCH->{block}),
              )
         }
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token for {
     'for' 'each'?
-    { $MATCH->{_saved_scope} = $Perlito5::SCOPE;
-      my $new_scope = { block => [] };
-      push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope
-      $Perlito5::SCOPE = $new_scope;
-    }
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
     [
         [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::Expression::term_declarator>
             { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_declarator"})->[1] }
@@ -138,11 +143,12 @@ token for {
                  )
         }
     ]
-    { $Perlito5::SCOPE = $MATCH->{_saved_scope} }
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token while {
     'while' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
         {
             my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
@@ -155,10 +161,12 @@ token while {
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token until {
     'until' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
         {
             my $cond = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
@@ -175,10 +183,13 @@ token until {
                     continue => $MATCH->{opt_continue_block}{capture}
                  )
         }
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 token given {
-    'given' <.Perlito5::Grammar::Space::opt_ws> '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block>
+    'given' <.Perlito5::Grammar::Space::opt_ws>
+    { Perlito5::Grammar::Block::create_new_compile_time_scope() }
+        '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block>
         {
             my $body = Perlito5::Match::flat($MATCH->{block});
             $body->{sig} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::var_ident"});
@@ -187,6 +198,7 @@ token given {
                     body  => $body,
                  )
         }
+    { Perlito5::Grammar::Block::end_compile_time_scope() }
 };
 
 

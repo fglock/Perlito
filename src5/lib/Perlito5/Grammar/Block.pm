@@ -19,9 +19,23 @@ our %Special_var = (
     _    => 1,
 );
 
+my @Scope;
+sub create_new_compile_time_scope {
+    my $new_scope = { block => [] };
+    push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope
+    push @Scope, $Perlito5::SCOPE;
+    # warn "ENTER ",scalar(@Scope)," $Perlito5::PKG_NAME \n";
+    $Perlito5::SCOPE = $new_scope;
+}
+sub end_compile_time_scope {
+    # warn "EXIT  ",scalar(@Scope),"\n";
+    $Perlito5::SCOPE = pop @Scope;
+}
+
 sub lookup_variable {
     # search for a variable declaration in the compile-time scope
     my $var = shift;
+    ## return $var;
 
     return $var if $var->{namespace};       # global variable
     return $var if $var->{_decl};           # predeclared variable
@@ -69,9 +83,7 @@ sub block {
     # when parsing a command like "for my $x ..." register the loop variable
     # before entering the block, so that it can be seen immediately
     Perlito5::Grammar::Statement::check_variable_declarations();
-    my $new_scope = { block => [] };
-    push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new lexical scope
-    local $Perlito5::SCOPE = $new_scope;
+    Perlito5::Grammar::Block::create_new_compile_time_scope();
 
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
@@ -87,6 +99,7 @@ sub block {
     $m->{to} = $pos + 1;
     $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
     # end of lexical scope
+    Perlito5::Grammar::Block::end_compile_time_scope();
     return $m;
 }
 

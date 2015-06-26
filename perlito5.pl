@@ -967,10 +967,10 @@ sub Perlito5::Grammar::Statement::check_variable_declarations {
             }
         }
     }
-    push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT)
+    push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT);
+    @Perlito5::SCOPE_STMT = ()
 }
 sub Perlito5::Grammar::Statement::statement_parse {
-    local @Perlito5::SCOPE_STMT;
     my $m = statement_parse_inner(@_);
     !@Perlito5::SCOPE_STMT && return $m;
     check_variable_declarations();
@@ -1949,6 +1949,10 @@ sub Perlito5::Grammar::unless {
             0
         }
     }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
+    }) && (do {
         my $m2 = Perlito5::Grammar::Expression::term_paren($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -2012,6 +2016,10 @@ sub Perlito5::Grammar::unless {
                 1
             })
         })
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -2028,6 +2036,10 @@ sub Perlito5::Grammar::if_ {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
     }) && (do {
         my $m2 = Perlito5::Grammar::Expression::term_paren($str, $MATCH->{'to'});
         if ($m2) {
@@ -2118,6 +2130,10 @@ sub Perlito5::Grammar::if_ {
                 1
             })
         })
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -2134,6 +2150,10 @@ sub Perlito5::Grammar::when {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
     }) && (do {
         my $m2 = Perlito5::Grammar::Expression::term_paren($str, $MATCH->{'to'});
         if ($m2) {
@@ -2167,6 +2187,10 @@ sub Perlito5::Grammar::when {
         $MATCH->{'str'} = $str;
         $MATCH->{'capture'} = Perlito5::AST::When->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::term_paren'})->[2], 'body' => Perlito5::Match::flat($MATCH->{'block'}));
         1
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -2182,10 +2206,7 @@ sub Perlito5::Grammar::for {
         1
     }) && (do {
         $MATCH->{'str'} = $str;
-        $MATCH->{'_saved_scope'} = $Perlito5::SCOPE;
-        my $new_scope = {'block' => []};
-        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
-        $Perlito5::SCOPE = $new_scope;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
         1
     }) && (do {
         my $pos1 = $MATCH->{'to'};
@@ -2458,7 +2479,7 @@ sub Perlito5::Grammar::for {
         })
     }) && (do {
         $MATCH->{'str'} = $str;
-        $Perlito5::SCOPE = $MATCH->{'_saved_scope'};
+        Perlito5::Grammar::Block::end_compile_time_scope();
         1
     })));
     $tmp ? $MATCH : 0
@@ -2476,6 +2497,10 @@ sub Perlito5::Grammar::while {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
     }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
         if ($m2) {
@@ -2514,6 +2539,10 @@ sub Perlito5::Grammar::while {
         }
         $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => $cond, 'body' => Perlito5::Match::flat($MATCH->{'block'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
         1
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -2530,6 +2559,10 @@ sub Perlito5::Grammar::until {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
     }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
         if ($m2) {
@@ -2568,6 +2601,10 @@ sub Perlito5::Grammar::until {
         }
         $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => Perlito5::AST::Apply->new('arguments' => [$cond], 'code' => 'prefix:<!>', 'namespace' => ''), 'body' => Perlito5::Match::flat($MATCH->{'block'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
         1
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -2584,6 +2621,10 @@ sub Perlito5::Grammar::given {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::create_new_compile_time_scope();
+        1
     }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
         my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
         if ($m2) {
@@ -2609,6 +2650,10 @@ sub Perlito5::Grammar::given {
         my $body = Perlito5::Match::flat($MATCH->{'block'});
         $body->{'sig'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::var_ident'});
         $MATCH->{'capture'} = Perlito5::AST::Given->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'}), 'body' => $body);
+        1
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        Perlito5::Grammar::Block::end_compile_time_scope();
         1
     })));
     $tmp ? $MATCH : 0
@@ -4306,6 +4351,16 @@ package Perlito5::Grammar::Block;
 # use strict
 our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1);
 our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, '_' => 1);
+my @Scope;
+sub Perlito5::Grammar::Block::create_new_compile_time_scope {
+    my $new_scope = {'block' => []};
+    push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
+    push(@Scope, $Perlito5::SCOPE);
+    $Perlito5::SCOPE = $new_scope
+}
+sub Perlito5::Grammar::Block::end_compile_time_scope {
+    $Perlito5::SCOPE = pop(@Scope)
+}
 sub Perlito5::Grammar::Block::lookup_variable {
     my $var = shift;
     $var->{'namespace'} && return $var;
@@ -4341,9 +4396,7 @@ sub Perlito5::Grammar::Block::block {
     }
     $pos++;
     Perlito5::Grammar::Statement::check_variable_declarations();
-    my $new_scope = {'block' => []};
-    push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
-    local $Perlito5::SCOPE = $new_scope;
+    Perlito5::Grammar::Block::create_new_compile_time_scope();
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
         die('syntax error')
@@ -4357,6 +4410,7 @@ sub Perlito5::Grammar::Block::block {
     }
     $m->{'to'} = $pos + 1;
     $m->{'capture'} = Perlito5::AST::Block->new('stmts' => $capture, 'sig' => undef);
+    Perlito5::Grammar::Block::end_compile_time_scope();
     return $m
 }
 sub Perlito5::Grammar::Block::eval_begin_block {

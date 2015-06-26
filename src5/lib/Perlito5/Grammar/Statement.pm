@@ -253,6 +253,7 @@ sub check_variable_declarations {
         }
     }
     push @{ $Perlito5::SCOPE->{block} }, @Perlito5::SCOPE_STMT;
+    @Perlito5::SCOPE_STMT = ();
 }
 
 sub statement_parse {
@@ -261,7 +262,7 @@ sub statement_parse {
     ## my $stmt = substr($str, $pos, 30);
     ## warn "statement_parse: [ $stmt ] in $Perlito5::PKG_NAME\n";
 
-    local @Perlito5::SCOPE_STMT;
+    ## local @Perlito5::SCOPE_STMT;
 
     my $m = statement_parse_inner(@_);
 

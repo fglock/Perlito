@@ -103,7 +103,6 @@ package Perlito5::AST::Var;
 sub new {
     my ($class, %args) = @_;
     my $var = bless \%args, $class;
-    # push @{ $Perlito5::SCOPE->{block} }, $var;
     push @Perlito5::SCOPE_STMT, $var;
     return $var;
 }
