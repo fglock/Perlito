@@ -66,6 +66,9 @@ sub block {
     }
     $pos++;
 
+    # when parsing a command like "for my $x ..." register the loop variable
+    # before entering the block, so that it can be seen immediately
+    Perlito5::Grammar::Statement::check_variable_declarations();
     my $new_scope = { block => [] };
     push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new lexical scope
     local $Perlito5::SCOPE = $new_scope;

@@ -73,42 +73,47 @@ token when {
 
 token for {
     'for' 'each'?
+    { $MATCH->{_saved_scope} = $Perlito5::SCOPE;
+      my $new_scope = { block => [] };
+      push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope
+      $Perlito5::SCOPE = $new_scope;
+    }
     [
         [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::Expression::term_declarator>
-            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_declarator"})->[1];
-              # register the loop variable in the current scope, so that it can be seen inside the block
-              my $new_scope = { block => [] };
-              push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new lexical scope
-              $MATCH->{_saved_scope} = $Perlito5::SCOPE;
-              Perlito5::Grammar::Statement::check_variable_declarations();
-            }
+            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_declarator"})->[1] }
         | <.Perlito5::Grammar::Space::opt_ws> <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
             { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1] }
         ]
         <.Perlito5::Grammar::Space::opt_ws> 
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
-        {
-            my $body = Perlito5::Match::flat($MATCH->{block});
-            $body->{sig} = $MATCH->{_tmp};
-            $MATCH->{capture} = Perlito5::AST::For->new( 
-                    cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}), 
-                    body  => $body,
-                    continue => $MATCH->{opt_continue_block}{capture}
-                 );
-            $Perlito5::SCOPE = $MATCH->{_saved_scope};
-        }
+            {   my $body = Perlito5::Match::flat($MATCH->{block});
+                $body->{sig} = $MATCH->{_tmp};
+                $MATCH->{capture} = Perlito5::AST::For->new( 
+                        cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}), 
+                        body  => $body,
+                        continue => $MATCH->{opt_continue_block}{capture}
+                     );
+            }
     |
         <.Perlito5::Grammar::Space::opt_ws>
 
             # (@x)  (my $i = 0; $i < 10; $i++)
 
             '(' 
-                [ <Perlito5::Grammar::Expression::exp_parse> 
+                [  <Perlito5::Grammar::Expression::exp_parse> 
+                    { # register any loop variables, so they can be seen immediately
+                      Perlito5::Grammar::Statement::check_variable_declarations();
+                    }
                 || [ <.Perlito5::Grammar::Space::opt_ws> <before ';'> ]
                 ]
                     [ ';' 
                           { $MATCH->{c_style_for} = 1 }
-                          [ <Perlito5::Grammar::exp>  || <.Perlito5::Grammar::Space::opt_ws> ]
+                          [  <Perlito5::Grammar::exp>  
+                             { # register any loop variables, so they can be seen immediately
+                               Perlito5::Grammar::Statement::check_variable_declarations();
+                             }
+                          || <.Perlito5::Grammar::Space::opt_ws>
+                          ]
                       ';' [ <Perlito5::Grammar::exp2> || <.Perlito5::Grammar::Space::opt_ws> ]
                     | ''
                     ]
@@ -133,6 +138,7 @@ token for {
                  )
         }
     ]
+    { $Perlito5::SCOPE = $MATCH->{_saved_scope} }
 };
 
 token while {

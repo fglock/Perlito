@@ -2181,6 +2181,13 @@ sub Perlito5::Grammar::for {
         }
         1
     }) && (do {
+        $MATCH->{'str'} = $str;
+        $MATCH->{'_saved_scope'} = $Perlito5::SCOPE;
+        my $new_scope = {'block' => []};
+        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
+        $Perlito5::SCOPE = $new_scope;
+        1
+    }) && (do {
         my $pos1 = $MATCH->{'to'};
         (do {
             ((do {
@@ -2208,10 +2215,6 @@ sub Perlito5::Grammar::for {
                     }) && (do {
                         $MATCH->{'str'} = $str;
                         $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::term_declarator'})->[1];
-                        my $new_scope = {'block' => []};
-                        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
-                        $MATCH->{'_saved_scope'} = $Perlito5::SCOPE;
-                        Perlito5::Grammar::Statement::check_variable_declarations();
                         1
                     }))
                 }) || (do {
@@ -2291,7 +2294,6 @@ sub Perlito5::Grammar::for {
                 my $body = Perlito5::Match::flat($MATCH->{'block'});
                 $body->{'sig'} = $MATCH->{'_tmp'};
                 $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'}), 'body' => $body, 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
-                $Perlito5::SCOPE = $MATCH->{'_saved_scope'};
                 1
             }))
         }) || (do {
@@ -2308,7 +2310,7 @@ sub Perlito5::Grammar::for {
             }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                 my $pos1 = $MATCH->{'to'};
                 (do {
-                    (do {
+                    ((do {
                         my $m2 = Perlito5::Grammar::Expression::exp_parse($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -2318,7 +2320,11 @@ sub Perlito5::Grammar::for {
                         else {
                             0
                         }
-                    })
+                    }) && (do {
+                        $MATCH->{'str'} = $str;
+                        Perlito5::Grammar::Statement::check_variable_declarations();
+                        1
+                    }))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ()
@@ -2351,7 +2357,7 @@ sub Perlito5::Grammar::for {
                     }) && (do {
                         my $pos1 = $MATCH->{'to'};
                         (do {
-                            (do {
+                            ((do {
                                 my $m2 = Perlito5::Grammar::exp($str, $MATCH->{'to'});
                                 if ($m2) {
                                     $MATCH->{'to'} = $m2->{'to'};
@@ -2361,7 +2367,11 @@ sub Perlito5::Grammar::for {
                                 else {
                                     0
                                 }
-                            })
+                            }) && (do {
+                                $MATCH->{'str'} = $str;
+                                Perlito5::Grammar::Statement::check_variable_declarations();
+                                1
+                            }))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
                             ()
@@ -2446,6 +2456,10 @@ sub Perlito5::Grammar::for {
                 1
             }))
         })
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        $Perlito5::SCOPE = $MATCH->{'_saved_scope'};
+        1
     })));
     $tmp ? $MATCH : 0
 }
@@ -4326,6 +4340,7 @@ sub Perlito5::Grammar::Block::block {
         return 
     }
     $pos++;
+    Perlito5::Grammar::Statement::check_variable_declarations();
     my $new_scope = {'block' => []};
     push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
     local $Perlito5::SCOPE = $new_scope;
