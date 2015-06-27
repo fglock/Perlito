@@ -570,7 +570,11 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 $sig eq '$' && die('Not enough arguments for ' . $name);
                 $sig eq '_' && push(@args, Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))
             }
-            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0))];
+            my $ast = Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0));
+            if ($name eq 'eval' && !$namespace) {
+                $ast->{'_scope'} = Perlito5::Grammar::Scope::get_snapshot()
+            }
+            $m->{'capture'} = ['term', $ast];
             return $m
         }
         if ($sig eq ';@') {
@@ -589,7 +593,8 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     push(@args, @{$arg})
                 }
             }
-            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0))];
+            my $ast = Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0));
+            $m->{'capture'} = ['term', $ast];
             return $m
         }
         if ($sig eq '*') {}
@@ -4395,6 +4400,21 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
     }
     push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT);
     @Perlito5::SCOPE_STMT = ()
+}
+sub Perlito5::Grammar::Scope::get_snapshot {
+    my @result;
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $block = $scope->{'block'};
+    if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
+        my $look = get_snapshot($block->[-1]);
+        unshift(@result, @{$look->{'block'}})
+    }
+    for my $item (@{$block}) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'}) {
+            unshift(@result, $item)
+        }
+    }
+    return {'block' => \@result}
 }
 1;
 package main;
@@ -9753,11 +9773,16 @@ package Perlito5::AST::Apply;
             $eval = Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [$arg])->emit_javascript2($level + 1, $wantarray)
         }
         else {
+            my $m;
             my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
-            my $m = Perlito5::Grammar::Expression::term_square($var_env_perl5, 0);
+            $m = Perlito5::Grammar::Expression::term_square($var_env_perl5, 0);
             $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
             my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
-            $eval = 'eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . $var_env_js . ', ' . Perlito5::Javascript2::escape_string($wantarray) . ']))'
+            my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
+            $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
+            $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
+            my $scope_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
+            $eval = 'eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . $var_env_js . ', ' . Perlito5::Javascript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
         }
         my $context = Perlito5::Javascript2::to_context($wantarray);
         Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')

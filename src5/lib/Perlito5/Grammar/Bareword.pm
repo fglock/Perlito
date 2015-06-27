@@ -462,14 +462,17 @@ sub term_bareword {
                     if $sig eq '_';
                 # ';$' --> ignore the missing arg
             }
-            $m->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
+            my $ast = Perlito5::AST::Apply->new(
                         code      => $name,
                         namespace => $namespace,
                         arguments => \@args,
                         bareword  => ($has_paren == 0)
-                    )
-                ];
+                    );
+            if ($name eq 'eval' && !$namespace) {
+                # add scope information to eval-string
+                $ast->{_scope} = Perlito5::Grammar::Scope::get_snapshot();
+            }
+            $m->{capture} = [ 'term', $ast ];
             return $m;
         }
 
@@ -489,14 +492,13 @@ sub term_bareword {
                     push @args, @$arg;
                 }
             }
-            $m->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
+            my $ast = Perlito5::AST::Apply->new(
                         code      => $name,
                         namespace => $namespace,
                         arguments => \@args,
                         bareword  => ($has_paren == 0)
-                    )
-                ];
+                    );
+            $m->{capture} = [ 'term', $ast ];
             return $m;
         }
 

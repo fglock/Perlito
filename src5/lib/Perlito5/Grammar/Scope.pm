@@ -90,5 +90,24 @@ sub check_variable_declarations {
     @Perlito5::SCOPE_STMT = ();
 }
 
+sub get_snapshot {
+    # return a structure with the variable declarations in the current compile-time scope
+    # this is used by eval-string at runtime
+    my @result;
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $block = $scope->{block};
+    if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
+        # lookup in the inner scope first
+        my $look = get_snapshot($block->[-1]);
+        unshift @result, @{ $look->{block} };
+    }
+    for my $item (@$block) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl}) {
+            unshift @result, $item;
+        }
+    }
+    return { block => \@result };
+}
+
 1;
 
