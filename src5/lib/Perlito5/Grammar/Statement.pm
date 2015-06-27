@@ -232,30 +232,6 @@ sub modifier {
 }
 
 
-sub check_variable_declarations {
-    # examine the variables that were used in the last statement
-    # - check if the variables were declared
-    # - insert the variables in the current compile-time scope
-
-    # print "env: ", Data::Dumper::Dumper( $Perlito5::SCOPE->{block} );
-    for my $item ( @Perlito5::SCOPE_STMT ) {
-        if (ref($item) eq 'Perlito5::AST::Var') {
-            my $var = $item;
-            my $look = Perlito5::Grammar::Block::lookup_variable($var);
-            if ( $Perlito5::STRICT ) {
-                if (!$look) {
-                    # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
-                    my $sigil = $var->{_real_sigil} || $var->{sigil};
-                    # TODO - die()
-                    # warn 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
-                }
-            }
-        }
-    }
-    push @{ $Perlito5::SCOPE->{block} }, @Perlito5::SCOPE_STMT;
-    @Perlito5::SCOPE_STMT = ();
-}
-
 sub statement_parse {
     ## my $str = $_[0];
     ## my $pos = $_[1];
@@ -267,7 +243,7 @@ sub statement_parse {
     my $m = statement_parse_inner(@_);
 
     return $m if !@Perlito5::SCOPE_STMT;
-    check_variable_declarations();
+    Perlito5::Grammar::Scope::check_variable_declarations();
     return $m;
 }
 
