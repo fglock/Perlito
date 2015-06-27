@@ -6,13 +6,12 @@ use strict;
 
 package Perlito5::Javascript2;
 {
-    my $label_count = 100;
     my %label;
     sub pkg {
         'p5pkg[' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME ) . ']'
     }
     sub get_label {
-        'tmp' . $label_count++
+        'tmp' . $Perlito5::ID++
     }
     sub tab {
         my $level = shift;

@@ -6,19 +6,18 @@ use feature 'say';
 
 package Perlito5::Javascript3;
 {
-    my $label_count = 100;
     my %label;
     sub pkg {
         # this is an optimization to reduce the number of lookups
         # this breaks eval() because the variable is not always seen at runtime
-        # $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+        # $label{ $Perlito5::PKG_NAME } ||= "p5" . $Perlito5::ID++
         'p5pkg["' . $Perlito5::PKG_NAME . '"]'
     }
     sub pkg_new_var {
-        $label{ $Perlito5::PKG_NAME } = "p5" . $label_count++
+        $label{ $Perlito5::PKG_NAME } = "p5" . $Perlito5::ID++
     }
     sub get_label {
-        $label_count++
+        $Perlito5::ID++
     }
 
     sub tab {

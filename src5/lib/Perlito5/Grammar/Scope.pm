@@ -96,8 +96,12 @@ sub check_variable_declarations {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
             my $look = lookup_variable($var);
-            if ( $Perlito5::STRICT ) {
-                if (!$look) {
+            if ($look) {
+                $var->{_id} = $look->{_id} if $look->{_id};
+            }
+            else {
+                # unknown variable
+                if ( $Perlito5::STRICT ) {
                     # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
                     if ($sigil ne '*') {

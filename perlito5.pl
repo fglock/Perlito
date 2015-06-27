@@ -1655,6 +1655,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         $type && !$Perlito5::PACKAGES->{$type} && die('No such class ' . $type);
         my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
         $var->{'_decl'} = $declarator;
+        $var->{'_id'} = $Perlito5::ID++;
         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
         $MATCH->{'capture'} = ['term', $decl];
         1
@@ -1722,6 +1723,7 @@ sub Perlito5::Grammar::Expression::term_local {
         $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
         my $var = $MATCH->{'capture'};
         $var->{'_decl'} = $declarator;
+        $var->{'_id'} = $Perlito5::ID++;
         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var);
         $MATCH->{'capture'} = ['term', $decl];
         1
@@ -4394,12 +4396,13 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
         if (ref($item) eq 'Perlito5::AST::Var') {
             my $var = $item;
             my $look = lookup_variable($var);
-            if ($Perlito5::STRICT) {
-                if (!$look) {
-                    my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-                    if ($sigil ne '*') {
-                        die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
-                    }
+            if ($look) {
+                $look->{'_id'} && ($var->{'_id'} = $look->{'_id'})
+            }
+            elsif ($Perlito5::STRICT) {
+                my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+                if ($sigil ne '*') {
+                    die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
                 }
             }
         }
@@ -7213,6 +7216,7 @@ our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
 our $BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE = $BASE_SCOPE;
+our $ID = 100;
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
     for split(':', ($ENV{'PERL5LIB'} || ''));
@@ -8529,13 +8533,12 @@ undef();
 # use strict
 package Perlito5::Javascript2;
 {
-    my $label_count = 100;
     my %label;
     sub Perlito5::Javascript2::pkg {
         'p5pkg[' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ']'
     }
     sub Perlito5::Javascript2::get_label {
-        'tmp' . $label_count++
+        'tmp' . $Perlito5::ID++
     }
     sub Perlito5::Javascript2::tab {
         my $level = shift;
@@ -10516,16 +10519,15 @@ undef();
 # use feature
 package Perlito5::Javascript3;
 {
-    my $label_count = 100;
     my %label;
     sub Perlito5::Javascript3::pkg {
         'p5pkg["' . $Perlito5::PKG_NAME . '"]'
     }
     sub Perlito5::Javascript3::pkg_new_var {
-        $label{$Perlito5::PKG_NAME} = 'p5' . $label_count++
+        $label{$Perlito5::PKG_NAME} = 'p5' . $Perlito5::ID++
     }
     sub Perlito5::Javascript3::get_label {
-        $label_count++
+        $Perlito5::ID++
     }
     sub Perlito5::Javascript3::tab {
         my $level = shift;

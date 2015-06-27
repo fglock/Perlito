@@ -119,12 +119,14 @@ $_->() for @RUN;
 #-----------------------
 
     # fails to compile
-    print z1, "\n"; # 5
----> No comma allowed after filehandle at x.pl line 2.
+    # print z1, "\n"; # 5
+    # ---> No comma allowed after filehandle at x.pl line 2.
+
+    print z1(), "\n"; # 5
     z0(10);
-    print z1, "\n"; # 10
+    print z1(), "\n"; # 10
     z0(20);
-    print z1, "\n"; # still 10
+    print z1(), "\n"; # still 10
     sub z0 {
         my $z = shift;
         sub z1 { $z; eval '$z' }

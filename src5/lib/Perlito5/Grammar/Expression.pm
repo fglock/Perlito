@@ -397,6 +397,7 @@ token term_declarator {
 
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
             $var->{_decl} = $declarator;
+            $var->{_id}   = $Perlito5::ID++;
             my $decl = Perlito5::AST::Decl->new(
                     decl => $declarator,
                     type => $type,
@@ -429,6 +430,7 @@ token term_local {
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
             $var->{_decl} = $declarator;
+            $var->{_id}   = $Perlito5::ID++;
             my $decl = Perlito5::AST::Decl->new(
                     decl => $declarator,
                     type => $type,
