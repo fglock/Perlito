@@ -11,6 +11,10 @@ our %Special_var = (
 
 my @Scope;
 
+sub new {
+    return { block => [] };
+}
+
 sub create_new_compile_time_scope {
     my $new_scope = { block => [] };
     push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope

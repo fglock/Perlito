@@ -1,5 +1,5 @@
 package Perlito5;
-
+use Perlito5::Grammar::Scope;
 use strict;
 
 $^O = 'perlito5'    unless defined $^O;
@@ -28,7 +28,8 @@ our $PKG_NAME     = '';   # current package being compiled
 our $LINE_NUMBER  = 0;    # current line number being compiled
 our $FILE_NAME    = '';   # current file name being compiled
 
-our $BASE_SCOPE   = { block => [] };    # information about the current compilation process
+# information about the current compilation process
+our $BASE_SCOPE   = Perlito5::Grammar::Scope->new();
 our $SCOPE        = $BASE_SCOPE;        # information about the current block being compiled
 
 # list of packages that "exist" - this is used by the indirect-object parser

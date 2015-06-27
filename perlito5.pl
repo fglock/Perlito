@@ -4335,6 +4335,9 @@ package Perlito5::Grammar::Scope;
 # use strict
 our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, '_' => 1);
 my @Scope;
+sub Perlito5::Grammar::Scope::new {
+    return {'block' => []}
+}
 sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
     my $new_scope = {'block' => []};
     push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
@@ -7151,6 +7154,7 @@ sub Perlito5::AST::Apply::op_auto {
 }
 package main;
 package Perlito5;
+# use Perlito5::Grammar::Scope
 # use strict
 defined(${chr(15)}) || (${chr(15)} = 'perlito5');
 defined(${'/'}) || (${'/'} = chr(10));
@@ -7172,7 +7176,7 @@ our %DATA_SECTION = ();
 our $PKG_NAME = '';
 our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
-our $BASE_SCOPE = {'block' => []};
+our $BASE_SCOPE = Perlito5::Grammar::Scope->new();
 our $SCOPE = $BASE_SCOPE;
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
