@@ -1136,14 +1136,14 @@ sub Perlito5::Grammar::Expression::reduce_postfix {
         return $v
     }
     if ($v->[1] eq '[ ]') {
-        if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+        if (ref($value) eq 'Perlito5::AST::Var') {
             $value->{'_real_sigil'} = '@'
         }
         $v = Perlito5::AST::Index->new('obj' => $value, 'index_exp' => $v->[2]);
         return $v
     }
     if ($v->[1] eq 'block') {
-        if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+        if (ref($value) eq 'Perlito5::AST::Var') {
             $value->{'_real_sigil'} = '%'
         }
         $v = Perlito5::AST::Lookup->new('obj' => $value, 'index_exp' => $v->[2]->[0]);
@@ -10457,8 +10457,11 @@ package main;
 undef();
 package Perlito5::Javascript2::Runtime;
 sub Perlito5::Javascript2::Runtime::perl5_to_js {
-    my($source, $namespace, $var_env_js, $want) = @_;
+    my($source, $namespace, $var_env_js, $want, $scope_js) = @_;
     my $strict_old = $Perlito5::STRICT;
+    local $Perlito5::BASE_SCOPE = $scope_js->[0];
+    local @Perlito5::SCOPE_STMT;
+    local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
     local $Perlito5::VAR = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
     my $match = Perlito5::Grammar::exp_stmts($source, 0);

@@ -3,11 +3,15 @@ use v5;
 package Perlito5::Javascript2::Runtime;
 
 sub perl5_to_js {
-    my ($source, $namespace, $var_env_js, $want) = @_;
+    my ($source, $namespace, $var_env_js, $want, $scope_js) = @_;
 
     # say "source: [" . $source . "]";
 
     my    $strict_old         = $Perlito5::STRICT;
+    local $Perlito5::BASE_SCOPE = $scope_js->[0];
+    local @Perlito5::SCOPE_STMT;
+    local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+
     local $Perlito5::VAR      = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
 
