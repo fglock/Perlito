@@ -4396,7 +4396,10 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
             my $look = lookup_variable($var);
             if ($Perlito5::STRICT) {
                 if (!$look) {
-                    my $sigil = $var->{'_real_sigil'} || $var->{'sigil'}
+                    my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+                    if ($sigil ne '*') {
+                        die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
+                    }
                 }
             }
         }

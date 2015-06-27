@@ -100,8 +100,11 @@ sub check_variable_declarations {
                 if (!$look) {
                     # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
-                    # TODO - die()
-                    # die 'Global symbol "' . $sigil . $var->{name} . '" requires explicit package name';
+                    if ($sigil ne '*') {
+                        die 'Global symbol "' . $sigil . $var->{name} . '"'
+                            . ' requires explicit package name'
+                            . ' at ' . $Perlito5::FILE_NAME;
+                    }
                 }
             }
         }
