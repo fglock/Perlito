@@ -9136,9 +9136,6 @@ package Perlito5::AST::Var;
             $decl_type = $decl->{'decl'}
         }
         elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
-            if ($Perlito5::STRICT && $self->{'name'} ne 0 && !(0 + $self->{'name'})) {
-                die('Global symbol "' . $perl5_name . '" requires explicit package name')
-            }
             $decl_type = 'our';
             $self->{'namespace'} = $Perlito5::PKG_NAME;
             return $self->emit_javascript2_global($level, $wantarray)
@@ -10383,9 +10380,6 @@ package Perlito5::AST::For;
                 $decl = $pre_declaration->{'decl'}
             }
             if (!$decl && !$v->{'namespace'}) {
-                if ($Perlito5::STRICT) {
-                    die('Global symbol "' . $perl5_name . '" requires explicit package name')
-                }
                 $decl = 'our'
             }
             $Perlito5::VAR->[0]->{$perl5_name} = {'decl' => $decl, 'namespace' => $namespace};
@@ -11033,9 +11027,6 @@ package Perlito5::AST::Var;
             $decl_type = $decl->{'decl'}
         }
         elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
-            if ($Perlito5::STRICT) {
-                die('Global symbol "' . $perl5_name . '" requires explicit package name')
-            }
             $self->{'namespace'} = $Perlito5::PKG_NAME
         }
         if ($self->{'sigil'} eq '@') {
@@ -11937,7 +11928,6 @@ package Perlito5::AST::Var;
         if ($decl) {
             $decl_type = $decl->{'decl'}
         }
-        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {}
         my $ns = '';
         if ($self->{'namespace'}) {
             $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';
@@ -12841,7 +12831,6 @@ package Perlito5::AST::Var;
         if ($decl) {
             $decl_type = $decl->{'decl'}
         }
-        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {}
         my $ns = '';
         if ($self->{'namespace'}) {
             $self->{'sigil'} eq '::' && return $self->{'namespace'};
@@ -13567,7 +13556,6 @@ package Perlito5::AST::Var;
         if ($decl) {
             $decl_type = $decl->{'decl'}
         }
-        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {}
         my $ns = '';
         if (0 && $self->{'namespace'}) {
             if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {

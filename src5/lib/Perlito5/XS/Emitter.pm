@@ -214,15 +214,7 @@ package Perlito5::AST::Var;
             $decl_type = $decl->{decl};
         }
         else {
-            if ( !$self->{namespace}
-               && $self->{sigil} ne '*'
-               )
-            {
-                # TODO - track globals; see javascript emitter
-                # if ( $Perlito5::STRICT ) {
-                #    die "Global symbol \"$xs_name\" requires explicit package name"
-                # }
-            }
+            # undeclared global
         }
 
         # Normalize the sigil

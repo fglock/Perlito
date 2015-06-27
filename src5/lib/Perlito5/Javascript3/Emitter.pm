@@ -951,33 +951,8 @@ package Perlito5::AST::Var;
                && $self->{sigil} ne '*' 
                )
             {
-                if ( $Perlito5::STRICT ) {
-                    die "Global symbol \"$perl5_name\" requires explicit package name"
-                }
-                # no strict - "auto-declare" the var
-
-                # $decl_type = 'our';
+                # undeclared global
                 $self->{namespace} = $Perlito5::PKG_NAME;
-
-                # my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
-                # my $s = 'p5pkg["' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
-
-                # if ($sigil eq '@') {
-                #     $s = $s . ' || (' . $s . ' = new p5Array([]))';  # init
-                #     $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
-                #     if ( $self->{sigil} eq '@' && $wantarray eq 'scalar' ) {
-                #         $s .= '.FETCHSIZE()';
-                #     }
-                # }
-                # elsif ($sigil eq '%') {
-                #     $s = $s . ' || (' . $s . ' = new p5Hash({}))';  # init
-                #     $s = 'p5pkg[' . $s . ', "' . $self->{namespace} . '"]["' . $table->{$sigil} . $str_name . '"]';
-                # }
-
-                # if ($self->{sigil} eq '$#') {
-                #     return '(' . $s . '.FETCHSIZE() - 1)';
-                # }
-                # return $s;
             }
         }
 

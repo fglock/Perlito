@@ -1207,13 +1207,7 @@ package Perlito5::AST::Var;
                && $self->{sigil} ne '*' 
                )
             {
-                if (  $Perlito5::STRICT 
-                   && $self->{name} ne '0'  # $0 @0 %0
-                   && !(0 + $self->{name})  # $1 @2 %3
-                ) {
-                    die "Global symbol \"$perl5_name\" requires explicit package name"
-                }
-                # no strict - "auto-declare" the var
+                # "auto-declare" global var
                 $decl_type = 'our';
                 $self->{namespace} = $Perlito5::PKG_NAME;
                 return $self->emit_javascript2_global($level, $wantarray);
@@ -3286,9 +3280,7 @@ package Perlito5::AST::For;
                 $decl = $pre_declaration->{decl};
             }
             if ( !$decl && !$v->{namespace} ) {
-                if ( $Perlito5::STRICT ) {
-                    die "Global symbol \"$perl5_name\" requires explicit package name"
-                }
+                # undeclared global
                 $decl = 'our';
             }
 
