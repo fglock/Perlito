@@ -1478,6 +1478,11 @@ sub Perlito5::Grammar::Expression::term_curly {
         }
         1
     }) && (do {
+        $MATCH->{'str'} = $str;
+        $MATCH->{'_save_scope'} = [@Perlito5::SCOPE_STMT];
+        @Perlito5::SCOPE_STMT = ();
+        1
+    }) && (do {
         my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{'to'});
         if ($m2) {
             $MATCH->{'to'} = $m2->{'to'};
@@ -1487,6 +1492,10 @@ sub Perlito5::Grammar::Expression::term_curly {
         else {
             0
         }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        @Perlito5::SCOPE_STMT = @{$MATCH->{'_save_scope'}};
+        1
     }) && (do {
         my $m = $MATCH;
         if (!(do {
