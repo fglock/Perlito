@@ -6,6 +6,7 @@ our %Special_var = (
     ARGV => 1,
     INC  => 1,
     ENV  => 1,
+    SIG  => 1,
     _    => 1,
 );
 
@@ -13,6 +14,25 @@ my @Scope;
 
 sub new {
     return { block => [] };
+}
+
+sub new_base_scope {
+    return {
+        block => [
+            bless({
+                'name' => 'a',
+                'namespace' => '',
+                'sigil' => '$',
+                '_decl' => 'our',
+            }, 'Perlito5::AST::Var'),
+            bless({
+                'name' => 'b',
+                'namespace' => '',
+                'sigil' => '$',
+                '_decl' => 'our',
+            }, 'Perlito5::AST::Var'),
+        ],
+    }
 }
 
 sub create_new_compile_time_scope {

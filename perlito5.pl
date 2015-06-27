@@ -4347,10 +4347,13 @@ Perlito5::Grammar::Precedence::add_term('require' => \&term_require);
 package main;
 package Perlito5::Grammar::Scope;
 # use strict
-our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, '_' => 1);
+our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, 'SIG' => 1, '_' => 1);
 my @Scope;
 sub Perlito5::Grammar::Scope::new {
     return {'block' => []}
+}
+sub Perlito5::Grammar::Scope::new_base_scope {
+    return {'block' => [bless({'name' => 'a', 'namespace' => '', 'sigil' => '$', '_decl' => 'our'}, 'Perlito5::AST::Var'), bless({'name' => 'b', 'namespace' => '', 'sigil' => '$', '_decl' => 'our'}, 'Perlito5::AST::Var')]}
 }
 sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
     my $new_scope = {'block' => []};
@@ -7205,7 +7208,7 @@ our %DATA_SECTION = ();
 our $PKG_NAME = '';
 our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
-our $BASE_SCOPE = Perlito5::Grammar::Scope->new();
+our $BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE = $BASE_SCOPE;
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
