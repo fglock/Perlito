@@ -568,7 +568,6 @@ package Perlito5::Javascript2::LexicalBlock;
                 $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
-                $Perlito5::VAR->[0]{'$AUTOLOAD'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
 
             my @var_decl = $decl->emit_javascript2_get_decl();
@@ -745,7 +744,6 @@ package Perlito5::AST::CompUnit;
               '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-              '$AUTOLOAD' => { decl => 'our', namespace => $Perlito5::PKG_NAME },
             }
         ];
         for my $comp_unit ( @$comp_units ) {

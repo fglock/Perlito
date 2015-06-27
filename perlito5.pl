@@ -8812,8 +8812,7 @@ package Perlito5::Javascript2::LexicalBlock;
                 $Perlito5::PKG_NAME = $decl->{'namespace'};
                 $Perlito5::VAR->[0]->{'$_'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
                 $Perlito5::VAR->[0]->{'$a'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
-                $Perlito5::VAR->[0]->{'$b'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
-                $Perlito5::VAR->[0]->{'$AUTOLOAD'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}
+                $Perlito5::VAR->[0]->{'$b'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}
             }
             my @var_decl = $decl->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
@@ -8891,7 +8890,7 @@ package Perlito5::AST::CompUnit;
             $str .= Perlito5::Javascript2::Sprintf->emit_javascript2()
         }
         $str .= 'var p5want;' . chr(10) . 'var List__ = [];' . chr(10);
-        $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$/' => {'decl' => 'our', 'namespace' => 'main'}, '$"' => {'decl' => 'our', 'namespace' => 'main'}, '$,' => {'decl' => 'our', 'namespace' => 'main'}, '$!' => {'decl' => 'our', 'namespace' => 'main'}, '$;' => {'decl' => 'our', 'namespace' => 'main'}, '$?' => {'decl' => 'our', 'namespace' => 'main'}, '$[' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '$^V' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '%SIG' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$AUTOLOAD' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
+        $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$/' => {'decl' => 'our', 'namespace' => 'main'}, '$"' => {'decl' => 'our', 'namespace' => 'main'}, '$,' => {'decl' => 'our', 'namespace' => 'main'}, '$!' => {'decl' => 'our', 'namespace' => 'main'}, '$;' => {'decl' => 'our', 'namespace' => 'main'}, '$?' => {'decl' => 'our', 'namespace' => 'main'}, '$[' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '$^V' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '%SIG' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
         for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . chr(10)
         }
@@ -10787,8 +10786,7 @@ package Perlito5::Javascript3::LexicalBlock;
                 $Perlito5::PKG_NAME = $decl->{'namespace'};
                 $Perlito5::VAR->[0]->{'$_'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
                 $Perlito5::VAR->[0]->{'$a'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
-                $Perlito5::VAR->[0]->{'$b'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME};
-                $Perlito5::VAR->[0]->{'$AUTOLOAD'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}
+                $Perlito5::VAR->[0]->{'$b'} = {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}
             }
             if ($decl->isa('Perlito5::AST::Decl')) {
                 push(@str, $decl->emit_javascript3_init())
@@ -10896,7 +10894,7 @@ package Perlito5::AST::CompUnit;
             $str .= Perlito5::Javascript3::Sprintf->emit_javascript2()
         }
         $str .= 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript3::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10);
-        $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$AUTOLOAD' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
+        $Perlito5::VAR = [{'@_' => {'decl' => 'my'}, '$@' => {'decl' => 'our', 'namespace' => 'main'}, '$|' => {'decl' => 'our', 'namespace' => 'main'}, '$^O' => {'decl' => 'our', 'namespace' => 'main'}, '%ENV' => {'decl' => 'our', 'namespace' => 'main'}, '%INC' => {'decl' => 'our', 'namespace' => 'main'}, '@#' => {'decl' => 'our', 'namespace' => 'main'}, '@ARGV' => {'decl' => 'our', 'namespace' => 'main'}, '@INC' => {'decl' => 'our', 'namespace' => 'main'}, '$_' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$a' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}, '$b' => {'decl' => 'our', 'namespace' => $Perlito5::PKG_NAME}}];
         for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_javascript3() . chr(10)
         }
