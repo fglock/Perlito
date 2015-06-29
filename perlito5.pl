@@ -4401,7 +4401,8 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
             my $var = $item;
             my $look = lookup_variable($var);
             if ($look) {
-                $look->{'_id'} && ($var->{'_id'} = $look->{'_id'})
+                $look->{'_id'} && ($var->{'_id'} = $look->{'_id'});
+                $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'})
             }
             elsif ($Perlito5::STRICT) {
                 my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};

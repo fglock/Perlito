@@ -31,6 +31,12 @@ sub new_base_scope {
                 'sigil' => '$',
                 '_decl' => 'our',
             }, 'Perlito5::AST::Var'),
+            # bless({
+            #     'name' => '/',
+            #     'namespace' => 'main',
+            #     'sigil' => '$',
+            #     '_decl' => 'our',
+            # }, 'Perlito5::AST::Var'),
         ],
     }
 }
@@ -98,6 +104,7 @@ sub check_variable_declarations {
             my $look = lookup_variable($var);
             if ($look) {
                 $var->{_id} = $look->{_id} if $look->{_id};
+                $var->{_decl} = $look->{_decl} if $look->{_decl};
             }
             else {
                 # unknown variable
