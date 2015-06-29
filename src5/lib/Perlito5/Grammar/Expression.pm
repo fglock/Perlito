@@ -429,6 +429,12 @@ token term_local {
             # hijack some string interpolation code to parse the possible subscript
             $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
             my $var = $MATCH->{capture};
+
+            my $look = Perlito5::Grammar::Scope::lookup_variable($var);
+            if ( $look && ($look->{_decl} eq 'my' || $look->{_decl} eq 'state') ) {
+                die "Can\'t localize lexical variable $var->{sigil}$var->{name}";
+            }
+
             $var->{_decl} = $declarator;
             $var->{_id}   = $Perlito5::ID++;
             my $decl = Perlito5::AST::Decl->new(

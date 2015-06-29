@@ -1722,6 +1722,10 @@ sub Perlito5::Grammar::Expression::term_local {
         $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
         $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
         my $var = $MATCH->{'capture'};
+        my $look = Perlito5::Grammar::Scope::lookup_variable($var);
+        if ($look && ($look->{'_decl'} eq 'my' || $look->{'_decl'} eq 'state')) {
+            die('Can' . chr(39) . 't localize lexical variable ' . $var->{'sigil'} . $var->{'name'})
+        }
         $var->{'_decl'} = $declarator;
         $var->{'_id'} = $Perlito5::ID++;
         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var);
@@ -9224,13 +9228,6 @@ package Perlito5::AST::Decl;
         my($self, $level, $wantarray) = @_;
         if ($self->{'decl'} eq 'local') {
             my $var = $self->{'var'};
-            if (ref($var) eq 'Perlito5::AST::Var') {
-                my $perl5_name = $var->perl5_name();
-                my $decl = $var->perl5_get_decl($perl5_name);
-                if ($decl && ($decl->{'decl'} eq 'my' || $decl->{'decl'} eq 'state')) {
-                    die('Can' . chr(39) . 't localize lexical variable ' . $perl5_name)
-                }
-            }
             my $var_set;
             my $tmp_name = Perlito5::Javascript2::get_label();
             if (ref($var) eq 'Perlito5::AST::Var') {

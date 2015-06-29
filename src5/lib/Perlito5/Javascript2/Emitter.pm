@@ -1315,13 +1315,6 @@ package Perlito5::AST::Decl;
 
         if ($self->{decl} eq 'local') {
             my $var = $self->{var};
-            if ( ref($var) eq 'Perlito5::AST::Var' ) {
-                my $perl5_name = $var->perl5_name;
-                my $decl = $var->perl5_get_decl( $perl5_name );
-                if ( $decl && ($decl->{decl} eq 'my' || $decl->{decl} eq 'state') ) {
-                    die "Can't localize lexical variable $perl5_name";
-                }
-            }
             my $var_set;
             my $tmp_name  = Perlito5::Javascript2::get_label();
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
