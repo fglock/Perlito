@@ -42,6 +42,9 @@ sub lookup_variable {
     return $var if $var->{_decl};           # predeclared variable
     return $var if $var->{sigil} eq '&';    # &sub - TODO
 
+    my $look = lookup_variable_inner($var, $scope);
+    return $look if $look;
+
     my $c = substr($var->{name}, 0, 1);
     if ( $Special_var{ $var->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         # special variable
@@ -49,9 +52,6 @@ sub lookup_variable {
         $var->{_namespace} = 'main';
         return $var;
     }
-
-    my $look = lookup_variable_inner($var, $scope);
-    return $look if $look;
 
     if ( $var->{sigil} eq '$' && ( $var->{name} eq 'a' || $var->{name} eq 'b' ) ) {
         # special variables $a and $b

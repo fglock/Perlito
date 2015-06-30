@@ -4379,14 +4379,14 @@ sub Perlito5::Grammar::Scope::lookup_variable {
     $var->{'namespace'} && return $var;
     $var->{'_decl'} && return $var;
     $var->{'sigil'} eq '&' && return $var;
+    my $look = lookup_variable_inner($var, $scope);
+    $look && return $look;
     my $c = substr($var->{'name'}, 0, 1);
     if ($Special_var{$var->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         $var->{'_decl'} = 'our';
         $var->{'_namespace'} = 'main';
         return $var
     }
-    my $look = lookup_variable_inner($var, $scope);
-    $look && return $look;
     if ($var->{'sigil'} eq '$' && ($var->{'name'} eq 'a' || $var->{'name'} eq 'b')) {
         $var->{'_decl'} = 'our';
         $var->{'_namespace'} = $Perlito5::PKG_NAME;
