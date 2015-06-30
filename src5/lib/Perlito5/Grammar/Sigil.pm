@@ -315,6 +315,7 @@ sub term_sigil {
                             sigil       => $sigil,
                             namespace   => $namespace,
                             name        => Perlito5::Match::flat($n),
+                            ( $sigil eq '$#' ? ( _real_sigil => '@' ) : () ),
                         )
                 ];
             return $n;
@@ -325,6 +326,7 @@ sub term_sigil {
                             sigil       => $sigil,
                             namespace   => $namespace,
                             name        => undef,
+                            ( $sigil eq '$#' ? ( _real_sigil => '@' ) : () ),
                         )
                 ];
             return $m;

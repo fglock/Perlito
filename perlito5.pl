@@ -3881,11 +3881,11 @@ sub Perlito5::Grammar::Sigil::term_sigil {
         my $namespace = Perlito5::Match::flat($m);
         my $n = Perlito5::Grammar::var_name($str, $m->{'to'});
         if ($n) {
-            $n->{'capture'} = ['term', Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => Perlito5::Match::flat($n))];
+            $n->{'capture'} = ['term', Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => Perlito5::Match::flat($n), ($sigil eq '$#' ? ('_real_sigil' => '@') : ()))];
             return $n
         }
         if ($namespace) {
-            $m->{'capture'} = ['term', Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => undef)];
+            $m->{'capture'} = ['term', Perlito5::AST::Var->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => undef, ($sigil eq '$#' ? ('_real_sigil' => '@') : ()))];
             return $m
         }
     }
