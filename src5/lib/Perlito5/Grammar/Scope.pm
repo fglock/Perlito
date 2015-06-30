@@ -105,6 +105,7 @@ sub check_variable_declarations {
             if ($look) {
                 $var->{_id} = $look->{_id} if $look->{_id};
                 $var->{_decl} = $look->{_decl} if $look->{_decl};
+                $var->{_namespace} = $look->{_namespace} if $look->{_namespace};
             }
             else {
                 # unknown variable

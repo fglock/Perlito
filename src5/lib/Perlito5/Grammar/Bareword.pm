@@ -531,18 +531,20 @@ sub term_bareword {
             ||  $name eq 'our'
             )
         {
+            my $declarator = $name;
             for my $var (@$arg) {
                 if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
                     # "local (undef)" is a no-op
                 }
                 else {
                     my $decl = Perlito5::AST::Decl->new(
-                            decl => $name,
+                            decl => $declarator,
                             type => '',
                             var  => $var,
                             attributes => [],
                         );
                     $var->{_decl} = $name;
+                    $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
                 }
             }
         }

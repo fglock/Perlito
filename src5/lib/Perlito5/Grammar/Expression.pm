@@ -398,6 +398,7 @@ token term_declarator {
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
             $var->{_decl} = $declarator;
             $var->{_id}   = $Perlito5::ID++;
+            $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
             my $decl = Perlito5::AST::Decl->new(
                     decl => $declarator,
                     type => $type,

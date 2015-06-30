@@ -607,11 +607,13 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         my $arg = $m->{'capture'}->[2];
         $arg = Perlito5::Grammar::Expression::expand_list($arg);
         if ($name eq 'local' || $name eq 'my' || $name eq 'state' || $name eq 'our') {
+            my $declarator = $name;
             for my $var (@{$arg}) {
                 if (ref($var) eq 'Perlito5::AST::Apply' && $var->{'code'} eq 'undef') {}
                 else {
-                    my $decl = Perlito5::AST::Decl->new('decl' => $name, 'type' => '', 'var' => $var, 'attributes' => []);
-                    $var->{'_decl'} = $name
+                    my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => '', 'var' => $var, 'attributes' => []);
+                    $var->{'_decl'} = $name;
+                    $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
                 }
             }
         }
@@ -1656,6 +1658,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
         $var->{'_decl'} = $declarator;
         $var->{'_id'} = $Perlito5::ID++;
+        $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
         $MATCH->{'capture'} = ['term', $decl];
         1
@@ -4402,7 +4405,8 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
             my $look = lookup_variable($var);
             if ($look) {
                 $look->{'_id'} && ($var->{'_id'} = $look->{'_id'});
-                $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'})
+                $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'});
+                $look->{'_namespace'} && ($var->{'_namespace'} = $look->{'_namespace'})
             }
             elsif ($Perlito5::STRICT) {
                 my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
