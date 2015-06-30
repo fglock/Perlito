@@ -17,28 +17,7 @@ sub new {
 }
 
 sub new_base_scope {
-    return {
-        block => [
-            bless({
-                'name' => 'a',
-                'namespace' => '',
-                'sigil' => '$',
-                '_decl' => 'our',
-            }, 'Perlito5::AST::Var'),
-            bless({
-                'name' => 'b',
-                'namespace' => '',
-                'sigil' => '$',
-                '_decl' => 'our',
-            }, 'Perlito5::AST::Var'),
-            # bless({
-            #     'name' => '/',
-            #     'namespace' => 'main',
-            #     'sigil' => '$',
-            #     '_decl' => 'our',
-            # }, 'Perlito5::AST::Var'),
-        ],
-    }
+    return { block => [] }
 }
 
 sub create_new_compile_time_scope {
@@ -57,7 +36,7 @@ sub end_compile_time_scope {
 sub lookup_variable {
     # search for a variable declaration in the compile-time scope
     my $var = shift;
-    ## return $var;
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
 
     return $var if $var->{namespace};       # global variable
     return $var if $var->{_decl};           # predeclared variable
@@ -66,14 +45,33 @@ sub lookup_variable {
     my $c = substr($var->{name}, 0, 1);
     if ( $Special_var{ $var->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         # special variable
+        $var->{_decl} = 'our';
+        $var->{_namespace} = 'main';
         return $var;
     }
 
-    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my $look = lookup_variable_inner($var, $scope);
+    return $look if $look;
+
+    if ( $var->{sigil} eq '$' && ( $var->{name} eq 'a' || $var->{name} eq 'b' ) ) {
+        # special variables $a and $b
+        $var->{_decl} = 'our';
+        $var->{_namespace} = $Perlito5::PKG_NAME;
+        return $var;
+    }
+    return;
+}
+
+
+sub lookup_variable_inner {
+    # search for a variable declaration in the compile-time scope
+    my $var = shift;
+    my $scope = shift();
+
     my $block = $scope->{block};
     if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
         # lookup in the inner scope first
-        my $look = lookup_variable($var, $block->[-1]);
+        my $look = lookup_variable_inner($var, $block->[-1]);
         return $look if $look;
     }
     for my $item (reverse @$block) {
@@ -88,7 +86,6 @@ sub lookup_variable {
             }
         }
     }
-    # print "not found\n";
     return;
 }
 
