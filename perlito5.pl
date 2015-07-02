@@ -4379,7 +4379,7 @@ sub Perlito5::Grammar::Scope::lookup_variable {
     $var->{'namespace'} && return $var;
     $var->{'_decl'} && return $var;
     $var->{'sigil'} eq '&' && return $var;
-    my $look = lookup_variable_inner($var, $scope);
+    my $look = lookup_variable_inner($var, $scope, 0);
     $look && return $look;
     my $c = substr($var->{'name'}, 0, 1);
     if ($Special_var{$var->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
@@ -4395,11 +4395,11 @@ sub Perlito5::Grammar::Scope::lookup_variable {
     return 
 }
 sub Perlito5::Grammar::Scope::lookup_variable_inner {
-    my $var = shift;
-    my $scope = shift();
+    my($var, $scope, $depth) = @_;
+    $depth > @Scope && return ;
     my $block = $scope->{'block'};
     if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
-        my $look = lookup_variable_inner($var, $block->[-1]);
+        my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
         $look && return $look
     }
     for my $item (reverse(@{$block})) {

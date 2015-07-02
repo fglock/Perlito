@@ -42,7 +42,7 @@ sub lookup_variable {
     return $var if $var->{_decl};           # predeclared variable
     return $var if $var->{sigil} eq '&';    # &sub - TODO
 
-    my $look = lookup_variable_inner($var, $scope);
+    my $look = lookup_variable_inner($var, $scope, 0);
     return $look if $look;
 
     my $c = substr($var->{name}, 0, 1);
@@ -65,13 +65,15 @@ sub lookup_variable {
 
 sub lookup_variable_inner {
     # search for a variable declaration in the compile-time scope
-    my $var = shift;
-    my $scope = shift();
+    my ($var, $scope, $depth) = @_;
+
+    # warn "depth $depth ", scalar(@Scope), "\n";
+    return if $depth > @Scope;
 
     my $block = $scope->{block};
     if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {
         # lookup in the inner scope first
-        my $look = lookup_variable_inner($var, $block->[-1]);
+        my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
         return $look if $look;
     }
     for my $item (reverse @$block) {
