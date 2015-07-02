@@ -189,6 +189,7 @@ sub new { my $class = shift; bless {@_}, $class }
 sub cond { $_[0]->{cond} }
 sub continue { $_[0]->{continue} }
 sub body { $_[0]->{body} }
+sub topic { $_[0]->{topic} }
 
 
 

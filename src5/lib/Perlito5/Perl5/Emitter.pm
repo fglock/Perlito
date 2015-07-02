@@ -428,7 +428,7 @@ package Perlito5::AST::For;
         }
 
         my @sig;
-        my $sig_ast = $self->{body}->sig();
+        my $sig_ast = $self->{topic};
         if (!$sig_ast) {
             # $_
         }

@@ -2168,12 +2168,12 @@ package Perlito5::AST::For;
         }
 
         my $cond = Perlito5::Javascript3::to_list([$self->{cond}], $level + 1);
-        if ($self->{body}->sig()) {
+        if ($self->{topic}) {
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
             # TODO - for without "my"
 
             # mark the variable as "declared"
-            my $v = $self->{body}->sig;
+            my $v = $self->{topic};
             $Perlito5::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
             my $sig = $v->emit_javascript3( $level + 1 );
             return 'p5for_lex('

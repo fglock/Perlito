@@ -3240,16 +3240,7 @@ package Perlito5::AST::For;
 
             my $cond = Perlito5::Javascript2::to_list([$self->{cond}], $level + 1);
 
-            my $topic;
-            $topic = $self->{body}{sig}
-                if ref($self->{body}) ne 'ARRAY';
-            if (!$topic) {
-                $topic = Perlito5::AST::Decl->new(
-                            decl => 'our',
-                            type => '',
-                            var  => Perlito5::AST::Var->new( name => '_', namespace => '', sigil => '$' ),
-                         );
-            }
+            my $topic = $self->{topic};
 
             my $decl = '';
             my $v = $topic;

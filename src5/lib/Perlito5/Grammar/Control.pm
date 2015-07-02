@@ -92,11 +92,11 @@ token for {
         <.Perlito5::Grammar::Space::opt_ws> 
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
             {   my $body = Perlito5::Match::flat($MATCH->{block});
-                $body->{sig} = $MATCH->{_tmp};
                 $MATCH->{capture} = Perlito5::AST::For->new( 
                         cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}), 
                         body  => $body,
-                        continue => $MATCH->{opt_continue_block}{capture}
+                        continue => $MATCH->{opt_continue_block}{capture},
+                        topic => $MATCH->{_tmp},
                      );
             }
     |
@@ -125,6 +125,8 @@ token for {
             ')' <block> <opt_continue_block>
         {
             my $header;
+            my $body = Perlito5::Match::flat($MATCH->{block});
+            my $topic;
             if ($MATCH->{c_style_for}) {
                 $header = [
                     $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture},
@@ -134,12 +136,18 @@ token for {
             }
             else {
                 $header = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture};
+                $topic  = Perlito5::AST::Var->new(
+                                        namespace => '',
+                                        name      => '_',
+                                        sigil     => '$'
+                                    );
             }
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => $header, 
-                    body  => Perlito5::Match::flat($MATCH->{block}),
-                    continue => $MATCH->{opt_continue_block}{capture}
+                    body  => $body,
+                    continue => $MATCH->{opt_continue_block}{capture},
+                    topic => $topic,
                  )
         }
     ]

@@ -962,7 +962,7 @@ sub Perlito5::Grammar::Statement::modifier {
         return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::While->new('cond' => Perlito5::AST::Apply->new('arguments' => [Perlito5::Match::flat($modifier_exp)], 'code' => 'prefix:<!>', 'namespace' => ''), 'body' => $expression)}
     }
     if ($modifier eq 'for' || $modifier eq 'foreach') {
-        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression)}
+        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression, 'topic' => Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))}
     }
     die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
 }
@@ -2325,8 +2325,7 @@ sub Perlito5::Grammar::for {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 my $body = Perlito5::Match::flat($MATCH->{'block'});
-                $body->{'sig'} = $MATCH->{'_tmp'};
-                $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'}), 'body' => $body, 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+                $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'}), 'body' => $body, 'continue' => $MATCH->{'opt_continue_block'}->{'capture'}, 'topic' => $MATCH->{'_tmp'});
                 1
             }))
         }) || (do {
@@ -2479,13 +2478,16 @@ sub Perlito5::Grammar::for {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 my $header;
+                my $body = Perlito5::Match::flat($MATCH->{'block'});
+                my $topic;
                 if ($MATCH->{'c_style_for'}) {
                     $header = [$MATCH->{'Perlito5::Grammar::Expression::exp_parse'}->{'capture'}, $MATCH->{'Perlito5::Grammar::exp'}->{'capture'}, $MATCH->{'Perlito5::Grammar::exp2'}->{'capture'}]
                 }
                 else {
-                    $header = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'}->{'capture'}
+                    $header = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'}->{'capture'};
+                    $topic = Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')
                 }
-                $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => $header, 'body' => Perlito5::Match::flat($MATCH->{'block'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+                $MATCH->{'capture'} = Perlito5::AST::For->new('cond' => $header, 'body' => $body, 'continue' => $MATCH->{'opt_continue_block'}->{'capture'}, 'topic' => $topic);
                 1
             }))
         })
@@ -8496,6 +8498,9 @@ sub Perlito5::AST::For::continue {
 sub Perlito5::AST::For::body {
     $_[0]->{'body'}
 }
+sub Perlito5::AST::For::topic {
+    $_[0]->{'topic'}
+}
 package Perlito5::AST::Given;
 sub Perlito5::AST::Given::new {
     my $class = shift;
@@ -10388,11 +10393,7 @@ package Perlito5::AST::For;
         }
         else {
             my $cond = Perlito5::Javascript2::to_list([$self->{'cond'}], $level + 1);
-            my $topic;
-            ref($self->{'body'}) ne 'ARRAY' && ($topic = $self->{'body'}->{'sig'});
-            if (!$topic) {
-                $topic = Perlito5::AST::Decl->new('decl' => 'our', 'type' => '', 'var' => Perlito5::AST::Var->new('name' => '_', 'namespace' => '', 'sigil' => '$'))
-            }
+            my $topic = $self->{'topic'};
             my $decl = '';
             my $v = $topic;
             if ($v->{'decl'}) {
@@ -11770,8 +11771,8 @@ package Perlito5::AST::For;
             return 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript3($level + 1) . ' ' : ' ') . ') {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::Javascript3::tab($level) . '}'
         }
         my $cond = Perlito5::Javascript3::to_list([$self->{'cond'}], $level + 1);
-        if ($self->{'body'}->sig()) {
-            my $v = $self->{'body'}->sig();
+        if ($self->{'topic'}) {
+            my $v = $self->{'topic'};
             $Perlito5::VAR->[0]->{$v->perl5_name()} = {'decl' => 'my'};
             my $sig = $v->emit_javascript3($level + 1);
             return 'p5for_lex(' . 'function (' . $sig . ') {' . chr(10) . (Perlito5::Javascript3::LexicalBlock->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::Javascript3::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
@@ -12141,7 +12142,7 @@ package Perlito5::AST::For;
             $cond = ['paren' => '(', $self->{'cond'}->emit_perl5()]
         }
         my @sig;
-        my $sig_ast = $self->{'body'}->sig();
+        my $sig_ast = $self->{'topic'};
         if (!$sig_ast) {}
         else {
             @sig = $sig_ast->emit_perl5()
@@ -13122,7 +13123,7 @@ package Perlito5::AST::For;
             $cond = $self->{'cond'}->emit_perl6()
         }
         my @sig;
-        my $sig_ast = $self->{'body'}->sig();
+        my $sig_ast = $self->{'topic'};
         if (!$sig_ast) {}
         else {
             ref($sig_ast) eq 'Perlito5::AST::Decl' && ($sig_ast = $sig_ast->{'var'});

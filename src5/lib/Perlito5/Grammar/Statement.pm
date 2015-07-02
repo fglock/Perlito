@@ -225,6 +225,11 @@ sub modifier {
             capture => Perlito5::AST::For->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
                 body     => $expression,
+                topic    => Perlito5::AST::Var->new(
+                                        namespace => '',
+                                        name      => '_',
+                                        sigil     => '$'
+                                    ),
             ) 
         };
     }
