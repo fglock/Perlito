@@ -1194,20 +1194,26 @@ package Perlito5::AST::Var;
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
         my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl( $perl5_name );
-        if ( $decl ) {
-            # say "found ", $decl->{decl};
-            $decl_type = $decl->{decl};
+        my $decl;
+        if ( $self->{_decl} eq 'my' ) {
+            $decl_type = $self->{_decl};
         }
         else {
-            if ( !$self->{namespace}
-               && $self->{sigil} ne '*' 
-               )
-            {
-                # "auto-declare" global var
-                $decl_type = 'our';
-                $self->{namespace} = $Perlito5::PKG_NAME;
-                return $self->emit_javascript2_global($level, $wantarray);
+            $decl = $self->perl5_get_decl( $perl5_name );
+            if ( $decl ) {
+                # say "found ", $decl->{decl};
+                $decl_type = $decl->{decl};
+            }
+            else {
+                if ( !$self->{namespace}
+                   && $self->{sigil} ne '*' 
+                   )
+                {
+                    # "auto-declare" global var
+                    $decl_type = 'our';
+                    $self->{namespace} = $Perlito5::PKG_NAME;
+                    return $self->emit_javascript2_global($level, $wantarray);
+                }
             }
         }
 
@@ -1321,10 +1327,8 @@ package Perlito5::AST::Decl;
                 $var_set = $var->emit_javascript2 . ' = v_' . $tmp_name;
             }
             else {
-                my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name);
-                push @{ $Perlito5::VAR }, { ('$' . $tmp_name) => { decl => 'my' } };
+                my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name, _decl => 'my' );
                 $var_set = $var->emit_javascript2_set($tmp);
-                pop @{ $Perlito5::VAR };
             }
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
                      'var v_' . $tmp_name . ' = ' . $var->emit_javascript2 . ';',

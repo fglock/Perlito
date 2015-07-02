@@ -9156,14 +9156,20 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         my $perl5_name = $self->perl5_name();
         my $decl_type;
-        my $decl = $self->perl5_get_decl($perl5_name);
-        if ($decl) {
-            $decl_type = $decl->{'decl'}
+        my $decl;
+        if ($self->{'_decl'} eq 'my') {
+            $decl_type = $self->{'_decl'}
         }
-        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
-            $decl_type = 'our';
-            $self->{'namespace'} = $Perlito5::PKG_NAME;
-            return $self->emit_javascript2_global($level, $wantarray)
+        else {
+            $decl = $self->perl5_get_decl($perl5_name);
+            if ($decl) {
+                $decl_type = $decl->{'decl'}
+            }
+            elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
+                $decl_type = 'our';
+                $self->{'namespace'} = $Perlito5::PKG_NAME;
+                return $self->emit_javascript2_global($level, $wantarray)
+            }
         }
         if ($self->{'sigil'} eq '@') {
             if ($wantarray eq 'scalar') {
@@ -9253,10 +9259,8 @@ package Perlito5::AST::Decl;
                 $var_set = $var->emit_javascript2() . ' = v_' . $tmp_name
             }
             else {
-                my $tmp = Perlito5::AST::Var->new('sigil' => '$', 'name' => $tmp_name);
-                push(@{$Perlito5::VAR}, {('$' . $tmp_name) => {'decl' => 'my'}});
-                $var_set = $var->emit_javascript2_set($tmp);
-                pop(@{$Perlito5::VAR})
+                my $tmp = Perlito5::AST::Var->new('sigil' => '$', 'name' => $tmp_name, '_decl' => 'my');
+                $var_set = $var->emit_javascript2_set($tmp)
             }
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var v_' . $tmp_name . ' = ' . $var->emit_javascript2() . ';', 'p5LOCAL.push(function(){ ' . $var_set . ' });', 'return ' . $var->emit_javascript2_set(Perlito5::AST::Apply->new('code' => 'undef', 'arguments' => [], 'namespace' => ''), $level + 1) . ';') . ';'
         }
