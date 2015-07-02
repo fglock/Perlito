@@ -627,6 +627,10 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         $m_name->{'to'} = $m_list->{'to'};
         return $m_name
     }
+    if (($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE')) {
+        $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
+        return $m_name
+    }
     $m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name];
     return $m_name
 }
@@ -9911,9 +9915,6 @@ package Perlito5::AST::Apply;
         return 'p5untie_' . $meth . '(' . $v->emit_javascript2($level) . ')'
     }, 'print' => sub {
         my($self, $level, $wantarray) = @_;
-        if (!$self->{'namespace'} && $self->{'bareword'}) {
-            $self->{'arguments'} = [Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_')]
-        }
         my @in = @{$self->{'arguments'}};
         my $fun;
         if ($self->{'special_arg'}) {
@@ -9926,9 +9927,6 @@ package Perlito5::AST::Apply;
         'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')'
     }, 'say' => sub {
         my($self, $level, $wantarray) = @_;
-        if (!$self->{'namespace'} && $self->{'bareword'}) {
-            $self->{'arguments'} = [Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_')]
-        }
         my @in = @{$self->{'arguments'}};
         my $fun;
         if ($self->{'special_arg'}) {

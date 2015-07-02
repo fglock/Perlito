@@ -2437,12 +2437,6 @@ package Perlito5::AST::Apply;
         },
         'print' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ( !$self->{namespace} && $self->{bareword} ) {
-                # print/say have no prototype; the default argument is $_
-                $self->{arguments} = [
-                    Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
-                ];
-            }
             my @in  = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
@@ -2456,12 +2450,6 @@ package Perlito5::AST::Apply;
         },
         'say' => sub {
             my ($self, $level, $wantarray) = @_;
-            if ( !$self->{namespace} && $self->{bareword} ) {
-                # print/say have no prototype; the default argument is $_
-                $self->{arguments} = [
-                    Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
-                ];
-            }
             my @in  = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {

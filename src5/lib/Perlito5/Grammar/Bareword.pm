@@ -573,6 +573,23 @@ sub term_bareword {
     }
 
     # it's just a bareword - we will disambiguate later
+
+    if ( ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE') ) {
+        $m_name->{capture} = [ 'term', 
+                Perlito5::AST::Apply->new(
+                    code      => $name,
+                    namespace => $namespace,
+                    arguments => [ Perlito5::AST::Var->new(
+                                        namespace => '',
+                                        name      => '_',
+                                        sigil     => '$'
+                                    ),
+                                 ],
+                )
+            ];
+        return $m_name;
+    }
+
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
             $namespace,
             $name
