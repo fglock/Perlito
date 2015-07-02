@@ -10045,7 +10045,7 @@ package Perlito5::AST::Apply;
         if ($arg->isa('Perlito5::AST::Lookup')) {
             my $v = $arg->obj();
             if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $v->namespace(), 'name' => $v->name());
+                $v->{'sigil'} = '%';
                 return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->autoquote($arg->{'index_exp'})->emit_javascript2($level) . ')'
             }
             return '(' . $v->emit_javascript2() . ')._hash_.hasOwnProperty(' . $arg->autoquote($arg->{'index_exp'})->emit_javascript2($level) . ')'
@@ -10053,7 +10053,7 @@ package Perlito5::AST::Apply;
         if ($arg->isa('Perlito5::AST::Index')) {
             my $v = $arg->obj();
             if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $v = Perlito5::AST::Var->new('sigil' => '@', 'namespace' => $v->namespace(), 'name' => $v->name());
+                $v->{'sigil'} = '@';
                 return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->{'index_exp'}->emit_javascript2($level) . ')'
             }
             return '(' . $v->emit_javascript2() . ')._array_.hasOwnProperty(' . $arg->{'index_exp'}->emit_javascript2($level) . ')'
