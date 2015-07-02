@@ -9046,8 +9046,8 @@ package Perlito5::AST::Index;
             return Perlito5::Javascript2::to_list([$self->{'obj'}], $level)
         }
         if ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '$') {
-            my $v = Perlito5::AST::Var->new(%{$self->{'obj'}}, 'sigil' => '@');
-            return $v->emit_javascript2($level)
+            $self->{'obj'}->{'sigil'} = '@';
+            return $self->{'obj'}->emit_javascript2($level)
         }
         else {
             return Perlito5::Javascript2::emit_javascript2_autovivify($self->{'obj'}, $level, 'array') . '._array_'
@@ -9069,13 +9069,19 @@ package Perlito5::AST::Lookup;
         $autovivification_type eq 'hash' && ($method = 'p5hget_hash');
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
-            $self->{'obj'}->isa('Perlito5::AST::Var') && ($v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name()));
+            if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
+                $v = $self->{'obj'};
+                $v->{'sigil'} = '%'
+            }
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
             return 'p5list_lookup_slice(' . $v->emit_javascript2($level, 'list') . ', ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
         }
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '%')) {
             my $v;
-            $self->{'obj'}->isa('Perlito5::AST::Var') && ($v = Perlito5::AST::Var->new('sigil' => '%', 'namespace' => $self->{'obj'}->namespace(), 'name' => $self->{'obj'}->name()));
+            if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
+                $v = $self->{'obj'};
+                $v->{'sigil'} = '%'
+            }
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
             return 'p5hash_lookup_slice(' . $v->emit_javascript2($level, 'list') . ', ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
         }
