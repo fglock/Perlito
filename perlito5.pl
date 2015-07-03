@@ -9225,7 +9225,7 @@ package Perlito5::AST::Var;
             return 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{'namespace'} || $Perlito5::PKG_NAME)) . '][' . Perlito5::Javascript2::escape_string($str_name) . ']'
         }
         if ($decl_type eq 'our') {
-            my $sigil = $self->{'sigil'} eq '$#' ? '@' : $self->{'sigil'};
+            my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{'namespace'} || $decl->{'namespace'})) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
             if ($self->{'sigil'} eq '$#') {
                 return '(' . $s . '.length - 1)'
