@@ -9262,16 +9262,17 @@ package Perlito5::AST::Var;
     }
     sub Perlito5::AST::Var::emit_javascript2_set_list {
         my($self, $level, $list) = @_;
-        if ($self->sigil() eq '$') {
+        my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
+        if ($sigil eq '$') {
             return $self->emit_javascript2() . ' = ' . $list . '.shift()'
         }
-        if ($self->sigil() eq '@') {
+        if ($sigil eq '@') {
             return join(';' . chr(10) . Perlito5::Javascript2::tab($level), $self->emit_javascript2() . ' = ' . $list, $list . ' = []')
         }
-        if ($self->sigil() eq '%') {
+        if ($sigil eq '%') {
             return join(';' . chr(10) . Perlito5::Javascript2::tab($level), $self->emit_javascript2() . ' = p5a_to_h(' . $list . ')', $list . ' = []')
         }
-        die('don' . chr(39) . 't know how to assign to variable ', $self->sigil(), $self->name())
+        die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
     }
     sub Perlito5::AST::Var::emit_javascript2_get_decl {
         ()

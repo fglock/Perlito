@@ -1293,22 +1293,23 @@ package Perlito5::AST::Var;
 
     sub emit_javascript2_set_list {
         my ($self, $level, $list) = @_;
-        if ( $self->sigil eq '$' ) {
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
+        if ( $sigil eq '$' ) {
             return $self->emit_javascript2() . ' = ' . $list  . '.shift()'
         }
-        if ( $self->sigil eq '@' ) {
+        if ( $sigil eq '@' ) {
             return join( ";\n" . Perlito5::Javascript2::tab($level),
                 $self->emit_javascript2() . ' = ' . $list,
                 $list . ' = []'
             );
         }
-        if ( $self->sigil eq '%' ) {
+        if ( $sigil eq '%' ) {
             return join( ";\n" . Perlito5::Javascript2::tab($level),
                 $self->emit_javascript2() . ' = p5a_to_h(' . $list  . ')',
                 $list . ' = []'
             );
         }
-        die "don't know how to assign to variable ", $self->sigil, $self->name;
+        die "don't know how to assign to variable ", $sigil, $self->name;
     }
 
     sub emit_javascript2_get_decl { () }
