@@ -1256,6 +1256,13 @@ package Perlito5::AST::Var;
             return 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Javascript2::escape_string($str_name) . ']';
         }
         if ( $decl_type eq 'our' ) {
+
+            # my $v1 = ($self->{namespace} || $decl->{namespace});
+            # my $v2 = ($self->{namespace} || $self->{_namespace});
+            # if ($v1 ne $v2) {
+            #     warn Data::Dumper::Dumper($self);
+            # }
+
             my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{namespace} || $decl->{namespace}) ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
 
             if ($self->{sigil} eq '$#') {

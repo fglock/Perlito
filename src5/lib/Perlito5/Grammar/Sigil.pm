@@ -44,7 +44,7 @@ my %special_var = (
     '$('  => '',
     '$)'  => '',
     '$['  => '',
-    '$]'  => 'main',
+    '$]'  => '',
     '@_'  => '',
 
     # '$*'  => '',  #  "$* is no longer supported"
@@ -146,7 +146,8 @@ sub term_special_var {
                                 Perlito5::AST::Var->new(
                                         sigil       => substr($s, 0, $len - 1),
                                         namespace   => $special_var{$s},
-                                        name        => substr($s, $len - 1, 1)
+                                        name        => substr($s, $len - 1, 1),
+                                        _namespace  => 'main',
                                     )
                           ]
             };
