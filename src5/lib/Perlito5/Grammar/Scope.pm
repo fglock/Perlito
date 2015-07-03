@@ -54,10 +54,12 @@ sub lookup_variable {
     }
 
     if ( $var->{sigil} eq '$' && ( $var->{name} eq 'a' || $var->{name} eq 'b' ) ) {
-        # special variables $a and $b
-        $var->{_decl} = 'our';
-        $var->{_namespace} = $Perlito5::PKG_NAME;
-        return $var;
+        if ( !$var->{_real_sigil} ) {
+            # special variables $a and $b
+            $var->{_decl} = 'our';
+            $var->{_namespace} = $Perlito5::PKG_NAME;
+            return $var;
+        }
     }
     return;
 }
