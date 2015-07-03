@@ -1258,8 +1258,9 @@ package Perlito5::AST::Var;
         if ( $decl_type eq 'our' ) {
 
             # my $v1 = ($self->{namespace} || $decl->{namespace});
-            # my $v2 = ($self->{namespace} || $self->{_namespace});
+            # my $v2 = ($self->{namespace} || $self->{_namespace} || $Package::PKG_NAME);
             # if ($v1 ne $v2) {
+            #     warn "\nnamespace: $v1 / $v2\n";
             #     warn Data::Dumper::Dumper($self);
             # }
 

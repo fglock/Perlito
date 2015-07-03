@@ -48,7 +48,7 @@ sub lookup_variable {
     my $c = substr($var->{name}, 0, 1);
     if ( $Special_var{ $var->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
         # special variable
-        $var->{_decl} = 'our';
+        $var->{_decl} = 'global';
         $var->{_namespace} = 'main';
         return $var;
     }
@@ -56,7 +56,7 @@ sub lookup_variable {
     if ( $var->{sigil} eq '$' && ( $var->{name} eq 'a' || $var->{name} eq 'b' ) ) {
         if ( !$var->{_real_sigil} ) {
             # special variables $a and $b
-            $var->{_decl} = 'our';
+            $var->{_decl} = 'global';
             $var->{_namespace} = $Perlito5::PKG_NAME;
             return $var;
         }
@@ -79,7 +79,9 @@ sub lookup_variable_inner {
         return $look if $look;
     }
     for my $item (reverse @$block) {
-        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} && $item->{name} eq $var->{name}) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl}
+            && $item->{_decl} ne 'global'
+            && $item->{name} eq $var->{name}) {
             my $sigil = $var->{_real_sigil} || $var->{sigil};
             # TODO - namespace
             # TODO - $a[10]  $#a  ${"a"}

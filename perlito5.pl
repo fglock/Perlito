@@ -4410,13 +4410,13 @@ sub Perlito5::Grammar::Scope::lookup_variable {
     $look && return $look;
     my $c = substr($var->{'name'}, 0, 1);
     if ($Special_var{$var->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
-        $var->{'_decl'} = 'our';
+        $var->{'_decl'} = 'global';
         $var->{'_namespace'} = 'main';
         return $var
     }
     if ($var->{'sigil'} eq '$' && ($var->{'name'} eq 'a' || $var->{'name'} eq 'b')) {
         if (!$var->{'_real_sigil'}) {
-            $var->{'_decl'} = 'our';
+            $var->{'_decl'} = 'global';
             $var->{'_namespace'} = $Perlito5::PKG_NAME;
             return $var
         }
@@ -4432,7 +4432,7 @@ sub Perlito5::Grammar::Scope::lookup_variable_inner {
         $look && return $look
     }
     for my $item (reverse(@{$block})) {
-        if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'name'} eq $var->{'name'}) {
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'_decl'} ne 'global' && $item->{'name'} eq $var->{'name'}) {
             my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
             if ($sigil eq $item->{'sigil'}) {
                 return $item
