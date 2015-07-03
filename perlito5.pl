@@ -10335,13 +10335,7 @@ package Perlito5::AST::If;
 package Perlito5::AST::When;
 {
     sub Perlito5::AST::When::emit_javascript2 {
-        my($self, $level, $wantarray) = @_;
-        my $cond = $self->{'cond'};
-        my $body = Perlito5::Javascript2::LexicalBlock->new('block' => $self->{'body'}->stmts());
-        my $expr = Perlito5::AST::Apply->new('code' => 'infix:<==>', 'arguments' => [Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $cond]);
-        my $label = '';
-        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($expr, $level + 1) . ' ) {' . chr(10) . Perlito5::Javascript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level + 1) . 'throw(new p5_error("next", ' . Perlito5::Javascript2::escape_string($label) . '))' . Perlito5::Javascript2::tab($level) . '}';
-        return $s
+        die(chr(39) . 'when' . chr(39) . ' is not implemented')
     }
     sub Perlito5::AST::When::emit_javascript2_get_decl {
         ()

@@ -3054,31 +3054,7 @@ package Perlito5::AST::If;
 package Perlito5::AST::When;
 {
     sub emit_javascript2 {
-        my ($self, $level, $wantarray) = @_;
-        my $cond = $self->{cond};
-        my $body  = Perlito5::Javascript2::LexicalBlock->new( block => $self->{body}->stmts );
-
-        # TODO - transform EXPR into ($_ ~~ EXPR)
-
-        # this is a placeholder - this is wrong!
-        my $expr = Perlito5::AST::Apply->new(
-            code => 'infix:<==>', 
-            arguments => [
-                Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
-                $cond
-            ] 
-        );
-
-        # TODO - use a "next" exception inside a "for", but use a "break" exception inside a "given"
-
-        my $label = '';  # TODO
-
-        my $s = 'if ( ' . Perlito5::Javascript2::to_bool($expr, $level + 1) . ' ) {' . "\n"
-            . Perlito5::Javascript2::tab($level + 1) .       $body->emit_javascript2( $level + 1, $wantarray ) . "\n"
-
-            . Perlito5::Javascript2::tab($level+1) . 'throw(new p5_error("next", ' . Perlito5::Javascript2::escape_string($label ) . '))'
-            . Perlito5::Javascript2::tab($level) . '}';
-        return $s;
+        die "'when' is not implemented";
     }
     sub emit_javascript2_get_decl { () }
     sub emit_javascript2_has_regex { () }
