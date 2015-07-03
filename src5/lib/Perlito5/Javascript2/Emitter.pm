@@ -2666,7 +2666,6 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    $v->{sigil} = '@';
                     return '(' . $v->emit_javascript2() . ').hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
                 }
                 return '(' . $v->emit_javascript2() . ')._array_.hasOwnProperty(' . $arg->{index_exp}->emit_javascript2($level) . ')';
