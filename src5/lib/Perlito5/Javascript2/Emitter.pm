@@ -1164,7 +1164,7 @@ package Perlito5::AST::Var;
     sub emit_javascript2_global {
         my ($self, $level, $wantarray) = @_;
         my $str_name = $self->{name};
-        my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
 
         if ($sigil eq '$' && $self->{name} > 0) {
             # regex captures
