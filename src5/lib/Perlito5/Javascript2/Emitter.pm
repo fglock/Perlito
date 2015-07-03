@@ -1271,23 +1271,24 @@ package Perlito5::AST::Var;
         my ($self, $arguments, $level, $wantarray) = @_;
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
-        if ( $self->sigil eq '$' ) {
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
+        if ( $sigil eq '$' ) {
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . $close
         }
-        if ( $self->sigil eq '@' ) {
+        if ( $sigil eq '@' ) {
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . $close
         }
-        if ( $self->sigil eq '%' ) {
+        if ( $sigil eq '%' ) {
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1, 'hash') . $close 
         }
-        if ( $self->sigil eq '*' ) {
+        if ( $sigil eq '*' ) {
             return 'p5typeglob_set(' 
             .   Perlito5::Javascript2::escape_string($self->{namespace} || $Perlito5::PKG_NAME) . ', '
             .   Perlito5::Javascript2::escape_string($self->{name}) . ', ' 
             .   Perlito5::Javascript2::to_scalar([$arguments], $level+1)
             . ')'
         }
-        die "don't know how to assign to variable ", $self->sigil, $self->name;
+        die "don't know how to assign to variable ", $sigil, $self->name;
     }
 
     sub emit_javascript2_set_list {
