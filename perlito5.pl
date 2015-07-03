@@ -9728,7 +9728,6 @@ package Perlito5::AST::Apply;
         if ($arg->isa('Perlito5::AST::Lookup')) {
             my $v = $arg->obj();
             if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $v->{'sigil'} = '%';
                 return '(delete ' . $v->emit_javascript2() . '[' . $arg->autoquote($arg->{'index_exp'})->emit_javascript2($level) . '])'
             }
             return '(delete ' . $v->emit_javascript2() . '._hash_[' . $arg->autoquote($arg->{'index_exp'})->emit_javascript2($level) . '])'
@@ -9736,7 +9735,6 @@ package Perlito5::AST::Apply;
         if ($arg->isa('Perlito5::AST::Index')) {
             my $v = $arg->obj();
             if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $v->{'sigil'} = '@';
                 return '(delete ' . $v->emit_javascript2() . '[' . $arg->{'index_exp'}->emit_javascript2($level) . '])'
             }
             return '(delete ' . $v->emit_javascript2() . '._array_[' . $arg->{'index_exp'}->emit_javascript2($level) . '])'

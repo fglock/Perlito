@@ -1141,7 +1141,12 @@ package Perlito5::AST::Lookup;
            && $self->{obj}->sigil eq '$'
            )
         {
-            # my $v = $self->{obj};
+            # my $v = $self->{obj};   HERE
+
+            #if ($self->{obj}{_real_sigil} ne '%') {
+            #    warn Data::Dumper::Dumper($self->{obj});
+            #}
+
             my $v = Perlito5::AST::Var->new( %{$self->{obj}}, sigil => '%' );
             return $v->emit_javascript2($level)
         }
@@ -2031,7 +2036,6 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    $v->{sigil} = '%';
                     return '(delete ' . $v->emit_javascript2() . '[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
                 }
                 return '(delete ' . $v->emit_javascript2() . '._hash_[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
@@ -2042,7 +2046,6 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    $v->{sigil} = '@';
                     return '(delete ' . $v->emit_javascript2() . '[' . $arg->{index_exp}->emit_javascript2($level) . '])';
                 }
                 return '(delete ' . $v->emit_javascript2() . '._array_[' . $arg->{index_exp}->emit_javascript2($level) . '])';
