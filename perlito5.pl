@@ -9236,14 +9236,13 @@ package Perlito5::AST::Var;
             }
             return $s
         }
-        my $ns = '';
         if ($self->{'namespace'}) {
             return $self->emit_javascript2_global($level, $wantarray)
         }
         if ($self->{'sigil'} eq '$#') {
-            return '(' . $ns . $table->{'@'} . $str_name . '.length - 1)'
+            return '(' . $table->{'@'} . $str_name . '.length - 1)'
         }
-        $ns . $table->{$sigil} . $str_name
+        $table->{$sigil} . $str_name
     }
     sub Perlito5::AST::Var::emit_javascript2_set {
         my($self, $arguments, $level, $wantarray) = @_;
