@@ -1064,7 +1064,7 @@ package Perlito5::AST::Lookup;
             # @a{ 'x', 'y' }
             # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
             my $v;
-            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+            $v = $self->{obj}
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
@@ -1102,7 +1102,7 @@ package Perlito5::AST::Lookup;
             # @a{ 'x', 'y' }
             # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
             my $v;
-            $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{obj}->namespace, name => $self->{obj}->name )
+            $v = $self->{obj}
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
@@ -1141,6 +1141,7 @@ package Perlito5::AST::Lookup;
            && $self->{obj}->sigil eq '$'
            )
         {
+            # my $v = $self->{obj};
             my $v = Perlito5::AST::Var->new( %{$self->{obj}}, sigil => '%' );
             return $v->emit_javascript2($level)
         }
