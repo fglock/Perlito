@@ -2702,10 +2702,6 @@ package Perlito5::AST::Apply;
         'split' => sub {
             my ($self, $level, $wantarray) = @_;
             my @js;
-            push @{ $self->{arguments} }, Perlito5::AST::Buf->new( buf => ' ' )
-                if @{ $self->{arguments} } == 0;
-            push @{ $self->{arguments} }, Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' )
-                if @{ $self->{arguments} } == 1;
             my $arg = $self->{arguments}->[0];
             if ( $arg
               && $arg->isa('Perlito5::AST::Apply')

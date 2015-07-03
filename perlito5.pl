@@ -606,20 +606,31 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         }
         my $arg = $m->{'capture'}->[2];
         $arg = Perlito5::Grammar::Expression::expand_list($arg);
-        if ($name eq 'local' || $name eq 'my' || $name eq 'state' || $name eq 'our') {
-            my $declarator = $name;
-            for my $var (@{$arg}) {
-                if (ref($var) eq 'Perlito5::AST::Apply' && $var->{'code'} eq 'undef') {}
-                else {
-                    my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => '', 'var' => $var, 'attributes' => []);
-                    $var->{'_decl'} = $name;
-                    $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
+        if ($namespace eq '' || $namespace eq 'CORE') {
+            if ($name eq 'local' || $name eq 'my' || $name eq 'state' || $name eq 'our') {
+                my $declarator = $name;
+                for my $var (@{$arg}) {
+                    if (ref($var) eq 'Perlito5::AST::Apply' && $var->{'code'} eq 'undef') {}
+                    else {
+                        my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => '', 'var' => $var, 'attributes' => []);
+                        $var->{'_decl'} = $name;
+                        $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
+                    }
                 }
             }
-        }
-        if (@{$arg} == 0 && ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE')) {
-            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
-            return $m
+            if ($name eq 'print' || $name eq 'say') {
+                if (@{$arg} == 0) {
+                    push(@{$arg}, Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))
+                }
+            }
+            if ($name eq 'split') {
+                if (@{$arg} == 0) {
+                    push(@{$arg}, Perlito5::AST::Buf->new('buf' => ' '))
+                }
+                if (@{$arg} == 1) {
+                    push(@{$arg}, Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))
+                }
+            }
         }
         $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => $arg, 'proto' => $sig)];
         return $m
@@ -631,9 +642,15 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         $m_name->{'to'} = $m_list->{'to'};
         return $m_name
     }
-    if (($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE')) {
-        $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
-        return $m_name
+    if ($namespace eq '' || $namespace eq 'CORE') {
+        if ($name eq 'print' || $name eq 'say') {
+            $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
+            return $m_name
+        }
+        if ($name eq 'split' && ($namespace eq '' || $namespace eq 'CORE')) {
+            $m_name->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Buf->new('buf' => ' '), Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
+            return $m_name
+        }
     }
     $m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name];
     return $m_name
@@ -10095,8 +10112,6 @@ package Perlito5::AST::Apply;
     }, 'split' => sub {
         my($self, $level, $wantarray) = @_;
         my @js;
-        @{$self->{'arguments'}} == 0 && push(@{$self->{'arguments'}}, Perlito5::AST::Buf->new('buf' => ' '));
-        @{$self->{'arguments'}} == 1 && push(@{$self->{'arguments'}}, Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'));
         my $arg = $self->{'arguments'}->[0];
         if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
             push(@js, 'new RegExp(' . $arg->{'arguments'}->[0]->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($arg->{'arguments'}->[1]->{'buf'}) . ')');

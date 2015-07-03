@@ -525,43 +525,52 @@ sub term_bareword {
         if ( !$m ) { return $m };
         my $arg = $m->{capture}[2];
         $arg = Perlito5::Grammar::Expression::expand_list( $arg );
-        if  (   $name eq 'local'
-            ||  $name eq 'my'
-            ||  $name eq 'state'
-            ||  $name eq 'our'
-            )
-        {
-            my $declarator = $name;
-            for my $var (@$arg) {
-                if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
-                    # "local (undef)" is a no-op
-                }
-                else {
-                    my $decl = Perlito5::AST::Decl->new(
-                            decl => $declarator,
-                            type => '',
-                            var  => $var,
-                            attributes => [],
-                        );
-                    $var->{_decl} = $name;
-                    $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
+
+        if ( $namespace eq '' || $namespace eq 'CORE' ) {
+            if  (   $name eq 'local'
+                ||  $name eq 'my'
+                ||  $name eq 'state'
+                ||  $name eq 'our'
+                )
+            {
+                my $declarator = $name;
+                for my $var (@$arg) {
+                    if ( ref($var) eq 'Perlito5::AST::Apply' && $var->{code} eq 'undef' ) {
+                        # "local (undef)" is a no-op
+                    }
+                    else {
+                        my $decl = Perlito5::AST::Decl->new(
+                                decl => $declarator,
+                                type => '',
+                                var  => $var,
+                                attributes => [],
+                            );
+                        $var->{_decl} = $name;
+                        $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
+                    }
                 }
             }
-        }
-        if ( @$arg == 0 && ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE') ) {
-            $m->{capture} = [ 'term', 
-                    Perlito5::AST::Apply->new(
-                        code      => $name,
-                        namespace => $namespace,
-                        arguments => [ Perlito5::AST::Var->new(
-                                            namespace => '',
-                                            name      => '_',
-                                            sigil     => '$'
-                                        ),
-                                     ],
-                    )
-                ];
-            return $m;
+            if ( $name eq 'print' || $name eq 'say' ) {
+                if (@$arg == 0) {
+                    push @$arg, Perlito5::AST::Var->new(
+                                                namespace => '',
+                                                name      => '_',
+                                                sigil     => '$'
+                                            );
+                }
+            }
+            if ( $name eq 'split' ) {
+                if (@$arg == 0) {
+                    push @$arg, Perlito5::AST::Buf->new( buf => ' ' );
+                }
+                if (@$arg == 1) {
+                    push @$arg, Perlito5::AST::Var->new(
+                                                namespace => '',
+                                                name      => '_',
+                                                sigil     => '$'
+                                            );
+                }
+            }
         }
 
         $m->{capture} = [ 'term', 
@@ -588,23 +597,42 @@ sub term_bareword {
         return $m_name;
     }
 
-    # it's just a bareword - we will disambiguate later
-
-    if ( ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE') ) {
-        $m_name->{capture} = [ 'term', 
-                Perlito5::AST::Apply->new(
-                    code      => $name,
-                    namespace => $namespace,
-                    arguments => [ Perlito5::AST::Var->new(
-                                        namespace => '',
-                                        name      => '_',
-                                        sigil     => '$'
-                                    ),
-                                 ],
-                )
-            ];
-        return $m_name;
+    if ( $namespace eq '' || $namespace eq 'CORE' ) {
+        if ( $name eq 'print' || $name eq 'say' ) {
+            $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => [ Perlito5::AST::Var->new(
+                                            namespace => '',
+                                            name      => '_',
+                                            sigil     => '$'
+                                        ),
+                                     ],
+                    )
+                ];
+            return $m_name;
+        }
+        if ( $name eq 'split' && ($namespace eq '' || $namespace eq 'CORE') ) {
+            $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => [ 
+                                       Perlito5::AST::Buf->new( buf => ' ' ),
+                                       Perlito5::AST::Var->new(
+                                            namespace => '',
+                                            name      => '_',
+                                            sigil     => '$'
+                                        ),
+                                     ],
+                    )
+                ];
+            return $m_name;
+        }
     }
+
+    # it's just a bareword - we will disambiguate later
 
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
             $namespace,
