@@ -617,6 +617,10 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 }
             }
         }
+        if (@{$arg} == 0 && ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE')) {
+            $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => [Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$')])];
+            return $m
+        }
         $m->{'capture'} = ['term', Perlito5::AST::Apply->new('code' => $name, 'namespace' => $namespace, 'arguments' => $arg, 'proto' => $sig)];
         return $m
     }
@@ -8398,7 +8402,7 @@ sub Perlito5::AST::Var::perl5_get_decl {
     my $self = shift;
     my $perl5_name = shift;
     substr($perl5_name, 0, 1) eq '&' && return {'decl' => 'our'};
-    for (@{$Perlito5::VAR}) {
+    for $_ (@{$Perlito5::VAR}) {
         exists($_->{$perl5_name}) && return $_->{$perl5_name}
     }
     return undef
@@ -8656,7 +8660,7 @@ package Perlito5::Javascript2;
         my $literal_type = $_[2] || 'array';
         my $wantarray = 'list';
         my $interpolate = 0;
-        for (@{$items}) {
+        for $_ (@{$items}) {
             is_scalar($_) && ($interpolate = 1)
         }
         if ($literal_type eq 'hash') {
@@ -10644,7 +10648,7 @@ package Perlito5::Javascript3;
         my $literal_type = $_[2] || 'array';
         my $wantarray = 'list';
         my $interpolate = 0;
-        for (@{$items}) {
+        for $_ (@{$items}) {
             is_scalar($_) && ($interpolate = 1)
         }
         if ($literal_type eq 'hash') {
@@ -10779,7 +10783,7 @@ package Perlito5::Javascript3::LexicalBlock;
         my $level = shift;
         my $wantarray = shift;
         my @block;
-        for (@{$self->{'block'}}) {
+        for $_ (@{$self->{'block'}}) {
             if (defined($_)) {
                 push(@block, $_)
             }
@@ -10819,7 +10823,7 @@ package Perlito5::Javascript3::LexicalBlock;
                 push(@str, $decl->emit_javascript3_init())
             }
             if ($decl->isa('Perlito5::AST::Apply') && $decl->code() eq 'my') {
-                for (@{$decl->{'arguments'}}) {
+                for $_ (@{$decl->{'arguments'}}) {
                     if ($_->isa('Perlito5::AST::Var')) {
                         my $d = Perlito5::AST::Decl->new('decl' => $decl->code(), 'var' => $_);
                         push(@str, $d->emit_javascript3_init())
@@ -10832,7 +10836,7 @@ package Perlito5::Javascript3::LexicalBlock;
                     push(@str, $arg->emit_javascript3_init())
                 }
                 if ($arg->isa('Perlito5::AST::Apply') && $arg->code() eq 'my') {
-                    for (@{$arg->{'arguments'}}) {
+                    for $_ (@{$arg->{'arguments'}}) {
                         if ($_->isa('Perlito5::AST::Var')) {
                             my $d = Perlito5::AST::Decl->new('decl' => $arg->code(), 'var' => $_);
                             push(@str, $d->emit_javascript3_init())
@@ -12534,7 +12538,7 @@ sub Perlito5::TreeGrammar::Star {
 sub Perlito5::TreeGrammar::Progn {
     my($rule, $node) = @_;
     my $result;
-    for (@{$rule}[1 .. $#{$rule}]) {
+    for $_ (@{$rule}[1 .. $#{$rule}]) {
         $result = render($_, $node)
     }
     return $result
@@ -12542,7 +12546,7 @@ sub Perlito5::TreeGrammar::Progn {
 sub Perlito5::TreeGrammar::And {
     my($rule, $node) = @_;
     my $result;
-    for (@{$rule}[1 .. $#{$rule}]) {
+    for $_ (@{$rule}[1 .. $#{$rule}]) {
         $result = render($_, $node) or return 
     }
     return $result
@@ -12550,7 +12554,7 @@ sub Perlito5::TreeGrammar::And {
 sub Perlito5::TreeGrammar::Or {
     my($rule, $node) = @_;
     my $result;
-    for (@{$rule}[1 .. $#{$rule}]) {
+    for $_ (@{$rule}[1 .. $#{$rule}]) {
         $result = render($_, $node) and return $result
     }
     return 
@@ -13488,7 +13492,7 @@ package Perlito5::AST::CompUnit;
         my $self = $_[0];
         my $level = $_[1];
         my @body;
-        for (@{$self->{'body'}}) {
+        for $_ (@{$self->{'body'}}) {
             if (defined($_)) {
                 push(@body, $_)
             }

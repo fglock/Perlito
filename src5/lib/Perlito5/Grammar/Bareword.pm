@@ -548,6 +548,22 @@ sub term_bareword {
                 }
             }
         }
+        if ( @$arg == 0 && ($name eq 'print' || $name eq 'say') && ($namespace eq '' || $namespace eq 'CORE') ) {
+            $m->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => [ Perlito5::AST::Var->new(
+                                            namespace => '',
+                                            name      => '_',
+                                            sigil     => '$'
+                                        ),
+                                     ],
+                    )
+                ];
+            return $m;
+        }
+
         $m->{capture} = [ 'term', 
                 Perlito5::AST::Apply->new(
                     code      => $name,
