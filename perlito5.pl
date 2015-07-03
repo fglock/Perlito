@@ -9174,16 +9174,16 @@ package Perlito5::AST::Var;
         if ($sigil eq '@') {
             $s = $s . ' || (' . $s . ' = [])';
             $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
-            if ($self->{'sigil'} eq '@' && $wantarray eq 'scalar') {
-                $s .= '.length'
+            if ($self->{'sigil'} eq '$#') {
+                return '(' . $s . '.length - 1)'
+            }
+            if ($wantarray eq 'scalar') {
+                return $s . '.length'
             }
         }
         elsif ($sigil eq '%') {
             $s = $s . ' || (' . $s . ' = {})';
             $s = 'p5pkg[' . $s . ', ' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']'
-        }
-        if ($self->{'sigil'} eq '$#') {
-            return '(' . $s . '.length - 1)'
         }
         return $s
     }
