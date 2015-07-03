@@ -1011,7 +1011,6 @@ package Perlito5::AST::Lookup;
             my $v;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
-                $v->{sigil} = '%';
             }
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
@@ -1036,7 +1035,6 @@ package Perlito5::AST::Lookup;
             my $v;
             if ( $self->{obj}->isa('Perlito5::AST::Var') ) {
                 $v = $self->{obj};
-                $v->{sigil} = '%';
             }
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');

@@ -9100,8 +9100,7 @@ package Perlito5::AST::Lookup;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
             if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
-                $v = $self->{'obj'};
-                $v->{'sigil'} = '%'
+                $v = $self->{'obj'}
             }
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
             return 'p5list_lookup_slice(' . $v->emit_javascript2($level, 'list') . ', ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
@@ -9109,8 +9108,7 @@ package Perlito5::AST::Lookup;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '%')) {
             my $v;
             if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
-                $v = $self->{'obj'};
-                $v->{'sigil'} = '%'
+                $v = $self->{'obj'}
             }
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
             return 'p5hash_lookup_slice(' . $v->emit_javascript2($level, 'list') . ', ' . Perlito5::Javascript2::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Javascript2::to_context($wantarray) . ')'
