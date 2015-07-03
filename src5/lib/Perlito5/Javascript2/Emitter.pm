@@ -1643,15 +1643,15 @@ package Perlito5::AST::Apply;
         },
         'p5:s' => sub {
             my ($self, $level, $wantarray) = @_;
-            emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
+            emit_regex_javascript2( '=~', $self->{arguments}->[3], $self, $level, $wantarray );
         },
         'p5:m' => sub {
             my ($self, $level, $wantarray) = @_;
-            emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
+            emit_regex_javascript2( '=~', $self->{arguments}->[2], $self, $level, $wantarray );
         },
         'p5:tr' => sub {
             my ($self, $level, $wantarray) = @_;
-            emit_regex_javascript2( '=~', Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ), $self, $level, $wantarray );
+            emit_regex_javascript2( '=~', $self->{arguments}->[3], $self, $level, $wantarray );
         },
         'p5:qr' => sub {
             my ($self, $level, $wantarray) = @_;

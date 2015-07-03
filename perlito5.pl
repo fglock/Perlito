@@ -3169,7 +3169,7 @@ sub Perlito5::Grammar::String::m_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part1->{'to'} = $m->{'to'}
     }
-    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:m', 'arguments' => [$str_regex, Perlito5::AST::Buf->new('buf' => $modifiers)], 'namespace' => '');
+    $part1->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:m', 'arguments' => [$str_regex, Perlito5::AST::Buf->new('buf' => $modifiers), Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
     return $part1
 }
 sub Perlito5::Grammar::String::s_quote_parse {
@@ -3227,7 +3227,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
     if ($m) {
         $part2->{'to'} = $m->{'to'}
     }
-    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, $replace, Perlito5::AST::Buf->new('buf' => $modifiers)], 'namespace' => '');
+    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:s', 'arguments' => [$str_regex, $replace, Perlito5::AST::Buf->new('buf' => $modifiers), Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
     return $part2
 }
 sub Perlito5::Grammar::String::qr_quote_parse {
@@ -3333,7 +3333,7 @@ sub Perlito5::Grammar::String::tr_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
         $part2->{'to'} = $m->{'to'}
     }
-    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Buf->new('buf' => $modifiers)], 'namespace' => '');
+    $part2->{'capture'} = Perlito5::AST::Apply->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Buf->new('buf' => $modifiers), Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
     return $part2
 }
 sub Perlito5::Grammar::String::apply_quote_flags {
@@ -9507,13 +9507,13 @@ package Perlito5::AST::Apply;
         emit_regex_javascript2('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1], $level, $wantarray)
     }, 'p5:s' => sub {
         my($self, $level, $wantarray) = @_;
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
+        emit_regex_javascript2('=~', $self->{'arguments'}->[3], $self, $level, $wantarray)
     }, 'p5:m' => sub {
         my($self, $level, $wantarray) = @_;
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
+        emit_regex_javascript2('=~', $self->{'arguments'}->[2], $self, $level, $wantarray)
     }, 'p5:tr' => sub {
         my($self, $level, $wantarray) = @_;
-        emit_regex_javascript2('=~', Perlito5::AST::Var->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $self, $level, $wantarray)
+        emit_regex_javascript2('=~', $self->{'arguments'}->[3], $self, $level, $wantarray)
     }, 'p5:qr' => sub {
         my($self, $level, $wantarray) = @_;
         'p5qr(' . Perlito5::Javascript2::to_str($self->{'arguments'}->[0]) . ', ' . Perlito5::Javascript2::to_str($self->{'arguments'}->[1]) . ')'
