@@ -9168,7 +9168,7 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
         my $namespace = $self->{'namespace'} || $self->{'_namespace'} || $Perlito5::PKG_NAME;
-        if ($sigil eq '@' && $self->{'name'} eq '_' && $self->{'namespace'} eq 'main') {
+        if ($sigil eq '@' && $self->{'name'} eq '_' && $namespace eq 'main') {
             return 'List__'
         }
         if ($sigil eq '$' && $self->{'name'} > 0) {
