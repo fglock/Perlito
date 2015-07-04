@@ -1237,7 +1237,7 @@ package Perlito5::AST::Var;
             }
         }
 
-        if ( $decl_type eq 'our' || $self->{namespace}) {
+        if ( $decl_type ne 'my' ) {
             return $self->emit_javascript2_global($level, $wantarray);
         }
 
