@@ -614,7 +614,8 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     else {
                         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => '', 'var' => $var, 'attributes' => []);
                         $var->{'_decl'} = $name;
-                        $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
+                        $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
+                        $declarator eq 'local' && !$var->{'namespace'} && !$var->{'_namespace'} && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
                     }
                 }
             }
@@ -1754,8 +1755,9 @@ sub Perlito5::Grammar::Expression::term_local {
         if ($look && ($look->{'_decl'} eq 'my' || $look->{'_decl'} eq 'state')) {
             die('Can' . chr(39) . 't localize lexical variable ' . $var->{'sigil'} . $var->{'name'})
         }
-        $var->{'_decl'} = $declarator;
         $var->{'_id'} = $Perlito5::ID++;
+        $var->{'_decl'} = $declarator;
+        !$var->{'namespace'} && !$var->{'_namespace'} && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
         my $decl = Perlito5::AST::Decl->new('decl' => $declarator, 'type' => $type, 'var' => $var);
         $MATCH->{'capture'} = ['term', $decl];
         1

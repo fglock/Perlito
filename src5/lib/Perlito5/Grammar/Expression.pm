@@ -438,8 +438,10 @@ token term_local {
             # warn "look: ", Data::Dumper::Dumper($look)
             #     if ref($look) eq 'Perlito5::AST::Var';
 
-            $var->{_decl} = $declarator;
             $var->{_id}   = $Perlito5::ID++;
+            $var->{_decl} = $declarator;
+            $var->{_namespace} = $Perlito5::PKG_NAME
+                if !$var->{namespace} && !$var->{_namespace};
             my $decl = Perlito5::AST::Decl->new(
                     decl => $declarator,
                     type => $type,
