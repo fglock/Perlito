@@ -1262,8 +1262,9 @@ package Perlito5::AST::Var;
             #     warn "\nnamespace: $v1 / $v2\n";
             #     warn Data::Dumper::Dumper($self);
             # }
+            my $namespace = ($self->{namespace} || $self->{_namespace} || $Package::PKG_NAME);
 
-            my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{namespace} || $decl->{namespace}) ) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
+            my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
 
             if ($self->{sigil} eq '$#') {
                 return '(' . $s . '.length - 1)';
@@ -3211,7 +3212,7 @@ package Perlito5::AST::For;
                 $decl = $v->{decl};
                 $v    = $v->{var};
             }
-            my $namespace = $v->{namespace} || $Perlito5::PKG_NAME;
+            my $namespace = $v->{namespace} || $v->{_namespace} || $Perlito5::PKG_NAME;
 
             my $perl5_name = $v->perl5_name;
             my $pre_declaration = $v->perl5_get_decl( $perl5_name );
