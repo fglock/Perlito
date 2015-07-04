@@ -1232,12 +1232,13 @@ package Perlito5::AST::Var;
             }
             else {
                 if ( !$self->{namespace} ) {
-                    # "auto-declare" global var
                     $decl_type = 'our';
-                    $self->{namespace} = $Perlito5::PKG_NAME;
-                    return $self->emit_javascript2_global($level, $wantarray);
                 }
             }
+        }
+
+        if ( $decl_type eq 'our' || $self->{namespace}) {
+            return $self->emit_javascript2_global($level, $wantarray);
         }
 
         if ( $sigil eq '@' ) {
@@ -1250,10 +1251,6 @@ package Perlito5::AST::Var;
                     . ' : ' . $self->emit_javascript2($level, 'list') . '.length'
                     . ')';
             }
-        }
-
-        if ( $decl_type eq 'our' || $self->{namespace}) {
-            return $self->emit_javascript2_global($level, $wantarray);
         }
 
         if ($self->{sigil} eq '$#') {

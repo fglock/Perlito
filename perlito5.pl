@@ -9241,10 +9241,11 @@ package Perlito5::AST::Var;
                 $decl_type = $decl->{'decl'}
             }
             elsif (!$self->{'namespace'}) {
-                $decl_type = 'our';
-                $self->{'namespace'} = $Perlito5::PKG_NAME;
-                return $self->emit_javascript2_global($level, $wantarray)
+                $decl_type = 'our'
             }
+        }
+        if ($decl_type eq 'our' || $self->{'namespace'}) {
+            return $self->emit_javascript2_global($level, $wantarray)
         }
         if ($sigil eq '@') {
             if ($wantarray eq 'scalar') {
@@ -9253,9 +9254,6 @@ package Perlito5::AST::Var;
             if ($wantarray eq 'runtime') {
                 return '(p5want' . ' ? ' . $self->emit_javascript2($level, 'list') . ' : ' . $self->emit_javascript2($level, 'list') . '.length' . ')'
             }
-        }
-        if ($decl_type eq 'our' || $self->{'namespace'}) {
-            return $self->emit_javascript2_global($level, $wantarray)
         }
         if ($self->{'sigil'} eq '$#') {
             return '(' . $table->{'@'} . $str_name . '.length - 1)'
