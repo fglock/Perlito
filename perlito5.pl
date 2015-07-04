@@ -4451,11 +4451,15 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
                 $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'});
                 $look->{'_namespace'} && ($var->{'_namespace'} = $look->{'_namespace'})
             }
-            elsif ($Perlito5::STRICT) {
-                my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-                if ($sigil ne '*') {
-                    die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
+            else {
+                if ($Perlito5::STRICT) {
+                    my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+                    if ($sigil ne '*') {
+                        die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
+                    }
                 }
+                $var->{'_decl'} = 'global';
+                $var->{'_namespace'} = $Perlito5::PKG_NAME
             }
         }
     }

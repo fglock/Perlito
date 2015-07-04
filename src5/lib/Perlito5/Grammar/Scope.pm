@@ -121,6 +121,8 @@ sub check_variable_declarations {
                             . ' at ' . $Perlito5::FILE_NAME;
                     }
                 }
+                $var->{_decl} = 'global';
+                $var->{_namespace} = $Perlito5::PKG_NAME;
             }
         }
     }
