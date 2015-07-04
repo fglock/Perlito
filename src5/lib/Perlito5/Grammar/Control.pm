@@ -163,11 +163,14 @@ token while {
             if ($cond eq '*undef*') {
                 $cond = Perlito5::AST::Int->new( int => 1 );
             }
-            $MATCH->{capture} = Perlito5::AST::While->new( 
+            my $stmt = Perlito5::AST::While->new( 
                     cond  => $cond, 
                     body  => Perlito5::Match::flat($MATCH->{block}),
                     continue => $MATCH->{opt_continue_block}{capture}
-                 )
+                 );
+            my $out = Perlito5::Macro::while_file($stmt);
+            $stmt = $out if $out;
+            $MATCH->{capture} = $stmt;
         }
     { Perlito5::Grammar::Scope::end_compile_time_scope() }
 };

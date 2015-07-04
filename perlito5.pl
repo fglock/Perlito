@@ -779,7 +779,53 @@ sub Perlito5::Grammar::Attribute::opt_attribute {
 }
 1;
 package main;
+undef();
+package Perlito5::Macro;
+# use strict
+{
+    package Perlito5::AST::Apply;
+    # use strict
+    my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>', 'infix:<x=>' => 'infix:<x>');
+    sub Perlito5::AST::Apply::op_assign {
+        my $self = $_[0];
+        my $code = $self->{'code'};
+        ref($code) && return 0;
+        if (exists($op{$code})) {
+            return Perlito5::AST::Apply->new('code' => 'infix:<=>', 'arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new('code' => $op{$code}, 'arguments' => $self->{'arguments'})])
+        }
+        return 0
+    }
+    my %op_auto = ('prefix:<++>' => 1, 'prefix:<-->' => 1, 'postfix:<++>' => 1, 'postfix:<-->' => 1);
+    sub Perlito5::AST::Apply::op_auto {
+        my $self = $_[0];
+        my $code = $self->{'code'};
+        ref($code) && return 0;
+        if (exists($op_auto{$code})) {
+            my $paren = $self->{'arguments'}->[0];
+            if ($paren->{'code'} eq 'circumfix:<( )>') {
+                my $arg = $paren->{'arguments'}->[-1];
+                if ($arg->{'code'} eq 'infix:<=>') {
+                    my $var = $arg->{'arguments'}->[0];
+                    return Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [Perlito5::AST::Block->new('stmts' => [$paren, Perlito5::AST::Apply->new('code' => $code, 'arguments' => [$var])])])
+                }
+            }
+        }
+        return 0
+    }
+}
+sub Perlito5::Macro::while_file {
+    my $self = $_[0];
+    ref($self) ne 'Perlito5::AST::While' && return 0;
+    my $cond = $self->{'cond'};
+    if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq 'readline')) {
+        $self->{'cond'} = bless({'arguments' => [bless({'arguments' => [Perlito5::AST::Var->new('name' => '_', 'namespace' => '', 'sigil' => '$'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply');
+        return $self
+    }
+    return 0
+}
+package main;
 package Perlito5::Grammar::Statement;
+# use Perlito5::Macro
 my @Statement_chars;
 my %Statement;
 sub Perlito5::Grammar::Statement::add_statement {
@@ -978,10 +1024,14 @@ sub Perlito5::Grammar::Statement::modifier {
         return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::When->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression)}
     }
     if ($modifier eq 'while') {
-        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::While->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression)}
+        my $stmt = Perlito5::AST::While->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression);
+        my $out = Perlito5::Macro::while_file($stmt);
+        $out && ($stmt = $out);
+        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => $stmt}
     }
     if ($modifier eq 'until') {
-        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::While->new('cond' => Perlito5::AST::Apply->new('arguments' => [Perlito5::Match::flat($modifier_exp)], 'code' => 'prefix:<!>', 'namespace' => ''), 'body' => $expression)}
+        my $stmt = Perlito5::AST::While->new('cond' => Perlito5::AST::Apply->new('arguments' => [Perlito5::Match::flat($modifier_exp)], 'code' => 'prefix:<!>', 'namespace' => ''), 'body' => $expression);
+        return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => $stmt}
     }
     if ($modifier eq 'for' || $modifier eq 'foreach') {
         return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression, 'topic' => Perlito5::AST::Var->new('namespace' => '', 'name' => '_', 'sigil' => '$'))}
@@ -2574,7 +2624,10 @@ sub Perlito5::Grammar::while {
         if ($cond eq '*undef*') {
             $cond = Perlito5::AST::Int->new('int' => 1)
         }
-        $MATCH->{'capture'} = Perlito5::AST::While->new('cond' => $cond, 'body' => Perlito5::Match::flat($MATCH->{'block'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+        my $stmt = Perlito5::AST::While->new('cond' => $cond, 'body' => Perlito5::Match::flat($MATCH->{'block'}), 'continue' => $MATCH->{'opt_continue_block'}->{'capture'});
+        my $out = Perlito5::Macro::while_file($stmt);
+        $out && ($stmt = $out);
+        $MATCH->{'capture'} = $stmt;
         1
     }) && (do {
         $MATCH->{'str'} = $str;
@@ -7216,39 +7269,6 @@ sub Perlito5::Grammar::exp_stmts {
     return {'str' => $str, 'to' => $pos, 'capture' => \@stmts}
 }
 package main;
-undef();
-package Perlito5::Macro;
-# use strict
-package Perlito5::AST::Apply;
-# use strict
-my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>', 'infix:<x=>' => 'infix:<x>');
-sub Perlito5::AST::Apply::op_assign {
-    my $self = $_[0];
-    my $code = $self->{'code'};
-    ref($code) && return 0;
-    if (exists($op{$code})) {
-        return Perlito5::AST::Apply->new('code' => 'infix:<=>', 'arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new('code' => $op{$code}, 'arguments' => $self->{'arguments'})])
-    }
-    return 0
-}
-my %op_auto = ('prefix:<++>' => 1, 'prefix:<-->' => 1, 'postfix:<++>' => 1, 'postfix:<-->' => 1);
-sub Perlito5::AST::Apply::op_auto {
-    my $self = $_[0];
-    my $code = $self->{'code'};
-    ref($code) && return 0;
-    if (exists($op_auto{$code})) {
-        my $paren = $self->{'arguments'}->[0];
-        if ($paren->{'code'} eq 'circumfix:<( )>') {
-            my $arg = $paren->{'arguments'}->[-1];
-            if ($arg->{'code'} eq 'infix:<=>') {
-                my $var = $arg->{'arguments'}->[0];
-                return Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [Perlito5::AST::Block->new('stmts' => [$paren, Perlito5::AST::Apply->new('code' => $code, 'arguments' => [$var])])])
-            }
-        }
-    }
-    return 0
-}
-package main;
 package Perlito5;
 # use Perlito5::Grammar::Scope
 # use strict
@@ -10358,9 +10378,6 @@ package Perlito5::AST::While;
         my $cond = $self->{'cond'};
         my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do' ? 1 : 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-        if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq 'readline')) {
-            $cond = bless({'arguments' => [bless({'arguments' => [bless({'name' => '_', 'namespace' => '', 'sigil' => '$'}, 'Perlito5::AST::Var'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply')
-        }
         my @str;
         my $old_level = $level;
         unshift(@{$Perlito5::VAR}, {});

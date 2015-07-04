@@ -2,6 +2,7 @@ use v5;
 package Perlito5::Macro;
 use strict;
 
+{
 package Perlito5::AST::Apply;
 use strict;
 
@@ -85,6 +86,39 @@ sub op_auto {
     return 0;
 }
 
+} # /package
+
+
+sub while_file {
+    my $self = $_[0];
+    return 0
+        if ref($self) ne 'Perlito5::AST::While';
+    my $cond = $self->{cond};
+    if ($cond->isa('Perlito5::AST::Apply') && ($cond->{code} eq 'readline')) {
+        # while (<>) ...  is rewritten as  while ( defined($_ = <>) ) { ...
+        $self->{cond} = bless({
+                'arguments' => [
+                    bless({
+                        'arguments' => [
+                            Perlito5::AST::Var->new(
+                                'name' => '_',
+                                'namespace' => '',
+                                'sigil' => '$',
+                            ),
+                            $cond,
+                        ],
+                        'code' => 'infix:<=>',
+                        'namespace' => '',
+                    }, 'Perlito5::AST::Apply'),
+                ],
+                'bareword' => '',
+                'code' => 'defined',
+                'namespace' => '',
+            }, 'Perlito5::AST::Apply');
+        return $self;
+    }
+    return 0;
+}
 
 =begin
 

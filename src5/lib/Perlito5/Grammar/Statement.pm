@@ -1,5 +1,6 @@
 
 package Perlito5::Grammar::Statement;
+use Perlito5::Macro;
 
 
 my @Statement_chars;
@@ -195,25 +196,29 @@ sub modifier {
         };
     }
     if ($modifier eq 'while') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::While->new(
+        my $stmt = Perlito5::AST::While->new(
                 cond     => Perlito5::Match::flat($modifier_exp),
                 body     => $expression,
-            ) 
+            );
+        my $out = Perlito5::Macro::while_file($stmt);
+        $stmt = $out if $out;
+        return {
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
+            capture => $stmt,
         };
     }
     if ($modifier eq 'until') {
-        return {
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
-            capture => Perlito5::AST::While->new(
+        my $stmt = Perlito5::AST::While->new(
                 cond     => Perlito5::AST::Apply->new(
                                 'arguments' => [ Perlito5::Match::flat($modifier_exp) ],
                                 'code'      => 'prefix:<!>',
                                 'namespace' => '',
                             ),
                 body     => $expression,
-            ) 
+            );
+        return {
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{to},
+            capture => $stmt,
         };
     }
     if  (  $modifier eq 'for'
