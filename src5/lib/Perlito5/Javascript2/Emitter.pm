@@ -1254,25 +1254,7 @@ package Perlito5::AST::Var;
         if ( $sigil eq '*' ) {
             return 'p5pkg[' . Perlito5::Javascript2::escape_string(($self->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Javascript2::escape_string($str_name) . ']';
         }
-        if ( $decl_type eq 'our' ) {
-
-            # my $v1 = ($self->{namespace} || $decl->{namespace});
-            # my $v2 = ($self->{namespace} || $self->{_namespace} || $Package::PKG_NAME);
-            # if ($v1 ne $v2) {
-            #     warn "\nnamespace: $v1 / $v2\n";
-            #     warn Data::Dumper::Dumper($self);
-            # }
-            my $namespace = ($self->{namespace} || $self->{_namespace} || $Package::PKG_NAME);
-
-            my $s = 'p5pkg[' . Perlito5::Javascript2::escape_string($namespace) . '][' . Perlito5::Javascript2::escape_string($table->{$sigil} . $str_name) . ']';
-
-            if ($self->{sigil} eq '$#') {
-                return '(' . $s . '.length - 1)';
-            }
-            return $s;
-        }
-
-        if ($self->{namespace}) {
+        if ( $decl_type eq 'our' || $self->{namespace}) {
             return $self->emit_javascript2_global($level, $wantarray);
         }
 
