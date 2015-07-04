@@ -1265,29 +1265,29 @@ var p5while = function(func, cond, cont, label, redo) {
 };
 
 var p5map = function(namespace, func, args) {
-    var v_old = namespace["v__"];
+    var v_old = p5pkg["main"]["v__"];
     var out = [];
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        p5pkg["main"]["v__"] = args[i];
         var o = p5list_to_a([func(1)]);
         for(var j = 0; j < o.length; j++) {
             out.push(o[j]);
         }
     }
-    namespace["v__"] = v_old;
+    p5pkg["main"]["v__"] = v_old;
     return out;
 };
 
 var p5grep = function(namespace, func, args) {
-    var v_old = namespace["v__"];
+    var v_old = p5pkg["main"]["v__"];
     var out = [];
     for(var i = 0; i < args.length; i++) {
-        namespace["v__"] = args[i];
+        p5pkg["main"]["v__"] = args[i];
         if (p5bool(func(0))) {
             out.push(args[i])
         }
     }
-    namespace["v__"] = v_old;
+    p5pkg["main"]["v__"] = v_old;
     return out;
 };
 

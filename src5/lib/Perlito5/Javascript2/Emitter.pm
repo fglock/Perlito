@@ -564,7 +564,6 @@ package Perlito5::Javascript2::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{namespace};
-                $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
@@ -740,7 +739,7 @@ package Perlito5::AST::CompUnit;
               '@#'    => { decl => 'our', namespace => 'main' },
               '@ARGV' => { decl => 'our', namespace => 'main' },
               '@INC'  => { decl => 'our', namespace => 'main' },
-              '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '$_'    => { decl => 'our', namespace => 'main' },
               '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
             }
