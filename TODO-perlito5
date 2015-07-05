@@ -435,7 +435,6 @@ TODO list for Perlito5
 -- lvalue pos($str)
 -- pos($str)
 -- lvalue chomp(), chop()
--- lvalue $#a
 -- lvalue subroutine
 
 -- bug: variable aliases create copies instead
@@ -476,6 +475,8 @@ TODO list for Perlito5
 
 
 * Javascript - implemented but missing more tests
+
+-- lvalue $#a
 
 -- local
    add tests:  exiting a block with 'last' doesn't retrieve previous 'local' values:
