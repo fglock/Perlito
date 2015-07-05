@@ -1213,6 +1213,12 @@ package Perlito5::AST::Var;
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . $close
         }
         if ( $sigil eq '@' ) {
+
+            if ($self->{sigil} eq '$#') {
+                $self->{sigil} = '@';
+                return $open . $self->emit_javascript2() . '.length = 1 + ' . Perlito5::Javascript2::to_scalar([$arguments], $level+1) . $close
+            }
+
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . $close
         }
         if ( $sigil eq '%' ) {

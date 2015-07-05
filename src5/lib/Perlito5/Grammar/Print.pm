@@ -152,8 +152,14 @@ token term_print {
     [
         '('
             <.Perlito5::Grammar::Space::opt_ws>
-            <the_object>
-            <Perlito5::Grammar::Expression::list_parse>
+            { $MATCH->{_scope} = $#Perlito5::SCOPE_STMT }
+            [ <the_object>
+              <Perlito5::Grammar::Expression::list_parse>
+            | { # backtrack
+                $#Perlito5::SCOPE_STMT = $MATCH->{_scope};
+                return;
+              }
+            ]
         ')'
 
         { 
@@ -169,8 +175,14 @@ token term_print {
             ]
         }
     |
-        <the_object>
-        <Perlito5::Grammar::Expression::list_parse>
+        { $MATCH->{_scope} = $#Perlito5::SCOPE_STMT }
+        [ <the_object>
+          <Perlito5::Grammar::Expression::list_parse>
+        | { # backtrack
+            $#Perlito5::SCOPE_STMT = $MATCH->{_scope};
+            return;
+          }
+        ]
 
         { 
             my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
