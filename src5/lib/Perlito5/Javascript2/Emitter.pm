@@ -564,18 +564,13 @@ package Perlito5::Javascript2::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{namespace};
-                $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
-                $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
 
             my @var_decl = $decl->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
 
-                # my $perl5_name = $arg->{'var'}->perl5_name();
-                # if ( $Perlito5::VAR->[0]->{$perl5_name} ) {
-                #     # TODO - create a new context for the redeclared variable
-                #     # print "redeclared $perl5_name\n"
-                # }
+                # TODO - create a new context for the redeclared variable
+                # print "redeclared $perl5_name\n"
 
                 push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
@@ -591,10 +586,8 @@ package Perlito5::Javascript2::LexicalBlock;
             for my $arg (@var_decl) {
 
                 my $perl5_name = $arg->{'var'}->perl5_name();
-                if ( $Perlito5::VAR->[0]->{$perl5_name} ) {
-                    # TODO - create a new context for the redeclared variable
-                    # print "redeclared $perl5_name\n"
-                }
+                # TODO - create a new context for the redeclared variable
+                # print "redeclared $perl5_name\n"
 
                 push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
@@ -720,30 +713,7 @@ package Perlito5::AST::CompUnit;
         }
         $str .= "var p5want;\n"
              .  "var List__ = [];\n";
-        $Perlito5::VAR = [
-            { '@_'    => { decl => 'my',                      }, # TODO - verify
-              '$@'    => { decl => 'our', namespace => 'main' },
-              '$|'    => { decl => 'our', namespace => 'main' },
-              '$/'    => { decl => 'our', namespace => 'main' },
-              '$"'    => { decl => 'our', namespace => 'main' },
-              '$,'    => { decl => 'our', namespace => 'main' },
-              '$!'    => { decl => 'our', namespace => 'main' },
-              '$;'    => { decl => 'our', namespace => 'main' },
-              '$?'    => { decl => 'our', namespace => 'main' },
-              '$['    => { decl => 'our', namespace => 'main' },
-              '$^O'   => { decl => 'our', namespace => 'main' },
-              '$^V'   => { decl => 'our', namespace => 'main' },
-              '%ENV'  => { decl => 'our', namespace => 'main' },
-              '%INC'  => { decl => 'our', namespace => 'main' },
-              '%SIG'  => { decl => 'our', namespace => 'main' },
-              '@#'    => { decl => 'our', namespace => 'main' },
-              '@ARGV' => { decl => 'our', namespace => 'main' },
-              '@INC'  => { decl => 'our', namespace => 'main' },
-              '$_'    => { decl => 'our', namespace => 'main' },
-              '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-              '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-            }
-        ];
+        $Perlito5::VAR = [ {} ];
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . "\n";
         }
