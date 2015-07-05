@@ -4439,7 +4439,6 @@ package main;
 package Perlito5::Grammar::Scope;
 # use strict
 our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, 'SIG' => 1, '_' => 1);
-my @Scope;
 sub Perlito5::Grammar::Scope::new {
     return {'block' => []}
 }
@@ -4449,11 +4448,17 @@ sub Perlito5::Grammar::Scope::new_base_scope {
 sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
     my $new_scope = {'block' => []};
     push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
-    push(@Scope, $Perlito5::SCOPE);
+    $Perlito5::SCOPE_DEPTH++;
     $Perlito5::SCOPE = $new_scope
 }
 sub Perlito5::Grammar::Scope::end_compile_time_scope {
-    $Perlito5::SCOPE = pop(@Scope)
+    my $pos = 0;
+    $Perlito5::SCOPE_DEPTH--;
+    $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+    while ($Perlito5::SCOPE_DEPTH > $pos) {
+        $pos++;
+        $Perlito5::SCOPE = $Perlito5::SCOPE->{'block'}->[-1]
+    }
 }
 sub Perlito5::Grammar::Scope::lookup_variable {
     my $var = shift;
@@ -4480,7 +4485,7 @@ sub Perlito5::Grammar::Scope::lookup_variable {
 }
 sub Perlito5::Grammar::Scope::lookup_variable_inner {
     my($var, $scope, $depth) = @_;
-    $depth > @Scope && return ;
+    $depth > $Perlito5::SCOPE_DEPTH && return ;
     my $block = $scope->{'block'};
     if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
         my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
@@ -7294,6 +7299,8 @@ our $LINE_NUMBER = 0;
 our $FILE_NAME = '';
 our $BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE = $BASE_SCOPE;
+our $SCOPE_DEPTH = 0;
+our @SCOPE_STMT = ();
 our $ID = 100;
 our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
 push(@INC, $_)
@@ -9840,6 +9847,10 @@ package Perlito5::AST::Apply;
         }
         my $tmp_strict = $Perlito5::STRICT;
         $Perlito5::STRICT = 0;
+        local $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
+        local $Perlito5::SCOPE = $BASE_SCOPE;
+        local $Perlito5::SCOPE_DEPTH = 0;
+        local @Perlito5::SCOPE_STMT = ();
         my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})]);
         my $js = $ast->emit_javascript2($level, $wantarray);
         $Perlito5::STRICT = $tmp_strict;
@@ -10517,8 +10528,13 @@ sub Perlito5::Javascript2::Runtime::perl5_to_js {
     local $Perlito5::BASE_SCOPE = $scope_js->[0];
     local @Perlito5::SCOPE_STMT;
     local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+    local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::VAR = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
+    if (!$Perlito5::BASE_SCOPE) {
+        $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
+        $Perlito5::SCOPE = $BASE_SCOPE
+    }
     my $match = Perlito5::Grammar::exp_stmts($source, 0);
     if (!$match || $match->{'to'} != length($source)) {
         die('Syntax error in eval near pos ', $match->{'to'})

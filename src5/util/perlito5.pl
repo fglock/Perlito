@@ -258,6 +258,11 @@ if ($backend && @ARGV) {
                   ";
     }
 
+    # TODO - reset information about the current compilation process,
+    #        this should happen before the eval-string below is *compiled*.
+    # our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
+    # our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
+
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;

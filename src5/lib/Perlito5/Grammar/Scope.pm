@@ -10,8 +10,6 @@ our %Special_var = (
     _    => 1,
 );
 
-my @Scope;
-
 sub new {
     return { block => [] };
 }
@@ -23,14 +21,20 @@ sub new_base_scope {
 sub create_new_compile_time_scope {
     my $new_scope = { block => [] };
     push @{ $Perlito5::SCOPE->{block} }, $new_scope;   # start new compile-time lexical scope
-    push @Scope, $Perlito5::SCOPE;
-    # warn "ENTER ",scalar(@Scope)," $Perlito5::PKG_NAME \n";
+    $Perlito5::SCOPE_DEPTH++;
+    # warn "ENTER ", $Perlito5::SCOPE_DEPTH, " $Perlito5::PKG_NAME \n";
     $Perlito5::SCOPE = $new_scope;
 }
 
 sub end_compile_time_scope {
-    # warn "EXIT  ",scalar(@Scope),"\n";
-    $Perlito5::SCOPE = pop @Scope;
+    # warn "EXIT  ", $Perlito5::SCOPE_DEPTH, "\n";
+    my $pos = 0;
+    $Perlito5::SCOPE_DEPTH--;
+    $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+    while ($Perlito5::SCOPE_DEPTH > $pos) {
+        $pos++;
+        $Perlito5::SCOPE = $Perlito5::SCOPE->{block}[-1]; 
+    }
 }
 
 sub lookup_variable {
@@ -69,8 +73,8 @@ sub lookup_variable_inner {
     # search for a variable declaration in the compile-time scope
     my ($var, $scope, $depth) = @_;
 
-    # warn "depth $depth ", scalar(@Scope), "\n";
-    return if $depth > @Scope;
+    # warn "depth $depth ", $Perlito5::SCOPE_DEPTH, "\n";
+    return if $depth > $Perlito5::SCOPE_DEPTH;
 
     my $block = $scope->{block};
     if ( @$block && ref($block->[-1]) eq 'HASH' && $block->[-1]{block} ) {

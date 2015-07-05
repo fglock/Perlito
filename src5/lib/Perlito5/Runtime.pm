@@ -31,6 +31,9 @@ our $FILE_NAME    = '';   # current file name being compiled
 # information about the current compilation process
 our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
+our $SCOPE_DEPTH  = 0;
+our @SCOPE_STMT = ();
+
 our $ID           = 100;    # generic "id" source; increment after use
 
 # list of packages that "exist" - this is used by the indirect-object parser

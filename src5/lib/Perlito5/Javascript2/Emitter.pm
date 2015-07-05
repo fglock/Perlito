@@ -1226,6 +1226,11 @@ package Perlito5::AST::Var;
         }
         else {
             $decl = $self->perl5_get_decl( $perl5_name );
+
+            # warn "\nVar\n";
+            # warn Data::Dumper::Dumper($decl);
+            # warn Data::Dumper::Dumper($self);
+
             if ( $decl ) {
                 # say "found ", $decl->{decl};
                 $decl_type = $decl->{decl};
@@ -2205,6 +2210,14 @@ package Perlito5::AST::Apply;
             # do EXPR
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
+            # information about the current compilation process
+            local $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
+            local $Perlito5::SCOPE = $BASE_SCOPE;
+            local $Perlito5::SCOPE_DEPTH = 0;
+            local @Perlito5::SCOPE_STMT = ();
+
+            # warn "in do_file BASE_SCOPE: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+
             my $ast =
                 Perlito5::AST::Apply->new(
                     code => 'eval',
@@ -2251,7 +2264,7 @@ package Perlito5::AST::Apply;
 
                 # compile-time env
                 my $scope_perl5 = Perlito5::Dumper::ast_dumper( [$self->{_scope}] );
-                # say "at eval: ", $scope_perl5;
+                # warn "at eval save scope: ", $scope_perl5;
                 $m = Perlito5::Grammar::Expression::term_square( $scope_perl5, 0 );
                 $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
                 # say Perlito5::Dumper::ast_dumper( $m );
