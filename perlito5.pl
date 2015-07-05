@@ -4466,7 +4466,6 @@ sub Perlito5::Grammar::Scope::lookup_variable {
     my $scope = shift() // $Perlito5::BASE_SCOPE;
     $var->{'namespace'} && return $var;
     $var->{'_decl'} && return $var;
-    $var->{'sigil'} eq '&' && return $var;
     my $look = lookup_variable_inner($var, $scope, 0);
     $look && return $look;
     my $c = substr($var->{'name'}, 0, 1);
@@ -4515,7 +4514,7 @@ sub Perlito5::Grammar::Scope::check_variable_declarations {
             else {
                 if ($Perlito5::STRICT) {
                     my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-                    if ($sigil ne '*') {
+                    if ($sigil ne '*' && $sigil ne '&') {
                         die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
                     }
                 }
@@ -9178,7 +9177,7 @@ package Perlito5::AST::Var;
         my($self, $level, $wantarray) = @_;
         my $str_name = $self->{'name'};
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
-        my $namespace = $self->{'namespace'} || $self->{'_namespace'} || $Perlito5::PKG_NAME;
+        my $namespace = $self->{'namespace'} || $self->{'_namespace'};
         if ($sigil eq '@' && $self->{'name'} eq '_' && $namespace eq 'main') {
             my $s = 'List__';
             if ($self->{'sigil'} eq '$#') {
@@ -9257,7 +9256,8 @@ package Perlito5::AST::Var;
             return $open . $self->emit_javascript2() . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level + 1, 'hash') . $close
         }
         if ($sigil eq '*') {
-            return 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'} || $Perlito5::PKG_NAME) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . Perlito5::Javascript2::to_scalar([$arguments], $level + 1) . ')'
+            my $namespace = $self->{'namespace'} || $self->{'_namespace'};
+            return 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($namespace) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . Perlito5::Javascript2::to_scalar([$arguments], $level + 1) . ')'
         }
         die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
     }

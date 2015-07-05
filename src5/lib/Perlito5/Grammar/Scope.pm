@@ -44,7 +44,6 @@ sub lookup_variable {
 
     return $var if $var->{namespace};       # global variable
     return $var if $var->{_decl};           # predeclared variable
-    return $var if $var->{sigil} eq '&';    # &sub - TODO
 
     my $look = lookup_variable_inner($var, $scope, 0);
     return $look if $look;
@@ -119,7 +118,7 @@ sub check_variable_declarations {
                 if ( $Perlito5::STRICT ) {
                     # warn "look: ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
                     my $sigil = $var->{_real_sigil} || $var->{sigil};
-                    if ($sigil ne '*') {
+                    if ($sigil ne '*' && $sigil ne '&') {
                         die 'Global symbol "' . $sigil . $var->{name} . '"'
                             . ' requires explicit package name'
                             . ' at ' . $Perlito5::FILE_NAME;
