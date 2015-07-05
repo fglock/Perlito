@@ -123,12 +123,6 @@ sub perl5_name {
     $sigil = '@' if $sigil eq '$#';
     $sigil . ( $self->{namespace} ? $self->{namespace} . '::' : '' ) . $self->{name}
 }
-sub perl5_get_decl {
-    # TODO - cleanup (obsolete)
-    my $self = shift;
-    my $perl5_name = shift;
-    return undef;
-}
 
 
 package Perlito5::AST::Proto;

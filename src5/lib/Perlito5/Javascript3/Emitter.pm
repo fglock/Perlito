@@ -915,24 +915,6 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
-        my $perl5_name = $self->perl5_name;
-        # say "looking up $perl5_name";
-        my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl( $perl5_name );
-        if ( $decl ) {
-            # say "found ", $decl->{decl};
-            $decl_type = $decl->{decl};
-        }
-        else {
-            if ( !$self->{namespace}
-               && $self->{sigil} ne '*' 
-               )
-            {
-                # undeclared global
-                $self->{namespace} = $Perlito5::PKG_NAME;
-            }
-        }
-
         if ( $self->{sigil} eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_javascript3($level, 'list') . '.FETCHSIZE()';
@@ -951,10 +933,11 @@ package Perlito5::AST::Var;
         if ( $self->{sigil} eq '*' ) {
             return 'p5pkg["' . ($self->{namespace} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]';
         }
+        my $decl_type = $self->{_decl} || 'global';
         if ( $decl_type eq 'our' ) {
 
             my $sigil = $self->{sigil} eq '$#' ? '@' : $self->{sigil};
-            my $s = 'p5pkg["' . ($self->{namespace} || $decl->{namespace}) . '"]["' . $table->{$sigil} . $str_name . '"]';
+            my $s = 'p5pkg["' . ($self->{namespace} || $self->{_namespace}) . '"]["' . $table->{$sigil} . $str_name . '"]';
 
             if ($self->{sigil} eq '$#') {
                 return '(' . $s . '.FETCHSIZE() - 1)';
@@ -998,30 +981,6 @@ package Perlito5::AST::Decl;
     }
     sub emit_javascript3_init {
         my $self = shift;
-
-        my $env = { decl => $self->{decl} };
-        my $perl5_name = $self->{var}->perl5_name;
-        if ( $self->{decl} ne 'my' ) {
-
-            die "No package name allowed for variable $perl5_name in \"our\""
-                if $self->{decl} eq 'our' && $self->{var}{namespace};
-
-            if ( $self->{var}{namespace} eq '' ) {
-                # say "looking up $perl5_name";
-                my $decl_namespace = '';
-                my $decl = $self->{var}->perl5_get_decl( $perl5_name );
-                if (  $self->{decl} eq 'local' 
-                   && $decl 
-                   && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')
-                   )
-                {
-                    # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
-                    $decl_namespace = $decl->{namespace};
-                }
-                $env->{namespace} = $decl_namespace || $Perlito5::PKG_NAME;
-            }
-        }
-
         if ($self->{decl} eq 'my') {
             my $str = "";
             $str = $str . 'var ' . $self->{var}->emit_javascript3() . ' = ';
@@ -1048,26 +1007,8 @@ package Perlito5::AST::Decl;
 
         }
         elsif ($self->{decl} eq 'local') {
-            # TODO - add grammar support
-            # if ($self->var->isa("Lookup")) {
-            #     return 
-            #         'p5set_local(' . $self->var->{obj}->emit_javascript3() . ', '
-            #                      . $self->var->{index_exp}->emit_javascript3() . ', '
-            #                      . '""); '
-            #         . $self->{var}->emit_javascript3( $level );
-            # }
-
-            my $perl5_name = $self->{var}->perl5_name;
-            # say "looking up $perl5_name";
-            my $decl_namespace = '';
-            my $decl = $self->{var}->perl5_get_decl( $perl5_name );
-            if ( $decl && ($decl->{decl} eq 'our' || $decl->{decl} eq 'local')) {
-                # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
-                $decl_namespace = $decl->{namespace};
-            }
-
+            my $decl_namespace = $self->{var}->{_namespace};
             my $ns = 'p5pkg["' . ($self->{var}{namespace} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
-
             return
                   'p5set_local(' . $ns . ','
                                . Perlito5::Javascript3::escape_string($self->{var}{name}) . ','

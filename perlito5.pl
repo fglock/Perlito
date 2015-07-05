@@ -8451,11 +8451,6 @@ sub Perlito5::AST::Var::perl5_name {
     $sigil eq '$#' && ($sigil = '@');
     $sigil . ($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $self->{'name'}
 }
-sub Perlito5::AST::Var::perl5_get_decl {
-    my $self = shift;
-    my $perl5_name = shift;
-    return undef
-}
 package Perlito5::AST::Proto;
 sub Perlito5::AST::Proto::new {
     my $class = shift;
@@ -11036,15 +11031,6 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
         $str_name eq '"' && ($str_name = chr(92) . '"');
-        my $perl5_name = $self->perl5_name();
-        my $decl_type;
-        my $decl = $self->perl5_get_decl($perl5_name);
-        if ($decl) {
-            $decl_type = $decl->{'decl'}
-        }
-        elsif (!$self->{'namespace'} && $self->{'sigil'} ne '*') {
-            $self->{'namespace'} = $Perlito5::PKG_NAME
-        }
         if ($self->{'sigil'} eq '@') {
             if ($wantarray eq 'scalar') {
                 return $self->emit_javascript3($level, 'list') . '.FETCHSIZE()'
@@ -11059,9 +11045,10 @@ package Perlito5::AST::Var;
         if ($self->{'sigil'} eq '*') {
             return 'p5pkg["' . ($self->{'namespace'} || $Perlito5::PKG_NAME) . '"]["' . $str_name . '"]'
         }
+        my $decl_type = $self->{'_decl'} || 'global';
         if ($decl_type eq 'our') {
             my $sigil = $self->{'sigil'} eq '$#' ? '@' : $self->{'sigil'};
-            my $s = 'p5pkg["' . ($self->{'namespace'} || $decl->{'namespace'}) . '"]["' . $table->{$sigil} . $str_name . '"]';
+            my $s = 'p5pkg["' . ($self->{'namespace'} || $self->{'_namespace'}) . '"]["' . $table->{$sigil} . $str_name . '"]';
             if ($self->{'sigil'} eq '$#') {
                 return '(' . $s . '.FETCHSIZE() - 1)'
             }
@@ -11091,19 +11078,6 @@ package Perlito5::AST::Decl;
     }
     sub Perlito5::AST::Decl::emit_javascript3_init {
         my $self = shift;
-        my $env = {'decl' => $self->{'decl'}};
-        my $perl5_name = $self->{'var'}->perl5_name();
-        if ($self->{'decl'} ne 'my') {
-            $self->{'decl'} eq 'our' && $self->{'var'}->{'namespace'} && die('No package name allowed for variable ' . $perl5_name . ' in "our"');
-            if ($self->{'var'}->{'namespace'} eq '') {
-                my $decl_namespace = '';
-                my $decl = $self->{'var'}->perl5_get_decl($perl5_name);
-                if ($self->{'decl'} eq 'local' && $decl && ($decl->{'decl'} eq 'our' || $decl->{'decl'} eq 'local')) {
-                    $decl_namespace = $decl->{'namespace'}
-                }
-                $env->{'namespace'} = $decl_namespace || $Perlito5::PKG_NAME
-            }
-        }
         if ($self->{'decl'} eq 'my') {
             my $str = '';
             $str = $str . 'var ' . $self->{'var'}->emit_javascript3() . ' = ';
@@ -11125,12 +11099,7 @@ package Perlito5::AST::Decl;
             return 'p5global("' . $self->{'var'}->{'sigil'} . '", ' . '"' . ($self->{'var'}->{'namespace'} || $Perlito5::PKG_NAME) . '", ' . '"' . $str_name . '")'
         }
         elsif ($self->{'decl'} eq 'local') {
-            my $perl5_name = $self->{'var'}->perl5_name();
-            my $decl_namespace = '';
-            my $decl = $self->{'var'}->perl5_get_decl($perl5_name);
-            if ($decl && ($decl->{'decl'} eq 'our' || $decl->{'decl'} eq 'local')) {
-                $decl_namespace = $decl->{'namespace'}
-            }
+            my $decl_namespace = $self->{'var'}->{'_namespace'};
             my $ns = 'p5pkg["' . ($self->{'var'}->{'namespace'} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
             return 'p5set_local(' . $ns . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'sigil'}) . '); '
         }
@@ -12833,12 +12802,6 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
         $str_name eq '"' && ($str_name = chr(92) . '"');
-        my $perl5_name = $self->perl5_name();
-        my $decl_type;
-        my $decl = $self->perl5_get_decl($perl5_name);
-        if ($decl) {
-            $decl_type = $decl->{'decl'}
-        }
         my $ns = '';
         if ($self->{'namespace'}) {
             $self->{'sigil'} eq '::' && return $self->{'namespace'};
@@ -13558,12 +13521,6 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
         $str_name eq '"' && ($str_name = chr(92) . '"');
-        my $xs_name = $self->perl5_name();
-        my $decl_type;
-        my $decl = $self->perl5_get_decl($xs_name);
-        if ($decl) {
-            $decl_type = $decl->{'decl'}
-        }
         my $ns = '';
         if (0 && $self->{'namespace'}) {
             if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {
