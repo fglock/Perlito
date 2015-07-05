@@ -9201,7 +9201,17 @@ package Perlito5::AST::Var;
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
         my $namespace = $self->{'namespace'} || $self->{'_namespace'} || $Perlito5::PKG_NAME;
         if ($sigil eq '@' && $self->{'name'} eq '_' && $namespace eq 'main') {
-            return 'List__'
+            my $s = 'List__';
+            if ($self->{'sigil'} eq '$#') {
+                return '(' . $s . '.length - 1)'
+            }
+            if ($wantarray eq 'scalar') {
+                return $s . '.length'
+            }
+            if ($wantarray eq 'runtime') {
+                return '(p5want' . ' ? ' . $s . ' : ' . $s . '.length' . ')'
+            }
+            return $s
         }
         if ($sigil eq '$' && $self->{'name'} > 0) {
             return 'p5_regex_capture[' . ($self->{'name'} - 1) . ']'
@@ -9236,21 +9246,7 @@ package Perlito5::AST::Var;
         my($self, $level, $wantarray) = @_;
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
         my $str_name = $self->{'name'};
-        my $perl5_name = $self->perl5_name();
-        my $decl_type;
-        my $decl;
-        if ($self->{'_decl'} eq 'my') {
-            $decl_type = $self->{'_decl'}
-        }
-        else {
-            $decl = $self->perl5_get_decl($perl5_name);
-            if ($decl) {
-                $decl_type = $decl->{'decl'}
-            }
-            elsif (!$self->{'namespace'}) {
-                $decl_type = 'our'
-            }
-        }
+        my $decl_type = $self->{'_decl'} || 'global';
         if ($decl_type ne 'my') {
             return $self->emit_javascript2_global($level, $wantarray)
         }

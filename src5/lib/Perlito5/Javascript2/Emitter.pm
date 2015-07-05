@@ -1172,7 +1172,20 @@ package Perlito5::AST::Var;
 
         if ($sigil eq '@' && $self->{name} eq '_' && $namespace eq 'main') {
             # XXX - optimization - @_ is a js lexical
-            return 'List__';
+            my $s = 'List__';
+            if ($self->{sigil} eq '$#') {
+                return '(' . $s . '.length - 1)';
+            }
+            if ( $wantarray eq 'scalar' ) {
+                return $s . '.length';
+            }
+            if ( $wantarray eq 'runtime' ) {
+                return '(p5want'
+                    . ' ? ' . $s
+                    . ' : ' . $s . '.length'
+                    . ')';
+            }
+            return $s;
         }
 
         if ($sigil eq '$' && $self->{name} > 0) {
@@ -1216,31 +1229,7 @@ package Perlito5::AST::Var;
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $str_name = $self->{name};
-
-        my $perl5_name = $self->perl5_name;
-        # say "looking up $perl5_name";
-        my $decl_type;  # my, our, local
-        my $decl;
-        if ( $self->{_decl} eq 'my' ) {
-            $decl_type = $self->{_decl};
-        }
-        else {
-            $decl = $self->perl5_get_decl( $perl5_name );
-
-            # warn "\nVar\n";
-            # warn Data::Dumper::Dumper($decl);
-            # warn Data::Dumper::Dumper($self);
-
-            if ( $decl ) {
-                # say "found ", $decl->{decl};
-                $decl_type = $decl->{decl};
-            }
-            else {
-                if ( !$self->{namespace} ) {
-                    $decl_type = 'our';
-                }
-            }
-        }
+        my $decl_type = $self->{_decl} || 'global';
 
         if ( $decl_type ne 'my' ) {
             return $self->emit_javascript2_global($level, $wantarray);
