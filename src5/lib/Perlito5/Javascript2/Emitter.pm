@@ -1278,7 +1278,6 @@ package Perlito5::AST::Decl;
     }
     sub emit_javascript2_init {
         my ($self, $level, $wantarray) = @_;
-
         if ($self->{decl} eq 'local') {
             my $var = $self->{var};
             my $var_set;
@@ -1299,27 +1298,6 @@ package Perlito5::AST::Decl;
                                  ) . ';',
                 ) . ';';
         }
-
-        my $type = $self->{decl};
-        my $env = { decl => $type };
-        my $perl5_name = $self->{var}->perl5_name;
-        if ( $self->{decl} ne 'my' ) {
-
-            die "No package name allowed for variable $perl5_name in \"our\""
-                if $self->{decl} eq 'our' && $self->{var}{namespace};
-
-            if ( $self->{var}{namespace} eq '' ) {
-                # say "looking up $perl5_name";
-                my $decl_namespace = '';
-                my $decl = $self->{var}->perl5_get_decl( $perl5_name );
-                if ( $decl && $decl->{decl} eq 'our') {
-                    # say "found ", $decl->{decl}, " namespace: ", $decl->{namespace};
-                    $decl_namespace = $decl->{namespace};
-                }
-                $env->{namespace} = $decl_namespace || $Perlito5::PKG_NAME;
-            }
-        }
-
         if ($self->{decl} eq 'my') {
             my $str = 'var ' . $self->{var}->emit_javascript2();
             if ($self->{var}->sigil eq '%') {
@@ -1344,10 +1322,6 @@ package Perlito5::AST::Decl;
             else {
                 return '// our ' . $str;
             }
-            # return '(function () { if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
-            #         . $str
-            #         . '; return ' . $self->{var}->emit_javascript2()
-            #         . '}})()';
             return 'if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
                     . $str
                     . '}';

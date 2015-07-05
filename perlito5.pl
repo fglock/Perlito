@@ -1732,6 +1732,7 @@ sub Perlito5::Grammar::Expression::term_declarator {
         my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::opt_type'});
         $type && !$Perlito5::PACKAGES->{$type} && die('No such class ' . $type);
         my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
+        $var->{'namespace'} && die('No package name allowed for variable ' . $var->{'sigil'} . $var->{'name'} . ' in "' . $declarator . '"');
         $var->{'_decl'} = $declarator;
         $var->{'_id'} = $Perlito5::ID++;
         $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
@@ -9313,20 +9314,6 @@ package Perlito5::AST::Decl;
                 $var_set = $var->emit_javascript2_set($tmp)
             }
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var v_' . $tmp_name . ' = ' . $var->emit_javascript2() . ';', 'p5LOCAL.push(function(){ ' . $var_set . ' });', 'return ' . $var->emit_javascript2_set(Perlito5::AST::Apply->new('code' => 'undef', 'arguments' => [], 'namespace' => ''), $level + 1) . ';') . ';'
-        }
-        my $type = $self->{'decl'};
-        my $env = {'decl' => $type};
-        my $perl5_name = $self->{'var'}->perl5_name();
-        if ($self->{'decl'} ne 'my') {
-            $self->{'decl'} eq 'our' && $self->{'var'}->{'namespace'} && die('No package name allowed for variable ' . $perl5_name . ' in "our"');
-            if ($self->{'var'}->{'namespace'} eq '') {
-                my $decl_namespace = '';
-                my $decl = $self->{'var'}->perl5_get_decl($perl5_name);
-                if ($decl && $decl->{'decl'} eq 'our') {
-                    $decl_namespace = $decl->{'namespace'}
-                }
-                $env->{'namespace'} = $decl_namespace || $Perlito5::PKG_NAME
-            }
         }
         if ($self->{'decl'} eq 'my') {
             my $str = 'var ' . $self->{'var'}->emit_javascript2();

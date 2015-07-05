@@ -396,6 +396,8 @@ token term_declarator {
                 if $type && ! $Perlito5::PACKAGES->{$type};
 
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
+            die "No package name allowed for variable $var->{sigil}$var->{name} in \"$declarator\""
+                if $var->{namespace};
             $var->{_decl} = $declarator;
             $var->{_id}   = $Perlito5::ID++;
             $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
