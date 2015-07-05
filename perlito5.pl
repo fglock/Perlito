@@ -8975,7 +8975,6 @@ package Perlito5::AST::CompUnit;
             $str .= Perlito5::Javascript2::Sprintf->emit_javascript2()
         }
         $str .= 'var p5want;' . chr(10) . 'var List__ = [];' . chr(10);
-        $Perlito5::VAR = [{}];
         for my $comp_unit (@{$comp_units}) {
             $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . chr(10)
         }
@@ -9333,7 +9332,6 @@ package Perlito5::AST::Decl;
                 $env->{'namespace'} = $decl_namespace || $Perlito5::PKG_NAME
             }
         }
-        $Perlito5::VAR->[0]->{$perl5_name} = $env;
         if ($self->{'decl'} eq 'my') {
             my $str = 'var ' . $self->{'var'}->emit_javascript2();
             if ($self->{'var'}->sigil() eq '%') {
@@ -10337,7 +10335,7 @@ package Perlito5::AST::If;
             }
         }
         push(@str, $s);
-        if (keys(%{$Perlito5::VAR->[0]})) {
+        if (@str) {
             $level = $old_level;
             return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }
@@ -10381,7 +10379,7 @@ package Perlito5::AST::While;
             }
         }
         push(@str, 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'void', $cond) . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::Javascript2::escape_string($self->{'label'} || '') . ', ' . $do_at_least_once . ')');
-        if (keys(%{$Perlito5::VAR->[0]})) {
+        if (@str) {
             $level = $old_level;
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }

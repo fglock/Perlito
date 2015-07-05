@@ -711,7 +711,6 @@ package Perlito5::AST::CompUnit;
         }
         $str .= "var p5want;\n"
              .  "var List__ = [];\n";
-        $Perlito5::VAR = [ {} ];
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . "\n";
         }
@@ -1320,8 +1319,6 @@ package Perlito5::AST::Decl;
                 $env->{namespace} = $decl_namespace || $Perlito5::PKG_NAME;
             }
         }
-
-        $Perlito5::VAR->[0]{ $perl5_name } = $env;
 
         if ($self->{decl} eq 'my') {
             my $str = 'var ' . $self->{var}->emit_javascript2();
@@ -2991,7 +2988,7 @@ package Perlito5::AST::If;
 
         push @str, $s;
 
-        if (keys %{ $Perlito5::VAR->[0] }) {
+        if (@str) {
             $level = $old_level;
             # create js scope for 'my' variables
             return 
@@ -3059,7 +3056,7 @@ package Perlito5::AST::While;
                     . $do_at_least_once
                     . ')';
 
-        if (keys %{ $Perlito5::VAR->[0] }) {
+        if (@str) {
             $level = $old_level;
             # create js scope for 'my' variables
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str);
