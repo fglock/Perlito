@@ -11936,12 +11936,6 @@ package Perlito5::AST::Var;
         my $str_name = $self->{'name'};
         $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
         $str_name eq chr(39) && ($str_name = chr(92) . chr(39));
-        my $perl5_name = $self->perl5_name();
-        my $decl_type;
-        my $decl = $self->perl5_get_decl($perl5_name);
-        if ($decl) {
-            $decl_type = $decl->{'decl'}
-        }
         my $ns = '';
         if ($self->{'namespace'}) {
             $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';

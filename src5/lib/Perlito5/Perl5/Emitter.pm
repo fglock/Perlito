@@ -157,18 +157,6 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = "\\'" if $str_name eq "'";     # escape $'
 
-        my $perl5_name = $self->perl5_name;
-        # say "looking up $perl5_name";
-        my $decl_type;  # my, our, local
-        my $decl = $self->perl5_get_decl( $perl5_name );
-        if ( $decl ) {
-            # say "found ", $decl->{decl};
-            $decl_type = $decl->{decl};
-        }
-        else {
-            # undeclared global
-        }
-
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
