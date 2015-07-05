@@ -8890,7 +8890,6 @@ package Perlito5::Javascript2::LexicalBlock;
         }
         my $create_context = $self->{'create_context'} && $self->has_decl('my');
         my $outer_pkg = $Perlito5::PKG_NAME;
-        unshift(@{$Perlito5::VAR}, {});
         if ($self->{'top_level'} || $create_context) {
             $level++
         }
@@ -8950,7 +8949,6 @@ package Perlito5::Javascript2::LexicalBlock;
             $out = join($tab, @str)
         }
         $Perlito5::PKG_NAME = $outer_pkg;
-        shift(@{$Perlito5::VAR});
         return $out
     }
     sub Perlito5::Javascript2::LexicalBlock::emit_javascript2_has_regex {
@@ -9858,7 +9856,7 @@ package Perlito5::AST::Apply;
         }
         else {
             my $m;
-            my $var_env_perl5 = Perlito5::Dumper::ast_dumper($Perlito5::VAR);
+            my $var_env_perl5 = Perlito5::Dumper::ast_dumper([]);
             $m = Perlito5::Grammar::Expression::term_square($var_env_perl5, 0);
             $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
             my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
@@ -10314,7 +10312,6 @@ package Perlito5::AST::If;
         my $cond = $self->{'cond'};
         my @str;
         my $old_level = $level;
-        unshift(@{$Perlito5::VAR}, {});
         if ($cond) {
             my @var_decl = $cond->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
@@ -10342,11 +10339,9 @@ package Perlito5::AST::If;
         push(@str, $s);
         if (keys(%{$Perlito5::VAR->[0]})) {
             $level = $old_level;
-            shift(@{$Perlito5::VAR});
             return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }
         else {
-            shift(@{$Perlito5::VAR});
             return join(chr(10) . Perlito5::Javascript2::tab($level), @str)
         }
     }
@@ -10378,7 +10373,6 @@ package Perlito5::AST::While;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
         my @str;
         my $old_level = $level;
-        unshift(@{$Perlito5::VAR}, {});
         if ($cond) {
             my @var_decl = $cond->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
@@ -10389,11 +10383,9 @@ package Perlito5::AST::While;
         push(@str, 'p5while(' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'void', $cond) . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::Javascript2::escape_string($self->{'label'} || '') . ', ' . $do_at_least_once . ')');
         if (keys(%{$Perlito5::VAR->[0]})) {
             $level = $old_level;
-            shift(@{$Perlito5::VAR});
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }
         else {
-            shift(@{$Perlito5::VAR});
             return join(chr(10) . Perlito5::Javascript2::tab($level), @str)
         }
     }
@@ -10411,9 +10403,8 @@ package Perlito5::AST::For;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
         my @str;
         my $old_level = $level;
-        unshift(@{$Perlito5::VAR}, {});
         my $cond = ref($self->{'cond'}) eq 'ARRAY' ? $self->{'cond'} : [$self->{'cond'}];
-        for my $expr (@{$cond}) {
+        for my $expr (@{$cond}, $self->{'topic'}) {
             if ($expr) {
                 my @var_decl = $expr->emit_javascript2_get_decl();
                 for my $arg (@var_decl) {
@@ -10422,7 +10413,6 @@ package Perlito5::AST::For;
                 }
             }
         }
-        unshift(@{$Perlito5::VAR}, {});
         if (ref($self->{'cond'}) eq 'ARRAY') {
             push(@str, Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var label = ' . Perlito5::Javascript2::escape_string(($self->{'label'} || '')) . ';', 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript2($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Javascript2::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript2($level + 1) . ' ' : '') . ') {', ['var _redo = true;', 'while(_redo) {', ['_redo = false;', 'try {', [Perlito5::Javascript2::LexicalBlock->new('block' => $body)->emit_javascript2($level + 4, $wantarray)], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {', ['if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }', 'else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }', 'else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }'], '}', 'else {', ['throw(err)'], '}'], '}'], '}'], '}'))
         }
@@ -10435,16 +10425,10 @@ package Perlito5::AST::For;
                 $decl = $v->{'decl'};
                 $v = $v->{'var'}
             }
+            else {
+                $decl = $v->{'_decl'} || 'global'
+            }
             my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
-            my $perl5_name = $v->perl5_name();
-            my $pre_declaration = $v->perl5_get_decl($perl5_name);
-            if ($pre_declaration) {
-                $decl = $pre_declaration->{'decl'}
-            }
-            if (!$decl && !$v->{'namespace'}) {
-                $decl = 'our'
-            }
-            $Perlito5::VAR->[0]->{$perl5_name} = {'decl' => $decl, 'namespace' => $namespace};
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
                 my $sig = $v->emit_javascript2($level + 1);
@@ -10454,14 +10438,11 @@ package Perlito5::AST::For;
                 push(@str, 'p5for(' . 'p5make_package(' . Perlito5::Javascript2::escape_string($namespace) . '), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . Perlito5::Javascript2::tab($level + 2) . (Perlito5::Javascript2::LexicalBlock->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::Javascript2::escape_string($self->{'label'} || '') . ')')
             }
         }
-        shift(@{$Perlito5::VAR});
-        if (keys(%{$Perlito5::VAR->[0]})) {
+        if (@str > 1) {
             $level = $old_level;
-            shift(@{$Perlito5::VAR});
             return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
         }
         else {
-            shift(@{$Perlito5::VAR});
             return join(chr(10) . Perlito5::Javascript2::tab($level), @str)
         }
     }
