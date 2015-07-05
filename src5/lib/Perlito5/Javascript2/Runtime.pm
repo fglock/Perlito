@@ -15,13 +15,17 @@ sub perl5_to_js {
 
     local $Perlito5::VAR      = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
-    # warn "in eval BASE_SCOPE enter: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-
-
-    if (!$Perlito5::BASE_SCOPE) {
-        $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
-        $Perlito5::SCOPE = $BASE_SCOPE;    # information about the current block being compiled
-    }
+    # warn "in eval enter\n";
+    # warn "External scope ", Data::Dumper::Dumper($scope_js);
+    # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    # warn "SCOPE_STMT ", Data::Dumper::Dumper(\@Perlito5::SCOPE_STMT);
+    # warn "SCOPE ", Data::Dumper::Dumper($Perlito5::SCOPE);
+    # warn "SCOPE_DEPTH ", Data::Dumper::Dumper($Perlito5::SCOPE_DEPTH);
+    # 
+    # if (!$Perlito5::BASE_SCOPE) {
+    #     $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
+    #     $Perlito5::SCOPE = $BASE_SCOPE;    # information about the current block being compiled
+    # }
 
     my $match = Perlito5::Grammar::exp_stmts( $source, 0 );
 

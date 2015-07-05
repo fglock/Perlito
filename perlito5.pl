@@ -9851,7 +9851,7 @@ package Perlito5::AST::Apply;
         local $Perlito5::SCOPE = $BASE_SCOPE;
         local $Perlito5::SCOPE_DEPTH = 0;
         local @Perlito5::SCOPE_STMT = ();
-        my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})]);
+        my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => $Perlito5::BASE_SCOPE);
         my $js = $ast->emit_javascript2($level, $wantarray);
         $Perlito5::STRICT = $tmp_strict;
         return $js
@@ -9871,6 +9871,9 @@ package Perlito5::AST::Apply;
             my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
             my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
             $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
+            if (!$m || $m->{'to'} < length($scope_perl5)) {
+                die('invalid scope in eval' . chr(10))
+            }
             $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
             my $scope_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
             $eval = 'eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . $var_env_js . ', ' . Perlito5::Javascript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
@@ -10531,10 +10534,6 @@ sub Perlito5::Javascript2::Runtime::perl5_to_js {
     local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::VAR = $var_env_js;
     local $Perlito5::PKG_NAME = $namespace;
-    if (!$Perlito5::BASE_SCOPE) {
-        $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
-        $Perlito5::SCOPE = $BASE_SCOPE
-    }
     my $match = Perlito5::Grammar::exp_stmts($source, 0);
     if (!$match || $match->{'to'} != length($source)) {
         die('Syntax error in eval near pos ', $match->{'to'})
