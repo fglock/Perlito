@@ -2131,14 +2131,6 @@ package Perlito5::AST::Apply;
             # do EXPR
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
-            # information about the current compilation process
-            local $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
-            local $Perlito5::SCOPE = $BASE_SCOPE;
-            local $Perlito5::SCOPE_DEPTH = 0;
-            local @Perlito5::SCOPE_STMT = ();
-
-            # warn "in do_file BASE_SCOPE: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-
             my $ast =
                 Perlito5::AST::Apply->new(
                     code => 'eval',
@@ -2150,7 +2142,7 @@ package Perlito5::AST::Apply;
                           arguments => $self->{arguments}
                         )
                     ],
-                    _scope => $Perlito5::BASE_SCOPE,
+                    _scope => Perlito5::Grammar::Scope->new_base_scope(),
                 );
             my $js = $ast->emit_javascript2( $level, $wantarray );
             $Perlito5::STRICT = $tmp_strict;

@@ -9807,11 +9807,7 @@ package Perlito5::AST::Apply;
         }
         my $tmp_strict = $Perlito5::STRICT;
         $Perlito5::STRICT = 0;
-        local $Perlito5::BASE_SCOPE = Perlito5::Grammar::Scope->new_base_scope();
-        local $Perlito5::SCOPE = $BASE_SCOPE;
-        local $Perlito5::SCOPE_DEPTH = 0;
-        local @Perlito5::SCOPE_STMT = ();
-        my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => $Perlito5::BASE_SCOPE);
+        my $ast = Perlito5::AST::Apply->new('code' => 'eval', 'namespace' => '', 'arguments' => [Perlito5::AST::Apply->new('code' => 'do_file', 'namespace' => 'Perlito5::Grammar::Use', 'arguments' => $self->{'arguments'})], '_scope' => Perlito5::Grammar::Scope->new_base_scope());
         my $js = $ast->emit_javascript2($level, $wantarray);
         $Perlito5::STRICT = $tmp_strict;
         return $js
