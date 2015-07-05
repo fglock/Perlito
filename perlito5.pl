@@ -8445,12 +8445,6 @@ sub Perlito5::AST::Var::plain_name {
     }
     return $self->name()
 }
-sub Perlito5::AST::Var::perl5_name {
-    my $self = shift;
-    my $sigil = $self->{'sigil'};
-    $sigil eq '$#' && ($sigil = '@');
-    $sigil . ($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $self->{'name'}
-}
 package Perlito5::AST::Proto;
 sub Perlito5::AST::Proto::new {
     my $class = shift;
@@ -8904,7 +8898,6 @@ package Perlito5::Javascript2::LexicalBlock;
         if ($last_statement) {
             my @var_decl = $last_statement->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
-                my $perl5_name = $arg->{'var'}->perl5_name();
                 push(@str, $arg->emit_javascript2_init($level, $wantarray))
             }
             if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return' && $self->{'top_level'} && @{$last_statement->{'arguments'}}) {

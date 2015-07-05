@@ -567,10 +567,7 @@ package Perlito5::Javascript2::LexicalBlock;
 
             my @var_decl = $decl->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
-
                 # TODO - create a new context for the redeclared variable
-                # print "redeclared $perl5_name\n"
-
                 push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
 
@@ -583,11 +580,7 @@ package Perlito5::Javascript2::LexicalBlock;
 
             my @var_decl = $last_statement->emit_javascript2_get_decl();
             for my $arg (@var_decl) {
-
-                my $perl5_name = $arg->{'var'}->perl5_name();
                 # TODO - create a new context for the redeclared variable
-                # print "redeclared $perl5_name\n"
-
                 push @str, $arg->emit_javascript2_init($level, $wantarray);
             }
 

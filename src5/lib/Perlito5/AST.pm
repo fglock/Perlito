@@ -117,12 +117,6 @@ sub plain_name {
     }
     return $self->name
 }
-sub perl5_name {
-    my $self = shift;
-    my $sigil = $self->{sigil};
-    $sigil = '@' if $sigil eq '$#';
-    $sigil . ( $self->{namespace} ? $self->{namespace} . '::' : '' ) . $self->{name}
-}
 
 
 package Perlito5::AST::Proto;
