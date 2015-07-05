@@ -1139,8 +1139,6 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     // CORE.say(["source: [" + source + "]"]);
 
     var strict_old = p5global("$", "Perlito5", "STRICT").FETCH();
-    var var_env_js_old = p5global("$", "Perlito5", "VAR").FETCH();
-    p5pkg["Perlito5"].v_VAR.assign(var_env_js);
 
     var namespace_old = p5global("$", "Perlito5", "PKG_NAME").FETCH();
     p5pkg["Perlito5"].v_PKG_NAME.assign(namespace);
@@ -1169,7 +1167,6 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
     // CORE.say(["js-source: [" + js_code + "]"]);
 
     p5pkg["Perlito5"].v_PKG_NAME.assign(namespace_old);
-    p5pkg["Perlito5"].v_VAR.assign(var_env_js_old);
     p5pkg["Perlito5"].v_STRICT.assign(strict_old);
     return js_code;
 }

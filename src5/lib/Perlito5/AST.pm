@@ -124,15 +124,9 @@ sub perl5_name {
     $sigil . ( $self->{namespace} ? $self->{namespace} . '::' : '' ) . $self->{name}
 }
 sub perl5_get_decl {
+    # TODO - cleanup (obsolete)
     my $self = shift;
     my $perl5_name = shift;
-    # TODO - subroutines can be 'my'
-    return { decl => 'our' }
-        if substr($perl5_name, 0, 1) eq '&';
-    for ( @{ $Perlito5::VAR } ) {
-        return $_->{$perl5_name}
-            if exists $_->{$perl5_name}
-    }
     return undef;
 }
 

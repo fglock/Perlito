@@ -501,7 +501,6 @@ package Perlito5::Javascript3::LexicalBlock;
         my $create_context = $self->{create_context} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
-        unshift @{ $Perlito5::VAR }, {};
 
         $Perlito5::THROW = 0
             if $self->{top_level};
@@ -524,9 +523,6 @@ package Perlito5::Javascript3::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{namespace};
-                $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
-                $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
-                $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
 
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
@@ -660,7 +656,6 @@ package Perlito5::Javascript3::LexicalBlock;
         $Perlito5::PKG_NAME = $outer_pkg;
         $Perlito5::THROW    = $outer_throw
             if $self->{top_level};
-        shift @{ $Perlito5::VAR };
         return $out;
     }
 
@@ -689,21 +684,6 @@ package Perlito5::AST::CompUnit;
         }
         $str .= "var p5want = null;\n"
              .  "var " . Perlito5::Javascript3::pkg_new_var() . " = p5pkg['" . $Perlito5::PKG_NAME . "'];\n";
-        $Perlito5::VAR = [
-            { '@_'    => { decl => 'my' }, # XXX
-              '$@'    => { decl => 'our', namespace => 'main' },
-              '$|'    => { decl => 'our', namespace => 'main' },
-              '$^O'   => { decl => 'our', namespace => 'main' },
-              '%ENV'  => { decl => 'our', namespace => 'main' },
-              '%INC'  => { decl => 'our', namespace => 'main' },
-              '@#'    => { decl => 'our', namespace => 'main' },
-              '@ARGV' => { decl => 'our', namespace => 'main' },
-              '@INC'  => { decl => 'our', namespace => 'main' },
-              '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-              '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-              '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-            }
-        ];
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript3() . "\n";
         }
@@ -1041,8 +1021,6 @@ package Perlito5::AST::Decl;
                 $env->{namespace} = $decl_namespace || $Perlito5::PKG_NAME;
             }
         }
-
-        $Perlito5::VAR->[0]{ $perl5_name } = $env;
 
         if ($self->{decl} eq 'my') {
             my $str = "";
@@ -1664,7 +1642,7 @@ package Perlito5::AST::Apply;
             else {
                 # eval string
 
-                my $var_env_perl5 = Perlito5::Dumper::ast_dumper( $Perlito5::VAR );
+                my $var_env_perl5 = Perlito5::Dumper::ast_dumper( [] );
                 # say "at eval: ", $var_env_perl5;
                 my $m = Perlito5::Grammar::Expression::term_square( $var_env_perl5, 0 );
                 $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
@@ -2174,7 +2152,6 @@ package Perlito5::AST::For;
 
             # mark the variable as "declared"
             my $v = $self->{topic};
-            $Perlito5::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
             my $sig = $v->emit_javascript3( $level + 1 );
             return 'p5for_lex('
                     . "function ($sig) {\n"
