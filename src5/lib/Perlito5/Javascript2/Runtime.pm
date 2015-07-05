@@ -3,7 +3,7 @@ use v5;
 package Perlito5::Javascript2::Runtime;
 
 sub perl5_to_js {
-    my ($source, $namespace, $var_env_js, $want, $scope_js) = @_;
+    my ($source, $namespace, $want, $scope_js) = @_;
 
     # say "source: [" . $source . "]";
 

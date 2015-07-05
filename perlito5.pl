@@ -9820,19 +9820,14 @@ package Perlito5::AST::Apply;
             $eval = Perlito5::AST::Apply->new('code' => 'do', 'arguments' => [$arg])->emit_javascript2($level + 1, $wantarray)
         }
         else {
-            my $m;
-            my $var_env_perl5 = Perlito5::Dumper::ast_dumper([]);
-            $m = Perlito5::Grammar::Expression::term_square($var_env_perl5, 0);
-            $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
-            my $var_env_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
             my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
-            $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
+            my $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
             if (!$m || $m->{'to'} < length($scope_perl5)) {
-                die('invalid scope in eval' . chr(10))
+                die('invalid internal scope in eval' . chr(10))
             }
             $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
             my $scope_js = '(new p5ArrayRef(' . Perlito5::Javascript2::to_list($m) . '))';
-            $eval = 'eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . $var_env_js . ', ' . Perlito5::Javascript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
+            $eval = 'eval(p5pkg["Perlito5::Javascript2::Runtime"].perl5_to_js([' . Perlito5::Javascript2::to_str($arg) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Javascript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
         }
         my $context = Perlito5::Javascript2::to_context($wantarray);
         Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
@@ -10465,7 +10460,7 @@ package main;
 undef();
 package Perlito5::Javascript2::Runtime;
 sub Perlito5::Javascript2::Runtime::perl5_to_js {
-    my($source, $namespace, $var_env_js, $want, $scope_js) = @_;
+    my($source, $namespace, $want, $scope_js) = @_;
     my $strict_old = $Perlito5::STRICT;
     local $Perlito5::BASE_SCOPE = $scope_js->[0];
     local @Perlito5::SCOPE_STMT;
