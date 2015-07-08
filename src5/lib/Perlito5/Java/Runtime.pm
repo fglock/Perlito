@@ -71,6 +71,33 @@ class PerlitoScalar extends PerlitoObject {
     public String to_string() {
         return this.o.to_string();
     }
+    public int to_int() {
+        return this.o.to_int();
+    }
+    public double to_num() {
+        return this.o.to_num();
+    }
+    public boolean to_bool() {
+        return this.o.to_bool();
+    }
+    public PerlitoObject add(PerlitoObject s) {
+        return this.o.add(s);
+    }
+    public boolean is_int() {
+        return this.o.is_int();
+    }
+    public boolean is_num() {
+        return this.o.is_num();
+    }
+    public boolean is_string() {
+        return this.o.is_string();
+    }
+    public boolean is_bool() {
+        return this.o.is_bool();
+    }
+    public PerlitoObject to_num_or_int() {
+        return this.o.to_num_or_int();
+    }
 }
 class PerlitoArray extends PerlitoObject {
     private ArrayList<PerlitoObject> a;
@@ -121,7 +148,6 @@ class PerlitoArray extends PerlitoObject {
     public PerlitoObject to_num_or_int() {
         return new PerlitoInt(this.to_int());
     }
-
 }
 class PerlitoHash extends PerlitoObject {
     private HashMap<String, PerlitoObject> h;
