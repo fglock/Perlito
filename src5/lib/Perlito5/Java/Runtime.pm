@@ -44,6 +44,8 @@ class pCORE {
     }
 }
 class pObject {
+    public static final pString REF = new pString("");
+
     public pObject() {
     }
     public String to_string() {
@@ -89,15 +91,34 @@ class pObject {
     public void the_int_method() {
         System.out.println("error!");
     }
+    public pObject ref() {
+        return REF;
+    }
 }
 class pClosure extends pObject {
     public pObject env;
+    public static final pString REF = new pString("CODE");
+
     public pClosure(pObject env) {
         this.env = env;
     }
     public pObject apply(int want, pObject... args) {
         System.out.println("error!");
         return new pInt(0);
+    }
+    public pObject ref() {
+        return REF;
+    }
+}
+class pScalarRef extends pObject {
+    private pScalar o;
+    public static final pString REF = new pString("SCALAR");
+
+    public pObject get() {
+        return this.o;
+    }
+    public pObject ref() {
+        return REF;
     }
 }
 class pScalar extends pObject {
