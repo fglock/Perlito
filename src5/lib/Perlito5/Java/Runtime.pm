@@ -21,8 +21,16 @@ class pCORE {
     public static final pObject print(int want, pObject... args) {
         for(pObject s : args)
         {
-            System.out.println(s.to_string());
+            System.out.print(s.to_string());
         }
+        return new pInt(1);
+    }
+    public static final pObject say(int want, pObject... args) {
+        for(pObject s : args)
+        {
+            System.out.print(s.to_string());
+        }
+        System.out.println("\n");
         return new pInt(1);
     }
 }
@@ -119,6 +127,10 @@ class pArray extends pObject {
         this.a = new ArrayList<pObject>();
     }
     public pObject aget(pObject i) {
+        int pos  = i.to_int();
+        if (pos > this.a.size()) {
+            return new pUndef();
+        }
         return this.a.get(i.to_int());
     }
     public pObject aset(pObject i, pObject v) {
@@ -169,7 +181,11 @@ class pHash extends pObject {
         this.h = new HashMap<String, pObject>();
     }
     public pObject hget(pObject i) {
-        return this.h.get(i.to_string());
+        pObject o = this.h.get(i.to_string());
+        if (o == null) {
+            return new pUndef();
+        }
+        return o;
     }
     public pObject hset(pObject i, pObject v) {
         this.h.put(i.to_string(), v);
