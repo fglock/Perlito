@@ -40,6 +40,9 @@ class Test {
             };
         c.apply();
 
+        PerlitoScalar vv = new PerlitoScalar();
+        System.out.println("Scalar " + vv.to_string());
+
         PerlitoArray aa = new PerlitoArray();
         System.out.println("Array " + aa.to_string());
 

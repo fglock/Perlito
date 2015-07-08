@@ -63,6 +63,15 @@ class PerlitoClosure extends PerlitoObject {
         return new PerlitoInt(0);
     }
 }
+class PerlitoScalar extends PerlitoObject {
+    private PerlitoObject o;
+    public PerlitoScalar() {
+        this.o = new PerlitoUndef();
+    }
+    public String to_string() {
+        return this.o.to_string();
+    }
+}
 class PerlitoArray extends PerlitoObject {
     private ArrayList<PerlitoObject> a;
     public PerlitoArray() {
@@ -81,6 +90,28 @@ class PerlitoHash extends PerlitoObject {
     public String to_string() {
         // TODO
         return "" + this.hashCode();
+    }
+}
+class PerlitoUndef extends PerlitoObject {
+    public PerlitoUndef() {
+    }
+    public int to_int() {
+        return 0;
+    }
+    public double to_num() {
+        return 0.0;
+    }
+    public String to_string() {
+        return "";
+    }
+    public boolean to_bool() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public PerlitoObject to_num_or_int() {
+        return new PerlitoInt(0);
     }
 }
 class PerlitoBool extends PerlitoObject {
