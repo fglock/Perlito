@@ -90,6 +90,20 @@ class pScalar extends pObject {
     public pScalar() {
         this.o = new pUndef();
     }
+    public pObject get() {
+        return this.o;
+    }
+
+    // Note: 2 versions of set()
+    public pObject set(pObject o) {
+        this.o = o;
+        return this;
+    }
+    public pObject set(pScalar o) {
+        this.o = o.get();
+        return this;
+    }
+
     public String to_string() {
         return this.o.to_string();
     }
@@ -133,6 +147,8 @@ class pArray extends pObject {
         }
         return this.a.get(i.to_int());
     }
+
+    // Note: 2 versions of set()
     public pObject aset(pObject i, pObject v) {
         int size = this.a.size();
         int pos  = i.to_int();
@@ -143,6 +159,17 @@ class pArray extends pObject {
         this.a.add(i.to_int(), v);
         return v;
     }
+    public pObject aset(pObject i, pScalar v) {
+        int size = this.a.size();
+        int pos  = i.to_int();
+        while (size < pos) {
+            this.a.add( new pUndef() );
+            size++;
+        }
+        this.a.add(i.to_int(), v.get());
+        return v;
+    }
+
     public String to_string() {
         // TODO
         return "" + this.hashCode();
@@ -187,10 +214,17 @@ class pHash extends pObject {
         }
         return o;
     }
+
+    // Note: 2 versions of set()
     public pObject hset(pObject i, pObject v) {
         this.h.put(i.to_string(), v);
         return v;
     }
+    public pObject hset(pObject i, pScalar v) {
+        this.h.put(i.to_string(), v.get());
+        return v;
+    }
+
     public String to_string() {
         // TODO
         return "" + this.hashCode();
