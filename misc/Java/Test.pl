@@ -33,12 +33,12 @@ class Test {
         System.out.println(f.to_string());
 
         pClosure c = new pClosure(s) {
-                public pObject apply(pArray args, int want) {
+                public pObject apply(int want, pObject... args) {
                     System.out.println("called MyClosure with " + this.env.to_string());
                     return new pInt(0);
                 }
             };
-        c.apply(new pArray(), pContext.VOID);
+        c.apply(pContext.VOID);
 
         pScalar vv = new pScalar();
         System.out.println("Scalar " + vv.to_string());
@@ -55,9 +55,7 @@ class Test {
         hh.hset(i, n);
         System.out.println("Hash get " + hh.hget(i).to_string());
 
-        pArray arg = new pArray();
-        arg.aset(new pInt(0), new pString("HERE\n"));
-        pCORE.print(arg, pContext.VOID);
+        pCORE.print(pContext.VOID, new pString("HERE\n"));
     }
 }
 

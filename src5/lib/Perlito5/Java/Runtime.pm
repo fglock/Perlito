@@ -18,8 +18,11 @@ class pContext {
     public static final int LIST   = 2;
 }
 class pCORE {
-    public static final pObject print(pArray args, int want) {
-        System.out.println(args.aget(new pInt(0)).to_string());
+    public static final pObject print(int want, pObject... args) {
+        for(pObject s : args)
+        {
+            System.out.println(s.to_string());
+        }
         return new pInt(1);
     }
 }
@@ -69,7 +72,7 @@ class pClosure extends pObject {
     public pClosure(pObject env) {
         this.env = env;
     }
-    public pObject apply(pArray args, int want) {
+    public pObject apply(int want, pObject... args) {
         System.out.println("error!");
         return new pInt(0);
     }
