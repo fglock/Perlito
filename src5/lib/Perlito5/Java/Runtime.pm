@@ -114,9 +114,8 @@ class pScalarRef extends pObject {
     private pScalar o;
     public static final pString REF = new pString("SCALAR");
 
-    public pObject pScalarRef(pScalar o) {
+    public pScalarRef(pScalar o) {
         this.o = o;
-        return this;
     }
     public pObject get() {
         return this.o;
@@ -129,9 +128,8 @@ class pArrayRef extends pObject {
     private pArray o;
     public static final pString REF = new pString("ARRAY");
 
-    public pObject pArrayRef(pArray o) {
+    public pArrayRef(pArray o) {
         this.o = o;
-        return this;
     }
     public pObject get() {
         return this.o;
@@ -144,12 +142,15 @@ class pHashRef extends pObject {
     private pHash o;
     public static final pString REF = new pString("HASH");
 
-    public pObject pHashRef(pHash o) {
+    public pHashRef(pHash o) {
         this.o = o;
-        return this;
     }
     public pObject get() {
         return this.o;
+    }
+    public pObject set(pHash o) {
+        this.o = o;
+        return this;
     }
     public pObject ref() {
         return REF;
@@ -159,16 +160,13 @@ class pScalar extends pObject {
     private pObject o;
 
     // Note: 3 versions of pScalar()
-    public pObject pScalar() {
-        return this;
+    public pScalar() {
     }
-    public pObject pScalar(pObject o) {
+    public pScalar(pObject o) {
         this.o = o;
-        return this;
     }
-    public pObject pScalar(pScalar o) {
+    public pScalar(pScalar o) {
         this.o = o.get();
-        return this;
     }
 
     public pObject get() {

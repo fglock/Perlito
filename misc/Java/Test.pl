@@ -57,8 +57,8 @@ class Test {
 
         pCORE.print(pContext.VOID, new pString("HERE\n"));
 
-        // pHashRef hr = new pHashRef(hh);
-        // pCORE.say(pContext.VOID, new pString("ref is "), pHashRef.ref());
+        pHashRef hr = new pHashRef(hh);
+        pCORE.say(pContext.VOID, new pString("ref is "), hr.ref());
     }
 }
 
