@@ -87,9 +87,19 @@ class pClosure extends pObject {
 }
 class pScalar extends pObject {
     private pObject o;
-    public pScalar() {
-        this.o = new pUndef();
+    // Note: 3 versions of pScalar()
+    public pObject pScalar() {
+        return this;
     }
+    public pObject pScalar(pObject o) {
+        this.o = o;
+        return this;
+    }
+    public pObject pScalar(pScalar o) {
+        this.o = o.get();
+        return this;
+    }
+
     public pObject get() {
         return this.o;
     }
@@ -105,33 +115,63 @@ class pScalar extends pObject {
     }
 
     public String to_string() {
+        if (this.o == null) {
+            return "";
+        }
         return this.o.to_string();
     }
     public int to_int() {
+        if (this.o == null) {
+            return 0;
+        }
         return this.o.to_int();
     }
     public double to_num() {
+        if (this.o == null) {
+            return 0.0;
+        }
         return this.o.to_num();
     }
     public boolean to_bool() {
+        if (this.o == null) {
+            return false;
+        }
         return this.o.to_bool();
     }
     public pObject add(pObject s) {
+        if (this.o == null) {
+            this.o = new pInt(0);
+        }
         return this.o.add(s);
     }
     public boolean is_int() {
+        if (this.o == null) {
+            return false;
+        }
         return this.o.is_int();
     }
     public boolean is_num() {
+        if (this.o == null) {
+            return false;
+        }
         return this.o.is_num();
     }
     public boolean is_string() {
+        if (this.o == null) {
+            return false;
+        }
         return this.o.is_string();
     }
     public boolean is_bool() {
+        if (this.o == null) {
+            return false;
+        }
         return this.o.is_bool();
     }
     public pObject to_num_or_int() {
+        if (this.o == null) {
+            this.o = new pUndef();
+        }
         return this.o.to_num_or_int();
     }
 }
