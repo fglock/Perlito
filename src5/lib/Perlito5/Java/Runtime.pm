@@ -222,6 +222,30 @@ class pArray extends pObject {
         }
         return this.a.get(i.to_int());
     }
+    public pObject get_array(pObject i) {
+        pObject o = this.aget(i);
+        if (o == null) {
+            o = new pArray();
+            this.aset(i, o);
+            return o;
+        }
+        else if (o.is_array()) {
+            return o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+    }
+    public pObject get_hash(pObject i) {
+        pObject o = this.aget(i);
+        if (o == null) {
+            o = new pHash();
+            this.aset(i, o);
+            return o;
+        }
+        else if (o.is_hash()) {
+            return o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
+    }
 
     // Note: 2 versions of set()
     public pObject aset(pObject i, pObject v) {
@@ -291,6 +315,30 @@ class pHash extends pObject {
             return new pUndef();
         }
         return o;
+    }
+    public pObject get_array(pObject i) {
+        pObject o = this.hget(i);
+        if (o == null) {
+            o = new pArray();
+            this.hset(i, o);
+            return o;
+        }
+        else if (o.is_array()) {
+            return o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+    }
+    public pObject get_hash(pObject i) {
+        pObject o = this.hget(i);
+        if (o == null) {
+            o = new pHash();
+            this.hset(i, o);
+            return o;
+        }
+        else if (o.is_hash()) {
+            return o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
     }
 
     // Note: 2 versions of set()
