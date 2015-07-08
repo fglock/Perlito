@@ -13,15 +13,15 @@ print <<'EOT';
 class Test {
     public static void main(String[] args) {
 
-        PerlitoString s = new PerlitoString("456");
-        PerlitoInt i = new PerlitoInt(123);
-        PerlitoNum n = new PerlitoNum(123.456);
-        PerlitoBool t = new PerlitoBool(true);
-        PerlitoBool f = new PerlitoBool(false);
-        PerlitoObject x;
+        pString s = new pString("456");
+        pInt i = new pInt(123);
+        pNum n = new pNum(123.456);
+        pBool t = new pBool(true);
+        pBool f = new pBool(false);
+        pObject x;
 
         x = i.add(s);
-        x = x.add( new PerlitoInt(4) );
+        x = x.add( new pInt(4) );
         x.the_int_method();
         s.the_int_method();
         System.out.println(x.to_string());
@@ -32,24 +32,24 @@ class Test {
         System.out.println(t.to_string());
         System.out.println(f.to_string());
 
-        PerlitoClosure c = new PerlitoClosure(s) {
-                public PerlitoObject apply() {
+        pClosure c = new pClosure(s) {
+                public pObject apply(pArray args, int want) {
                     System.out.println("called MyClosure with " + this.env.to_string());
-                    return new PerlitoInt(0);
+                    return new pInt(0);
                 }
             };
-        c.apply();
+        c.apply(new pArray(), 0);
 
-        PerlitoScalar vv = new PerlitoScalar();
+        pScalar vv = new pScalar();
         System.out.println("Scalar " + vv.to_string());
 
-        PerlitoArray aa = new PerlitoArray();
+        pArray aa = new pArray();
         System.out.println("Array " + aa.to_string());
 
         aa.aset(i, n);
         System.out.println("Array get " + aa.aget(i).to_string());
 
-        PerlitoHash hh = new PerlitoHash();
+        pHash hh = new pHash();
         System.out.println("Hash " + hh.to_string());
 
         hh.hset(i, n);

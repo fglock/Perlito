@@ -12,8 +12,8 @@ sub emit_java {
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class PerlitoObject {
-    public PerlitoObject() {
+class pObject {
+    public pObject() {
     }
     public String to_string() {
         System.out.println("error .to_string!");
@@ -31,7 +31,7 @@ class PerlitoObject {
         System.out.println("error .to_bool!");
         return true;
     }
-    public PerlitoObject add(PerlitoObject s) {
+    public pObject add(pObject s) {
         return this.to_num_or_int().add(s);
     }
     public boolean is_int() {
@@ -46,27 +46,27 @@ class PerlitoObject {
     public boolean is_bool() {
         return false;
     }
-    public PerlitoObject to_num_or_int() {
-        return new PerlitoInt(0);
+    public pObject to_num_or_int() {
+        return new pInt(0);
     }
     public void the_int_method() {
         System.out.println("error!");
     }
 }
-class PerlitoClosure extends PerlitoObject {
-    public PerlitoObject env;
-    public PerlitoClosure(PerlitoObject env) {
+class pClosure extends pObject {
+    public pObject env;
+    public pClosure(pObject env) {
         this.env = env;
     }
-    public PerlitoObject apply() {
+    public pObject apply(pArray args, int want) {
         System.out.println("error!");
-        return new PerlitoInt(0);
+        return new pInt(0);
     }
 }
-class PerlitoScalar extends PerlitoObject {
-    private PerlitoObject o;
-    public PerlitoScalar() {
-        this.o = new PerlitoUndef();
+class pScalar extends pObject {
+    private pObject o;
+    public pScalar() {
+        this.o = new pUndef();
     }
     public String to_string() {
         return this.o.to_string();
@@ -80,7 +80,7 @@ class PerlitoScalar extends PerlitoObject {
     public boolean to_bool() {
         return this.o.to_bool();
     }
-    public PerlitoObject add(PerlitoObject s) {
+    public pObject add(pObject s) {
         return this.o.add(s);
     }
     public boolean is_int() {
@@ -95,23 +95,23 @@ class PerlitoScalar extends PerlitoObject {
     public boolean is_bool() {
         return this.o.is_bool();
     }
-    public PerlitoObject to_num_or_int() {
+    public pObject to_num_or_int() {
         return this.o.to_num_or_int();
     }
 }
-class PerlitoArray extends PerlitoObject {
-    private ArrayList<PerlitoObject> a;
-    public PerlitoArray() {
-        this.a = new ArrayList<PerlitoObject>();
+class pArray extends pObject {
+    private ArrayList<pObject> a;
+    public pArray() {
+        this.a = new ArrayList<pObject>();
     }
-    public PerlitoObject aget(PerlitoObject i) {
+    public pObject aget(pObject i) {
         return this.a.get(i.to_int());
     }
-    public PerlitoObject aset(PerlitoObject i, PerlitoObject v) {
+    public pObject aset(pObject i, pObject v) {
         int size = this.a.size();
         int pos  = i.to_int();
         while (size < pos) {
-            this.a.add( new PerlitoUndef() );
+            this.a.add( new pUndef() );
             size++;
         }
         this.a.add(i.to_int(), v);
@@ -130,7 +130,7 @@ class PerlitoArray extends PerlitoObject {
     public boolean to_bool() {
         return (this.a.size() > 0);
     }
-    public PerlitoObject add(PerlitoObject s) {
+    public pObject add(pObject s) {
         return this.to_num_or_int().add(s);
     }
     public boolean is_int() {
@@ -145,19 +145,19 @@ class PerlitoArray extends PerlitoObject {
     public boolean is_bool() {
         return false;
     }
-    public PerlitoObject to_num_or_int() {
-        return new PerlitoInt(this.to_int());
+    public pObject to_num_or_int() {
+        return new pInt(this.to_int());
     }
 }
-class PerlitoHash extends PerlitoObject {
-    private HashMap<String, PerlitoObject> h;
-    public PerlitoHash() {
-        this.h = new HashMap<String, PerlitoObject>();
+class pHash extends pObject {
+    private HashMap<String, pObject> h;
+    public pHash() {
+        this.h = new HashMap<String, pObject>();
     }
-    public PerlitoObject hget(PerlitoObject i) {
+    public pObject hget(pObject i) {
         return this.h.get(i.to_string());
     }
-    public PerlitoObject hset(PerlitoObject i, PerlitoObject v) {
+    public pObject hset(pObject i, pObject v) {
         this.h.put(i.to_string(), v);
         return v;
     }
@@ -175,7 +175,7 @@ class PerlitoHash extends PerlitoObject {
     public boolean to_bool() {
         return true;
     }
-    public PerlitoObject add(PerlitoObject s) {
+    public pObject add(pObject s) {
         return this.to_num_or_int().add(s);
     }
     public boolean is_int() {
@@ -190,12 +190,12 @@ class PerlitoHash extends PerlitoObject {
     public boolean is_bool() {
         return false;
     }
-    public PerlitoObject to_num_or_int() {
-        return new PerlitoInt(this.to_int());
+    public pObject to_num_or_int() {
+        return new pInt(this.to_int());
     }
 }
-class PerlitoUndef extends PerlitoObject {
-    public PerlitoUndef() {
+class pUndef extends pObject {
+    public pUndef() {
     }
     public int to_int() {
         return 0;
@@ -212,13 +212,13 @@ class PerlitoUndef extends PerlitoObject {
     public boolean is_bool() {
         return false;
     }
-    public PerlitoObject to_num_or_int() {
-        return new PerlitoInt(0);
+    public pObject to_num_or_int() {
+        return new pInt(0);
     }
 }
-class PerlitoBool extends PerlitoObject {
+class pBool extends pObject {
     private boolean i;
-    public PerlitoBool(boolean i) {
+    public pBool(boolean i) {
         this.i = i;
     }
     public int to_int() {
@@ -251,13 +251,13 @@ class PerlitoBool extends PerlitoObject {
     public boolean is_bool() {
         return true;
     }
-    public PerlitoObject to_num_or_int() {
-        return new PerlitoInt(this.to_int());
+    public pObject to_num_or_int() {
+        return new pInt(this.to_int());
     }
 }
-class PerlitoInt extends PerlitoObject {
+class pInt extends pObject {
     private int i;
-    public PerlitoInt(int i) {
+    public pInt(int i) {
         this.i = i;
     }
     public int to_int() {
@@ -278,20 +278,20 @@ class PerlitoInt extends PerlitoObject {
     public void the_int_method() {
         System.out.println("Here!");
     }
-    public PerlitoObject add(PerlitoObject s) {
+    public pObject add(pObject s) {
         System.out.println("Int.add Object!");
         if (s.is_int()) {
-            return new PerlitoInt( this.i + s.to_int() );
+            return new pInt( this.i + s.to_int() );
         }
         return s.to_num_or_int().add(this);
     }
-    public PerlitoObject to_num_or_int() {
+    public pObject to_num_or_int() {
         return this;
     }
 }
-class PerlitoNum extends PerlitoObject {
+class pNum extends pObject {
     private double i;
-    public PerlitoNum(double i) {
+    public pNum(double i) {
         this.i = i;
     }
     public int to_int() {
@@ -306,19 +306,19 @@ class PerlitoNum extends PerlitoObject {
     public boolean to_bool() {
         return this.i != 0.0;
     }
-    public PerlitoNum add(PerlitoObject s) {
-        return new PerlitoNum( this.i + s.to_num() );
+    public pNum add(pObject s) {
+        return new pNum( this.i + s.to_num() );
     }
     public boolean is_num() {
         return true;
     }
-    public PerlitoObject to_num_or_int() {
+    public pObject to_num_or_int() {
         return this;
     }
 }
-class PerlitoString extends PerlitoObject {
+class pString extends pObject {
     private java.lang.String s;
-    public PerlitoString(String s) {
+    public pString(String s) {
         this.s = s;
     }
     public int to_int() {
@@ -337,18 +337,18 @@ class PerlitoString extends PerlitoObject {
     public boolean is_string() {
         return true;
     }
-    public PerlitoObject to_num_or_int() {
+    public pObject to_num_or_int() {
         if (this.s.indexOf('.') > 0) {
             try {
-                return new PerlitoNum(this.to_num());
+                return new pNum(this.to_num());
             } catch (NumberFormatException nfe) {
-                return new PerlitoInt(0);
+                return new pInt(0);
             }
         }
         try {
-            return new PerlitoInt(this.to_int());
+            return new pInt(this.to_int());
         } catch (NumberFormatException nfe) {
-            return new PerlitoInt(0);
+            return new pInt(0);
         }
     } 
 }
@@ -363,15 +363,15 @@ __END__
 
 class HelloWorldApp {
     public static void main(String[] args) { 
-        PerlitoString s = new PerlitoString("456");
-        PerlitoInt i = new PerlitoInt(123);
-        PerlitoNum n = new PerlitoNum(123.456);
-        PerlitoBool t = new PerlitoBool(true);
-        PerlitoBool f = new PerlitoBool(false);
-        PerlitoObject x;
+        pString s = new pString("456");
+        pInt i = new pInt(123);
+        pNum n = new pNum(123.456);
+        pBool t = new pBool(true);
+        pBool f = new pBool(false);
+        pObject x;
 
         x = i.add(s);
-        x = x.add( new PerlitoInt(4) );
+        x = x.add( new pInt(4) );
         x.the_int_method();
         s.the_int_method();
         System.out.println(x.to_string());
@@ -382,15 +382,15 @@ class HelloWorldApp {
         System.out.println(t.to_string());
         System.out.println(f.to_string());
 
-        PerlitoClosure c = new PerlitoClosure(s) {
-                public PerlitoObject apply() {
+        pClosure c = new pClosure(s) {
+                public pObject apply() {
                     System.out.println("called MyClosure with " + this.env.to_string());
-                    return new PerlitoInt(0);
+                    return new pInt(0);
                 }
             };
         c.apply();
 
-        PerlitoHash h = new PerlitoHash();
+        pHash h = new pHash();
         System.out.println(h.to_string());
     }
 }
