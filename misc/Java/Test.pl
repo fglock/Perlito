@@ -58,7 +58,10 @@ class Test {
         pCORE.print(pContext.VOID, new pString("HERE\n"));
 
         pHashRef hr = new pHashRef(hh);
-        pCORE.say(pContext.VOID, new pString("ref is "), hr.ref());
+        pCORE.say(pContext.VOID, new pString("ref is "), pCORE.ref(pContext.SCALAR, hr));
+
+        pScalar v_x = new pScalar(aa);
+        pCORE.say(pContext.VOID, new pString("scalar is "), v_x);
     }
 }
 

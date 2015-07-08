@@ -42,6 +42,15 @@ class pCORE {
         System.exit(1);     // TODO
         return new pUndef();
     }
+    public static final pObject ref(int want, pObject arg) {
+        return arg.ref();
+    }
+    public static final pObject scalar(int want, pObject... args) {
+        if (args.length == 0) {
+            return new pUndef();
+        }
+        return args[-1].scalar();
+    }
 }
 class pObject {
     public static final pString REF = new pString("");
@@ -93,6 +102,9 @@ class pObject {
     }
     public pObject ref() {
         return REF;
+    }
+    public pObject scalar() {
+        return this;
     }
 }
 class pClosure extends pObject {
@@ -159,7 +171,7 @@ class pHashRef extends pObject {
 class pScalar extends pObject {
     private pObject o;
 
-    // Note: 3 versions of pScalar()
+    // Note: several versions of pScalar()
     public pScalar() {
     }
     public pScalar(pObject o) {
@@ -167,6 +179,14 @@ class pScalar extends pObject {
     }
     public pScalar(pScalar o) {
         this.o = o.get();
+    }
+    public pScalar(pArray o) {
+        // $a = @x
+        this.o = o.scalar();
+    }
+    public pScalar(pHash o) {
+        // $a = %x
+        this.o = o.scalar();
     }
 
     public pObject get() {
@@ -192,13 +212,23 @@ class pScalar extends pObject {
         return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
     }
 
-    // Note: 2 versions of set()
+    // Note: several versions of set()
     public pObject set(pObject o) {
         this.o = o;
         return this;
     }
     public pObject set(pScalar o) {
         this.o = o.get();
+        return this;
+    }
+    public pObject set(pArray o) {
+        // $a = @x
+        this.o = o.scalar();
+        return this;
+    }
+    public pObject set(pHash o) {
+        // $a = %x
+        this.o = o.scalar();
         return this;
     }
 
@@ -262,6 +292,9 @@ class pScalar extends pObject {
         }
         return this.o.to_num_or_int();
     }
+    public pObject scalar() {
+        return this.o;
+    }
 }
 class pArray extends pObject {
     private ArrayList<pObject> a;
@@ -308,7 +341,7 @@ class pArray extends pObject {
             this.a.add( new pUndef() );
             size++;
         }
-        this.a.add(i.to_int(), v);
+        this.a.add(i.to_int(), v.scalar());
         return v;
     }
     public pObject aset(pObject i, pScalar v) {
@@ -356,6 +389,9 @@ class pArray extends pObject {
     public pObject to_num_or_int() {
         return new pInt(this.to_int());
     }
+    public pObject scalar() {
+        return this.to_num_or_int();
+    }
 }
 class pHash extends pObject {
     private HashMap<String, pObject> h;
@@ -396,7 +432,7 @@ class pHash extends pObject {
 
     // Note: 2 versions of set()
     public pObject hset(pObject i, pObject v) {
-        this.h.put(i.to_string(), v);
+        this.h.put(i.to_string(), v.scalar());
         return v;
     }
     public pObject hset(pObject i, pScalar v) {
@@ -438,6 +474,9 @@ class pHash extends pObject {
     }
     public pObject to_num_or_int() {
         return new pInt(this.to_int());
+    }
+    public pObject scalar() {
+        return new pString(this.to_string());
     }
 }
 class pUndef extends pObject {
