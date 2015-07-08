@@ -40,8 +40,11 @@ class Test {
             };
         c.apply();
 
-        PerlitoHash h = new PerlitoHash();
-        System.out.println(h.to_string());
+        PerlitoArray aa = new PerlitoArray();
+        System.out.println("Array " + aa.to_string());
+
+        PerlitoHash hh = new PerlitoHash();
+        System.out.println("Hash " + hh.to_string());
     }
 }
 
