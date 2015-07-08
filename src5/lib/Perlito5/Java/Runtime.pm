@@ -12,6 +12,17 @@ sub emit_java {
 import java.util.ArrayList;
 import java.util.HashMap;
 
+class pContext {
+    public static final int VOID   = 0;
+    public static final int SCALAR = 1;
+    public static final int LIST   = 2;
+}
+class pCORE {
+    public static final pObject print(pArray args, int want) {
+        System.out.println(args.aget(new pInt(0)).to_string());
+        return new pInt(1);
+    }
+}
 class pObject {
     public pObject() {
     }

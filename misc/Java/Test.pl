@@ -38,7 +38,7 @@ class Test {
                     return new pInt(0);
                 }
             };
-        c.apply(new pArray(), 0);
+        c.apply(new pArray(), pContext.VOID);
 
         pScalar vv = new pScalar();
         System.out.println("Scalar " + vv.to_string());
@@ -54,6 +54,10 @@ class Test {
 
         hh.hset(i, n);
         System.out.println("Hash get " + hh.hget(i).to_string());
+
+        pArray arg = new pArray();
+        arg.aset(new pInt(0), new pString("HERE\n"));
+        pCORE.print(arg, pContext.VOID);
     }
 }
 
