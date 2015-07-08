@@ -77,19 +77,95 @@ class PerlitoArray extends PerlitoObject {
     public PerlitoArray() {
         this.a = new ArrayList<PerlitoObject>();
     }
+    public PerlitoObject aget(PerlitoObject i) {
+        return this.a.get(i.to_int());
+    }
+    public PerlitoObject aset(PerlitoObject i, PerlitoObject v) {
+        int size = this.a.size();
+        int pos  = i.to_int();
+        while (size < pos) {
+            this.a.add( new PerlitoUndef() );
+            size++;
+        }
+        this.a.add(i.to_int(), v);
+        return v;
+    }
     public String to_string() {
         // TODO
         return "" + this.hashCode();
     }
+    public int to_int() {
+        return this.a.size();
+    }
+    public double to_num() {
+        return 0.0 + this.to_int();
+    }
+    public boolean to_bool() {
+        return (this.a.size() > 0);
+    }
+    public PerlitoObject add(PerlitoObject s) {
+        return this.to_num_or_int().add(s);
+    }
+    public boolean is_int() {
+        return false;
+    }
+    public boolean is_num() {
+        return false;
+    }
+    public boolean is_string() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public PerlitoObject to_num_or_int() {
+        return new PerlitoInt(this.to_int());
+    }
+
 }
 class PerlitoHash extends PerlitoObject {
     private HashMap<String, PerlitoObject> h;
     public PerlitoHash() {
         this.h = new HashMap<String, PerlitoObject>();
     }
+    public PerlitoObject hget(PerlitoObject i) {
+        return this.h.get(i.to_string());
+    }
+    public PerlitoObject hset(PerlitoObject i, PerlitoObject v) {
+        this.h.put(i.to_string(), v);
+        return v;
+    }
     public String to_string() {
         // TODO
         return "" + this.hashCode();
+    }
+    public int to_int() {
+        // TODO
+        return this.hashCode();
+    }
+    public double to_num() {
+        return 0.0 + this.to_int();
+    }
+    public boolean to_bool() {
+        return true;
+    }
+    public PerlitoObject add(PerlitoObject s) {
+        return this.to_num_or_int().add(s);
+    }
+    public boolean is_int() {
+        return false;
+    }
+    public boolean is_num() {
+        return false;
+    }
+    public boolean is_string() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public PerlitoObject to_num_or_int() {
+        return new PerlitoInt(this.to_int());
     }
 }
 class PerlitoUndef extends PerlitoObject {

@@ -46,8 +46,14 @@ class Test {
         PerlitoArray aa = new PerlitoArray();
         System.out.println("Array " + aa.to_string());
 
+        aa.aset(i, n);
+        System.out.println("Array get " + aa.aget(i).to_string());
+
         PerlitoHash hh = new PerlitoHash();
         System.out.println("Hash " + hh.to_string());
+
+        hh.hset(i, n);
+        System.out.println("Hash get " + hh.hget(i).to_string());
     }
 }
 
