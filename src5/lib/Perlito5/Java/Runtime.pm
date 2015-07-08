@@ -9,6 +9,8 @@ sub emit_java {
     lib/Perlito5/Java/Runtime.pm
 */
 
+import java.util.HashMap;
+
 class PerlitoObject {
     public PerlitoObject() {
     }
@@ -58,6 +60,16 @@ class PerlitoClosure extends PerlitoObject {
     public PerlitoObject apply() {
         System.out.println("error!");
         return new PerlitoInt(0);
+    }
+}
+class PerlitoHash extends PerlitoObject {
+    private HashMap<String, PerlitoObject> h;
+    public PerlitoHash() {
+        this.h = new HashMap<String, PerlitoObject>();
+    }
+    public String to_string() {
+        // TODO
+        return "" + this.hashCode();
     }
 }
 class PerlitoBool extends PerlitoObject {
@@ -233,6 +245,9 @@ class HelloWorldApp {
                 }
             };
         c.apply();
+
+        PerlitoHash h = new PerlitoHash();
+        System.out.println(h.to_string());
     }
 }
 

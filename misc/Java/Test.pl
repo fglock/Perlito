@@ -39,6 +39,9 @@ class Test {
                 }
             };
         c.apply();
+
+        PerlitoHash h = new PerlitoHash();
+        System.out.println(h.to_string());
     }
 }
 
