@@ -33,6 +33,15 @@ class pCORE {
         System.out.println("\n");
         return new pInt(1);
     }
+    public static final pObject die(int want, pObject... args) {
+        for(pObject s : args)
+        {
+            System.out.print(s.to_string());
+        }
+        System.err.println("\n");
+        System.exit(1);     // TODO
+        return new pUndef();
+    }
 }
 class pObject {
     public pObject() {
@@ -68,6 +77,12 @@ class pObject {
     public boolean is_bool() {
         return false;
     }
+    public boolean is_hash() {
+        return false;
+    }
+    public boolean is_array() {
+        return false;
+    }
     public pObject to_num_or_int() {
         return new pInt(0);
     }
@@ -87,6 +102,7 @@ class pClosure extends pObject {
 }
 class pScalar extends pObject {
     private pObject o;
+
     // Note: 3 versions of pScalar()
     public pObject pScalar() {
         return this;
@@ -102,6 +118,25 @@ class pScalar extends pObject {
 
     public pObject get() {
         return this.o;
+    }
+    public pObject get_array() {
+        if (this.o == null) {
+            this.o = new pArray();
+            return this.o;
+        }
+        else if (this.o.is_array()) {
+            return this.o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+    }
+    public pObject get_hash() {
+        if (this.o == null) {
+            this.o = new pHash();
+        }
+        else if (this.o.is_hash()) {
+            return this.o;
+        }
+        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
     }
 
     // Note: 2 versions of set()
@@ -238,6 +273,9 @@ class pArray extends pObject {
     public boolean is_bool() {
         return false;
     }
+    public boolean is_array() {
+        return true;
+    }
     public pObject to_num_or_int() {
         return new pInt(this.to_int());
     }
@@ -293,6 +331,9 @@ class pHash extends pObject {
     }
     public boolean is_bool() {
         return false;
+    }
+    public boolean is_hash() {
+        return true;
     }
     public pObject to_num_or_int() {
         return new pInt(this.to_int());
