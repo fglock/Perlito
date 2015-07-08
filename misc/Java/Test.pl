@@ -56,6 +56,9 @@ class Test {
         System.out.println("Hash get " + hh.hget(i).to_string());
 
         pCORE.print(pContext.VOID, new pString("HERE\n"));
+
+        // pHashRef hr = new pHashRef(hh);
+        // pCORE.say(pContext.VOID, new pString("ref is "), pHashRef.ref());
     }
 }
 
