@@ -55,19 +55,19 @@ class Test {
         hh.hset(i, v_n);
         System.out.println("Hash get " + hh.hget(i).to_string());
 
-        pCORE.print(pCx.VOID, new pString("HERE\n"));
+        pCORE.print(pCx.VOID, new pString("STDOUT"), new pArray(new pString("HERE\n")));
 
         pHashRef hr = new pHashRef(hh);
-        pCORE.say(pCx.VOID, new pString("ref is "), pCORE.ref(pCx.SCALAR, hr));
+        pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("ref is "), pCORE.ref(pCx.SCALAR, new pArray(hr))));
 
         pScalar v_x = new pScalar(aa);
-        pCORE.say(pCx.VOID, new pString("scalar is "), v_x);
+        pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("scalar is "), v_x));
 
 
         // perl "block"
         ( new pClosure(s) {
                 public pObject apply(int want, pObject... args) {
-                    pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string()));
+                    pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string())));
                     return new pInt(0);
                 }
             }
@@ -75,17 +75,17 @@ class Test {
 
         new pClosure(s) {
                 public pObject apply(int want, pObject... args) {
-                    pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string()));
-                    // pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string() + " "), v_n);
+                    pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string())));
+                    // pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string() + " "), v_n));
                     return new pInt(0);
                 }
             }.apply(pCx.VOID);
 
         // print special chars
-        pCORE.say(pCx.VOID, new pString("x" + (char)10 + "y"));
+        pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("x" + (char)10 + "y")));
 
         pArray aaa = new pArray(new pInt(10), new pInt(20), new pInt(30), aa);
-        pCORE.say(pCx.VOID, new pString("array size is "), pCORE.scalar(pCx.SCALAR, aaa));
+        pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("array size is "), pCORE.scalar(pCx.SCALAR, aaa)));
     }
 }
 

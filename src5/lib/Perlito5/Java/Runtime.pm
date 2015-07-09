@@ -18,40 +18,37 @@ class pCx {
     public static final int LIST   = 2;
 }
 class pCORE {
-    public static final pObject print(int want, pObject handle, pObject... args) {
+    public static final pObject print(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
-        for(pObject s : args)
-        {
-            System.out.print(s.to_string());
+        for (int i = 0; i < List__.to_int(); i++) {
+            System.out.print(List__.aget(i).to_string());
         }
         return new pInt(1);
     }
-    public static final pObject say(int want, pObject handle, pObject... args) {
+    public static final pObject say(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
-        for(pObject s : args)
-        {
-            System.out.print(s.to_string());
+        for (int i = 0; i < List__.to_int(); i++) {
+            System.out.print(List__.aget(i).to_string());
         }
         System.out.println("\n");
         return new pInt(1);
     }
-    public static final pObject die(int want, pObject... args) {
-        for(pObject s : args)
-        {
-            System.out.print(s.to_string());
+    public static final pObject die(int want, pArray List__) {
+        for (int i = 0; i < List__.to_int(); i++) {
+            System.err.print(List__.aget(i).to_string());
         }
         System.err.println("\n");
         System.exit(1);     // TODO
         return new pUndef();
     }
-    public static final pObject ref(int want, pObject arg) {
-        return arg.ref();
+    public static final pObject ref(int want, pArray List__) {
+        return List__.aget(0).ref();
     }
-    public static final pObject scalar(int want, pObject... args) {
-        if (args.length == 0) {
+    public static final pObject scalar(int want, pArray List__) {
+        if (List__.to_int() == 0) {
             return new pUndef();
         }
-        return args[args.length - 1].scalar();
+        return List__.aget(-1).scalar();
     }
 }
 class pObject {
@@ -211,7 +208,7 @@ class pScalar extends pObject {
         else if (this.o.is_array()) {
             return this.o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
     public pObject get_hash() {
         if (this.o == null) {
@@ -220,7 +217,7 @@ class pScalar extends pObject {
         else if (this.o.is_hash()) {
             return this.o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
 
     // Note: several versions of set()
@@ -330,17 +327,23 @@ class pArray extends pObject {
 
     public pObject aget(pObject i) {
         int pos  = i.to_int();
-        if (pos > this.a.size()) {
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos > this.a.size()) {
             return new pUndef();
         }
-        return this.a.get(i.to_int());
+        return this.a.get(pos);
     }
     public pObject aget(int i) {
         int pos  = i;
-        if (pos > this.a.size()) {
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos > this.a.size()) {
             return new pUndef();
         }
-        return this.a.get(i);
+        return this.a.get(pos);
     }
 
     public pObject get_array(pObject i) {
@@ -353,7 +356,7 @@ class pArray extends pObject {
         else if (o.is_array()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
     public pObject get_hash(pObject i) {
         pObject o = this.aget(i);
@@ -365,7 +368,7 @@ class pArray extends pObject {
         else if (o.is_hash()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
 
     // Note: 2 versions of set()
@@ -450,7 +453,7 @@ class pHash extends pObject {
         else if (o.is_array()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
     public pObject get_hash(pObject i) {
         pObject o = this.hget(i);
@@ -462,7 +465,7 @@ class pHash extends pObject {
         else if (o.is_hash()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
 
     // Note: 2 versions of set()
