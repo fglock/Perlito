@@ -15,7 +15,7 @@ class Test {
 
         pString s = new pString("456");
         pInt i = new pInt(123);
-        pNum n = new pNum(123.456);
+        pScalar v_n = new pScalar(new pNum(123.456));
         pBool t = new pBool(true);
         pBool f = new pBool(false);
         pObject x;
@@ -27,7 +27,7 @@ class Test {
         System.out.println(x.to_string());
         x = s.add(i);
         System.out.println(x.to_string());
-        x = s.add(n);
+        x = s.add(v_n);
         System.out.println(x.to_string());
         System.out.println(t.to_string());
         System.out.println(f.to_string());
@@ -46,13 +46,13 @@ class Test {
         pArray aa = new pArray();
         System.out.println("Array " + aa.to_string());
 
-        aa.aset(i, n);
+        aa.aset(i, v_n);
         System.out.println("Array get " + aa.aget(i).to_string());
 
         pHash hh = new pHash();
         System.out.println("Hash " + hh.to_string());
 
-        hh.hset(i, n);
+        hh.hset(i, v_n);
         System.out.println("Hash get " + hh.hget(i).to_string());
 
         pCORE.print(pCx.VOID, new pString("HERE\n"));
@@ -75,7 +75,8 @@ class Test {
 
         new pClosure(s) {
                 public pObject apply(int want, pObject... args) {
-                    System.out.println("inside block " + this.env.to_string());
+                    pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string()));
+                    // pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string() + " "), v_n);
                     return new pInt(0);
                 }
             }.apply(pCx.VOID);
