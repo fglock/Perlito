@@ -53,6 +53,7 @@ class pCORE {
     }
 }
 class pObject {
+    // extends java object ???
     public static final pString REF = new pString("");
 
     public pObject() {
@@ -524,10 +525,10 @@ class pBool extends pObject {
     }
     public String to_string() {
         if (this.i) {
-            return "true";
+            return "1";
         }
         else {
-            return "false";
+            return "";
         }
     }
     public boolean to_bool() {
