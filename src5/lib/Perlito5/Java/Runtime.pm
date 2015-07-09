@@ -375,21 +375,27 @@ class pArray extends pObject {
     public pObject aset(pObject i, pObject v) {
         int size = this.a.size();
         int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
         while (size < pos) {
             this.a.add( new pUndef() );
             size++;
         }
-        this.a.add(i.to_int(), v.scalar());
+        this.a.add(pos, v.scalar());
         return v;
     }
     public pObject aset(pObject i, pScalar v) {
         int size = this.a.size();
         int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
         while (size < pos) {
             this.a.add( new pUndef() );
             size++;
         }
-        this.a.add(i.to_int(), v.get());
+        this.a.add(pos, v.get());
         return v;
     }
 
