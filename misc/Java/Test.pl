@@ -62,6 +62,25 @@ class Test {
 
         pScalar v_x = new pScalar(aa);
         pCORE.say(pCx.VOID, new pString("scalar is "), v_x);
+
+
+        // perl "block"
+        ( new pClosure(s) {
+                public pObject apply(int want, pObject... args) {
+                    pCORE.say(pCx.VOID, new pString("inside block " + this.env.to_string()));
+                    return new pInt(0);
+                }
+            }
+        ).apply(pCx.VOID);
+
+        new pClosure(s) {
+                public pObject apply(int want, pObject... args) {
+                    System.out.println("inside block " + this.env.to_string());
+                    return new pInt(0);
+                }
+            }.apply(pCx.VOID);
+
+
     }
 }
 

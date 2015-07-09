@@ -702,11 +702,13 @@ package Perlito5::AST::CompUnit;
             # $str .= Perlito5::Java::IO->emit_java();
             # $str .= Perlito5::Java::Sprintf->emit_java();
         }
-        $str .= "var p5want;\n"
-             .  "var List__ = [];\n";
+        $str .= "class Test {\n"
+             .  "    public static void main(String[] args) {\n";
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_java($level, $wantarray) . "\n";
         }
+        $str .= "    }\n"
+             .  "}\n";
         return $str;
     }
     sub emit_java_get_decl { () }
@@ -1289,17 +1291,16 @@ package Perlito5::AST::Decl;
                 ) . ';';
         }
         if ($self->{decl} eq 'my') {
-            my $str = 'var ' . $self->{var}->emit_java();
             if ($self->{var}->sigil eq '%') {
-                $str = $str . ' = {};';
+                return 'pHash ' . $self->{var}->emit_java() . ' = new pHash();';
             }
             elsif ($self->{var}->sigil eq '@') {
-                $str = $str . ' = [];';
+                return 'pArray ' . $self->{var}->emit_java() . ' = new pArray();';
             }
             else {
-                $str = $str . ';';
+                return 'pScalar ' . $self->{var}->emit_java() . ' = new pScalar();';
             }
-            return $str;
+            return '// my ' . $self->{var}->emit_java();
         }
         elsif ($self->{decl} eq 'our') {
             my $str = $self->{var}->emit_java();
@@ -2352,7 +2353,7 @@ package Perlito5::AST::Apply;
                 $fun  = '"STDOUT"';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
+            'pCORE.print(pCx.VOID, ' . $fun . ', ' . $list . ')';
         },
         'say' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2365,7 +2366,7 @@ package Perlito5::AST::Apply;
                 $fun  = '"STDOUT"';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'p5pkg["Perlito5::IO"].say(' . $fun . ', ' . $list . ')';
+            'pCORE.say(pCx.VOID, ' . $fun . ', ' . $list . ')';
         },
         'printf' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2378,7 +2379,7 @@ package Perlito5::AST::Apply;
                 $fun  = '"STDOUT"';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'p5pkg["Perlito5::IO"].printf(' . $fun . ', ' . $list . ')';
+            'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')';
         },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
