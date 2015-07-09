@@ -38,7 +38,7 @@ class Test {
                     return new pInt(0);
                 }
             };
-        c.apply(pContext.VOID);
+        c.apply(pCx.VOID);
 
         pScalar vv = new pScalar();
         System.out.println("Scalar " + vv.to_string());
@@ -55,13 +55,13 @@ class Test {
         hh.hset(i, n);
         System.out.println("Hash get " + hh.hget(i).to_string());
 
-        pCORE.print(pContext.VOID, new pString("HERE\n"));
+        pCORE.print(pCx.VOID, new pString("HERE\n"));
 
         pHashRef hr = new pHashRef(hh);
-        pCORE.say(pContext.VOID, new pString("ref is "), pCORE.ref(pContext.SCALAR, hr));
+        pCORE.say(pCx.VOID, new pString("ref is "), pCORE.ref(pCx.SCALAR, hr));
 
         pScalar v_x = new pScalar(aa);
-        pCORE.say(pContext.VOID, new pString("scalar is "), v_x);
+        pCORE.say(pCx.VOID, new pString("scalar is "), v_x);
     }
 }
 

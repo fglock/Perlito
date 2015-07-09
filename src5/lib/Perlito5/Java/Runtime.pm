@@ -12,7 +12,7 @@ sub emit_java {
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class pContext {
+class pCx {
     public static final int VOID   = 0;
     public static final int SCALAR = 1;
     public static final int LIST   = 2;
@@ -200,7 +200,7 @@ class pScalar extends pObject {
         else if (this.o.is_array()) {
             return this.o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
     }
     public pObject get_hash() {
         if (this.o == null) {
@@ -209,7 +209,7 @@ class pScalar extends pObject {
         else if (this.o.is_hash()) {
             return this.o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
     }
 
     // Note: several versions of set()
@@ -318,7 +318,7 @@ class pArray extends pObject {
         else if (o.is_array()) {
             return o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
     }
     public pObject get_hash(pObject i) {
         pObject o = this.aget(i);
@@ -330,7 +330,7 @@ class pArray extends pObject {
         else if (o.is_hash()) {
             return o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
     }
 
     // Note: 2 versions of set()
@@ -415,7 +415,7 @@ class pHash extends pObject {
         else if (o.is_array()) {
             return o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not an ARRAY reference"));
+        return pCORE.die(pCx.VOID, new pString("Not an ARRAY reference"));
     }
     public pObject get_hash(pObject i) {
         pObject o = this.hget(i);
@@ -427,7 +427,7 @@ class pHash extends pObject {
         else if (o.is_hash()) {
             return o;
         }
-        return pCORE.die(pContext.VOID, new pString("Not a HASH reference"));
+        return pCORE.die(pCx.VOID, new pString("Not a HASH reference"));
     }
 
     // Note: 2 versions of set()
