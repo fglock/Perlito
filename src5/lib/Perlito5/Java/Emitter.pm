@@ -2350,7 +2350,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'pString("STDOUT")';
+                $fun  = 'new pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.print(pCx.VOID, ' . $fun . ', ' . $list . ')';
@@ -2363,7 +2363,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'pString("STDOUT")';
+                $fun  = 'new pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.say(pCx.VOID, ' . $fun . ', ' . $list . ')';
@@ -2376,7 +2376,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'pString("STDOUT")';
+                $fun  = 'new pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')';
