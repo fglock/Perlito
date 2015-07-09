@@ -13886,19 +13886,19 @@ package Perlito5::Java;
         my $s = shift;
         my @out;
         my $tmp = '';
-        $s eq '' && return chr(39) . chr(39);
+        $s eq '' && return '""';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
             }
             else {
-                $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
-                push(@out, 'String.fromCharCode(' . ord($c) . ')');
+                $tmp ne '' && push(@out, '"' . $tmp . '"');
+                push(@out, '(char)' . ord($c) . '');
                 $tmp = ''
             }
         }
-        $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
+        $tmp ne '' && push(@out, '"' . $tmp . '"');
         return join(' + ', @out)
     }
     sub Perlito5::Java::to_str {
@@ -14230,7 +14230,7 @@ package Perlito5::AST::Int;
 {
     sub Perlito5::AST::Int::emit_java {
         my($self, $level, $wantarray) = @_;
-        $self->{'int'}
+        'new pInt(' . $self->{'int'} . ')'
     }
     sub Perlito5::AST::Int::emit_java_get_decl {
         ()
@@ -14243,7 +14243,7 @@ package Perlito5::AST::Num;
 {
     sub Perlito5::AST::Num::emit_java {
         my($self, $level, $wantarray) = @_;
-        $self->{'num'}
+        'new pNum(' . $self->{'num'} . ')'
     }
     sub Perlito5::AST::Num::emit_java_get_decl {
         ()
@@ -14256,7 +14256,7 @@ package Perlito5::AST::Buf;
 {
     sub Perlito5::AST::Buf::emit_java {
         my($self, $level, $wantarray) = @_;
-        Perlito5::Java::escape_string($self->{'buf'})
+        'new pString(' . Perlito5::Java::escape_string($self->{'buf'}) . ')'
     }
     sub Perlito5::AST::Buf::emit_java_get_decl {
         ()

@@ -140,7 +140,7 @@ package Perlito5::Java;
         my $s = shift;
         my @out;
         my $tmp = '';
-        return "''" if $s eq '';
+        return '""' if $s eq '';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if  (  ($c ge 'a' && $c le 'z')
@@ -152,12 +152,12 @@ package Perlito5::Java;
                 $tmp = $tmp . $c;
             }
             else {
-                push @out, "'$tmp'" if $tmp ne '';
-                push @out, "String.fromCharCode(" . ord($c) . ")";
+                push @out, "\"$tmp\"" if $tmp ne '';
+                push @out, "(char)" . ord($c) . "";
                 $tmp = '';
             }
         }
-        push @out, "'$tmp'" if $tmp ne '';
+        push @out, "\"$tmp\"" if $tmp ne '';
         return join(' + ', @out);
     }
 
@@ -719,7 +719,7 @@ package Perlito5::AST::Int;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        $self->{int};
+        "new pInt(" . $self->{int} . ")";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -729,7 +729,7 @@ package Perlito5::AST::Num;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        $self->{num};
+        "new pNum(" . $self->{num} . ")";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -739,7 +739,7 @@ package Perlito5::AST::Buf;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        Perlito5::Java::escape_string( $self->{buf} );
+        "new pString(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }

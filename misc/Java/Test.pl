@@ -80,6 +80,8 @@ class Test {
                 }
             }.apply(pCx.VOID);
 
+        // print special chars
+        pCORE.say(pCx.VOID, new pString("x" + (char)10 + "y"));
 
     }
 }
