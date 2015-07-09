@@ -84,6 +84,8 @@ class Test {
         // print special chars
         pCORE.say(pCx.VOID, new pString("x" + (char)10 + "y"));
 
+        pArray aaa = new pArray(new pInt(10), new pInt(20), new pInt(30), aa);
+        pCORE.say(pCx.VOID, new pString("array size is "), pCORE.scalar(pCx.SCALAR, aaa));
     }
 }
 

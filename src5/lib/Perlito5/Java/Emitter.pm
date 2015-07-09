@@ -302,9 +302,9 @@ package Perlito5::Java;
           .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
           . '])'
           )
-        : ( '['
+        : ( 'new pArray('
           .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
-          . ']'
+          . ')'
           )
     }
 
@@ -389,9 +389,9 @@ package Perlito5::Java;
 
     sub to_context {
         my $wantarray = shift;
-         $wantarray eq 'list'   ? '1' 
-        :$wantarray eq 'scalar' ? '0' 
-        :$wantarray eq 'void'   ? 'null'
+         $wantarray eq 'list'   ? 'pCx.LIST' 
+        :$wantarray eq 'scalar' ? 'pCx.SCALAR' 
+        :$wantarray eq 'void'   ? 'pCx.VOID'
         :                         'p5want'
     }
 
@@ -2350,7 +2350,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = '"STDOUT"';
+                $fun  = 'pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.print(pCx.VOID, ' . $fun . ', ' . $list . ')';
@@ -2363,7 +2363,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = '"STDOUT"';
+                $fun  = 'pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.say(pCx.VOID, ' . $fun . ', ' . $list . ')';
@@ -2376,7 +2376,7 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = '"STDOUT"';
+                $fun  = 'pString("STDOUT")';
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')';
@@ -2815,8 +2815,8 @@ package Perlito5::AST::Apply;
         }
 
         $code . '('
-                . $arg_code . ', '
-                . Perlito5::Java::to_context($wantarray)
+                . Perlito5::Java::to_context($wantarray) . ', '
+                . $arg_code
               . ')';
 
     }

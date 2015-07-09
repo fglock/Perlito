@@ -18,14 +18,16 @@ class pCx {
     public static final int LIST   = 2;
 }
 class pCORE {
-    public static final pObject print(int want, pObject... args) {
+    public static final pObject print(int want, pObject handle, pObject... args) {
+        // TODO - write to filehandle
         for(pObject s : args)
         {
             System.out.print(s.to_string());
         }
         return new pInt(1);
     }
-    public static final pObject say(int want, pObject... args) {
+    public static final pObject say(int want, pObject handle, pObject... args) {
+        // TODO - write to filehandle
         for(pObject s : args)
         {
             System.out.print(s.to_string());
@@ -49,7 +51,7 @@ class pCORE {
         if (args.length == 0) {
             return new pUndef();
         }
-        return args[-1].scalar();
+        return args[args.length - 1].scalar();
     }
 }
 class pObject {
@@ -105,6 +107,14 @@ class pObject {
         return REF;
     }
     public pObject scalar() {
+        return this;
+    }
+    public pObject get() {
+        System.out.println("error .get!");
+        return this;
+    }
+    public pObject aget(int i) {
+        System.out.println("error .get!");
         return this;
     }
 }
@@ -302,6 +312,22 @@ class pArray extends pObject {
     public pArray() {
         this.a = new ArrayList<pObject>();
     }
+    public pArray(pObject... args) {
+        ArrayList<pObject> aa = new ArrayList<pObject>();
+        for (pObject s : args) {
+            if (s.is_array()) {
+                // @x = ( @x, @y );
+                for (int i = 0; i < s.to_int(); i++) {
+                    aa.add(s.aget(i));
+                }
+            }
+            else {
+                aa.add(s);
+            }
+        }
+        this.a = aa;
+    }
+
     public pObject aget(pObject i) {
         int pos  = i.to_int();
         if (pos > this.a.size()) {
@@ -309,6 +335,14 @@ class pArray extends pObject {
         }
         return this.a.get(i.to_int());
     }
+    public pObject aget(int i) {
+        int pos  = i;
+        if (pos > this.a.size()) {
+            return new pUndef();
+        }
+        return this.a.get(i);
+    }
+
     public pObject get_array(pObject i) {
         pObject o = this.aget(i);
         if (o == null) {
