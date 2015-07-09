@@ -463,9 +463,9 @@ package Perlito5::Java;
 
     sub emit_wrap_java {
         my ($level, $wantarray, @argument) = @_;
-        return join("\n", "(function () {",
+        return join("\n", "// (function () {",
                           emit_java_list_with_tabs($level, [
-                                \@argument, "})()"
+                                \@argument, "// })()"
                           ]));
     }
 
@@ -629,7 +629,7 @@ package Perlito5::Java::LexicalBlock;
         }
         if ( $has_local ) {
             unshift @str, (
-                    'var local_idx = p5LOCAL.length;',
+                    '// var local_idx = p5LOCAL.length;',
                     ( $has_regex
                       ? ( 'var regex_tmp = p5_regex_capture;',
                           'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
@@ -637,7 +637,7 @@ package Perlito5::Java::LexicalBlock;
                       : ()
                     )
                 );
-            push    @str, 'p5cleanup_local(local_idx, null);';
+            push    @str, '// p5cleanup_local(local_idx, null);';
         }
         my $out;
         if ($self->{top_level} && $Perlito5::THROW) {
@@ -1212,7 +1212,7 @@ package Perlito5::AST::Var;
         my $close = $wantarray eq 'void' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         if ( $sigil eq '$' ) {
-            return $open . $self->emit_java() . ' = ' . Perlito5::Java::to_scalar([$arguments], $level+1) . $close
+            return $self->emit_java() . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '@' ) {
 
