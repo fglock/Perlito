@@ -698,6 +698,9 @@ class pString extends pObject {
     public pString(String s) {
         this.s = s;
     }
+    public pString(char s) {
+        this.s = "" + s;
+    }
     public int to_int() {
         return Integer.parseInt(this.s.trim());
     }

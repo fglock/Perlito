@@ -183,7 +183,7 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'p5str(' . $cond->emit_java($level, $wantarray) . ')';
+                return 'new pString(' . $cond->emit_java($level, $wantarray) . ')';
             }
     }
     sub to_num {
@@ -198,7 +198,7 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'p5num(' . $cond->emit_java($level, $wantarray) . ')';
+                return 'new pNum(' . $cond->emit_java($level, $wantarray) . ')';
             }
     }
     sub to_bool {
