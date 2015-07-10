@@ -14045,7 +14045,7 @@ package Perlito5::Java;
             my $arg = $obj->{'arguments'}->[0];
             return 'p5scalar_deref(' . $arg->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($type) . ')'
         }
-        '(' . $obj->emit_java($level) . ' || (' . $obj->emit_java($level) . ' = ' . ($type eq 'array' ? 'new p5ArrayRef([])' : $type eq 'hash' ? 'new p5HashRef({})' : 'new p5ScalarRef(null)') . ')' . ')'
+        '(' . $obj->emit_java($level) . ' || (' . $obj->emit_java($level) . ' = ' . ($type eq 'array' ? 'new pArrayRef()' : $type eq 'hash' ? 'new pHashRef()' : 'new pScalarRef()') . ')' . ')'
     }
     sub Perlito5::Java::emit_java_list_with_tabs {
         my($level, $argument) = @_;
@@ -14862,19 +14862,19 @@ package Perlito5::AST::Apply;
         'p5code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')([])'
     }, 'circumfix:<[ ]>' => sub {
         my($self, $level, $wantarray) = @_;
-        '(new p5ArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}) . '))'
+        '(new pArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}) . '))'
     }, 'circumfix:<{ }>' => sub {
         my($self, $level, $wantarray) = @_;
-        '(new p5HashRef(' . Perlito5::Java::to_list($self->{'arguments'}, $level, 'hash') . '))'
+        '(new pHashRef(' . Perlito5::Java::to_list($self->{'arguments'}, $level, 'hash') . '))'
     }, 'prefix:<' . chr(92) . '>' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
         if ($arg->isa('Perlito5::AST::Apply')) {
             if ($arg->{'code'} eq 'prefix:<@>') {
-                return '(new p5ArrayRef(' . $arg->emit_java($level) . '))'
+                return '(new pArrayRef(' . $arg->emit_java($level) . '))'
             }
             if ($arg->{'code'} eq 'prefix:<%>') {
-                return '(new p5HashRef(' . $arg->emit_java($level) . '))'
+                return '(new pHashRef(' . $arg->emit_java($level) . '))'
             }
             if ($arg->{'code'} eq 'circumfix:<( )>') {
                 return 'p5_list_of_refs(' . Perlito5::Java::to_list($arg->{'arguments'}) . ')'
@@ -14885,13 +14885,13 @@ package Perlito5::AST::Apply;
         }
         if ($arg->isa('Perlito5::AST::Var')) {
             if ($arg->sigil() eq '@') {
-                return '(new p5ArrayRef(' . $arg->emit_java($level) . '))'
+                return '(new pArrayRef(' . $arg->emit_java($level) . '))'
             }
             if ($arg->sigil() eq '%') {
-                return '(new p5HashRef(' . $arg->emit_java($level) . '))'
+                return '(new pHashRef(' . $arg->emit_java($level) . '))'
             }
             if ($arg->sigil() eq '*') {
-                return '(new p5GlobRef(' . $arg->emit_java($level) . '))'
+                return '(new pGlobRef(' . $arg->emit_java($level) . '))'
             }
             if ($arg->sigil() eq '&') {
                 if ($arg->{'namespace'}) {
@@ -14902,7 +14902,7 @@ package Perlito5::AST::Apply;
                 }
             }
         }
-        return '(new p5ScalarRef(' . $arg->emit_java($level) . '))'
+        return '(new pScalarRef(' . $arg->emit_java($level) . '))'
     }, 'postfix:<++>' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
@@ -15084,7 +15084,7 @@ package Perlito5::AST::Apply;
                 die('invalid internal scope in eval' . chr(10))
             }
             $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
-            my $scope_js = '(new p5ArrayRef(' . Perlito5::Java::to_list($m) . '))';
+            my $scope_js = '(new pArrayRef(' . Perlito5::Java::to_list($m) . '))';
             $eval = 'eval(p5pkg["Perlito5::Java::Runtime"].perl5_to_js([' . Perlito5::Java::to_str($arg) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($wantarray) . ', ' . $scope_js . ']))'
         }
         my $context = Perlito5::Java::to_context($wantarray);
