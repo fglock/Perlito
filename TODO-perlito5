@@ -529,6 +529,7 @@ TODO list for Perlito5
     package Put { Java };
     generates:
     import Put;     (DONE)
+    and adds a pObject accessor "to_Put"  (DONE)
     and adds a pObject variant "pPut"  (TODO)
 
     my Put $put = new Put();

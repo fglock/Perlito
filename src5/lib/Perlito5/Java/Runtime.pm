@@ -13,17 +13,19 @@ sub emit_java {
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 EOT
-
-    . join('', ( map {   my $class = $_;
-                "import $class;\n"
+        # import the Java classes
+        # that were declared with
+        #
+        #   package MyJavaClass { Java }
+        #
+    . join('', ( map {
+                    my $class = $_;
+                    "import $class->{java_class_name};\n"
             }
-            keys %java_classes
+            values %java_classes
       ))
-
-    . <<'EOT';
-
+    . <<'EOT'
 class pCx {
     public static final int VOID   = 0;
     public static final int SCALAR = 1;
@@ -69,6 +71,23 @@ class pObject {
 
     public pObject() {
     }
+EOT
+        # add interfaces to Java classes
+        # that were declared with
+        #
+        #   package MyJavaClass { Java }
+        #
+    . join('', ( map {
+                    my $class = $_;
+                    my $java_class_name = $class->{java_class_name};
+                    "    public ${java_class_name} to_${java_class_name}() {\n"
+                  . "        System.out.println(\"error .to_${java_class_name}!\");\n"
+                  . "        return null;\n"
+                  . "    }\n"
+            }
+            values %java_classes
+      ))
+    . <<'EOT';
     public String to_string() {
         System.out.println("error .to_string!");
         return "";

@@ -710,7 +710,11 @@ package Perlito5::AST::CompUnit;
                     }
                     if ($class && $stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && $stmt->[1]->{code} eq 'Java') {
                         # warn "Java class: $class\n";
-                        $Java_class{$class} = {};   # TODO - add more information about the class
+                        # TODO - add more information about the class
+                        $Java_class{$class} = {
+                            java_class_name => "$class",
+                            perl_class_name => "$class",
+                        };
 
                         # generate no Perl code for this block
                         $unit_stmt->{stmts} = [];
@@ -794,6 +798,7 @@ package Perlito5::AST::Block;
 
         }
 
+        return "// TODO - Perlito5::AST::Block\n";
         return 'p5for_lex('
                 . "function () {\n"
                 .                                             $init
