@@ -689,39 +689,58 @@ package Perlito5::AST::CompUnit;
                     my $stmt = $unit_stmt->{stmts} // [];
 
                     # Perl:
-                    #   package Put { Java };
+                    #   package Put { import => 'java.Put' };
                     #
-                    # AST:
+                    # AST inside the @$stmt:
                     #   bless({
                     #       'arguments' => [],
                     #       'code' => 'package',
                     #       'namespace' => 'Put',
                     #   }, 'Perlito5::AST::Apply'),
                     #   bless({
-                    #       'arguments' => [],
-                    #       'bareword' => 1,
-                    #       'code' => 'Java',
+                    #       'arguments' => [
+                    #           bless({
+                    #               'arguments' => [],
+                    #               'bareword' => 1,
+                    #               'code' => 'import',
+                    #               'namespace' => '',
+                    #           }, 'Perlito5::AST::Apply'),
+                    #           bless({
+                    #               'buf' => 'java.Put',
+                    #           }, 'Perlito5::AST::Buf'),
+                    #       ],
+                    #       'code' => 'infix:<=>>',
                     #       'namespace' => '',
                     #   }, 'Perlito5::AST::Apply'),
 
-                    my $class = '';
-                    if ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{code} eq 'package') {
-                        $class = $stmt->[0]->{namespace};
-                    }
-                    if ($class && $stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && $stmt->[1]->{code} eq 'Java') {
-                        # warn "Java class: $class\n";
-                        # TODO - add more information about the class
-                        $Java_class{$class} = {
-                            java_class_name => "$class",
-                            perl_class_name => "$class",
-                        };
+                    next if @$stmt != 2;    # exactly 2 statements: "package" + "options"
+                    next unless ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{code} eq 'package');
+                    next unless ($stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && ( $stmt->[1]->{code} eq 'infix:<=>>' || $stmt->[1]->{code} eq 'list:<,>'));
 
-                        # generate no Perl code for this block
-                        $unit_stmt->{stmts} = [];
-                    }
-                    # $str = $str . $comp_unit->emit_java($level, $wantarray) . "\n";
+                    my $class = $stmt->[0]->{namespace};
+                    # warn "Java class: $class\n";
+                    # TODO - add more information about the class
 
+                    # we need the parameter list as Perl data, so we need to evaluate the AST
+                    # - wrap the "list AST into a "hashref" AST
+                    my $args_ast = Perlito5::AST::Apply->new(
+                        arguments => [ $stmt->[1] ],
+                        code => 'circumfix:<{ }>',
+                    );
+                    # - transform the AST back into Perl code
+                    my $out = [];
+                    Perlito5::Perl5::PrettyPrinter::pretty_print( [$args_ast->emit_perl5()], 0, $out );
+                    my $args_perl5 = join( '', @$out );
 
+                    # - eval the Perl code and store the arguments to use later
+                    $Java_class{$class} = eval $args_perl5
+                        or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
+
+            # TODO - syntax error in ${@}
+            #            or die "error in arguments to generate Java class:\n${@}\n${args_perl5}";
+
+                    # throw away this block - generate no Perl code
+                    $unit_stmt->{stmts} = [];
                 }
             }
         }

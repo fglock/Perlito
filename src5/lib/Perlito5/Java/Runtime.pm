@@ -6,6 +6,13 @@ sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
 
+    for my $class ( values %java_classes ) {
+        die "missing 'import' argument to generate Java class"
+            unless $class->{import};
+        my @parts = split /\./, $class->{import};
+        $class->{accessor} //= $parts[-1];
+    }
+
     return <<'EOT'
 /*
     lib/Perlito5/Java/Runtime.pm
@@ -21,7 +28,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    "import $class->{java_class_name};\n"
+                    "import $class->{import};\n"
             }
             values %java_classes
       ))
@@ -79,7 +86,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{java_class_name};
+                    my $java_class_name = $class->{accessor};
                     "    public ${java_class_name} to_${java_class_name}() {\n"
                   . "        System.out.println(\"error .to_${java_class_name}!\");\n"
                   . "        return null;\n"
