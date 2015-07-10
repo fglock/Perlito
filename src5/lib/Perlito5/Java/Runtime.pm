@@ -334,6 +334,24 @@ class pScalar extends pObject {
     public pObject scalar() {
         return this.o;
     }
+EOT
+        # add "unbox" accessors to Java classes
+        # that were declared with
+        #
+        #   package MyJavaClass { Java }
+        #
+    . join('', ( map {
+                    my $class = $_;
+                    my $java_class_name = $class->{accessor};
+"    public ${java_class_name} to_${java_class_name}() {
+        return this.o.to_${java_class_name}();
+    }
+"
+            }
+            values %java_classes
+      ))
+
+    . <<'EOT'
 }
 class pArray extends pObject {
     private ArrayList<pObject> a;

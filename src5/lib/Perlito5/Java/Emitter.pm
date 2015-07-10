@@ -1461,11 +1461,11 @@ package Perlito5::AST::Call;
         }
 
 
-        if ( ref($self->{invocant}) eq 'Perlito5::AST::Proto' ) {
-            # maybe a Java native class
+        # get info about native 'Java' packages
+        my $Java_class = Perlito5::Java::get_java_class_info();
 
-            # get info about native 'Java' packages
-            my $Java_class = Perlito5::Java::get_java_class_info();
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Proto' ) {
+            # maybe a Java native class:  Sample->new()
 
             if ( exists $Java_class->{$self->{invocant}->{name}} ) {
                 my $info = $Java_class->{$self->{invocant}->{name}};
@@ -1474,8 +1474,20 @@ package Perlito5::AST::Call;
             }
         }
 
-
         my $invocant = $self->{invocant}->emit_java($level, 'scalar');
+
+        if ( $meth =~ /^to_(.+)/ ) {
+            # maybe a method to convert to native object:  $x->to_Sample()
+
+            # TODO - check for no-arguments
+            my $class = $1;
+            if ( exists $Java_class->{$class} ) {
+                my $info = $Java_class->{$class};
+                return "$invocant.$meth()";
+            }
+
+        }
+
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_java($level, 'scalar');
         }

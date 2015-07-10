@@ -525,9 +525,8 @@ TODO list for Perlito5
 
 * Java backend
 
--- document Java options
-
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new() ' > Test.java ; javac Test.java
+-- document Java import options
+-- add more "import" details
 
     package Sample { import => "misc.Java.Sample" };
 
@@ -539,34 +538,30 @@ TODO list for Perlito5
                                             (TODO - maybe unbox the arguments automatically)
     - add a pScalar variant "set(Sample)"   (TODO)
 
--- "import" details
-
-    package Bytes {
-        import => 'java.thingy.Byte',   # DONE
-        other_options => { stuff },
-    };
-
 -- Typed variables
 
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Put { import => "java.Put" }; package main; my Put $put = new Put(); my $x = $put '
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
 
     my $p_put = new Sample();
-    creates a boxed Java variable  (DONE)
+    creates a boxed Java variable           (DONE)
 
-    my Sample $put = new Sample();
-    creates a native Java variable  (TODO)
-
-    my $x = $put;
-    puts the unboxed object into a Perl scalar  (TODO - create pScalar.set() variant)
+    $x->to_Sample()
+    retrieves the native Sample object      (DONE)
+    allow conversion of primitive types - to_Int(), to_String()
+                                            (TODO - add to %Java_class in emitter)
 
     my $x = $p_put;
     puts the boxed object into a Perl scalar  (DONE)
 
+    my Sample $put = new Sample();
+    creates a native Java variable          (TODO)
+                                            (TODO - allow Int, String types)
+
+    my $x = $put;
+    puts the unboxed object into a Perl scalar  (TODO - create pScalar.set() variant)
+
     my $x = Sample->new()
     stores the boxed pSample object in a Perl scalar (DONE)
-
-    $x->to_Sample()
-    retrieves the native Sample object (TODO - emitter side)
 
 
 * Compile-time execution environment
