@@ -2671,16 +2671,16 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{namespace}) {
-            if (  $self->{namespace} eq 'JS' 
+            if (  $self->{namespace} eq 'Java' 
                && $code eq 'inline'
                ) 
             {
                 if ( $self->{arguments}->[0]->isa('Perlito5::AST::Buf') ) {
-                    # JS::inline('var x = 123')
+                    # Java::inline('int x = 123')
                     return $self->{arguments}[0]{buf};
                 }
                 else {
-                    die "JS::inline needs a string constant";
+                    die "Java::inline needs a string constant";
                 }
             }
             $code = 'p5pkg[' . Perlito5::Java::escape_string($self->{namespace} ) . '].' . $code;

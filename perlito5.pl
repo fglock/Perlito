@@ -15392,12 +15392,12 @@ package Perlito5::AST::Apply;
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ')'
         }
         if ($self->{'namespace'}) {
-            if ($self->{'namespace'} eq 'JS' && $code eq 'inline') {
+            if ($self->{'namespace'} eq 'Java' && $code eq 'inline') {
                 if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Buf')) {
                     return $self->{'arguments'}->[0]->{'buf'}
                 }
                 else {
-                    die('JS::inline needs a string constant')
+                    die('Java::inline needs a string constant')
                 }
             }
             $code = 'p5pkg[' . Perlito5::Java::escape_string($self->{'namespace'}) . '].' . $code
