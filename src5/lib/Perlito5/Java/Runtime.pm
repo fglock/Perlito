@@ -729,7 +729,7 @@ EOT
                     my $class = $_;
                     my $java_class_name = $class->{accessor};
 "class p${java_class_name} extends pObject {
-    private $class->{import} stuff;
+    private ${java_class_name} stuff;
     public p${java_class_name}(${java_class_name} stuff) {
         this.stuff = stuff;
     }
