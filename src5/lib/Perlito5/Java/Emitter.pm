@@ -286,7 +286,7 @@ package Perlito5::Java;
                 return '{' . join(', ', @out) . '}'
                     if $printable;
             }
-            return 'p5a_to_h(' . to_list($items, $level, 'array') . ')';
+            return 'new pHash(' . to_list($items, $level, 'array') . ')';
         }
         return 'new pArray('
              .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
@@ -680,13 +680,54 @@ package Perlito5::AST::CompUnit;
         my $level = 0;
         my $wantarray = 'void';
         my $str;
-        if ( $options{expand_use} ) {
-            $str .= Perlito5::Java::Runtime->emit_java();
-            # $str .= Perlito5::Java::Array->emit_java();
-            # $str .= Perlito5::Java::CORE->emit_java();
-            # $str .= Perlito5::Java::IO->emit_java();
-            # $str .= Perlito5::Java::Sprintf->emit_java();
+
+        # look for special 'Java' packages
+        my %Java_class;
+        for my $comp_unit ( @$comp_units ) {
+            for my $unit_stmt ( @{ $comp_unit->{body} } ) {
+                if ( ref($unit_stmt) eq 'Perlito5::AST::Block') {
+                    my $stmt = $unit_stmt->{stmts} // [];
+
+                    # Perl:
+                    #   package Put { Java };
+                    #
+                    # AST:
+                    #   bless({
+                    #       'arguments' => [],
+                    #       'code' => 'package',
+                    #       'namespace' => 'Put',
+                    #   }, 'Perlito5::AST::Apply'),
+                    #   bless({
+                    #       'arguments' => [],
+                    #       'bareword' => 1,
+                    #       'code' => 'Java',
+                    #       'namespace' => '',
+                    #   }, 'Perlito5::AST::Apply'),
+
+                    my $class = '';
+                    if ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{code} eq 'package') {
+                        $class = $stmt->[0]->{namespace};
+                    }
+                    if ($class && $stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && $stmt->[1]->{code} eq 'Java') {
+                        # warn "Java class: $class\n";
+                        $Java_class{$class} = {};   # TODO - add more information about the class
+
+                        # generate no Perl code for this block
+                        $unit_stmt->{stmts} = [];
+                    }
+                    # $str = $str . $comp_unit->emit_java($level, $wantarray) . "\n";
+
+
+                }
+            }
         }
+
+        if ($options{'expand_use'}) {
+            $str .= Perlito5::Java::Runtime->emit_java(
+                java_classes => \%Java_class,
+            );
+        }
+
         $str .= "class Test {\n"
              .  "    public static void main(String[] args) {\n";
         for my $comp_unit ( @$comp_units ) {
@@ -1236,7 +1277,7 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '%' ) {
             return join( ";\n" . Perlito5::Java::tab($level),
-                $self->emit_java() . ' = p5a_to_h(' . $list  . ')',
+                $self->emit_java() . ' = new pHash(' . $list  . ')',
                 $list . ' = []'
             );
         }

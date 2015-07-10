@@ -3,14 +3,26 @@ use v5;
 package Perlito5::Java::Runtime;
 
 sub emit_java {
+    my ($self, %args) = @_;
+    my %java_classes = %{ $args{java_classes} // {} };
 
-    return <<'EOT';
+    return <<'EOT'
 /*
     lib/Perlito5/Java/Runtime.pm
 */
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+EOT
+
+    . join('', ( map {   my $class = $_;
+                "import $class;\n"
+            }
+            keys %java_classes
+      ))
+
+    . <<'EOT';
 
 class pCx {
     public static final int VOID   = 0;
