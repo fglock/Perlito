@@ -94,7 +94,7 @@ EOT
             }
             values %java_classes
       ))
-    . <<'EOT';
+    . <<'EOT'
     public String to_string() {
         System.out.println("error .to_string!");
         return "";
@@ -719,8 +719,28 @@ class pString extends pObject {
         }
     } 
 }
-
 EOT
+        # add "box" classes to Java classes
+        # that were declared with
+        #
+        #   package MyJavaClass { Java }
+        #
+    . join('', ( map {
+                    my $class = $_;
+                    my $java_class_name = $class->{accessor};
+"class p${java_class_name} extends pObject {
+    private $class->{import} stuff;
+    public p${java_class_name}(${java_class_name} stuff) {
+        this.stuff = stuff;
+    }
+    public ${java_class_name} to_${java_class_name}() {
+        return this.stuff;
+    }
+}
+"
+            }
+            values %java_classes
+      ))
 
 } # end of emit_javascript2()
 
@@ -728,37 +748,27 @@ EOT
 
 __END__
 
-class HelloWorldApp {
-    public static void main(String[] args) { 
-        pString s = new pString("456");
-        pInt i = new pInt(123);
-        pNum n = new pNum(123.456);
-        pBool t = new pBool(true);
-        pBool f = new pBool(false);
-        pObject x;
+=pod
 
-        x = i.add(s);
-        x = x.add( new pInt(4) );
-        x.the_int_method();
-        s.the_int_method();
-        System.out.println(x.to_string());
-        x = s.add(i);
-        System.out.println(x.to_string());
-        x = s.add(n);
-        System.out.println(x.to_string());
-        System.out.println(t.to_string());
-        System.out.println(f.to_string());
+=head1 NAME
 
-        pClosure c = new pClosure(s) {
-                public pObject apply() {
-                    System.out.println("called MyClosure with " + this.env.to_string());
-                    return new pInt(0);
-                }
-            };
-        c.apply();
+Perlito5::Java::Runtime
 
-        pHash h = new pHash();
-        System.out.println(h.to_string());
-    }
-}
+=head1 DESCRIPTION
 
+Provides runtime routines for the Perlito-in-Java compiled code
+
+=head1 AUTHORS
+
+Flavio Soibelmann Glock
+
+=head1 COPYRIGHT
+
+Copyright 2015 by Flavio Soibelmann Glock.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See L<http://www.perl.com/perl/misc/Artistic.html>
+
+=cut
