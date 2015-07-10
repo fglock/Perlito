@@ -252,8 +252,8 @@ sub Perlito5::Grammar::Precedence::precedence_parse {
         }
         elsif ($token_is_term) {
             if ($last_is_term) {
-                say('#      last:  ', Perlito5::Dumper::Dumper($last));
-                say('#      token: ', Perlito5::Dumper::Dumper($token));
+                say('#      last:  ', Data::Dumper::Dumper($last));
+                say('#      token: ', Data::Dumper::Dumper($token));
                 die('Value tokens must be separated by an operator')
             }
             $token->[0] = 'term';
@@ -13975,7 +13975,7 @@ package Perlito5::Java;
             }
             return 'p5a_to_h(' . to_list($items, $level, 'array') . ')'
         }
-        $interpolate ? ('p5list_to_a([' . join(', ', map($_->emit_java($level, $wantarray), @{$items})) . '])') : ('new pArray(' . join(', ', map($_->emit_java($level, $wantarray), @{$items})) . ')')
+        return 'new pArray(' . join(', ', map($_->emit_java($level, $wantarray), @{$items})) . ')'
     }
     sub Perlito5::Java::to_list_preprocess {
         my @items;

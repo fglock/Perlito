@@ -260,19 +260,15 @@ package Perlito5::Java;
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
         my $literal_type = $_[2] || 'array';    # 'array', 'hash'
-
         my $wantarray = 'list';
-
         my $interpolate = 0;
         for (@$items) {
             $interpolate = 1
                 if is_scalar($_);
         }
-
         if ($literal_type eq 'hash') {
             if (!$interpolate) {
                 # { x : y, ... }
-
                 my @out;
                 my $printable = 1;
                 my @in = @$items;
@@ -280,32 +276,21 @@ package Perlito5::Java;
                     my $k = shift @in;
                     my $v = shift @in;
                     $k = $k->emit_java($level, 0);
-
                     $printable = 0
                         if $k =~ /[ \[]/;
-
                     $v = $v
                          ? $v->emit_java($level, 0)
                          : 'null';
                     push @out, "$k : $v";
                 }
-
                 return '{' . join(', ', @out) . '}'
                     if $printable;
-
             }
             return 'p5a_to_h(' . to_list($items, $level, 'array') . ')';
         }
-
-        $interpolate
-        ? ( 'p5list_to_a(['
-          .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
-          . '])'
-          )
-        : ( 'new pArray('
-          .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
-          . ')'
-          )
+        return 'new pArray('
+             .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
+             . ')';
     }
 
     sub to_list_preprocess {
