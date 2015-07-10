@@ -31,6 +31,9 @@ TODO list for Perlito5
 
 * Parser
 
+-- syntax error in ${@} in string
+    "${@}";
+
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected

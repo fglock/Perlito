@@ -736,9 +736,6 @@ package Perlito5::AST::CompUnit;
                     $Java_class{$class} = eval $args_perl5
                         or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
 
-            # TODO - syntax error in ${@}
-            #            or die "error in arguments to generate Java class:\n${@}\n${args_perl5}";
-
                     # throw away this block - generate no Perl code
                     $unit_stmt->{stmts} = [];
                 }
