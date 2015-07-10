@@ -6,13 +6,6 @@ sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
 
-    for my $class ( values %java_classes ) {
-        die "missing 'import' argument to generate Java class"
-            unless $class->{import};
-        my @parts = split /\./, $class->{import};
-        $class->{accessor} //= $parts[-1];
-    }
-
     return <<'EOT'
 /*
     lib/Perlito5/Java/Runtime.pm
@@ -730,6 +723,10 @@ EOT
                     my $java_class_name = $class->{accessor};
 "class p${java_class_name} extends pObject {
     private ${java_class_name} stuff;
+    // TODO - constructor with Perl parameters
+    public p${java_class_name}() {
+        this.stuff = new ${java_class_name}();
+    }
     public p${java_class_name}(${java_class_name} stuff) {
         this.stuff = stuff;
     }

@@ -7,6 +7,7 @@ use strict;
 package Perlito5::Java;
 {
     my %label;
+    my %Java_class;     # { import => 'full.path.TheClass', accessor => 'TheClass' }
     sub pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ']'
     }
@@ -16,6 +17,9 @@ package Perlito5::Java;
     sub tab {
         my $level = shift;
         "\t" x $level
+    }
+    sub get_java_class_info {
+        return \%Java_class;
     }
 
     # prefix operators that take a "str" parameter
@@ -682,7 +686,7 @@ package Perlito5::AST::CompUnit;
         my $str;
 
         # look for special 'Java' packages
-        my %Java_class;
+        my $Java_class = Perlito5::Java::get_java_class_info();
         for my $comp_unit ( @$comp_units ) {
             for my $unit_stmt ( @{ $comp_unit->{body} } ) {
                 if ( ref($unit_stmt) eq 'Perlito5::AST::Block') {
@@ -733,8 +737,15 @@ package Perlito5::AST::CompUnit;
                     my $args_perl5 = join( '', @$out );
 
                     # - eval the Perl code and store the arguments to use later
-                    $Java_class{$class} = eval $args_perl5
+                    $Java_class->{$class} = eval $args_perl5
                         or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
+
+
+                    die "missing 'import' argument to generate Java class"
+                        unless $Java_class->{$class}->{import};
+                    my @parts = split /\./, $Java_class->{$class}->{import};
+                    $Java_class->{$class}->{accessor} //= $parts[-1];
+
 
                     # throw away this block - generate no Perl code
                     $unit_stmt->{stmts} = [];
@@ -744,7 +755,7 @@ package Perlito5::AST::CompUnit;
 
         if ($options{'expand_use'}) {
             $str .= Perlito5::Java::Runtime->emit_java(
-                java_classes => \%Java_class,
+                java_classes => $Java_class,
             );
         }
 
@@ -1448,6 +1459,21 @@ package Perlito5::AST::Call;
                         . Perlito5::Java::to_context($wantarray)
                     . ')';
         }
+
+
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Proto' ) {
+            # maybe a Java native class
+
+            # get info about native 'Java' packages
+            my $Java_class = Perlito5::Java::get_java_class_info();
+
+            if ( exists $Java_class->{$self->{invocant}->{name}} ) {
+                my $info = $Java_class->{$self->{invocant}->{name}};
+                # TODO - add arguments
+                return "new p$info->{accessor}()";
+            }
+        }
+
 
         my $invocant = $self->{invocant}->emit_java($level, 'scalar');
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {

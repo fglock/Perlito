@@ -527,26 +527,46 @@ TODO list for Perlito5
 
 -- document Java options
 
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Put { import => "java.Put" }; package main; my Put $put = new Put(); my $x = $put '
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new() ' > Test.java ; javac Test.java
 
-    package Put { import => "java.Put" };
+    package Sample { import => "misc.Java.Sample" };
+
     generates:
-    import java.Put;     (DONE)
-    and adds a pObject accessor "to_Put"  (DONE)
-    and adds a pObject variant "pPut"  (TODO)
-
-    my Put $put = new Put();
-    creates a native Java variable  (TODO)
-
-    my $x = $put;
-    puts the boxed object into a Perl scalar  (TODO)
+    - import misc.java.Sample;              (DONE)
+    - adds a pObject accessor "to_Sample"   (DONE)
+    - adds a pObject variant "pSample"      (DONE)
+                                            (TODO - add argument list)
+                                            (TODO - maybe unbox the arguments automatically)
+    - add a pScalar variant "set(Sample)"   (TODO)
 
 -- "import" details
 
     package Bytes {
-        import => 'java.thingy.Byte',
+        import => 'java.thingy.Byte',   # DONE
         other_options => { stuff },
     };
+
+-- Typed variables
+
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Put { import => "java.Put" }; package main; my Put $put = new Put(); my $x = $put '
+
+    my $p_put = new Sample();
+    creates a boxed Java variable  (DONE)
+
+    my Sample $put = new Sample();
+    creates a native Java variable  (TODO)
+
+    my $x = $put;
+    puts the unboxed object into a Perl scalar  (TODO - create pScalar.set() variant)
+
+    my $x = $p_put;
+    puts the boxed object into a Perl scalar  (DONE)
+
+    my $x = Sample->new()
+    stores the boxed pSample object in a Perl scalar (DONE)
+
+    $x->to_Sample()
+    retrieves the native Sample object (TODO - emitter side)
 
 
 * Compile-time execution environment
