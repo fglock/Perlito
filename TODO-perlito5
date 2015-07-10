@@ -538,6 +538,13 @@ TODO list for Perlito5
     my $x = $put;
     puts the boxed object into a Perl scalar  (TODO)
 
+-- "import" details
+
+    package Bytes {
+        Java import => 'java.thingy.Byte',
+             other_options => { stuff },
+    };
+
 
 * Compile-time execution environment
 
