@@ -89,8 +89,7 @@ EOT
       ))
     . <<'EOT'
     public String to_string() {
-        System.out.println("error .to_string!");
-        return "";
+        return this.toString();
     }
     public int to_int() {
         System.out.println("error .to_int!");
