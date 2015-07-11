@@ -528,7 +528,7 @@ package Perlito5::Java::LexicalBlock;
             return 'return []'      if $wantarray eq 'list';
             return 'return null'    if $wantarray eq 'scalar';
             return 'return p5want ? [] : null' if $wantarray eq 'runtime';
-            return 'null;';         # void
+            return '// void';         # void
         }
         my @str;
         my $has_local = $self->has_decl("local");
@@ -1663,7 +1663,7 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            'p5make_package(' . Perlito5::Java::escape_string($self->{namespace} ) . ')';
+            '// package(' . Perlito5::Java::escape_string($self->{namespace} ) . ')';
         },
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2321,7 +2321,7 @@ package Perlito5::AST::Apply;
                 }
                 return '(' . $arg->emit_java . ' = null)'
             }
-            return 'null'
+            return 'new pUndef()'
         },
         'defined' => sub { 
             my ($self, $level, $wantarray) = @_;
@@ -3216,7 +3216,7 @@ package Perlito5::AST::Sub;
         my ($self, $level, $wantarray) = @_;
         my $prototype = defined($self->{sig}) 
                         ? Perlito5::Java::escape_string($self->{sig}) 
-                        : 'null';
+                        : '';
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;

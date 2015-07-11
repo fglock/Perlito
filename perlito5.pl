@@ -14074,7 +14074,7 @@ package Perlito5::Java::LexicalBlock;
             $wantarray eq 'list' && return 'return []';
             $wantarray eq 'scalar' && return 'return null';
             $wantarray eq 'runtime' && return 'return p5want ? [] : null';
-            return 'null;'
+            return '// void'
         }
         my @str;
         my $has_local = $self->has_decl('local');
@@ -14749,7 +14749,7 @@ package Perlito5::AST::Apply;
         'p5want'
     }, 'package' => sub {
         my $self = $_[0];
-        'p5make_package(' . Perlito5::Java::escape_string($self->{'namespace'}) . ')'
+        '// package(' . Perlito5::Java::escape_string($self->{'namespace'}) . ')'
     }, 'infix:<&&>' => sub {
         my($self, $level, $wantarray) = @_;
         'p5and(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ', ' . Perlito5::Java::emit_function_java($level, $wantarray, $self->{'arguments'}->[1]) . ')'
@@ -15082,7 +15082,7 @@ package Perlito5::AST::Apply;
             }
             return '(' . $arg->emit_java() . ' = null)'
         }
-        return 'null'
+        return 'new pUndef()'
     }, 'defined' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
@@ -15650,7 +15650,7 @@ package Perlito5::AST::Sub;
 {
     sub Perlito5::AST::Sub::emit_java {
         my($self, $level, $wantarray) = @_;
-        my $prototype = defined($self->{'sig'}) ? Perlito5::Java::escape_string($self->{'sig'}) : 'null';
+        my $prototype = defined($self->{'sig'}) ? Perlito5::Java::escape_string($self->{'sig'}) : '';
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $js_block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'})->emit_java_subroutine_body($level + 2, 'runtime');
@@ -15702,7 +15702,7 @@ sub Perlito5::Java::Runtime::emit_java {
     return '/*' . chr(10) . '    lib/Perlito5/Java/Runtime.pm' . chr(10) . '*/' . chr(10) . chr(10) . 'import java.util.ArrayList;' . chr(10) . 'import java.util.HashMap;' . chr(10) . join('', (map {
         my $class = $_;
         'import ' . $class->{'import'} . ';' . chr(10)
-    } values(%java_classes))) . 'class pCx {' . chr(10) . '    public static final int VOID   = 0;' . chr(10) . '    public static final int SCALAR = 1;' . chr(10) . '    public static final int LIST   = 2;' . chr(10) . '}' . chr(10) . 'class pCORE {' . chr(10) . '    public static final pObject print(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject say(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.out.println("' . chr(92) . 'n");' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject die(int want, pArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.err.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.err.println("' . chr(92) . 'n");' . chr(10) . '        System.exit(1);     // TODO' . chr(10) . '        return new pUndef();' . chr(10) . '    }' . chr(10) . '    public static final pObject ref(int want, pArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final pObject scalar(int want, pArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return new pUndef();' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class pObject {' . chr(10) . '    // extends java object ???' . chr(10) . '    public static final pString REF = new pString("");' . chr(10) . chr(10) . '    public pObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
+    } values(%java_classes))) . 'class pCx {' . chr(10) . '    public static final int VOID   = 0;' . chr(10) . '    public static final int SCALAR = 1;' . chr(10) . '    public static final int LIST   = 2;' . chr(10) . '}' . chr(10) . 'class pCORE {' . chr(10) . '    public static final pObject print(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject say(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.out.println("");' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject die(int want, pArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.err.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.err.println("");' . chr(10) . '        System.exit(1);     // TODO' . chr(10) . '        return new pUndef();' . chr(10) . '    }' . chr(10) . '    public static final pObject ref(int want, pArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final pObject scalar(int want, pArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return new pUndef();' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class pObject {' . chr(10) . '    // extends java object ???' . chr(10) . '    public static final pString REF = new pString("");' . chr(10) . chr(10) . '    public pObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
         my $class = $_;
         my $java_class_name = $class->{'accessor'};
         '    public ' . $java_class_name . ' to_' . $java_class_name . '() {' . chr(10) . '        System.out.println("error .to_' . $java_class_name . '!");' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10)

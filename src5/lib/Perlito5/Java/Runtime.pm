@@ -53,14 +53,14 @@ class pCORE {
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).to_string());
         }
-        System.out.println("\n");
+        System.out.println("");
         return new pInt(1);
     }
     public static final pObject die(int want, pArray List__) {
         for (int i = 0; i < List__.to_int(); i++) {
             System.err.print(List__.aget(i).to_string());
         }
-        System.err.println("\n");
+        System.err.println("");
         System.exit(1);     // TODO
         return new pUndef();
     }
