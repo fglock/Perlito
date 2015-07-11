@@ -1398,20 +1398,6 @@ package Perlito5::AST::Decl;
     sub emit_java_has_regex { () }
 }
 
-package Perlito5::AST::Proto;
-{
-    sub emit_java {
-        my ($self, $level, $wantarray) = @_;
-        return Perlito5::Java::pkg()
-            if $self->{name} eq '__PACKAGE__';
-        return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
-            if $self->{name} eq '__SUB__';
-        'p5pkg[' . Perlito5::Java::escape_string($self->{name} ) . ']'
-    }
-    sub emit_java_get_decl { () }
-    sub emit_java_has_regex { () }
-}
-
 package Perlito5::AST::Call;
 {
     sub emit_java {
@@ -1464,11 +1450,11 @@ package Perlito5::AST::Call;
         # get info about native 'Java' packages
         my $Java_class = Perlito5::Java::get_java_class_info();
 
-        if ( ref($self->{invocant}) eq 'Perlito5::AST::Proto' ) {
-            # maybe a Java native class:  Sample->new()
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{sigil} eq '::' ) {
+            # maybe a Java native class:  Sample->new()  or  new Sample()
 
-            if ( exists $Java_class->{$self->{invocant}->{name}} ) {
-                my $info = $Java_class->{$self->{invocant}->{name}};
+            if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
+                my $info = $Java_class->{$self->{invocant}->{namespace}};
                 # TODO - add arguments
                 return "new p$info->{accessor}()";
             }

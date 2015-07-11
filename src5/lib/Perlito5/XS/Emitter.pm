@@ -230,16 +230,6 @@ package Perlito5::AST::Var;
     }
 }
 
-package Perlito5::AST::Proto;
-{
-    sub emit_xs {
-        my $self = $_[0];
-        my $level = $_[1];
-        
-        $self->{name}
-    }
-}
-
 package Perlito5::AST::Call;
 {
     sub emit_xs {

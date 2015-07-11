@@ -1152,6 +1152,12 @@ package Perlito5::AST::Var;
             return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
         }
         if ( $sigil eq '::' ) {
+
+            return Perlito5::Javascript2::pkg()
+                if $self->{namespace} eq '__PACKAGE__';
+            return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
+                if $self->{namespace} eq '__SUB__';
+
             return Perlito5::Javascript2::escape_string( $namespace );
         }
 
@@ -1336,20 +1342,6 @@ package Perlito5::AST::Decl;
         my $self = shift;
         return ($self);
     }
-    sub emit_javascript2_has_regex { () }
-}
-
-package Perlito5::AST::Proto;
-{
-    sub emit_javascript2 {
-        my ($self, $level, $wantarray) = @_;
-        return Perlito5::Javascript2::pkg()
-            if $self->{name} eq '__PACKAGE__';
-        return $Perlito5::AST::Sub::SUB_REF // '__SUB__'
-            if $self->{name} eq '__SUB__';
-        'p5pkg[' . Perlito5::Javascript2::escape_string($self->{name} ) . ']'
-    }
-    sub emit_javascript2_get_decl { () }
     sub emit_javascript2_has_regex { () }
 }
 

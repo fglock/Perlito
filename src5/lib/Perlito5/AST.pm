@@ -119,12 +119,6 @@ sub plain_name {
 }
 
 
-package Perlito5::AST::Proto;
-sub new { my $class = shift; bless {@_}, $class }
-sub name { $_[0]->{name} }
-
-
-
 package Perlito5::AST::Call;
 sub new { my $class = shift; bless {@_}, $class }
 sub invocant { $_[0]->{invocant} }

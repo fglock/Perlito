@@ -1024,17 +1024,6 @@ package Perlito5::AST::Decl;
     }
 }
 
-package Perlito5::AST::Proto;
-{
-    sub emit_javascript3 {
-        my $self = shift;
-        my $level = shift;
-        return Perlito5::Javascript3::pkg()
-            if $self->{name} eq '__PACKAGE__';
-        'p5pkg["' . $self->{name} . '"]'
-    }
-}
-
 package Perlito5::AST::Call;
 {
     sub emit_javascript3 {

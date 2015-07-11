@@ -92,15 +92,6 @@ sub eval {
 
 
 
-package Perlito5::AST::Proto;
-sub eval {
-    my $self = $_[0];
-    my $env = $_[1];
-
-    '' . $self->{name}
-}
-
-
 package Perlito5::AST::Call;
 sub eval {
     my $self = $_[0];

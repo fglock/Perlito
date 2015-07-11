@@ -190,7 +190,13 @@ sub term_bareword {
         }
         else {
             # class->method call
-            $m_name->{capture} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
+            $m_name->{capture} = [ 'term',
+                                   Perlito5::AST::Var->new(
+                                        'name'      => '',
+                                        'namespace' => $full_name,
+                                        'sigil'     => '::',
+                                   )
+                                 ];
         }
         $m_name->{to} = $p;
         return $m_name;

@@ -272,11 +272,16 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = '\\"' if $str_name eq '"';     # escape $"
 
+        if ($self->{sigil} eq '::') {
+            if ($self->{namespace} eq '__PACKAGE__')  { 
+                return [ bareword => '$?PACKAGE' ];
+            }
+            return $self->{namespace};
+        }
+
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
-            return $self->{namespace}
-                if $self->{sigil} eq '::';
             if ($self->{namespace} eq 'main' && substr($self->{name}, 0, 1) eq '^') {
                 # don't add the namespace to special variables
                 return $self->{sigil} . '{' . $self->{name} . '}'
@@ -309,17 +314,6 @@ package Perlito5::AST::Var;
     }
 }
 
-
-package Perlito5::AST::Proto;
-{
-    sub emit_perl6 {
-        my $self = $_[0];
-        if ($self->{name} eq '__PACKAGE__')  { 
-            return [ bareword => '$?PACKAGE' ];
-        }
-        return [ bareword => $self->{name} ];
-    }
-}
 
 package Perlito5::AST::Call;
 {

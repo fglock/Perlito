@@ -182,14 +182,6 @@ package Perlito5::AST::Var;
     }
 }
 
-package Perlito5::AST::Proto;
-{
-    sub emit_perl5 {
-        my $self = $_[0];
-        return [ bareword => $self->{name} ];
-    }
-}
-
 package Perlito5::AST::Call;
 {
     sub emit_perl5 {
