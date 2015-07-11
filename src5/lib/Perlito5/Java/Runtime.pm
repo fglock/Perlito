@@ -6,6 +6,15 @@ sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
 
+    my %native_to_perl = (
+        int    => 'pInt',
+        double => 'pNum',
+        String => 'pString',
+    );
+    for (values %java_classes) {
+        $native_to_perl{$_->{accessor}} = "p" . $_->{accessor};
+    }
+
     return <<'EOT'
 /*
     lib/Perlito5/Java/Runtime.pm
@@ -269,7 +278,19 @@ class pScalar extends pObject {
         this.o = o.scalar();
         return this;
     }
+EOT
+    . ( join('', map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+"    public pObject set($native s) {
+        this.o = new $perl(s);
+        return this;
+    }
+"
+            }
+            keys %native_to_perl ))
 
+    . <<'EOT'
     public String to_string() {
         if (this.o == null) {
             return "";
@@ -419,10 +440,23 @@ class pArray extends pObject {
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
 
-    // Note: 2 versions of set()
+    // Note: multiple versions of set()
     public pObject aset(pObject i, pObject v) {
         int size = this.a.size();
         int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        while (size < pos) {
+            this.a.add( new pUndef() );
+            size++;
+        }
+        this.a.add(pos, v.scalar());
+        return v;
+    }
+    public pObject aset(int i, pObject v) {
+        int size = this.a.size();
+        int pos  = i;
         if (pos < 0) {
             pos = size + pos;
         }
@@ -446,6 +480,21 @@ class pArray extends pObject {
         this.a.add(pos, v.get());
         return v;
     }
+EOT
+    . ( join('', map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+"    public pObject aset(pObject i, $native s) {
+        return this.aset(i, new $perl(s));
+    }
+    public pObject aset(int i, $native s) {
+        return this.aset(i, new $perl(s));
+    }
+"
+            }
+            keys %native_to_perl ))
+
+    . <<'EOT'
 
     public String to_string() {
         // TODO
@@ -522,15 +571,34 @@ class pHash extends pObject {
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
 
-    // Note: 2 versions of set()
-    public pObject hset(pObject i, pObject v) {
-        this.h.put(i.to_string(), v.scalar());
+    // Note: multiple versions of set()
+    public pObject hset(pObject s, pObject v) {
+        this.h.put(s.to_string(), v.scalar());
         return v;
     }
-    public pObject hset(pObject i, pScalar v) {
-        this.h.put(i.to_string(), v.get());
+    public pObject hset(String s, pObject v) {
+        this.h.put(s, v.scalar());
         return v;
     }
+    public pObject hset(pObject s, pScalar v) {
+        this.h.put(s.to_string(), v.get());
+        return v;
+    }
+EOT
+    . ( join('', map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+"    public pObject hset(pObject s, $native v) {
+        return this.hset(s, new $perl(v));
+    }
+    public pObject hset(String s, $native v) {
+        return this.hset(s, new $perl(v));
+    }
+"
+            }
+            keys %native_to_perl ))
+
+    . <<'EOT'
 
     public String to_string() {
         // TODO
