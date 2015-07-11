@@ -154,7 +154,17 @@ EOT
         return this;
     }
 }
-class pClosure extends pObject {
+class pReference extends pObject {
+    public static final pString REF = new pString("REF");
+
+    public String to_string() {
+        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+    }
+    public pObject ref() {
+        return REF;
+    }
+}
+class pClosure extends pReference {
     public pObject env;
     public static final pString REF = new pString("CODE");
 
@@ -169,7 +179,7 @@ class pClosure extends pObject {
         return REF;
     }
 }
-class pScalarRef extends pObject {
+class pScalarRef extends pReference {
     private pScalar o;
     public static final pString REF = new pString("SCALAR");
 
@@ -183,7 +193,7 @@ class pScalarRef extends pObject {
         return REF;
     }
 }
-class pArrayRef extends pObject {
+class pArrayRef extends pReference {
     private pArray o;
     public static final pString REF = new pString("ARRAY");
 
@@ -197,7 +207,7 @@ class pArrayRef extends pObject {
         return REF;
     }
 }
-class pHashRef extends pObject {
+class pHashRef extends pReference {
     private pHash o;
     public static final pString REF = new pString("HASH");
 
@@ -809,7 +819,9 @@ EOT
     . join('', ( map {
                     my $class = $_;
                     my $java_class_name = $class->{accessor};
-"class p${java_class_name} extends pObject {
+"class p${java_class_name} extends pReference {
+    public static final pString REF = new pString(\"${java_class_name}\");
+
     private ${java_class_name} stuff;
     // TODO - constructor with Perl parameters
     public p${java_class_name}() {
@@ -820,6 +832,9 @@ EOT
     }
     public ${java_class_name} to_${java_class_name}() {
         return this.stuff;
+    }
+    public pObject ref() {
+        return REF;
     }
 }
 "
