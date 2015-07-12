@@ -18,6 +18,14 @@ sub emit_java {
         num_gt => { op => '>',  returns => 'pBool' },
         num_ge => { op => '>=', returns => 'pBool' },
     );
+    my %string_binop = (
+        str_eq => { op => '== 0', returns => 'pBool' },
+        str_ne => { op => '!= 0', returns => 'pBool' },
+        str_lt => { op => '< 0',  returns => 'pBool' },
+        str_le => { op => '<= 0', returns => 'pBool' },
+        str_gt => { op => '> 0',  returns => 'pBool' },
+        str_ge => { op => '>= 0', returns => 'pBool' },
+    );
 
     my %native_to_perl = (
         int    => 'pInt',
@@ -160,7 +168,19 @@ EOT
             }
             keys %number_binop ))
 
+    . ( join('', map {
+            my $perl = $_;
+            my $native  = $string_binop{$perl}{op};
+            my $returns = $string_binop{$perl}{returns};
+"    public pObject ${perl}(pObject b) {
+        return new ${returns}(this.to_string().compareTo(b.to_string()) ${native});
+    }
+"
+            }
+            keys %string_binop ))
+
     . <<'EOT'
+
     public boolean is_int() {
         return false;
     }

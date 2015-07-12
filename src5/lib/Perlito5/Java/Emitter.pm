@@ -1698,6 +1698,38 @@ package Perlito5::AST::Apply;
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
 
+        'infix:<eq>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_eq('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<ne>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_ne('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+
+        'infix:<gt>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_gt('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<ge>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_ge('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<lt>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_lt('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<le>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_le('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
             'p5and('
@@ -2749,11 +2781,6 @@ package Perlito5::AST::Apply;
         return $emit_js{$code}->($self, $level, $wantarray)
             if exists $emit_js{$code};
 
-        if (exists $Perlito5::Java::op_infix_js_str{$code}) {
-            return '(' 
-                . join( $Perlito5::Java::op_infix_js_str{$code}, map { Perlito5::Java::to_str($_, $level) } @{$self->{arguments}} )
-                . ')'
-        }
         if (exists $Perlito5::Java::op_infix_js_num{$code}) {
             return '(' 
                 . join( $Perlito5::Java::op_infix_js_num{$code}, map { Perlito5::Java::to_num($_, $level) } @{$self->{arguments}} )
