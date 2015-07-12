@@ -116,9 +116,13 @@ EOT
         pCORE.die("error .to_bool!");
         return true;
     }
-    public pArray array_deref() {
+    public pObject array_deref() {
         pCORE.die("error .array_deref!");
         return new pArray();
+    }
+    public pObject hash_deref() {
+        pCORE.die("error .hash_deref!");
+        return new pHash();
     }
     public pObject add(pObject s) {
         return this.to_num_or_int().add(s);
@@ -208,7 +212,7 @@ class pArrayRef extends pReference {
     public pObject get() {
         return this.o;
     }
-    public pArray array_deref() {
+    public pObject array_deref() {
         return this.o;
     }
     public pObject ref() {
@@ -223,6 +227,9 @@ class pHashRef extends pReference {
         this.o = o;
     }
     public pObject get() {
+        return this.o;
+    }
+    public pHash hash_deref() {
         return this.o;
     }
     public pObject set(pHash o) {
@@ -258,6 +265,7 @@ class pScalar extends pObject {
         return this.o;
     }
     public pObject get_array() {
+        // $x->[1]
         if (this.o == null) {
             this.o = new pArray();
             return this.o;
@@ -268,8 +276,29 @@ class pScalar extends pObject {
         return pCORE.die("Not an ARRAY reference");
     }
     public pObject get_hash() {
+        // $x->{a}
         if (this.o == null) {
             this.o = new pHash();
+        }
+        else if (this.o.is_hash()) {
+            return this.o;
+        }
+        return pCORE.die("Not a HASH reference");
+    }
+    public pObject array_deref() {
+        // @$x doesn't autovivify
+        if (this.o == null) {
+            return new pArray();
+        }
+        else if (this.o.is_array()) {
+            return this.o;
+        }
+        return pCORE.die("Not an ARRAY reference");
+    }
+    public pObject hash_deref() {
+        // %$x doesn't autovivify
+        if (this.o == null) {
+            return new pHash();
         }
         else if (this.o.is_hash()) {
             return this.o;

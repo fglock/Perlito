@@ -1792,10 +1792,7 @@ package Perlito5::AST::Apply;
         'prefix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            return 'p5hash_deref(' 
-                    . Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . ', '
-                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
-                    . ')';
+            return Perlito5::Java::emit_java_autovivify( $arg, $level, 'hash' ) . '.hash_deref()';
         },
         'prefix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
