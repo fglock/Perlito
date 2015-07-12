@@ -1184,15 +1184,15 @@ package Perlito5::AST::Var;
             # XXX - optimization - @_ is a js lexical
             my $s = 'List__';
             if ($self->{sigil} eq '$#') {
-                return '(' . $s . '.length - 1)';
+                return $s . '.end_of_array_index()';
             }
             if ( $wantarray eq 'scalar' ) {
-                return $s . '.length';
+                return $s . '.to_int()';
             }
             if ( $wantarray eq 'runtime' ) {
                 return '(p5want'
                     . ' ? ' . $s
-                    . ' : ' . $s . '.length'
+                    . ' : ' . $s . '.to_int()'
                     . ')';
             }
             return $s;
@@ -1217,10 +1217,10 @@ package Perlito5::AST::Var;
             $s = $s . ' || (' . $s . ' = [])';  # init
             $s = 'p5pkg[' . $s . ', ' . Perlito5::Java::escape_string($namespace ) . '][' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ']';
             if ($self->{sigil} eq '$#') {
-                return '(' . $s . '.length - 1)';
+                return $s . '.end_of_array_index()';
             }
             if ( $wantarray eq 'scalar' ) {
-                return $s . '.length';
+                return $s . '.to_int()';
             }
         }
         elsif ($sigil eq '%') {
@@ -1250,7 +1250,7 @@ package Perlito5::AST::Var;
             }
         }
         if ($self->{sigil} eq '$#') {
-            return '(' . $table->{'@'} . $str_name . '.length - 1)';
+            return $table->{'@'} . $str_name . '.end_of_array_index()';
         }
         $table->{$sigil} . $str_name
     }
@@ -1267,7 +1267,7 @@ package Perlito5::AST::Var;
 
             if ($self->{sigil} eq '$#') {
                 $self->{sigil} = '@';
-                return $open . $self->emit_java() . '.length = 1 + ' . Perlito5::Java::to_scalar([$arguments], $level+1) . $close
+                return $open . $self->emit_java() . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' . $close
             }
 
             return $open . $self->emit_java() . ' = ' . Perlito5::Java::to_list([$arguments], $level+1) . $close
@@ -1777,8 +1777,7 @@ package Perlito5::AST::Apply;
         'prefix:<@>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            my $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' )
-                  . '.array_deref()';
+            my $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
             return $wantarray eq 'scalar'
                 ? "p5num($s)"
                 : $s;
@@ -1786,8 +1785,7 @@ package Perlito5::AST::Apply;
         'prefix:<$#>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' )
-                 . '.array_deref().length - 1';
+            return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref().end_of_array_index()';
         },
         'prefix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;

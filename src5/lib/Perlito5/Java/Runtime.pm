@@ -108,6 +108,9 @@ EOT
         pCORE.die("error .to_int!");
         return 0;
     }
+    public pObject end_of_array_index() {
+        return pCORE.die("error .to_int!");
+    }
     public double to_num() {
         pCORE.die("error .to_num!");
         return 0.0;
@@ -549,6 +552,9 @@ EOT
     }
     public int to_int() {
         return this.a.size();
+    }
+    public pObject end_of_array_index() {
+        return new pInt(this.a.size() - 1);
     }
     public double to_num() {
         return 0.0 + this.to_int();
