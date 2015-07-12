@@ -243,10 +243,14 @@ class pClosure extends pReference {
     }
 }
 class pScalarRef extends pReference {
-    private pScalar o;
+    private pObject o;
     public static final pString REF = new pString("SCALAR");
 
     public pScalarRef(pScalar o) {
+        this.o = o;
+    }
+    public pScalarRef(pObject o) {
+        // TODO - make readonly value like in \1
         this.o = o;
     }
     public pObject get() {
