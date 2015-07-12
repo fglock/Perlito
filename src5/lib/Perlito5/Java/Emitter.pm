@@ -2313,7 +2313,7 @@ package Perlito5::AST::Apply;
                 }
                 return '(' . $arg->emit_java . ' = null)'
             }
-            return 'new pUndef()'
+            return 'pCx.UNDEF'
         },
         'defined' => sub { 
             my ($self, $level, $wantarray) = @_;

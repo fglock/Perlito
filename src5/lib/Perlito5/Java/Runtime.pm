@@ -39,6 +39,7 @@ class pCx {
     public static final int VOID   = 0;
     public static final int SCALAR = 1;
     public static final int LIST   = 2;
+    public static final pUndef UNDEF = new pUndef();
 }
 class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {
@@ -62,7 +63,7 @@ class pCORE {
         }
         System.err.println("");
         System.exit(1);     // TODO
-        return new pUndef();
+        return pCx.UNDEF;
     }
     public static final pObject die(String s) {
         // die() shortcut
@@ -73,7 +74,7 @@ class pCORE {
     }
     public static final pObject scalar(int want, pArray List__) {
         if (List__.to_int() == 0) {
-            return new pUndef();
+            return pCx.UNDEF;
         }
         return List__.aget(-1).scalar();
     }
@@ -456,7 +457,7 @@ class pArray extends pObject {
             pos = this.a.size() + pos;
         }
         if (pos < 0 || pos > this.a.size()) {
-            return new pUndef();
+            return pCx.UNDEF;
         }
         return this.a.get(pos);
     }
@@ -466,7 +467,7 @@ class pArray extends pObject {
             pos = this.a.size() + pos;
         }
         if (pos < 0 || pos > this.a.size()) {
-            return new pUndef();
+            return pCx.UNDEF;
         }
         return this.a.get(pos);
     }
@@ -504,7 +505,7 @@ class pArray extends pObject {
             pos = size + pos;
         }
         while (size < pos) {
-            this.a.add( new pUndef() );
+            this.a.add( pCx.UNDEF );
             size++;
         }
         this.a.add(pos, v.scalar());
@@ -517,7 +518,7 @@ class pArray extends pObject {
             pos = size + pos;
         }
         while (size < pos) {
-            this.a.add( new pUndef() );
+            this.a.add( pCx.UNDEF );
             size++;
         }
         this.a.add(pos, v.scalar());
@@ -530,7 +531,7 @@ class pArray extends pObject {
             pos = size + pos;
         }
         while (size < pos) {
-            this.a.add( new pUndef() );
+            this.a.add( pCx.UNDEF );
             size++;
         }
         this.a.add(pos, v.get());
@@ -595,7 +596,7 @@ class pHash extends pObject {
     public pObject hget(pObject i) {
         pObject o = this.h.get(i.to_string());
         if (o == null) {
-            return new pUndef();
+            return pCx.UNDEF;
         }
         return o;
     }
