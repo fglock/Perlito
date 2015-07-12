@@ -13855,6 +13855,20 @@ package Perlito5::Java;
         $tmp ne '' && push(@out, '"' . $tmp . '"');
         return join(' + ', @out)
     }
+    sub Perlito5::Java::to_native_str {
+        my $cond = shift;
+        my $level = shift;
+        my $wantarray = 'scalar';
+        if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
+            return to_native_str($cond->{'arguments'}->[0], $level)
+        }
+        if (($cond->isa('Perlito5::AST::Buf')) || ($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))) {
+            return $cond->emit_java($level, $wantarray) . '.to_string()'
+        }
+        else {
+            return $cond->emit_java($level, $wantarray) . '.to_string()'
+        }
+    }
     sub Perlito5::Java::to_str {
         my $cond = shift;
         my $level = shift;
@@ -14979,7 +14993,7 @@ package Perlito5::AST::Apply;
         'p5str_replicate(' . Perlito5::Java::to_str($self->{'arguments'}->[0], $level) . ',' . Perlito5::Java::to_num($self->{'arguments'}->[1], $level) . ')'
     }, 'list:<.>' => sub {
         my($self, $level, $wantarray) = @_;
-        '(' . join(' + ', map(Perlito5::Java::to_str($_), @{$self->{'arguments'}})) . ')'
+        'new pString(' . join(' + ', map(Perlito5::Java::to_native_str($_), @{$self->{'arguments'}})) . ')'
     }, 'list:<,>' => sub {
         my($self, $level, $wantarray) = @_;
         Perlito5::Java::to_list($self->{'arguments'})
