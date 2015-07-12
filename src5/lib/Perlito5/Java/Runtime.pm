@@ -429,6 +429,9 @@ EOT
     public boolean is_bool() {
         return this.o.is_bool();
     }
+    public boolean is_undef() {
+        return this.o.is_undef();
+    }
     public pObject scalar() {
         return this.o;
     }
