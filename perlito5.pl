@@ -13862,8 +13862,14 @@ package Perlito5::Java;
         if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
             return to_native_str($cond->{'arguments'}->[0], $level)
         }
-        if (($cond->isa('Perlito5::AST::Buf')) || ($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))) {
-            return $cond->emit_java($level, $wantarray) . '.to_string()'
+        if ($cond->isa('Perlito5::AST::Buf')) {
+            return Perlito5::Java::escape_string($cond->{'buf'})
+        }
+        elsif ($cond->isa('Perlito5::AST::Int')) {
+            return Perlito5::Java::escape_string($cond->{'int'})
+        }
+        elsif ($cond->isa('Perlito5::AST::Num')) {
+            return Perlito5::Java::escape_string($cond->{'num'})
         }
         else {
             return $cond->emit_java($level, $wantarray) . '.to_string()'
