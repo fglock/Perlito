@@ -7,10 +7,16 @@ sub emit_java {
     my %java_classes = %{ $args{java_classes} // {} };
 
     my %number_binop = (
-        add    => '+',
-        sub    => '-',
-        mul    => '*',
-        div    => '/',
+        add    => { op => '+',  returns => 'pNum' }, 
+        sub    => { op => '-',  returns => 'pNum' },
+        mul    => { op => '*',  returns => 'pNum' },
+        div    => { op => '/',  returns => 'pNum' },
+        num_eq => { op => '==', returns => 'pBool' },
+        num_ne => { op => '!=', returns => 'pBool' },
+        num_lt => { op => '<',  returns => 'pBool' },
+        num_le => { op => '<=', returns => 'pBool' },
+        num_gt => { op => '>',  returns => 'pBool' },
+        num_ge => { op => '>=', returns => 'pBool' },
     );
 
     my %native_to_perl = (
@@ -142,12 +148,13 @@ EOT
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl};
+            my $native  = $number_binop{$perl}{op};
+            my $returns = $number_binop{$perl}{returns};
 "    public pObject ${perl}(pObject s) {
         return s.${perl}2(this);
     }
     public pObject ${perl}2(pObject s) {
-        return new pInt( s.to_int() ${native} this.to_int() );
+        return new ${returns}( s.to_int() ${native} this.to_int() );
     }
 "
             }
@@ -389,7 +396,7 @@ EOT
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl};
+            my $native = $number_binop{$perl}{op};
 "    public pObject ${perl}(pObject s) {
         if (this.o == null) {
             return s.${perl}2(new pInt(0));
@@ -800,14 +807,15 @@ class pNum extends pObject {
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl};
+            my $native  = $number_binop{$perl}{op};
+            my $returns = $number_binop{$perl}{returns};
 "    public pObject ${perl}(pObject s) {
         // num - int, num - num
-        return new pNum( this.i ${native} s.to_num() );
+        return new ${returns}( this.i ${native} s.to_num() );
     }
     public pObject ${perl}2(pObject s) {
         // int - num
-        return new pNum( s.to_num() ${native} this.i );
+        return new ${returns}( s.to_num() ${native} this.i );
     }
 "
             }
@@ -853,7 +861,9 @@ class pString extends pObject {
 EOT
     . ( join('', map {
             my $perl = $_;
-            my $native = $number_binop{$perl};
+            my $native  = $number_binop{$perl}{op};
+            my $returns = $number_binop{$perl}{returns};
+            if ($returns eq 'pNum') {
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
         if (this.s.indexOf('.') > 0) {
@@ -869,6 +879,24 @@ EOT
         return new pInt( b.to_int() ${native} this.to_int() );
     }
 "
+            }
+            else {
+"    public pObject ${perl}(pObject b) {
+        // 'num' - int, 'num' - num
+        if (this.s.indexOf('.') > 0) {
+            return new ${returns}( this.to_num() ${native} b.to_num() );
+        }
+        return new ${returns}( this.to_int() ${native} b.to_int() );
+    }
+    public pObject ${perl}2(pObject b) {
+        // int - 'num'
+        if (this.s.indexOf('.') > 0) {
+            return new ${returns}( b.to_num() ${native} this.to_num() );
+        }
+        return new ${returns}( b.to_int() ${native} this.to_int() );
+    }
+"
+            }
             }
             keys %number_binop ))
 

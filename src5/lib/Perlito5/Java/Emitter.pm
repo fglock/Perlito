@@ -44,17 +44,7 @@ package Perlito5::Java;
     );
     # these operators need 2 "num" parameters
     our %op_infix_js_num = (
-        'infix:<==>' => ' == ',
-        'infix:<!=>' => ' != ',
-        # 'infix:<+>'  => ' + ',
-        # 'infix:<->'  => ' - ',
-        # 'infix:<*>'  => ' * ',
-        # 'infix:</>'  => ' / ',
         # 'infix:<%>'  => ' % ',    # see p5modulo()
-        'infix:<>>'  => ' > ',
-        'infix:<<>'  => ' < ',
-        'infix:<>=>' => ' >= ',
-        'infix:<<=>' => ' <= ',
         'infix:<&>'  => ' & ',
         'infix:<|>'  => ' | ',
         'infix:<^>'  => ' ^ ',
@@ -1676,6 +1666,38 @@ package Perlito5::AST::Apply;
               $self->{arguments}->[0]->emit_java($level, 'scalar') . '.div('
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
+        'infix:<==>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_eq('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<!=>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_ne('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+
+        'infix:<>>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_gt('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<>=>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_ge('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<<>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_lt('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<<=>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_le('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
             'p5and('
