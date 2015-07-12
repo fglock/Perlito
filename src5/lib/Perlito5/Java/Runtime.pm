@@ -80,14 +80,9 @@ class pCORE {
     }
 }
 class pOp {
-    // operators: + - && || * / 
-    // note: '+' add() is a pObject method
-    // public static final pObject add(int want, pObject a, pObject b) {
-    //     if (a.is_num() || b.is_num()) {
-    //         return new pInt(a.to_num() + b.to_num());
-    //     }
-    //     return new pInt(a.to_int() + b.to_int());
-    // }
+    // operators: && || * / 
+    // note: '+' add() and '-' sub() are pObject methods
+    // TODO
 }
 class pObject {
     // extends java object ???
@@ -144,6 +139,12 @@ EOT
     }
     public pObject add2(pObject s) {
         return new pInt( this.to_int() + s.to_int() );
+    }
+    public pObject sub(pObject s) {
+        return s.sub2(this);
+    }
+    public pObject sub2(pObject s) {
+        return new pInt( s.to_int() - this.to_int() );
     }
 
     public boolean is_int() {
@@ -380,10 +381,17 @@ EOT
     }
     public pObject add(pObject s) {
         if (this.o == null) {
-            return new pInt(0).add2(s);
+            return s.add2(new pInt(0));
         }
-        return this.o.add2(s);
+        return this.o.add(s);
     }
+    public pObject sub(pObject s) {
+        if (this.o == null) {
+            return s.sub2(new pInt(0));
+        }
+        return this.o.sub(s);
+    }
+
     public boolean is_int() {
         if (this.o == null) {
             return false;
@@ -788,6 +796,15 @@ class pNum extends pObject {
         // int + num
         return new pNum( this.i + s.to_num() );
     }
+    public pObject sub(pObject s) {
+        // num - int, num - num
+        return new pNum( this.i - s.to_num() );
+    }
+    public pObject sub2(pObject s) {
+        // int - num
+        return new pNum( s.to_num() - this.i );
+    }
+
     public boolean is_num() {
         return true;
     }
@@ -811,7 +828,7 @@ class pString extends pObject {
         try {
             return Double.parseDouble(this.s.trim());
         } catch (NumberFormatException nfe) {
-            return 0.0;
+            return 0.0 + this.to_int();
         }
     }
     public String to_string() {
@@ -838,6 +855,20 @@ class pString extends pObject {
             return new pNum(this.to_num()).add2(b);
         }
         return new pInt(this.to_int()).add2(b);
+    }
+    public pObject sub(pObject b) {
+        // "num" - int, "num" - num
+        if (this.s.indexOf('.') > 0) {
+            return new pNum( this.to_num() - b.to_num() );
+        }
+        return new pInt( this.to_int() - b.to_int() );
+    }
+    public pObject sub2(pObject b) {
+        // int - "num"
+        if (this.s.indexOf('.') > 0) {
+            return new pNum( b.to_num() - this.to_num() );
+        }
+        return new pInt( b.to_int() - this.to_int() );
     }
 
 }
