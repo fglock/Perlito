@@ -145,6 +145,9 @@ EOT
         pCORE.die("error .to_bool!");
         return true;
     }
+    public boolean is_undef() {
+        return false;
+    }
     public pObject array_deref() {
         pCORE.die("error .array_deref!");
         return new pArray();
@@ -296,6 +299,7 @@ class pScalar extends pObject {
 
     // Note: several versions of pScalar()
     public pScalar() {
+        this.o = pCx.UNDEF;
     }
     public pScalar(pObject o) {
         this.o = o;
@@ -317,7 +321,7 @@ class pScalar extends pObject {
     }
     public pObject get_array() {
         // $x->[1]
-        if (this.o == null) {
+        if (this.o.is_undef()) {
             this.o = new pArray();
             return this.o;
         }
@@ -328,7 +332,7 @@ class pScalar extends pObject {
     }
     public pObject get_hash() {
         // $x->{a}
-        if (this.o == null) {
+        if (this.o.is_undef()) {
             this.o = new pHash();
         }
         else if (this.o.is_hash()) {
@@ -338,7 +342,7 @@ class pScalar extends pObject {
     }
     public pObject array_deref() {
         // @$x doesn't autovivify
-        if (this.o == null) {
+        if (this.o.is_undef()) {
             return new pArray();
         }
         else if (this.o.is_array()) {
@@ -348,7 +352,7 @@ class pScalar extends pObject {
     }
     public pObject hash_deref() {
         // %$x doesn't autovivify
-        if (this.o == null) {
+        if (this.o.is_undef()) {
             return new pHash();
         }
         else if (this.o.is_hash()) {
@@ -390,27 +394,15 @@ EOT
 
     . <<'EOT'
     public String to_string() {
-        if (this.o == null) {
-            return "";
-        }
         return this.o.to_string();
     }
     public int to_int() {
-        if (this.o == null) {
-            return 0;
-        }
         return this.o.to_int();
     }
     public double to_num() {
-        if (this.o == null) {
-            return 0.0;
-        }
         return this.o.to_num();
     }
     public boolean to_bool() {
-        if (this.o == null) {
-            return false;
-        }
         return this.o.to_bool();
     }
 EOT
@@ -418,9 +410,6 @@ EOT
             my $perl = $_;
             my $native = $number_binop{$perl}{op};
 "    public pObject ${perl}(pObject s) {
-        if (this.o == null) {
-            return s.${perl}2(new pInt(0));
-        }
         return s.${perl}2(this);
     }
 "
@@ -429,27 +418,15 @@ EOT
 
     . <<'EOT'
     public boolean is_int() {
-        if (this.o == null) {
-            return false;
-        }
         return this.o.is_int();
     }
     public boolean is_num() {
-        if (this.o == null) {
-            return false;
-        }
         return this.o.is_num();
     }
     public boolean is_string() {
-        if (this.o == null) {
-            return false;
-        }
         return this.o.is_string();
     }
     public boolean is_bool() {
-        if (this.o == null) {
-            return false;
-        }
         return this.o.is_bool();
     }
     public pObject scalar() {
@@ -518,7 +495,7 @@ class pArray extends pObject {
 
     public pObject get_array(pObject i) {
         pObject o = this.aget(i);
-        if (o == null) {
+        if (o.is_undef()) {
             o = new pArray();
             this.aset(i, o);
             return o;
@@ -530,7 +507,7 @@ class pArray extends pObject {
     }
     public pObject get_hash(pObject i) {
         pObject o = this.aget(i);
-        if (o == null) {
+        if (o.is_undef()) {
             o = new pHash();
             this.aset(i, o);
             return o;
@@ -639,14 +616,11 @@ class pHash extends pObject {
     }
     public pObject hget(pObject i) {
         pObject o = this.h.get(i.to_string());
-        if (o == null) {
-            return pCx.UNDEF;
-        }
         return o;
     }
     public pObject get_array(pObject i) {
         pObject o = this.hget(i);
-        if (o == null) {
+        if (o.is_undef()) {
             o = new pArray();
             this.hset(i, o);
             return o;
@@ -658,7 +632,7 @@ class pHash extends pObject {
     }
     public pObject get_hash(pObject i) {
         pObject o = this.hget(i);
-        if (o == null) {
+        if (o.is_undef()) {
             o = new pHash();
             this.hset(i, o);
             return o;
@@ -748,6 +722,9 @@ class pUndef extends pObject {
     }
     public boolean is_bool() {
         return false;
+    }
+    public boolean is_undef() {
+        return true;
     }
 }
 class pBool extends pObject {
