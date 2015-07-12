@@ -14087,7 +14087,10 @@ package Perlito5::Java::LexicalBlock;
         my @block;
         for my $stmt (@{$self->{'block'}}) {
             if (defined($stmt)) {
-                push(@block, $stmt)
+                if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code() eq 'undef') {}
+                else {
+                    push(@block, $stmt)
+                }
             }
         }
         if (!@block) {
