@@ -6,6 +6,13 @@ sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
 
+    my %number_binop = (
+        add    => '+',
+        sub    => '-',
+        mul    => '*',
+        div    => '/',
+    );
+
     my %native_to_perl = (
         int    => 'pInt',
         double => 'pNum',
@@ -16,9 +23,8 @@ sub emit_java {
     }
 
     return <<'EOT'
-/*
-    lib/Perlito5/Java/Runtime.pm
-*/
+// start Perl-Java runtime
+// this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,20 +139,21 @@ EOT
         pCORE.die("error .hash_deref!");
         return new pHash();
     }
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl};
+"    public pObject ${perl}(pObject s) {
+        return s.${perl}2(this);
+    }
+    public pObject ${perl}2(pObject s) {
+        return new pInt( s.to_int() ${native} this.to_int() );
+    }
+"
+            }
+            keys %number_binop ))
 
-    public pObject add(pObject s) {
-        return s.add2(this);
-    }
-    public pObject add2(pObject s) {
-        return new pInt( this.to_int() + s.to_int() );
-    }
-    public pObject sub(pObject s) {
-        return s.sub2(this);
-    }
-    public pObject sub2(pObject s) {
-        return new pInt( s.to_int() - this.to_int() );
-    }
-
+    . <<'EOT'
     public boolean is_int() {
         return false;
     }
@@ -379,19 +386,21 @@ EOT
         }
         return this.o.to_bool();
     }
-    public pObject add(pObject s) {
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl};
+"    public pObject ${perl}(pObject s) {
         if (this.o == null) {
-            return s.add2(new pInt(0));
+            return s.${perl}2(new pInt(0));
         }
-        return this.o.add(s);
+        return s.${perl}2(this);
     }
-    public pObject sub(pObject s) {
-        if (this.o == null) {
-            return s.sub2(new pInt(0));
-        }
-        return this.o.sub(s);
-    }
+"
+            }
+            keys %number_binop ))
 
+    . <<'EOT'
     public boolean is_int() {
         if (this.o == null) {
             return false;
@@ -788,23 +797,23 @@ class pNum extends pObject {
     public boolean to_bool() {
         return this.i != 0.0;
     }
-    public pObject add(pObject s) {
-        // num + int, num + num
-        return new pNum( this.i + s.to_num() );
-    }
-    public pObject add2(pObject s) {
-        // int + num
-        return new pNum( this.i + s.to_num() );
-    }
-    public pObject sub(pObject s) {
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl};
+"    public pObject ${perl}(pObject s) {
         // num - int, num - num
-        return new pNum( this.i - s.to_num() );
+        return new pNum( this.i ${native} s.to_num() );
     }
-    public pObject sub2(pObject s) {
+    public pObject ${perl}2(pObject s) {
         // int - num
-        return new pNum( s.to_num() - this.i );
+        return new pNum( s.to_num() ${native} this.i );
     }
+"
+            }
+            keys %number_binop ))
 
+    . <<'EOT'
     public boolean is_num() {
         return true;
     }
@@ -841,36 +850,29 @@ class pString extends pObject {
     public boolean is_string() {
         return true;
     }
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl};
+"    public pObject ${perl}(pObject b) {
+        // 'num' - int, 'num' - num
+        if (this.s.indexOf('.') > 0) {
+            return new pNum( this.to_num() ${native} b.to_num() );
+        }
+        return new pInt( this.to_int() ${native} b.to_int() );
+    }
+    public pObject ${perl}2(pObject b) {
+        // int - 'num'
+        if (this.s.indexOf('.') > 0) {
+            return new pNum( b.to_num() ${native} this.to_num() );
+        }
+        return new pInt( b.to_int() ${native} this.to_int() );
+    }
+"
+            }
+            keys %number_binop ))
 
-    public pObject add(pObject b) {
-        // "num" + int, "num" + num
-        if (this.s.indexOf('.') > 0) {
-            return new pNum(this.to_num()).add2(b);
-        }
-        return b.add2(new pInt(this.to_int()));
-    }
-    public pObject add2(pObject b) {
-        // int + "num"
-        if (this.s.indexOf('.') > 0) {
-            return new pNum(this.to_num()).add2(b);
-        }
-        return new pInt(this.to_int()).add2(b);
-    }
-    public pObject sub(pObject b) {
-        // "num" - int, "num" - num
-        if (this.s.indexOf('.') > 0) {
-            return new pNum( this.to_num() - b.to_num() );
-        }
-        return new pInt( this.to_int() - b.to_int() );
-    }
-    public pObject sub2(pObject b) {
-        // int - "num"
-        if (this.s.indexOf('.') > 0) {
-            return new pNum( b.to_num() - this.to_num() );
-        }
-        return new pInt( b.to_int() - this.to_int() );
-    }
-
+    . <<'EOT'
 }
 EOT
         # add "box" classes to Java classes
@@ -899,6 +901,9 @@ EOT
         return REF;
     }
 }
+
+// end Perl-Java runtime
+
 "
             }
             values %java_classes

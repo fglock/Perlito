@@ -48,8 +48,8 @@ package Perlito5::Java;
         'infix:<!=>' => ' != ',
         # 'infix:<+>'  => ' + ',
         # 'infix:<->'  => ' - ',
-        'infix:<*>'  => ' * ',
-        'infix:</>'  => ' / ',
+        # 'infix:<*>'  => ' * ',
+        # 'infix:</>'  => ' / ',
         # 'infix:<%>'  => ' % ',    # see p5modulo()
         'infix:<>>'  => ' > ',
         'infix:<<>'  => ' < ',
@@ -1664,6 +1664,16 @@ package Perlito5::AST::Apply;
         'infix:<->' => sub {
             my ($self, $level, $wantarray) = @_;
               $self->{arguments}->[0]->emit_java($level, 'scalar') . '.sub('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<*>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.mul('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:</>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.div('
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<&&>' => sub {
