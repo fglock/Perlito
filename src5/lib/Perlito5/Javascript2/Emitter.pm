@@ -430,7 +430,13 @@ package Perlito5::Javascript2;
                     . Perlito5::Javascript2::escape_string($type)      # autovivification type
                     . ')';
         }
- 
+        if ( $obj->isa( 'Perlito5::AST::Apply' ) ) {
+            return $obj->emit_javascript2($level);
+        }
+        if ( $obj->isa( 'Perlito5::AST::Buf' ) ) {
+            return $obj->emit_javascript2($level);
+        }
+
         # TODO - Perlito5::AST::Var
 
           '(' .  $obj->emit_javascript2($level)

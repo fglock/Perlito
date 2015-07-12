@@ -8813,6 +8813,12 @@ package Perlito5::Javascript2;
             my $arg = $obj->{'arguments'}->[0];
             return 'p5scalar_deref(' . $arg->emit_javascript2($level) . ', ' . Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Javascript2::escape_string($type) . ')'
         }
+        if ($obj->isa('Perlito5::AST::Apply')) {
+            return $obj->emit_javascript2($level)
+        }
+        if ($obj->isa('Perlito5::AST::Buf')) {
+            return $obj->emit_javascript2($level)
+        }
         '(' . $obj->emit_javascript2($level) . ' || (' . $obj->emit_javascript2($level) . ' = ' . ($type eq 'array' ? 'new p5ArrayRef([])' : $type eq 'hash' ? 'new p5HashRef({})' : 'new p5ScalarRef(null)') . ')' . ')'
     }
     sub Perlito5::Javascript2::emit_javascript2_list_with_tabs {
