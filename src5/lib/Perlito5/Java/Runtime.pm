@@ -64,6 +64,10 @@ class pCORE {
         System.exit(1);     // TODO
         return new pUndef();
     }
+    public static final pObject die(String s) {
+        // die() shortcut
+        return pCORE.die(pCx.VOID, new pArray(new pString(s)));
+    }
     public static final pObject ref(int want, pArray List__) {
         return List__.aget(0).ref();
     }
@@ -90,7 +94,7 @@ EOT
                     my $class = $_;
                     my $java_class_name = $class->{accessor};
                     "    public ${java_class_name} to_${java_class_name}() {\n"
-                  . "        System.out.println(\"error .to_${java_class_name}!\");\n"
+                  . "        pCORE.die(\"error .to_${java_class_name}!\");\n"
                   . "        return null;\n"
                   . "    }\n"
             }
@@ -101,16 +105,20 @@ EOT
         return this.toString();
     }
     public int to_int() {
-        System.out.println("error .to_int!");
+        pCORE.die("error .to_int!");
         return 0;
     }
     public double to_num() {
-        System.out.println("error .to_num!");
+        pCORE.die("error .to_num!");
         return 0.0;
     }
     public boolean to_bool() {
-        System.out.println("error .to_bool!");
+        pCORE.die("error .to_bool!");
         return true;
+    }
+    public pArray array_deref() {
+        pCORE.die("error .array_deref!");
+        return new pArray();
     }
     public pObject add(pObject s) {
         return this.to_num_or_int().add(s);
@@ -136,9 +144,6 @@ EOT
     public pObject to_num_or_int() {
         return new pInt(0);
     }
-    public void the_int_method() {
-        System.out.println("error!");
-    }
     public pObject ref() {
         return REF;
     }
@@ -146,11 +151,11 @@ EOT
         return this;
     }
     public pObject get() {
-        System.out.println("error .get!");
+        pCORE.die("error .get!");
         return this;
     }
     public pObject aget(int i) {
-        System.out.println("error .get!");
+        pCORE.die("error .get!");
         return this;
     }
 }
@@ -172,7 +177,7 @@ class pClosure extends pReference {
         this.env = env;
     }
     public pObject apply(int want, pObject... args) {
-        System.out.println("error!");
+        pCORE.die("error!");
         return new pInt(0);
     }
     public pObject ref() {
@@ -201,6 +206,9 @@ class pArrayRef extends pReference {
         this.o = o;
     }
     public pObject get() {
+        return this.o;
+    }
+    public pArray array_deref() {
         return this.o;
     }
     public pObject ref() {
@@ -257,7 +265,7 @@ class pScalar extends pObject {
         else if (this.o.is_array()) {
             return this.o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
+        return pCORE.die("Not an ARRAY reference");
     }
     public pObject get_hash() {
         if (this.o == null) {
@@ -266,7 +274,7 @@ class pScalar extends pObject {
         else if (this.o.is_hash()) {
             return this.o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
 
     // Note: several versions of set()
@@ -730,11 +738,7 @@ class pInt extends pObject {
     public boolean is_int() {
         return true;
     }
-    public void the_int_method() {
-        System.out.println("Here!");
-    }
     public pObject add(pObject s) {
-        System.out.println("Int.add Object!");
         if (s.is_int()) {
             return new pInt( this.i + s.to_int() );
         }

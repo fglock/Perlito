@@ -419,17 +419,8 @@ package Perlito5::Java;
                     . Perlito5::Java::escape_string($type)      # autovivification type
                     . ')';
         }
- 
-        # TODO - Perlito5::AST::Var
 
-          '(' .  $obj->emit_java($level)
-        .   ' || (' . $obj->emit_java($level) . ' = ' 
-                    . ( $type eq 'array' ? 'new pArrayRef()' 
-                      : $type eq 'hash'  ? 'new pHashRef()'
-                      :                    'new pScalarRef()'
-                      )
-              . ')'
-        . ')'
+        $obj->emit_java($level)
     }
 
     sub emit_java_list_with_tabs {
@@ -1786,10 +1777,8 @@ package Perlito5::AST::Apply;
         'prefix:<@>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            my $s = 'p5array_deref(' 
-                  . Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . ', '
-                  . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
-                  . ')';
+            my $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' )
+                  . '.array_deref()';
             return $wantarray eq 'scalar'
                 ? "p5num($s)"
                 : $s;
@@ -1797,10 +1786,8 @@ package Perlito5::AST::Apply;
         'prefix:<$#>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            return '(p5array_deref(' 
-                    . Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . ', '
-                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
-                    . ').length - 1)';
+            return  Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' )
+                 . '.array_deref().length - 1';
         },
         'prefix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1817,7 +1804,7 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(new pArrayRef(' . Perlito5::Java::to_list( $self->{arguments} ) . '))';
+            'new pArrayRef(' . Perlito5::Java::to_list( $self->{arguments} ) . ')';
         },
         'circumfix:<{ }>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1828,10 +1815,10 @@ package Perlito5::AST::Apply;
             my $arg   = $self->{arguments}->[0];
             if ( $arg->isa('Perlito5::AST::Apply') ) {
                 if ( $arg->{code} eq 'prefix:<@>' ) {
-                    return '(new pArrayRef(' . $arg->emit_java($level) . '))';
+                    return 'new pArrayRef(' . $arg->emit_java($level) . ')';
                 }
                 if ( $arg->{code} eq 'prefix:<%>' ) {
-                    return '(new pHashRef(' . $arg->emit_java($level) . '))';
+                    return 'new pHashRef(' . $arg->emit_java($level) . ')';
                 }
                 # if ( $arg->{code} eq '*' ) {
                 #     # TODO
@@ -1847,7 +1834,7 @@ package Perlito5::AST::Apply;
             }
             if ( $arg->isa('Perlito5::AST::Var') ) {
                 if ( $arg->sigil eq '@' ) {
-                    return '(new pArrayRef(' . $arg->emit_java($level) . '))';
+                    return 'new pArrayRef(' . $arg->emit_java($level) . ')';
                 }
                 if ( $arg->sigil eq '%' ) {
                     return '(new pHashRef(' . $arg->emit_java($level) . '))';
@@ -2242,7 +2229,7 @@ package Perlito5::AST::Apply;
                     die "invalid internal scope in eval\n";
                 }
                 $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
-                my $scope_js = '(new pArrayRef(' . Perlito5::Java::to_list($m) . '))';
+                my $scope_js = 'new pArrayRef(' . Perlito5::Java::to_list($m) . ')';
 
                 $eval ='eval(p5pkg["Perlito5::Java::Runtime"].perl5_to_js([' 
                             . Perlito5::Java::to_str($arg) . ", "
