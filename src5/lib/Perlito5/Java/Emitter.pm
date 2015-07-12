@@ -46,8 +46,8 @@ package Perlito5::Java;
     our %op_infix_js_num = (
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
-        'infix:<+>'  => ' + ',
-        'infix:<->'  => ' - ',
+        # 'infix:<+>'  => ' + ',
+        # 'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
         # 'infix:<%>'  => ' % ',    # see p5modulo()
@@ -1655,6 +1655,16 @@ package Perlito5::AST::Apply;
         'package' => sub {
             my $self = $_[0];
             '// package(' . Perlito5::Java::escape_string($self->{namespace} ) . ')';
+        },
+        'infix:<+>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.add('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'infix:<->' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.sub('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;

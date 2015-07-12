@@ -78,6 +78,16 @@ class pCORE {
         return List__.aget(-1).scalar();
     }
 }
+class pOp {
+    // operators: + - && || * / 
+    // note: '+' add() is a pObject method
+    // public static final pObject add(int want, pObject a, pObject b) {
+    //     if (a.is_num() || b.is_num()) {
+    //         return new pInt(a.to_num() + b.to_num());
+    //     }
+    //     return new pInt(a.to_int() + b.to_int());
+    // }
+}
 class pObject {
     // extends java object ???
     public static final pString REF = new pString("");
@@ -127,9 +137,14 @@ EOT
         pCORE.die("error .hash_deref!");
         return new pHash();
     }
+
     public pObject add(pObject s) {
-        return this.to_num_or_int().add(s);
+        return s.add2(this);
     }
+    public pObject add2(pObject s) {
+        return new pInt( this.to_int() + s.to_int() );
+    }
+
     public boolean is_int() {
         return false;
     }
@@ -147,9 +162,6 @@ EOT
     }
     public boolean is_array() {
         return false;
-    }
-    public pObject to_num_or_int() {
-        return new pInt(0);
     }
     public pObject ref() {
         return REF;
@@ -367,9 +379,9 @@ EOT
     }
     public pObject add(pObject s) {
         if (this.o == null) {
-            this.o = new pInt(0);
+            return new pInt(0).add2(s);
         }
-        return this.o.add(s);
+        return this.o.add2(s);
     }
     public boolean is_int() {
         if (this.o == null) {
@@ -394,12 +406,6 @@ EOT
             return false;
         }
         return this.o.is_bool();
-    }
-    public pObject to_num_or_int() {
-        if (this.o == null) {
-            this.o = new pUndef();
-        }
-        return this.o.to_num_or_int();
     }
     public pObject scalar() {
         return this.o;
@@ -562,9 +568,6 @@ EOT
     public boolean to_bool() {
         return (this.a.size() > 0);
     }
-    public pObject add(pObject s) {
-        return this.to_num_or_int().add(s);
-    }
     public boolean is_int() {
         return false;
     }
@@ -580,11 +583,8 @@ EOT
     public boolean is_array() {
         return true;
     }
-    public pObject to_num_or_int() {
-        return new pInt(this.to_int());
-    }
     public pObject scalar() {
-        return this.to_num_or_int();
+        return new pInt(this.to_int());
     }
 }
 class pHash extends pObject {
@@ -667,9 +667,6 @@ EOT
     public boolean to_bool() {
         return true;
     }
-    public pObject add(pObject s) {
-        return this.to_num_or_int().add(s);
-    }
     public boolean is_int() {
         return false;
     }
@@ -684,9 +681,6 @@ EOT
     }
     public boolean is_hash() {
         return true;
-    }
-    public pObject to_num_or_int() {
-        return new pInt(this.to_int());
     }
     public pObject scalar() {
         return new pString(this.to_string());
@@ -709,9 +703,6 @@ class pUndef extends pObject {
     }
     public boolean is_bool() {
         return false;
-    }
-    public pObject to_num_or_int() {
-        return new pInt(0);
     }
 }
 class pBool extends pObject {
@@ -749,9 +740,6 @@ class pBool extends pObject {
     public boolean is_bool() {
         return true;
     }
-    public pObject to_num_or_int() {
-        return new pInt(this.to_int());
-    }
 }
 class pInt extends pObject {
     private int i;
@@ -773,15 +761,6 @@ class pInt extends pObject {
     public boolean is_int() {
         return true;
     }
-    public pObject add(pObject s) {
-        if (s.is_int()) {
-            return new pInt( this.i + s.to_int() );
-        }
-        return s.to_num_or_int().add(this);
-    }
-    public pObject to_num_or_int() {
-        return this;
-    }
 }
 class pNum extends pObject {
     private double i;
@@ -800,14 +779,16 @@ class pNum extends pObject {
     public boolean to_bool() {
         return this.i != 0.0;
     }
-    public pNum add(pObject s) {
+    public pObject add(pObject s) {
+        // num + int, num + num
+        return new pNum( this.i + s.to_num() );
+    }
+    public pObject add2(pObject s) {
+        // int + num
         return new pNum( this.i + s.to_num() );
     }
     public boolean is_num() {
         return true;
-    }
-    public pObject to_num_or_int() {
-        return this;
     }
 }
 class pString extends pObject {
@@ -819,10 +800,18 @@ class pString extends pObject {
         this.s = "" + s;
     }
     public int to_int() {
-        return Integer.parseInt(this.s.trim());
+        try {
+            return Integer.parseInt(this.s.trim());
+        } catch (NumberFormatException nfe) {
+            return 0;
+        }
     }
     public double to_num() {
-        return Double.parseDouble(this.s.trim());
+        try {
+            return Double.parseDouble(this.s.trim());
+        } catch (NumberFormatException nfe) {
+            return 0.0;
+        }
     }
     public String to_string() {
         return this.s;
@@ -834,20 +823,22 @@ class pString extends pObject {
     public boolean is_string() {
         return true;
     }
-    public pObject to_num_or_int() {
+
+    public pObject add(pObject b) {
+        // "num" + int, "num" + num
         if (this.s.indexOf('.') > 0) {
-            try {
-                return new pNum(this.to_num());
-            } catch (NumberFormatException nfe) {
-                return new pInt(0);
-            }
+            return new pNum(this.to_num()).add2(b);
         }
-        try {
-            return new pInt(this.to_int());
-        } catch (NumberFormatException nfe) {
-            return new pInt(0);
+        return b.add2(new pInt(this.to_int()));
+    }
+    public pObject add2(pObject b) {
+        // int + "num"
+        if (this.s.indexOf('.') > 0) {
+            return new pNum(this.to_num()).add2(b);
         }
-    } 
+        return new pInt(this.to_int()).add2(b);
+    }
+
 }
 EOT
         # add "box" classes to Java classes
