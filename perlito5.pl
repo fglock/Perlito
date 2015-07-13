@@ -14006,7 +14006,7 @@ package Perlito5::Java;
     }
     sub Perlito5::Java::to_context {
         my $wantarray = shift;
-        $wantarray eq 'list' ? 'pCx.LIST' : $wantarray eq 'scalar' ? 'pCx.SCALAR' : $wantarray eq 'void' ? 'pCx.VOID' : 'p5want'
+        $wantarray eq 'list' ? 'pCx.LIST' : $wantarray eq 'scalar' ? 'pCx.SCALAR' : $wantarray eq 'void' ? 'pCx.VOID' : 'want'
     }
     sub Perlito5::Java::autoquote {
         my $index = shift;
@@ -15244,10 +15244,10 @@ package Perlito5::AST::Apply;
             $fun = $self->{'special_arg'}->emit_java($level)
         }
         else {
-            $fun = 'new pString("STDOUT")'
+            $fun = 'pCx.STDOUT'
         }
         my $list = Perlito5::Java::to_list(\@in);
-        'pCORE.print(pCx.VOID, ' . $fun . ', ' . $list . ')'
+        'pCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')'
     }, 'say' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
@@ -15256,10 +15256,10 @@ package Perlito5::AST::Apply;
             $fun = $self->{'special_arg'}->emit_java($level)
         }
         else {
-            $fun = 'new pString("STDOUT")'
+            $fun = 'pCx.STDOUT'
         }
         my $list = Perlito5::Java::to_list(\@in);
-        'pCORE.say(pCx.VOID, ' . $fun . ', ' . $list . ')'
+        'pCORE.say(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')'
     }, 'printf' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
@@ -15268,15 +15268,15 @@ package Perlito5::AST::Apply;
             $fun = $self->{'special_arg'}->emit_java($level)
         }
         else {
-            $fun = 'new pString("STDOUT")'
+            $fun = 'pCx.STDOUT'
         }
         my $list = Perlito5::Java::to_list(\@in);
-        'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')'
+        'pCORE.printf(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')'
     }, 'join' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
         my $list = Perlito5::Java::to_list(\@in);
-        'pCORE.join(pCx.VOID, ' . $list . ')'
+        'pCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . $list . ')'
     }, 'close' => sub {
         my($self, $level, $wantarray) = @_;
         my @in = @{$self->{'arguments'}};
@@ -15784,7 +15784,7 @@ sub Perlito5::Java::Runtime::emit_java {
     return '// start Perl-Java runtime' . chr(10) . '// this is generated code - see: lib/Perlito5/Java/Runtime.pm' . chr(10) . chr(10) . 'import java.util.ArrayList;' . chr(10) . 'import java.util.HashMap;' . chr(10) . join('', (map {
         my $class = $_;
         'import ' . $class->{'import'} . ';' . chr(10)
-    } values(%java_classes))) . 'class pCx {' . chr(10) . '    public static final int VOID   = 0;' . chr(10) . '    public static final int SCALAR = 1;' . chr(10) . '    public static final int LIST   = 2;' . chr(10) . '    public static final pUndef UNDEF = new pUndef();' . chr(10) . '}' . chr(10) . 'class pCORE {' . chr(10) . '    public static final pObject print(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject say(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.out.println("");' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject die(int want, pArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.err.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.err.println("");' . chr(10) . '        System.exit(1);     // TODO' . chr(10) . '        return pCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final pObject die(String s) {' . chr(10) . '        // die() shortcut' . chr(10) . '        return pCORE.die(pCx.VOID, new pArray(new pString(s)));' . chr(10) . '    }' . chr(10) . '    public static final pObject ref(int want, pArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final pObject scalar(int want, pArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return pCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '    public static final pObject join(int want, pArray List__) {' . chr(10) . '        String s = List__.shift().to_string();' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        boolean first = true;' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            String item = List__.aget(i).to_string();' . chr(10) . '            if (first)' . chr(10) . '                first = false;' . chr(10) . '            else' . chr(10) . '                sb.append(s);' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        return new pString(sb.toString());' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class pOp {' . chr(10) . '    // operators: && || * / ' . chr(10) . '    // note: ' . chr(39) . '+' . chr(39) . ' add() and ' . chr(39) . '-' . chr(39) . ' sub() are pObject methods' . chr(10) . '    // TODO' . chr(10) . '}' . chr(10) . 'class pObject {' . chr(10) . '    // extends java object ???' . chr(10) . '    public static final pString REF = new pString("");' . chr(10) . chr(10) . '    public pObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
+    } values(%java_classes))) . 'class pCx {' . chr(10) . '    public static final int VOID   = 0;' . chr(10) . '    public static final int SCALAR = 1;' . chr(10) . '    public static final int LIST   = 2;' . chr(10) . '    public static final pUndef UNDEF = new pUndef();' . chr(10) . '    public static final pString STDOUT = new pString("STDOUT");' . chr(10) . '    public static final pString STDERR = new pString("STDERR");' . chr(10) . '    public static final pString STDIN  = new pString("STDIN");' . chr(10) . '}' . chr(10) . 'class pCORE {' . chr(10) . '    public static final pObject print(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject say(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.out.println("");' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject die(int want, pArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.err.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.err.println("");' . chr(10) . '        System.exit(1);     // TODO' . chr(10) . '        return pCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final pObject die(String s) {' . chr(10) . '        // die() shortcut' . chr(10) . '        return pCORE.die(pCx.VOID, new pArray(new pString(s)));' . chr(10) . '    }' . chr(10) . '    public static final pObject ref(int want, pArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final pObject scalar(int want, pArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return pCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '    public static final pObject join(int want, pArray List__) {' . chr(10) . '        String s = List__.shift().to_string();' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        boolean first = true;' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            String item = List__.aget(i).to_string();' . chr(10) . '            if (first)' . chr(10) . '                first = false;' . chr(10) . '            else' . chr(10) . '                sb.append(s);' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        return new pString(sb.toString());' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class pOp {' . chr(10) . '    // operators: && || * / ' . chr(10) . '    // note: ' . chr(39) . '+' . chr(39) . ' add() and ' . chr(39) . '-' . chr(39) . ' sub() are pObject methods' . chr(10) . '    // TODO' . chr(10) . '}' . chr(10) . 'class pObject {' . chr(10) . '    // extends java object ???' . chr(10) . '    public static final pString REF = new pString("");' . chr(10) . chr(10) . '    public pObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
         my $class = $_;
         my $java_class_name = $class->{'accessor'};
         '    public ' . $java_class_name . ' to_' . $java_class_name . '() {' . chr(10) . '        pCORE.die("error .to_' . $java_class_name . '!");' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10)

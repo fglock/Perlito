@@ -60,6 +60,9 @@ class pCx {
     public static final int SCALAR = 1;
     public static final int LIST   = 2;
     public static final pUndef UNDEF = new pUndef();
+    public static final pString STDOUT = new pString("STDOUT");
+    public static final pString STDERR = new pString("STDERR");
+    public static final pString STDIN  = new pString("STDIN");
 }
 class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {

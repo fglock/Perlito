@@ -395,7 +395,7 @@ package Perlito5::Java;
          $wantarray eq 'list'   ? 'pCx.LIST' 
         :$wantarray eq 'scalar' ? 'pCx.SCALAR' 
         :$wantarray eq 'void'   ? 'pCx.VOID'
-        :                         'p5want'
+        :                         'want'
     }
 
     sub autoquote {
@@ -2511,10 +2511,10 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'new pString("STDOUT")';
+                $fun  = 'pCx.STDOUT';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'pCORE.print(pCx.VOID, ' . $fun . ', ' . $list . ')';
+            'pCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
         'say' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2524,10 +2524,10 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'new pString("STDOUT")';
+                $fun  = 'pCx.STDOUT';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'pCORE.say(pCx.VOID, ' . $fun . ', ' . $list . ')';
+            'pCORE.say(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
         'printf' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2537,16 +2537,16 @@ package Perlito5::AST::Apply;
                 $fun  = $self->{special_arg}->emit_java( $level );
             }
             else {
-                $fun  = 'new pString("STDOUT")';
+                $fun  = 'pCx.STDOUT';
             }
             my $list = Perlito5::Java::to_list(\@in);
-            'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')';
+            'pCORE.printf(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
         'join' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
             my $list = Perlito5::Java::to_list(\@in);
-            'pCORE.join(pCx.VOID, ' . $list . ')';
+            'pCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . $list . ')';
         },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
