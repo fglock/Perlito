@@ -457,6 +457,9 @@ EOT
     public pObject scalar() {
         return this.o;
     }
+    public pObject ref() {
+        return this.o.ref();
+    }
 EOT
         # add "unbox" accessors to Java classes
         # that were declared with
