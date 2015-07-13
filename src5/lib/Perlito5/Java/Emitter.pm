@@ -1471,7 +1471,10 @@ package Perlito5::AST::Call;
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
                 # TODO - add arguments
-                return "new p$info->{accessor}()";
+                if ($meth eq 'new') {
+                    return "new p$info->{accessor}()";
+                }
+                return "p$info->{accessor}.${meth}()";
             }
         }
 

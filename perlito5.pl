@@ -14653,7 +14653,10 @@ package Perlito5::AST::Call;
         if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::') {
             if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
                 my $info = $Java_class->{$self->{'invocant'}->{'namespace'}};
-                return 'new p' . $info->{'accessor'} . '()'
+                if ($meth eq 'new') {
+                    return 'new p' . $info->{'accessor'} . '()'
+                }
+                return 'p' . $info->{'accessor'} . '.' . $meth . '()'
             }
         }
         my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');
