@@ -13822,6 +13822,7 @@ package Perlito5::Java;
 {
     my %label;
     my %Java_class;
+    my %Java_var;
     sub Perlito5::Java::pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ']'
     }
@@ -13834,6 +13835,9 @@ package Perlito5::Java;
     }
     sub Perlito5::Java::get_java_class_info {
         return \%Java_class
+    }
+    sub Perlito5::Java::get_java_var_info {
+        return \%Java_var
     }
     our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size');
     our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
@@ -14557,7 +14561,12 @@ package Perlito5::AST::Decl;
     }
     sub Perlito5::AST::Decl::emit_java_init {
         my($self, $level, $wantarray) = @_;
+        my $Java_var = Perlito5::Java::get_java_var_info();
         my $type = $self->{'type'} // 'Scalar';
+        my $id = $self->{'_id'};
+        if ($id) {
+            $Java_var->{$id} = {'id' => $id, 'type' => $type}
+        }
         if ($self->{'decl'} eq 'local') {
             my $var = $self->{'var'};
             my $var_set;
@@ -14657,6 +14666,14 @@ package Perlito5::AST::Call;
                     return 'new p' . $info->{'accessor'} . '()'
                 }
                 return 'p' . $info->{'accessor'} . '.' . $meth . '()'
+            }
+        }
+        if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'_id'}) {
+            my $id = $self->{'invocant'}->{'_id'};
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{$id}->{'type'};
+            if ($type ne 'Scalar') {
+                return $self->{'invocant'}->emit_java($level, 'scalar') . '.' . $meth . '()'
             }
         }
         my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');

@@ -7,7 +7,8 @@ use strict;
 package Perlito5::Java;
 {
     my %label;
-    my %Java_class;     # { import => 'full.path.TheClass', accessor => 'TheClass' }
+    my %Java_class;     # TheClass => { import => 'full.path.TheClass', accessor => 'TheClass' }
+    my %Java_var;       # 101 => { id => 101, type => 'Byte' }
     sub pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ']'
     }
@@ -20,6 +21,9 @@ package Perlito5::Java;
     }
     sub get_java_class_info {
         return \%Java_class;
+    }
+    sub get_java_var_info {
+        return \%Java_var;
     }
 
     # prefix operators that take a "str" parameter
@@ -1343,7 +1347,14 @@ package Perlito5::AST::Decl;
     }
     sub emit_java_init {
         my ($self, $level, $wantarray) = @_;
+
+        my $Java_var = Perlito5::Java::get_java_var_info();
         my $type = $self->{type} // 'Scalar';
+        my $id = $self->{_id};
+        if ( $id ) {
+            $Java_var->{ $id } = { id => $id, type => $type };
+        }
+
         if ($self->{decl} eq 'local') {
             my $var = $self->{var};
             my $var_set;
@@ -1475,6 +1486,17 @@ package Perlito5::AST::Call;
                     return "new p$info->{accessor}()";
                 }
                 return "p$info->{accessor}.${meth}()";
+            }
+        }
+
+        # invocant is typed
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
+            my $id = $self->{invocant}->{_id};
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{ $id }{type};
+            if ($type ne 'Scalar') {
+                # TODO - add arguments
+                return $self->{invocant}->emit_java($level, 'scalar') . ".${meth}()";
             }
         }
 
