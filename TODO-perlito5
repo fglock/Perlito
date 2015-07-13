@@ -592,6 +592,15 @@ TODO list for Perlito5
 
         package my_chars { type => 'char[]' }
 
+-- coercing method naming rules
+
+    - rule: remove '::', add 'to_'
+        example:  my::Sample  =>  to_mySample()
+
+    package my::Sample { import => "misc.Java.Sample" };
+    my $x = my::Sample->new();
+    $x->to_mySample()
+
 
 * Compile-time execution environment
 

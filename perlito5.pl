@@ -15250,6 +15250,9 @@ package Perlito5::AST::Apply;
         my @arguments = @{$self->{'arguments'}};
         my $v = shift(@arguments);
         return $v->emit_java($level) . '.push(' . Perlito5::Java::to_list(\@arguments) . ')'
+    }, 'ref' => sub {
+        my($self, $level, $wantarray) = @_;
+        'pCORE.ref(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
     }, 'tie' => sub {
         my($self, $level, $wantarray) = @_;
         my @arguments = @{$self->{'arguments'}};

@@ -138,7 +138,7 @@ EOT
                     my $java_class_name = $class->{java_constructor};
                     my $perl_to_java = $class->{perl_to_java};
                     "    public ${java_class_name} ${perl_to_java}() {\n"
-                  . "        pCORE.die(\"error .to_${perl_to_java}!\");\n"
+                  . "        pCORE.die(\"error .${perl_to_java}!\");\n"
                   . "        return null;\n"
                   . "    }\n"
             }
