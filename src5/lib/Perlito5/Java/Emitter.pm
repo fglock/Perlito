@@ -1343,6 +1343,7 @@ package Perlito5::AST::Decl;
     }
     sub emit_java_init {
         my ($self, $level, $wantarray) = @_;
+        my $type = $self->{type} // 'Scalar';
         if ($self->{decl} eq 'local') {
             my $var = $self->{var};
             my $var_set;
@@ -1371,9 +1372,8 @@ package Perlito5::AST::Decl;
                 return 'pArray ' . $self->{var}->emit_java() . ' = new pArray();';
             }
             else {
-                return 'pScalar ' . $self->{var}->emit_java() . ' = new pScalar();';
+                return "p${type} " . $self->{var}->emit_java() . " = new p${type}();";
             }
-            return '// my ' . $self->{var}->emit_java();
         }
         elsif ($self->{decl} eq 'our') {
             my $str = $self->{var}->emit_java();
