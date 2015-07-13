@@ -33,7 +33,7 @@ sub emit_java {
         String => 'pString',
     );
     for (values %java_classes) {
-        $native_to_perl{$_->{accessor}} = "p" . $_->{accessor};
+        $native_to_perl{$_->{java_constructor}} = "p" . $_->{java_constructor};
     }
 
     return <<'EOT'
@@ -135,9 +135,10 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{accessor};
-                    "    public ${java_class_name} to_${java_class_name}() {\n"
-                  . "        pCORE.die(\"error .to_${java_class_name}!\");\n"
+                    my $java_class_name = $class->{java_constructor};
+                    my $perl_to_java = $class->{perl_to_java};
+                    "    public ${java_class_name} ${perl_to_java}() {\n"
+                  . "        pCORE.die(\"error .to_${perl_to_java}!\");\n"
                   . "        return null;\n"
                   . "    }\n"
             }
@@ -464,9 +465,10 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{accessor};
-"    public ${java_class_name} to_${java_class_name}() {
-        return this.o.to_${java_class_name}();
+                    my $java_class_name = $class->{java_constructor};
+                    my $perl_to_java = $class->{perl_to_java};
+"    public ${java_class_name} ${perl_to_java}() {
+        return this.o.${perl_to_java}();
     }
 "
             }
@@ -997,9 +999,11 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{accessor};
+                    my $java_class_name = $class->{java_constructor};
+                    my $perl_to_java    = $class->{perl_to_java};
+                    my $perl_package    = $class->{perl_package};
 "class p${java_class_name} extends pReference {
-    public static final pString REF = new pString(\"${java_class_name}\");
+    public static final pString REF = new pString(\"${perl_package}\");
 
     private ${java_class_name} stuff;
     // TODO - constructor with Perl parameters
@@ -1009,7 +1013,7 @@ EOT
     public p${java_class_name}(${java_class_name} stuff) {
         this.stuff = stuff;
     }
-    public ${java_class_name} to_${java_class_name}() {
+    public ${java_class_name} ${perl_to_java}() {
         return this.stuff;
     }
     public pObject ref() {

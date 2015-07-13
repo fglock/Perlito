@@ -12878,11 +12878,11 @@ package Perlito5::AST::Apply;
         if ($code eq 'infix:<=>>') {
             return ['op' => $code, Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_perl6(), $self->{'arguments'}->[1]->emit_perl6()]
         }
-        if ($code eq 'nan' && !$self->{'namespace'}) {
-            return ['keyword' => NaN]
+        if ($code eq nan && !$self->{'namespace'}) {
+            return ['keyword' => 'NaN']
         }
-        if ($code eq 'inf' && !$self->{'namespace'}) {
-            return ['keyword' => Inf]
+        if ($code eq inf && !$self->{'namespace'}) {
+            return ['keyword' => 'Inf']
         }
         if ($code eq '__PACKAGE__' && !$self->{'namespace'}) {
             return ['bareword' => '$?PACKAGE']
@@ -14237,7 +14237,11 @@ package Perlito5::AST::CompUnit;
                     $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
                     $Java_class->{$class}->{'import'} || die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class');
                     my @parts = split(m!\.!, $Java_class->{$class}->{'import'});
-                    $Java_class->{$class}->{'accessor'} //= $parts[-1];
+                    $Java_class->{$class}->{'java_constructor'} //= $parts[-1];
+                    my $perl_to_java = $class;
+                    $perl_to_java =~ s!::!!g;
+                    $Java_class->{$class}->{'perl_to_java'} //= 'to_' . $perl_to_java;
+                    $Java_class->{$class}->{'perl_package'} = $class;
                     $unit_stmt->{'stmts'} = []
                 }
             }
@@ -14587,7 +14591,7 @@ package Perlito5::AST::Decl;
     sub Perlito5::AST::Decl::emit_java_init {
         my($self, $level, $wantarray) = @_;
         my $Java_var = Perlito5::Java::get_java_var_info();
-        my $type = $self->{'type'} // 'pScalar';
+        my $type = $self->{'type'} || 'pScalar';
         my $id = $self->{'_id'};
         if ($id) {
             $Java_var->{$id} = {'id' => $id, 'type' => $type}
@@ -14688,9 +14692,9 @@ package Perlito5::AST::Call;
             if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
                 my $info = $Java_class->{$self->{'invocant'}->{'namespace'}};
                 if ($meth eq 'new') {
-                    return 'new p' . $info->{'accessor'} . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
+                    return 'new p' . $info->{'java_constructor'} . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                 }
-                return 'p' . $info->{'accessor'} . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
+                return 'p' . $info->{'java_constructor'} . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
             }
         }
         my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');
@@ -14702,12 +14706,12 @@ package Perlito5::AST::Call;
                 return $invocant . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
             }
         }
-        if ($meth =~ m!^to_(.+)!) {
+        if ($meth =~ m!^to!) {
             my $Java_class = Perlito5::Java::get_java_class_info();
-            my $class = ${'1'};
-            if (exists($Java_class->{$class})) {
-                my $info = $Java_class->{$class};
-                return $invocant . '.' . $meth . '()'
+            for my $info (values(%{$Java_class})) {
+                if ($meth eq $info->{'perl_to_java'}) {
+                    return $invocant . '.' . $meth . '()'
+                }
             }
         }
         if (ref($meth) eq 'Perlito5::AST::Var') {
@@ -15825,15 +15829,16 @@ sub Perlito5::Java::Runtime::emit_java {
     my %string_binop = ('str_eq' => {'op' => '== 0', 'returns' => 'pBool'}, 'str_ne' => {'op' => '!= 0', 'returns' => 'pBool'}, 'str_lt' => {'op' => '< 0', 'returns' => 'pBool'}, 'str_le' => {'op' => '<= 0', 'returns' => 'pBool'}, 'str_gt' => {'op' => '> 0', 'returns' => 'pBool'}, 'str_ge' => {'op' => '>= 0', 'returns' => 'pBool'});
     my %native_to_perl = ('int' => 'pInt', 'double' => 'pNum', 'String' => 'pString');
     for $_ (values(%java_classes)) {
-        $native_to_perl{$_->{'accessor'}} = 'p' . $_->{'accessor'}
+        $native_to_perl{$_->{'java_constructor'}} = 'p' . $_->{'java_constructor'}
     }
     return '// start Perl-Java runtime' . chr(10) . '// this is generated code - see: lib/Perlito5/Java/Runtime.pm' . chr(10) . chr(10) . 'import java.util.ArrayList;' . chr(10) . 'import java.util.HashMap;' . chr(10) . join('', (map {
         my $class = $_;
         'import ' . $class->{'import'} . ';' . chr(10)
     } values(%java_classes))) . 'class pCx {' . chr(10) . '    public static final int VOID   = 0;' . chr(10) . '    public static final int SCALAR = 1;' . chr(10) . '    public static final int LIST   = 2;' . chr(10) . '    public static final pUndef UNDEF = new pUndef();' . chr(10) . '    public static final pString STDOUT = new pString("STDOUT");' . chr(10) . '    public static final pString STDERR = new pString("STDERR");' . chr(10) . '    public static final pString STDIN  = new pString("STDIN");' . chr(10) . '}' . chr(10) . 'class pCORE {' . chr(10) . '    public static final pObject print(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject say(int want, pObject filehandle, pArray List__) {' . chr(10) . '        // TODO - write to filehandle' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.out.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.out.println("");' . chr(10) . '        return new pInt(1);' . chr(10) . '    }' . chr(10) . '    public static final pObject die(int want, pArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            System.err.print(List__.aget(i).to_string());' . chr(10) . '        }' . chr(10) . '        System.err.println("");' . chr(10) . '        System.exit(1);     // TODO' . chr(10) . '        return pCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final pObject die(String s) {' . chr(10) . '        // die() shortcut' . chr(10) . '        return pCORE.die(pCx.VOID, new pArray(new pString(s)));' . chr(10) . '    }' . chr(10) . '    public static final pObject ref(int want, pArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final pObject scalar(int want, pArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return pCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '    public static final pObject join(int want, pArray List__) {' . chr(10) . '        String s = List__.shift().to_string();' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        boolean first = true;' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            String item = List__.aget(i).to_string();' . chr(10) . '            if (first)' . chr(10) . '                first = false;' . chr(10) . '            else' . chr(10) . '                sb.append(s);' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        return new pString(sb.toString());' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class pOp {' . chr(10) . '    // operators: && || * / ' . chr(10) . '    // note: ' . chr(39) . '+' . chr(39) . ' add() and ' . chr(39) . '-' . chr(39) . ' sub() are pObject methods' . chr(10) . '    // TODO' . chr(10) . '}' . chr(10) . 'class pObject {' . chr(10) . '    // extends java object ???' . chr(10) . '    public static final pString REF = new pString("");' . chr(10) . chr(10) . '    public pObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
         my $class = $_;
-        my $java_class_name = $class->{'accessor'};
-        '    public ' . $java_class_name . ' to_' . $java_class_name . '() {' . chr(10) . '        pCORE.die("error .to_' . $java_class_name . '!");' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10)
+        my $java_class_name = $class->{'java_constructor'};
+        my $perl_to_java = $class->{'perl_to_java'};
+        '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        pCORE.die("error .to_' . $perl_to_java . '!");' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10)
     } values(%java_classes))) . '    public String to_string() {' . chr(10) . '        return this.toString();' . chr(10) . '    }' . chr(10) . '    public int to_int() {' . chr(10) . '        pCORE.die("error .to_int!");' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    public pObject end_of_array_index() {' . chr(10) . '        return pCORE.die("error .to_int!");' . chr(10) . '    }' . chr(10) . '    public double to_num() {' . chr(10) . '        pCORE.die("error .to_num!");' . chr(10) . '        return 0.0;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        pCORE.die("error .to_bool!");' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public pObject array_deref() {' . chr(10) . '        pCORE.die("error .array_deref!");' . chr(10) . '        return new pArray();' . chr(10) . '    }' . chr(10) . '    public pObject hash_deref() {' . chr(10) . '        pCORE.die("error .hash_deref!");' . chr(10) . '        return new pHash();' . chr(10) . '    }' . chr(10) . (join('', map {
         my $perl = $_;
         my $native = $number_binop{$perl}->{'op'};
@@ -15854,8 +15859,9 @@ sub Perlito5::Java::Runtime::emit_java {
         '    public pObject ' . $perl . '(pObject s) {' . chr(10) . '        return s.' . $perl . '2(this);' . chr(10) . '    }' . chr(10)
     } keys(%number_binop))) . '    public boolean is_int() {' . chr(10) . '        return this.o.is_int();' . chr(10) . '    }' . chr(10) . '    public boolean is_num() {' . chr(10) . '        return this.o.is_num();' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return this.o.is_string();' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return this.o.is_bool();' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return this.o.is_undef();' . chr(10) . '    }' . chr(10) . '    public pObject scalar() {' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . join('', (map {
         my $class = $_;
-        my $java_class_name = $class->{'accessor'};
-        '    public ' . $java_class_name . ' to_' . $java_class_name . '() {' . chr(10) . '        return this.o.to_' . $java_class_name . '();' . chr(10) . '    }' . chr(10)
+        my $java_class_name = $class->{'java_constructor'};
+        my $perl_to_java = $class->{'perl_to_java'};
+        '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.o.' . $perl_to_java . '();' . chr(10) . '    }' . chr(10)
     } values(%java_classes))) . '}' . chr(10) . 'class pArray extends pObject {' . chr(10) . '    private ArrayList<pObject> a;' . chr(10) . '    public pArray() {' . chr(10) . '        this.a = new ArrayList<pObject>();' . chr(10) . '    }' . chr(10) . '    public pArray(pObject... args) {' . chr(10) . '        ArrayList<pObject> aa = new ArrayList<pObject>();' . chr(10) . '        for (pObject s : args) {' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                // @x = ( @x, @y );' . chr(10) . '                for (int i = 0; i < s.to_int(); i++) {' . chr(10) . '                    aa.add(s.aget(i));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                aa.add(s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        this.a = aa;' . chr(10) . '    }' . chr(10) . chr(10) . '    public pObject aget(pObject i) {' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos > this.a.size()) {' . chr(10) . '            return pCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return this.a.get(pos);' . chr(10) . '    }' . chr(10) . '    public pObject aget(int i) {' . chr(10) . '        int pos  = i;' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos > this.a.size()) {' . chr(10) . '            return pCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return this.a.get(pos);' . chr(10) . '    }' . chr(10) . chr(10) . '    public pObject get_array(pObject i) {' . chr(10) . '        pObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            o = new pArray();' . chr(10) . '            this.aset(i, o);' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        else if (o.is_array()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));' . chr(10) . '    }' . chr(10) . '    public pObject get_hash(pObject i) {' . chr(10) . '        pObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            o = new pHash();' . chr(10) . '            this.aset(i, o);' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hash()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));' . chr(10) . '    }' . chr(10) . chr(10) . '    // Note: multiple versions of set()' . chr(10) . '    public pObject aset(pObject i, pObject v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        while (size < pos) {' . chr(10) . '            this.a.add( pCx.UNDEF );' . chr(10) . '            size++;' . chr(10) . '        }' . chr(10) . '        this.a.add(pos, v.scalar());' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public pObject aset(int i, pObject v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i;' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        while (size < pos) {' . chr(10) . '            this.a.add( pCx.UNDEF );' . chr(10) . '            size++;' . chr(10) . '        }' . chr(10) . '        this.a.add(pos, v.scalar());' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public pObject aset(pObject i, pScalar v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        while (size < pos) {' . chr(10) . '            this.a.add( pCx.UNDEF );' . chr(10) . '            size++;' . chr(10) . '        }' . chr(10) . '        this.a.add(pos, v.get());' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . (join('', map {
         my $native = $_;
         my $perl = $native_to_perl{$native};
@@ -15881,8 +15887,10 @@ sub Perlito5::Java::Runtime::emit_java {
         }
     } keys(%number_binop))) . '}' . chr(10) . join('', (map {
         my $class = $_;
-        my $java_class_name = $class->{'accessor'};
-        'class p' . $java_class_name . ' extends pReference {' . chr(10) . '    public static final pString REF = new pString("' . $java_class_name . '");' . chr(10) . chr(10) . '    private ' . $java_class_name . ' stuff;' . chr(10) . '    // TODO - constructor with Perl parameters' . chr(10) . '    public p' . $java_class_name . '() {' . chr(10) . '        this.stuff = new ' . $java_class_name . '();' . chr(10) . '    }' . chr(10) . '    public p' . $java_class_name . '(' . $java_class_name . ' stuff) {' . chr(10) . '        this.stuff = stuff;' . chr(10) . '    }' . chr(10) . '    public ' . $java_class_name . ' to_' . $java_class_name . '() {' . chr(10) . '        return this.stuff;' . chr(10) . '    }' . chr(10) . '    public pObject ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10)
+        my $java_class_name = $class->{'java_constructor'};
+        my $perl_to_java = $class->{'perl_to_java'};
+        my $perl_package = $class->{'perl_package'};
+        'class p' . $java_class_name . ' extends pReference {' . chr(10) . '    public static final pString REF = new pString("' . $perl_package . '");' . chr(10) . chr(10) . '    private ' . $java_class_name . ' stuff;' . chr(10) . '    // TODO - constructor with Perl parameters' . chr(10) . '    public p' . $java_class_name . '() {' . chr(10) . '        this.stuff = new ' . $java_class_name . '();' . chr(10) . '    }' . chr(10) . '    public p' . $java_class_name . '(' . $java_class_name . ' stuff) {' . chr(10) . '        this.stuff = stuff;' . chr(10) . '    }' . chr(10) . '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.stuff;' . chr(10) . '    }' . chr(10) . '    public pObject ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10)
     } values(%java_classes))) . '// end Perl-Java runtime' . chr(10)
 }
 1;

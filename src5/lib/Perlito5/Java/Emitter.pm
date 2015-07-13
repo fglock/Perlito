@@ -7,7 +7,15 @@ use strict;
 package Perlito5::Java;
 {
     my %label;
-    my %Java_class;     # TheClass => { import => 'full.path.TheClass', accessor => 'TheClass' }
+
+    # 'The::Class' => {
+    #       import           => 'full.path.Class',
+    #       java_constructor => 'Class',            # generated
+    #       perl_to_java     => 'to_TheClass',      # generated
+    #       perl_package     => 'The::Class',       # package name
+    # }
+    my %Java_class;
+
     my %Java_var;       # 101 => { id => 101, type => 'Byte' }
     sub pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ']'
@@ -788,7 +796,11 @@ package Perlito5::AST::CompUnit;
                     die "missing 'import' argument to generate Java class"
                         unless $Java_class->{$class}->{import};
                     my @parts = split /\./, $Java_class->{$class}->{import};
-                    $Java_class->{$class}->{accessor} //= $parts[-1];
+                    $Java_class->{$class}->{java_constructor} //= $parts[-1];
+                    my $perl_to_java = $class;
+                    $perl_to_java =~ s/:://g;
+                    $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
+                    $Java_class->{$class}->{perl_package} = $class;
 
 
                     # throw away this block - generate no Perl code
@@ -1379,7 +1391,7 @@ package Perlito5::AST::Decl;
         my ($self, $level, $wantarray) = @_;
 
         my $Java_var = Perlito5::Java::get_java_var_info();
-        my $type = $self->{type} // 'pScalar';
+        my $type = $self->{type} || 'pScalar';
         my $id = $self->{_id};
         if ( $id ) {
             $Java_var->{ $id } = { id => $id, type => $type };
@@ -1513,9 +1525,9 @@ package Perlito5::AST::Call;
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
                 if ($meth eq 'new') {
-                    return "new p$info->{accessor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                    return "new p$info->{java_constructor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
-                return "p$info->{accessor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                return "p$info->{java_constructor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 
@@ -1540,13 +1552,13 @@ package Perlito5::AST::Call;
         #   my $x;  
         #   $x->to_Sample();
         #
-        if ( $meth =~ /^to_(.+)/ ) {
+        if ( $meth =~ /^to/ ) {
             # TODO - check for no-arguments
             my $Java_class = Perlito5::Java::get_java_class_info();
-            my $class = $1;
-            if ( exists $Java_class->{$class} ) {
-                my $info = $Java_class->{$class};
-                return "$invocant.$meth()";
+            for my $info ( values %{$Java_class} ) {
+                if ( $meth eq $info->{perl_to_java} ) {
+                    return "$invocant.$meth()";
+                }
             }
         }
 
