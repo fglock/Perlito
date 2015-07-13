@@ -580,6 +580,11 @@ TODO list for Perlito5
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO - test)
 
+-- interoperation between native expressions and perl expressions
+
+    test case:
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
+
 -- primitive types
 
     char, boolean, float, long, short, int, byte

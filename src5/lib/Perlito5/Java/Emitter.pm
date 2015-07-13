@@ -1331,6 +1331,14 @@ package Perlito5::AST::Var;
         my $close = $wantarray eq 'void' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         if ( $sigil eq '$' ) {
+            my $id = $self->{_id};
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{ $id }{type} || 'pScalar';
+            if ($type ne 'pScalar') {
+                # set a typed variable - there is no .set() method
+                # the arguments are not boxed
+                return $self->emit_java() . ' = ' . Perlito5::Java::to_native_args([$arguments]);
+            }
             return $self->emit_java() . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '@' ) {
@@ -1392,7 +1400,7 @@ package Perlito5::AST::Decl;
 
         my $Java_var = Perlito5::Java::get_java_var_info();
         my $type = $self->{type} || 'pScalar';
-        my $id = $self->{_id};
+        my $id = $self->{var}{_id};
         if ( $id ) {
             $Java_var->{ $id } = { id => $id, type => $type };
         }
@@ -1543,7 +1551,7 @@ package Perlito5::AST::Call;
         if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
             my $id = $self->{invocant}->{_id};
             my $Java_var = Perlito5::Java::get_java_var_info();
-            my $type = $Java_var->{ $id }{type};
+            my $type = $Java_var->{ $id }{type} || 'pScalar';
             if ($type ne 'pScalar') {
                 return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
