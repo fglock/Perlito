@@ -1016,13 +1016,14 @@ EOT
         return REF;
     }
 }
-
-// end Perl-Java runtime
-
 "
             }
             values %java_classes
       ))
+
+    . <<'EOT'
+// end Perl-Java runtime
+EOT
 
 } # end of emit_javascript2()
 

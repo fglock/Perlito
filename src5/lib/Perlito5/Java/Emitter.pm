@@ -159,6 +159,36 @@ package Perlito5::Java;
         return join(' + ', @out);
     }
 
+
+    sub to_native_args {
+            my $args = shift;
+            my $level = shift;
+            my $wantarray = 'scalar';
+            my $s = '';
+            my @out;
+            for my $cond (@$args) {
+                if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+                   && $cond->{arguments} && @{$cond->{arguments}}
+                   ) 
+                {
+                    push @out, to_native_args( $cond->{arguments}[0], $level )
+                }
+                if ($cond->isa( 'Perlito5::AST::Buf' )) {
+                    push @out, Perlito5::Java::escape_string( $cond->{buf} );
+                }
+                elsif ($cond->isa( 'Perlito5::AST::Int' )) {
+                    push @out, $cond->{int};
+                }
+                elsif ($cond->isa( 'Perlito5::AST::Num' )) {
+                    push @out, $cond->{num};
+                }
+                else {
+                    push @out, $cond->emit_java($level, $wantarray);
+                }
+            }
+            return join(', ', @out);
+    }
+
     sub to_native_str {
             my $cond = shift;
             my $level = shift;
@@ -1482,11 +1512,10 @@ package Perlito5::AST::Call;
             my $Java_class = Perlito5::Java::get_java_class_info();
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
-                # TODO - add arguments
                 if ($meth eq 'new') {
-                    return "new p$info->{accessor}()";
+                    return "new p$info->{accessor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
-                return "p$info->{accessor}.${meth}()";
+                return "p$info->{accessor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 
@@ -1502,8 +1531,7 @@ package Perlito5::AST::Call;
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{ $id }{type};
             if ($type ne 'pScalar') {
-                # TODO - add arguments
-                return "$invocant.${meth}()";
+                return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 
