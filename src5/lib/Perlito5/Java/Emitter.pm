@@ -1349,7 +1349,7 @@ package Perlito5::AST::Decl;
         my ($self, $level, $wantarray) = @_;
 
         my $Java_var = Perlito5::Java::get_java_var_info();
-        my $type = $self->{type} // 'Scalar';
+        my $type = $self->{type} // 'pScalar';
         my $id = $self->{_id};
         if ( $id ) {
             $Java_var->{ $id } = { id => $id, type => $type };
@@ -1383,7 +1383,7 @@ package Perlito5::AST::Decl;
                 return 'pArray ' . $self->{var}->emit_java() . ' = new pArray();';
             }
             else {
-                return "p${type} " . $self->{var}->emit_java() . " = new p${type}();";
+                return "${type} " . $self->{var}->emit_java() . " = new ${type}();";
             }
         }
         elsif ($self->{decl} eq 'our') {
@@ -1501,7 +1501,7 @@ package Perlito5::AST::Call;
             my $id = $self->{invocant}->{_id};
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{ $id }{type};
-            if ($type ne 'Scalar') {
+            if ($type ne 'pScalar') {
                 # TODO - add arguments
                 return "$invocant.${meth}()";
             }
