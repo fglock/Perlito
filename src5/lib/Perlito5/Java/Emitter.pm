@@ -1259,12 +1259,12 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
-                return $self->emit_java($level, 'list') . '.length';
+                return $self->emit_java($level, 'list') . '.length_of_array()';
             }
             if ( $wantarray eq 'runtime' ) {
                 return '(p5want'
                     . ' ? ' . $self->emit_java($level, 'list')
-                    . ' : ' . $self->emit_java($level, 'list') . '.length'
+                    . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()'
                     . ')';
             }
         }
@@ -2449,14 +2449,14 @@ package Perlito5::AST::Apply;
             my @arguments = @{$self->{arguments}};
             my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
 
-            return $v->emit_java( $level ) . '.p5unshift(' . Perlito5::Java::to_list(\@arguments) . ')';
+            return $v->emit_java( $level ) . '.unshift(' . Perlito5::Java::to_list(\@arguments) . ')';
         },
         'push' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
 
-            return $v->emit_java( $level ) . '.p5push(' . Perlito5::Java::to_list(\@arguments) . ')';
+            return $v->emit_java( $level ) . '.push(' . Perlito5::Java::to_list(\@arguments) . ')';
         },
         'tie' => sub {
             my ($self, $level, $wantarray) = @_;

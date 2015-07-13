@@ -581,12 +581,78 @@ EOT
 
     . <<'EOT'
 
+    // Note: multiple versions of push()
+    public pObject push(pObject v) {
+        this.a.add(v.scalar());
+        return this.length_of_array();
+    }
+    public pObject push(pScalar v) {
+        this.a.add(v.get());
+        return this.length_of_array();
+    }
+    public pObject push(pArray args) {
+        for (int i = 0; i < args.to_int(); i++) {
+            pObject s = args.aget(i);
+            if (s.is_array()) {
+                this.push(s);
+            }
+            else {
+                this.a.add(s);
+            }
+        }
+        return this.length_of_array();
+    }
+
+    // Note: multiple versions of unshift()
+    public pObject unshift(pObject v) {
+        this.a.add(0, v.scalar());
+        return this.length_of_array();
+    }
+    public pObject unshift(pScalar v) {
+        this.a.add(0, v.get());
+        return this.length_of_array();
+    }
+    public pObject unshift(pArray args) {
+        for (int i = args.to_int() - 1; i >= 0; i--) {
+            pObject s = args.aget(i);
+            if (s.is_array()) {
+                this.unshift(s);
+            }
+            else {
+                this.a.add(0, s);
+            }
+        }
+        return this.length_of_array();
+    }
+
+    public pObject pop() {
+        int size = this.a.size() - 1;
+        if (size >= 0) {
+            return this.a.remove(size);
+        }
+        else {
+            return pCx.UNDEF;
+        }
+    }
+    public pObject shift() {
+        int size = this.a.size();
+        if (size > 0) {
+            return this.a.remove(0);
+        }
+        else {
+            return pCx.UNDEF;
+        }
+    }
+
     public String to_string() {
         // TODO
         return "" + this.hashCode();
     }
     public int to_int() {
         return this.a.size();
+    }
+    public pObject length_of_array() {
+        return new pInt(this.a.size());
     }
     public pObject end_of_array_index() {
         return new pInt(this.a.size() - 1);
@@ -613,7 +679,7 @@ EOT
         return true;
     }
     public pObject scalar() {
-        return new pInt(this.to_int());
+        return this.length_of_array();
     }
 }
 class pHash extends pObject {
