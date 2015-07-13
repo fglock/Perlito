@@ -570,12 +570,16 @@ TODO list for Perlito5
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO - test)
 
--- 'bytes'
+-- primitive types
 
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package bytes { array_of => "byte" } my bytes $x = bytes->new("A","B","C");'
-        # bytes v_x = new bytes();
+    char, boolean, float, long, short, int, byte
 
-        - this should return instead:
+    in Perl:
+    char::Array, boolean::Array, float::Array, long::Array, short::Array, int::Array, byte::Array
+
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
+
+        - this should return:
         byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
         byte[0] ='A';
         byte[1] = 'B';
@@ -583,6 +587,10 @@ TODO list for Perlito5
 
         - or:
         byte[] v_x = new byte[] { "A", "B", "C" };
+
+    alternately:
+
+        package my_chars { type => 'char[]' }
 
 
 * Compile-time execution environment
