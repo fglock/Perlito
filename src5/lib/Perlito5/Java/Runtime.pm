@@ -98,6 +98,20 @@ class pCORE {
         }
         return List__.aget(-1).scalar();
     }
+    public static final pObject join(int want, pArray List__) {
+        String s = List__.shift().to_string();
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (int i = 0; i < List__.to_int(); i++) {
+            String item = List__.aget(i).to_string();
+            if (first)
+                first = false;
+            else
+                sb.append(s);
+            sb.append(item);
+        }
+        return new pString(sb.toString());
+    }
 }
 class pOp {
     // operators: && || * / 

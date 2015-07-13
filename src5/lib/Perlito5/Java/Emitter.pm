@@ -1200,7 +1200,7 @@ package Perlito5::AST::Var;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $namespace = $self->{namespace} || $self->{_namespace};
         if ($sigil eq '@' && $self->{name} eq '_' && $namespace eq 'main') {
-            # XXX - optimization - @_ is a js lexical
+            # XXX - optimization - @_ is a lexical
             my $s = 'List__';
             if ($self->{sigil} eq '$#') {
                 return $s . '.end_of_array_index()';
@@ -1223,6 +1223,11 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '::' ) {
             return Perlito5::Java::escape_string( $namespace );
+        }
+
+        if ($sigil eq '$' && $self->{name} eq '"' && $namespace eq 'main') {
+            # TODO - $" is hardcoded
+            return 'new pString(" ")';
         }
 
         my $s = 'p5make_package(' . Perlito5::Java::escape_string($namespace ) . ')[' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ']';
@@ -2536,6 +2541,12 @@ package Perlito5::AST::Apply;
             }
             my $list = Perlito5::Java::to_list(\@in);
             'pCORE.printf(pCx.VOID, ' . $fun . ', ' . $list . ')';
+        },
+        'join' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $list = Perlito5::Java::to_list(\@in);
+            'pCORE.join(pCx.VOID, ' . $list . ')';
         },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
