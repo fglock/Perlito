@@ -14658,8 +14658,8 @@ package Perlito5::AST::Call;
             }
             return '(' . $invocant . ')(' . Perlito5::Java::to_list($self->{'arguments'}) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
         }
-        my $Java_class = Perlito5::Java::get_java_class_info();
         if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::') {
+            my $Java_class = Perlito5::Java::get_java_class_info();
             if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
                 my $info = $Java_class->{$self->{'invocant'}->{'namespace'}};
                 if ($meth eq 'new') {
@@ -14668,16 +14668,17 @@ package Perlito5::AST::Call;
                 return 'p' . $info->{'accessor'} . '.' . $meth . '()'
             }
         }
+        my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');
         if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'_id'}) {
             my $id = $self->{'invocant'}->{'_id'};
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{$id}->{'type'};
             if ($type ne 'Scalar') {
-                return $self->{'invocant'}->emit_java($level, 'scalar') . '.' . $meth . '()'
+                return $invocant . '.' . $meth . '()'
             }
         }
-        my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');
         if ($meth =~ m!^to_(.+)!) {
+            my $Java_class = Perlito5::Java::get_java_class_info();
             my $class = ${'1'};
             if (exists($Java_class->{$class})) {
                 my $info = $Java_class->{$class};

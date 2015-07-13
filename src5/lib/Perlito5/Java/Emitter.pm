@@ -1472,13 +1472,14 @@ package Perlito5::AST::Call;
                     . ')';
         }
 
-
-        # get info about native 'Java' packages
-        my $Java_class = Perlito5::Java::get_java_class_info();
-
+        # class method call in native 'Java' packages
+        #
+        #   package Sample { import => "misc.Java.Sample" };
+        #   Sample->new();  
+        #   new Sample();
+        #
         if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{sigil} eq '::' ) {
-            # maybe a Java native class:  Sample->new()  or  new Sample()
-
+            my $Java_class = Perlito5::Java::get_java_class_info();
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
                 # TODO - add arguments
@@ -1489,30 +1490,39 @@ package Perlito5::AST::Call;
             }
         }
 
-        # invocant is typed
+        my $invocant = $self->{invocant}->emit_java($level, 'scalar');
+
+        # method call on a typed invocant
+        #   package Sample { import => "misc.Java.Sample" };
+        #   my Sample $s;  
+        #   $s->meth();
+        #
         if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
             my $id = $self->{invocant}->{_id};
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{ $id }{type};
             if ($type ne 'Scalar') {
                 # TODO - add arguments
-                return $self->{invocant}->emit_java($level, 'scalar') . ".${meth}()";
+                return "$invocant.${meth}()";
             }
         }
 
-        my $invocant = $self->{invocant}->emit_java($level, 'scalar');
-
+        # type coercion method call on an untyped invocant
+        #   package Sample { import => "misc.Java.Sample" };
+        #   my $x;  
+        #   $x->to_Sample();
+        #
         if ( $meth =~ /^to_(.+)/ ) {
-            # maybe a method to convert to native object:  $x->to_Sample()
-
             # TODO - check for no-arguments
+            my $Java_class = Perlito5::Java::get_java_class_info();
             my $class = $1;
             if ( exists $Java_class->{$class} ) {
                 my $info = $Java_class->{$class};
                 return "$invocant.$meth()";
             }
-
         }
+
+        # "Perl" method call
 
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_java($level, 'scalar');
