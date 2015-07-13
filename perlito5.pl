@@ -14617,7 +14617,9 @@ package Perlito5::AST::Decl;
                 return 'pArray ' . $self->{'var'}->emit_java() . ' = new pArray();'
             }
             else {
-                return $type . ' ' . $self->{'var'}->emit_java() . ' = new ' . $type . '();'
+                my $Java_class = Perlito5::Java::get_java_class_info();
+                my $java_type = $Java_class->{$type}->{'java_constructor'} || 'pScalar';
+                return $java_type . ' ' . $self->{'var'}->emit_java() . ' = new ' . $java_type . '();'
             }
         }
         elsif ($self->{'decl'} eq 'our') {

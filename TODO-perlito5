@@ -526,23 +526,33 @@ TODO list for Perlito5
 * Java backend
 
 -- document Java import options
--- add more "import" details
+
+    package The::Class {
+          import           => 'full.path.Class',  # mandatory
+          java_constructor => 'Class',            # auto generated from 'import' class name
+          perl_to_java     => 'to_TheClass',      # auto generated from package name
+          # perl_package     => 'The::Class',     # auto generated, same as the package name
+    }
+
+-- "import"
 
     package Sample { import => "misc.Java.Sample" };
 
     generates:
     - import misc.java.Sample;              (DONE)
-    - adds a pObject accessor "to_Sample"   (DONE)
+    - adds a pObject coercion "to_Sample"   (DONE)
     - adds a pObject variant "pSample"      (DONE)
-                                            (TODO - add argument list)
+                                            (TODO - add argument list - test)
                                             (TODO - maybe unbox the arguments automatically)
     - add a pScalar variant "set(Sample)"   (TODO)
+    - add pArray and pHash setters          (TODO)
 
 -- Typed variables
 
     Note:
         - parameters to native calls are evaluated in scalar context
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
+        - wantarray() context is not passed to native calls
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
 
@@ -552,7 +562,7 @@ TODO list for Perlito5
     $x->to_Sample()
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
-                                            (TODO - add to %Java_class in emitter)
+                                            (TODO - generate primitive types in emitter)
 
     my $x = $p_put;
     puts the boxed object into a Perl scalar  (DONE)
