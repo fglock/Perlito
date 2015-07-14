@@ -8344,7 +8344,7 @@ sub Perlito5::Dumper::escape_string {
     my @out;
     my $tmp = '';
     $s eq '' && return chr(39) . chr(39);
-    (0 + $s) eq $s && return 0 + $s;
+    (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
     for my $i (0 .. length($s) - 1) {
         my $c = substr($s, $i, 1);
         if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
@@ -12878,11 +12878,11 @@ package Perlito5::AST::Apply;
         if ($code eq 'infix:<=>>') {
             return ['op' => $code, Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_perl6(), $self->{'arguments'}->[1]->emit_perl6()]
         }
-        if ($code eq 'nan' && !$self->{'namespace'}) {
-            return ['keyword' => NaN]
+        if ($code eq nan && !$self->{'namespace'}) {
+            return ['keyword' => 'NaN']
         }
-        if ($code eq 'inf' && !$self->{'namespace'}) {
-            return ['keyword' => Inf]
+        if ($code eq inf && !$self->{'namespace'}) {
+            return ['keyword' => 'Inf']
         }
         if ($code eq '__PACKAGE__' && !$self->{'namespace'}) {
             return ['bareword' => '$?PACKAGE']
