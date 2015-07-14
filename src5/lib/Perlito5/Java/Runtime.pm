@@ -209,6 +209,14 @@ EOT
         pCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
         return new pArray();
     }
+    public pObject exists(pObject i) {
+        pCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+        return new pArray();
+    }
+    public pObject delete(pObject i) {
+        pCORE.die("delete argument is not a HASH or ARRAY element or slice");
+        return new pArray();
+    }
 EOT
     . ( join('', map {
             my $perl = $_;
