@@ -709,6 +709,47 @@ class pHash extends pObject {
     public pHash() {
         this.h = new HashMap<String, pObject>();
     }
+    public pHash(pObject... args) {
+        pHash hh = new pHash();
+        int args_size = args.length;
+        for (int i = 0; i < args_size; i++) {
+            pObject s = args[i];
+            if (s.is_array()) {
+                // %x = ( @x, @y );
+                int array_size = s.to_int();
+                for (int j = 0; j < array_size; j++) {
+                    pObject key = s.aget(j);
+                    j++;
+                    pObject value;
+                    if ( j >= array_size ) {
+                        // TODO - emit warning about odd number of arguments
+                        value = pCx.UNDEF;
+                    }
+                    else {
+                        value = s.aget(j);
+                    }
+                    hh.hset(key, value);
+                }
+            }
+            else {
+                i++;
+                pObject value;
+                if ( i >= args_size ) {
+                    // TODO - emit warning about odd number of arguments
+                    value = pCx.UNDEF;
+                }
+                else {
+                    value = args[i];
+                }
+                hh.hset(s, value);
+            }
+        }
+        this.h = hh.to_HashMap();
+    }
+    private HashMap<String, pObject> to_HashMap() {
+        return this.h;
+    }
+
     public pObject hget(pObject i) {
         pObject o = this.h.get(i.to_string());
         return o;

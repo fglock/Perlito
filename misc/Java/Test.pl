@@ -1,14 +1,16 @@
 #
+#   $ touch Test.class
+#   $ rm Test.class
 #   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java
 #   $ javac Test.java
 #   $ java Test
 #
 #   one liner:
-#   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
+#   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
 my $x = 123;
-print "1..6\n";
+print "1..7\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 $x = "ok 3";
@@ -21,8 +23,10 @@ Java::inline ' System.out.println("ok 5 - Java::inline works"); ';
 my @aa = (5,7,8,6,9);
 say "ok $aa[3] - array works";
 
-# my %hh = ( x => 7, y => 8 );
-# say "ok $hh{x} - hash works";
+my %hh = ( x => 7, y => 8 );
+say "ok $hh{x} - hash works";
+# my $h_key = "y";
+# say "ok $hh{$h_key} - hash works";
 
 __END__
 
