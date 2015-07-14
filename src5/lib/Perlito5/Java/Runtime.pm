@@ -722,12 +722,16 @@ EOT
     }
 
     public pObject values() {
-        // TODO - return a copy
-        return this;
+        // return a copy
+        return new pArray(this);
     }
     public pObject keys() {
-        pCORE.die(pCx.VOID, new pArray(new pString("TODO - array.keys")));
-        return this;
+        pArray aa = new pArray();
+        int size = this.a.size();
+        for (int i = 0; i < size; i++) {
+            aa.push(new pInt(i));
+        }
+        return aa;
     }
 
     public String to_string() {
@@ -868,12 +872,20 @@ class pHash extends pObject {
     }
 
     public pObject values() {
-        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.values")));
-        return this;
+        pArray aa = new pArray();
+        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
+            pObject value = entry.getValue();
+            aa.push(value);
+        }
+        return aa;
     }
     public pObject keys() {
-        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.keys")));
-        return this;
+        pArray aa = new pArray();
+        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            aa.push(new pString(key));
+        }
+        return aa;
     }
 
 EOT

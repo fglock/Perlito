@@ -112,6 +112,29 @@ else {
     say "not ok 24 - hash interpolation in array / string $s";
 }
 
+$s = "[@{[ keys %hh ]}]";
+if ($s eq "[x y]") {
+    say "ok 25 - keys $s";
+}
+elsif ($s eq "[y x]") {
+    say "ok 25 - keys $s";
+}
+else {
+    say "not ok 25 - keys $s";
+}
+
+$s = "[@{[ values %hh ]}]";
+if ($s eq "[8 9]") {
+    say "ok 26 - values $s";
+}
+elsif ($s eq "[9 8]") {
+    say "ok 26 - values $s";
+}
+else {
+    say "not ok 26 - values $s";
+}
+
+
 
 __END__
 
