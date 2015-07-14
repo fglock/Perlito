@@ -3242,15 +3242,14 @@ package Perlito5::AST::While;
             }
         }
 
-        push @str, 'p5while('
-                    . "function () {\n"
+        push @str, 'while ('
+                    . $cond->emit_java($level + 1, 'scalar') . '.to_bool()) '
+                    . "{\n"
                     . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
-                    . Perlito5::Java::tab($level + 1) . '}, '
-                    . Perlito5::Java::emit_function_java($level + 1, 'void', $cond) . ', '
-                    . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
-                    . Perlito5::Java::escape_string($self->{label} || "") . ', '
-                    . $do_at_least_once
-                    . ')';
+                    . Perlito5::Java::tab($level + 1) . '}';
+                    # . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
+                    # . Perlito5::Java::escape_string($self->{label} || "") . ', '
+                    # . $do_at_least_once
 
         if (@str) {
             $level = $old_level;

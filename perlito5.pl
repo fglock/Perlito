@@ -15714,7 +15714,7 @@ package Perlito5::AST::While;
                 push(@str, $arg->emit_java_init($level, $wantarray))
             }
         }
-        push(@str, 'p5while(' . 'function () {' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}, ' . Perlito5::Java::emit_function_java($level + 1, 'void', $cond) . ', ' . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', ' . Perlito5::Java::escape_string($self->{'label'} || '') . ', ' . $do_at_least_once . ')');
+        push(@str, 'while (' . $cond->emit_java($level + 1, 'scalar') . '.to_bool()) ' . '{' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}');
         if (@str) {
             $level = $old_level;
             return Perlito5::Java::emit_wrap_java($level, $wantarray, @str)

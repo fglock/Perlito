@@ -54,6 +54,7 @@ else {
 }
 
 my $if = 1;
+my $if2 = 2;
 if ($if == 1) {
     say "ok 16 - if works"
 }
@@ -63,9 +64,19 @@ else {
 if ($if == 0) {
     say "not ok 17 - if works"
 }
-else {
+elsif ($if2 == 2) {
     say "ok 17 - if works"
 }
+else {
+    say "not ok 17 - if works"
+}
+
+while ($if < 2) {
+    say "ok 18 - while works";
+    $if = $if + 1;
+}
+say "ok 19 - while finished"
+
 
 __END__
 
