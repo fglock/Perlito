@@ -155,6 +155,22 @@ else {
     say "not ok 29 - each @entry";
 }
 
+$s = "[" . @aa . "]";
+if ($s ne "[57869]") {
+    print "not ";
+}
+say "ok 30 - array stringification $s";
+
+my $aa = [5,32,8,31,9];
+say "ok $aa->[3] - array literal works";
+$a_key = 1;
+say "ok $aa->[$a_key] - array literal works";
+
+my $hh = { x => 33, y => 34 };
+say "ok $hh->{x} - hash literal works";
+$h_key = "y";
+say "ok $hh->{$h_key} - hash literal works";
+
 
 # import some native Java
 
