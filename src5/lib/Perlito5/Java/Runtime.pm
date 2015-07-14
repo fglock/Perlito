@@ -96,6 +96,12 @@ class pCORE {
     public static final pObject ref(int want, pArray List__) {
         return List__.aget(0).ref();
     }
+    public static final pObject values(int want, pObject List__) {
+        return List__.values();
+    }
+    public static final pObject keys(int want, pObject List__) {
+        return List__.keys();
+    }
     public static final pObject scalar(int want, pArray List__) {
         if (List__.to_int() == 0) {
             return pCx.UNDEF;
@@ -185,6 +191,14 @@ EOT
     }
     public pObject to_array() {
         pCORE.die("error .to_array!");
+        return new pArray();
+    }
+    public pObject values() {
+        pCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
+        return new pArray();
+    }
+    public pObject keys() {
+        pCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
         return new pArray();
     }
 EOT
@@ -313,6 +327,12 @@ class pArrayRef extends pReference {
     public boolean is_arrayref() {
         return true;
     }
+    public pObject values() {
+        return this.o.values();
+    }
+    public pObject keys() {
+        return this.o.keys();
+    }
     public pObject ref() {
         return REF;
     }
@@ -336,6 +356,12 @@ class pHashRef extends pReference {
     }
     public boolean is_hashref() {
         return true;
+    }
+    public pObject values() {
+        return this.o.values();
+    }
+    public pObject keys() {
+        return this.o.keys();
     }
     public pObject ref() {
         return REF;
@@ -695,6 +721,15 @@ EOT
         }
     }
 
+    public pObject values() {
+        // TODO - return a copy
+        return this;
+    }
+    public pObject keys() {
+        pCORE.die(pCx.VOID, new pArray(new pString("TODO - array.keys")));
+        return this;
+    }
+
     public String to_string() {
         // TODO
         return "" + this.hashCode();
@@ -831,6 +866,16 @@ class pHash extends pObject {
         this.h.put(s.to_string(), v.get());
         return v;
     }
+
+    public pObject values() {
+        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.values")));
+        return this;
+    }
+    public pObject keys() {
+        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.keys")));
+        return this;
+    }
+
 EOT
     . ( join('', map {
             my $native = $_;
