@@ -1,36 +1,31 @@
 #
-#   $ perl -I src5/lib misc/Java/Test.pl > Test.java
+#   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java
 #   $ javac Test.java
 #   $ java Test
 #
+#   one liner:
+#   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
+#
 
-use Perlito5::Java::Runtime;
+my $x = 123;
+print "1..6\n";
+print "ok 1 - print() works\n";
+say   "ok 2 - say() works";
+$x = "ok 3";
+say   "$x - scalar interpolation in string works";
+$x = 4;
+say   "ok $x - scalar number interpolation in string works";
 
-print Perlito5::Java::Runtime->emit_java();
+Java::inline ' System.out.println("ok 5 - Java::inline works"); ';
 
-print <<'EOT';
+my @aa = (5,7,8,6,9);
+say "ok $aa[3] - array works";
 
-class Test {
-    public static void main(String[] args) {
+# my %hh = ( x => 7, y => 8 );
+# say "ok $hh{x} - hash works";
 
-        pString s = new pString("456");
-        pInt i = new pInt(123);
-        pScalar v_n = new pScalar(new pNum(123.456));
-        pBool t = new pBool(true);
-        pBool f = new pBool(false);
-        pObject x;
+__END__
 
-        x = i.add(s);
-        x = x.add( new pInt(4) );
-        x.the_int_method();
-        s.the_int_method();
-        System.out.println(x.to_string());
-        x = s.add(i);
-        System.out.println(x.to_string());
-        x = s.add(v_n);
-        System.out.println(x.to_string());
-        System.out.println(t.to_string());
-        System.out.println(f.to_string());
 
         pClosure c = new pClosure(s) {
                 public pObject apply(int want, pObject... args) {

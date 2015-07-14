@@ -12878,11 +12878,11 @@ package Perlito5::AST::Apply;
         if ($code eq 'infix:<=>>') {
             return ['op' => $code, Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_perl6(), $self->{'arguments'}->[1]->emit_perl6()]
         }
-        if ($code eq nan && !$self->{'namespace'}) {
-            return ['keyword' => 'NaN']
+        if ($code eq 'nan' && !$self->{'namespace'}) {
+            return ['keyword' => NaN]
         }
-        if ($code eq inf && !$self->{'namespace'}) {
-            return ['keyword' => 'Inf']
+        if ($code eq 'inf' && !$self->{'namespace'}) {
+            return ['keyword' => Inf]
         }
         if ($code eq '__PACKAGE__' && !$self->{'namespace'}) {
             return ['bareword' => '$?PACKAGE']
@@ -14399,9 +14399,9 @@ package Perlito5::AST::Lookup;
 {
     sub Perlito5::AST::Lookup::emit_java {
         my($self, $level, $wantarray, $autovivification_type) = @_;
-        my $method = $autovivification_type || 'p5hget';
-        $autovivification_type eq 'array' && ($method = 'p5hget_array');
-        $autovivification_type eq 'hash' && ($method = 'p5hget_hash');
+        my $method = $autovivification_type || 'hget';
+        $autovivification_type eq 'array' && ($method = 'hget_array');
+        $autovivification_type eq 'hash' && ($method = 'hget_hash');
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
             if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
@@ -14426,7 +14426,7 @@ package Perlito5::AST::Lookup;
             my $v;
             $self->{'obj'}->isa('Perlito5::AST::Var') && ($v = $self->{'obj'});
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 'var a = [];', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var src=' . Perlito5::Java::to_list([$arguments], $level) . ';', 'var out=' . $v->emit_java($level) . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i)' . '{', ['tmp = src.p5hget(i);', 'out.p5hset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
+            return Perlito5::Java::emit_wrap_java($level, $wantarray, 'var a = [];', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var src=' . Perlito5::Java::to_list([$arguments], $level) . ';', 'var out=' . $v->emit_java($level) . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i)' . '{', ['tmp = src.hget(i);', 'out.p5hset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
         }
         return $self->emit_java_container($level) . '.p5hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
     }
@@ -14676,9 +14676,9 @@ package Perlito5::AST::Call;
             return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '._array_.' . $method . '(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
         }
         if ($meth eq 'postcircumfix:<{ }>') {
-            my $method = $autovivification_type || 'p5hget';
-            $autovivification_type eq 'array' && ($method = 'p5hget_array');
-            $autovivification_type eq 'hash' && ($method = 'p5hget_hash');
+            my $method = $autovivification_type || 'hget';
+            $autovivification_type eq 'array' && ($method = 'hget_array');
+            $autovivification_type eq 'hash' && ($method = 'hget_hash');
             return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '._hash_.' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
         }
         if ($meth eq 'postcircumfix:<( )>') {
