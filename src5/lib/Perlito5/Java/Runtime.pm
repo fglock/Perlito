@@ -42,6 +42,7 @@ sub emit_java {
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 EOT
         # import the Java classes
         # that were declared with
@@ -181,6 +182,10 @@ EOT
     public pObject aget(pObject i) {
         pCORE.die("error .aget!");
         return new pHash();
+    }
+    public pObject to_array() {
+        pCORE.die("error .to_array!");
+        return new pArray();
     }
 EOT
     . ( join('', map {
@@ -508,6 +513,10 @@ class pArray extends pObject {
     public pArray(pObject... args) {
         ArrayList<pObject> aa = new ArrayList<pObject>();
         for (pObject s : args) {
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
             if (s.is_array()) {
                 // @x = ( @x, @y );
                 for (int i = 0; i < s.to_int(); i++) {
@@ -768,6 +777,16 @@ class pHash extends pObject {
     }
     private HashMap<String, pObject> to_HashMap() {
         return this.h;
+    }
+    public pObject to_array() {
+        pArray aa = new pArray();
+        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            pObject value = entry.getValue();
+            aa.push(new pString(key));
+            aa.push(value);
+        }
+        return aa;
     }
 
     public pObject hget(pObject i) {
