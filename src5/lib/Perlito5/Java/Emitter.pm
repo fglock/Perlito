@@ -2644,6 +2644,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'pCORE.keys(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
         },
+        'each' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'pCORE.each(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
+        },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};

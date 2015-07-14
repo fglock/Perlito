@@ -102,6 +102,9 @@ class pCORE {
     public static final pObject keys(int want, pObject List__) {
         return want == pCx.LIST ? List__.keys() : List__.keys().scalar();
     }
+    public static final pObject each(int want, pObject List__) {
+        return want == pCx.LIST ? List__.each() : List__.each().aget(0);
+    }
     public static final pObject scalar(int want, pArray List__) {
         if (List__.to_int() == 0) {
             return pCx.UNDEF;
@@ -199,6 +202,10 @@ EOT
     }
     public pObject keys() {
         pCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
+        return new pArray();
+    }
+    public pObject each() {
+        pCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
         return new pArray();
     }
 EOT
@@ -333,6 +340,9 @@ class pArrayRef extends pReference {
     public pObject keys() {
         return this.o.keys();
     }
+    public pObject each() {
+        return this.o.each();
+    }
     public pObject ref() {
         return REF;
     }
@@ -362,6 +372,9 @@ class pHashRef extends pReference {
     }
     public pObject keys() {
         return this.o.keys();
+    }
+    public pObject each() {
+        return this.o.each();
     }
     public pObject ref() {
         return REF;
@@ -533,7 +546,9 @@ EOT
 }
 class pArray extends pObject {
     private ArrayList<pObject> a;
+    private int each_iterator;
     public pArray() {
+        this.each_iterator = 0;
         this.a = new ArrayList<pObject>();
     }
     public pArray(pObject... args) {
@@ -553,6 +568,7 @@ class pArray extends pObject {
                 aa.add(s);
             }
         }
+        this.each_iterator = 0;
         this.a = aa;
     }
 
@@ -733,6 +749,20 @@ EOT
         }
         return aa;
     }
+    public pObject each() {
+        pArray aa = new pArray();
+        int size = this.a.size();
+        if (this.each_iterator < size) {
+            aa.push(new pInt(this.each_iterator));
+            aa.push(this.aget(this.each_iterator));
+            this.each_iterator++;
+        }
+        else {
+            // return empty list
+            this.each_iterator = 0;
+        }
+        return aa;
+    }
 
     public String to_string() {
         // TODO
@@ -885,6 +915,21 @@ class pHash extends pObject {
             String key = entry.getKey();
             aa.push(new pString(key));
         }
+        return aa;
+    }
+    public pObject each() {
+        pArray aa = new pArray();
+        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.each")));
+        // int size = this.a.size();
+        // if (this.each_iterator < size) {
+        //     aa.push(new pInt(this.each_iterator));
+        //     aa.push(this.a.aget(this.each_iterator));
+        //     this.each_iterator++;
+        // }
+        // else {
+        //     // return empty list
+        //     this.each_iterator = 0;
+        // }
         return aa;
     }
 
