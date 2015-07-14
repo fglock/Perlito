@@ -772,10 +772,14 @@ EOT
         }
         return aa;
     }
-
     public String to_string() {
-        // TODO
-        return "" + this.hashCode();
+        StringBuilder sb = new StringBuilder();
+        int size = this.a.size();
+        for (int i = 0; i < size; i++) {
+            String item = this.a.get(i).to_string();
+            sb.append(item);
+        }
+        return sb.toString();
     }
     public int to_int() {
         return this.a.size();

@@ -200,12 +200,12 @@ package Perlito5::Java;
     sub to_native_str {
             my $cond = shift;
             my $level = shift;
-            my $wantarray = 'scalar';
+            my $wantarray = shift;
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_native_str( $cond->{arguments}[0], $level )
+                return to_native_str( $cond->{arguments}[0], $level, $wantarray )
             }
             if ($cond->isa( 'Perlito5::AST::Buf' )) {
                 return Perlito5::Java::escape_string( $cond->{buf} );
@@ -2162,7 +2162,7 @@ package Perlito5::AST::Apply;
 
         'list:<.>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'new pString(' . join( ' + ', map( Perlito5::Java::to_native_str($_), @{ $self->{arguments} } ) ) . ')';
+            'new pString(' . join( ' + ', map( Perlito5::Java::to_native_str($_, $level, 'list'), @{ $self->{arguments} } ) ) . ')';
         },
         'list:<,>' => sub {
             my ($self, $level, $wantarray) = @_;
