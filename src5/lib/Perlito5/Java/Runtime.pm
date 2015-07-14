@@ -7,16 +7,16 @@ sub emit_java {
     my %java_classes = %{ $args{java_classes} // {} };
 
     my %number_binop = (
-        add    => { op => '+',  returns => 'pNum' }, 
-        sub    => { op => '-',  returns => 'pNum' },
-        mul    => { op => '*',  returns => 'pNum' },
-        div    => { op => '/',  returns => 'pNum' },
-        num_eq => { op => '==', returns => 'pBool' },
-        num_ne => { op => '!=', returns => 'pBool' },
-        num_lt => { op => '<',  returns => 'pBool' },
-        num_le => { op => '<=', returns => 'pBool' },
-        num_gt => { op => '>',  returns => 'pBool' },
-        num_ge => { op => '>=', returns => 'pBool' },
+        add    => { op => '+',  returns => 'pInt',  num_returns => 'pNum'}, 
+        sub    => { op => '-',  returns => 'pInt',  num_returns => 'pNum'},
+        mul    => { op => '*',  returns => 'pInt',  num_returns => 'pNum'},
+        div    => { op => '/',  returns => 'pNum',  num_returns => 'pNum'},
+        num_eq => { op => '==', returns => 'pBool', num_returns => 'pBool' },
+        num_ne => { op => '!=', returns => 'pBool', num_returns => 'pBool' },
+        num_lt => { op => '<',  returns => 'pBool', num_returns => 'pBool' },
+        num_le => { op => '<=', returns => 'pBool', num_returns => 'pBool' },
+        num_gt => { op => '>',  returns => 'pBool', num_returns => 'pBool' },
+        num_ge => { op => '>=', returns => 'pBool', num_returns => 'pBool' },
     );
     my %string_binop = (
         str_eq => { op => '== 0', returns => 'pBool' },
@@ -961,7 +961,7 @@ EOT
     . ( join('', map {
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
-            my $returns = $number_binop{$perl}{returns};
+            my $returns = $number_binop{$perl}{num_returns};
 "    public pObject ${perl}(pObject s) {
         // num - int, num - num
         return new ${returns}( this.i ${native} s.to_num() );
@@ -1016,6 +1016,7 @@ EOT
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
+            my $num_returns = $number_binop{$perl}{num_returns};
             if ($returns eq 'pNum') {
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
@@ -1037,14 +1038,14 @@ EOT
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
         if (this.s.indexOf('.') > 0) {
-            return new ${returns}( this.to_num() ${native} b.to_num() );
+            return new ${num_returns}( this.to_num() ${native} b.to_num() );
         }
         return new ${returns}( this.to_int() ${native} b.to_int() );
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
         if (this.s.indexOf('.') > 0) {
-            return new ${returns}( b.to_num() ${native} this.to_num() );
+            return new ${num_returns}( b.to_num() ${native} this.to_num() );
         }
         return new ${returns}( b.to_int() ${native} this.to_int() );
     }
