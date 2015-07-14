@@ -239,7 +239,7 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'new pString(' . $cond->emit_java($level, $wantarray) . ')';
+                return 'new pString(' . $cond->emit_java($level, $wantarray) . '.to_string())';
             }
     }
     sub to_num {
@@ -254,7 +254,8 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'new pNum(' . $cond->emit_java($level, $wantarray) . ')';
+                # TODO - this converts to "double" - it should be int/double depending on context
+                return 'new pNum(' . $cond->emit_java($level, $wantarray) . '.to_num())';
             }
     }
     sub to_bool {
