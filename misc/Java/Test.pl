@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..24\n";
+print "1..29\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -143,6 +143,17 @@ say "ok 27 - scalar keys $s";
 $s = 3.45;
 
 say "", ($s < 4 ? "" : "not "), "ok 28 - ternary op";
+
+my @entry = each %hh;
+if ($entry[0] eq "x") {
+    say "ok 29 - each @entry";
+}
+elsif ($entry[0] eq "y") {
+    say "ok 29 - each @entry";
+}
+else {
+    say "not ok 29 - each @entry";
+}
 
 
 __END__

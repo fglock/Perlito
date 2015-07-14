@@ -43,6 +43,7 @@ sub emit_java {
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 EOT
         # import the Java classes
         # that were declared with
@@ -804,7 +805,10 @@ EOT
 }
 class pHash extends pObject {
     private HashMap<String, pObject> h;
+    private Iterator<Map.Entry<String, pObject>> each_iterator;
+
     public pHash() {
+        this.each_iterator = null;
         this.h = new HashMap<String, pObject>();
     }
     public pHash(pObject... args) {
@@ -842,6 +846,7 @@ class pHash extends pObject {
                 hh.hset(s, value);
             }
         }
+        this.each_iterator = null;
         this.h = hh.to_HashMap();
     }
     private HashMap<String, pObject> to_HashMap() {
@@ -918,21 +923,23 @@ class pHash extends pObject {
         return aa;
     }
     public pObject each() {
+        if (this.each_iterator == null) {
+            this.each_iterator = this.h.entrySet().iterator();
+        }
         pArray aa = new pArray();
-        pCORE.die(pCx.VOID, new pArray(new pString("TODO - hash.each")));
-        // int size = this.a.size();
-        // if (this.each_iterator < size) {
-        //     aa.push(new pInt(this.each_iterator));
-        //     aa.push(this.a.aget(this.each_iterator));
-        //     this.each_iterator++;
-        // }
-        // else {
-        //     // return empty list
-        //     this.each_iterator = 0;
-        // }
+        if (this.each_iterator.hasNext()) {
+            Map.Entry<String, pObject> entry = this.each_iterator.next();
+            String key = entry.getKey();
+            aa.push(new pString(key));
+            pObject value = entry.getValue();
+            aa.push(value);
+        }
+        else {
+             // return empty list
+             this.each_iterator = null;
+        }
         return aa;
     }
-
 EOT
     . ( join('', map {
             my $native = $_;
