@@ -174,6 +174,14 @@ EOT
         pCORE.die("error .hash_deref!");
         return new pHash();
     }
+    public pObject hget(pObject i) {
+        pCORE.die("error .hget!");
+        return new pHash();
+    }
+    public pObject aget(pObject i) {
+        pCORE.die("error .aget!");
+        return new pHash();
+    }
 EOT
     . ( join('', map {
             my $perl = $_;
@@ -218,6 +226,12 @@ EOT
         return false;
     }
     public boolean is_array() {
+        return false;
+    }
+    public boolean is_arrayref() {
+        return false;
+    }
+    public boolean is_hashref() {
         return false;
     }
     public pObject ref() {
@@ -291,6 +305,9 @@ class pArrayRef extends pReference {
     public pObject array_deref() {
         return this.o;
     }
+    public boolean is_arrayref() {
+        return true;
+    }
     public pObject ref() {
         return REF;
     }
@@ -311,6 +328,9 @@ class pHashRef extends pReference {
     public pObject set(pHash o) {
         this.o = o;
         return this;
+    }
+    public boolean is_hashref() {
+        return true;
     }
     public pObject ref() {
         return REF;
@@ -347,8 +367,8 @@ class pScalar extends pObject {
             this.o = new pArray();
             return this.o;
         }
-        else if (this.o.is_array()) {
-            return this.o;
+        else if (this.o.is_arrayref()) {
+            return this.o.get();
         }
         return pCORE.die("Not an ARRAY reference");
     }
@@ -357,8 +377,8 @@ class pScalar extends pObject {
         if (this.o.is_undef()) {
             this.o = new pHash();
         }
-        else if (this.o.is_hash()) {
-            return this.o;
+        else if (this.o.is_hashref()) {
+            return this.o.get();
         }
         return pCORE.die("Not a HASH reference");
     }
@@ -367,8 +387,8 @@ class pScalar extends pObject {
         if (this.o.is_undef()) {
             return new pArray();
         }
-        else if (this.o.is_array()) {
-            return this.o;
+        else if (this.o.is_arrayref()) {
+            return this.o.get();
         }
         return pCORE.die("Not an ARRAY reference");
     }
@@ -377,8 +397,8 @@ class pScalar extends pObject {
         if (this.o.is_undef()) {
             return new pHash();
         }
-        else if (this.o.is_hash()) {
-            return this.o;
+        else if (this.o.is_hashref()) {
+            return this.o.get();
         }
         return pCORE.die("Not a HASH reference");
     }

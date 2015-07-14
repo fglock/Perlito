@@ -1059,7 +1059,7 @@ package Perlito5::AST::Index;
             return $self->{obj}->emit_java($level);
         }
         else {
-            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . '._array_';
+            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . '.get_array()';
         }
     }
     sub emit_java_get_decl { () }
@@ -1225,7 +1225,7 @@ package Perlito5::AST::Lookup;
             return $v->emit_java($level)
         }
         else {
-            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'hash' ) . '._hash_';
+            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'hash' ) . '.get_hash()';
         }
     }
     sub emit_java_get_decl { () }
@@ -1489,7 +1489,7 @@ package Perlito5::AST::Call;
             $method = 'aget_array' if $autovivification_type eq 'array';
             $method = 'aget_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                . '._array_.' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
+                . '.get_array().' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
@@ -1497,7 +1497,7 @@ package Perlito5::AST::Call;
             $method = 'hget_array' if $autovivification_type eq 'array';
             $method = 'hget_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                . '._hash_.' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
+                . '.get_hash().' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -1592,14 +1592,14 @@ package Perlito5::AST::Call;
         my ($self, $arguments, $level, $wantarray) = @_;
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                    . '._array_.p5aset(' 
+                    . '.get_array().aset(' 
                         . Perlito5::Java::to_num($self->{arguments}, $level+1) . ', ' 
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                    . '._hash_.p5hset(' 
+                    . '.get_hash().hset(' 
                         . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
@@ -1610,14 +1610,14 @@ package Perlito5::AST::Call;
         my ($self, $level, $list) = @_;
         if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                    . '._array_.p5aset(' 
+                    . '.get_array().aset(' 
                         . Perlito5::Java::to_num($self->{arguments}, $level+1) . ', ' 
                         . $list  . '.shift()'
                     . ')';
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                    . '._hash_.p5hset(' 
+                    . '.get_hash().hset(' 
                         . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
                         . $list  . '.shift()'
                     . ')';
@@ -2197,7 +2197,7 @@ package Perlito5::AST::Apply;
                 {
                     return '(delete ' . $v->emit_java() . '[' . $arg->autoquote($arg->{index_exp})->emit_java($level) . '])';
                 }
-                return '(delete ' . $v->emit_java() . '._hash_[' . $arg->autoquote($arg->{index_exp})->emit_java($level) . '])';
+                return '(delete ' . $v->emit_java() . '.get_hash().[' . $arg->autoquote($arg->{index_exp})->emit_java($level) . '])';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -2207,14 +2207,14 @@ package Perlito5::AST::Apply;
                 {
                     return '(delete ' . $v->emit_java() . '[' . $arg->{index_exp}->emit_java($level) . '])';
                 }
-                return '(delete ' . $v->emit_java() . '._array_[' . $arg->{index_exp}->emit_java($level) . '])';
+                return '(delete ' . $v->emit_java() . '.get_array().[' . $arg->{index_exp}->emit_java($level) . '])';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(delete ' . $arg->invocant->emit_java() . '._hash_[' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . '])';
+                    return '(delete ' . $arg->invocant->emit_java() . '.get_hash()[' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . '])';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return '(delete ' . $arg->invocant->emit_java() . '._array_[' . $arg->{arguments}->emit_java($level) . '])';
+                    return '(delete ' . $arg->invocant->emit_java() . '.get_array().[' . $arg->{arguments}->emit_java($level) . '])';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')
@@ -2817,7 +2817,7 @@ package Perlito5::AST::Apply;
                     $v->{sigil} = '%';
                     return '(' . $v->emit_java() . ').hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return '(' . $v->emit_java() . ')._hash_.hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                return '(' . $v->emit_java() . ').get_hash().hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -2827,14 +2827,14 @@ package Perlito5::AST::Apply;
                 {
                     return '(' . $v->emit_java() . ').hasOwnProperty(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return '(' . $v->emit_java() . ')._array_.hasOwnProperty(' . $arg->{index_exp}->emit_java($level) . ')';
+                return '(' . $v->emit_java() . ').get_array().hasOwnProperty(' . $arg->{index_exp}->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_java() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
+                    return '(' . $arg->invocant->emit_java() . ').get_hash().hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return '(' . $arg->invocant->emit_java() . ')._array_.hasOwnProperty(' . $arg->{arguments}->emit_java($level) . ')';
+                    return '(' . $arg->invocant->emit_java() . ').get_array().hasOwnProperty(' . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')
