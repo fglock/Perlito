@@ -178,19 +178,31 @@ package my::Sample { import => "misc.Java.Sample" };
 
 $x = my::Sample->new(); 
 
+if (ref($x) ne 'my::Sample') {
+    print "not ";
+}
+say "ok 35 - java object ref: ", ref($x), " ", $x;
+
 # convert to native
 my my::Sample $x_native = $x->to_mySample(); 
 
-say "# java object ref: ", ref($x), " ", $x;
-
 my @arr = (1,2,5);
 $x = \@arr;
-say "# array ref ", ref($x), " ", $x; 
+
+if (ref($x) ne 'ARRAY') {
+    print "not ";
+}
+say "ok 36 - array ref: ", ref($x), " ", $x;
+
+# store native in scalar
+$x = $x_native; 
+if (ref($x) ne 'my::Sample') {
+    print "not ";
+}
+say "ok 37 - store java object in scalar: ", ref($x), " ", $x;
 
 # # create native variable
 # my my::Sample $z = my::Sample->new();
-# # store native in scalar
-# $x = $z; 
 
 __END__
 
