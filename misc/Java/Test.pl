@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..13\n";
+print "1..24\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -114,38 +114,4 @@ else {
 
 
 __END__
-
-
-pClosure c = new pClosure(s) {
-        public pObject apply(int want, pObject... args) {
-            System.out.println("called MyClosure with " + this.env.to_string());
-            return new pInt(0);
-        }
-    };
-c.apply(pCx.VOID);
-
-
-// perl "block"
-( new pClosure(s) {
-        public pObject apply(int want, pObject... args) {
-            pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string())));
-            return new pInt(0);
-        }
-    }
-).apply(pCx.VOID);
-
-new pClosure(s) {
-        public pObject apply(int want, pObject... args) {
-            pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string())));
-            // pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("inside block " + this.env.to_string() + " "), v_n));
-            return new pInt(0);
-        }
-    }.apply(pCx.VOID);
-
-// print special chars
-pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("x" + (char)10 + "y")));
-
-pArray aaa = new pArray(new pInt(10), new pInt(20), new pInt(30), aa);
-pCORE.say(pCx.VOID, new pString("STDOUT"), new pArray(new pString("array size is "), pCORE.scalar(pCx.SCALAR, aaa)));
-
 
