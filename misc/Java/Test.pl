@@ -134,6 +134,9 @@ else {
     say "not ok 26 - values $s";
 }
 
+$s = 3.45;
+
+say "", ($s < 4 ? "" : "not "), "ok 27 - ternary op";
 
 
 __END__

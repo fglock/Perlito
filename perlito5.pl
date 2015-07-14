@@ -15115,7 +15115,7 @@ package Perlito5::AST::Apply;
         Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1)
     }, 'ternary:<? :>' => sub {
         my($self, $level, $wantarray) = @_;
-        '( ' . Perlito5::Java::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_java($level, $wantarray) . ')'
+        '( ' . Perlito5::Java::to_bool($self->{'arguments'}->[0]) . '.to_bool() ? ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_java($level, $wantarray) . ')'
     }, 'my' => sub {
         my($self, $level, $wantarray) = @_;
         'p5context(' . '[' . join(', ', map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
