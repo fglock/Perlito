@@ -1040,7 +1040,7 @@ EOT
         if (this.s.indexOf('.') > 0) {
             return new ${num_returns}( this.to_num() ${native} b.to_num() );
         }
-        return new ${returns}( this.to_int() ${native} b.to_int() );
+        return b.${perl}2(new pInt(this.to_int()));
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
