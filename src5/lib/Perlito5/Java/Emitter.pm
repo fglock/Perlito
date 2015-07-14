@@ -3155,7 +3155,7 @@ package Perlito5::AST::If;
             ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts )
             : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1 );
  
-        my $s = 'if ( ' . Perlito5::Java::to_bool($cond, $level + 1) . ' ) {';
+        my $s = 'if ( ' . Perlito5::Java::to_bool($cond, $level + 1) . '.to_bool() ) {';
 
         if ($body) {
             $s = $s . "\n"

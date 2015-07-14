@@ -15655,7 +15655,7 @@ package Perlito5::AST::If;
         }
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? $self->{'body'} : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts()) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1);
         my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts()) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'create_context' => 1);
-        my $s = 'if ( ' . Perlito5::Java::to_bool($cond, $level + 1) . ' ) {';
+        my $s = 'if ( ' . Perlito5::Java::to_bool($cond, $level + 1) . '.to_bool() ) {';
         if ($body) {
             $s = $s . chr(10) . Perlito5::Java::tab($level + 1) . $body->emit_java($level + 1, $wantarray) . chr(10) . Perlito5::Java::tab($level) . '}'
         }

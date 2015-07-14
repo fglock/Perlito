@@ -39,6 +39,33 @@ say "ok ", ($ofs + $aar->[$a_key] ), " - array ref works";
 say "ok ", ($ofs + $hhr->{x}      ), " - hash ref works";
 say "ok ", ($ofs + $hhr->{$h_key} ), " - hash ref works";
 
+if (1) {
+    say "ok 14 - if works"
+}
+else {
+    say "not ok 14 - if works"
+}
+
+if (0) {
+    say "not ok 15 - if works"
+}
+else {
+    say "ok 15 - if works"
+}
+
+my $if = 1;
+if ($if == 1) {
+    say "ok 16 - if works"
+}
+else {
+    say "not ok 16 - if works"
+}
+if ($if == 0) {
+    say "not ok 17 - if works"
+}
+else {
+    say "ok 17 - if works"
+}
 
 __END__
 
