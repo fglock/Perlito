@@ -134,9 +134,15 @@ else {
     say "not ok 26 - values $s";
 }
 
+$s = keys %hh;
+if ($s != 2) {
+    print "not ";
+}
+say "ok 27 - scalar keys $s";
+
 $s = 3.45;
 
-say "", ($s < 4 ? "" : "not "), "ok 27 - ternary op";
+say "", ($s < 4 ? "" : "not "), "ok 28 - ternary op";
 
 
 __END__

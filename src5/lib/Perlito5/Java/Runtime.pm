@@ -97,10 +97,10 @@ class pCORE {
         return List__.aget(0).ref();
     }
     public static final pObject values(int want, pObject List__) {
-        return List__.values();
+        return want == pCx.LIST ? List__.values() : List__.values().scalar();
     }
     public static final pObject keys(int want, pObject List__) {
-        return List__.keys();
+        return want == pCx.LIST ? List__.keys() : List__.keys().scalar();
     }
     public static final pObject scalar(int want, pArray List__) {
         if (List__.to_int() == 0) {
