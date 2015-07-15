@@ -61,7 +61,9 @@ class pCx {
     public static final int VOID   = 0;
     public static final int SCALAR = 1;
     public static final int LIST   = 2;
-    public static final pUndef UNDEF = new pUndef();
+    public static final pUndef  UNDEF  = new pUndef();
+    public static final pBool   TRUE   = new pBool(true);
+    public static final pBool   FALSE  = new pBool(false);
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
@@ -932,12 +934,14 @@ class pHash extends pObject {
     }
 
     public pObject exists(pObject i) {
-        pCORE.die("TODO - hash exists");
-        return this;
+        return this.h.containsKey(i) ? pCx.TRUE : pCx.FALSE;
     }
     public pObject delete(pObject i) {
-        pCORE.die("TODO - hash delete");
-        return this;
+        pObject r = this.h.remove(i);
+        if (r == null) {
+            return pCx.UNDEF;
+        }
+        return r;
     }
     public pObject values() {
         pArray aa = new pArray();

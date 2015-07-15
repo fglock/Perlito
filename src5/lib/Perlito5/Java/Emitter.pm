@@ -2195,9 +2195,9 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    return '(delete ' . $v->emit_java() . '[' . $arg->autoquote($arg->{index_exp})->emit_java($level) . '])';
+                    return $v->emit_java($level, $wantarray) . '.delete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return '(delete ' . $v->emit_java() . '.get_hash().[' . $arg->autoquote($arg->{index_exp})->emit_java($level) . '])';
+                return $v->emit_java($level, $wantarray, 'hash') . '.delete(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -2205,9 +2205,9 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    return '(delete ' . $v->emit_java() . '[' . $arg->{index_exp}->emit_java($level) . '])';
+                    return $v->emit_java($level, $wantarray) . '.delete(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return '(delete ' . $v->emit_java() . '.get_array().[' . $arg->{index_exp}->emit_java($level) . '])';
+                return $v->emit_java($level, $wantarray, 'array') . '.delete(' . $arg->{index_exp}->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
