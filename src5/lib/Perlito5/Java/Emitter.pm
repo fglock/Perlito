@@ -444,14 +444,7 @@ package Perlito5::Java;
     sub autoquote {
         my $index = shift;
         my $level = shift;
-    
-        # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
-        # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
-        # TODO ' sub x () { 123 } $v{main::x} = 12; use Data::Dumper; print Dumper \%v '   # '123'     => 12
-        # ok   ' $v{main::x} = 12; use Data::Dumper; print Dumper \%v '                    # 'main::x' => 12
-    
         $index = Perlito5::AST::Lookup->autoquote($index);
-    
         return to_str($index, $level);
     }
 
