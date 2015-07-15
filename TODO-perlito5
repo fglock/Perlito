@@ -635,6 +635,19 @@ TODO list for Perlito5
     my $x = my::Sample->new();
     $x->to_mySample()
 
+-- bugs
+
+    Using 'exists' 2 times:
+    $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' my %x; exists $x{3}{3}; exists $x{3}{3}; '  > Test.java ; javac Test.java ; java Test
+    Not a HASH reference
+
+    $x{3}->{3} not implemented:
+    $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' my %x; exists $x{3}{3}; exists $x{3}->{3}; '  > Test.java ; javac Test.java ; java Test
+    Test.java:1376: cannot find symbol
+    symbol  : method get_hash()
+    location: class pObject
+        (Hash_x.hget(new pString(new pInt(3).to_string()))).get_hash().hasOwnProperty(new pInt(3));
+
 
 * Compile-time execution environment
 
