@@ -917,8 +917,8 @@ package Perlito5::AST::Index;
         my ($self, $level, $wantarray, $autovivification_type) = @_;
         # autovivification_type: array, hash
         my $method = $autovivification_type || 'aget';
-        $method = 'aget_array' if $autovivification_type eq 'array';
-        $method = 'aget_hash'  if $autovivification_type eq 'hash';
+        $method = 'get_array' if $autovivification_type eq 'array';
+        $method = 'get_hash'  if $autovivification_type eq 'hash';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1072,8 +1072,8 @@ package Perlito5::AST::Lookup;
         my ($self, $level, $wantarray, $autovivification_type) = @_;
         # autovivification_type: array, hash
         my $method = $autovivification_type || 'hget';
-        $method = 'hget_array' if $autovivification_type eq 'array';
-        $method = 'hget_hash'  if $autovivification_type eq 'hash';
+        $method = 'get_array' if $autovivification_type eq 'array';
+        $method = 'get_hash'  if $autovivification_type eq 'hash';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1486,16 +1486,16 @@ package Perlito5::AST::Call;
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
             my $method = $autovivification_type || 'aget';
-            $method = 'aget_array' if $autovivification_type eq 'array';
-            $method = 'aget_hash'  if $autovivification_type eq 'hash';
+            $method = 'get_array' if $autovivification_type eq 'array';
+            $method = 'get_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                 . '.get_array().' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             my $method = $autovivification_type || 'hget';
-            $method = 'hget_array' if $autovivification_type eq 'array';
-            $method = 'hget_hash'  if $autovivification_type eq 'hash';
+            $method = 'get_array' if $autovivification_type eq 'array';
+            $method = 'get_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.get_hash().' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';
@@ -2826,10 +2826,10 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    $v->{sigil} = '%';
-                    return '(' . $v->emit_java() . ').hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                    # $v->{sigil} = '%';
+                    return $v->emit_java($level, $wantarray) . '.exists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
-                return '(' . $v->emit_java() . ').get_hash().hasOwnProperty(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'hash') . '.exists(' . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
@@ -2837,9 +2837,9 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    return '(' . $v->emit_java() . ').hasOwnProperty(' . $arg->{index_exp}->emit_java($level) . ')';
+                    return $v->emit_java($level, $wantarray) . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
-                return '(' . $v->emit_java() . ').get_array().hasOwnProperty(' . $arg->{index_exp}->emit_java($level) . ')';
+                return $v->emit_java($level, $wantarray, 'array') . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {

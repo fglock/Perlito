@@ -748,7 +748,14 @@ EOT
             return pCx.UNDEF;
         }
     }
-
+    public pObject exists(pObject i) {
+        pCORE.die("TODO - array exists");
+        return this;
+    }
+    public pObject delete(pObject i) {
+        pCORE.die("TODO - array delete");
+        return this;
+    }
     public pObject values() {
         // return a copy
         return new pArray(this);
@@ -880,6 +887,9 @@ class pHash extends pObject {
 
     public pObject hget(pObject i) {
         pObject o = this.h.get(i.to_string());
+        if (o == null) {
+            return pCx.UNDEF;
+        }
         return o;
     }
     public pObject get_array(pObject i) {
@@ -921,6 +931,14 @@ class pHash extends pObject {
         return v;
     }
 
+    public pObject exists(pObject i) {
+        pCORE.die("TODO - hash exists");
+        return this;
+    }
+    public pObject delete(pObject i) {
+        pCORE.die("TODO - hash delete");
+        return this;
+    }
     public pObject values() {
         pArray aa = new pArray();
         for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
