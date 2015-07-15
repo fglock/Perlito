@@ -164,7 +164,7 @@ EOT
         return 0;
     }
     public pObject end_of_array_index() {
-        return pCORE.die("error .to_int!");
+        return pCORE.die("Not an ARRAY reference");
     }
     public double to_num() {
         pCORE.die("error .to_num!");
@@ -178,73 +178,57 @@ EOT
         return false;
     }
     public pObject array_deref() {
-        pCORE.die("error .array_deref!");
-        return new pArray();
+        pCORE.die("Not an ARRAY reference");
+        return this;
     }
     public pObject hash_deref() {
-        pCORE.die("error .hash_deref!");
-        return new pHash();
+        pCORE.die("Not a HASH reference");
+        return this;
     }
     public pObject hget(pObject i) {
-        pCORE.die("error .hget!");
-        return new pHash();
+        pCORE.die("Not a HASH reference");
+        return this;
     }
     public pObject aget(pObject i) {
-        pCORE.die("error .aget!");
-        return new pHash();
+        pCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public pObject aget(int i) {
+        pCORE.die("Not an ARRAY reference");
+        return this;
     }
     public pObject to_array() {
-        pCORE.die("error .to_array!");
-        return new pArray();
+        pCORE.die("Not an ARRAY reference");
+        return this;
     }
     public pObject values() {
         pCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
-        return new pArray();
+        return this;
     }
     public pObject keys() {
         pCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
-        return new pArray();
+        return this;
     }
     public pObject each() {
         pCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
-        return new pArray();
+        return this;
     }
     public pObject exists(pObject i) {
         pCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
-        return new pArray();
+        return this;
     }
     public pObject delete(pObject i) {
         pCORE.die("delete argument is not a HASH or ARRAY element or slice");
-        return new pArray();
+        return this;
     }
-EOT
-    . ( join('', map {
-            my $perl = $_;
-            my $native  = $number_binop{$perl}{op};
-            my $returns = $number_binop{$perl}{returns};
-"    public pObject ${perl}(pObject s) {
-        return s.${perl}2(this);
+    public pObject set(pObject o) {
+        pCORE.die("Modification of a read-only value attempted");
+        return this;
     }
-    public pObject ${perl}2(pObject s) {
-        return new ${returns}( s.to_int() ${native} this.to_int() );
+    public pObject get() {
+        pCORE.die("error .get!");
+        return this;
     }
-"
-            }
-            keys %number_binop ))
-
-    . ( join('', map {
-            my $perl = $_;
-            my $native  = $string_binop{$perl}{op};
-            my $returns = $string_binop{$perl}{returns};
-"    public pObject ${perl}(pObject b) {
-        return new ${returns}(this.to_string().compareTo(b.to_string()) ${native});
-    }
-"
-            }
-            keys %string_binop ))
-
-    . <<'EOT'
-
     public boolean is_int() {
         return false;
     }
@@ -275,14 +259,33 @@ EOT
     public pObject scalar() {
         return this;
     }
-    public pObject get() {
-        pCORE.die("error .get!");
-        return this;
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native  = $number_binop{$perl}{op};
+            my $returns = $number_binop{$perl}{returns};
+"    public pObject ${perl}(pObject s) {
+        return s.${perl}2(this);
     }
-    public pObject aget(int i) {
-        pCORE.die("error .get!");
-        return this;
+    public pObject ${perl}2(pObject s) {
+        return new ${returns}( s.to_int() ${native} this.to_int() );
     }
+"
+            }
+            keys %number_binop ))
+
+    . ( join('', map {
+            my $perl = $_;
+            my $native  = $string_binop{$perl}{op};
+            my $returns = $string_binop{$perl}{returns};
+"    public pObject ${perl}(pObject b) {
+        return new ${returns}(this.to_string().compareTo(b.to_string()) ${native});
+    }
+"
+            }
+            keys %string_binop ))
+
+    . <<'EOT'
 }
 class pReference extends pObject {
     public static final pString REF = new pString("REF");
@@ -301,7 +304,7 @@ class pClosure extends pReference {
     public pClosure(pObject env) {
         this.env = env;
     }
-    public pObject apply(int want, pObject... args) {
+    public pObject apply(int want, pObject List__) {
         pCORE.die("error!");
         return new pInt(0);
     }
