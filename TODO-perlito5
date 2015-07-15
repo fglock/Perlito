@@ -651,6 +651,10 @@ TODO list for Perlito5
     $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
     ''
 
+-- BUG hash deref
+    $x{"a"}{"b"} dereferences twice:
+    Hash_x.get_hash(new pString("a")).get_hash().hget(new pString("b"));
+
 * Compile-time execution environment
 
 -- work in progress
