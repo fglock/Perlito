@@ -644,6 +644,12 @@ TODO list for Perlito5
 
     delete local EXPR
 
+-- TODO symbolic references
+
+    $ perl -e ' $a = 123; my $z; $z = "a"; print $$z '
+    123
+    $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
+    ''
 
 * Compile-time execution environment
 
