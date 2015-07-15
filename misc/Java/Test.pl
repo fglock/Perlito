@@ -218,8 +218,10 @@ if ($aa[3] != 123) {
 }
 say "ok 40 - qw(), join(): ", join( ", ", @aa );
 
+# TODO
+# $aa[1]{"a"} = 12;
 
-# # create native variable
+# TODO - initialize native variable
 # my my::Sample $z = my::Sample->new();
 
 __END__
