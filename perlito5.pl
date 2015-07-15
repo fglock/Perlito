@@ -15098,10 +15098,10 @@ package Perlito5::AST::Apply;
         }
         if ($arg->isa('Perlito5::AST::Call')) {
             if ($arg->method() eq 'postcircumfix:<{ }>') {
-                return '(delete ' . $arg->invocant()->emit_java() . '.get_hash()[' . Perlito5::AST::Lookup::->autoquote($arg->{'arguments'})->emit_java($level) . '])'
+                return $arg->invocant()->emit_java($level, $wantarray, 'hash') . '.delete(' . Perlito5::AST::Lookup::->autoquote($arg->{'arguments'})->emit_java($level) . ')'
             }
             if ($arg->method() eq 'postcircumfix:<[ ]>') {
-                return '(delete ' . $arg->invocant()->emit_java() . '.get_array().[' . $arg->{'arguments'}->emit_java($level) . '])'
+                return $arg->invocant()->emit_java($level, $wantarray, 'array') . '.delete(' . $arg->{'arguments'}->emit_java($level) . ')'
             }
         }
         if ($arg->isa('Perlito5::AST::Var') && $arg->sigil() eq '&') {

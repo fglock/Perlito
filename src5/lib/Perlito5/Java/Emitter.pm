@@ -2205,10 +2205,10 @@ package Perlito5::AST::Apply;
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(delete ' . $arg->invocant->emit_java() . '.get_hash()[' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . '])';
+                    return $arg->invocant->emit_java($level, $wantarray, 'hash') . '.delete(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_java($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return '(delete ' . $arg->invocant->emit_java() . '.get_array().[' . $arg->{arguments}->emit_java($level) . '])';
+                    return $arg->invocant->emit_java($level, $wantarray, 'array') . '.delete(' . $arg->{arguments}->emit_java($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')
@@ -2216,17 +2216,12 @@ package Perlito5::AST::Apply;
                )
             {
                 die 'TODO delete &code';
-                # my $name = $arg->{name};
-                # my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
-                # return 'p5pkg[' . Perlito5::Java::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Java::escape_string($name) . ')';
             }
             if (  $arg->isa('Perlito5::AST::Apply')
                && $arg->{code} eq 'prefix:<&>'
                )
             {
                 die 'TODO delete &$code';
-                # my $arg2 = $arg->{arguments}->[0];
-                # return 'p5sub_exists(' . Perlito5::Java::to_str($arg2) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')';
             }
         },
 
