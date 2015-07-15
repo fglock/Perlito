@@ -434,6 +434,7 @@ class pScalar extends pObject {
         // $x->{a}
         if (this.o.is_undef()) {
             this.o = new pHash();
+            return this.o;
         }
         else if (this.o.is_hashref()) {
             return this.o.get();
