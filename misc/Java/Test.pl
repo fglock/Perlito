@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..29\n";
+print "1..42\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -228,8 +228,8 @@ $hh{"2"}[1] = 15;
 
 if (@aa != 3) { print "not" }
 say "ok 41 - data structure";
-# if (keys %aa != 2) { print "not" }
-# say "ok 42 - data structure";
+if (keys(%hh) != 2) { print "not" }
+say "ok 42 - data structure";
 
 # TODO - initialize native variable
 # my my::Sample $z = my::Sample->new();

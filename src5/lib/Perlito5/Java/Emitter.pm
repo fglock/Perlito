@@ -298,7 +298,7 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'p5bool(' . $cond->emit_java($level, $wantarray) . ')';
+                return $cond->emit_java($level, $wantarray);
             }
     }
 
