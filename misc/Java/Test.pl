@@ -201,6 +201,19 @@ if (ref($x) ne 'my::Sample') {
 }
 say "ok 37 - store java object in scalar: ", ref($x), " ", $x;
 
+my $sc;
+$$sc = 5;   # $sc = \5;
+if (ref($sc) ne 'SCALAR') {
+    print "not ";
+}
+say "ok 38 - autovivify scalarref: ", ref($sc), " ", $sc;
+if ($$sc != 5) {
+    print "not ";
+}
+say "ok 39 - autovivify scalarref: ", $$sc;
+
+
+
 # # create native variable
 # my my::Sample $z = my::Sample->new();
 

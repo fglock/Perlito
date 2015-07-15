@@ -249,6 +249,9 @@ EOT
     public boolean is_array() {
         return false;
     }
+    public boolean is_scalarref() {
+        return false;
+    }
     public boolean is_arrayref() {
         return false;
     }
@@ -324,6 +327,9 @@ class pScalarRef extends pReference {
     public pScalarRef(pObject o) {
         // TODO - make readonly value like in \1
         this.o = o;
+    }
+    public boolean is_scalarref() {
+        return true;
     }
     public pObject get() {
         return this.o;
@@ -417,6 +423,20 @@ class pScalar extends pObject {
     }
 
     public pObject get() {
+        return this.o;
+    }
+    public pObject get_scalar() {
+        // $$x
+        if (this.o.is_undef()) {
+            pScalar a = new pScalar();
+            this.o = new pScalarRef(a);
+            return a;
+        }
+        else if (this.o.is_scalarref()) {
+            return this.o.get();
+        }
+        // Modification of a read-only value attempted
+        // return pCORE.die("Not an SCALAR reference");
         return this.o;
     }
     public pObject get_array() {
@@ -610,6 +630,21 @@ class pArray extends pObject {
         return this.a.get(pos);
     }
 
+    public pObject get_scalar(pObject i) {
+        // $$x
+        pObject o = this.aget(i);
+        if (o.is_undef()) {
+            pScalar a = new pScalar();
+            this.aset(i, new pScalarRef(a));
+            return a;
+        }
+        else if (o.is_scalarref()) {
+            return o.get();
+        }
+        // Modification of a read-only value attempted
+        // return pCORE.die("Not an SCALAR reference");
+        return o;
+    }
     public pObject get_array(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
@@ -895,6 +930,21 @@ class pHash extends pObject {
         if (o == null) {
             return pCx.UNDEF;
         }
+        return o;
+    }
+    public pObject get_scalar(pObject i) {
+        // $$x
+        pObject o = this.hget(i);
+        if (o.is_undef()) {
+            pScalar a = new pScalar();
+            this.hset(i, new pScalarRef(a));
+            return a;
+        }
+        else if (o.is_scalarref()) {
+            return o.get();
+        }
+        // Modification of a read-only value attempted
+        // return pCORE.die("Not an SCALAR reference");
         return o;
     }
     public pObject get_array(pObject i) {

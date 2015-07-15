@@ -470,7 +470,7 @@ package Perlito5::Java;
 
         if ( $obj->isa( 'Perlito5::AST::Apply' ) && $obj->code eq 'prefix:<$>' ) {
             my $arg  = $obj->{arguments}->[0];
-            return 'p5scalar_deref(' 
+            return 'get_scalar(' 
                     . $arg->emit_java( $level ) . ', '
                     . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
                     . Perlito5::Java::escape_string($type)      # autovivification type
@@ -1705,10 +1705,8 @@ package Perlito5::AST::Apply;
         my ($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{code};
         if ($code eq 'prefix:<$>') {
-            return 'p5scalar_deref_set(' 
-                . Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
-                . Perlito5::Java::to_scalar([$arguments], $level+1)  . ', '
-                . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.get_scalar().set('
+                . Perlito5::Java::to_scalar([$arguments], $level+1)  
                 . ')';
         }
         if ($code eq 'prefix:<*>') {
@@ -1962,11 +1960,7 @@ package Perlito5::AST::Apply;
         'prefix:<$>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg  = $self->{arguments}->[0];
-            return 'p5scalar_deref(' 
-                    . $arg->emit_java( $level ) . ', '
-                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
-                    . '""'      # autovivification type
-                    . ')';
+            return $arg->emit_java( $level ) . '.get_scalar()'
         },
         'prefix:<@>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3089,10 +3083,8 @@ package Perlito5::AST::Apply;
             return $list . '.shift()' 
         }
         if ( $self->code eq 'prefix:<$>' ) {
-            return 'p5scalar_deref_set(' 
-                . Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . ', '
-                . $list . '.shift()'  . ', '
-                . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.get_scalar().set('
+                . $list->emit_java( $level + 1, 'scalar' )
                 . ')';
         }
         die "not implemented: assign to ", $self->code;
