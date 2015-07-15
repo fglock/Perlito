@@ -14670,10 +14670,16 @@ package Perlito5::AST::Call;
         my($self, $level, $wantarray, $autovivification_type) = @_;
         my $meth = $self->{'method'};
         if ($meth eq 'postcircumfix:<[ ]>') {
-            return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.aget(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
+            my $method = $autovivification_type || 'aget';
+            $autovivification_type eq 'array' && ($method = 'get_array');
+            $autovivification_type eq 'hash' && ($method = 'get_hash');
+            return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.get_array().' . $method . '(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
         }
         if ($meth eq 'postcircumfix:<{ }>') {
-            return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.hget(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
+            my $method = $autovivification_type || 'hget';
+            $autovivification_type eq 'array' && ($method = 'get_array');
+            $autovivification_type eq 'hash' && ($method = 'get_hash');
+            return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.get_hash().' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
         }
         if ($meth eq 'postcircumfix:<( )>') {
             my $invocant;
