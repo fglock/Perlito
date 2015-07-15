@@ -212,7 +212,7 @@ EOT
         pCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject aset(pObject i, pScalar v) {
+    public pObject aset(pObject i, pObject v) {
         pCORE.die("Not an ARRAY reference");
         return this;
     }
@@ -371,7 +371,7 @@ class pArrayRef extends pReference {
     public pObject aget(int i) {
         return this.o.aget(i);
     }
-    public pObject aset(pObject i, pScalar v) {
+    public pObject aset(pObject i, pObject v) {
         return this.o.aset(i, v);
     }
     public pObject array_deref() {
@@ -501,7 +501,7 @@ class pScalar extends pObject {
     public pObject aget(int i) {
         return this.o.aget(i);
     }
-    public pObject aset(pObject i, pScalar v) {
+    public pObject aset(pObject i, pObject v) {
         return this.o.aset(i, v);
     }
     public pObject hget(pObject i) {
@@ -661,7 +661,7 @@ class pArray extends pObject {
         if (pos < 0) {
             pos = this.a.size() + pos;
         }
-        if (pos < 0 || pos > this.a.size()) {
+        if (pos < 0 || pos >= this.a.size()) {
             return pCx.UNDEF;
         }
         return this.a.get(pos);
@@ -671,7 +671,7 @@ class pArray extends pObject {
         if (pos < 0) {
             pos = this.a.size() + pos;
         }
-        if (pos < 0 || pos > this.a.size()) {
+        if (pos < 0 || pos >= this.a.size()) {
             return pCx.UNDEF;
         }
         return this.a.get(pos);

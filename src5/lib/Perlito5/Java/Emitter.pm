@@ -328,25 +328,6 @@ package Perlito5::Java;
                 if is_scalar($_);
         }
         if ($literal_type eq 'hash') {
-            if (!$interpolate) {
-                # { x : y, ... }
-                my @out;
-                my $printable = 1;
-                my @in = @$items;
-                while (@in) {
-                    my $k = shift @in;
-                    my $v = shift @in;
-                    $k = $k->emit_java($level, 0);
-                    $printable = 0
-                        if $k =~ /[ \[]/;
-                    $v = $v
-                         ? $v->emit_java($level, 0)
-                         : 'null';
-                    push @out, "$k : $v";
-                }
-                return '{' . join(', ', @out) . '}'
-                    if $printable;
-            }
             return 'new pHash(' . to_list($items, $level, 'array') . ')';
         }
         return 'new pArray('
@@ -981,14 +962,14 @@ package Perlito5::AST::Index;
                     'var tmp' . ";",
                     'for (var i=0, l=v.length; i<l; ++i) {',
                           [ 'tmp = src.aget(i);',
-                            'out.p5aset(v[i], tmp);',
+                            'out.aset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
                     '}',
                     'return a',
             )
         }
-        return $self->emit_java_container($level) . '.p5aset(' 
+        return $self->emit_java_container($level) . '.aset(' 
                     . Perlito5::Java::to_num($self->{index_exp}, $level+1) . ', ' 
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
                 . ')';
@@ -1013,14 +994,14 @@ package Perlito5::AST::Index;
                     'var tmp' . ";",
                     'for (var i=0, l=v.length; i<l; ++i) {',
                           [ 'tmp = ' . $list . '.shift();',
-                            'out.p5aset(v[i], tmp);',
+                            'out.aset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
                     '}',
                     'return a',
             )
         }
-        return $self->emit_java_container($level) . '.p5aset(' 
+        return $self->emit_java_container($level) . '.aset(' 
                     . Perlito5::Java::to_num($self->{index_exp}, $level+1) . ', ' 
                     . $list . '.shift()'
                 . ')';

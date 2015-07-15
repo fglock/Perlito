@@ -218,9 +218,18 @@ if ($aa[3] != 123) {
 }
 say "ok 40 - qw(), join(): ", join( ", ", @aa );
 
-# TODO
-# $aa[1]{"a"} = 12;
-# $hh{1}{"a"} = 12;
+# Test if these compile
+@aa = ();
+%hh = ();
+$aa[1]{"a"} = 12;
+$hh{"1"}{"a"} = 13;
+$aa[2][1] = 14;
+$hh{"2"}[1] = 15;
+
+if (@aa != 3) { print "not" }
+say "ok 41 - data structure";
+# if (keys %aa != 2) { print "not" }
+# say "ok 42 - data structure";
 
 # TODO - initialize native variable
 # my my::Sample $z = my::Sample->new();
