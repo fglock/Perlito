@@ -134,6 +134,15 @@ class pOp {
     // note: '+' add() and '-' sub() are pObject methods
     // TODO
 }
+class pV {
+    // global variables (namespaces)
+    // TODO
+    public static final pHash var = new pHash();
+
+    // public static final pScalar look(String namespace, String name) {
+    //     return var.get_hash(namespace).hget(name);
+    // }
+}
 class pObject {
     // extends java object ???
     public static final pString REF = new pString("");

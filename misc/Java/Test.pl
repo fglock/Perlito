@@ -212,6 +212,11 @@ if ($$sc != 5) {
 }
 say "ok 39 - autovivify scalarref: ", $$sc;
 
+@aa = qw/ x y z 123 4 /;
+if ($aa[3] != 123) {
+    print "not ";
+}
+say "ok 40 - qw(), join(): ", join( ", ", @aa );
 
 
 # # create native variable
