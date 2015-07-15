@@ -365,6 +365,15 @@ class pArrayRef extends pReference {
     public pObject get() {
         return this.o;
     }
+    public pObject aget(pObject i) {
+        return this.o.aget(i);
+    }
+    public pObject aget(int i) {
+        return this.o.aget(i);
+    }
+    public pObject aset(pObject i, pScalar v) {
+        return this.o.aset(i, v);
+    }
     public pObject array_deref() {
         return this.o;
     }
@@ -485,6 +494,15 @@ class pScalar extends pObject {
             return this.o.get();
         }
         return pCORE.die("Not a HASH reference");
+    }
+    public pObject aget(pObject i) {
+        return this.o.aget(i);
+    }
+    public pObject aget(int i) {
+        return this.o.aget(i);
+    }
+    public pObject aset(pObject i, pScalar v) {
+        return this.o.aset(i, v);
     }
     public pObject hget(pObject i) {
         return this.o.hget(i);
