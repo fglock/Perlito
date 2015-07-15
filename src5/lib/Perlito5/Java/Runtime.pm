@@ -200,11 +200,19 @@ EOT
         pCORE.die("Not a HASH reference");
         return this;
     }
+    public pObject hset(pObject s, pObject v) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
     public pObject aget(pObject i) {
         pCORE.die("Not an ARRAY reference");
         return this;
     }
     public pObject aget(int i) {
+        pCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public pObject aset(pObject i, pScalar v) {
         pCORE.die("Not an ARRAY reference");
         return this;
     }
