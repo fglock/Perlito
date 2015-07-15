@@ -220,6 +220,7 @@ say "ok 40 - qw(), join(): ", join( ", ", @aa );
 
 # TODO
 # $aa[1]{"a"} = 12;
+$hh{1}{"a"} = 12;
 
 # TODO - initialize native variable
 # my my::Sample $z = my::Sample->new();

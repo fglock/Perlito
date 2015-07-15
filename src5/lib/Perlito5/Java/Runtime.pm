@@ -394,6 +394,12 @@ class pHashRef extends pReference {
     public pObject get() {
         return this.o;
     }
+    public pObject hget(pObject i) {
+        return this.o.hget(i);
+    }
+    public pObject hset(pObject s, pObject v) {
+        return this.o.hset(s, v);
+    }
     public pHash hash_deref() {
         return this.o;
     }
@@ -479,6 +485,12 @@ class pScalar extends pObject {
             return this.o.get();
         }
         return pCORE.die("Not a HASH reference");
+    }
+    public pObject hget(pObject i) {
+        return this.o.hget(i);
+    }
+    public pObject hset(pObject s, pObject v) {
+        return this.o.hset(s, v);
     }
     public pObject array_deref() {
         // @$x doesn't autovivify

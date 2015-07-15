@@ -1143,14 +1143,14 @@ package Perlito5::AST::Lookup;
                     'var tmp' . ";",
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'tmp = src.hget(i);',
-                            'out.p5hset(v[i], tmp);',
+                            'out.hset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
                     '}',
                     'return a',
             )
         }
-        return $self->emit_java_container($level) . '.p5hset('
+        return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
@@ -1180,14 +1180,14 @@ package Perlito5::AST::Lookup;
                     'var tmp' . ";",
                     'for (var i=0, l=v.length; i<l; ++i)' . '{',
                           [ 'tmp = ' . $list . '.shift();',
-                            'out.p5hset(v[i], tmp);',
+                            'out.hset(v[i], tmp);',
                             'a.push(tmp)',
                           ],
                     '}',
                     'return a',
             )
         }
-        return $self->emit_java_container($level) . '.p5hset('
+        return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
                     . $list . '.shift()'
             . ')';
@@ -1218,7 +1218,7 @@ package Perlito5::AST::Lookup;
             return $v->emit_java($level)
         }
         else {
-            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'hash' ) . '.get_hash()';
+            return Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'hash' );
         }
     }
     sub emit_java_get_decl { () }
@@ -1490,7 +1490,7 @@ package Perlito5::AST::Call;
             $method = 'get_array' if $autovivification_type eq 'array';
             $method = 'get_hash'  if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                . '.get_hash().' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
+                . '.' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -1592,7 +1592,7 @@ package Perlito5::AST::Call;
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                    . '.get_hash().hset(' 
+                    . '.hset(' 
                         . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
                     . ')';
@@ -1610,7 +1610,7 @@ package Perlito5::AST::Call;
         }
         if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                    . '.get_hash().hset(' 
+                    . '.hset(' 
                         . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
                         . $list  . '.shift()'
                     . ')';
