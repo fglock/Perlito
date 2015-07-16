@@ -728,6 +728,24 @@ class pArray extends pObject {
         this.each_iterator = 0;
         this.a = aa;
     }
+    public pObject set(pObject s) {
+        this.a.clear();
+        if (s.is_hash()) {
+            // @x = %x;
+            s = s.to_array();
+        }
+        if (s.is_array()) {
+            // @x = ( @x, @y );
+            for (int i = 0; i < s.to_int(); i++) {
+                this.a.add(s.aget(i));
+            }
+        }
+        else {
+            this.a.add(s);
+        }
+        this.each_iterator = 0;
+        return this;
+    }
 
     public pObject aget(pObject i) {
         int pos  = i.to_int();
