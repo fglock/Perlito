@@ -199,10 +199,20 @@ EOT
         pCORE.die("Not an ARRAY reference");
         return this;
     }
+    public pObject array_deref_set(pObject i) {
+        pCORE.die("Not an ARRAY reference");
+        return this;
+    }
+
     public pObject hash_deref() {
         pCORE.die("Not a HASH reference");
         return this;
     }
+    public pObject hash_deref_set(pObject i) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
+
     public pObject hget(pObject i) {
         pCORE.die("Not a HASH reference");
         return this;
@@ -394,6 +404,10 @@ class pArrayRef extends pReference {
     public pObject array_deref() {
         return this.o;
     }
+    public pObject array_deref_set(pObject v) {
+        return this.o.set(v);
+    }
+
     public boolean is_arrayref() {
         return true;
     }
@@ -553,6 +567,18 @@ class pScalar extends pObject {
         }
         return pCORE.die("Not an ARRAY reference");
     }
+    public pObject array_deref_set(pObject v) {
+        // @$x = ...
+        if (this.o.is_undef()) {
+            this.o = new pArrayRef(new pArray());
+            return this.o.array_deref_set(v);
+        }
+        else if (this.o.is_arrayref()) {
+            return this.o.array_deref_set(v);
+        }
+        return pCORE.die("Not an ARRAY reference");
+    }
+
     public pObject hash_deref() {
         // %$x doesn't autovivify
         if (this.o.is_undef()) {
