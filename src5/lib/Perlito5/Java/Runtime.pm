@@ -145,6 +145,11 @@ class pV {
         return var.get_hash(namespace).hset(name, v);
     }
 }
+class pEnv {
+    public static final void init() {
+        pV.set("main", "v_" + (char)34, new pString(" "));   // $" = " "
+    }
+}
 class pObject {
     // extends java object ???
     public static final pString REF = new pString("");

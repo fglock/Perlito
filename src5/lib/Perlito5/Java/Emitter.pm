@@ -111,7 +111,6 @@ package Perlito5::Java;
     my %safe_char = (
         ' ' => 1,
         '!' => 1,
-        '"' => 1,
         '#' => 1,
         '$' => 1,
         '%' => 1,
@@ -791,7 +790,8 @@ package Perlito5::AST::CompUnit;
         }
 
         $str .= "class Test {\n"
-             .  "    public static void main(String[] args) {\n";
+             .  "    public static void main(String[] args) {\n"
+             .  "        pEnv.init();\n";
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_java($level, $wantarray) . "\n";
         }
@@ -1246,11 +1246,6 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        if ($sigil eq '$' && $self->{name} eq '"' && $namespace eq 'main') {
-            # TODO - $" is hardcoded
-            return 'new pString(" ")';
-        }
-
         my $s = 'pV.get(' . Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ')';
         if ( $sigil eq '*' ) {
         }
@@ -1279,7 +1274,7 @@ package Perlito5::AST::Var;
             # XXX - optimization - @_ is a lexical
             my $s = 'List__';
             if ($self->{sigil} eq '$#') {
-                return $s . '.end_of_array_index()';
+                return $s . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.to_int()';
@@ -1299,11 +1294,6 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '::' ) {
             return Perlito5::Java::escape_string( $namespace );
-        }
-
-        if ($sigil eq '$' && $self->{name} eq '"' && $namespace eq 'main') {
-            # TODO - $" is hardcoded
-            return 'new pString(" ")';
         }
 
         my $index = Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name);

@@ -667,6 +667,13 @@ TODO list for Perlito5
           ]
         ];
 
+-- BUG globals
+
+    @x = (1,2,3);
+    generates a scalar assignment:
+    pV.set("main", "List_x", new pArray(new pInt(1), new pInt(2), new pInt(3)));
+
+
 -- TODO slices
 
     $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
