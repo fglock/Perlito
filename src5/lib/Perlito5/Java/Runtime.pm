@@ -144,6 +144,20 @@ class pV {
     public static final pObject set(String namespace, String name, pObject v) {
         return var.get_hash(namespace).hset(name, v);
     }
+
+    // public static final pObject hash_get(String namespace, String name) {
+    //     return var.get_hash(namespace).hash_deref(name);
+    // }
+    // public static final pObject hash_set(String namespace, String name, pObject v) {
+    //     return var.get_hash(namespace).hash_deref_set(name, v);
+    // }
+
+    // public static final pObject array_get(String namespace, String name) {
+    //     return var.get_array(namespace).array_deref(name);
+    // }
+    // public static final pObject array_set(String namespace, String name, pObject v) {
+    //     return var.get_array(namespace).array_deref_set(name, v);
+    // }
 }
 class pEnv {
     public static final void init() {

@@ -1246,23 +1246,29 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $s = 'pV.get(' . Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ')';
+        my $index = Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name);
+        if ( $sigil eq '$' ) {
+            return 'pV.get(' . $index . ')';
+        }
         if ( $sigil eq '*' ) {
         }
         if ( $sigil eq '&' ) {
-            return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+            # return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {
-                return $s . '.end_of_array_index()';
+                return 'pV.get(' . $index . ').end_of_array_index()'
             }
+            my $s = 'pV.array_get(' . $index . ')';
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.to_int()';
             }
+            return $s;
         }
         if ($sigil eq '%') {
+            return 'pV.hash_get(' . $index . ')';
         }
-        return $s;
+        die "don't know how to access variable ", $sigil, $self->name;
     }
 
     sub emit_java_global_set {
@@ -1307,16 +1313,16 @@ package Perlito5::AST::Var;
                 return 'pV.get(' . $index . ').set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
             # TODO - return in the right context
-            return 'pV.set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
+            return 'pV.array_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '%' ) {
-            return 'pV.set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')';
+            return 'pV.hash_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')';
         }
         if ( $sigil eq '*' ) {
             die "don't know how to assign to variable ", $sigil, $self->name;
         }
         if ( $sigil eq '&' ) {
-            return 'pV.get(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+            # return 'pV.get(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         die "don't know how to assign to variable ", $sigil, $self->name;
     }
