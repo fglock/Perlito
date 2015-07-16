@@ -14479,16 +14479,12 @@ package Perlito5::AST::Var;
         if ($sigil eq '$' && $self->{'name'} eq '"' && $namespace eq 'main') {
             return 'new pString(" ")'
         }
-        my $s = 'p5make_package(' . Perlito5::Java::escape_string($namespace) . ')[' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ']';
-        if ($sigil eq '*') {
-            return $s
-        }
+        my $s = 'pV.get(' . Perlito5::Java::escape_string($namespace) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ')';
+        if ($sigil eq '*') {}
         if ($sigil eq '&') {
-            return $s . '(List__, ' . Perlito5::Java::to_context($wantarray) . ')'
+            return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
         }
         if ($sigil eq '@') {
-            $s = $s . ' || (' . $s . ' = [])';
-            $s = 'p5pkg[' . $s . ', ' . Perlito5::Java::escape_string($namespace) . '][' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ']';
             if ($self->{'sigil'} eq '$#') {
                 return $s . '.end_of_array_index()'
             }
@@ -14496,10 +14492,7 @@ package Perlito5::AST::Var;
                 return $s . '.to_int()'
             }
         }
-        elsif ($sigil eq '%') {
-            $s = $s . ' || (' . $s . ' = {})';
-            $s = 'p5pkg[' . $s . ', ' . Perlito5::Java::escape_string($namespace) . '][' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ']'
-        }
+        if ($sigil eq '%') {}
         return $s
     }
     sub Perlito5::AST::Var::emit_java {
