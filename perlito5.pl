@@ -14237,7 +14237,7 @@ package Perlito5::AST::CompUnit;
         }
         $str .= 'class Test {' . chr(10) . '    public static void main(String[] args) {' . chr(10) . '        pEnv.init();' . chr(10);
         for my $comp_unit (@{$comp_units}) {
-            $str = $str . $comp_unit->emit_java($level, $wantarray) . chr(10)
+            $str = $str . $comp_unit->emit_java($level + 1, $wantarray) . chr(10)
         }
         $str .= '    }' . chr(10) . '}' . chr(10);
         return $str

@@ -793,7 +793,7 @@ package Perlito5::AST::CompUnit;
              .  "    public static void main(String[] args) {\n"
              .  "        pEnv.init();\n";
         for my $comp_unit ( @$comp_units ) {
-            $str = $str . $comp_unit->emit_java($level, $wantarray) . "\n";
+            $str = $str . $comp_unit->emit_java($level + 1, $wantarray) . "\n";
         }
         $str .= "    }\n"
              .  "}\n";
