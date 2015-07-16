@@ -1733,6 +1733,17 @@ package Perlito5::AST::Apply;
                 . Perlito5::Java::to_scalar([$arguments], $level+1)  
                 . ')';
         }
+        if ($code eq 'prefix:<@>') {
+            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.array_deref_set('
+                . Perlito5::Java::to_list([$arguments], $level+1)  
+                . ')';
+        }
+        if ($code eq 'prefix:<%>') {
+            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.hash_deref_set('
+                . Perlito5::Java::to_list([$arguments], $level+1)  
+                . ')';
+        }
+
         if ($code eq 'prefix:<*>') {
             return 'p5typeglob_deref_set(' 
                 . Perlito5::Java::to_scalar($self->{arguments}, $level+1) . ', '
