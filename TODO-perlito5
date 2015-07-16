@@ -673,6 +673,16 @@ TODO list for Perlito5
     generates a scalar assignment:
     pV.set("main", "List_x", new pArray(new pInt(1), new pInt(2), new pInt(3)));
 
+    related:
+    $ perl -e ' use strict; use warnings; use Data::Dumper; my $z; @{$z} = (1,2,3); print Dumper $z '
+    $VAR1 = [
+          1,
+          2,
+          3
+        ];
+    should generate:
+        .array_deref(), .array_deref_set()
+        .hash_deref(), .hash_deref_set()
 
 -- TODO slices
 
