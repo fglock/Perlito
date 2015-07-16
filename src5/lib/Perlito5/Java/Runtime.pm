@@ -452,9 +452,7 @@ class pHashRef extends pReference {
         return this.o;
     }
     public pObject hash_deref_set(pObject v) {
-        pCORE.die("TODO hash_deref_set in pHashRef");
-        // return this.o.set(v);
-        return this.o;
+        return this.o.hash_deref_set(v);
     }
     public pObject set(pHash o) {
         this.o = o;
@@ -596,9 +594,14 @@ class pScalar extends pObject {
     }
     public pObject hash_deref_set(pObject v) {
         // %$x = ...
-        pCORE.die("TODO hash_deref_set");
-        // return this.o.set(v);
-        return this.o;
+        if (this.o.is_undef()) {
+            this.o = new pHashRef(new pHash());
+            return this.o.hash_deref_set(v);
+        }
+        else if (this.o.is_hashref()) {
+            return this.o.hash_deref_set(v);
+        }
+        return pCORE.die("Not a HASH reference");
     }
 
     // Note: several versions of set()
