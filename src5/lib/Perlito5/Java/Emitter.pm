@@ -1270,6 +1270,64 @@ package Perlito5::AST::Var;
         return $s;
     }
 
+    sub emit_java_global_set {
+        my ($self, $arguments, $level, $wantarray) = @_;
+        my $str_name = $self->{name};
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
+        my $namespace = $self->{namespace} || $self->{_namespace};
+        if ($sigil eq '@' && $self->{name} eq '_' && $namespace eq 'main') {
+            # XXX - optimization - @_ is a lexical
+            my $s = 'List__';
+            if ($self->{sigil} eq '$#') {
+                return $s . '.end_of_array_index()';
+            }
+            if ( $wantarray eq 'scalar' ) {
+                return $s . '.to_int()';
+            }
+            if ( $wantarray eq 'runtime' ) {
+                return '(p5want'
+                    . ' ? ' . $s
+                    . ' : ' . $s . '.to_int()'
+                    . ')';
+            }
+            return $s;
+        }
+
+        if ($sigil eq '$' && $self->{name} > 0) {
+            # regex captures
+            return 'p5_regex_capture[' . ($self->{name} - 1) . ']'
+        }
+        if ( $sigil eq '::' ) {
+            return Perlito5::Java::escape_string( $namespace );
+        }
+
+        if ($sigil eq '$' && $self->{name} eq '"' && $namespace eq 'main') {
+            # TODO - $" is hardcoded
+            return 'new pString(" ")';
+        }
+
+        my $s = 'pV.set(' . Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ', ';
+        if ( $sigil eq '$' ) {
+            return $s . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
+        }
+        if ( $sigil eq '*' ) {
+        }
+        if ( $sigil eq '&' ) {
+            return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+        }
+        if ($sigil eq '@') {
+            if ($self->{sigil} eq '$#') {
+                return $s . '.end_of_array_index()';
+            }
+            if ( $wantarray eq 'scalar' ) {
+                return $s . '.to_int()';
+            }
+        }
+        if ($sigil eq '%') {
+        }
+        return $s;
+    }
+
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
@@ -1297,6 +1355,10 @@ package Perlito5::AST::Var;
 
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
+        my $decl_type = $self->{_decl} || 'global';
+        if ( $decl_type ne 'my' ) {
+            return $self->emit_java_global_set($arguments, $level, $wantarray);
+        }
         my $open  = $wantarray eq 'void' ? '' : '(';
         my $close = $wantarray eq 'void' ? '' : ')';
         my $sigil = $self->{_real_sigil} || $self->{sigil};
