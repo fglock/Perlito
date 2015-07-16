@@ -231,8 +231,11 @@ say "ok 41 - data structure";
 if (keys(%hh) != 2) { print "not" }
 say "ok 42 - data structure";
 
-# TODO - initialize native variable
-# my my::Sample $z = my::Sample->new();
+# initialize a typed variable by dereferencing a Perl object
+# TODO - is it possible to dereference automatically
+my my::Sample $z = my::Sample->new()->to_mySample();
+# TODO - cast typed variable to Perl object automatically
+# say "ok 43 - initialize a typed variable by dereferencing a Perl object: $z\n";
 
 __END__
 
