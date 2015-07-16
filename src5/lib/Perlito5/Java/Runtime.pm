@@ -138,13 +138,12 @@ class pV {
     // global variables (namespaces)
     public static final pHash var = new pHash();
 
-    public static final pObject look(String namespace, String name) {
+    public static final pObject get(String namespace, String name) {
         return var.get_hash(namespace).hget(name);
     }
-    // TODO
-    // public static final pScalar look_lvalue(String namespace, String name) {
-    //     return var.get_hash(namespace).hget_lvalue(name);
-    // }
+    public static final pObject set(String namespace, String name, pObject v) {
+        return var.get_hash(namespace).hset(name, v);
+    }
 }
 class pObject {
     // extends java object ???
@@ -212,6 +211,11 @@ EOT
         pCORE.die("Not a HASH reference");
         return this;
     }
+    public pObject hset(String s, pObject v) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
+
     public pObject aget(pObject i) {
         pCORE.die("Not an ARRAY reference");
         return this;
@@ -421,6 +425,10 @@ class pHashRef extends pReference {
     public pObject hset(pObject s, pObject v) {
         return this.o.hset(s, v);
     }
+    public pObject hset(String s, pObject v) {
+        return this.o.hset(s, v);
+    }
+
     public pHash hash_deref() {
         return this.o;
     }
@@ -526,6 +534,10 @@ class pScalar extends pObject {
     public pObject hset(pObject s, pObject v) {
         return this.o.hset(s, v);
     }
+    public pObject hset(String s, pObject v) {
+        return this.o.hset(s, v);
+    }
+
     public pObject array_deref() {
         // @$x doesn't autovivify
         if (this.o.is_undef()) {
@@ -1078,6 +1090,10 @@ class pHash extends pObject {
     }
     public pObject hset(pObject s, pScalar v) {
         this.h.put(s.to_string(), v.get());
+        return v;
+    }
+    public pObject hset(String s, pScalar v) {
+        this.h.put(s, v.get());
         return v;
     }
 
