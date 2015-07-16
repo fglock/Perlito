@@ -14522,24 +14522,27 @@ package Perlito5::AST::Var;
         if ($sigil eq '$' && $self->{'name'} eq '"' && $namespace eq 'main') {
             return 'new pString(" ")'
         }
-        my $s = 'pV.set(' . Perlito5::Java::escape_string($namespace) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name) . ', ';
+        my $index = Perlito5::Java::escape_string($namespace) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name);
         if ($sigil eq '$') {
-            return $s . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
-        }
-        if ($sigil eq '*') {}
-        if ($sigil eq '&') {
-            return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+            return 'pV.set(' . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         if ($sigil eq '@') {
             if ($self->{'sigil'} eq '$#') {
-                return $s . '.end_of_array_index()'
+                $self->{'sigil'} = '@';
+                return 'pV.get(' . $index . ').set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
-            if ($wantarray eq 'scalar') {
-                return $s . '.to_int()'
-            }
+            return 'pV.set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
         }
-        if ($sigil eq '%') {}
-        return $s
+        if ($sigil eq '%') {
+            return 'pV.set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1, 'hash') . ')'
+        }
+        if ($sigil eq '*') {
+            die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
+        }
+        if ($sigil eq '&') {
+            return 'pV.get(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+        }
+        die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
     }
     sub Perlito5::AST::Var::emit_java {
         my($self, $level, $wantarray) = @_;
