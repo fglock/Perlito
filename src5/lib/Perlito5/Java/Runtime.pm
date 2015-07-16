@@ -452,7 +452,7 @@ class pHashRef extends pReference {
         return this.o;
     }
     public pObject hash_deref_set(pObject v) {
-        return this.o.hash_deref_set(v);
+        return this.o.set(v);
     }
     public pObject set(pHash o) {
         this.o = o;
@@ -1064,6 +1064,33 @@ class pHash extends pObject {
     private HashMap<String, pObject> to_HashMap() {
         return this.h;
     }
+    public pObject set(pObject s) {
+        this.h.clear();
+        if (s.is_array()) {
+            // %x = ( @x, @y );
+            int array_size = s.to_int();
+            for (int j = 0; j < array_size; j++) {
+                pObject key = s.aget(j);
+                j++;
+                pObject value;
+                if ( j >= array_size ) {
+                    // TODO - emit warning about odd number of arguments
+                    value = pCx.UNDEF;
+                }
+                else {
+                    value = s.aget(j);
+                }
+                this.hset(key, value);
+            }
+        }
+        else {
+            // TODO - emit warning about odd number of arguments
+            this.hset(s, pCx.UNDEF);
+        }
+        this.each_iterator = null;
+        return this;
+    }
+
     public pObject to_array() {
         pArray aa = new pArray();
         for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
