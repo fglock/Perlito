@@ -231,11 +231,23 @@ say "ok 41 - data structure";
 if (keys(%hh) != 2) { print "not" }
 say "ok 42 - data structure";
 
+$aa = undef;
+$hh = undef;
+# $aa->[1]{"a"} = 12;
+# $hh->{"1"}{"a"} = 13;
+# $aa->[2][1] = 14;
+# $hh->{"2"}[1] = 15;
+# 
+# if (@$aa != 3) { print "not" }
+# say "ok 43 - data structure";
+# if (keys(%$hh) != 2) { print "not" }
+# say "ok 44 - data structure";
+
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
 my my::Sample $z = my::Sample->new()->to_mySample();
 # TODO - cast typed variable to Perl object automatically
-# say "ok 43 - initialize a typed variable by dereferencing a Perl object: $z\n";
+# say "ok 45 - initialize a typed variable by dereferencing a Perl object: $z\n";
 
 __END__
 
