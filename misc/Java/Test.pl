@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..42\n";
+print "1..46\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -236,20 +236,28 @@ say "ok 42 - data structure";
 
 $aa = undef;
 $hh = undef;
-# $aa->[1]{"a"} = 12;
-# $hh->{"1"}{"a"} = 13;
-# $aa->[2][1] = 14;
-# $hh->{"2"}[1] = 15;
-# 
-# if (@$aa != 3) { print "not" }
-# say "ok 43 - data structure";
-# if (keys(%$hh) != 2) { print "not" }
-# say "ok 44 - data structure";
+$aa->[1]{"a"} = 12;
+$hh->{"1"}{"a"} = 13;
+$aa->[2][1] = 14;
+$hh->{"2"}[1] = 15;
+if (@$aa != 3) { print "not" }
+say "ok 43 - data structure";
+if (keys(%$hh) != 2) { print "not" }
+say "ok 44 - data structure";
+
+$aa->[1]->{"a"} = 12;
+$hh->{"1"}->{"a"} = 13;
+$aa->[2]->[1] = 14;
+$hh->{"2"}->[1] = 15;
+if (@$aa != 3) { print "not" }
+say "ok 45 - data structure";
+if (keys(%$hh) != 2) { print "not" }
+say "ok 46 - data structure";
 
 # TODO - test these
-# @$a = (1,2,3)
-# %$a = (a => 1, b => 2)
-# $$a = 5
+# @$a = (1,2,3);
+# %$a = (a => 1, b => 2);
+# $$a = 5;
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
