@@ -236,19 +236,19 @@ EOT
     }
 
     public pObject aget_arrayref(pObject i) {
-        pCORE.die("Not a ARRAY reference");
+        pCORE.die("Not an ARRAY reference");
         return this;
     }
     public pObject aget_arrayref(int i) {
-        pCORE.die("Not a ARRAY reference");
+        pCORE.die("Not an ARRAY reference");
         return this;
     }
     public pObject aget_hashref(pObject i) {
-        pCORE.die("Not a ARRAY reference");
+        pCORE.die("Not an ARRAY reference");
         return this;
     }
     public pObject aget_hashref(int i) {
-        pCORE.die("Not a ARRAY reference");
+        pCORE.die("Not an ARRAY reference");
         return this;
     }
 
