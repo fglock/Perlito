@@ -139,17 +139,17 @@ class pV {
     public static final pHash var = new pHash();
 
     public static final pObject get(String namespace, String name) {
-        return var.get_hash(namespace).hget(name);
+        return var.get_hashref(namespace).hget(name);
     }
     public static final pObject set(String namespace, String name, pObject v) {
-        return var.get_hash(namespace).hset(name, v);
+        return var.get_hashref(namespace).hset(name, v);
     }
 
     // public static final pObject hash_get(String namespace, String name) {
-    //     return var.get_hash(namespace).hash_deref(name);
+    //     return var.get_hashref(namespace).hash_deref(name);
     // }
     // public static final pObject hash_set(String namespace, String name, pObject v) {
-    //     return var.get_hash(namespace).hash_deref_set(name, v);
+    //     return var.get_hashref(namespace).hash_deref_set(name, v);
     // }
 
     // public static final pObject array_get(String namespace, String name) {
@@ -539,15 +539,15 @@ class pScalar extends pObject {
         }
         return pCORE.die("Not an ARRAY reference");
     }
-    public pObject get_hash() {
+    public pObject get_hashref() {
         // $x->{a}
         if (this.o.is_undef()) {
-            pHash h = new pHash();
-            this.o = new pHashRef(h);
-            return h;
+            pHashRef hr = new pHashRef(new pHash());
+            this.o = hr;
+            return this.o;
         }
         else if (this.o.is_hashref()) {
-            return this.o.get();
+            return this.o;
         }
         return pCORE.die("Not a HASH reference");
     }
@@ -809,27 +809,27 @@ class pArray extends pObject {
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
-    public pObject get_hash(pObject i) {
+    public pObject get_hashref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pHash h = new pHash();
-            this.aset(i, new pHashRef(h));
-            return h;
+            pHashRef hr = new pHashRef(new pHash());
+            this.aset(i, hr);
+            return hr;
         }
         else if (o.is_hashref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
     public pObject get_hash(int i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pHash h = new pHash();
-            this.aset(i, new pHashRef(h));
-            return h;
+            pHashRef hr = new pHashRef(new pHash());
+            this.aset(i, hr);
+            return hr;
         }
         else if (o.is_hashref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
@@ -1158,27 +1158,27 @@ class pHash extends pObject {
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
-    public pObject get_hash(pObject i) {
+    public pObject get_hashref(pObject i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pHash h = new pHash();
-            this.hset(i, new pHashRef(h));
-            return h;
+            pHashRef hr = new pHashRef(new pHash());
+            this.hset(i, hr);
+            return hr;
         }
         else if (o.is_hashref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
-    public pObject get_hash(String i) {
+    public pObject get_hashref(String i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pHash h = new pHash();
-            this.hset(i, new pHashRef(h));
-            return h;
+            pHashRef hr = new pHashRef(new pHash());
+            this.hset(i, hr);
+            return hr;
         }
         else if (o.is_hashref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
     }
