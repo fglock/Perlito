@@ -255,9 +255,14 @@ if (keys(%$hh) != 2) { print "not" }
 say "ok 46 - data structure";
 
 # TODO - test these
+my $a;
 # @$a = (1,2,3);
 # %$a = (a => 1, b => 2);
 # $$a = 5;
+
+# @$main::a = (1,2,3);
+# %$main::a = (a => 1, b => 2);
+# $$main::a = 5;
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically

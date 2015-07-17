@@ -572,22 +572,19 @@ class pScalar extends pObject {
     public pObject get() {
         return this.o;
     }
-    public pObject get_scalar() {
-        // $$x
+    public pObject get_scalarref() {
         if (this.o.is_undef()) {
-            pScalar a = new pScalar();
-            this.o = new pScalarRef(a);
-            return a;
+            pScalarRef ar = new pScalarRef(new pScalar());
+            this.o = ar;
+            return ar;
         }
         else if (this.o.is_scalarref()) {
-            return this.o.get();
+            return this.o;
         }
         // Modification of a read-only value attempted
-        // return pCORE.die("Not an SCALAR reference");
         return this.o;
     }
     public pObject get_arrayref() {
-        // $x->[1]
         if (this.o.is_undef()) {
             pArrayRef ar = new pArrayRef(new pArray());
             this.o = ar;
@@ -599,7 +596,6 @@ class pScalar extends pObject {
         return pCORE.die("Not an ARRAY reference");
     }
     public pObject get_hashref() {
-        // $x->{a}
         if (this.o.is_undef()) {
             pHashRef hr = new pHashRef(new pHash());
             this.o = hr;
@@ -631,6 +627,13 @@ class pScalar extends pObject {
     }
     public pObject hset(String s, pObject v) {
         return this.o.hset(s, v);
+    }
+
+    public pObject scalar_deref() {
+        return this.get_scalarref().get();
+    }
+    public pObject scalar_deref_set(pObject v) {
+        return this.get_scalarref().get().set(v);
     }
 
     public pObject array_deref() {
