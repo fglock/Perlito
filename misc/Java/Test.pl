@@ -231,6 +231,9 @@ say "ok 41 - data structure";
 if (keys(%hh) != 2) { print "not" }
 say "ok 42 - data structure";
 
+@main::aa = ();
+%main::hh = ();
+
 $aa = undef;
 $hh = undef;
 # $aa->[1]{"a"} = 12;
