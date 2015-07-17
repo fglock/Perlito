@@ -138,10 +138,11 @@ class pV {
     public static final pHash var = new pHash();
 
     public static final pObject get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget(name);
+        return var.hget_hashref(namespace).hget_lvalue(name);
     }
     public static final pObject set(String namespace, String name, pObject v) {
         return var.hget_hashref(namespace).hset(name, v);
+        // return var.hget_hashref(namespace).hget_lvalue(name).set(v);
     }
 
     public static final pObject hash_get(String namespace, String name) {
@@ -276,6 +277,14 @@ EOT
         pCORE.die("Not a HASH reference");
         return this;
     }
+    public pObject hget_lvalue(pObject i) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
+    public pObject hget_lvalue(String i) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
 
     public pObject hset(pObject s, pObject v) {
         pCORE.die("Not a HASH reference");
@@ -346,6 +355,9 @@ EOT
         return false;
     }
     public boolean is_array() {
+        return false;
+    }
+    public boolean is_scalar() {
         return false;
     }
     public boolean is_scalarref() {
@@ -507,6 +519,13 @@ class pHashRef extends pReference {
     }
     public pObject hget(String i) {
         return this.o.hget(i);
+    }
+
+    public pObject hget_lvalue(pObject i) {
+        return this.o.hget_lvalue(i);
+    }
+    public pObject hget_lvalue(String i) {
+        return this.o.hget_lvalue(i);
     }
 
     public pObject hset(pObject s, pObject v) {
@@ -763,6 +782,9 @@ EOT
     }
     public boolean is_undef() {
         return this.o.is_undef();
+    }
+    public boolean is_scalar() {
+        return true;
     }
     public pObject scalar() {
         return this.o;
@@ -1230,6 +1252,34 @@ class pHash extends pObject {
             return pCx.UNDEF;
         }
         return o;
+    }
+    public pObject hget_lvalue(pObject i) {
+        pObject o = this.h.get(i.to_string());
+        if (o == null) {
+            pScalar a = new pScalar();
+            this.h.put(i.to_string(), a);
+            return a;
+        }
+        else if (o.is_scalar()) {
+            return o;
+        }
+        pScalar a = new pScalar(o);
+        this.h.put(i.to_string(), a);
+        return a;
+    }
+    public pObject hget_lvalue(String i) {
+        pObject o = this.h.get(i);
+        if (o == null) {
+            pScalar a = new pScalar();
+            this.h.put(i, a);
+            return a;
+        }
+        else if (o.is_scalar()) {
+            return o;
+        }
+        pScalar a = new pScalar(o);
+        this.h.put(i, a);
+        return a;
     }
 
     public pObject get_scalar(pObject i) {
