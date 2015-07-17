@@ -221,6 +221,14 @@ EOT
         pCORE.die("Not a SCALAR reference");
         return this;
     }
+    public pObject aget_scalarref(pObject i) {
+        pCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public pObject aget_scalarref(int i) {
+        pCORE.die("Not a SCALAR reference");
+        return this;
+    }
 
     public pObject array_deref() {
         pCORE.die("Not an ARRAY reference");
@@ -472,6 +480,12 @@ class pArrayRef extends pReference {
     }
     public pObject aset(pObject i, pObject v) {
         return this.o.aset(i, v);
+    }
+    public pObject aget_scalarref(pObject i) {
+        return this.o.aget_scalarref(i);
+    }
+    public pObject aget_scalarref(int i) {
+        return this.o.aget_scalarref(i);
     }
     public pObject aget_arrayref(pObject i) {
         return this.o.aget_arrayref(i);
@@ -899,6 +913,31 @@ class pArray extends pObject {
         // return pCORE.die("Not an SCALAR reference");
         return o;
     }
+    public pObject aget_scalarref(pObject i) {
+        pObject o = this.aget(i);
+        if (o.is_undef()) {
+            pScalarRef ar = new pScalarRef(new pScalar());
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not a SCALAR reference")));
+    }
+    public pObject aget_scalarref(int i) {
+        pObject o = this.aget(i);
+        if (o.is_undef()) {
+            pScalarRef ar = new pScalarRef(new pScalar());
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        return pCORE.die(pCx.VOID, new pArray(new pString("Not a SCALAR reference")));
+    }
+
     public pObject aget_arrayref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
