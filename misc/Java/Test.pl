@@ -155,8 +155,8 @@ else {
     say "not ok 29 - each @entry";
 }
 
-$s = "[" . @aa . "]";
-if ($s ne "[57869]") {
+$s = "[" . @aa . "]";   # array in scalar context
+if ($s ne "[5]") {
     print "not ";
 }
 say "ok 30 - array stringification $s";
@@ -255,13 +255,18 @@ if (keys(%$hh) != 2) { print "not" }
 say "ok 46 - data structure";
 
 # TODO - test these
-my $a;
+# my $a;
 # @$a = (1,2,3);
+# $a = undef;
 # %$a = (a => 1, b => 2);
+# $a = undef;
 # $$a = 5;
-
+# 
+# $main::a = undef;
 # @$main::a = (1,2,3);
+# $main::a = undef;
 # %$main::a = (a => 1, b => 2);
+# $main::a = undef;
 # $$main::a = 5;
 
 # initialize a typed variable by dereferencing a Perl object
