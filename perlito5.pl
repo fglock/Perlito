@@ -15104,7 +15104,7 @@ package Perlito5::AST::Apply;
         'p5str_replicate(' . Perlito5::Java::to_str($self->{'arguments'}->[0], $level) . ',' . Perlito5::Java::to_num($self->{'arguments'}->[1], $level) . ')'
     }, 'list:<.>' => sub {
         my($self, $level, $wantarray) = @_;
-        'new pString(' . join(' + ', map(Perlito5::Java::to_native_str($_, $level, 'list'), @{$self->{'arguments'}})) . ')'
+        'new pString(' . join(' + ', map(Perlito5::Java::to_native_str($_, $level, 'scalar'), @{$self->{'arguments'}})) . ')'
     }, 'list:<,>' => sub {
         my($self, $level, $wantarray) = @_;
         Perlito5::Java::to_list($self->{'arguments'})
