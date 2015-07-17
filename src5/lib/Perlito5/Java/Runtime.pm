@@ -153,10 +153,10 @@ class pV {
     // }
 
     // public static final pObject array_get(String namespace, String name) {
-    //     return var.get_array(namespace).array_deref(name);
+    //     return var.get_arrayref(namespace).array_deref(name);
     // }
     // public static final pObject array_set(String namespace, String name, pObject v) {
-    //     return var.get_array(namespace).array_deref_set(name, v);
+    //     return var.get_arrayref(namespace).array_deref_set(name, v);
     // }
 }
 class pEnv {
@@ -527,15 +527,15 @@ class pScalar extends pObject {
         // return pCORE.die("Not an SCALAR reference");
         return this.o;
     }
-    public pObject get_array() {
+    public pObject get_arrayref() {
         // $x->[1]
         if (this.o.is_undef()) {
-            pArray a = new pArray();
-            this.o = new pArrayRef(a);
-            return a;
+            pArrayRef ar = new pArrayRef(new pArray());
+            this.o = ar;
+            return ar;
         }
         else if (this.o.is_arrayref()) {
-            return this.o.get();
+            return this.o;
         }
         return pCORE.die("Not an ARRAY reference");
     }
@@ -797,15 +797,15 @@ class pArray extends pObject {
         // return pCORE.die("Not an SCALAR reference");
         return o;
     }
-    public pObject get_array(pObject i) {
+    public pObject get_arrayref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pArray a = new pArray();
-            this.aset(i, new pArrayRef(a));
-            return a;
+            pArrayRef ar = new pArrayRef(new pArray());
+            this.aset(i, ar);
+            return ar;
         }
         else if (o.is_arrayref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
@@ -1146,15 +1146,15 @@ class pHash extends pObject {
         // return pCORE.die("Not an SCALAR reference");
         return o;
     }
-    public pObject get_array(pObject i) {
+    public pObject get_arrayref(pObject i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pArray a = new pArray();
-            this.hset(i, new pArrayRef(a));
-            return a;
+            pArrayRef ar = new pArrayRef(new pArray());
+            this.hset(i, ar);
+            return ar;
         }
         else if (o.is_arrayref()) {
-            return o.get();
+            return o;
         }
         return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
     }
