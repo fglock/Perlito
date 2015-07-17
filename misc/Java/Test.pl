@@ -254,14 +254,20 @@ say "ok 45 - data structure";
 if (keys(%$hh) != 2) { print "not" }
 say "ok 46 - data structure";
 
+my $a;
+@$a = (10,20,30);
+if (@$aa != 3) { print "not" }
+say "ok 47 - data structure";
+$a = undef;
+%$a = (a => 1, b => 2);
+if (keys(%$hh) != 2) { print "not" }
+say "ok 48 - data structure";
+$a = undef;
+$$a = 5;
+if ($$a != 5) { print "not" }
+say "ok 49 - data structure";
+
 # TODO - test these
-# my $a;
-# @$a = (1,2,3);
-# $a = undef;
-# %$a = (a => 1, b => 2);
-# $a = undef;
-# $$a = 5;
-# 
 # $main::a = undef;
 # @$main::a = (1,2,3);
 # $main::a = undef;
