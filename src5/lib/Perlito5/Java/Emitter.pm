@@ -1257,7 +1257,7 @@ package Perlito5::AST::Var;
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {
-                return 'pV.get(' . $index . ').end_of_array_index()'
+                return 'pV.array_get(' . $index . ').end_of_array_index()'
             }
             my $s = 'pV.array_get(' . $index . ')';
             if ( $wantarray eq 'scalar' ) {
@@ -1310,7 +1310,7 @@ package Perlito5::AST::Var;
 
             if ($self->{sigil} eq '$#') {
                 $self->{sigil} = '@';
-                return 'pV.get(' . $index . ').set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
+                return 'pV.array_get(' . $index . ').set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
             # TODO - return in the right context
             return 'pV.array_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
