@@ -14995,7 +14995,7 @@ package Perlito5::AST::Apply;
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
         my $s = Perlito5::Java::emit_java_autovivify($arg, $level, 'array') . '.array_deref()';
-        return $wantarray eq 'scalar' ? 'p5num(' . $s . ')' : $s
+        return $wantarray eq 'scalar' ? $s . '.scalar()' : $s
     }, 'prefix:<$#>' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];

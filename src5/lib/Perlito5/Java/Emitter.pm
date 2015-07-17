@@ -2008,7 +2008,7 @@ package Perlito5::AST::Apply;
             my $arg   = $self->{arguments}->[0];
             my $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
             return $wantarray eq 'scalar'
-                ? "p5num($s)"
+                ? "$s.scalar()"
                 : $s;
         },
         'prefix:<$#>' => sub {
