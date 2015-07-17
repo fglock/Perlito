@@ -84,6 +84,10 @@ class pCORE {
         System.out.println("");
         return new pInt(1);
     }
+    public static final pObject say(String s) {
+        // say() shortcut
+        return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
+    }
     public static final pObject die(int want, pArray List__) {
         for (int i = 0; i < List__.to_int(); i++) {
             System.err.print(List__.aget(i).to_string());
@@ -146,14 +150,14 @@ class pV {
     }
 
     public static final pObject hash_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_hashref(name).hash_deref();
+        return var.hget_hashref(namespace).hget_hashref(name).get();
     }
     public static final pObject hash_set(String namespace, String name, pObject v) {
         return var.hget_hashref(namespace).hget_hashref(name).hash_deref_set(v);
     }
 
     public static final pObject array_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_arrayref(name).array_deref();
+        return var.hget_hashref(namespace).hget_arrayref(name).get();
     }
     public static final pObject array_set(String namespace, String name, pObject v) {
         return var.hget_hashref(namespace).hget_arrayref(name).array_deref_set(v);
