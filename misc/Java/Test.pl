@@ -276,9 +276,21 @@ $main::a = undef;
 $$main::a = 5;
 
 # TODO - test these
-# @{ $main::a[1] } = (1,2,3);
-# %{ $main::a[2] } = (a => 1, b => 2);
-# ${ $main::a[3] } = 5;
+@main::a = ();
+@{ $main::a[1] } = (1,2,3);
+%{ $main::a[2] } = (a => 1, b => 2);
+${ $main::a[3] } = 5;
+
+# TODO - test these
+%main::a = ();
+@{ $main::a{x1} } = (1,2,3);
+%{ $main::a{x2} } = (a => 1, b => 2);
+${ $main::a{x3} } = 5;
+
+# make sure interpolation of globals work
+@main::a = ( @main::a, %main::a );
+if (@main::a != 6) { print "not " }
+say "ok 50 - data structure [ @main::aa ] # TODO";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically

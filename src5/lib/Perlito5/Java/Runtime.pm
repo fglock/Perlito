@@ -324,6 +324,10 @@ EOT
         pCORE.die("Not an ARRAY reference");
         return this;
     }
+    public pObject length_of_array() {
+        pCORE.die("Not an ARRAY reference");
+        return this;
+    }
     public pObject values() {
         pCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
         return this;
@@ -452,6 +456,9 @@ class pScalarRef extends pReference {
         // TODO - make readonly value like in \1
         this.o = o;
     }
+    public pObject scalar_deref_set(pObject v) {
+        return this.o.set(v);
+    }
     public boolean is_scalarref() {
         return true;
     }
@@ -505,6 +512,9 @@ class pArrayRef extends pReference {
     }
     public pObject array_deref_set(pObject v) {
         return this.o.set(v);
+    }
+    public pObject length_of_array() {
+        return this.o.length_of_array();
     }
 
     public boolean is_arrayref() {
@@ -684,7 +694,7 @@ class pScalar extends pObject {
         return this.get_scalarref().get();
     }
     public pObject scalar_deref_set(pObject v) {
-        return this.get_scalarref().get().set(v);
+        return this.get_scalarref().scalar_deref_set(v);
     }
 
     public pObject array_deref() {

@@ -1229,7 +1229,7 @@ package Perlito5::AST::Var;
                 return $s . '.end_of_array_index()';
             }
             if ( $wantarray eq 'scalar' ) {
-                return $s . '.to_int()';
+                return $s . '.length_of_array()';
             }
             if ( $wantarray eq 'runtime' ) {
                 return '(p5want'
@@ -1263,7 +1263,7 @@ package Perlito5::AST::Var;
             }
             my $s = 'pV.array_get(' . $index . ')';
             if ( $wantarray eq 'scalar' ) {
-                return $s . '.to_int()';
+                return $s . '.length_of_array()';
             }
             return $s;
         }
