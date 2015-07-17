@@ -270,8 +270,8 @@ say "ok 49 - data structure";
 # TODO - test these
 $main::a = undef;
 @$main::a = (1,2,3);
-# $main::a = undef;
-# %$main::a = (a => 1, b => 2);
+$main::a = undef;
+%$main::a = (a => 1, b => 2);
 # $main::a = undef;
 # $$main::a = 5;
 
