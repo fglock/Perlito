@@ -891,8 +891,9 @@ package Perlito5::AST::Index;
         my ($self, $level, $wantarray, $autovivification_type) = @_;
         # autovivification_type: array, hash
         my $method = $autovivification_type || 'aget';
-        $method = 'aget_arrayref' if $autovivification_type eq 'array';
-        $method = 'aget_hashref'  if $autovivification_type eq 'hash';
+        $method = 'aget_scalarref' if $autovivification_type eq 'array';
+        $method = 'aget_arrayref'  if $autovivification_type eq 'array';
+        $method = 'aget_hashref'   if $autovivification_type eq 'hash';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1046,8 +1047,9 @@ package Perlito5::AST::Lookup;
         my ($self, $level, $wantarray, $autovivification_type) = @_;
         # autovivification_type: array, hash
         my $method = $autovivification_type || 'hget';
-        $method = 'hget_arrayref' if $autovivification_type eq 'array';
-        $method = 'hget_hashref'  if $autovivification_type eq 'hash';
+        $method = 'hget_scalarref' if $autovivification_type eq 'array';
+        $method = 'hget_arrayref'  if $autovivification_type eq 'array';
+        $method = 'hget_hashref'   if $autovivification_type eq 'hash';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1516,16 +1518,18 @@ package Perlito5::AST::Call;
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
             my $method = $autovivification_type || 'aget';
-            $method = 'get_arrayref().aget_arrayref' if $autovivification_type eq 'array';
-            $method = 'get_arrayref().aget_hashref'  if $autovivification_type eq 'hash';
+            $method = 'get_arrayref().aget_scalarref' if $autovivification_type eq 'array';
+            $method = 'get_arrayref().aget_arrayref'  if $autovivification_type eq 'array';
+            $method = 'get_arrayref().aget_hashref'   if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                 . '.' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             my $method = $autovivification_type || 'hget';
-            $method = 'get_hashref().hget_arrayref' if $autovivification_type eq 'array';
-            $method = 'get_hashref().hget_hashref'  if $autovivification_type eq 'hash';
+            $method = 'get_hashref().hget_scalarref' if $autovivification_type eq 'array';
+            $method = 'get_hashref().hget_arrayref'  if $autovivification_type eq 'array';
+            $method = 'get_hashref().hget_hashref'   if $autovivification_type eq 'hash';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';

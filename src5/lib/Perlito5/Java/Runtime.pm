@@ -217,6 +217,11 @@ EOT
         pCORE.die("Not a SCALAR reference");
         return this;
     }
+    public pObject scalar_deref_set(pObject v) {
+        pCORE.die("Not a SCALAR reference");
+        return this;
+    }
+
     public pObject array_deref() {
         pCORE.die("Not an ARRAY reference");
         return this;

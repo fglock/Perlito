@@ -272,8 +272,13 @@ $main::a = undef;
 @$main::a = (1,2,3);
 $main::a = undef;
 %$main::a = (a => 1, b => 2);
-# $main::a = undef;
-# $$main::a = 5;
+$main::a = undef;
+$$main::a = 5;
+
+# TODO - test these
+# @{ $main::a[1] } = (1,2,3);
+# %{ $main::a[2] } = (a => 1, b => 2);
+# ${ $main::a[3] } = 5;
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
