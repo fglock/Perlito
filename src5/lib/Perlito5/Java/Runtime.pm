@@ -146,14 +146,14 @@ class pV {
     }
 
     public static final pObject hash_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_hashref(name);
+        return var.hget_hashref(namespace).hget_hashref(name).hash_deref();
     }
     public static final pObject hash_set(String namespace, String name, pObject v) {
         return var.hget_hashref(namespace).hget_hashref(name).hash_deref_set(v);
     }
 
     public static final pObject array_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_arrayref(name);
+        return var.hget_hashref(namespace).hget_arrayref(name).array_deref();
     }
     public static final pObject array_set(String namespace, String name, pObject v) {
         return var.hget_hashref(namespace).hget_arrayref(name).array_deref_set(v);

@@ -226,9 +226,9 @@ $hh{"1"}{"a"} = 13;
 $aa[2][1] = 14;
 $hh{"2"}[1] = 15;
 
-if (@aa != 3) { print "not" }
+if (@aa != 3) { print "not " }
 say "ok 41 - data structure";
-if (keys(%hh) != 2) { print "not" }
+if (keys(%hh) != 2) { print "not " }
 say "ok 42 - data structure";
 
 @main::aa = ();
@@ -240,31 +240,31 @@ $aa->[1]{"a"} = 12;
 $hh->{"1"}{"a"} = 13;
 $aa->[2][1] = 14;
 $hh->{"2"}[1] = 15;
-if (@$aa != 3) { print "not" }
+if (@$aa != 3) { print "not " }
 say "ok 43 - data structure";
-if (keys(%$hh) != 2) { print "not" }
+if (keys(%$hh) != 2) { print "not " }
 say "ok 44 - data structure";
 
 $aa->[1]->{"a"} = 12;
 $hh->{"1"}->{"a"} = 13;
 $aa->[2]->[1] = 14;
 $hh->{"2"}->[1] = 15;
-if (@$aa != 3) { print "not" }
+if (@$aa != 3) { print "not " }
 say "ok 45 - data structure";
-if (keys(%$hh) != 2) { print "not" }
+if (keys(%$hh) != 2) { print "not " }
 say "ok 46 - data structure";
 
 my $a;
 @$a = (10,20,30);
-if (@$aa != 3) { print "not" }
+if (@$aa != 3) { print "not " }
 say "ok 47 - data structure";
 $a = undef;
 %$a = (a => 1, b => 2);
-if (keys(%$hh) != 2) { print "not" }
+if (keys(%$hh) != 2) { print "not " }
 say "ok 48 - data structure";
 $a = undef;
 $$a = 5;
-if ($$a != 5) { print "not" }
+if ($$a != 5) { print "not " }
 say "ok 49 - data structure";
 
 # TODO - test these
@@ -280,23 +280,27 @@ $$main::a = 5;
 @{ $main::a[1] } = (1,2,3);
 %{ $main::a[2] } = (a => 1, b => 2);
 ${ $main::a[3] } = 5;
+if (@main::a != 3) { print "not " }
+say "ok 50 - data structure [ @main::aa ] # TODO";
 
 # TODO - test these
 %main::a = ();
 @{ $main::a{x1} } = (1,2,3);
 %{ $main::a{x2} } = (a => 1, b => 2);
 ${ $main::a{x3} } = 5;
+if (keys(%main::a) != 3) { print "not " }
+say "ok 51 - data structure @{[ %main::aa ]}";
 
 # make sure interpolation of globals work
 @main::a = ( @main::a, %main::a );
 if (@main::a != 6) { print "not " }
-say "ok 50 - data structure [ @main::aa ] # TODO";
+say "ok 52 - data structure [ @main::aa ] # TODO";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
 my my::Sample $z = my::Sample->new()->to_mySample();
 # TODO - cast typed variable to Perl object automatically
-# say "ok 45 - initialize a typed variable by dereferencing a Perl object: $z\n";
+# say "ok 53 - initialize a typed variable by dereferencing a Perl object: $z\n";
 
 __END__
 
