@@ -89,8 +89,7 @@ class pCORE {
             System.err.print(List__.aget(i).to_string());
         }
         System.err.println("");
-        System.exit(1);     // TODO
-        return pCx.UNDEF;
+        throw new RuntimeException();
     }
     public static final pObject die(String s) {
         // die() shortcut
