@@ -278,15 +278,17 @@ $$main::a = 5;
 # TODO - test these
 @main::a = (20,30,40);
 if (@main::a != 3) { print "not " }
-say "ok 50 - data structure [ @main::aa ]";
+say "ok 50 - data structure [ @main::a ]";
+if ($main::a[1] != 30) { print "not " }
+say "ok 51 - data structure [ @main::a ]";
 
 # TODO - test these
 @main::a = ();
 @{ $main::a[1] } = (1,2,3);
 %{ $main::a[2] } = (a => 1, b => 2);
 ${ $main::a[3] } = 5;
-if (@main::a != 3) { print "not " }
-say "ok 51 - data structure [ @main::aa ] # TODO";
+if (@main::a != 4) { print "not " }
+say "ok 52 - data structure [ @main::a ]";
 
 # TODO - test these
 %main::a = ();
@@ -294,18 +296,18 @@ say "ok 51 - data structure [ @main::aa ] # TODO";
 %{ $main::a{x2} } = (a => 1, b => 2);
 ${ $main::a{x3} } = 5;
 if (keys(%main::a) != 3) { print "not " }
-say "ok 52 - data structure @{[ %main::aa ]} # TODO";
+say "ok 53 - data structure @{[ %main::a ]} # TODO";
 
 # make sure interpolation of globals work
 @main::a = ( @main::a, %main::a );
 if (@main::a != 6) { print "not " }
-say "ok 53 - data structure [ @main::aa ] # TODO";
+say "ok 54 - data structure [ @main::a ] # TODO";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
 my my::Sample $z = my::Sample->new()->to_mySample();
 # TODO - cast typed variable to Perl object automatically
-# say "ok 54 - initialize a typed variable by dereferencing a Perl object: $z\n";
+# say "ok 55 - initialize a typed variable by dereferencing a Perl object: $z\n";
 
 __END__
 
