@@ -1083,6 +1083,10 @@ EOT
     public pObject push(pArray args) {
         for (int i = 0; i < args.to_int(); i++) {
             pObject s = args.aget(i);
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
             if (s.is_array()) {
                 this.push(s);
             }
@@ -1105,6 +1109,10 @@ EOT
     public pObject unshift(pArray args) {
         for (int i = args.to_int() - 1; i >= 0; i--) {
             pObject s = args.aget(i);
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
             if (s.is_array()) {
                 this.unshift(s);
             }
@@ -1223,6 +1231,10 @@ class pHash extends pObject {
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
             pObject s = args[i];
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
             if (s.is_array()) {
                 // %x = ( @x, @y );
                 int array_size = s.to_int();
@@ -1261,6 +1273,10 @@ class pHash extends pObject {
     }
     public pObject set(pObject s) {
         this.h.clear();
+        if (s.is_hash()) {
+            // @x = %x;
+            s = s.to_array();
+        }
         if (s.is_array()) {
             // %x = ( @x, @y );
             int array_size = s.to_int();

@@ -296,12 +296,12 @@ say "ok 52 - data structure [ @main::a ]";
 %{ $main::a{x2} } = (a => 1, b => 2);
 ${ $main::a{x3} } = 5;
 if (keys(%main::a) != 3) { print "not " }
-say "ok 53 - data structure @{[ %main::a ]} # TODO";
+say "ok 53 - data structure @{[ %main::a ]}";
 
 # make sure interpolation of globals work
 @main::a = ( @main::a, %main::a );
-if (@main::a != 6) { print "not " }
-say "ok 54 - data structure [ @main::a ] # TODO";
+if (@main::a != 10) { print "not " }
+say "ok 54 - data structure [ @main::a ]";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
