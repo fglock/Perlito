@@ -3438,30 +3438,30 @@ package Perlito5::AST::Sub;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $prototype = defined($self->{sig}) 
-                        ? Perlito5::Java::escape_string($self->{sig}) 
-                        : '';
+                        ? 'new pString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
+                        : 'pCx.Undef';
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
-        my $js_block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} )->emit_java_subroutine_body( $level + 2, 'runtime' );
+        my $js_block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} )->emit_java_subroutine_body( $level + 3, 'runtime' );
 
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 
-            "var $sub_ref;",
-            "$sub_ref = function (List__, p5want) {",
-                [ $js_block ],
-            "};",
-            "$sub_ref._prototype_ = $prototype;",
-            "return $sub_ref",
+            "new pClosure($prototype, new pObject[]{ v1, v2, v3 } ) {",
+                [ "public pObject apply(want, List__) {",
+                    [ $js_block ],
+                  "}",
+                ],
+            "}",
         );
 
         if ( $self->{name} ) {
-            return 'p5typeglob_set(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ', ' . $s . ')'
+            return 'pV.(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ', ' . $s . ')'
         }
         else {
             return $s;
         }
 
-        # pClosure c = new pClosure( new pObject[]{ v1, v2, v3 } ) {
+        # pClosure c = new pClosure( "", new pObject[]{ v1, v2, v3 } ) {
         #     public PerlitoObject apply( context, args ) {
         #         System.out.println("called MyClosure with " + this.lexicals[2].to_string());
         #         return new PerlitoInt(0);

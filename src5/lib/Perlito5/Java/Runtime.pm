@@ -441,10 +441,12 @@ class pReference extends pObject {
     }
 }
 class pClosure extends pReference {
-    public pObject env;
+    public pObject[] env;       // new pObject[]{ v1, v2, v3 }
+    public pObject prototype;    // '$$$'
     public static final pString REF = new pString("CODE");
 
-    public pClosure(pObject env) {
+    public pClosure(pObject prototype, pObject[] env) {
+        this.prototype = protytype;
         this.env = env;
     }
     // Note: apply() is inherited from pObject
