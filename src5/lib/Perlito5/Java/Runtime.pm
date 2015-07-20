@@ -748,6 +748,9 @@ class pScalar extends pObject {
         }
         return pCORE.die("Not a HASH reference");
     }
+    public pObject apply(int want, pObject List__) {
+        return this.o.apply(want, List__);
+    }
 
     // Note: several versions of set()
     public pObject set(pObject o) {

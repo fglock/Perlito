@@ -1535,7 +1535,7 @@ package Perlito5::AST::Call;
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
-
+            # $x->()
             my $invocant;
             if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Apply' 
                && $self->{invocant}{code} eq 'prefix:<&>'
@@ -1554,8 +1554,9 @@ package Perlito5::AST::Call;
                 $invocant = $self->{invocant}->emit_java($level, 'scalar');
             }
 
-            return '(' . $invocant . ')(' . Perlito5::Java::to_list($self->{arguments}) . ', '
-                        . Perlito5::Java::to_context($wantarray)
+            return $invocant . '.apply('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_list($self->{arguments})
                     . ')';
         }
 
@@ -2949,7 +2950,7 @@ package Perlito5::AST::Apply;
             my @args = ();
             push @args, $_->emit_java
                 for @{$self->{arguments}};
-            return '(' . $self->{code}->emit_java( $level ) . ')(' . join(',', @args) . ')';
+            return $self->{code}->emit_java( $level ) . '.apply(' . join(',', @args) . ')';
         }
 
         return $emit_js{$code}->($self, $level, $wantarray)
@@ -3110,7 +3111,7 @@ package Perlito5::AST::Apply;
 
         }
 
-        $code . '('
+        $code . '.apply('
                 . Perlito5::Java::to_context($wantarray) . ', '
                 . $arg_code
               . ')';
