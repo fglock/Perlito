@@ -14055,7 +14055,7 @@ package Perlito5::Java;
     }
     sub Perlito5::Java::emit_wrap_java {
         my($level, $wantarray, @argument) = @_;
-        return join(chr(10), '// (function () {', emit_java_list_with_tabs($level, [\@argument, '// })()']))
+        return join(chr(10), emit_java_list_with_tabs($level, [\@argument]))
     }
     sub Perlito5::Java::emit_function_java {
         my($level, $wantarray, $argument) = @_;
@@ -15846,7 +15846,7 @@ package Perlito5::AST::Sub;
         my $js_block = $block->emit_java_subroutine_body($level + 3, 'runtime');
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captured) . ' } ) {', ['public pObject apply(want, List__) {', [$js_block], '}'], '}');
         if ($self->{'name'}) {
-            return 'pV.(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($self->{'name'}) . ', ' . $s . ')'
+            return 'pV.(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($self->{'name'}) . ',' . chr(10) . $s . ')'
         }
         else {
             return $s

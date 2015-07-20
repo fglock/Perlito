@@ -473,9 +473,8 @@ package Perlito5::Java;
 
     sub emit_wrap_java {
         my ($level, $wantarray, @argument) = @_;
-        return join("\n", "// (function () {",
-                          emit_java_list_with_tabs($level, [
-                                \@argument, "// })()"
+        return join("\n", emit_java_list_with_tabs($level, [
+                                \@argument, 
                           ]));
     }
 
@@ -3461,7 +3460,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'pV.(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ', ' . $s . ')'
+            return 'pV.(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ", " . $s . ')'
         }
         else {
             return $s;
