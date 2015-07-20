@@ -446,7 +446,7 @@ class pClosure extends pReference {
     public static final pString REF = new pString("CODE");
 
     public pClosure(pObject prototype, pObject[] env) {
-        this.prototype = protytype;
+        this.prototype = prototype;
         this.env = env;
     }
     // Note: apply() is inherited from pObject

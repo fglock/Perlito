@@ -3443,10 +3443,16 @@ package Perlito5::AST::Sub;
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
-        my $js_block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} )->emit_java_subroutine_body( $level + 3, 'runtime' );
+        my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} );
+
+        # TODO - get list of captured variables, including inner blocks
+        my @captured = ( 'v1', 'v2', 'v3' );
+
+        # TODO - access captured variables via this.env[index]
+        my $js_block = $block->emit_java_subroutine_body( $level + 3, 'runtime' );
 
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 
-            "new pClosure($prototype, new pObject[]{ v1, v2, v3 } ) {",
+            "new pClosure($prototype, new pObject[]{ " . join(', ', @captured) . " } ) {",
                 [ "public pObject apply(want, List__) {",
                     [ $js_block ],
                   "}",
@@ -3463,7 +3469,7 @@ package Perlito5::AST::Sub;
 
         # pClosure c = new pClosure( "", new pObject[]{ v1, v2, v3 } ) {
         #     public PerlitoObject apply( context, args ) {
-        #         System.out.println("called MyClosure with " + this.lexicals[2].to_string());
+        #         System.out.println("called MyClosure with " + this.env[2].to_string());
         #         return new PerlitoInt(0);
         #     }
         # };
