@@ -13831,7 +13831,7 @@ package Perlito5::Java;
     }
     sub Perlito5::Java::tab {
         my $level = shift;
-        chr(9) x $level
+        '    ' x $level
     }
     sub Perlito5::Java::get_java_class_info {
         return \%Java_class
