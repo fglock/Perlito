@@ -14249,6 +14249,9 @@ package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::CompUnit::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::Int;
 {
@@ -14260,6 +14263,9 @@ package Perlito5::AST::Int;
         ()
     }
     sub Perlito5::AST::Int::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Int::emit_java_get_captures {
         ()
     }
 }
@@ -14275,6 +14281,9 @@ package Perlito5::AST::Num;
     sub Perlito5::AST::Num::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::Num::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::Buf;
 {
@@ -14286,6 +14295,9 @@ package Perlito5::AST::Buf;
         ()
     }
     sub Perlito5::AST::Buf::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Buf::emit_java_get_captures {
         ()
     }
 }
@@ -14321,6 +14333,9 @@ package Perlito5::AST::Block;
         ()
     }
     sub Perlito5::AST::Block::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Block::emit_java_get_captures {
         ()
     }
 }
@@ -14380,6 +14395,9 @@ package Perlito5::AST::Index;
         ()
     }
     sub Perlito5::AST::Index::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Index::emit_java_get_captures {
         ()
     }
 }
@@ -14449,6 +14467,9 @@ package Perlito5::AST::Lookup;
         ()
     }
     sub Perlito5::AST::Lookup::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Lookup::emit_java_get_captures {
         ()
     }
 }
@@ -14619,6 +14640,9 @@ package Perlito5::AST::Var;
     sub Perlito5::AST::Var::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::Var::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::Decl;
 {
@@ -14693,6 +14717,9 @@ package Perlito5::AST::Decl;
         return ($self)
     }
     sub Perlito5::AST::Decl::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Decl::emit_java_get_captures {
         ()
     }
 }
@@ -14788,6 +14815,9 @@ package Perlito5::AST::Call;
         ()
     }
     sub Perlito5::AST::Call::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Call::emit_java_get_captures {
         ()
     }
 }
@@ -15686,6 +15716,9 @@ package Perlito5::AST::Apply;
         }
         return ()
     }
+    sub Perlito5::AST::Apply::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::If;
 {
@@ -15733,6 +15766,9 @@ package Perlito5::AST::If;
     sub Perlito5::AST::If::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::If::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::When;
 {
@@ -15743,6 +15779,9 @@ package Perlito5::AST::When;
         ()
     }
     sub Perlito5::AST::When::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::When::emit_java_get_captures {
         ()
     }
 }
@@ -15775,6 +15814,9 @@ package Perlito5::AST::While;
         ()
     }
     sub Perlito5::AST::While::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::While::emit_java_get_captures {
         ()
     }
 }
@@ -15834,6 +15876,9 @@ package Perlito5::AST::For;
     sub Perlito5::AST::For::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::For::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::Sub;
 {
@@ -15859,6 +15904,9 @@ package Perlito5::AST::Sub;
     sub Perlito5::AST::Sub::emit_java_has_regex {
         ()
     }
+    sub Perlito5::AST::Sub::emit_java_get_captures {
+        ()
+    }
 }
 package Perlito5::AST::Use;
 {
@@ -15876,6 +15924,9 @@ package Perlito5::AST::Use;
         ()
     }
     sub Perlito5::AST::Use::emit_java_has_regex {
+        ()
+    }
+    sub Perlito5::AST::Use::emit_java_get_captures {
         ()
     }
 }
