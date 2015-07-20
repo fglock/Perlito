@@ -3450,7 +3450,7 @@ package Perlito5::AST::Sub;
 
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 
             "new pClosure($prototype, new pObject[]{ " . join(', ', @captured) . " } ) {",
-                [ "public pObject apply(int want, pArray List__) {",
+                [ "public pObject apply(int want, pObject List__) {",
                     [ $js_block ],
                   "}",
                 ],

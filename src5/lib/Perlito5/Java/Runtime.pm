@@ -457,7 +457,10 @@ class pClosure extends pReference {
         this.env = env;
     }
     // Note: apply() is inherited from pObject
-    // public pObject apply(int want, pObject List__) {
+    public pObject apply(int want, pObject List__) {
+        pCORE.die("it looks like you have a closure without a block");
+        return this;
+    }
     public pObject ref() {
         return REF;
     }
