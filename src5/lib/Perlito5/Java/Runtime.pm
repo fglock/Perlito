@@ -213,6 +213,12 @@ EOT
     public boolean is_undef() {
         return false;
     }
+    public pObject apply(int want, pObject List__) {
+        // $ perl -e ' $a = 5; $a->() '
+        // Undefined subroutine &main::5 called
+        pCORE.die("subroutine call error");
+        return this;
+    }
     public pObject hget_scalarref(pObject i) {
         pCORE.die("Not a SCALAR reference");
         return this;
@@ -441,10 +447,8 @@ class pClosure extends pReference {
     public pClosure(pObject env) {
         this.env = env;
     }
-    public pObject apply(int want, pObject List__) {
-        pCORE.die("error!");
-        return new pInt(0);
-    }
+    // Note: apply() is inherited from pObject
+    // public pObject apply(int want, pObject List__) {
     public pObject ref() {
         return REF;
     }
@@ -1562,6 +1566,11 @@ EOT
 }
 class pUndef extends pObject {
     public pUndef() {
+    }
+    public pObject apply(int want, pObject List__) {
+        // $a->()
+        pCORE.die("Can't use an undefined value as a subroutine reference");
+        return this;
     }
     public int to_int() {
         return 0;

@@ -3459,6 +3459,15 @@ package Perlito5::AST::Sub;
         else {
             return $s;
         }
+
+        # pClosure c = new pClosure( new pObject[]{ v1, v2, v3 } ) {
+        #     public PerlitoObject apply( context, args ) {
+        #         System.out.println("called MyClosure with " + this.lexicals[2].to_string());
+        #         return new PerlitoInt(0);
+        #     }
+        # };
+        # c.apply( context, args );
+
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
