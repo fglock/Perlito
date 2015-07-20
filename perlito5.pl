@@ -4494,7 +4494,8 @@ sub Perlito5::Grammar::Scope::lookup_variable_inner {
     for my $item (reverse(@{$block})) {
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'_decl'} ne 'global' && $item->{'name'} eq $var->{'name'}) {
             my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-            if ($sigil eq $item->{'sigil'}) {
+            my $item_sigil = $item->{'_real_sigil'} || $item->{'sigil'};
+            if ($sigil eq $item_sigil) {
                 return $item
             }
         }
@@ -14546,11 +14547,11 @@ package Perlito5::AST::Var;
     sub Perlito5::AST::Var::emit_java {
         my($self, $level, $wantarray) = @_;
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
-        my $str_name = $self->{'name'};
         my $decl_type = $self->{'_decl'} || 'global';
         if ($decl_type ne 'my') {
             return $self->emit_java_global($level, $wantarray)
         }
+        my $str_name = $self->{'name'} . '_' . $self->{'_id'};
         if ($sigil eq '@') {
             if ($wantarray eq 'scalar') {
                 return $self->emit_java($level, 'list') . '.length_of_array()'

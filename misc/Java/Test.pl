@@ -258,7 +258,7 @@ my $a;
 @$a = (10,20,30);
 if (@$aa != 3) { print "not " }
 say "ok 47 - data structure";
-$a = undef;
+my $a;  # redeclaration
 %$a = (a => 1, b => 2);
 if (keys(%$hh) != 2) { print "not " }
 say "ok 48 - data structure";

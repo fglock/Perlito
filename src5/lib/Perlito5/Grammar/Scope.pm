@@ -86,10 +86,11 @@ sub lookup_variable_inner {
             && $item->{_decl} ne 'global'
             && $item->{name} eq $var->{name}) {
             my $sigil = $var->{_real_sigil} || $var->{sigil};
+            my $item_sigil = $item->{_real_sigil} || $item->{sigil};
             # TODO - namespace
             # TODO - $a[10]  $#a  ${"a"}
             # TODO - check "strict"
-            if ($sigil eq $item->{sigil}) {
+            if ($sigil eq $item_sigil) {
                 # print "found name: $item->{sigil} $item->{name} decl: $item->{_decl}\n";
                 return $item;
             }
