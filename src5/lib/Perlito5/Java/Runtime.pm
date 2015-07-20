@@ -136,6 +136,13 @@ class pOp {
     // operators: && || * / 
     // note: '+' add() and '-' sub() are pObject methods
     // TODO
+
+    public static final pObject context(int want, pObject arg) {
+        if (want == 1) {
+            return arg;
+        }
+        return arg.scalar();
+    }
 }
 class pV {
     // global variables (namespaces)

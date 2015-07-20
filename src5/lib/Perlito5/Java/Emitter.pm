@@ -406,11 +406,9 @@ package Perlito5::Java;
         return $items->[0]->emit_java($level, $wantarray)
             if @$items == 1 && is_scalar($items->[0]);
 
-        'p5context(' 
-            . '['
+        'pOp.context(want, ' 
             .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
-            . ']'
-            . ', p5want)'
+            . ')'
     }
 
     sub to_context {
@@ -2282,21 +2280,21 @@ package Perlito5::AST::Apply;
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of my($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'our' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of our($x,$y)
-            'p5context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'local' => sub {
             my ($self, $level, $wantarray) = @_;
             # 'local ($x, $y[10])'
-            'p5context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'circumfix:<( )>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'infix:<=>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3438,14 +3436,14 @@ package Perlito5::AST::Sub;
         my ($self, $level, $wantarray) = @_;
         my $prototype = defined($self->{sig}) 
                         ? 'new pString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
-                        : 'pCx.Undef';
+                        : 'pCx.UNDEF';
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} );
 
         # TODO - get list of captured variables, including inner blocks
-        my @captured = ( 'v1', 'v2', 'v3' );
+        my @captured = ( 'v_x' );
 
         # TODO - access captured variables via this.env[index]
         my $js_block = $block->emit_java_subroutine_body( $level + 3, 'runtime' );
@@ -3485,7 +3483,7 @@ package Perlito5::AST::Use;
         my ($self, $level, $wantarray) = @_;
         Perlito5::Grammar::Use::emit_time_eval($self);
         if ($wantarray ne 'void') {
-            return 'p5context([], p5want)';
+            return 'pOp.context([], p5want)';
         }
         else {
             return '// ' . $self->{code} . ' ' . $self->{mod} . "\n";
