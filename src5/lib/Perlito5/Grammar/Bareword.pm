@@ -552,6 +552,7 @@ sub term_bareword {
                                 attributes => [],
                             );
                         $var->{_decl} = $name;
+                        $var->{_id}   = $Perlito5::ID++;
                         $var->{_namespace} = $Perlito5::PKG_NAME if $declarator eq 'our';
                         $var->{_namespace} = $Perlito5::PKG_NAME
                             if $declarator eq 'local' && !$var->{namespace} && !$var->{_namespace};

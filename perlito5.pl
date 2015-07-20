@@ -614,6 +614,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     else {
                         my $decl = Perlito5::AST::Decl::->new('decl' => $declarator, 'type' => '', 'var' => $var, 'attributes' => []);
                         $var->{'_decl'} = $name;
+                        $var->{'_id'} = $Perlito5::ID++;
                         $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
                         $declarator eq 'local' && !$var->{'namespace'} && !$var->{'_namespace'} && ($var->{'_namespace'} = $Perlito5::PKG_NAME)
                     }
@@ -14195,6 +14196,14 @@ package Perlito5::Java::LexicalBlock;
     sub Perlito5::Java::LexicalBlock::emit_java_has_regex {
         ()
     }
+    sub Perlito5::Java::LexicalBlock::emit_java_get_captures {
+        my($self) = @_;
+        my @var;
+        for my $stmt (@{$self->{'block'}}) {
+            push(@var, $stmt->emit_java_get_captures())
+        }
+        return @var
+    }
 }
 package Perlito5::AST::CompUnit;
 {
@@ -14336,7 +14345,11 @@ package Perlito5::AST::Block;
         ()
     }
     sub Perlito5::AST::Block::emit_java_get_captures {
-        ()
+        my $self = shift;
+        my @var;
+        push(@var, $self->{'obj'}->emit_java_get_captures());
+        push(@var, $self->{'index_exp'}->emit_java_get_captures());
+        return @var
     }
 }
 package Perlito5::AST::Index;
@@ -14398,7 +14411,11 @@ package Perlito5::AST::Index;
         ()
     }
     sub Perlito5::AST::Index::emit_java_get_captures {
-        ()
+        my $self = shift;
+        my @var;
+        push(@var, $self->{'obj'}->emit_java_get_captures());
+        push(@var, $self->{'index_exp'}->emit_java_get_captures());
+        return @var
     }
 }
 package Perlito5::AST::Lookup;
@@ -14641,7 +14658,8 @@ package Perlito5::AST::Var;
         ()
     }
     sub Perlito5::AST::Var::emit_java_get_captures {
-        ()
+        my $self = shift;
+        return ($self)
     }
 }
 package Perlito5::AST::Decl;
@@ -14720,7 +14738,7 @@ package Perlito5::AST::Decl;
         ()
     }
     sub Perlito5::AST::Decl::emit_java_get_captures {
-        ()
+        return {'dont' => $_[0]->{'var'}->{'_id'}}
     }
 }
 package Perlito5::AST::Call;
@@ -15717,7 +15735,19 @@ package Perlito5::AST::Apply;
         return ()
     }
     sub Perlito5::AST::Apply::emit_java_get_captures {
-        ()
+        my $self = shift;
+        my $code = $self->{'code'};
+        my @var;
+        ref($code) && push(@var, $code->emit_java_get_captures());
+        $self->{'arguments'} && push(@var, map {
+            $_->emit_java_get_captures()
+        } @{$self->{'arguments'}});
+        if ($code eq 'my' || $code eq 'our' || $code eq 'state') {
+            push(@var, (map {
+                ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}}) : ()
+            } @{$self->{'arguments'}}))
+        }
+        return @var
     }
 }
 package Perlito5::AST::If;
@@ -15888,9 +15918,19 @@ package Perlito5::AST::Sub;
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'});
-        my @captured = ('v_x');
+        my @captured = $block->emit_java_get_captures();
+        my %dont_capture = map {
+            $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+        } @captured;
+        my %capture = map {
+            $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : $_->{'_decl'} eq 'local' ? () : ($_->{'_id'} => $_)
+        } @captured;
+        my @captures_ast = values(%capture);
+        my @captures_java = map {
+            $_->emit_java($level, 'list')
+        } @captures_ast;
         my $js_block = $block->emit_java_subroutine_body($level + 3, 'runtime');
-        my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captured) . ' } ) {', ['public pObject apply(int want, pObject List__) {', [$js_block], '}'], '}');
+        my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public pObject apply(int want, pObject List__) {', [$js_block], '}'], '}');
         if ($self->{'name'}) {
             return 'pV.(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($self->{'name'}) . ', ' . $s . ')'
         }
