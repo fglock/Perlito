@@ -3511,6 +3511,7 @@ package Perlito5::AST::Sub;
         my %capture = map { $_->{dont} ? ()
                           : $dont_capture{ $_->{_id} } ? ()
                           : $_->{_decl} eq 'local' ? ()
+                          : $_->{name} eq '_' ? ()      # don't capture $_, @_
                           : ( $_->{_id} => $_ )
                           } @captured;
         # warn Data::Dumper::Dumper(\@captured);
