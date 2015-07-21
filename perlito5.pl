@@ -13827,7 +13827,7 @@ package Perlito5::Java;
     our %Java_var_name;
     my %Java_var;
     sub Perlito5::Java::pkg {
-        'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ']'
+        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
     }
     sub Perlito5::Java::get_label {
         'tmp' . $Perlito5::ID++
@@ -15614,10 +15614,10 @@ package Perlito5::AST::Apply;
                     die('Java::inline needs a string constant')
                 }
             }
-            $code = 'p5pkg[' . Perlito5::Java::escape_string($self->{'namespace'}) . '].' . $code
+            $code = 'pV.get(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($code) . ')'
         }
         else {
-            $code = Perlito5::Java::pkg() . '.' . $code
+            $code = 'pV.get(' . Perlito5::Java::pkg() . ', ' . Perlito5::Java::escape_string($code) . ')'
         }
         my $sig;
         my $may_need_autoload;
@@ -15940,7 +15940,7 @@ package Perlito5::AST::Sub;
         my $js_block = $block->emit_java_subroutine_body($level + 3, 'runtime');
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public pObject apply(int want, pObject List__) {', [$js_block], '}'], '}');
         if ($self->{'name'}) {
-            return 'pV.(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($self->{'name'}) . ', ' . $s . ')'
+            return 'pV.set(' . Perlito5::Java::escape_string($self->{'namespace'}) . ', ' . Perlito5::Java::escape_string($self->{'name'}) . ', ' . $s . ')'
         }
         else {
             return $s

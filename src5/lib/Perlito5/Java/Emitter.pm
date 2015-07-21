@@ -20,7 +20,7 @@ package Perlito5::Java;
 
     my %Java_var;       # 101 => { id => 101, type => 'Byte' }
     sub pkg {
-        'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ']'
+        Perlito5::Java::escape_string($Perlito5::PKG_NAME )
     }
     sub get_label {
         'tmp' . $Perlito5::ID++
@@ -3017,10 +3017,10 @@ package Perlito5::AST::Apply;
                     die "Java::inline needs a string constant";
                 }
             }
-            $code = 'p5pkg[' . Perlito5::Java::escape_string($self->{namespace} ) . '].' . $code;
+            $code = 'pV.get(' . Perlito5::Java::escape_string($self->{namespace}) . ', ' . Perlito5::Java::escape_string( $code ) . ')'
         }
         else {
-            $code = Perlito5::Java::pkg() . '.' . $code
+            $code = 'pV.get(' . Perlito5::Java::pkg() . ', ' . Perlito5::Java::escape_string( $code ) . ')'
         }
 
         my $sig;
@@ -3541,7 +3541,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'pV.(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ", " . $s . ')'
+            return 'pV.set(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ", " . $s . ')'
         }
         else {
             return $s;

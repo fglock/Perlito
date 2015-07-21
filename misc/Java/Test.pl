@@ -321,6 +321,14 @@ if ( $res ne "127 4" ) {
 }
 say "ok 56 - closure with params [$res]";
 
+# $x = 3;
+# sub v { $x = $x + 1; $_[0] + $x;  }
+# $res = v(123) . " " . $x;
+# if ( $res ne "127 4" ) {
+#     print "not ";
+# }
+# say "ok 57 - subroutine [$res]";
+
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
