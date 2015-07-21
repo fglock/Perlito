@@ -3510,8 +3510,7 @@ package Perlito5::AST::Sub;
         my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
         my %capture = map { $_->{dont} ? ()
                           : $dont_capture{ $_->{_id} } ? ()
-                          : $_->{_decl} eq 'local' ? ()
-                          : $_->{name} eq '_' ? ()      # don't capture $_, @_
+                          : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
                           : ( $_->{_id} => $_ )
                           } @captured;
         # warn Data::Dumper::Dumper(\@captured);
@@ -3558,7 +3557,9 @@ package Perlito5::AST::Sub;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
+    sub emit_java_get_captures {
+        $_[0]->{block}->emit_java_get_captures()
+    }
 }
 
 package Perlito5::AST::Use;

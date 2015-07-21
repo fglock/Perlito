@@ -15925,7 +15925,7 @@ package Perlito5::AST::Sub;
             $_->{'dont'} ? ($_->{'dont'} => 1) : ()
         } @captured;
         my %capture = map {
-            $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : $_->{'_decl'} eq 'local' ? () : $_->{'name'} eq '_' ? () : ($_->{'_id'} => $_)
+            $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
         } @captured;
         my @captures_ast = values(%capture);
         my @captures_java = map {
@@ -15953,7 +15953,7 @@ package Perlito5::AST::Sub;
         ()
     }
     sub Perlito5::AST::Sub::emit_java_get_captures {
-        ()
+        $_[0]->{'block'}->emit_java_get_captures()
     }
 }
 package Perlito5::AST::Use;
