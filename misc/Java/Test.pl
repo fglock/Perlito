@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..46\n";
+print "1..55\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -302,6 +302,15 @@ say "ok 53 - data structure @{[ %main::a ]}";
 @main::a = ( @main::a, %main::a );
 if (@main::a != 10) { print "not " }
 say "ok 54 - data structure [ @main::a ]";
+
+# closure
+my $x = 3;
+my $v = sub { $x = $x + 1; 1 + $x;  };
+my $res = $v->() . " " . $x;
+if ( $res ne "5 4" ) {
+    print "not ";
+}
+say "ok 55 - closure [$res]";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically

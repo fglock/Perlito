@@ -13824,6 +13824,7 @@ package Perlito5::Java;
 {
     my %label;
     my %Java_class;
+    our %Java_var_name;
     my %Java_var;
     sub Perlito5::Java::pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ']'
@@ -14589,7 +14590,8 @@ package Perlito5::AST::Var;
         if ($decl_type ne 'my') {
             return $self->emit_java_global($level, $wantarray)
         }
-        my $str_name = $self->{'name'} . '_' . $self->{'_id'};
+        my $str_name = $table->{$sigil} . $self->{'name'} . '_' . $self->{'_id'};
+        exists($Perlito5::Java::Java_var_name{$self->{'_id'}}) && ($str_name = $Perlito5::Java::Java_var_name{$self->{'_id'}});
         if ($sigil eq '@') {
             if ($wantarray eq 'scalar') {
                 return $self->emit_java($level, 'list') . '.length_of_array()'
@@ -14599,9 +14601,9 @@ package Perlito5::AST::Var;
             }
         }
         if ($self->{'sigil'} eq '$#') {
-            return $table->{'@'} . $str_name . '.end_of_array_index()'
+            return $str_name . '.end_of_array_index()'
         }
-        $table->{$sigil} . $str_name
+        return $str_name
     }
     sub Perlito5::AST::Var::emit_java_set {
         my($self, $arguments, $level, $wantarray) = @_;
@@ -15929,6 +15931,12 @@ package Perlito5::AST::Sub;
         my @captures_java = map {
             $_->emit_java($level, 'list')
         } @captures_ast;
+        local %Perlito5::Java::Java_var_name;
+        my $i = 0;
+        for $_ (@captures_ast) {
+            $Perlito5::Java::Java_var_name{$_->{'_id'}} = 'this.env[' . $i . ']';
+            $i++
+        }
         my $js_block = $block->emit_java_subroutine_body($level + 3, 'runtime');
         my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public pObject apply(int want, pObject List__) {', [$js_block], '}'], '}');
         if ($self->{'name'}) {

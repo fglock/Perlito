@@ -16,6 +16,8 @@ package Perlito5::Java;
     # }
     my %Java_class;
 
+    our %Java_var_name; # 101 => 'this.env.[0]'
+
     my %Java_var;       # 101 => { id => 101, type => 'Byte' }
     sub pkg {
         'p5pkg[' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ']'
@@ -1361,7 +1363,11 @@ package Perlito5::AST::Var;
         if ( $decl_type ne 'my' ) {
             return $self->emit_java_global($level, $wantarray);
         }
-        my $str_name = $self->{name} . "_" . $self->{_id};
+        my $str_name = $table->{$sigil} . $self->{name} . "_" . $self->{_id};
+
+        $str_name = $Perlito5::Java::Java_var_name{$self->{_id}}
+            if exists $Perlito5::Java::Java_var_name{$self->{_id}};
+
         if ( $sigil eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_java($level, 'list') . '.length_of_array()';
@@ -1374,9 +1380,9 @@ package Perlito5::AST::Var;
             }
         }
         if ($self->{sigil} eq '$#') {
-            return $table->{'@'} . $str_name . '.end_of_array_index()';
+            return $str_name . '.end_of_array_index()';
         }
-        $table->{$sigil} . $str_name
+        return $str_name;
     }
 
     sub emit_java_set {
@@ -3512,6 +3518,14 @@ package Perlito5::AST::Sub;
         # warn Data::Dumper::Dumper(\%capture);
         my @captures_ast  = values %capture;
         my @captures_java = map { $_->emit_java( $level, 'list' ) } @captures_ast;
+
+        # set the new variable names inside the closure
+        local %Perlito5::Java::Java_var_name;
+        my $i = 0;
+        for (@captures_ast) {
+            $Perlito5::Java::Java_var_name{ $_->{_id} } = 'this.env[' . $i . ']';
+            $i++;
+        }
 
         # TODO - access captured variables via this.env[index]
         my $js_block = $block->emit_java_subroutine_body( $level + 3, 'runtime' );
