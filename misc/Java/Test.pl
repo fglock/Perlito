@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..55\n";
+print "1..57\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -321,13 +321,13 @@ if ( $res ne "127 4" ) {
 }
 say "ok 56 - closure with params [$res]";
 
-# $x = 3;
-# sub v { $x = $x + 1; $_[0] + $x;  }
-# $res = v(123) . " " . $x;
-# if ( $res ne "127 4" ) {
-#     print "not ";
-# }
-# say "ok 57 - subroutine [$res]";
+$x = 3;
+sub v { $x = $x + 1; $_[0] + $x;  }
+$res = v(123) . " " . $x;
+if ( $res ne "127 4" ) {
+    print "not ";
+}
+say "ok 57 - subroutine [$res]";
 
 
 # initialize a typed variable by dereferencing a Perl object

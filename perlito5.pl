@@ -947,6 +947,7 @@ sub Perlito5::Grammar::Statement::stmt_package {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
+                $MATCH->{'_package'} = $Perlito5::PKG_NAME;
                 $Perlito5::PACKAGES->{$name} = 1;
                 $Perlito5::PKG_NAME = $name;
                 1
@@ -963,6 +964,7 @@ sub Perlito5::Grammar::Statement::stmt_package {
             }) && (do {
                 $MATCH->{'str'} = $str;
                 $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'package', 'arguments' => [], 'namespace' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'})), @{$MATCH->{'Perlito5::Grammar::block'}->{'capture'}->{'stmts'}}]);
+                $Perlito5::PKG_NAME = $MATCH->{'_package'};
                 1
             }))
         }) || (do {

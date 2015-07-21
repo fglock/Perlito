@@ -74,6 +74,7 @@ token stmt_package {
         {
             # set the package name before parsing the block
             my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+            $MATCH->{_package} = $Perlito5::PKG_NAME;
             $Perlito5::PACKAGES->{$name} = 1;
             $Perlito5::PKG_NAME = $name;
         }
@@ -90,6 +91,7 @@ token stmt_package {
                         @{ $MATCH->{'Perlito5::Grammar::block'}{capture}{stmts} }
                     ]
                 );
+            $Perlito5::PKG_NAME = $MATCH->{_package};
         }
     |
         # old syntax - set the package name in the same lexical context
