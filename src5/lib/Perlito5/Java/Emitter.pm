@@ -581,12 +581,20 @@ package Perlito5::Java::LexicalBlock;
 
             my @var_decl = $decl->emit_java_get_decl();
             for my $arg (@var_decl) {
-                # TODO - create a new context for the redeclared variable
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
 
-            if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
-                push @str, $decl->emit_java($level, 'void') . ';';
+            if ( !( $decl->isa('Perlito5::AST::Decl') && $decl->decl eq 'my' ) ) {
+                if ( $decl->isa('Perlito5::AST::Apply')
+                    && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
+                    && !( $decl->{code} eq 'infix:<=>' ) )
+                {
+                    # workaround for "Error: not a statement"
+                    push @str, 'pOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
+                }
+                else {
+                    push @str, $decl->emit_java( $level, 'void' ) . ';';
+                }
             }
         }
 
@@ -594,7 +602,6 @@ package Perlito5::Java::LexicalBlock;
 
             my @var_decl = $last_statement->emit_java_get_decl();
             for my $arg (@var_decl) {
-                # TODO - create a new context for the redeclared variable
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
 
@@ -2620,6 +2627,10 @@ package Perlito5::AST::Apply;
         'ref' => sub {
             my ($self, $level, $wantarray) = @_;
             'pCORE.ref(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
+        'die' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'pCORE.die(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
         'tie' => sub {
             my ($self, $level, $wantarray) = @_;

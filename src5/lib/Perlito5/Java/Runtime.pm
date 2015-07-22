@@ -145,6 +145,10 @@ class pOp {
         return arg.scalar();
     }
 
+    // workaround for "Error: not a stamentent"
+    public static final void statement(pObject arg) {
+    }
+
     // and1(x) ? y : and3()
     public static final boolean and1(pObject arg1) {
         if (arg1.to_bool()) {

@@ -329,10 +329,18 @@ if ( $res ne "127 4" ) {
 }
 say "ok 57 - subroutine [$res]";
 
-# # lazy boolean operators
-# $x = "0";
-# print "not " if $x;
-# say "ok 58 - boolean operator";
+# lazy boolean operators
+$x = "0";
+print "not " if $x;
+say "ok 58 - boolean operator";
+
+# lazy boolean operators
+$x = "0E0";
+print "not " unless $x;
+say "ok 59 - boolean operator, 0E0";
+
+say "ok 60 - boolean operator or die()"
+    or die "didn't work";
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
