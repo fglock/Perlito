@@ -1,12 +1,21 @@
 * Java backend
 
+-- Perlito5-Java vs. Perl
+
+    - no timely destruction (DESTROY) (because Java)
+    - no XS (because Java)
+    - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
+    - no eval-string (because not-yet-bootstrapped)
+
+    - any other differences are not-yet-implemented or bugs.
+
 -- document Java import options
 
     package The::Class {
           import           => 'full.path.Class',  # mandatory
           java_constructor => 'Class',            # auto generated from 'import' class name
           perl_to_java     => 'to_TheClass',      # auto generated from package name
-          # perl_package     => 'The::Class',     # auto generated, same as the package name
+          # perl_package     => 'The::Class',     # internal, auto generated, same as the package name
     }
 
 -- "import"
@@ -103,6 +112,9 @@
 
         package my_chars { type => 'char[]' }
 
+    Investigate adding support for plain "Object" arguments.
+        See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
+
 -- coercing method naming rules
 
     - rule: remove '::', add 'to_'
@@ -169,6 +181,9 @@
     delete local EXPR
 
     "our" should use lexicals (it currently compiles to a "global")
+        - lexicals are faster
+
+    subroutine lookups could also be "our"-like (also method lookups)
 
 -- TODO symbolic references
 
