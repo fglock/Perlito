@@ -1,6 +1,6 @@
 * Java backend
 
--- Perlito5-Java vs. Perl
+-- document Perlito5-Java vs. Perl
 
     - no timely destruction (DESTROY) (because Java)
     - no XS (because Java)
@@ -195,6 +195,9 @@
 -- BUG hash deref
     $x{"a"}{"b"} dereferences twice:
     Hash_x.get_hash(new pString("a")).get_hash().hget(new pString("b"));
+
+-- "dualvars"
+    for string-to-number optimization
 
 -- autobox as-needed
 
