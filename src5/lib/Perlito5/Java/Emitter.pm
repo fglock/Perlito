@@ -1851,8 +1851,7 @@ package Perlito5::AST::Apply;
             'p5want';
         },
         'package' => sub {
-            my $self = $_[0];
-            '// package(' . Perlito5::Java::escape_string($self->{namespace} ) . ')';
+            '';
         },
         'infix:<+>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2487,22 +2486,7 @@ package Perlito5::AST::Apply;
             }
             else {
                 # eval string
-
-                # retrieve the parse-time env
-                my $scope_perl5 = Perlito5::Dumper::ast_dumper( [$self->{_scope}] );
-                my $m = Perlito5::Grammar::Expression::term_square( $scope_perl5, 0 );
-                if (!$m || $m->{to} < length($scope_perl5) ) {
-                    die "invalid internal scope in eval\n";
-                }
-                $m = Perlito5::Grammar::Expression::expand_list( Perlito5::Match::flat($m)->[2] );
-                my $scope_js = 'new pArrayRef(' . Perlito5::Java::to_list($m) . ')';
-
-                $eval ='eval(p5pkg["Perlito5::Java::Runtime"].perl5_to_js([' 
-                            . Perlito5::Java::to_str($arg) . ", "
-                            . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
-                            . Perlito5::Java::escape_string($wantarray) . ', '
-                            . $scope_js
-                        . "]))";
+                die "Java eval string not yet implemented";
             }
 
             # TODO - test return() from inside eval

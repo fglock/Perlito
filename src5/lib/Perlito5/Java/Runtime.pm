@@ -156,6 +156,7 @@ class pOp {
     //      - workaround for "Error: not a statement"
     //      - this is the compile-time version of context(null, arg)
     public static final void statement(pObject arg) { }
+    public static final void statement() { }
 
     // and1(x) ? y : and3()
     public static final boolean and1(pObject arg1) {
