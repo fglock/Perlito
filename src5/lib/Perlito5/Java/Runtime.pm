@@ -186,6 +186,36 @@ class pOp {
         return stack.remove(0);
     }
 
+    // $x++ when $x is pString
+    public static final pObject string_increment(pObject s) {
+        pCORE.die("not implemented string++");
+        return s;
+
+        // s = p5str(s);
+        // if (s.match(/^[0123456789]/)) {
+        //     return p5str(p5num(s)+1);
+        // }
+        // if (s.length < 2) {
+        //     if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
+        //         return String.fromCharCode(s.charCodeAt(0) + 1);
+        //     }
+        //     if (s == "9") {
+        //         return "10";
+        //     }
+        //     if (s == "Z") {
+        //         return "AA";
+        //     }
+        //     if (s == "z") {
+        //         return "aa";
+        //     }
+        //     return "1";
+        // }
+        // var c = p5str_inc(s.substr(s.length-1, 1));
+        // if (c.length == 1) {
+        //     return s.substr(0, s.length-1) + c;
+        // }
+        // return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+    }
 }
 class pV {
     // pV implements namespaces and global variables
@@ -1871,13 +1901,11 @@ class pString extends pObject {
     }
     public pObject _decr() {
         // --$x
-        pCORE.die("not implemented string--");
-        return this;
+        return this.add(new pInt(-1));
     }
     public pObject _incr() {
         // ++$x
-        pCORE.die("not implemented string++");
-        return this;
+        return pOp.string_increment(this);
     }
 EOT
     . ( join('', map {
