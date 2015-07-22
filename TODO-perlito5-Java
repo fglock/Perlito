@@ -209,6 +209,7 @@
 
 -- missing features (or untested)
 
+    NaN, Inf
     subroutine signatures
     return (list)
     assignment to splice
