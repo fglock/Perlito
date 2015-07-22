@@ -133,11 +133,18 @@ class pCORE {
     }
 }
 class pOp {
-    private static ArrayList<pObject> stack = new ArrayList<pObject>();
-    // operators: && || * / 
-    // note: '+' add() and '-' sub() are pObject methods
-    // TODO
+    // pOp implements operators: && || 
+    //      and auxiliary functions
+    //
+    // note: '+' add() and '-' sub() are pObject methods, not implemented here.
+    //
+    // TODO - 'stack' should be reset when an exception happens
+    // TODO - see Perlito5/Javascript2/Runtime.pm for more operator implementations
 
+    private static ArrayList<pObject> stack = new ArrayList<pObject>();
+
+    // context()
+    //      - handles run-time scalar/list/void context in expression results
     public static final pObject context(int want, pObject arg) {
         if (want == 1) {
             return arg;
@@ -145,9 +152,10 @@ class pOp {
         return arg.scalar();
     }
 
-    // workaround for "Error: not a statement"
-    public static final void statement(pObject arg) {
-    }
+    // statement()
+    //      - workaround for "Error: not a statement"
+    //      - this is the compile-time version of context(null, arg)
+    public static final void statement(pObject arg) { }
 
     // and1(x) ? y : and3()
     public static final boolean and1(pObject arg1) {
@@ -179,7 +187,11 @@ class pOp {
 
 }
 class pV {
-    // global variables (namespaces)
+    // pV implements namespaces and global variables
+    //
+    // TODO - import CORE subroutines in new namespaces, if needed
+    // TODO - cache lookups in lexical variables (see pClosure implementation)
+
     public static final pHash var = new pHash();
 
     public static final pObject get(String namespace, String name) {
