@@ -1933,31 +1933,29 @@ package Perlito5::AST::Apply;
 
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5and('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            # and1(x) ? y : and3()
+            'pOp.and1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pOp.and3()'
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5and('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            'pOp.and1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pOp.and3()'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5or('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            # or1(x) ? or2() : y
+            'pOp.or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'infix:<or>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5or('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            'pOp.or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;

@@ -133,6 +133,7 @@ class pCORE {
     }
 }
 class pOp {
+    private static ArrayList<pObject> stack = new ArrayList<pObject>();
     // operators: && || * / 
     // note: '+' add() and '-' sub() are pObject methods
     // TODO
@@ -143,6 +144,35 @@ class pOp {
         }
         return arg.scalar();
     }
+
+    // and1(x) ? y : and3()
+    public static final boolean and1(pObject arg1) {
+        if (arg1.to_bool()) {
+            return true;
+        }
+        else {
+            stack.add(0, arg1);
+            return false;
+        }
+    }
+    public static final pObject and3() {
+        return stack.remove(0);
+    }
+
+    // or1(x) ? or2() : y
+    public static final boolean or1(pObject arg1) {
+        if (arg1.to_bool()) {
+            stack.add(0, arg1);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public static final pObject or2() {
+        return stack.remove(0);
+    }
+
 }
 class pV {
     // global variables (namespaces)
