@@ -145,7 +145,7 @@ class pOp {
         return arg.scalar();
     }
 
-    // workaround for "Error: not a stamentent"
+    // workaround for "Error: not a statement"
     public static final void statement(pObject arg) {
     }
 
