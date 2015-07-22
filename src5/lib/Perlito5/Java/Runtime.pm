@@ -450,6 +450,36 @@ EOT
     public boolean is_hashref() {
         return false;
     }
+
+    public pObject _decr() {
+        // --$x
+        return new pInt(-1);
+    }
+    public pObject _incr() {
+        // ++$x
+        return new pInt(1);
+    }
+    public pObject pre_decr() {
+        // --$x
+        pCORE.die("Can't modify constant item in predecrement (--)");
+        return this;
+    }
+    public pObject post_decr() {
+        // $x--
+        pCORE.die("Can't modify constant item in postdecrement (--)");
+        return this;
+    }
+    public pObject pre_incr() {
+        // ++$x
+        pCORE.die("Can't modify constant item in preincrement (++)");
+        return this;
+    }
+    public pObject post_incr() {
+        // $x++
+        pCORE.die("Can't modify constant item in postincrement (++)");
+        return this;
+    }
+
     public pObject ref() {
         return REF;
     }
@@ -885,6 +915,30 @@ EOT
     public boolean is_scalar() {
         return true;
     }
+
+    public pObject pre_decr() {
+        // --$x
+        this.o = this.o._decr();
+        return this.o;
+    }
+    public pObject post_decr() {
+        // $x--
+        pObject res = this.o;
+        this.o = this.o._decr();
+        return res;
+    }
+    public pObject pre_incr() {
+        // ++$x
+        this.o = this.o._incr();
+        return this.o;
+    }
+    public pObject post_incr() {
+        // $x++
+        pObject res = this.o;
+        this.o = this.o._incr();
+        return res;
+    }
+
     public pObject scalar() {
         return this.o;
     }
@@ -1688,6 +1742,24 @@ class pBool extends pObject {
     public boolean is_bool() {
         return true;
     }
+    public pObject _decr() {
+        // --$x
+        if (i) {
+            return new pInt(0);
+        }
+        else {
+            return new pInt(-1);
+        }
+    }
+    public pObject _incr() {
+        // ++$x
+        if (i) {
+            return new pInt(2);
+        }
+        else {
+            return new pInt(1);
+        }
+    }
 }
 class pInt extends pObject {
     private int i;
@@ -1709,6 +1781,14 @@ class pInt extends pObject {
     public boolean is_int() {
         return true;
     }
+    public pObject _decr() {
+        // --$x
+        return new pInt(i-1);
+    }
+    public pObject _incr() {
+        // ++$x
+        return new pInt(i+1);
+    }
 }
 class pNum extends pObject {
     private double i;
@@ -1726,6 +1806,14 @@ class pNum extends pObject {
     }
     public boolean to_bool() {
         return this.i != 0.0;
+    }
+    public pObject _decr() {
+        // --$x
+        return new pNum(i-1);
+    }
+    public pObject _incr() {
+        // ++$x
+        return new pNum(i+1);
     }
 EOT
     . ( join('', map {
@@ -1780,6 +1868,16 @@ class pString extends pObject {
     }
     public boolean is_string() {
         return true;
+    }
+    public pObject _decr() {
+        // --$x
+        pCORE.die("not implemented string--");
+        return this;
+    }
+    public pObject _incr() {
+        // ++$x
+        pCORE.die("not implemented string++");
+        return this;
     }
 EOT
     . ( join('', map {

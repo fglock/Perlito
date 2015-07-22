@@ -2127,98 +2127,22 @@ package Perlito5::AST::Apply;
         'postfix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if  (   $arg->isa( 'Perlito5::AST::Index')
-                ||  $arg->isa( 'Perlito5::AST::Lookup') 
-                ||  $arg->isa( 'Perlito5::AST::Call') 
-                )
-            {
-                return $arg->emit_java($level+1, 0, 'p5postincr');
-            }
-            if  (   $arg->isa( 'Perlito5::AST::Var')
-                &&  $arg->{sigil} eq '$'
-                )
-            {
-                my $tmp  = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'scalar', 
-                            'var ' . $tmp . ' = ' . $arg->emit_java($level) . ';',
-                            $arg->emit_java($level) . ' = p5incr_(' . $tmp . ');',
-                            'return ' . $tmp,
-                )
-            }
-            '(' . join( ' ', map( $_->emit_java, @{ $self->{arguments} } ) ) . ')++';
+            $arg->emit_java($level, 'scalar') . '.post_incr()'
         },
         'postfix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-
-            if  (   $arg->isa( 'Perlito5::AST::Index')
-                ||  $arg->isa( 'Perlito5::AST::Lookup') 
-                ||  $arg->isa( 'Perlito5::AST::Call') 
-                )
-            {
-                return $arg->emit_java($level+1, 0, 'p5postdecr');
-            }
-            if  (   $arg->isa( 'Perlito5::AST::Var')
-                &&  $arg->{sigil} eq '$'
-                )
-            {
-                my $tmp  = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'scalar', 
-                            'var ' . $tmp . ' = ' . $arg->emit_java($level) . ';',
-                            $arg->emit_java($level) . ' = p5decr_(' . $tmp . ');',
-                            'return ' . $tmp,
-                )
-            }
-
-            '(' . join( ' ', map( $_->emit_java, @{ $self->{arguments} } ) ) . ')--';
+            $arg->emit_java($level, 'scalar') . '.post_decr()'
         },
         'prefix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if  (   $arg->isa( 'Perlito5::AST::Index')
-                ||  $arg->isa( 'Perlito5::AST::Lookup') 
-                ||  $arg->isa( 'Perlito5::AST::Call') 
-                )
-            {
-                return $arg->emit_java($level+1, 0, 'p5incr');
-            }
-            if  (   $arg->isa( 'Perlito5::AST::Var')
-                &&  $arg->{sigil} eq '$'
-                )
-            {
-                my $tmp  = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'scalar', 
-                            'var ' . $tmp . ' = ' . $arg->emit_java($level) . ';',
-                            $arg->emit_java($level) . ' = p5incr_(' . $tmp . ');',
-                            'return ' . $arg->emit_java($level+1),
-                )
-            }
-            '++(' . join( ' ', map( $_->emit_java, @{ $self->{arguments} } ) ) . ')';
+            $arg->emit_java($level, 'scalar') . '.pre_incr()'
         },
         'prefix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-
-            if  (   $arg->isa( 'Perlito5::AST::Index')
-                ||  $arg->isa( 'Perlito5::AST::Lookup') 
-                ||  $arg->isa( 'Perlito5::AST::Call') 
-                )
-            {
-                return $arg->emit_java($level+1, 0, 'p5decr');
-            }
-            if  (   $arg->isa( 'Perlito5::AST::Var')
-                &&  $arg->{sigil} eq '$'
-                )
-            {
-                my $tmp  = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'scalar', 
-                            'var ' . $tmp . ' = ' . $arg->emit_java($level) . ';',
-                            $arg->emit_java($level) . ' = p5decr_(' . $tmp . ');',
-                            'return ' . $arg->emit_java($level+1),
-                )
-            }
-
-            '--(' . join( ' ', map( $_->emit_java, @{ $self->{arguments} } ) ) . ')';
+            $arg->emit_java($level, 'scalar') . '.pre_decr()'
         },
 
         'infix:<x>' => sub {
