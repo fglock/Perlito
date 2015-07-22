@@ -24,6 +24,8 @@
 
 -- Typed variables
 
+    - no "global" typed variables (only "my" variables)
+
     Note:
         - parameters to native calls are evaluated in scalar context
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
@@ -160,9 +162,13 @@
     $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
     @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
 
+    - test slice interpolation in strings
+
 -- TODO namespaces, global variables, local, our
 
     delete local EXPR
+
+    "our" should use lexicals (it currently compiles to a "global")
 
 -- TODO symbolic references
 
@@ -174,4 +180,28 @@
 -- BUG hash deref
     $x{"a"}{"b"} dereferences twice:
     Hash_x.get_hash(new pString("a")).get_hash().hget(new pString("b"));
+
+-- autobox as-needed
+
+    runtime methods should accept String, int, double, boolean types
+    and maybe other types of number (byte, ...)
+
+    Array and Hash should accept other types of containers
+
+    - String accepts char in constructor (DONE)
+    - Hash accepts String for index (DONE)
+    - Array accepts int for index   (DONE)
+
+-- missing features (or untested)
+
+    subroutine signatures
+    return (list)
+    assignment to splice
+    rw @_
+    //
+    sprintf
+    pack
+    unpack
+    file operations
+    regex
 
