@@ -215,8 +215,14 @@
     rw @_
     //
     sprintf
+        http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
+        http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
     pack
     unpack
     file operations
     regex
+        http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+    pos()
+    typeglob operations
+    local
 

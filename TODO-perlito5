@@ -389,7 +389,6 @@ TODO list for Perlito5
 -- cache the mro
 
 -- add regex compiler
--- /e modifier
 -- /x modifier
 -- support all perl5 regex syntax
 -- @v = /x/g
@@ -482,6 +481,8 @@ TODO list for Perlito5
 
 
 * Javascript - implemented but missing more tests
+
+-- /e modifier
 
 -- lvalue $#a
 
