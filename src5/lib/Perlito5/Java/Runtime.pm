@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+// import java.util.regex.Matcher;
 EOT
         # import the Java classes
         # that were declared with
@@ -557,6 +559,21 @@ class pReference extends pObject {
 
     public String to_string() {
         return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+    }
+    public pObject ref() {
+        return REF;
+    }
+}
+class pRegex extends pReference {
+    public Pattern p;
+    // public Matcher m;
+    public static final pString REF = new pString("Regexp");
+
+    public pRegex(String p) {
+        this.p = Pattern.compile(p);
+    }
+    public pRegex(pObject p) {
+        this.p = Pattern.compile(p.to_string());
     }
     public pObject ref() {
         return REF;
