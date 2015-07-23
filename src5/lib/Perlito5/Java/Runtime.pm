@@ -644,76 +644,41 @@ class pArrayRef extends pArray {
         return REF;
     }
 }
-class pHashRef extends pReference {
-    private pHash o;
+class pHashRef extends pHash {
     public static final pString REF = new pString("HASH");
 
+    public String to_string() {
+        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+    }
     public pHashRef(pHash o) {
-        this.o = o;
-    }
-    public pObject get() {
-        return this.o;
-    }
-    public pObject hget(pObject i) {
-        return this.o.hget(i);
-    }
-    public pObject hget(String i) {
-        return this.o.hget(i);
-    }
-
-    public pObject hget_lvalue(pObject i) {
-        return this.o.hget_lvalue(i);
-    }
-    public pObject hget_lvalue(String i) {
-        return this.o.hget_lvalue(i);
-    }
-
-    public pObject hset(pObject s, pObject v) {
-        return this.o.hset(s, v);
-    }
-    public pObject hset(String s, pObject v) {
-        return this.o.hset(s, v);
-    }
-    public pObject hget_scalarref(pObject i) {
-        return this.o.hget_scalarref(i);
-    }
-    public pObject hget_scalarref(String i) {
-        return this.o.hget_scalarref(i);
-    }
-    public pObject hget_arrayref(pObject i) {
-        return this.o.hget_arrayref(i);
-    }
-    public pObject hget_arrayref(String i) {
-        return this.o.hget_arrayref(i);
-    }
-    public pObject hget_hashref(pObject i) {
-        return this.o.hget_hashref(i);
-    }
-    public pObject hget_hashref(String i) {
-        return this.o.hget_hashref(i);
-    }
- 
-    public pObject hash_deref() {
-        return this.o;
-    }
-    public pObject hash_deref_set(pObject v) {
-        return this.o.set(v);
+        this.h = o.h;
     }
     public pObject set(pHash o) {
-        this.o = o;
-        return this;
+        this.h = o.h;
+        return o;
+    }
+    public pObject get() {
+        pHash o = new pHash();
+        o.h = this.h;
+        return o;
+    }
+    public pObject hash_deref() {
+        pHash o = new pHash();
+        o.h = this.h;
+        return o;
+    }
+    public pObject hash_deref_set(pObject v) {
+        super.set(v);
+        return v;
+    }
+    public boolean is_hash() {
+        return false;
     }
     public boolean is_hashref() {
         return true;
     }
-    public pObject values() {
-        return this.o.values();
-    }
-    public pObject keys() {
-        return this.o.keys();
-    }
-    public pObject each() {
-        return this.o.each();
+    public pObject scalar() {
+        return this;
     }
     public pObject ref() {
         return REF;
@@ -1353,7 +1318,7 @@ EOT
     }
 }
 class pHash extends pObject {
-    private HashMap<String, pObject> h;
+    public HashMap<String, pObject> h;
     private Iterator<Map.Entry<String, pObject>> each_iterator;
 
     public pHash() {
