@@ -303,6 +303,14 @@ EOT
         pCORE.die("subroutine call error");
         return this;
     }
+
+    public pObject get_arrayref() {
+        return pCORE.die("Not an ARRAY reference");
+    }
+    public pObject get_hashref() {
+        return pCORE.die("Not a HASH reference");
+    }
+
     public pObject hget_scalarref(pObject i) {
         pCORE.die("Not a SCALAR reference");
         return this;
@@ -596,65 +604,41 @@ class pScalarRef extends pReference {
         return REF;
     }
 }
-class pArrayRef extends pReference {
-    private pArray o;
+class pArrayRef extends pArray {
     public static final pString REF = new pString("ARRAY");
 
+    public String to_string() {
+        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+    }
     public pArrayRef(pArray o) {
-        this.o = o;
+        this.a = o.a;
+    }
+    public pObject set(pArray o) {
+        this.a = o.a;
+        return o;
     }
     public pObject get() {
-        return this.o;
+        pArray o = new pArray();
+        o.a = this.a;
+        return o;
     }
-    public pObject aget(pObject i) {
-        return this.o.aget(i);
-    }
-    public pObject aget(int i) {
-        return this.o.aget(i);
-    }
-    public pObject aset(pObject i, pObject v) {
-        return this.o.aset(i, v);
-    }
-    public pObject aget_scalarref(pObject i) {
-        return this.o.aget_scalarref(i);
-    }
-    public pObject aget_scalarref(int i) {
-        return this.o.aget_scalarref(i);
-    }
-    public pObject aget_arrayref(pObject i) {
-        return this.o.aget_arrayref(i);
-    }
-    public pObject aget_arrayref(int i) {
-        return this.o.aget_arrayref(i);
-    }
-    public pObject aget_hashref(pObject i) {
-        return this.o.aget_hashref(i);
-    }
-    public pObject aget_hashref(int i) {
-        return this.o.aget_hashref(i);
-    }
-
     public pObject array_deref() {
-        return this.o;
+        pArray o = new pArray();
+        o.a = this.a;
+        return o;
     }
     public pObject array_deref_set(pObject v) {
-        return this.o.set(v);
+        super.set(v);
+        return v;
     }
-    public pObject length_of_array() {
-        return this.o.length_of_array();
+    public boolean is_array() {
+        return false;
     }
-
     public boolean is_arrayref() {
         return true;
     }
-    public pObject values() {
-        return this.o.values();
-    }
-    public pObject keys() {
-        return this.o.keys();
-    }
-    public pObject each() {
-        return this.o.each();
+    public pObject scalar() {
+        return this;
     }
     public pObject ref() {
         return REF;
@@ -996,7 +980,7 @@ EOT
     . <<'EOT'
 }
 class pArray extends pObject {
-    private ArrayList<pObject> a;
+    public ArrayList<pObject> a;
     private int each_iterator;
     public pArray() {
         this.each_iterator = 0;
