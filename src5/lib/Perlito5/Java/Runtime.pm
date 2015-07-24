@@ -778,6 +778,26 @@ class pScalar extends pObject {
     public pObject aget(int i) {
         return this.o.aget(i);
     }
+
+    public pObject aget_scalarref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pArrayRef();
+        }
+        return this.o.aget_scalarref(i);
+    }
+    public pObject aget_arrayref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pArrayRef();
+        }
+        return this.o.aget_arrayref(i);
+    }
+    public pObject aget_hashref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pArrayRef();
+        }
+        return this.o.aget_hashref(i);
+    }
+
     public pObject aset(pObject i, pObject v) {
         return this.o.aset(i, v);
     }
@@ -786,6 +806,25 @@ class pScalar extends pObject {
     }
     public pObject hget(String i) {
         return this.o.hget(i);
+    }
+
+    public pObject hget_scalarref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pHashRef();
+        }
+        return this.o.hget_scalarref(i);
+    }
+    public pObject hget_arrayref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pHashRef();
+        }
+        return this.o.hget_arrayref(i);
+    }
+    public pObject hget_hashref(pObject i) {
+        if (this.o.is_undef()) {
+            this.o = new pHashRef();
+        }
+        return this.o.hget_hashref(i);
     }
 
     public pObject hset(pObject s, pObject v) {
