@@ -13966,16 +13966,7 @@ package Perlito5::Java;
     sub Perlito5::Java::to_list {
         my $items = to_list_preprocess($_[0]);
         my $level = $_[1];
-        my $literal_type = $_[2] || 'array';
-        my $wantarray = 'list';
-        my $interpolate = 0;
-        for $_ (@{$items}) {
-            is_scalar($_) && ($interpolate = 1)
-        }
-        if ($literal_type eq 'hash') {
-            return 'new pHash(' . to_list($items, $level, 'array') . ')'
-        }
-        return 'new pArray(' . join(', ', map($_->emit_java($level, $wantarray), @{$items})) . ')'
+        return 'new pArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')'
     }
     sub Perlito5::Java::to_list_preprocess {
         my @items;
@@ -14582,7 +14573,7 @@ package Perlito5::AST::Var;
             return 'pV.array_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
         }
         if ($sigil eq '%') {
-            return 'pV.hash_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1, 'hash') . ')'
+            return 'pV.hash_set(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
         }
         if ($sigil eq '*') {
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
@@ -14638,7 +14629,7 @@ package Perlito5::AST::Var;
             return $open . $self->emit_java() . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1) . $close
         }
         if ($sigil eq '%') {
-            return $open . $self->emit_java() . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1, 'hash') . $close
+            return $open . $self->emit_java() . ' = new pHash(' . Perlito5::Java::to_list([$arguments], $level + 1, 'hash') . ')' . $close
         }
         if ($sigil eq '*') {
             my $namespace = $self->{'namespace'} || $self->{'_namespace'};
@@ -15074,7 +15065,7 @@ package Perlito5::AST::Apply;
         'new pArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
     }, 'circumfix:<{ }>' => sub {
         my($self, $level, $wantarray) = @_;
-        '(new pHashRef(' . Perlito5::Java::to_list($self->{'arguments'}, $level, 'hash') . '))'
+        '(new pHashRef(new pHash(' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')))'
     }, 'prefix:<' . chr(92) . '>' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
