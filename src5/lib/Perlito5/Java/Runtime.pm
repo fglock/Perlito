@@ -568,11 +568,15 @@ class pRegex extends pReference {
     // public Matcher m;
     public static final pString REF = new pString("Regexp");
 
-    public pRegex(String p) {
-        this.p = Pattern.compile(p);
+    public pRegex(String p, int flags) {
+        this.p = Pattern.compile(p, flags);
     }
-    public pRegex(pObject p) {
-        this.p = Pattern.compile(p.to_string());
+    public pRegex(pObject p, int flags) {
+        this.p = Pattern.compile(p.to_string(), flags);
+    }
+    public String to_string() {
+        // TODO - show flags
+        return this.p.toString();
     }
     public pObject ref() {
         return REF;

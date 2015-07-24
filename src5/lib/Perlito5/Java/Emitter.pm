@@ -1824,9 +1824,17 @@ package Perlito5::AST::Apply;
         },
         'p5:qr' => sub {
             my ($self, $level, $wantarray) = @_;
-            # p5qr( $str, $modifier );
-            'p5qr(' . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', '
-                    . Perlito5::Java::to_str( $self->{arguments}[1] ) . ')';
+
+            my %flags = map { $_ => 1 } split //, $self->{arguments}[1]{buf};
+            # warn Data::Dumper::Dumper(\%flags);
+            my $flag_string = join( " | ", 
+                ( $flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : () ),
+                ( $flags{'x'} ? 'Pattern.COMMENTS'         : () ),
+                ( $flags{'m'} ? 'Pattern.MULTILINE'        : () ),
+                ( $flags{'s'} ? 'Pattern.DOTALL'           : () ),
+            ) || '0';
+
+            'new pRegex(' . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', ' . $flag_string . ')';
         },
         '__PACKAGE__' => sub {
             my $self = $_[0];
