@@ -1272,7 +1272,7 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $index = Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name);
+        my $index = Perlito5::Java::escape_string($namespace . '|' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             return 'pV.get(' . $index . ')';
         }
@@ -1328,7 +1328,7 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $index = Perlito5::Java::escape_string($namespace ) . ', ' . Perlito5::Java::escape_string($table->{$sigil} . $str_name);
+        my $index = Perlito5::Java::escape_string($namespace . '|' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             return 'pV.set(' . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
@@ -2924,10 +2924,10 @@ package Perlito5::AST::Apply;
                     die "Java::inline needs a string constant";
                 }
             }
-            $code = 'pV.get(' . Perlito5::Java::escape_string($self->{namespace}) . ', ' . Perlito5::Java::escape_string( $code ) . ')'
+            $code = 'pV.get(' . Perlito5::Java::escape_string($self->{namespace} . '|' . $code ) . ')'
         }
         else {
-            $code = 'pV.get(' . Perlito5::Java::pkg() . ', ' . Perlito5::Java::escape_string( $code ) . ')'
+            $code = 'pV.get(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '|' . $code ) . ')'
         }
 
         my $sig;
@@ -3447,7 +3447,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'pV.set(' . Perlito5::Java::escape_string($self->{namespace} ) . ', ' . Perlito5::Java::escape_string($self->{name} ) . ", " . $s . ')'
+            return 'pV.set(' . Perlito5::Java::escape_string($self->{namespace} . '|' . $self->{name} ) . ", " . $s . ')'
         }
         else {
             return $s;

@@ -227,31 +227,30 @@ class pV {
 
     public static final pHash var = new pHash();
 
-    public static final pObject get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_lvalue(name);
+    public static final pObject get(String name) {
+        return var.hget_lvalue(name);
     }
-    public static final pObject set(String namespace, String name, pObject v) {
-        return var.hget_hashref(namespace).hset(name, v);
-        // return var.hget_hashref(namespace).hget_lvalue(name).set(v);
-    }
-
-    public static final pObject hash_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_hashref(name).get();
-    }
-    public static final pObject hash_set(String namespace, String name, pObject v) {
-        return var.hget_hashref(namespace).hget_hashref(name).hash_deref_set(v);
+    public static final pObject set(String name, pObject v) {
+        return var.hset(name, v);
     }
 
-    public static final pObject array_get(String namespace, String name) {
-        return var.hget_hashref(namespace).hget_arrayref(name).get();
+    public static final pObject hash_get(String name) {
+        return var.hget_hashref(name).get();
     }
-    public static final pObject array_set(String namespace, String name, pObject v) {
-        return var.hget_hashref(namespace).hget_arrayref(name).array_deref_set(v);
+    public static final pObject hash_set(String name, pObject v) {
+        return var.hget_hashref(name).hash_deref_set(v);
+    }
+
+    public static final pObject array_get(String name) {
+        return var.hget_arrayref(name).get();
+    }
+    public static final pObject array_set(String name, pObject v) {
+        return var.hget_arrayref(name).array_deref_set(v);
     }
 }
 class pEnv {
     public static final void init() {
-        pV.set("main", "v_" + (char)34, new pString(" "));   // $" = " "
+        pV.set("main|v_" + (char)34, new pString(" "));   // $" = " "
     }
 }
 class pObject {
