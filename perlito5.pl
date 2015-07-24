@@ -14844,6 +14844,20 @@ package Perlito5::AST::Call;
 }
 package Perlito5::AST::Apply;
 {
+    sub Perlito5::AST::Apply::emit_qr_java {
+        my($regex, $modifier, $level) = @_;
+        my %flags = map {
+            $_ => 1
+        } split(m!!, $modifier->{'buf'});
+        my $flag_string = join(' | ', ($flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : ()), ($flags{'x'} ? 'Pattern.COMMENTS' : ()), ($flags{'m'} ? 'Pattern.MULTILINE' : ()), ($flags{'s'} ? 'Pattern.DOTALL' : ())) || 0;
+        my $s = 'new pRegex(' . Perlito5::Java::to_str($regex) . ', ' . $flag_string . ')';
+        if (ref($regex) eq 'Perlito5::AST::Buf') {
+            my $label = Perlito5::Java::get_label();
+            push(@Perlito5::Java::Java_constants, 'public static final pRegex ' . $label . ' = ' . $s . ';');
+            return 'pCx.' . $label
+        }
+        return $s
+    }
     sub Perlito5::AST::Apply::emit_regex_java {
         my $op = shift;
         my $var = shift;
@@ -14918,17 +14932,7 @@ package Perlito5::AST::Apply;
         emit_regex_java('=~', $self->{'arguments'}->[3], $self, $level, $wantarray)
     }, 'p5:qr' => sub {
         my($self, $level, $wantarray) = @_;
-        my %flags = map {
-            $_ => 1
-        } split(m!!, $self->{'arguments'}->[1]->{'buf'});
-        my $flag_string = join(' | ', ($flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : ()), ($flags{'x'} ? 'Pattern.COMMENTS' : ()), ($flags{'m'} ? 'Pattern.MULTILINE' : ()), ($flags{'s'} ? 'Pattern.DOTALL' : ())) || 0;
-        my $s = 'new pRegex(' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ', ' . $flag_string . ')';
-        if (ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Buf') {
-            my $label = Perlito5::Java::get_label();
-            push(@Perlito5::Java::Java_constants, 'public static final pRegex ' . $label . ' = ' . $s . ';');
-            return 'pCx.' . $label
-        }
-        return $s
+        return emit_qr_java($self->{'arguments'}->[0], $self->{'arguments'}->[1], $level)
     }, '__PACKAGE__' => sub {
         my $self = $_[0];
         Perlito5::Java::escape_string($Perlito5::PKG_NAME)
