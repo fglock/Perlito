@@ -627,11 +627,17 @@ class pArrayRef extends pArray {
     public String to_string() {
         return this.ref().to_string() + "(0x" + this.hashCode() + ")";
     }
+    public pArrayRef() {
+        this.each_iterator = 0;
+        this.a = new ArrayList<pObject>();
+    }
     public pArrayRef(pArray o) {
         this.a = o.a;
+        this.each_iterator = o.each_iterator;
     }
     public pObject set(pArray o) {
         this.a = o.a;
+        this.each_iterator = o.each_iterator;
         return o;
     }
     public pObject get() {
@@ -667,11 +673,17 @@ class pHashRef extends pHash {
     public String to_string() {
         return this.ref().to_string() + "(0x" + this.hashCode() + ")";
     }
+    public pHashRef() {
+        this.h = new HashMap<String, pObject>();
+        this.each_iterator = null;
+    }
     public pHashRef(pHash o) {
         this.h = o.h;
+        this.each_iterator = o.each_iterator;
     }
     public pObject set(pHash o) {
         this.h = o.h;
+        this.each_iterator = o.each_iterator;
         return o;
     }
     public pObject get() {
@@ -740,7 +752,7 @@ class pScalar extends pObject {
     }
     public pObject get_arrayref() {
         if (this.o.is_undef()) {
-            pArrayRef ar = new pArrayRef(new pArray());
+            pArrayRef ar = new pArrayRef();
             this.o = ar;
             return ar;
         }
@@ -751,7 +763,7 @@ class pScalar extends pObject {
     }
     public pObject get_hashref() {
         if (this.o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.o = hr;
             return this.o;
         }
@@ -803,7 +815,7 @@ class pScalar extends pObject {
     public pObject array_deref_set(pObject v) {
         // @$x = ...
         if (this.o.is_undef()) {
-            this.o = new pArrayRef(new pArray());
+            this.o = new pArrayRef();
             return this.o.array_deref_set(v);
         }
         else if (this.o.is_arrayref()) {
@@ -825,7 +837,7 @@ class pScalar extends pObject {
     public pObject hash_deref_set(pObject v) {
         // %$x = ...
         if (this.o.is_undef()) {
-            this.o = new pHashRef(new pHash());
+            this.o = new pHashRef();
             return this.o.hash_deref_set(v);
         }
         else if (this.o.is_hashref()) {
@@ -963,7 +975,7 @@ EOT
 }
 class pArray extends pObject {
     public ArrayList<pObject> a;
-    private int each_iterator;
+    public int each_iterator;
     public pArray() {
         this.each_iterator = 0;
         this.a = new ArrayList<pObject>();
@@ -1071,7 +1083,7 @@ class pArray extends pObject {
     public pObject aget_arrayref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef(new pArray());
+            pArrayRef ar = new pArrayRef();
             this.aset(i, ar);
             return ar;
         }
@@ -1083,7 +1095,7 @@ class pArray extends pObject {
     public pObject aget_arrayref(int i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef(new pArray());
+            pArrayRef ar = new pArrayRef();
             this.aset(i, ar);
             return ar;
         }
@@ -1096,7 +1108,7 @@ class pArray extends pObject {
     public pObject aget_hashref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.aset(i, hr);
             return hr;
         }
@@ -1108,7 +1120,7 @@ class pArray extends pObject {
     public pObject aget_hashref(int i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.aset(i, hr);
             return hr;
         }
@@ -1121,7 +1133,7 @@ class pArray extends pObject {
     public pObject get_hash(int i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.aset(i, hr);
             return hr;
         }
@@ -1336,7 +1348,7 @@ EOT
 }
 class pHash extends pObject {
     public HashMap<String, pObject> h;
-    private Iterator<Map.Entry<String, pObject>> each_iterator;
+    public Iterator<Map.Entry<String, pObject>> each_iterator;
 
     public pHash() {
         this.each_iterator = null;
@@ -1518,7 +1530,7 @@ class pHash extends pObject {
     public pObject hget_arrayref(pObject i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef(new pArray());
+            pArrayRef ar = new pArrayRef();
             this.hset(i, ar);
             return ar;
         }
@@ -1530,7 +1542,7 @@ class pHash extends pObject {
     public pObject hget_arrayref(String i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef(new pArray());
+            pArrayRef ar = new pArrayRef();
             this.hset(i, ar);
             return ar;
         }
@@ -1543,7 +1555,7 @@ class pHash extends pObject {
     public pObject hget_hashref(pObject i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.hset(i, hr);
             return hr;
         }
@@ -1555,7 +1567,7 @@ class pHash extends pObject {
     public pObject hget_hashref(String i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef(new pHash());
+            pHashRef hr = new pHashRef();
             this.hset(i, hr);
             return hr;
         }
