@@ -236,6 +236,19 @@ class pOp {
         // TODO - cache the compiled pattern
         return match(s, new pRegex(pat, 0), want);
     }
+
+    public static final pObject replace(pObject s, pRegex pat, pObject rep, int want) {
+        if (want == 0) {
+            return new pString(pat.p.matcher(s.to_string()).replaceAll(rep.to_string()));
+        }
+        pCORE.die("not implemented string replace in list context");
+        return s;
+    }
+    public static final pObject replace(pObject s, pObject pat, pObject rep, int want) {
+        // TODO - cache the compiled pattern
+        return replace(s, new pRegex(pat, 0), rep, want);
+    }
+
 }
 class pV {
     // pV implements namespaces and global variables

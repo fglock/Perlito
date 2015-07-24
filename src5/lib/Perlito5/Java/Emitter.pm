@@ -1755,17 +1755,12 @@ package Perlito5::AST::Apply;
                         );
                 $modifier =~ s/e//g;
             }
-            $str = Perlito5::Java::emit_wrap_java($level+1, $wantarray, 
-                "var tmp = p5s("
+            $str = 'pOp.replace('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $replace, $modifier, $level ) . ', '
-                    . Perlito5::Java::emit_function_java($level+2, $wantarray, $replace) . ', '
-                    . Perlito5::Java::escape_string($modifier) . ', '
+                    . $replace->emit_java() . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
-                  . ");",
-                $var->emit_java() . " = tmp[0];",
-                "return tmp[1];",
-            );
+                  . ")";
         }
         elsif ($code eq 'p5:m') {
             $str = 'pOp.match('
