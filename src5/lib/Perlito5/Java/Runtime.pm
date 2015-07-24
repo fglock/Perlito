@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-// import java.util.regex.Matcher;
+import java.util.regex.Matcher;
 EOT
         # import the Java classes
         # that were declared with
@@ -224,7 +224,7 @@ class pOp {
 
     public static final pObject match(pObject s, pRegex pat, int want) {
         if (want == 0) {
-            return pat.p.matcher(s.to_string()).matches() ? pCx.TRUE : pCx.FALSE;
+            return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
         }
         pCORE.die("not implemented string match in list context");
         return s;
