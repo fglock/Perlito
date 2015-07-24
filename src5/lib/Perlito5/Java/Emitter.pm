@@ -17,8 +17,9 @@ package Perlito5::Java;
     my %Java_class;
 
     our %Java_var_name; # 101 => 'this.env.[0]'
-
     my %Java_var;       # 101 => { id => 101, type => 'Byte' }
+    our @Java_init;
+
     sub pkg {
         Perlito5::Java::escape_string($Perlito5::PKG_NAME )
     }
@@ -793,13 +794,18 @@ package Perlito5::AST::CompUnit;
             );
         }
 
+        my $init = "";
+        my $main = "";
+        for my $comp_unit ( @$comp_units ) {
+            $main = $main . $comp_unit->emit_java($level + 1, $wantarray) . "\n";
+        }
+        $init = join("\n", @Perlito5::Java::Java_init);
         $str .= "class Test {\n"
              .  "    public static void main(String[] args) {\n"
-             .  "        pEnv.init();\n";
-        for my $comp_unit ( @$comp_units ) {
-            $str = $str . $comp_unit->emit_java($level + 1, $wantarray) . "\n";
-        }
-        $str .= "    }\n"
+             .  "        pEnv.init();\n"
+             .  "        $init\n"
+             .  "        $main\n"
+             .  "    }\n"
              .  "}\n";
         return $str;
     }
@@ -1834,7 +1840,15 @@ package Perlito5::AST::Apply;
                 ( $flags{'s'} ? 'Pattern.DOTALL'           : () ),
             ) || '0';
 
-            'new pRegex(' . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', ' . $flag_string . ')';
+            my $s = 'new pRegex(' . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', ' . $flag_string . ')';
+
+            if ( ref( $self->{arguments}[0] ) eq "Perlito5::AST::Buf" ) {
+                # precompile regex
+                my $label = Perlito5::Java::get_label();
+                push @Perlito5::Java::Java_init, "pObject $label = $s;\n";
+                return $label;
+            }
+            return $s;
         },
         '__PACKAGE__' => sub {
             my $self = $_[0];
