@@ -229,10 +229,12 @@ class pOp {
         pCORE.die("not implemented string match in list context");
         return s;
     }
+    public static final pObject match(pObject s, pScalar pat, int want) {
+        return match(s, pat.get(), want);
+    }
     public static final pObject match(pObject s, pObject pat, int want) {
-        // TODO - compile pattern
-        pCORE.die("not implemented string match");
-        return s;
+        // TODO - cache the compiled pattern
+        return match(s, new pRegex(pat, 0), want);
     }
 }
 class pV {
