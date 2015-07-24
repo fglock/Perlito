@@ -1708,6 +1708,10 @@ package Perlito5::AST::Apply;
 {
     sub emit_qr_java {
         my ($regex, $modifier, $level) = @_;
+        if ( $modifier->{buf} eq '' && ref( $regex ) eq "Perlito5::AST::Var" && $regex->{sigil} eq '$' ) {
+            # return as-is because var may contain a qr//
+            return $regex->emit_java($level);
+        }
         my %flags = map { $_ => 1 } split //, $modifier->{buf};
         # warn Data::Dumper::Dumper(\%flags);
         my $flag_string = join( " | ", 
@@ -1764,7 +1768,7 @@ package Perlito5::AST::Apply;
             );
         }
         elsif ($code eq 'p5:m') {
-            $str = 'p5m('
+            $str = 'pOp.match('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $regex_args->[0], $regex_args->[1], $level ) . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )

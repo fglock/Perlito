@@ -221,6 +221,19 @@ class pOp {
         // }
         // return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
     }
+
+    public static final pObject match(pObject s, pRegex pat, int want) {
+        if (want == 0) {
+            return pat.p.matcher(s.to_string()).matches() ? pCx.TRUE : pCx.FALSE;
+        }
+        pCORE.die("not implemented string match in list context");
+        return s;
+    }
+    public static final pObject match(pObject s, pObject pat, int want) {
+        // TODO - compile pattern
+        pCORE.die("not implemented string match");
+        return s;
+    }
 }
 class pV {
     // pV implements namespaces and global variables
