@@ -788,11 +788,6 @@ package Perlito5::AST::CompUnit;
             }
         }
 
-        if ($options{'expand_use'}) {
-            $str .= Perlito5::Java::Runtime->emit_java(
-                java_classes => $Java_class,
-            );
-        }
 
         my $init = "";
         my $main = "";
@@ -800,6 +795,12 @@ package Perlito5::AST::CompUnit;
             $main = $main . $comp_unit->emit_java($level + 1, $wantarray) . "\n";
         }
         $init = join("\n", @Perlito5::Java::Java_init);
+        if ($options{'expand_use'}) {
+            $str .= Perlito5::Java::Runtime->emit_java(
+                java_classes => $Java_class,
+                java_constants => \@Perlito5::Java::Java_constants,
+            );
+        }
         $str .= "class Test {\n"
              .  "    public static void main(String[] args) {\n"
              .  "        pEnv.init();\n"
@@ -1845,8 +1846,8 @@ package Perlito5::AST::Apply;
             if ( ref( $self->{arguments}[0] ) eq "Perlito5::AST::Buf" ) {
                 # precompile regex
                 my $label = Perlito5::Java::get_label();
-                push @Perlito5::Java::Java_init, "pObject $label = $s;\n";
-                return $label;
+                push @Perlito5::Java::Java_constants, "public static final pRegex $label = $s;";
+                return 'pCx.' . $label;
             }
             return $s;
         },

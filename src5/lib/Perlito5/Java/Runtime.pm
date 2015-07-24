@@ -54,7 +54,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    "import $class->{import};\n"
+                    $class->{import} ? "import $class->{import};\n" : ()
             }
             values %java_classes
       ))
@@ -69,6 +69,9 @@ class pCx {
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
+EOT
+    . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
+    . <<'EOT'
 }
 class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {
@@ -269,10 +272,11 @@ EOT
                     my $class = $_;
                     my $java_class_name = $class->{java_constructor};
                     my $perl_to_java = $class->{perl_to_java};
+                    $class->{import} ? 
                     "    public ${java_class_name} ${perl_to_java}() {\n"
                   . "        pCORE.die(\"error .${perl_to_java}!\");\n"
                   . "        return null;\n"
-                  . "    }\n"
+                  . "    }\n" : ()
             }
             values %java_classes
       ))
@@ -914,11 +918,12 @@ EOT
     . ( join('', map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
+            $native && $perl ? 
 "    public pObject set($native s) {
         this.o = new $perl(s);
         return this;
     }
-"
+" : ()
             }
             keys %native_to_perl ))
 
@@ -1005,10 +1010,11 @@ EOT
                     my $class = $_;
                     my $java_class_name = $class->{java_constructor};
                     my $perl_to_java = $class->{perl_to_java};
+                    $class->{import} ? 
 "    public ${java_class_name} ${perl_to_java}() {
         return this.o.${perl_to_java}();
     }
-"
+" : ()
             }
             values %java_classes
       ))
@@ -1229,13 +1235,14 @@ EOT
     . ( join('', map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
+            $native && $perl ?
 "    public pObject aset(pObject i, $native s) {
         return this.aset(i, new $perl(s));
     }
     public pObject aset(int i, $native s) {
         return this.aset(i, new $perl(s));
     }
-"
+" : ()
             }
             keys %native_to_perl ))
 
@@ -1685,13 +1692,14 @@ EOT
     . ( join('', map {
             my $native = $_;
             my $perl   = $native_to_perl{$native};
+            $native && $perl ?
 "    public pObject hset(pObject s, $native v) {
         return this.hset(s, new $perl(v));
     }
     public pObject hset(String s, $native v) {
         return this.hset(s, new $perl(v));
     }
-"
+" : ()
             }
             keys %native_to_perl ))
 
@@ -1983,6 +1991,7 @@ EOT
                     my $java_class_name = $class->{java_constructor};
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
+                    $class->{import} ? 
 "class p${java_class_name} extends pReference {
     public static final pString REF = new pString(\"${perl_package}\");
 
@@ -2001,7 +2010,7 @@ EOT
         return REF;
     }
 }
-"
+" : ()
             }
             values %java_classes
       ))
