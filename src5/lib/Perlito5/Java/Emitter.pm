@@ -1754,7 +1754,7 @@ package Perlito5::AST::Apply;
             $str = Perlito5::Java::emit_wrap_java($level+1, $wantarray, 
                 "var tmp = p5s("
                     . $var->emit_java() . ', '
-                    . $regex_args->[0]->emit_java() . ', '
+                    . emit_qr_java( $replace, $modifier, $level ) . ', '
                     . Perlito5::Java::emit_function_java($level+2, $wantarray, $replace) . ', '
                     . Perlito5::Java::escape_string($modifier) . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
@@ -1766,8 +1766,7 @@ package Perlito5::AST::Apply;
         elsif ($code eq 'p5:m') {
             $str = 'p5m('
                     . $var->emit_java() . ', '
-                    . $regex_args->[0]->emit_java() . ', '
-                    . Perlito5::Java::escape_string($regex_args->[1]->{buf}) . ', '
+                    . emit_qr_java( $regex_args->[0], $regex_args->[1], $level ) . ', '
                     . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
                   . ")";
         }
