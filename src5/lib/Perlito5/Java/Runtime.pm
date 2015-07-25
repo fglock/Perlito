@@ -1141,7 +1141,7 @@ class pArray extends pObject {
         else if (o.is_scalarref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a SCALAR reference")));
+        return pCORE.die("Not a SCALAR reference");
     }
     public pObject aget_scalarref(int i) {
         pObject o = this.aget(i);
@@ -1153,7 +1153,7 @@ class pArray extends pObject {
         else if (o.is_scalarref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a SCALAR reference")));
+        return pCORE.die("Not a SCALAR reference");
     }
 
     public pObject aget_arrayref(pObject i) {
@@ -1166,7 +1166,7 @@ class pArray extends pObject {
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
+        return pCORE.die("Not an ARRAY reference");
     }
     public pObject aget_arrayref(int i) {
         pObject o = this.aget(i);
@@ -1178,7 +1178,7 @@ class pArray extends pObject {
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
+        return pCORE.die("Not an ARRAY reference");
     }
 
     public pObject aget_hashref(pObject i) {
@@ -1191,7 +1191,7 @@ class pArray extends pObject {
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
     public pObject aget_hashref(int i) {
         pObject o = this.aget(i);
@@ -1203,7 +1203,7 @@ class pArray extends pObject {
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
 
     public pObject get_hash(int i) {
@@ -1216,7 +1216,7 @@ class pArray extends pObject {
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
 
     // Note: multiple versions of set()
@@ -1614,7 +1614,7 @@ class pHash extends pObject {
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
+        return pCORE.die("Not an ARRAY reference");
     }
     public pObject hget_arrayref(String i) {
         pObject o = this.hget(i);
@@ -1626,7 +1626,7 @@ class pHash extends pObject {
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not an ARRAY reference")));
+        return pCORE.die("Not an ARRAY reference");
     }
 
     public pObject hget_hashref(pObject i) {
@@ -1639,7 +1639,7 @@ class pHash extends pObject {
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
     public pObject hget_hashref(String i) {
         pObject o = this.hget(i);
@@ -1651,7 +1651,7 @@ class pHash extends pObject {
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die(pCx.VOID, new pArray(new pString("Not a HASH reference")));
+        return pCORE.die("Not a HASH reference");
     }
 
     // Note: multiple versions of set()
