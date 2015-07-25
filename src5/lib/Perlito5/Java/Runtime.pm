@@ -1931,16 +1931,133 @@ class pString extends pObject {
     public pString(char s) {
         this.s = "" + s;
     }
+    private pObject _parse_exp(int length, int signal, int offset, int next) {
+        // 123.45E^^^
+        int offset3 = next;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {        
+                case '+': case '-':
+                    // TODO
+                    break;
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                default:    // invalid
+                    return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+            }
+            offset3++;
+        }
+        return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+    }
+    private pObject _parse_dot(int length, int signal, int offset, int next) {
+        // 123.^^^
+        int offset3 = next;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {        
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                case 'E': case 'e':
+                    // start exponential part
+                    return _parse_exp(length, signal, offset, offset3+1);
+                default:    // invalid
+                    return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+            }
+            offset3++;
+        }
+        return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+    }
+    public pObject parse() {
+        final int length = s.length();
+        int signal = 0;
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {        
+                case '.':   // starts with dot
+                            if (signal != 0) {
+                                signal = 1;
+                            }
+                            return _parse_dot(length, signal, offset, offset+1);
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                            // starts with number
+                            if (signal == 0) {
+                                signal = 1;
+                            }
+                            int offset2 = offset+1;
+                            for ( ; offset2 < length; ) {
+                                final int c2 = s.codePointAt(offset2);
+                                switch (c2) {        
+                                    case '0': case '1': case '2': case '3': case '4':
+                                    case '5': case '6': case '7': case '8': case '9':
+                                        // more numbers
+                                        break;
+                                    case '.':
+                                        // start decimal part
+                                        return _parse_dot(length, signal, offset, offset2+1);
+                                    case 'E': case 'e':
+                                        // start exponential part
+                                        return _parse_exp(length, signal, offset, offset2+1);
+                                    default:
+                                        // return integer
+                                        if (signal < 0) {
+                                            return new pInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                        }
+                                        else {
+                                            return new pInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                        }
+                                }
+                                offset2++;
+                            }
+                            // integer
+                            if (signal < 0) {
+                                return new pInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                            }
+                            else {
+                                return new pInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                            }
+                case '+':   // starts with +
+                            if (signal != 0) {
+                                // invalid
+                                return new pInt(0);
+                            }
+                            signal = 1;
+                            break;
+                case '-':   // starts with -
+                            if (signal != 0) {
+                                // invalid
+                                return new pInt(0);
+                            }
+                            signal = -1;
+                            break;
+                case ' ': case '\t': case '\n': case '\r':
+                            // starts with space
+                            if (signal != 0) {
+                                // invalid
+                                return new pInt(0);
+                            }
+                            break;
+                default:    // invalid
+                            return new pInt(0);
+            }
+            offset++;
+        }
+        return new pInt(0);
+    }
     public int to_int() {
         try {
-            return Integer.parseInt(this.s.trim());
+            return this.parse().to_int();
+            // return Integer.parseInt(this.s.trim());
         } catch (NumberFormatException nfe) {
             return 0;
         }
     }
     public double to_num() {
         try {
-            return Double.parseDouble(this.s.trim());
+            return this.parse().to_num();
+            // return Double.parseDouble(this.s.trim());
         } catch (NumberFormatException nfe) {
             return 0.0 + this.to_int();
         }
