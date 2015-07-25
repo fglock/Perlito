@@ -2047,20 +2047,10 @@ class pString extends pObject {
         return new pInt(0);
     }
     public int to_int() {
-        try {
-            return this.parse().to_int();
-            // return Integer.parseInt(this.s.trim());
-        } catch (NumberFormatException nfe) {
-            return 0;
-        }
+        return this.parse().to_int();
     }
     public double to_num() {
-        try {
-            return this.parse().to_num();
-            // return Double.parseDouble(this.s.trim());
-        } catch (NumberFormatException nfe) {
-            return 0.0 + this.to_int();
-        }
+        return this.parse().to_num();
     }
     public String to_string() {
         return this.s;
