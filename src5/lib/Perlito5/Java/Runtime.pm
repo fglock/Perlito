@@ -2089,34 +2089,22 @@ EOT
             if ($returns eq 'pNum') {
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
-        if (this.s.indexOf('.') > -1) {
-            return new pNum( this.to_num() ${native} b.to_num() );
-        }
-        return new pInt( this.to_int() ${native} b.to_int() );
+        return this.parse().${perl}(b);
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
-        if (this.s.indexOf('.') > -1) {
-            return new pNum( b.to_num() ${native} this.to_num() );
-        }
-        return new pInt( b.to_int() ${native} this.to_int() );
+        return this.parse().${perl}2(b);
     }
 "
             }
             else {
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
-        if (this.s.indexOf('.') > -1) {
-            return new ${num_returns}( this.to_num() ${native} b.to_num() );
-        }
-        return b.${perl}2(new pInt(this.to_int()));
+        return this.parse().${perl}(b);
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
-        if (this.s.indexOf('.') > -1) {
-            return new ${num_returns}( b.to_num() ${native} this.to_num() );
-        }
-        return new ${returns}( b.to_int() ${native} this.to_int() );
+        return this.parse().${perl}2(b);
     }
 "
             }
