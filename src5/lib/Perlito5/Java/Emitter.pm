@@ -1952,6 +1952,11 @@ package Perlito5::AST::Apply;
 
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'void') {
+                return
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
+            }
             # and1(x) ? y : and3()
             'pOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
@@ -1959,12 +1964,23 @@ package Perlito5::AST::Apply;
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'void') {
+                return
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
+            }
+            # and1(x) ? y : and3()
             'pOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pOp.and3()'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'void') {
+                return
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
+            }
             # or1(x) ? or2() : y
             'pOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
@@ -1972,6 +1988,12 @@ package Perlito5::AST::Apply;
         },
         'infix:<or>' => sub {
             my ($self, $level, $wantarray) = @_;
+            if ($wantarray eq 'void') {
+                return
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
+            }
+            # or1(x) ? or2() : y
             'pOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
