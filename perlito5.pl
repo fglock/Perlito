@@ -16038,10 +16038,10 @@ sub Perlito5::Java::Runtime::emit_java {
         my $returns = $number_binop{$perl}->{'returns'};
         my $num_returns = $number_binop{$perl}->{'num_returns'};
         if ($returns eq 'pNum') {
-            '    public pObject ' . $perl . '(pObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public pObject ' . $perl . '2(pObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return this.parse().' . $perl . '2(b);' . chr(10) . '    }' . chr(10)
+            '    public pObject ' . $perl . '(pObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public pObject ' . $perl . '2(pObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return b.' . $perl . '(this.parse());' . chr(10) . '    }' . chr(10)
         }
         else {
-            '    public pObject ' . $perl . '(pObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public pObject ' . $perl . '2(pObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return this.parse().' . $perl . '2(b);' . chr(10) . '    }' . chr(10)
+            '    public pObject ' . $perl . '(pObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public pObject ' . $perl . '2(pObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return b.' . $perl . '(this.parse());' . chr(10) . '    }' . chr(10)
         }
     } keys(%number_binop))) . '}' . chr(10) . join('', (map {
         my $class = $_;

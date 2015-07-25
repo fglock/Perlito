@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..57\n";
+print "1..60\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 

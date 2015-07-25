@@ -2098,7 +2098,7 @@ EOT
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
-        return this.parse().${perl}2(b);
+        return b.${perl}(this.parse());
     }
 "
             }
@@ -2109,7 +2109,7 @@ EOT
     }
     public pObject ${perl}2(pObject b) {
         // int - 'num'
-        return this.parse().${perl}2(b);
+        return b.${perl}(this.parse());
     }
 "
             }
