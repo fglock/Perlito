@@ -1975,6 +1975,21 @@ class pString extends pObject {
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {        
+                case 'i': case 'I':
+                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
+                                if (signal < 0) {
+                                    return new pNum(Double.NEGATIVE_INFINITY);
+                                }
+                                else {
+                                    return new pNum(Double.POSITIVE_INFINITY);
+                                }
+                            }
+                            return new pInt(0);
+                case 'n': case 'N':
+                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
+                                return new pNum(Double.NaN);
+                            }
+                            return new pInt(0);
                 case '.':   // starts with dot
                             if (signal != 0) {
                                 signal = 1;
