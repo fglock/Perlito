@@ -209,15 +209,11 @@ class pOp {
             }
             return "1";
         }
-
-        pCORE.die("not implemented string++");
-        return s;
-
-        // var c = p5str_inc(s.substr(s.length-1, 1));
-        // if (c.length == 1) {
-        //     return s.substr(0, s.length-1) + c;
-        // }
-        // return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+        String c = string_increment(s.substring(s.length()-1, s.length()));
+        if (c.length() == 1) {
+            return s.substring(0, s.length()-1) + c;
+        }
+        return string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
     }
 
     public static final pObject match(pObject s, pRegex pat, int want) {
