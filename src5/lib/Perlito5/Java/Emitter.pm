@@ -297,10 +297,10 @@ package Perlito5::Java;
                 || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
                 )
             {
-                return $cond->emit_java($level, $wantarray);
+                return $cond->emit_java($level, $wantarray) . '.to_bool()';
             }
             else {
-                return $cond->emit_java($level, $wantarray);
+                return $cond->emit_java($level, $wantarray) . '.to_bool()';
             }
     }
 
@@ -1954,7 +1954,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                  Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
             }
             # and1(x) ? y : and3()
@@ -1966,7 +1966,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                  Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
             }
             # and1(x) ? y : and3()
@@ -1978,7 +1978,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                  Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
                 . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
             }
             # or1(x) ? or2() : y
@@ -1990,7 +1990,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
-                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_bool() ? '
+                  Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
                 . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
             }
             # or1(x) ? or2() : y
@@ -2033,7 +2033,7 @@ package Perlito5::AST::Apply;
         'prefix:<!>' => sub {
             my $self      = shift;
             my $level     = shift;
-            '!( ' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . ')';
+            'new pBool(!(' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . '))';
         },
         'prefix:<not>' => sub {
             my $self      = shift;
@@ -2042,7 +2042,7 @@ package Perlito5::AST::Apply;
             if (!$arg) {
                 return 'true';
             }
-            '!( ' . Perlito5::Java::to_bool( $arg, $level ) . ')';
+            'new pBool(!( ' . Perlito5::Java::to_bool( $arg, $level ) . '))';
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
@@ -2278,7 +2278,7 @@ package Perlito5::AST::Apply;
 
         'ternary:<? :>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '( ' . Perlito5::Java::to_bool( $self->{arguments}->[0] ) . '.to_bool() ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray ) . ')';
+            '( ' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . ' ? ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ' : ' . ( $self->{arguments}->[2] )->emit_java( $level, $wantarray ) . ')';
         },
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3208,7 +3208,7 @@ package Perlito5::AST::If;
             ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts )
             : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1 );
  
-        my $s = 'if ( ' . Perlito5::Java::to_bool($cond, $level + 1) . '.to_bool() ) {';
+        my $s = 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
 
         if ($body) {
             $s = $s . "\n"
@@ -3298,7 +3298,7 @@ package Perlito5::AST::While;
         }
 
         push @str, 'while ('
-                    . $cond->emit_java($level + 1, 'scalar') . '.to_bool()) '
+                    . Perlito5::Java::to_bool($cond, $level + 1) . ') '
                     . "{\n"
                     . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
                     . Perlito5::Java::tab($level + 1) . '}';
