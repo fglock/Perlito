@@ -2000,10 +2000,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5xor('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            '( ' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . ' ? new pBool(!' . Perlito5::Java::to_bool($self->{arguments}->[1], $level) . ') : ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ')';
         },
         'infix:<=>>' => sub {
             my ($self, $level, $wantarray) = @_;
