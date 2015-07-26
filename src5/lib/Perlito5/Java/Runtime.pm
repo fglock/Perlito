@@ -973,7 +973,10 @@ EOT
             my $perl = $_;
             my $native = $number_binop{$perl}{op};
 "    public pObject ${perl}(pObject s) {
-        return s.${perl}2(this);
+        return this.o.${perl}(s);
+    }
+    public pObject ${perl}2(pObject s) {
+        return s.${perl}(this.o);
     }
 "
             }
