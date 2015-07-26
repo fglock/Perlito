@@ -524,6 +524,9 @@ EOT
         // ++$x
         return new pInt(1);
     }
+    public pObject neg() {
+        return new pInt(-this.to_int());
+    }
     public pObject pre_decr() {
         // --$x
         pCORE.die("Can't modify constant item in predecrement (--)");
@@ -1017,6 +1020,9 @@ EOT
         pObject res = this.o;
         this.o = this.o._incr();
         return res;
+    }
+    public pObject neg() {
+        return this.o.neg();
     }
 
     public pObject scalar() {
@@ -1843,6 +1849,14 @@ class pBool extends pObject {
             return new pInt(1);
         }
     }
+    public pObject neg() {
+        if (i) {
+            return new pInt(-1);
+        }
+        else {
+            return new pInt(0);
+        }
+    }
 }
 class pInt extends pObject {
     private int i;
@@ -1872,6 +1886,9 @@ class pInt extends pObject {
         // ++$x
         return new pInt(i+1);
     }
+    public pObject neg() {
+        return new pInt(-i);
+    }
 }
 class pNum extends pObject {
     private double i;
@@ -1897,6 +1914,9 @@ class pNum extends pObject {
     public pObject _incr() {
         // ++$x
         return new pNum(i+1);
+    }
+    public pObject neg() {
+        return new pNum(-i);
     }
 EOT
     . ( join('', map {
@@ -2089,6 +2109,10 @@ class pString extends pObject {
                 return this.add(new pInt(1));
         }
         return new pString(pOp.string_increment(this.s));
+    }
+    public pObject neg() {
+        pCORE.die("TODO - string neg");
+        return this;
     }
 EOT
     . ( join('', map {

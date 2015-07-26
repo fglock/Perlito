@@ -2050,11 +2050,11 @@ package Perlito5::AST::Apply;
         },
         'prefix:<->' => sub {
             my ($self, $level, $wantarray) = @_;
-            'p5negative( ' . $self->{arguments}->[0]->emit_java( $level, 'scalar' ) . ')';
+            $self->{arguments}->[0]->emit_java( $level, 'scalar' ) . '.neg()';
         },
         'prefix:<+>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '(' . $self->{arguments}->[0]->emit_java( $level, $wantarray ) . ')';
+            $self->{arguments}->[0]->emit_java( $level, $wantarray );
         },
         'require' => sub {
             my ($self, $level, $wantarray) = @_;
