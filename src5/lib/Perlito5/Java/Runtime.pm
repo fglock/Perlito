@@ -192,25 +192,27 @@ class pOp {
     }
 
     // $x++ when $x is pString
-    public static final pObject string_increment(pObject s) {
+    public static final String string_increment(String s) {
+        if (s.length() < 2) {
+            final int c = s.codePointAt(0);
+            if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
+                return "" + Character.toChars(c + 1)[0];
+            }
+            if (c == '9') {
+                return "10";
+            }
+            if (c == 'Z') {
+                return "AA";
+            }
+            if (c == 'z') {
+                return "aa";
+            }
+            return "1";
+        }
+
         pCORE.die("not implemented string++");
         return s;
 
-        // if (s.length < 2) {
-        //     if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
-        //         return String.fromCharCode(s.charCodeAt(0) + 1);
-        //     }
-        //     if (s == "9") {
-        //         return "10";
-        //     }
-        //     if (s == "Z") {
-        //         return "AA";
-        //     }
-        //     if (s == "z") {
-        //         return "aa";
-        //     }
-        //     return "1";
-        // }
         // var c = p5str_inc(s.substr(s.length-1, 1));
         // if (c.length == 1) {
         //     return s.substr(0, s.length-1) + c;
@@ -2082,7 +2084,7 @@ class pString extends pObject {
     }
     public pObject _incr() {
         // ++$x
-        final int c = s.codePointAt(0);
+        final int c = this.s.codePointAt(0);
         switch (c) {        
             case ' ': case '\t': case '\n': case '\r':
             case '+': case '-': case '.':
@@ -2090,7 +2092,7 @@ class pString extends pObject {
             case '5': case '6': case '7': case '8': case '9':
                 return this.add(new pInt(1));
         }
-        return pOp.string_increment(this);
+        return new pString(pOp.string_increment(this.s));
     }
 EOT
     . ( join('', map {
