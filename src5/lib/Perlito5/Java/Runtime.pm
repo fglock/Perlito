@@ -196,10 +196,6 @@ class pOp {
         pCORE.die("not implemented string++");
         return s;
 
-        // s = p5str(s);
-        // if (s.match(/^[0123456789]/)) {
-        //     return p5str(p5num(s)+1);
-        // }
         // if (s.length < 2) {
         //     if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
         //         return String.fromCharCode(s.charCodeAt(0) + 1);
@@ -2086,6 +2082,14 @@ class pString extends pObject {
     }
     public pObject _incr() {
         // ++$x
+        final int c = s.codePointAt(0);
+        switch (c) {        
+            case ' ': case '\t': case '\n': case '\r':
+            case '+': case '-': case '.':
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                return this.add(new pInt(1));
+        }
         return pOp.string_increment(this);
     }
 EOT
