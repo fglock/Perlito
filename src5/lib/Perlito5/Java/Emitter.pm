@@ -2299,21 +2299,21 @@ package Perlito5::AST::Apply;
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of my($x,$y)
-            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'our' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of our($x,$y)
-            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'local' => sub {
             my ($self, $level, $wantarray) = @_;
             # 'local ($x, $y[10])'
-            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'circumfix:<( )>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'pOp.context(' . '[' . join( ', ', map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'infix:<=>' => sub {
             my ($self, $level, $wantarray) = @_;
