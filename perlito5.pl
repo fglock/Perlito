@@ -14946,6 +14946,27 @@ package Perlito5::AST::Apply;
         'p5want'
     }, 'package' => sub {
         ''
+    }, 'uc' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pString(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_string().toUpperCase())'
+    }, 'lc' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pString(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_string().toLowerCase())'
+    }, 'ucfirst' => sub {
+        my($self, $level, $wantarray) = @_;
+        'pOp.ucfirst(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ')'
+    }, 'lcfirst' => sub {
+        my($self, $level, $wantarray) = @_;
+        'pOp.lcfirst(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ')'
+    }, 'quotemeta' => sub {
+        my($self, $level, $wantarray) = @_;
+        'pOp.quotemeta(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ')'
+    }, 'index' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_string().indexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_string()))'
+    }, 'chr' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pString((char)' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int())'
     }, 'infix:<%>' => sub {
         my($self, $level, $wantarray) = @_;
         'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() % ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
