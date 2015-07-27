@@ -554,6 +554,15 @@ EOT
     public pObject scalar() {
         return this;
     }
+    public pObject str_cmp(pObject b) {
+        return new pInt(this.to_string().compareTo(b.to_string()));
+    }
+    public pObject num_cmp(pObject b) {
+        return b.num_cmp2(this);
+    }
+    public pObject num_cmp2(pObject b) {
+        return new pInt(new Integer(b.to_int()).compareTo(this.to_int()));
+    }
 EOT
     . ( join('', map {
             my $perl = $_;
@@ -964,6 +973,12 @@ EOT
     }
     public boolean to_bool() {
         return this.o.to_bool();
+    }
+    public pObject num_cmp(pObject b) {
+        return this.o.num_cmp(b);
+    }
+    public pObject num_cmp2(pObject b) {
+        return b.num_cmp(this.o);
     }
 EOT
     . ( join('', map {
@@ -1918,6 +1933,12 @@ class pDouble extends pObject {
     public pObject neg() {
         return new pDouble(-i);
     }
+    public pObject num_cmp(pObject b) {
+        return new pInt(new Double(this.i).compareTo(b.to_double()));
+    }
+    public pObject num_cmp2(pObject b) {
+        return new pInt(new Double(b.to_double()).compareTo(this.i));
+    }
 EOT
     . ( join('', map {
             my $perl = $_;
@@ -2113,6 +2134,12 @@ class pString extends pObject {
     public pObject neg() {
         pCORE.die("TODO - string neg");
         return this;
+    }
+    public pObject num_cmp(pObject b) {
+        return this.parse().num_cmp(b);
+    }
+    public pObject num_cmp2(pObject b) {
+        return b.num_cmp2(this.parse());
     }
 EOT
     . ( join('', map {

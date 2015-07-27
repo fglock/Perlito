@@ -2075,12 +2075,14 @@ package Perlito5::AST::Apply;
             . $self->{arguments}[1]->emit_java($level)
         },
         'infix:<cmp>' => sub {
-            my $self = $_[0];
-            'p5cmp(' . join( ', ', map( Perlito5::Java::to_str($_), @{ $self->{arguments} } ) ) . ')';
+            my ($self, $level, $wantarray) = @_;
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_cmp('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<<=>>' => sub {
-            my $self = $_[0];
-            'p5cmp(' . join( ', ', map( Perlito5::Java::to_num($_), @{ $self->{arguments} } ) ) . ')';
+            my ($self, $level, $wantarray) = @_;
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.num_cmp('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<**>' => sub {
             my $self = $_[0];
