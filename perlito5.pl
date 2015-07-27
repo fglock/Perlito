@@ -14946,6 +14946,12 @@ package Perlito5::AST::Apply;
         'p5want'
     }, 'package' => sub {
         ''
+    }, 'infix:<>>>' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() >>> ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
+    }, 'infix:<<<>' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() << ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
     }, 'infix:<^>' => sub {
         my($self, $level, $wantarray) = @_;
         'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() ^ ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
@@ -15042,9 +15048,6 @@ package Perlito5::AST::Apply;
     }, 'infix:<**>' => sub {
         my $self = $_[0];
         'Math.pow(' . join(', ', map(Perlito5::Java::to_num($_), @{$self->{'arguments'}})) . ')'
-    }, 'infix:<<<>' => sub {
-        my $self = $_[0];
-        'p5shift_left(' . join(', ', map(Perlito5::Java::to_num($_), @{$self->{'arguments'}})) . ')'
     }, 'infix:<%>' => sub {
         my $self = $_[0];
         'p5modulo(' . join(', ', map(Perlito5::Java::to_num($_), @{$self->{'arguments'}})) . ')'
@@ -15062,7 +15065,7 @@ package Perlito5::AST::Apply;
         'new pBool(!( ' . Perlito5::Java::to_bool($arg, $level) . '))'
     }, 'prefix:<~>' => sub {
         my $self = $_[0];
-        'p5complement( ' . Perlito5::Java::to_num($self->{'arguments'}->[0]) . ')'
+        'new pInt(~' . Perlito5::Java::to_num($self->{'arguments'}->[0]) . '.to_int())'
     }, 'prefix:<->' => sub {
         my($self, $level, $wantarray) = @_;
         $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.neg()'
