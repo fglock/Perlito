@@ -248,7 +248,7 @@ package Perlito5::Java;
             }
             else {
                 # TODO - this converts to "double" - it should be int/double depending on context
-                return 'new pNum(' . $cond->emit_java($level, $wantarray) . '.to_num())';
+                return 'new pDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())';
             }
     }
     sub to_bool {
@@ -821,7 +821,7 @@ package Perlito5::AST::Num;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        "new pNum(" . $self->{num} . ")";
+        "new pDouble(" . $self->{num} . ")";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -1892,6 +1892,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
               'new pString((char)'
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())'
+        },
+        'abs' => sub {
+            my ($self, $level, $wantarray) = @_;
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.abs()'
         },
         'infix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;

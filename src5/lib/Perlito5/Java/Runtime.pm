@@ -7,10 +7,10 @@ sub emit_java {
     my %java_classes = %{ $args{java_classes} // {} };
 
     my %number_binop = (
-        add    => { op => '+',  returns => 'pInt',  num_returns => 'pNum'}, 
-        sub    => { op => '-',  returns => 'pInt',  num_returns => 'pNum'},
-        mul    => { op => '*',  returns => 'pInt',  num_returns => 'pNum'},
-        div    => { op => '/',  returns => 'pNum',  num_returns => 'pNum'},
+        add    => { op => '+',  returns => 'pInt',  num_returns => 'pDouble'}, 
+        sub    => { op => '-',  returns => 'pInt',  num_returns => 'pDouble'},
+        mul    => { op => '*',  returns => 'pInt',  num_returns => 'pDouble'},
+        div    => { op => '/',  returns => 'pDouble',  num_returns => 'pDouble'},
         num_eq => { op => '==', returns => 'pBool', num_returns => 'pBool' },
         num_ne => { op => '!=', returns => 'pBool', num_returns => 'pBool' },
         num_lt => { op => '<',  returns => 'pBool', num_returns => 'pBool' },
@@ -29,7 +29,7 @@ sub emit_java {
 
     my %native_to_perl = (
         int    => 'pInt',
-        double => 'pNum',
+        double => 'pDouble',
         String => 'pString',
     );
     for (values %java_classes) {
@@ -313,8 +313,8 @@ EOT
     public pObject end_of_array_index() {
         return pCORE.die("Not an ARRAY reference");
     }
-    public double to_num() {
-        pCORE.die("error .to_num!");
+    public double to_double() {
+        pCORE.die("error .to_double!");
         return 0.0;
     }
     public boolean to_bool() {
@@ -959,8 +959,8 @@ EOT
     public int to_int() {
         return this.o.to_int();
     }
-    public double to_num() {
-        return this.o.to_num();
+    public double to_double() {
+        return this.o.to_double();
     }
     public boolean to_bool() {
         return this.o.to_bool();
@@ -1401,7 +1401,7 @@ EOT
     public pObject end_of_array_index() {
         return new pInt(this.a.size() - 1);
     }
-    public double to_num() {
+    public double to_double() {
         return 0.0 + this.to_int();
     }
     public boolean to_bool() {
@@ -1744,7 +1744,7 @@ EOT
         // TODO
         return this.hashCode();
     }
-    public double to_num() {
+    public double to_double() {
         return 0.0 + this.to_int();
     }
     public boolean to_bool() {
@@ -1780,7 +1780,7 @@ class pUndef extends pObject {
     public int to_int() {
         return 0;
     }
-    public double to_num() {
+    public double to_double() {
         return 0.0;
     }
     public String to_string() {
@@ -1809,7 +1809,7 @@ class pBool extends pObject {
             return 0;
         }
     }
-    public double to_num() {
+    public double to_double() {
         if (this.i) {
             return 1.0;
         }
@@ -1866,7 +1866,7 @@ class pInt extends pObject {
     public int to_int() {
         return this.i;
     }
-    public double to_num() {
+    public double to_double() {
         return (double)(this.i);
     }
     public String to_string() {
@@ -1890,15 +1890,15 @@ class pInt extends pObject {
         return new pInt(-i);
     }
 }
-class pNum extends pObject {
+class pDouble extends pObject {
     private double i;
-    public pNum(double i) {
+    public pDouble(double i) {
         this.i = i;
     }
     public int to_int() {
         return (int)(this.i);
     }
-    public double to_num() {
+    public double to_double() {
         return this.i;
     }
     public String to_string() {
@@ -1909,14 +1909,14 @@ class pNum extends pObject {
     }
     public pObject _decr() {
         // --$x
-        return new pNum(i-1);
+        return new pDouble(i-1);
     }
     public pObject _incr() {
         // ++$x
-        return new pNum(i+1);
+        return new pDouble(i+1);
     }
     public pObject neg() {
-        return new pNum(-i);
+        return new pDouble(-i);
     }
 EOT
     . ( join('', map {
@@ -1925,11 +1925,11 @@ EOT
             my $returns = $number_binop{$perl}{num_returns};
 "    public pObject ${perl}(pObject s) {
         // num - int, num - num
-        return new ${returns}( this.i ${native} s.to_num() );
+        return new ${returns}( this.i ${native} s.to_double() );
     }
     public pObject ${perl}2(pObject s) {
         // int - num
-        return new ${returns}( s.to_num() ${native} this.i );
+        return new ${returns}( s.to_double() ${native} this.i );
     }
 "
             }
@@ -1961,11 +1961,11 @@ class pString extends pObject {
                 case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:    // invalid
-                    return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+                    return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
             }
             offset3++;
         }
-        return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+        return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }
     private pObject _parse_dot(int length, int signal, int offset, int next) {
         // 123.^^^
@@ -1980,11 +1980,11 @@ class pString extends pObject {
                     // start exponential part
                     return _parse_exp(length, signal, offset, offset3+1);
                 default:    // invalid
-                    return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+                    return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
             }
             offset3++;
         }
-        return new pNum(Double.parseDouble(this.s.substring(0, offset3)));
+        return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }
     public pObject parse() {
         final int length = s.length();
@@ -1995,16 +1995,16 @@ class pString extends pObject {
                 case 'i': case 'I':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
                                 if (signal < 0) {
-                                    return new pNum(Double.NEGATIVE_INFINITY);
+                                    return new pDouble(Double.NEGATIVE_INFINITY);
                                 }
                                 else {
-                                    return new pNum(Double.POSITIVE_INFINITY);
+                                    return new pDouble(Double.POSITIVE_INFINITY);
                                 }
                             }
                             return new pInt(0);
                 case 'n': case 'N':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
-                                return new pNum(Double.NaN);
+                                return new pDouble(Double.NaN);
                             }
                             return new pInt(0);
                 case '.':   // starts with dot
@@ -2081,8 +2081,8 @@ class pString extends pObject {
     public int to_int() {
         return this.parse().to_int();
     }
-    public double to_num() {
-        return this.parse().to_num();
+    public double to_double() {
+        return this.parse().to_double();
     }
     public String to_string() {
         return this.s;
@@ -2120,7 +2120,7 @@ EOT
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
             my $num_returns = $number_binop{$perl}{num_returns};
-            if ($returns eq 'pNum') {
+            if ($returns eq 'pDouble') {
 "    public pObject ${perl}(pObject b) {
         // 'num' - int, 'num' - num
         return this.parse().${perl}(b);
