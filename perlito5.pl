@@ -13847,7 +13847,6 @@ package Perlito5::Java;
     }
     our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size');
     our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
-    our %op_infix_js_num = ('infix:<&>' => ' & ', 'infix:<|>' => ' | ', 'infix:<^>' => ' ^ ', 'infix:<>>>' => ' >>> ');
     our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
     our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
     our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>');
@@ -14947,6 +14946,15 @@ package Perlito5::AST::Apply;
         'p5want'
     }, 'package' => sub {
         ''
+    }, 'infix:<^>' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() ^ ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
+    }, 'infix:<&>' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() & ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
+    }, 'infix:<|>' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int() | ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_int())'
     }, 'infix:<+>' => sub {
         my($self, $level, $wantarray) = @_;
         $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.add(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ')'
@@ -15594,11 +15602,6 @@ package Perlito5::AST::Apply;
             return $self->{'code'}->emit_java($level) . '.apply(' . join(',', @args) . ')'
         }
         exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray);
-        if (exists($Perlito5::Java::op_infix_js_num{$code})) {
-            return '(' . join($Perlito5::Java::op_infix_js_num{$code}, map {
-                Perlito5::Java::to_num($_, $level)
-            } @{$self->{'arguments'}}) . ')'
-        }
         if (exists($Perlito5::Java::op_prefix_js_str{$code})) {
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ')'
         }

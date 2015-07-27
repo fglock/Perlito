@@ -57,15 +57,6 @@ package Perlito5::Java;
         'infix:<lt>' => ' < ',
         'infix:<gt>' => ' > ',
     );
-    # these operators need 2 "num" parameters
-    our %op_infix_js_num = (
-        # 'infix:<%>'  => ' % ',    # see p5modulo()
-        'infix:<&>'  => ' & ',
-        'infix:<|>'  => ' | ',
-        'infix:<^>'  => ' ^ ',
-        'infix:<>>>' => ' >>> ',
-        # 'infix:<<<>' => ' << ',   # see p5shift_left()
-    );
     # these operators always return "bool"
     our %op_to_bool = map +($_ => 1), qw(
         prefix:<!>
@@ -1866,6 +1857,24 @@ package Perlito5::AST::Apply;
         'package' => sub {
             '';
         },
+        'infix:<^>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              'new pInt('
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() ^ '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+        },
+        'infix:<&>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              'new pInt('
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() & '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+        },
+        'infix:<|>' => sub {
+            my ($self, $level, $wantarray) = @_;
+              'new pInt('
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() | '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+        },
         'infix:<+>' => sub {
             my ($self, $level, $wantarray) = @_;
               $self->{arguments}->[0]->emit_java($level, 'scalar') . '.add('
@@ -2942,11 +2951,6 @@ package Perlito5::AST::Apply;
         return $emit_js{$code}->($self, $level, $wantarray)
             if exists $emit_js{$code};
 
-        if (exists $Perlito5::Java::op_infix_js_num{$code}) {
-            return '(' 
-                . join( $Perlito5::Java::op_infix_js_num{$code}, map { Perlito5::Java::to_num($_, $level) } @{$self->{arguments}} )
-                . ')'
-        }
         if (exists $Perlito5::Java::op_prefix_js_str{$code}) {
             return $Perlito5::Java::op_prefix_js_str{$code} . '(' 
                 . Perlito5::Java::to_str($self->{arguments}[0])
