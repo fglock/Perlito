@@ -59,24 +59,27 @@ EOT
             values %java_classes
       ))
     . <<'EOT'
+class pControlException extends RuntimeException { }
+class pNextException extends pControlException { }
+class pLastException extends pControlException { }
+class pRedoException extends pControlException { }
 class pCx {
-    public static final int VOID   = 0;
-    public static final int SCALAR = 1;
-    public static final int LIST   = 2;
+    public static final int     VOID   = 0;
+    public static final int     SCALAR = 1;
+    public static final int     LIST   = 2;
     public static final pUndef  UNDEF  = new pUndef();
     public static final pBool   TRUE   = new pBool(true);
     public static final pBool   FALSE  = new pBool(false);
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
+    public static final pNextException NEXT = new pNextException();
+    public static final pLastException LAST = new pLastException();
+    public static final pRedoException REDO = new pRedoException();
 EOT
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
 }
-class pControlException extends RuntimeException { }
-class pNextException extends pControlException { }
-class pLastException extends pControlException { }
-class pRedoException extends pControlException { }
 class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
