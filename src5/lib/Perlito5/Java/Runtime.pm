@@ -73,6 +73,10 @@ EOT
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
 }
+class pControlException extends RuntimeException { }
+class pNextException extends pControlException { }
+class pLastException extends pControlException { }
+class pRedoException extends pControlException { }
 class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
