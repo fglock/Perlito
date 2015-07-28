@@ -3,6 +3,8 @@
 -- document Perlito5-Java vs. Perl
 
     - no timely destruction (DESTROY) (because Java)
+        - files don't "auto-close" at the end of a block
+        - Try::Tiny "finally" doesn't work
     - no XS (because Java)
     - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
     - no eval-string (because not-yet-bootstrapped)
@@ -193,6 +195,8 @@
 
 -- Missing features, or partially implemented, or untested
 
+    overload
+    tie()
     exceptions
         die() works
         "next", "goto", "last", "redo"
