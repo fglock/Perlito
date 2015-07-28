@@ -7,6 +7,16 @@
 
     when compiling misc/Java/code_too_large.pl
 
+    possible workaround: insert a closure every 100s of lines in a block:
+
+        code...
+        return (sub {
+                code ...
+                return (sub {
+                        code ...
+                    }->() )
+            }->() )
+
 -- document Perlito5-Java vs. Perl
 
     - no timely destruction (DESTROY) (because Java)
