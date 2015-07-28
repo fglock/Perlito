@@ -1,5 +1,12 @@
 * Java backend
 
+-- According to the Java Virtual Machine specification,
+   the bytecode of a method must not be bigger than 65536 bytes:
+
+    Test.java:2309: error: code too large
+
+    when compiling misc/Java/code_too_large.pl
+
 -- document Perlito5-Java vs. Perl
 
     - no timely destruction (DESTROY) (because Java)
