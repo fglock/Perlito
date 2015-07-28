@@ -191,6 +191,20 @@ class pOp {
         return stack.remove(0);
     }
 
+    // defined_or1(x) ? defined_or2() : y
+    public static final boolean defined_or1(pObject arg1) {
+        if (!arg1.is_undef()) {
+            stack.add(0, arg1);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public static final pObject defined_or2() {
+        return stack.remove(0);
+    }
+
     // $x++ when $x is pString
     public static final String string_increment(String s) {
         if (s.length() < 2) {

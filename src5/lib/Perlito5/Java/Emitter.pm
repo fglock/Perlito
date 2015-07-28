@@ -2894,10 +2894,10 @@ package Perlito5::AST::Apply;
         },
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
-            'p5defined_or' . '('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ', '
-                . Perlito5::Java::emit_function_java($level, $wantarray, $self->{arguments}->[1]) 
-                . ')'
+            # defined_or1(x) ? defined_or2() : y
+            'pOp.defined_or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.defined_or2() : '
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'exists' => sub {
             my ($self, $level, $wantarray) = @_;
