@@ -6,6 +6,7 @@
     - no XS (because Java)
     - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
     - no eval-string (because not-yet-bootstrapped)
+        - also no: "do FILE", "require" (because these depend on eval-string)
 
     - any other differences are not-yet-implemented or bugs.
 
@@ -58,7 +59,7 @@
                                             (TODO - allow Int, String types)
 
     my $x = $put;
-    puts the unboxed object into a Perl scalar  (TODO - create pScalar.set() variant)
+    puts the unboxed object into a Perl scalar  (DONE)
 
     my $x = Sample->new()
     stores the boxed pSample object in a Perl scalar (DONE)
@@ -175,9 +176,6 @@
     $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
     ''
 
--- "dualvars"
-    for string-to-number optimization
-
 -- autobox as-needed
 
     runtime methods should accept String, int, double, boolean types
@@ -189,14 +187,25 @@
     - Hash accepts String for index (DONE)
     - Array accepts int for index   (DONE)
 
--- missing features (or untested)
+-- Add tests
 
-    NaN, Inf
+    NaN, Inf, -0
+
+-- Missing features, or partially implemented, or untested
+
+    exceptions
+        die() works
+        "next", "goto", "last", "redo"
+        "eval BLOCK"
+        Note: remember to cleanup the stacks (boolean, local).
+    "continue" blocks
+    "dualvars"
+        for string-to-number optimization
+    unicode-strings vs. byte-strings
     subroutine signatures
     return (list)
     assignment to splice
     rw @_
-    //
     sprintf
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
