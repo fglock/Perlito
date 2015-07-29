@@ -576,13 +576,15 @@ EOT
         return this;
     }
     public pObject str_cmp(pObject b) {
-        return new pInt(this.to_string().compareTo(b.to_string()));
+        int c = this.to_string().compareTo(b.to_string());
+        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
     public pObject num_cmp(pObject b) {
         return b.num_cmp2(this);
     }
     public pObject num_cmp2(pObject b) {
-        return new pInt(new Integer(b.to_int()).compareTo(this.to_int()));
+        int c = new Integer(b.to_int()).compareTo(this.to_int());
+        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
 EOT
     . ( join('', map {
@@ -1955,10 +1957,12 @@ class pDouble extends pObject {
         return new pDouble(-i);
     }
     public pObject num_cmp(pObject b) {
-        return new pInt(new Double(this.i).compareTo(b.to_double()));
+        int c = new Double(this.i).compareTo(b.to_double());
+        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
     public pObject num_cmp2(pObject b) {
-        return new pInt(new Double(b.to_double()).compareTo(this.i));
+        int c = new Double(b.to_double()).compareTo(this.i);
+        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
 EOT
     . ( join('', map {
