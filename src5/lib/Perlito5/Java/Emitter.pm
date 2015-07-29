@@ -810,7 +810,11 @@ package Perlito5::AST::Int;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        "new pInt(" . $self->{int} . ")";
+        my $v = $self->{int};
+        if ( $v > (2**31-1) ) {
+            return "new pDouble(" . $v . ".0)";
+        }
+        "new pInt(" . $v . ")";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
