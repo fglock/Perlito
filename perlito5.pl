@@ -14967,6 +14967,9 @@ package Perlito5::AST::Apply;
     }, 'chr' => sub {
         my($self, $level, $wantarray) = @_;
         'new pString((char)' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int())'
+    }, 'int' => sub {
+        my($self, $level, $wantarray) = @_;
+        'new pInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int())'
     }, 'abs' => sub {
         my($self, $level, $wantarray) = @_;
         $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.abs()'
