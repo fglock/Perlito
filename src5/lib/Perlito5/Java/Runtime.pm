@@ -548,6 +548,10 @@ EOT
     public pObject neg() {
         return new pInt(-this.to_int());
     }
+    public pObject abs() {
+        int c = this.to_int();
+        return new pInt(c < 0 ? -c : c);
+    }
     public pObject pre_decr() {
         // --$x
         pCORE.die("Can't modify constant item in predecrement (--)");
@@ -1061,6 +1065,9 @@ EOT
     }
     public pObject neg() {
         return this.o.neg();
+    }
+    public pObject abs() {
+        return this.o.abs();
     }
 
     public pObject scalar() {
@@ -1956,6 +1963,9 @@ class pDouble extends pObject {
     public pObject neg() {
         return new pDouble(-i);
     }
+    public pObject abs() {
+        return new pDouble(i < 0.0 ? -i : i);
+    }
     public pObject num_cmp(pObject b) {
         int c = new Double(this.i).compareTo(b.to_double());
         return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
@@ -2158,7 +2168,10 @@ class pString extends pObject {
     }
     public pObject neg() {
         pCORE.die("TODO - string neg");
-        return this;
+        return this.parse().neg();
+    }
+    public pObject abs() {
+        return this.parse().abs();
     }
     public pObject num_cmp(pObject b) {
         return this.parse().num_cmp(b);
