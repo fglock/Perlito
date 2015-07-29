@@ -1392,8 +1392,8 @@ package Perlito5::AST::Var;
         if ( $sigil eq '$' ) {
             my $id = $self->{_id};
             my $Java_var = Perlito5::Java::get_java_var_info();
-            my $type = $Java_var->{ $id }{type} || 'pScalar';
-            if ($type ne 'pScalar') {
+            my $type = $Java_var->{ $id }{type} || 'pLvalue';
+            if ($type ne 'pLvalue') {
                 # set a typed variable - there is no .set() method
                 # the arguments are not boxed
                 return $self->emit_java() . ' = ' . Perlito5::Java::to_native_args([$arguments]);
@@ -1462,7 +1462,7 @@ package Perlito5::AST::Decl;
         my ($self, $level, $wantarray) = @_;
 
         my $Java_var = Perlito5::Java::get_java_var_info();
-        my $type = $self->{type} || 'pScalar';
+        my $type = $self->{type} || 'pLvalue';
         my $id = $self->{var}{_id};
         if ( $id ) {
             $Java_var->{ $id } = { id => $id, type => $type };
@@ -1497,7 +1497,7 @@ package Perlito5::AST::Decl;
             }
             else {
                 my $Java_class = Perlito5::Java::get_java_class_info();
-                my $java_type = $Java_class->{$type}{java_constructor} || 'pScalar';
+                my $java_type = $Java_class->{$type}{java_constructor} || 'pLvalue';
                 return "${java_type} " . $self->{var}->emit_java() . " = new ${java_type}();";
             }
         }
@@ -1618,8 +1618,8 @@ package Perlito5::AST::Call;
         if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
             my $id = $self->{invocant}->{_id};
             my $Java_var = Perlito5::Java::get_java_var_info();
-            my $type = $Java_var->{ $id }{type} || 'pScalar';
-            if ($type ne 'pScalar') {
+            my $type = $Java_var->{ $id }{type} || 'pLvalue';
+            if ($type ne 'pLvalue') {
                 return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
@@ -2219,7 +2219,7 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            return '(new pScalarRef(' . $arg->emit_java($level) . '))';
+            return '(new pLvalueRef(' . $arg->emit_java($level) . '))';
         },
 
         'postfix:<++>' => sub {

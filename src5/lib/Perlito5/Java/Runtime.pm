@@ -244,7 +244,7 @@ class pOp {
         pCORE.die("not implemented string match in list context");
         return s;
     }
-    public static final pObject match(pObject s, pScalar pat, int want) {
+    public static final pObject match(pObject s, pLvalue pat, int want) {
         return match(s, pat.get(), want);
     }
     public static final pObject match(pObject s, pObject pat, int want) {
@@ -661,14 +661,14 @@ class pClosure extends pReference {
         return REF;
     }
 }
-class pScalarRef extends pReference {
+class pLvalueRef extends pReference {
     private pObject o;
     public static final pString REF = new pString("SCALAR");
 
-    public pScalarRef(pScalar o) {
+    public pLvalueRef(pLvalue o) {
         this.o = o;
     }
-    public pScalarRef(pObject o) {
+    public pLvalueRef(pObject o) {
         // TODO - make readonly value like in \1
         this.o = o;
     }
@@ -777,24 +777,24 @@ class pHashRef extends pHash {
         return REF;
     }
 }
-class pScalar extends pObject {
+class pLvalue extends pObject {
     private pObject o;
 
-    // Note: several versions of pScalar()
-    public pScalar() {
+    // Note: several versions of pLvalue()
+    public pLvalue() {
         this.o = pCx.UNDEF;
     }
-    public pScalar(pObject o) {
+    public pLvalue(pObject o) {
         this.o = o;
     }
-    public pScalar(pScalar o) {
+    public pLvalue(pLvalue o) {
         this.o = o.get();
     }
-    public pScalar(pArray o) {
+    public pLvalue(pArray o) {
         // $a = @x
         this.o = o.scalar();
     }
-    public pScalar(pHash o) {
+    public pLvalue(pHash o) {
         // $a = %x
         this.o = o.scalar();
     }
@@ -804,7 +804,7 @@ class pScalar extends pObject {
     }
     public pObject get_scalarref() {
         if (this.o.is_undef()) {
-            pScalarRef ar = new pScalarRef(new pScalar());
+            pLvalueRef ar = new pLvalueRef(new pLvalue());
             this.o = ar;
             return ar;
         }
@@ -957,7 +957,7 @@ class pScalar extends pObject {
         this.o = o;
         return this;
     }
-    public pObject set(pScalar o) {
+    public pObject set(pLvalue o) {
         this.o = o.get();
         return this;
     }
@@ -1161,8 +1161,8 @@ class pArray extends pObject {
         // $$x
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pScalar a = new pScalar();
-            this.aset(i, new pScalarRef(a));
+            pLvalue a = new pLvalue();
+            this.aset(i, new pLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
@@ -1175,7 +1175,7 @@ class pArray extends pObject {
     public pObject aget_scalarref(pObject i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pScalarRef ar = new pScalarRef(new pScalar());
+            pLvalueRef ar = new pLvalueRef(new pLvalue());
             this.aset(i, ar);
             return ar;
         }
@@ -1187,7 +1187,7 @@ class pArray extends pObject {
     public pObject aget_scalarref(int i) {
         pObject o = this.aget(i);
         if (o.is_undef()) {
-            pScalarRef ar = new pScalarRef(new pScalar());
+            pLvalueRef ar = new pLvalueRef(new pLvalue());
             this.aset(i, ar);
             return ar;
         }
@@ -1287,7 +1287,7 @@ class pArray extends pObject {
         this.a.add(pos, v.scalar());
         return v;
     }
-    public pObject aset(pObject i, pScalar v) {
+    public pObject aset(pObject i, pLvalue v) {
         int size = this.a.size();
         int pos  = i.to_int();
         if (pos < 0) {
@@ -1322,7 +1322,7 @@ EOT
         this.a.add(v.scalar());
         return this.length_of_array();
     }
-    public pObject push(pScalar v) {
+    public pObject push(pLvalue v) {
         this.a.add(v.get());
         return this.length_of_array();
     }
@@ -1348,7 +1348,7 @@ EOT
         this.a.add(0, v.scalar());
         return this.length_of_array();
     }
-    public pObject unshift(pScalar v) {
+    public pObject unshift(pLvalue v) {
         this.a.add(0, v.get());
         return this.length_of_array();
     }
@@ -1576,28 +1576,28 @@ class pHash extends pObject {
     public pObject hget_lvalue(pObject i) {
         pObject o = this.h.get(i.to_string());
         if (o == null) {
-            pScalar a = new pScalar();
+            pLvalue a = new pLvalue();
             this.h.put(i.to_string(), a);
             return a;
         }
         else if (o.is_scalar()) {
             return o;
         }
-        pScalar a = new pScalar(o);
+        pLvalue a = new pLvalue(o);
         this.h.put(i.to_string(), a);
         return a;
     }
     public pObject hget_lvalue(String i) {
         pObject o = this.h.get(i);
         if (o == null) {
-            pScalar a = new pScalar();
+            pLvalue a = new pLvalue();
             this.h.put(i, a);
             return a;
         }
         else if (o.is_scalar()) {
             return o;
         }
-        pScalar a = new pScalar(o);
+        pLvalue a = new pLvalue(o);
         this.h.put(i, a);
         return a;
     }
@@ -1606,8 +1606,8 @@ class pHash extends pObject {
         // $$x
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pScalar a = new pScalar();
-            this.hset(i, new pScalarRef(a));
+            pLvalue a = new pLvalue();
+            this.hset(i, new pLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
@@ -1621,7 +1621,7 @@ class pHash extends pObject {
     public pObject hget_scalarref(pObject i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pScalarRef ar = new pScalarRef(new pScalar());
+            pLvalueRef ar = new pLvalueRef(new pLvalue());
             this.hset(i, ar);
             return ar;
         }
@@ -1634,7 +1634,7 @@ class pHash extends pObject {
     public pObject hget_scalarref(String i) {
         pObject o = this.hget(i);
         if (o.is_undef()) {
-            pScalarRef ar = new pScalarRef(new pScalar());
+            pLvalueRef ar = new pLvalueRef(new pLvalue());
             this.hset(i, ar);
             return ar;
         }
@@ -1704,11 +1704,11 @@ class pHash extends pObject {
         this.h.put(s, v.scalar());
         return v;
     }
-    public pObject hset(pObject s, pScalar v) {
+    public pObject hset(pObject s, pLvalue v) {
         this.h.put(s.to_string(), v.get());
         return v;
     }
-    public pObject hset(String s, pScalar v) {
+    public pObject hset(String s, pLvalue v) {
         this.h.put(s, v.get());
         return v;
     }
