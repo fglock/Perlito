@@ -793,7 +793,7 @@ package Perlito5::AST::CompUnit;
             );
         }
         $str .= "class Test {\n"
-             .  "    public static void main(String[] args) {\n"
+             .  "    public static void main(String[] args) throws Exception {\n"
              .  "        pEnv.init();\n"
              .  "        $init\n"
              .  "        $main\n"
@@ -1610,9 +1610,9 @@ package Perlito5::AST::Call;
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
                 if ($meth eq 'new') {
-                    return "new p$info->{java_constructor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                    return "new $info->{java_constructor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
-                return "p$info->{java_constructor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                return "$info->{java_constructor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 

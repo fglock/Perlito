@@ -14250,7 +14250,7 @@ package Perlito5::AST::CompUnit;
         if ($options{'expand_use'}) {
             $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
         }
-        $str .= 'class Test {' . chr(10) . '    public static void main(String[] args) {' . chr(10) . '        pEnv.init();' . chr(10) . '        ' . $init . chr(10) . '        ' . $main . chr(10) . '    }' . chr(10) . '}' . chr(10);
+        $str .= 'class Test {' . chr(10) . '    public static void main(String[] args) throws Exception {' . chr(10) . '        pEnv.init();' . chr(10) . '        ' . $init . chr(10) . '        ' . $main . chr(10) . '    }' . chr(10) . '}' . chr(10);
         return $str
     }
     sub Perlito5::AST::CompUnit::emit_java_get_decl {
@@ -14705,7 +14705,12 @@ package Perlito5::AST::Decl;
             else {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 my $java_type = $Java_class->{$type}->{'java_constructor'} || 'pLvalue';
-                return $java_type . ' ' . $self->{'var'}->emit_java() . ' = new ' . $java_type . '();'
+                if ($java_type eq 'pLvalue') {
+                    return $java_type . ' ' . $self->{'var'}->emit_java() . ' = new ' . $java_type . '();'
+                }
+                else {
+                    return $java_type . ' ' . $self->{'var'}->emit_java() . ';'
+                }
             }
         }
         elsif ($self->{'decl'} eq 'our') {
@@ -14785,9 +14790,9 @@ package Perlito5::AST::Call;
             if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
                 my $info = $Java_class->{$self->{'invocant'}->{'namespace'}};
                 if ($meth eq 'new') {
-                    return 'new p' . $info->{'java_constructor'} . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
+                    return 'new ' . $info->{'java_constructor'} . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                 }
-                return 'p' . $info->{'java_constructor'} . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
+                return $info->{'java_constructor'} . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
             }
         }
         my $invocant = $self->{'invocant'}->emit_java($level, 'scalar');
@@ -16089,7 +16094,7 @@ sub Perlito5::Java::Runtime::emit_java {
         my $java_class_name = $class->{'java_constructor'};
         my $perl_to_java = $class->{'perl_to_java'};
         my $perl_package = $class->{'perl_package'};
-        $class->{'import'} ? 'class p' . $java_class_name . ' extends pReference {' . chr(10) . '    public static final pString REF = new pString("' . $perl_package . '");' . chr(10) . chr(10) . '    private ' . $java_class_name . ' stuff;' . chr(10) . '    // TODO - constructor with Perl parameters' . chr(10) . '    public p' . $java_class_name . '() {' . chr(10) . '        this.stuff = new ' . $java_class_name . '();' . chr(10) . '    }' . chr(10) . '    public p' . $java_class_name . '(' . $java_class_name . ' stuff) {' . chr(10) . '        this.stuff = stuff;' . chr(10) . '    }' . chr(10) . '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.stuff;' . chr(10) . '    }' . chr(10) . '    public pObject ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10) : ()
+        $class->{'import'} ? 'class p' . $java_class_name . ' extends pReference {' . chr(10) . '    public static final pString REF = new pString("' . $perl_package . '");' . chr(10) . chr(10) . '    private ' . $java_class_name . ' stuff;' . chr(10) . '    // TODO - constructor with Perl parameters' . chr(10) . '    // public p' . $java_class_name . '() {' . chr(10) . '    //     this.stuff = new ' . $java_class_name . '();' . chr(10) . '    // }' . chr(10) . '    public p' . $java_class_name . '(' . $java_class_name . ' stuff) {' . chr(10) . '        this.stuff = stuff;' . chr(10) . '    }' . chr(10) . '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.stuff;' . chr(10) . '    }' . chr(10) . '    public pObject ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10) : ()
     } values(%java_classes))) . '// end Perl-Java runtime' . chr(10)
 }
 1;
