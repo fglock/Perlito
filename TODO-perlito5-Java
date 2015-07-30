@@ -210,6 +210,10 @@
 
     NaN, Inf, -0
 
+-- Overflow from int to double
+
+    partially implemented - needs more work
+
 -- Missing features, or partially implemented, or untested
 
     overload
