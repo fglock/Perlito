@@ -2565,18 +2565,11 @@ package Perlito5::AST::Apply;
 
         'substr' => sub {
             my ($self, $level, $wantarray) = @_;
-            my $length = $self->{arguments}->[2];
-            if ( $length && $length->isa('Perlito5::AST::Int') && $length->{int} > 0 ) {
-                return Perlito5::Java::to_str($self->{arguments}->[0]) 
-                    . '.substr(' . Perlito5::Java::to_num($self->{arguments}->[1]) . ', ' 
-                                 . Perlito5::Java::to_num($self->{arguments}->[2]) . ')'
-            }
-            my $arg_list = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-            my $arg_code = Perlito5::Java::to_list($arg_list);
-            return 'CORE.substr(' 
-                    . $arg_code . ', '
-                    . Perlito5::Java::to_context($wantarray)
-                 . ')';
+            my $arg = shift @{$self->{arguments}};
+                return Perlito5::Java::to_str($arg) 
+                    . '.substr('
+                    .   join(', ', map( $_->emit_java($level, 'scalar'), @{$self->{arguments}} ))
+                    . ')'
         },
         'undef' => sub {
             my ($self, $level, $wantarray) = @_;

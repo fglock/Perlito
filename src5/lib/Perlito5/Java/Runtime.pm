@@ -581,6 +581,22 @@ EOT
         return this;
     }
 
+    public pObject substr(pObject offset) {
+        // substr EXPR,OFFSET
+        pCORE.die("TODO substr EXPR,OFFSET");
+        return this;
+    }
+    public pObject substr(pObject offset, pObject length) {
+        // substr EXPR,OFFSET,LENGTH
+        pCORE.die("TODO substr EXPR,OFFSET,LENGTH");
+        return this;
+    }
+    public pObject substr(pObject offset, pObject length, pObject replacement) {
+        // substr EXPR,OFFSET,LENGTH,REPLACEMENT
+        pCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
+        return this;
+    }
+
     public pObject ref() {
         return REF;
     }
