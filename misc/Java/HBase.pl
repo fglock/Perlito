@@ -10,10 +10,10 @@ package Bytes { import => "org.apache.hadoop.hbase.util.Bytes" };
 my Configuration $config = HBaseConfiguration->create();
 
 # Instantiating HTable class
-my HTable $table = new HTable( $config, "b_room" );
+my HTable $table = new HTable( $config, "prices" );
 
 # Instantiating Get class
-my Get $g = new Get( Bytes->toBytes("100002303") );
+my Get $g = new Get( Bytes->toBytes("1234") );
 
 # Reading the data
 my Result $result = $table->get($g);
