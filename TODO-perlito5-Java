@@ -210,6 +210,10 @@
 
     NaN, Inf, -0
 
+    @perl_array = java_native[]
+        supported types: byte[], int[], and imported_class[]
+        not implemented: long[], String[], Double[], char[]
+
 -- Overflow from int to double
 
     partially implemented - needs more work
