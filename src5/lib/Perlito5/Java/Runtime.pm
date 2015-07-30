@@ -673,7 +673,6 @@ class pLvalueRef extends pReference {
         this.o = o;
     }
     public pLvalueRef(pObject o) {
-        // TODO - make readonly value like in \1
         this.o = o;
     }
     public pObject scalar_deref_set(pObject v) {
