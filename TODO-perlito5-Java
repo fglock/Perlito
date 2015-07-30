@@ -239,3 +239,7 @@
     typeglob operations
     local
 
+-- Extra things to test
+
+    threads
+
