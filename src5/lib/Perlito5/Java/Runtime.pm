@@ -1224,7 +1224,53 @@ class pArray extends pObject {
         this.each_iterator = 0;
         return this;
     }
+    public pObject set(byte[] bs) {
+        this.a.clear();
+        // @x = byte[] native;
+        for(byte b : bs){
+            int i = b;
+            this.a.add(new pInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public pObject set(int[] ints) {
+        this.a.clear();
+        // @x = int[] native;
+        for(int i : ints){
+            this.a.add(new pInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    // TODO - String[], Double[]
+EOT
+        # add "box" array-of Java classes
+        # that were declared with
+        #
+        #   package MyJavaClass { Java }
+        #
+    . join('', ( map {
+                    my $class = $_;
+                    my $java_class_name = $class->{java_constructor};
+                    my $perl_to_java    = $class->{perl_to_java};
+                    my $perl_package    = $class->{perl_package};
+                    $class->{import} ? 
+"    public pObject set(${java_class_name}[] stuffs) {
+        this.a.clear();
+        // \@x = ${java_class_name}[] native;
+        for(${java_class_name} i : stuffs){
+            this.a.add(new p${java_class_name}(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+" : ()
+            }
+            values %java_classes
+      ))
 
+    . <<'EOT'
     public pObject aget(pObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
