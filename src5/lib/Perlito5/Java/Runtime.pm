@@ -2163,6 +2163,10 @@ class pString extends pObject {
     }
     public pObject _incr() {
         // ++$x
+        final int length = s.length();
+        if (length == 0) {
+            return new pInt(1);
+        }
         final int c = this.s.codePointAt(0);
         switch (c) {        
             case ' ': case '\t': case '\n': case '\r':
