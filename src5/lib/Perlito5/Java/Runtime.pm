@@ -40,6 +40,7 @@ sub emit_java {
 // start Perl-Java runtime
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -552,6 +553,13 @@ EOT
         int c = this.to_int();
         return new pInt(c < 0 ? -c : c);
     }
+
+    public pObject sqrt() { return new pDouble(Math.sqrt(this.to_double())); }
+    public pObject cos()  { return new pDouble(Math.cos(this.to_double())); }
+    public pObject sin()  { return new pDouble(Math.sin(this.to_double())); }
+    public pObject exp()  { return new pDouble(Math.exp(this.to_double())); }
+    public pObject log()  { return new pDouble(Math.log(this.to_double())); }
+
     public pObject pre_decr() {
         // --$x
         pCORE.die("Can't modify constant item in predecrement (--)");

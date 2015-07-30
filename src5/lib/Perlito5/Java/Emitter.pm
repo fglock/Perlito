@@ -1902,10 +1902,16 @@ package Perlito5::AST::Apply;
               'new pInt('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())'
         },
-        'abs' => sub {
-            my ($self, $level, $wantarray) = @_;
-              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.abs()'
-        },
+        ( map {
+                my $op = $_;
+                ( $op => sub {
+                        my ($self, $level, $wantarray) = @_;
+                        $self->{arguments}->[0]->emit_java($level, 'scalar') . '.' . $op . '()'
+                      }
+                )
+            }
+            qw/ abs sqrt cos sin exp log /
+        ),
         'infix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new pInt('
