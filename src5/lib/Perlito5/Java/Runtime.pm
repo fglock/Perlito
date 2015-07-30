@@ -705,7 +705,7 @@ class pReference extends pObject {
     public static final pString REF = new pString("REF");
 
     public String to_string() {
-        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pObject ref() {
         return REF;
@@ -775,7 +775,7 @@ class pArrayRef extends pArray {
     public static final pString REF = new pString("ARRAY");
 
     public String to_string() {
-        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pArrayRef() {
         this.each_iterator = 0;
@@ -821,7 +821,7 @@ class pHashRef extends pHash {
     public static final pString REF = new pString("HASH");
 
     public String to_string() {
-        return this.ref().to_string() + "(0x" + this.hashCode() + ")";
+        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pHashRef() {
         this.h = new HashMap<String, pObject>();
