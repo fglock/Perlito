@@ -41,6 +41,7 @@ sub emit_java {
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
 import java.lang.Math;
+import java.lang.System;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -143,6 +144,9 @@ class pCORE {
             sb.append(item);
         }
         return new pString(sb.toString());
+    }
+    public static final pObject time(int want, pArray List__) {
+        return new pDouble( System.currentTimeMillis() * 0.001 );
     }
 }
 class pOp {
