@@ -1947,14 +1947,18 @@ class pDouble extends pObject {
         return this.i;
     }
     public String to_string() {
-        return "" + this.i;
-        // TODO - remove trailing zeroes and dot
-        // for (int i = 0; i < source.length(); ++i)
-        // {
-        //     char c = source.charAt(i);
-        //     if (c != '0' && !Character.isSpaceChar(c))
-        //         return source.substring(i);
-        // }
+        String s = "" + this.i;
+        final int length = s.length();
+        final int dot = s.indexOf('.');
+        if (dot == -1) {
+            return s;
+        }
+        for (int i = dot + 1; i < length; ++i) {
+            if (s.charAt(i) != '0') {
+                return s;
+            }
+        }
+        return s.substring(0, dot);
     }
     public boolean to_bool() {
         return this.i != 0.0;
