@@ -583,13 +583,31 @@ EOT
 
     public pObject substr(pObject offset) {
         // substr EXPR,OFFSET
-        pCORE.die("TODO substr EXPR,OFFSET");
-        return this;
+        String s = this.to_string();
+        int ofs = offset.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+        return new pString(s.substring(ofs));
     }
     public pObject substr(pObject offset, pObject length) {
         // substr EXPR,OFFSET,LENGTH
-        pCORE.die("TODO substr EXPR,OFFSET,LENGTH");
-        return this;
+        String s = this.to_string();
+        int ofs = offset.to_int();
+        int len = length.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs + len > s.length()) {
+            return this.substr(offset);
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+        return new pString(s.substring(ofs, ofs + len));
     }
     public pObject substr(pObject offset, pObject length, pObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
