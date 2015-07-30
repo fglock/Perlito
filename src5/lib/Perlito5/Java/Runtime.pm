@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
 EOT
         # import the Java classes
         # that were declared with
@@ -147,6 +148,15 @@ class pCORE {
     }
     public static final pObject time(int want, pArray List__) {
         return new pDouble( System.currentTimeMillis() * 0.001 );
+    }
+    public static final pObject sleep(int want, pArray List__) {
+        long s = (new Double(List__.shift().to_double() * 1000)).longValue();
+        try {
+            TimeUnit.MILLISECONDS.sleep(s);
+        } catch (InterruptedException e) {
+            //Handle exception
+        }
+        return new pDouble(s / 1000.0);
     }
 }
 class pOp {

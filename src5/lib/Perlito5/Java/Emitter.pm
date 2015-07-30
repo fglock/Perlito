@@ -2634,6 +2634,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'pCORE.time(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
+        'sleep' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'pCORE.sleep(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
         'ref' => sub {
             my ($self, $level, $wantarray) = @_;
             'pCORE.ref(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
