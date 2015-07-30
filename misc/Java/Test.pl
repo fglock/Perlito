@@ -344,7 +344,7 @@ say "ok 60 - boolean operator or die()"
 
 # initialize a typed variable by dereferencing a Perl object
 # TODO - is it possible to dereference automatically
-my my::Sample $z = my::Sample->new()->to_mySample();
+my my::Sample $z = my::Sample->new();  # ->to_mySample();
 # TODO - cast typed variable to Perl object automatically
 # say "ok 55 - initialize a typed variable by dereferencing a Perl object: $z\n";
 
