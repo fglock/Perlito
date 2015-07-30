@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..60\n";
+print "1..63\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -342,11 +342,16 @@ say "ok 59 - boolean operator, 0E0";
 say "ok 60 - boolean operator or die()"
     or die "didn't work";
 
-# initialize a typed variable by dereferencing a Perl object
-# TODO - is it possible to dereference automatically
 my my::Sample $z = my::Sample->new();  # ->to_mySample();
-# TODO - cast typed variable to Perl object automatically
-# say "ok 55 - initialize a typed variable by dereferencing a Perl object: $z\n";
+# cast typed variable to Perl object automatically
+my $x = $z;
+say "ok 61 - initialize a Perl variable from a Java object: $x";
+# initialize a typed variable by dereferencing a Perl object
+my my::Sample $y = $x->to_mySample();
+say "ok 62 - initialize a typed variable by dereferencing a Perl object: $x";
+
+my @things = my::Sample->lots_of_it();
+say "ok 63 - initialize an untyped Perl array with an array of object: [ @things ]";
 
 __END__
 

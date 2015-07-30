@@ -1234,6 +1234,12 @@ class pArray extends pObject {
         this.each_iterator = 0;
         return this;
     }
+    public pArray(byte[] bs) {
+        pArray aa = new pArray();
+        aa.set(bs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
     public pObject set(int[] ints) {
         this.a.clear();
         // @x = int[] native;
@@ -1242,6 +1248,12 @@ class pArray extends pObject {
         }
         this.each_iterator = 0;
         return this;
+    }
+    public pArray(int[] ints) {
+        pArray aa = new pArray();
+        aa.set(ints);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
     }
     // TODO - String[], Double[]
 EOT
@@ -1264,6 +1276,12 @@ EOT
         }
         this.each_iterator = 0;
         return this;
+    }
+    public pArray(${java_class_name}[] stuffs) {
+        pArray aa = new pArray();
+        aa.set(stuffs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
     }
 " : ()
             }
