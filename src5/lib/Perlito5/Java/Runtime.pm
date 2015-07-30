@@ -2323,12 +2323,8 @@ EOT
                     $class->{import} ? 
 "class p${java_class_name} extends pReference {
     public static final pString REF = new pString(\"${perl_package}\");
-
     private ${java_class_name} stuff;
-    // TODO - constructor with Perl parameters
-    // public p${java_class_name}() {
-    //     this.stuff = new ${java_class_name}();
-    // }
+
     public p${java_class_name}(${java_class_name} stuff) {
         this.stuff = stuff;
     }
