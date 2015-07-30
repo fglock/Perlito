@@ -1502,7 +1502,11 @@ package Perlito5::AST::Decl;
             else {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 my $java_type = $Java_class->{$type}{java_constructor} || 'pLvalue';
-                return "${java_type} " . $self->{var}->emit_java() . " = new ${java_type}();";
+                if( $java_type eq 'pLvalue' ) {
+                    return "${java_type} " . $self->{var}->emit_java() . " = new ${java_type}();";
+                } else {
+                    return "${java_type} " . $self->{var}->emit_java() . ";";
+                }
             }
         }
         elsif ($self->{decl} eq 'our') {

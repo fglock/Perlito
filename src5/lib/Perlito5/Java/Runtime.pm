@@ -2326,9 +2326,9 @@ EOT
 
     private ${java_class_name} stuff;
     // TODO - constructor with Perl parameters
-    public p${java_class_name}() {
-        this.stuff = new ${java_class_name}();
-    }
+    // public p${java_class_name}() {
+    //     this.stuff = new ${java_class_name}();
+    // }
     public p${java_class_name}(${java_class_name} stuff) {
         this.stuff = stuff;
     }
