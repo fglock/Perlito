@@ -1873,18 +1873,15 @@ package Perlito5::AST::Apply;
         },
         'ucfirst' => sub {
             my ($self, $level, $wantarray) = @_;
-              'pOp.ucfirst('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . ')'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.ucfirst()'
         },
         'lcfirst' => sub {
             my ($self, $level, $wantarray) = @_;
-              'pOp.lcfirst('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . ')'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.lcfirst()'
         },
         'quotemeta' => sub {
             my ($self, $level, $wantarray) = @_;
-              'pOp.quotemeta('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . ')'
+              $self->{arguments}->[0]->emit_java($level, 'scalar') . '.quotemeta()'
         },
         'index' => sub {
             my ($self, $level, $wantarray) = @_;

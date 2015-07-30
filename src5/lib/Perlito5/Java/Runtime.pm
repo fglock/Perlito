@@ -581,6 +581,33 @@ EOT
         return this;
     }
 
+    public pObject lcfirst() {
+        String s = this.to_string();
+        int len = s.length();
+        if (len == 0) {
+            return new pString(s);
+        }
+        if (len == 1) {
+            return new pString(s.toLowerCase());
+        }
+        return new pString( s.substring(0,1).toLowerCase() + s.substring(2) );
+    }
+    public pObject ucfirst() {
+        String s = this.to_string();
+        int len = s.length();
+        if (len == 0) {
+            return new pString(s);
+        }
+        if (len == 1) {
+            return new pString(s.toUpperCase());
+        }
+        return new pString( s.substring(0,1).toUpperCase() + s.substring(2) );
+    }
+    public pObject quotemeta() {
+        String s = this.to_string();
+        return new pString(Matcher.quoteReplacement(s));
+    }
+
     public pObject substr(pObject offset) {
         // substr EXPR,OFFSET
         String s = this.to_string();
