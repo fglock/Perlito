@@ -14331,7 +14331,7 @@ package Perlito5::AST::Block;
             my $tmp = 'p5pkg.main.' . Perlito5::Java::get_label();
             $init = Perlito5::Java::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
         }
-        return '// TODO - Perlito5::AST::Block' . chr(10);
+        return '// TODO - Perlito5::AST::Block' . chr(10) . Perlito5::Java::tab($level + 2) . $body->emit_java($level + 1, $wantarray) . chr(10);
         return 'p5for_lex(' . 'function () {' . chr(10) . $init . Perlito5::Java::tab($level + 2) . $body->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}, ' . '[0], ' . $self->emit_java_continue($level, $wantarray) . ', ' . Perlito5::Java::escape_string($self->{'label'} || '') . chr(10) . Perlito5::Java::tab($level) . ')'
     }
     sub Perlito5::AST::Block::emit_java_continue {

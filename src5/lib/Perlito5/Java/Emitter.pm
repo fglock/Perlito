@@ -866,7 +866,9 @@ package Perlito5::AST::Block;
 
         }
 
-        return "// TODO - Perlito5::AST::Block\n";
+        return "// TODO - Perlito5::AST::Block\n"
+                . Perlito5::Java::tab($level + 2) .    $body->emit_java($level + 1, $wantarray) . "\n";
+
         return 'p5for_lex('
                 . "function () {\n"
                 .                                             $init
