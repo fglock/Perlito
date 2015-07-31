@@ -652,19 +652,15 @@ package Perlito5::Java::LexicalBlock;
             $out =                                         "try {"
                 . $tab                                   .    join($tab, @str) . "\n"
                 . Perlito5::Java::tab($level)     . '}' . "\n"
-                . Perlito5::Java::tab($level)     . 'catch(err) {' . "\n"
-                . Perlito5::Java::tab($level + 1) .    'if ( err instanceof Error ) {' . "\n"
-                . Perlito5::Java::tab($level + 2)         . 'throw(err);' . "\n"
-                . Perlito5::Java::tab($level + 1) .    '}' . "\n"
-                . Perlito5::Java::tab($level + 1) .    'else {' . "\n"
-                . Perlito5::Java::tab($level + 2)
-                    . ( $has_local
-                      ? 'return p5cleanup_local(local_idx, err)'
-                      : 'return(err)'
-                      )
-                    . ";\n"
-                . Perlito5::Java::tab($level + 1) .   '}' . "\n"
+                . Perlito5::Java::tab($level)     . 'catch(pReturnException e) {' . "\n"
+                . Perlito5::Java::tab($level + 1) .    'return e.ret;' . "\n"
                 . Perlito5::Java::tab($level)     . '}';
+                # . Perlito5::Java::tab($level + 2)
+                #     . ( $has_local
+                #       ? 'return p5cleanup_local(local_idx, err)'
+                #       : 'return(err)'
+                #       )
+                #     . ";\n"
         }
         elsif ( $create_context ) {
             $level = $original_level;
@@ -2451,7 +2447,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             # TODO - label_id
-            'pOp.ret(' . 123 . ', '
+            'pOp.ret('
                 . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
         },
         'goto' => sub {

@@ -86,11 +86,9 @@ class pRedoException    extends pControlException {
     }
 }
 class pReturnException  extends pControlException {
-    public int label_id;
     public pObject ret;
 
-    public pReturnException(int i, pObject ret) {
-        this.label_id = i;
+    public pReturnException(pObject ret) {
         this.ret = ret;
     }
 }
@@ -220,8 +218,8 @@ class pOp {
     public static final pObject redo(int label_id) {
         throw new pRedoException(label_id);
     }
-    public static final pObject ret(int label_id, pObject ret) {
-        throw new pReturnException(label_id, ret);
+    public static final pObject ret(pObject ret) {
+        throw new pReturnException(ret);
     }
 
     // and1(x) ? y : and3()
