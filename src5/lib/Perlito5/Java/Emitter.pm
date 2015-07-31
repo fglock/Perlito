@@ -1851,16 +1851,16 @@ package Perlito5::AST::Apply;
             return emit_qr_java($self->{arguments}[0], $self->{arguments}[1], $level);
         },
         '__PACKAGE__' => sub {
-            my $self = $_[0];
+            my ($self, $level, $wantarray) = @_;
             Perlito5::Java::escape_string($Perlito5::PKG_NAME);
         },
         '__SUB__' => sub {
-            my $self = $_[0];
+            my ($self, $level, $wantarray) = @_;
             $Perlito5::AST::Sub::SUB_REF // '__SUB__'
         },
         'wantarray' => sub {
-            my $self = $_[0];
-            'p5want';
+            my ($self, $level, $wantarray) = @_;
+            '(want == pCx.VOID ? pCx.UNDEF : new pInt(want-1))';
         },
         'package' => sub {
             '';
@@ -2083,7 +2083,9 @@ package Perlito5::AST::Apply;
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
-            '( ' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . ' ? new pBool(!' . Perlito5::Java::to_bool($self->{arguments}->[1], $level) . ') : ' . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ')';
+            '( ' . Perlito5::Java::to_bool( $self->{arguments}->[0], $level ) . ' ? new pBool(!'
+                 . Perlito5::Java::to_bool($self->{arguments}->[1], $level) . ') : '
+                 . ( $self->{arguments}->[1] )->emit_java( $level, $wantarray ) . ')';
         },
         'infix:<=>>' => sub {
             my ($self, $level, $wantarray) = @_;

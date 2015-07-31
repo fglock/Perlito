@@ -14945,14 +14945,14 @@ package Perlito5::AST::Apply;
         my($self, $level, $wantarray) = @_;
         return emit_qr_java($self->{'arguments'}->[0], $self->{'arguments'}->[1], $level)
     }, '__PACKAGE__' => sub {
-        my $self = $_[0];
+        my($self, $level, $wantarray) = @_;
         Perlito5::Java::escape_string($Perlito5::PKG_NAME)
     }, '__SUB__' => sub {
-        my $self = $_[0];
+        my($self, $level, $wantarray) = @_;
         $Perlito5::AST::Sub::SUB_REF // '__SUB__'
     }, 'wantarray' => sub {
-        my $self = $_[0];
-        'p5want'
+        my($self, $level, $wantarray) = @_;
+        '(want == pCx.VOID ? pCx.UNDEF : new pInt(want-1))'
     }, 'package' => sub {
         ''
     }, 'uc' => sub {
