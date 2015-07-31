@@ -2606,7 +2606,7 @@ package Perlito5::AST::Apply;
             else {
                 $invocant = $arg->emit_java($level, 'scalar');
             }
-            '(' . $invocant . ' != null)' 
+            'new pBool(' . $invocant . ' != null)' 
         },
         'shift' => sub {
             my ($self, $level, $wantarray) = @_;
