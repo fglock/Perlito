@@ -399,7 +399,7 @@ EOT
     public boolean is_undef() {
         return false;
     }
-    public pObject apply(int want, pObject List__) {
+    public pObject apply(int want, pArray List__) {
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
         pCORE.die("subroutine call error");
@@ -798,7 +798,7 @@ class pClosure extends pReference {
         this.env = env;
     }
     // Note: apply() is inherited from pObject
-    public pObject apply(int want, pObject List__) {
+    public pObject apply(int want, pArray List__) {
         pCORE.die("it looks like you have a closure without a block");
         return this;
     }
@@ -1092,7 +1092,7 @@ class pLvalue extends pObject {
         }
         return pCORE.die("Not a HASH reference");
     }
-    public pObject apply(int want, pObject List__) {
+    public pObject apply(int want, pArray List__) {
         return this.o.apply(want, List__);
     }
 
@@ -2021,7 +2021,7 @@ EOT
 class pUndef extends pObject {
     public pUndef() {
     }
-    public pObject apply(int want, pObject List__) {
+    public pObject apply(int want, pArray List__) {
         // $a->()
         pCORE.die("Can't use an undefined value as a subroutine reference");
         return this;
