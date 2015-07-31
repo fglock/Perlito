@@ -2347,8 +2347,29 @@ class pString extends pObject {
         return new pString(pOp.string_increment(this.s));
     }
     public pObject neg() {
-        pCORE.die("TODO - string neg");
-        return this.parse().neg();
+        final int length = s.length();
+        if (length == 0) {
+            return new pInt(0);
+        }
+        final int c = this.s.codePointAt(0);
+        switch (c) {        
+            case '+': case '-':
+                if (c == '+') {
+                    return new pString( '-' + s.substring(1) );
+                }
+                if (c == '-') {
+                    return new pString( '+' + s.substring(1) );
+                }
+            case '.':
+            case ' ': case '\t': case '\n': case '\r':
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                return this.parse().neg();
+        }
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            return new pString( '-' + s );
+        }
+        return new pInt(0);
     }
     public pObject abs() {
         return this.parse().abs();
