@@ -14350,10 +14350,11 @@ package Perlito5::AST::Block;
         ()
     }
     sub Perlito5::AST::Block::emit_java_get_captures {
-        my $self = shift;
+        my($self) = @_;
         my @var;
-        push(@var, $self->{'obj'}->emit_java_get_captures());
-        push(@var, $self->{'index_exp'}->emit_java_get_captures());
+        for my $stmt (@{$self->{'block'}}) {
+            push(@var, $stmt->emit_java_get_captures())
+        }
         return @var
     }
 }
