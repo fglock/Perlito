@@ -606,7 +606,7 @@ EOT
         if (len == 1) {
             return new pString(s.toLowerCase());
         }
-        return new pString( s.substring(0,1).toLowerCase() + s.substring(2) );
+        return new pString( s.substring(0,1).toLowerCase() + s.substring(1) );
     }
     public pObject ucfirst() {
         String s = this.to_string();
@@ -617,7 +617,7 @@ EOT
         if (len == 1) {
             return new pString(s.toUpperCase());
         }
-        return new pString( s.substring(0,1).toUpperCase() + s.substring(2) );
+        return new pString( s.substring(0,1).toUpperCase() + s.substring(1) );
     }
     public pObject quotemeta() {
         String s = this.to_string();
