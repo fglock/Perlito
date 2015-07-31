@@ -3145,20 +3145,14 @@ package Perlito5::AST::Apply;
                 $sig = substr($sig, 1);
             }
 
-            return $code . '([' . join(', ', @out) . $close . ', '
+            return $code . '('
                         . Perlito5::Java::to_context($wantarray)
+                        . ', [' . join(', ', @out) . $close
                 . ')';
         }
 
         my $arg_list = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-
-        my $arg_code = 
-            $self->{code} eq 'scalar'      # scalar() is special
-            ?   '['
-              .   join(', ', map( $_->emit_java($level), @$arg_list ))
-              . ']'
-            : Perlito5::Java::to_list($arg_list);
-
+        my $arg_code = Perlito5::Java::to_list($arg_list);
 
         if ( $may_need_autoload ) {
             # p5call_sub(namespace, name, list, p5want)

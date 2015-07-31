@@ -15738,10 +15738,10 @@ package Perlito5::AST::Apply;
                 }
                 $sig = substr($sig, 1)
             }
-            return $code . '([' . join(', ', @out) . $close . ', ' . Perlito5::Java::to_context($wantarray) . ')'
+            return $code . '(' . Perlito5::Java::to_context($wantarray) . ', [' . join(', ', @out) . $close . ')'
         }
         my $arg_list = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-        my $arg_code = $self->{'code'} eq 'scalar' ? '[' . join(', ', map($_->emit_java($level), @{$arg_list})) . ']' : Perlito5::Java::to_list($arg_list);
+        my $arg_code = Perlito5::Java::to_list($arg_list);
         if ($may_need_autoload) {
             my $name = $self->{'code'};
             my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
