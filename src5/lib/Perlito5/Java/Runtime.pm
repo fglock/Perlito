@@ -573,6 +573,8 @@ EOT
     public pObject sin()  { return new pDouble(Math.sin(this.to_double())); }
     public pObject exp()  { return new pDouble(Math.exp(this.to_double())); }
     public pObject log()  { return new pDouble(Math.log(this.to_double())); }
+    public pObject pow(pObject arg)    { return new pDouble(Math.pow(this.to_double(), arg.to_double())); }
+    public pObject atan2(pObject arg)  { return new pDouble(Math.atan2(this.to_double(), arg.to_double())); }
 
     public pObject pre_decr() {
         // --$x

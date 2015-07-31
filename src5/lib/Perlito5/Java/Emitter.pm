@@ -2101,8 +2101,14 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'infix:<**>' => sub {
-            my $self = $_[0];
-            'Math.pow(' . join( ', ', map( Perlito5::Java::to_num($_), @{ $self->{arguments} } ) ) . ')';
+            my ($self, $level, $wantarray) = @_;
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.pow('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+        },
+        'atan2' => sub {
+            my ($self, $level, $wantarray) = @_;
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.atan2('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
         'prefix:<!>' => sub {
             my $self      = shift;
