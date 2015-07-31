@@ -2606,7 +2606,9 @@ package Perlito5::AST::Apply;
             else {
                 $invocant = $arg->emit_java($level, 'scalar');
             }
-            'new pBool(' . $invocant . ' != null)' 
+            # TODO - use this code for typed variables:
+            #   'new pBool(' . $invocant . ' != null)' 
+            'new pBool(!' . $invocant . '.is_undef())'
         },
         'shift' => sub {
             my ($self, $level, $wantarray) = @_;
