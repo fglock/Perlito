@@ -31,6 +31,14 @@ TODO list for Perlito5
 
 * Parser
 
+-- label all blocks
+
+    all "next", "redo", "last" would have labels.
+
+    "return" would point to the current subroutine.
+
+    same-subroutine tailcalls could execute a "redo" in the current subroutine.
+
 -- syntax error in autoquote: $x{s}
     parses as: $x { s/// }
 
