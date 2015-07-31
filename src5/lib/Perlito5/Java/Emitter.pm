@@ -3150,18 +3150,18 @@ package Perlito5::AST::Apply;
         my $arg_list = Perlito5::Java::to_list_preprocess( $self->{arguments} );
         my $arg_code = Perlito5::Java::to_list($arg_list);
 
-        if ( $may_need_autoload ) {
-            # p5call_sub(namespace, name, list, p5want)
-            my $name = $self->{code};
-            my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-            return 'p5call_sub('
-                    . Perlito5::Java::escape_string($namespace) . ', '
-                    . Perlito5::Java::escape_string($name) . ', '
-                    . $arg_code . ', '
-                    . Perlito5::Java::to_context($wantarray)
-                 . ')';
-
-        }
+        # TODO - autoload
+        # if ( $may_need_autoload ) {
+        #     # p5call_sub(namespace, name, list, p5want)
+        #     my $name = $self->{code};
+        #     my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
+        #     return 'p5call_sub('
+        #             . Perlito5::Java::escape_string($namespace) . ', '
+        #             . Perlito5::Java::escape_string($name) . ', '
+        #             . $arg_code . ', '
+        #             . Perlito5::Java::to_context($wantarray)
+        #          . ')';
+        # }
 
         $code . '.apply('
                 . Perlito5::Java::to_context($wantarray) . ', '

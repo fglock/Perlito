@@ -15746,11 +15746,6 @@ package Perlito5::AST::Apply;
         }
         my $arg_list = Perlito5::Java::to_list_preprocess($self->{'arguments'});
         my $arg_code = Perlito5::Java::to_list($arg_list);
-        if ($may_need_autoload) {
-            my $name = $self->{'code'};
-            my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
-            return 'p5call_sub(' . Perlito5::Java::escape_string($namespace) . ', ' . Perlito5::Java::escape_string($name) . ', ' . $arg_code . ', ' . Perlito5::Java::to_context($wantarray) . ')'
-        }
         $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
     }
     sub Perlito5::AST::Apply::emit_java_set_list {
