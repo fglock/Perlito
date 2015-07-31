@@ -15318,8 +15318,8 @@ package Perlito5::AST::Apply;
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
         if ($arg->isa('Perlito5::AST::Block')) {
-            my $block = $arg->{'stmts'};
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, (Perlito5::Java::LexicalBlock::->new('block' => $block))->emit_java($level + 1, $wantarray))
+            my $ast = Perlito5::AST::Call::->new('method' => 'postcircumfix:<( )>', 'invocant' => Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => []), 'arguments' => []);
+            return $ast->emit_java($level + 1, $wantarray)
         }
         my $tmp_strict = $Perlito5::STRICT;
         $Perlito5::STRICT = 0;
