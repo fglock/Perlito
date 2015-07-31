@@ -2435,6 +2435,9 @@ EOT
     public ${java_class_name} ${perl_to_java}() {
         return this.stuff;
     }
+    public boolean is_undef() {
+        return stuff == null;
+    }
     public pObject ref() {
         return REF;
     }
