@@ -2114,7 +2114,7 @@ package Perlito5::AST::Apply;
             my $level     = shift;
             my $arg = pop(@{$self->{arguments}});
             if (!$arg) {
-                return 'true';
+                return 'pCx.TRUE';
             }
             'new pBool(!( ' . Perlito5::Java::to_bool( $arg, $level ) . '))';
         },
