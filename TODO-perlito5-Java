@@ -86,6 +86,12 @@
     package Int { import => 'java.lang.Integer' };
     my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO - test)
 
+    maybe TODO: automatic casting (my Result $java_obj = $scan_result;)
+
+    maybe TODO: make pJavaReference which will have this implementation
+        - Note: Boxed Java objects can be undef (null)
+
+
 -- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
@@ -110,12 +116,17 @@
     test case:
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
 
+    maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
+
+
 -- primitive types
 
     char, boolean, float, long, short, int, byte
 
     in Perl:
     char::Array, boolean::Array, float::Array, long::Array, short::Array, int::Array, byte::Array
+
+    @perl_array = JavaCall->toBytes();  (DONE - autobox Java array into a Perl array)
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
 
