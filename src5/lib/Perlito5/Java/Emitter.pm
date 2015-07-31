@@ -2424,59 +2424,40 @@ package Perlito5::AST::Apply;
         'break' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(new p5_error("break", ""))'
-            );
+            die "TODO - break() not implemented";
         },
         'next' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(new p5_error("next", ' . Perlito5::Java::escape_string($label ) . '))'
-            );
+            # TODO - label_id
+            'pOp.next(' . 123 . ')';
         },
         'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(new p5_error("last", ' . Perlito5::Java::escape_string($label ) . '))'
-            );
+            # TODO - label_id
+            'pOp.last(' . 123 . ')';
         },
         'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(new p5_error("redo", ' . Perlito5::Java::escape_string($label ) . '))'
-            );
+            # TODO - label_id
+            'pOp.redo(' . 123 . ')';
         },
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')'
-            );
+            # TODO - label_id
+            'pOp.ret(' . 123 . ', '
+                . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            Perlito5::Java::emit_wrap_statement_java(
-                $level,
-                $wantarray, 
-                'throw(' . $self->{arguments}->[0]->emit_java($level) . ')'
-            );
+            die "TODO - goto() not implemented";
         },
 
         'do' => sub {
