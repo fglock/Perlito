@@ -353,5 +353,15 @@ say "ok 62 - initialize a typed variable by dereferencing a Perl object: $x";
 my @things = my::Sample->lots_of_it();
 say "ok 63 - initialize an untyped Perl array with an array of object: [ @things ]";
 
+if (!defined $x) {
+    print "not ";
+}
+say "ok 64 - defined()";
+undef $x;
+if (defined $x) {
+    print "not ";
+}
+say "ok 65 - not defined()";
+
 __END__
 

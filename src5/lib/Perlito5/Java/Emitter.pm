@@ -523,7 +523,7 @@ package Perlito5::Java::LexicalBlock;
         my @block;
         for my $stmt (@{$self->{block}}) {
             if (defined($stmt)) {
-                if ( ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'undef' ) {
+                if ( ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'undef' && !@{$stmt->{arguments}} ) {
                     # don't emit code
                 }
                 else {
@@ -2582,7 +2582,8 @@ package Perlito5::AST::Apply;
                 {
                     return '(delete p5pkg[' . Perlito5::Java::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Java::escape_string($arg->{name} ) . '])';
                 }
-                return '(' . $arg->emit_java . ' = null)'
+                $self->{arguments} = [];
+                return $arg->emit_java_set($self, $level, $wantarray);
             }
             return 'pCx.UNDEF'
         },
