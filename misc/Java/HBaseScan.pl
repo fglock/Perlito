@@ -12,7 +12,7 @@ package ResultScanner { import => 'org.apache.hadoop.hbase.client.ResultScanner'
 my Configuration $config = HBaseConfiguration->create();
 
 # Instantiating HTable class
-my HTable $table = new HTable( $config, "b_room" );
+my HTable $table = new HTable( $config, "prices" );
 
 #################### SCAN ##############################
 my Scan $scan = new Scan();
@@ -47,5 +47,3 @@ while (defined $scan_result) {
 
     $scan_result = $resultScanner->next();
 }
-
-odo: automatic
