@@ -634,6 +634,9 @@ EOT
         if (ofs < 0) {
             ofs = 0;
         }
+        if (ofs >= s.length()) {
+            return pCx.UNDEF;
+        }
         return new pString(s.substring(ofs));
     }
     public pObject substr(pObject offset, pObject length) {
@@ -644,13 +647,27 @@ EOT
         if (ofs < 0) {
             ofs = s.length() + ofs;
         }
-        if (ofs + len > s.length()) {
-            return this.substr(offset);
+        if (ofs >= s.length()) {
+            return pCx.UNDEF;
+        }
+
+        if (len < 0) {
+            len = s.length() + len;
+        }
+        else {
+            len = ofs + len;
+        }
+
+        if (len >= s.length()) {
+            len = s.length();
+        }
+        if (len <= 0) {
+            return pCx.UNDEF;
         }
         if (ofs < 0) {
             ofs = 0;
         }
-        return new pString(s.substring(ofs, ofs + len));
+        return new pString(s.substring(ofs, len));
     }
     public pObject substr(pObject offset, pObject length, pObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
