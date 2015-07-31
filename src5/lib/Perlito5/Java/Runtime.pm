@@ -62,10 +62,38 @@ EOT
             values %java_classes
       ))
     . <<'EOT'
-class pControlException extends RuntimeException { }
-class pNextException extends pControlException { }
-class pLastException extends pControlException { }
-class pRedoException extends pControlException { }
+class pControlException extends RuntimeException {
+}
+class pNextException    extends pControlException {
+    public int label_id;
+
+    public pNextException(int i) {
+        this.label_id = i;
+    }
+}
+class pLastException    extends pControlException {
+    public int label_id;
+
+    public pLastException(int i) {
+        this.label_id = i;
+    }
+}
+class pRedoException    extends pControlException {
+    public int label_id;
+
+    public pRedoException(int i) {
+        this.label_id = i;
+    }
+}
+class pReturnException  extends pControlException {
+    public int label_id;
+    public pObject ret;
+
+    public pReturnException(int i, pObject ret) {
+        this.label_id = i;
+        this.ret = ret;
+    }
+}
 class pCx {
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
@@ -76,9 +104,6 @@ class pCx {
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
-    public static final pNextException NEXT = new pNextException();
-    public static final pLastException LAST = new pLastException();
-    public static final pRedoException REDO = new pRedoException();
 EOT
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
@@ -184,6 +209,20 @@ class pOp {
     //      - this is the compile-time version of context(null, arg)
     public static final void statement(pObject arg) { }
     public static final void statement() { }
+
+    // control-flow exceptions
+    public static final pObject next(int label_id) {
+        throw new pNextException(label_id);
+    }
+    public static final pObject last(int label_id) {
+        throw new pLastException(label_id);
+    }
+    public static final pObject redo(int label_id) {
+        throw new pRedoException(label_id);
+    }
+    public static final pObject ret(int label_id, pObject ret) {
+        throw new pReturnException(label_id, ret);
+    }
 
     // and1(x) ? y : and3()
     public static final boolean and1(pObject arg1) {
