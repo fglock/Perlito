@@ -455,7 +455,10 @@ package Perlito5::Java;
 
     sub emit_wrap_java {
         my ($level, $wantarray, @argument) = @_;
-        return join("\n", emit_java_list_with_tabs($level, [
+        my $s;
+        $s = shift @argument if !ref($argument[0]);
+        return join("\n", ($s ? $s : ()),
+                          emit_java_list_with_tabs($level, [
                                 \@argument, 
                           ]));
     }

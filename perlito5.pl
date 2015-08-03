@@ -14051,7 +14051,9 @@ package Perlito5::Java;
     }
     sub Perlito5::Java::emit_wrap_java {
         my($level, $wantarray, @argument) = @_;
-        return join(chr(10), emit_java_list_with_tabs($level, [\@argument]))
+        my $s;
+        !ref($argument[0]) && ($s = shift(@argument));
+        return join(chr(10), ($s ? $s : ()), emit_java_list_with_tabs($level, [\@argument]))
     }
     sub Perlito5::Java::emit_function_java {
         my($level, $wantarray, $argument) = @_;
