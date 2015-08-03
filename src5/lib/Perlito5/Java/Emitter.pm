@@ -531,11 +531,8 @@ package Perlito5::Java::LexicalBlock;
                 }
             }
         }
-        if (!@block) {
-            return 'return []'      if $wantarray eq 'list';
-            return 'return null'    if $wantarray eq 'scalar';
-            return 'return p5want ? [] : null' if $wantarray eq 'runtime';
-            return '// void';         # void
+        if ($self->{top_level} && !@block) {
+            push @block, Perlito5::AST::Apply->new( code => 'return', arguments => [] );
         }
         my @str;
         my $has_local = $self->has_decl("local");
@@ -605,7 +602,7 @@ package Perlito5::Java::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
             {
-                push @str, $last_statement->emit_java($level, $wantarray);
+                push @str, $last_statement->emit_java($level, $wantarray) . ';';
             }
             else {
                 if ( $has_local ) {
@@ -2446,7 +2443,9 @@ package Perlito5::AST::Apply;
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            # TODO - label_id
+            if ( ! @{ $self->{arguments} } ) {
+                return 'pOp.ret(pOp.context(want))';
+            }
             'pOp.ret('
                 . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
         },
@@ -3579,7 +3578,7 @@ package Perlito5::AST::Use;
         my ($self, $level, $wantarray) = @_;
         Perlito5::Grammar::Use::emit_time_eval($self);
         if ($wantarray ne 'void') {
-            return 'pOp.context([], p5want)';
+            return 'pCx.UNDEF';
         }
         else {
             return '// ' . $self->{code} . ' ' . $self->{mod} . "\n";

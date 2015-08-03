@@ -201,6 +201,12 @@ class pOp {
         }
         return arg.scalar();
     }
+    public static final pObject context(int want) {
+        if (want == 1) {
+            return new pArray();
+        }
+        return pCx.UNDEF;
+    }
 
     // statement()
     //      - workaround for "Error: not a statement"
