@@ -14155,11 +14155,17 @@ package Perlito5::Java::LexicalBlock;
             for my $arg (@var_decl) {
                 push(@str, $arg->emit_java_init($level, $wantarray))
             }
-            if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return' && $self->{'top_level'} && @{$last_statement->{'arguments'}}) {
-                $last_statement = $last_statement->{'arguments'}->[0]
+            if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Block') || $last_statement->isa('Perlito5::AST::Use') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto') {
+                push(@str, $last_statement->emit_java($level, 'void') . ';');
+                push(@str, 'return (pOp.context(want));')
             }
-            if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Block') || $last_statement->isa('Perlito5::AST::Use') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto' || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
-                push(@str, $last_statement->emit_java($level, $wantarray) . ';')
+            elsif ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
+                if (!@{$last_statement->{'arguments'}}) {
+                    push(@str, 'return (pOp.context(want));')
+                }
+                else {
+                    push(@str, 'return (' . ($wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement->{'arguments'}->[0]], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement->{'arguments'}->[0]], $level + 1) : $last_statement->{'arguments'}->[0]->emit_java($level, $wantarray)) . ');')
+                }
             }
             elsif ($has_local) {
                 push(@str, 'return p5cleanup_local(local_idx, (' . ($wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement], $level + 1) : $last_statement->emit_java($level, $wantarray)) . '));')
