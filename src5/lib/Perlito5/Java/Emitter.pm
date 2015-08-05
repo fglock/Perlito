@@ -1603,6 +1603,14 @@ package Perlito5::AST::Call;
             {
                 $invocant = 'p5pkg[' . Perlito5::Java::escape_string(($self->{invocant}{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Java::escape_string($self->{invocant}{name} ) . ']';
             }
+            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
+               && $self->{invocant}{sigil} eq '::'
+               && $self->{invocant}{namespace} eq '__SUB__'
+               )
+            {
+                # __SUB__->()
+                $invocant = 'this';     # "this" is the closure
+            }
             else {
                 $invocant = $self->{invocant}->emit_java($level, 'scalar');
             }
@@ -1870,7 +1878,7 @@ package Perlito5::AST::Apply;
         },
         '__SUB__' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::AST::Sub::SUB_REF // '__SUB__'
+            $Perlito5::AST::Sub::SUB_REF // 'this'
         },
         'wantarray' => sub {
             my ($self, $level, $wantarray) = @_;
