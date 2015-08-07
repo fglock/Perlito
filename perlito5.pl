@@ -9478,11 +9478,16 @@ package Perlito5::AST::Apply;
         if ($code eq 'p5:s') {
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{'buf'};
+            my $fun;
             if (ref($replace) eq 'Perlito5::AST::Block') {
-                $replace = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace]);
+                $replace = Perlito5::AST::Sub::->new('block' => $replace);
+                $fun = $replace->emit_javascript2($level + 2, $wantarray);
                 $modifier =~ s!e!!g
             }
-            $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5s(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . Perlito5::Javascript2::emit_function_javascript2($level + 2, $wantarray, $replace) . ', ' . Perlito5::Javascript2::escape_string($modifier) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');', $var->emit_javascript2() . ' = tmp[0];', 'return tmp[1];')
+            else {
+                $fun = Perlito5::Javascript2::emit_function_javascript2($level + 2, $wantarray, $replace)
+            }
+            $str = Perlito5::Javascript2::emit_wrap_javascript2($level + 1, $wantarray, 'var tmp = p5s(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . $fun . ', ' . Perlito5::Javascript2::escape_string($modifier) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');', $var->emit_javascript2() . ' = tmp[0];', 'return tmp[1];')
         }
         elsif ($code eq 'p5:m') {
             $str = 'p5m(' . $var->emit_javascript2() . ', ' . $regex_args->[0]->emit_javascript2() . ', ' . Perlito5::Javascript2::escape_string($regex_args->[1]->{'buf'}) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
