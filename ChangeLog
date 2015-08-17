@@ -1,3 +1,53 @@
+dev  2015-08-17
+
+* Perlito5 (Perl 5 compiler):
+
+- more than 1700 tests
+
+- Parser:
+-- emit the same error messages as 'perl' in more places
+-- expanded support for prototypes, regex, v-strings
+-- track variable redeclarations and variable scopes
+-- add the variable type to AST nodes ("real sigil")
+-- "Perlito5X" namespace re-implements CPAN modules that are not possible (or not easy)
+   to support directly in Perlito - such as Data::Dumper.
+   Some modules are inlined in the parser - such as "vars" and "constant".
+-- add "<<>>" (Perl 5.22)
+-- support for "__LINE__", "__FILE__", and tracking the current line number
+-- more pod implementation details, such as "=encoding"
+-- fix return value for if/unless modifiers
+-- command line - implement "-n", "-p", "-M", "-m", fixed "-I"
+-- use a smaller grammar-grammar
+-- use a faster calling convention in grammar
+-- shorter AST node names
+
+- Perl5-to-Javascript compiler:
+-- file operators (nodejs)
+-- create regex variables $1, $2, ...
+-- implement regex /e and /ee modifier
+-- /usr/bin/node displays the message's text and a backtrace (Shlomi Fish)
+-- initial overload implementation
+-- flip-flop operator, split, tr
+
+- Perl5-to-Java compiler:
+-- statements: while() and if()
+-- containers: hash, array, scalar; autovivification
+-- lexical and global variables
+-- Java data types: String, long, double, boolean
+-- Perl data types: closures, references
+-- initial implementation of regexes
+-- native Java objects and classes using: package Perl::Package { import => "java.class" }
+-- typed lexicals - mapped to imported Java classes: my Perl::Package $java_variable
+-- Java::inline
+
+* Perlito6 (Perl 6 compiler):
+
+-- no significant changes
+-- Go backend no longer works
+-- Python bootstrap still works
+-- instructions in "README-perlito6" need some update (replace "d8" with "node")
+
+
 dev  2014-05-30
 
 * Perlito5 (Perl 5 compiler):
