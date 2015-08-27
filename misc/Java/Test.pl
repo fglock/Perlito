@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..63\n";
+print "1..66\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -362,6 +362,10 @@ if (defined $x) {
     print "not ";
 }
 say "ok 65 - not defined()";
+
+$x = 'ryba';
+print 'not ' unless ( $x x 3 ) eq 'rybarybaryba';
+say 'ok 66 - string replication';
 
 __END__
 
