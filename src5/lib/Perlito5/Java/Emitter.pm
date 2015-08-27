@@ -160,6 +160,54 @@ package Perlito5::Java;
         return join(' + ', @out);
     }
 
+    sub is_native {
+        my $self = shift;
+        
+        # class method call in native 'Java' packages
+        #
+        #   package Sample { import => "misc.Java.Sample" };
+        #   Sample->new();  
+        #   new Sample();
+        #
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{sigil} eq '::' ) {
+            my $Java_class = Perlito5::Java::get_java_class_info();
+            if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
+                return 1;
+            }
+        }
+
+        # method call on a typed invocant
+        #   package Sample { import => "misc.Java.Sample" };
+        #   my Sample $s;  
+        #   $s->meth();
+        #
+        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
+            my $id = $self->{invocant}->{_id};
+            my $Java_var = Perlito5::Java::get_java_var_info();
+            my $type = $Java_var->{ $id }{type} || 'pLvalue';
+            if ($type ne 'pLvalue') {
+                return 1;
+            }
+        }
+
+        # type coercion method call on an untyped invocant
+        #   package Sample { import => "misc.Java.Sample" };
+        #   my $x;  
+        #   $x->to_Sample();
+        #
+        my $meth = $self->{method}; 
+        if ( $meth =~ /^to/ ) {
+            # TODO - check for no-arguments
+            my $Java_class = Perlito5::Java::get_java_class_info();
+            for my $info ( values %{$Java_class} ) {
+                if ( $meth eq $info->{perl_to_java} ) {
+                    return 1;
+                }
+            }
+        }
+
+        return 0; # <- not native (plain Perl)
+    }
 
     sub to_native_args {
             my $args = shift;
@@ -3385,8 +3433,15 @@ package Perlito5::AST::While;
             }
         }
 
-        push @str, 'while ('
-                    . Perlito5::Java::to_bool($cond, $level + 1) . ') '
+        my $expression;
+        if (Perlito5::Java::is_native($cond)) {
+            $expression = Perlito5::Java::to_native_args([$cond], $level + 1);
+        }
+        else {
+            $expression =  Perlito5::Java::to_bool($cond, $level + 1);    
+        }
+
+        push @str, 'while (' . $expression . ') '
                     . "{\n"
                     . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
                     . Perlito5::Java::tab($level + 1) . '}';
