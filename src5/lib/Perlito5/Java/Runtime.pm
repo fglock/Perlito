@@ -364,6 +364,8 @@ class pV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see pClosure implementation)
 
+    public static final String ARGV = "main|List_ARGV";
+
     public static final pHash var = new pHash();
 
     public static final pObject get(String name) {
@@ -388,7 +390,8 @@ class pV {
     }
 }
 class pEnv {
-    public static final void init() {
+    public static final void init(String[] args) {
+        pV.array_set(pV.ARGV, new pArray(args));
         pV.set("main|v_" + (char)34, new pString(" "));   // $" = " "
     }
 }
@@ -1357,7 +1360,21 @@ class pArray extends pObject {
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-    // TODO - String[], Double[]
+    public pObject set(String[] strings) {
+        this.a.clear();
+        for (String s : strings) {
+            this.a.add(new pString(s));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public pArray(String[] strings) {
+        pArray arr = new pArray();
+        arr.set(strings);
+        this.each_iterator = arr.each_iterator;
+        this.a = arr.a;
+    }
+    // TODO - Double[]
 EOT
         # add "box" array-of Java classes
         # that were declared with

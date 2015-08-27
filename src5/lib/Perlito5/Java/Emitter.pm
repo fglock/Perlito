@@ -857,7 +857,7 @@ package Perlito5::AST::CompUnit;
         }
         $str .= "class Test {\n"
              .  "    public static void main(String[] args) throws Exception {\n"
-             .  "        pEnv.init();\n"
+             .  "        pEnv.init(args);\n"
              .  "        $init\n"
              .  "        $main\n"
              .  "    }\n"
