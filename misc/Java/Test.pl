@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..66\n";
+print "1..75\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -367,10 +367,47 @@ $x = 'ryba';
 print 'not ' unless ( $x x 3 ) eq 'rybarybaryba';
 say 'ok 66 - string replication';
 
+my @a = ($x) x 3;
+print 'not ' unless join( ',', @a ) eq 'ryba,ryba,ryba';
+say "ok 67 - list replication in list context: [ @a ]";
+
+my $c = scalar( ($x) x 3 );
+print 'not ' unless $c == 3;
+say "ok 68 - list replication in scalar context: [ @a ]";
+
+@a = ( 1, 2, 3, 4 );
+push @a, 7;
+print 'not ' unless $a[4] == 7;
+say "ok 69 - push an item to a list: [ @a ]";
+
+@a = ( 1, 2, 3, 4 );
+push @a, ( 7, 8, 9 );
+print 'not ' unless $a[6] == 9;
+say "ok 70 - push a list to a list: [ @a ]";
+
+@a = ( 1, 2, 3, 4 );
+push @a, 7, 8, 9;
+print 'not ' unless $a[6] == 9;
+say "ok 71 - push a list of items to a list: [ @a ]";
+
+@a = ( 1, 2, 3 );
+push @a, ( 4, 5 ), ( 6, 7 );
+print 'not ' unless $a[6] == 7;
+say "ok 72 - push a list of lists to a list: [ @a ]";
+
+@a = ();
+push @a, ( 4, 5 ), ( 6, 7 );
+print 'not ' unless $a[3] == 7;
+say "ok 73 - push a list of lists to an empty list: [ @a ]";
+
+my @y = ('ryba', 'lufa');
+my @a = (@y) x 2;
+print 'not ' unless join( ',', @a ) eq 'ryba,lufa,ryba,lufa';
+say "ok 74 - long list replication in list context: [ @a ]";
+
 my @yarr = 1..4;
 print 'not ' unless (shift @yarr) == 1;
-say 'ok 67 - array shift';
-
+say "ok 75 - array shift: [ @yarr ]";
 
 __END__
 

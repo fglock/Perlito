@@ -196,13 +196,13 @@ class pOp {
     // context()
     //      - handles run-time scalar/list/void context in expression results
     public static final pObject context(int want, pObject arg) {
-        if (want == 1) {
+        if (want == pCx.LIST) {
             return arg;
         }
         return arg.scalar();
     }
     public static final pObject context(int want) {
-        if (want == 1) {
+        if (want == pCx.LIST) {
             return new pArray();
         }
         return pCx.UNDEF;
@@ -308,6 +308,26 @@ class pOp {
             }
             return new pString(sb.toString());
         }
+    }
+    public static final pObject list_replicate(pArray o, pObject c, int wantarray) {
+        int count = c.to_int();
+        pArray a = new pArray();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                a.push( o );
+            }
+        }
+        return (wantarray == pCx.LIST ) ? a : a.length_of_array();
+    }
+    public static final pObject list_replicate(pObject o, pObject c, int wantarray) {
+        int count = c.to_int();
+        pArray a = new pArray();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                a.push( o );
+            }
+        }
+        return (wantarray == pCx.LIST ) ? a : a.length_of_array();
     }
 
     public static final pObject match(pObject s, pRegex pat, int want) {

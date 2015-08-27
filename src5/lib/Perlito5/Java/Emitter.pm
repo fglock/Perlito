@@ -2298,9 +2298,9 @@ package Perlito5::AST::Apply;
                 # ($v) x $i
                 # qw( 1 2 3 ) x $i
                 return 'pOp.list_replicate('
-                           . $self->{arguments}->[0]->emit_java($level, 'list') . ','
+                           . Perlito5::Java::to_list( [$self->{arguments}->[0] ], $level) . ', '
                            . Perlito5::Java::to_num($self->{arguments}->[1], $level) . ', '
-                           . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                           . Perlito5::Java::to_context($wantarray)
                         . ')'
             }
             'pOp.string_replicate('
