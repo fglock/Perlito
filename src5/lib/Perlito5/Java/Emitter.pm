@@ -2297,13 +2297,13 @@ package Perlito5::AST::Apply;
             {
                 # ($v) x $i
                 # qw( 1 2 3 ) x $i
-                return 'p5list_replicate('
+                return 'pOp.list_replicate('
                            . $self->{arguments}->[0]->emit_java($level, 'list') . ','
                            . Perlito5::Java::to_num($self->{arguments}->[1], $level) . ', '
                            . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
                         . ')'
             }
-            'p5str_replicate('
+            'pOp.string_replicate('
                            . Perlito5::Java::to_str($self->{arguments}->[0], $level) . ','
                            . Perlito5::Java::to_num($self->{arguments}->[1], $level) . ')'
         },

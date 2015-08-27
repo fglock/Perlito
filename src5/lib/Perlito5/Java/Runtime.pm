@@ -295,6 +295,21 @@ class pOp {
         return string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
     }
 
+    public static final pString string_replicate(pObject s, pObject c) {
+        int count = c.to_int();
+        if ( count < 1 ) {
+            return new pString("");
+        }
+        else {
+            String raw_s = s.to_string();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                sb.append(raw_s);
+            }
+            return new pString(sb.toString());
+        }
+    }
+
     public static final pObject match(pObject s, pRegex pat, int want) {
         if (want == 0) {
             return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
