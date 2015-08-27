@@ -16081,7 +16081,7 @@ sub Perlito5::Java::Runtime::emit_java {
     my %java_classes = %{$args{'java_classes'} // {}};
     my %number_binop = ('add' => {'op' => '+', 'returns' => 'pInt', 'num_returns' => 'pDouble'}, 'sub' => {'op' => '-', 'returns' => 'pInt', 'num_returns' => 'pDouble'}, 'mul' => {'op' => '*', 'returns' => 'pInt', 'num_returns' => 'pDouble'}, 'div' => {'op' => '/', 'returns' => 'pDouble', 'num_returns' => 'pDouble'}, 'num_eq' => {'op' => '==', 'returns' => 'pBool', 'num_returns' => 'pBool'}, 'num_ne' => {'op' => '!=', 'returns' => 'pBool', 'num_returns' => 'pBool'}, 'num_lt' => {'op' => '<', 'returns' => 'pBool', 'num_returns' => 'pBool'}, 'num_le' => {'op' => '<=', 'returns' => 'pBool', 'num_returns' => 'pBool'}, 'num_gt' => {'op' => '>', 'returns' => 'pBool', 'num_returns' => 'pBool'}, 'num_ge' => {'op' => '>=', 'returns' => 'pBool', 'num_returns' => 'pBool'});
     my %string_binop = ('str_eq' => {'op' => '== 0', 'returns' => 'pBool'}, 'str_ne' => {'op' => '!= 0', 'returns' => 'pBool'}, 'str_lt' => {'op' => '< 0', 'returns' => 'pBool'}, 'str_le' => {'op' => '<= 0', 'returns' => 'pBool'}, 'str_gt' => {'op' => '> 0', 'returns' => 'pBool'}, 'str_ge' => {'op' => '>= 0', 'returns' => 'pBool'});
-    my %native_to_perl = ('int' => 'pInt', 'double' => 'pDouble', 'String' => 'pString');
+    my %native_to_perl = ('int' => 'pInt', 'double' => 'pDouble', 'boolean' => 'pBool', 'String' => 'pString');
     for $_ (values(%java_classes)) {
         $native_to_perl{$_->{'java_constructor'}} = 'p' . $_->{'java_constructor'}
     }

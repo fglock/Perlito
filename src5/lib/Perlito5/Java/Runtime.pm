@@ -28,9 +28,10 @@ sub emit_java {
     );
 
     my %native_to_perl = (
-        int    => 'pInt',
-        double => 'pDouble',
-        String => 'pString',
+        int     => 'pInt',
+        double  => 'pDouble',
+        boolean => 'pBool',
+        String  => 'pString',
     );
     for (values %java_classes) {
         $native_to_perl{$_->{java_constructor}} = "p" . $_->{java_constructor};
