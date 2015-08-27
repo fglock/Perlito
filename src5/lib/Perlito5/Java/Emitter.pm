@@ -1836,14 +1836,14 @@ package Perlito5::AST::Apply;
                     . $var->emit_java() . ', '
                     . emit_qr_java( $replace, $modifier, $level ) . ', '
                     . $replace->emit_java() . ', '
-                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                    . Perlito5::Java::to_context($wantarray)
                   . ")";
         }
         elsif ($code eq 'p5:m') {
             $str = 'pOp.match('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $regex_args->[0], $regex_args->[1], $level ) . ', '
-                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                    . Perlito5::Java::to_context($wantarray)
                   . ")";
         }
         elsif ($code eq 'p5:tr') {
@@ -1853,7 +1853,7 @@ package Perlito5::AST::Apply;
                     . $regex_args->[0]->emit_java() . ', '
                     . $regex_args->[1]->emit_java() . ', '
                     . Perlito5::Java::escape_string($regex_args->[2]->{buf}) . ', '
-                    . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 )
+                    . Perlito5::Java::to_context($wantarray)
                   . ");",
                 $var->emit_java() . " = tmp[0];",
                 "return tmp[1];",
@@ -2370,18 +2370,18 @@ package Perlito5::AST::Apply;
         },
         'infix:<..>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'p5range(' . $self->{arguments}->[0]->emit_java($level) . ', '
+            return 'pOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
                               . $self->{arguments}->[1]->emit_java($level) . ', '
-                              . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ', '
+                              . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
                               . '0'
                         . ')'
         },
         'infix:<...>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'p5range(' . $self->{arguments}->[0]->emit_java($level) . ', '
+            return 'pOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
                               . $self->{arguments}->[1]->emit_java($level) . ', '
-                              . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ', '
+                              . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
                               . '1'
                         . ')'

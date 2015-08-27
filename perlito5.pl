@@ -14932,13 +14932,13 @@ package Perlito5::AST::Apply;
                 $replace = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace]);
                 $modifier =~ s!e!!g
             }
-            $str = 'pOp.replace(' . $var->emit_java() . ', ' . emit_qr_java($replace, $modifier, $level) . ', ' . $replace->emit_java() . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
+            $str = 'pOp.replace(' . $var->emit_java() . ', ' . emit_qr_java($replace, $modifier, $level) . ', ' . $replace->emit_java() . ', ' . Perlito5::Java::to_context($wantarray) . ')'
         }
         elsif ($code eq 'p5:m') {
-            $str = 'pOp.match(' . $var->emit_java() . ', ' . emit_qr_java($regex_args->[0], $regex_args->[1], $level) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
+            $str = 'pOp.match(' . $var->emit_java() . ', ' . emit_qr_java($regex_args->[0], $regex_args->[1], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
         }
         elsif ($code eq 'p5:tr') {
-            $str = Perlito5::Java::emit_wrap_java($level + 1, $wantarray, 'var tmp = p5tr(' . $var->emit_java() . ', ' . $regex_args->[0]->emit_java() . ', ' . $regex_args->[1]->emit_java() . ', ' . Perlito5::Java::escape_string($regex_args->[2]->{'buf'}) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ');', $var->emit_java() . ' = tmp[0];', 'return tmp[1];')
+            $str = Perlito5::Java::emit_wrap_java($level + 1, $wantarray, 'var tmp = p5tr(' . $var->emit_java() . ', ' . $regex_args->[0]->emit_java() . ', ' . $regex_args->[1]->emit_java() . ', ' . Perlito5::Java::escape_string($regex_args->[2]->{'buf'}) . ', ' . Perlito5::Java::to_context($wantarray) . ');', $var->emit_java() . ' = tmp[0];', 'return tmp[1];')
         }
         else {
             die('Error: regex emitter - unknown operator ' . $code)
@@ -15263,10 +15263,10 @@ package Perlito5::AST::Apply;
         Perlito5::Java::to_list($self->{'arguments'})
     }, 'infix:<..>' => sub {
         my($self, $level, $wantarray) = @_;
-        return 'p5range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 0 . ')'
+        return 'pOp.range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 0 . ')'
     }, 'infix:<...>' => sub {
         my($self, $level, $wantarray) = @_;
-        return 'p5range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 1 . ')'
+        return 'pOp.range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 1 . ')'
     }, 'delete' => sub {
         my($self, $level, $wantarray) = @_;
         my $arg = $self->{'arguments'}->[0];
