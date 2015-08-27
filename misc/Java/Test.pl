@@ -367,5 +367,10 @@ $x = 'ryba';
 print 'not ' unless ( $x x 3 ) eq 'rybarybaryba';
 say 'ok 66 - string replication';
 
+my @yarr = 1..4;
+print 'not ' unless (shift @yarr) == 1;
+say 'ok 67 - array shift';
+
+
 __END__
 
