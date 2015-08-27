@@ -14175,7 +14175,7 @@ package Perlito5::Java::LexicalBlock;
                 push(@str, $arg->emit_java_init($level, $wantarray))
             }
             if (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) {
-                if ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>')) {
+                if ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
                     push(@str, 'pOp.statement(' . $decl->emit_java($level, 'void') . ');')
                 }
                 else {

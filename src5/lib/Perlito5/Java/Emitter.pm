@@ -622,7 +622,7 @@ package Perlito5::Java::LexicalBlock;
             if ( !( $decl->isa('Perlito5::AST::Decl') && $decl->decl eq 'my' ) ) {
                 if ( $decl->isa('Perlito5::AST::Apply')
                     && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
-                    && !( $decl->{code} eq 'infix:<=>' ) )
+                    && !( $decl->{code} eq 'infix:<=>' || $decl->{code} eq 'print' || $decl->{code} eq 'say' ) )
                 {
                     # workaround for "Error: not a statement"
                     push @str, 'pOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
