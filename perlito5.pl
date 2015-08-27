@@ -14129,6 +14129,7 @@ package Perlito5::Java::LexicalBlock;
             $has_local = 1;
             $has_regex = 1
         }
+        $has_local = 0;
         my $create_context = $self->{'create_context'} && $self->has_decl('my');
         my $outer_pkg = $Perlito5::PKG_NAME;
         if ($self->{'top_level'} || $create_context) {
