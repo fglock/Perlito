@@ -34,7 +34,7 @@ sub emit_java {
         String  => 'pString',
     );
     for (values %java_classes) {
-        $native_to_perl{$_->{java_constructor}} = "p" . $_->{java_constructor};
+        $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
     }
 
     return <<'EOT'
@@ -410,7 +410,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{java_constructor};
+                    my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
                     $class->{import} ? 
                     "    public ${java_class_name} ${perl_to_java}() {\n"
@@ -1272,7 +1272,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{java_constructor};
+                    my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
                     $class->{import} ? 
 "    public ${java_class_name} ${perl_to_java}() {
@@ -1384,15 +1384,16 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{java_constructor};
+                    my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
+                    my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} ? 
 "    public pObject set(${java_class_name}[] stuffs) {
         this.a.clear();
         // \@x = ${java_class_name}[] native;
         for(${java_class_name} i : stuffs){
-            this.a.add(new p${java_class_name}(i));
+            this.a.add(new ${java_native_to_perl}(i));
         }
         this.each_iterator = 0;
         return this;
@@ -2522,15 +2523,16 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    my $java_class_name = $class->{java_constructor};
+                    my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
+                    my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} ? 
-"class p${java_class_name} extends pReference {
+"class ${java_native_to_perl} extends pReference {
     public static final pString REF = new pString(\"${perl_package}\");
     private ${java_class_name} stuff;
 
-    public p${java_class_name}(${java_class_name} stuff) {
+    public ${java_native_to_perl}(${java_class_name} stuff) {
         this.stuff = stuff;
     }
     public ${java_class_name} ${perl_to_java}() {

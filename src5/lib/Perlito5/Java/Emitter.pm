@@ -9,10 +9,11 @@ package Perlito5::Java;
     my %label;
 
     # 'The::Class' => {
-    #       import           => 'full.path.Class',
-    #       java_constructor => 'Class',            # generated
-    #       perl_to_java     => 'to_TheClass',      # generated
-    #       perl_package     => 'The::Class',       # package name
+    #       import              => 'full.path.Class',   # Java class path
+    #       perl_package        => 'The::Class',        # Perl package name
+    #       java_type           => 'Class',             # generated, can be overriden: 'Class<String>'
+    #       perl_to_java        => 'to_TheClass',       # generated
+    #       java_native_to_perl => 'pClass',            # generated
     # }
     my %Java_class;
 
@@ -829,7 +830,10 @@ package Perlito5::AST::CompUnit;
                     die "missing 'import' argument to generate Java class"
                         unless $Java_class->{$class}->{import};
                     my @parts = split /\./, $Java_class->{$class}->{import};
-                    $Java_class->{$class}->{java_constructor} //= $parts[-1];
+                    $Java_class->{$class}->{java_type} //= $parts[-1];
+                    $Java_class->{$class}->{java_native_to_perl} //= 'p' . $Java_class->{$class}->{java_type};
+                    # "List<String>" becomes "pList_String_"
+                    $Java_class->{$class}->{java_native_to_perl} =~ s/[<>]/_/g;
                     my $perl_to_java = $class;
                     $perl_to_java =~ s/:://g;
                     $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
@@ -1567,7 +1571,7 @@ package Perlito5::AST::Decl;
             }
             else {
                 my $Java_class = Perlito5::Java::get_java_class_info();
-                my $java_type = $Java_class->{$type}{java_constructor} || 'pLvalue';
+                my $java_type = $Java_class->{$type}{java_type} || 'pLvalue';
                 if( $java_type eq 'pLvalue' ) {
                     return "${java_type} " . $self->{var}->emit_java() . " = new ${java_type}();";
                 } else {
@@ -1684,9 +1688,9 @@ package Perlito5::AST::Call;
             if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                 my $info = $Java_class->{$self->{invocant}->{namespace}};
                 if ($meth eq 'new') {
-                    return "new $info->{java_constructor}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                    return "new $info->{java_type}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
-                return "$info->{java_constructor}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                return "$info->{java_type}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 
