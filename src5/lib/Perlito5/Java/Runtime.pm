@@ -428,6 +428,11 @@ EOT
     public pObject get_arrayref() {
         return pCORE.die("Not an ARRAY reference");
     }
+
+    public pObject shift() {
+        return pCORE.die("Not an ARRAY reference");
+    }
+
     public pObject get_hashref() {
         return pCORE.die("Not a HASH reference");
     }
