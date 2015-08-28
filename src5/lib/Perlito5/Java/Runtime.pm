@@ -1638,6 +1638,9 @@ EOT
 
     // Note: multiple versions of unshift()
     public pObject unshift(pObject v) {
+        if (v.is_array()) {
+            return this.unshift( (pArray)v );
+        }
         this.a.add(0, v.scalar());
         return this.length_of_array();
     }
