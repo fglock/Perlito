@@ -243,7 +243,7 @@ class PerlOp {
     }
 
     public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {
-        if (ctx = pCx.LIST) {
+        if (ctx == pCx.LIST) {
             int start = _start.to_int(),
                 end   = _end.to_int();
             int size = Math.max(0, end - start + 1);
@@ -254,6 +254,7 @@ class PerlOp {
             return ret;
         }
         pCORE.die("Range not implemented for context " + ctx);
+        return null;
     }
 
     // and1(x) ? y : and3()

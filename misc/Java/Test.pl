@@ -461,10 +461,14 @@ $val =~ s/-//g;
 print 'not ' unless $val eq '20150828';
 say 'ok 85 - search-replace regex works';
 
-# TODO - range not yet implemented
-# my @yarr = 1..4;
-# print 'not ' unless (shift @yarr) == 1;
-# say "ok 75 - array shift: [ @yarr ]";
+my @range = 1..4;
+print 'not ' unless ($range[0] == 1 && $range[1] == 2 && $range[2] == 3 && $range[3] == 4 && !defined $range[4]);
+say 'ok 84 - range in list context works';
+
+my @yarr = 1..4;
+print 'not ' unless (shift @yarr) == 1;
+say "ok 75 - array shift: [ @yarr ]";
+
 
 __END__
 
