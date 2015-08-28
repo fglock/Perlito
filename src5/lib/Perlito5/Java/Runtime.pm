@@ -378,7 +378,7 @@ class PerlOp {
 
     public static final pObject replace(pObject s, pRegex pat, pObject rep, pContext want) {
         if (want != pCx.LIST) {
-            return new pString(pat.p.matcher(s.to_string()).replaceAll(rep.to_string()));
+            return s.set(new pString(pat.p.matcher(s.to_string()).replaceAll(rep.to_string())));
         }
         pCORE.die("not implemented string replace in list context");
         return s;
