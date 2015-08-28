@@ -320,8 +320,24 @@ class PerlOp {
         }
         return (wantarray == pCx.LIST ) ? a : a.length_of_array();
     }
+    public static final pObject grep(pClosure c, pArray a, int wantarray) {
+        pArray ret = new pArray();
+        int size = a.to_int();
+        pObject underline = pV.get("main|v__");
+        for (int i = 0; i < size; i++) {
+            boolean result;
+            pObject temp = a.aget(i);
+            pV.set("main|v__", temp);
+            result = c.apply(pCx.SCALAR, new pArray()).to_bool();
+            if (result) {
+                ret.push(temp);
+            }
+        }
+        pV.set("main|v__", underline);
+        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+    }
     public static final pObject match(pObject s, pRegex pat, int want) {
-        if (want == 0) {
+        if (want != pCx.LIST) {
             return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
         }
         pCORE.die("not implemented string match in list context");
