@@ -242,6 +242,17 @@ class PerlOp {
         throw new pReturnException(ret);
     }
 
+    public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {
+        int start = _start.to_int(),
+            end   = _end.to_int();
+        int size = Math.max(0, end - start + 1);
+        int[] ret = new int[size];
+        for (int i = 0; i < size; ++i) {
+            ret[i] = start + i;
+        }
+        return ret;
+    }
+
     // and1(x) ? y : and3()
     public static final boolean and1(pObject arg1) {
         if (arg1.to_bool()) {
