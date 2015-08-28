@@ -187,12 +187,14 @@ class pCORE {
 }
 class PerlCompare implements Comparator<pObject> {
     public pClosure sorter;
-    public PerlCompare (pClosure sorter) {
+    public String pckg;
+    public PerlCompare (pClosure sorter, String pckg) {
         this.sorter = sorter;
+        this.pckg = pckg;
     }
     public int compare (pObject a, pObject b) {
-        pV.set("main|v_a", a);
-        pV.set("main|v_b", b);
+        pV.set(pckg + "|v_a", a);
+        pV.set(pckg + "|v_b", b);
         return this.sorter.apply( pCx.SCALAR, new pArray() ).to_int();
     }
 }
@@ -375,15 +377,15 @@ class PerlOp {
         pV.set("main|v__", underline);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject sort(pClosure c, pArray a, int wantarray) {
+    public static final pObject sort(pClosure c, pArray a, int wantarray, String pckg) {
         pArray ret = new pArray(a);
         int size = a.to_int();
-        PerlCompare comp = new PerlCompare(c);
-        pObject sort_a = pV.get("main|v_a");
-        pObject sort_b = pV.get("main|v_b");
+        PerlCompare comp = new PerlCompare(c, pckg);
+        pObject sort_a = pV.get(pckg + "|v_a");
+        pObject sort_b = pV.get(pckg + "|v_b");
         Collections.sort(ret.a, comp);
-        pV.set("main|v_a", sort_a);
-        pV.set("main|v_b", sort_b);
+        pV.set(pckg + "|v_a", sort_a);
+        pV.set(pckg + "|v_b", sort_b);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final pObject match(pObject s, pRegex pat, int want) {
