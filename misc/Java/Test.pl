@@ -8,7 +8,7 @@
 #   one liner:
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
-print "1..86\n";
+print "1..87\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -474,7 +474,7 @@ say 'ok 86 - search-replace regex works';
 
 my @range = 1..4;
 print 'not ' unless ($range[0] == 1 && $range[1] == 2 && $range[2] == 3 && $range[3] == 4 && !defined $range[4]);
-say 'ok 84 - range in list context works';
+say 'ok 87 - range in list context works';
 
 my @yarr = 1..4;
 print 'not ' unless (shift @yarr) == 1;

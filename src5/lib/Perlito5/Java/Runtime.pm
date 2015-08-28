@@ -187,14 +187,16 @@ class pCORE {
 }
 class PerlCompare implements Comparator<pObject> {
     public pClosure sorter;
-    public String pckg;
-    public PerlCompare (pClosure sorter, String pckg) {
+    public pLvalue v_a;
+    public pLvalue v_b;
+    public PerlCompare (pClosure sorter, pLvalue a, pLvalue b) {
         this.sorter = sorter;
-        this.pckg = pckg;
+        this.v_a = a;
+        this.v_b = b;
     }
     public int compare (pObject a, pObject b) {
-        pV.set(pckg + "|v_a", a);
-        pV.set(pckg + "|v_b", b);
+        v_a.set(a);
+        v_b.set(b);
         return this.sorter.apply( pCx.SCALAR, new pArray() ).to_int();
     }
 }
@@ -353,39 +355,43 @@ class PerlOp {
     public static final pObject grep(pClosure c, pArray a, int wantarray) {
         pArray ret = new pArray();
         int size = a.to_int();
-        pObject underline = pV.get("main|v__");
+        pLvalue v__ref = (pLvalue)pV.get("main|v__");
+        pObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
             pObject temp = a.aget(i);
-            pV.set("main|v__", temp);
+            v__ref.set(temp);
             result = c.apply(pCx.SCALAR, new pArray()).to_bool();
             if (result) {
                 ret.push(temp);
             }
         }
-        pV.set("main|v__", underline);
+        v__ref.set(v__val);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final pObject map(pClosure c, pArray a, int wantarray) {
         pArray ret = new pArray();
         int size = a.to_int();
-        pObject underline = pV.get("main|v__");
+        pLvalue v__ref = (pLvalue)pV.get("main|v__");
+        pObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
-            pV.set("main|v__", a.aget(i));
+            v__ref.set(a.aget(i));
             ret.push(c.apply(pCx.LIST, new pArray()));
         }
-        pV.set("main|v__", underline);
+        v__ref.set(v__val);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final pObject sort(pClosure c, pArray a, int wantarray, String pckg) {
         pArray ret = new pArray(a);
         int size = a.to_int();
-        PerlCompare comp = new PerlCompare(c, pckg);
-        pObject sort_a = pV.get(pckg + "|v_a");
-        pObject sort_b = pV.get(pckg + "|v_b");
+        pLvalue v_a_ref = (pLvalue)pV.get(pckg + "|v_a");
+        pLvalue v_b_ref = (pLvalue)pV.get(pckg + "|v_b");
+        PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
+        pObject v_a_val = v_a_ref.get();
+        pObject v_b_val = v_b_ref.get();
         Collections.sort(ret.a, comp);
-        pV.set(pckg + "|v_a", sort_a);
-        pV.set(pckg + "|v_b", sort_b);
+        v_a_ref.set(v_a_val);
+        v_b_ref.set(v_b_val);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final pObject match(pObject s, pRegex pat, int want) {
