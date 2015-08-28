@@ -8,12 +8,7 @@
 #   one liner:
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
-<<<<<<< HEAD
-print "1..81\n";
-=======
-
-print "1..80\n";
->>>>>>> Perlito5 - java - Added more tests for map
+print "1..82\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -442,7 +437,7 @@ say "ok 80 - map { ? . : () } in list context works: [ @a => @y ]";
 @a = ( qw/ryb luf ryb/ );
 $x = map { $_ =~ /^ry/ ? $_ . 'a' : () } @a;
 print 'not ' unless $x == 2;
-say "ok 80 - map { ? . : () } in scalar context works: [ @a => @y ]";
+say "ok 81 - map { ? . : () } in scalar context works: [ @a => @y ]";
 
 my $val = '2015-08-28';
 $val =~ s/-//g;
