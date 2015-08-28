@@ -1609,6 +1609,9 @@ EOT
 
     // Note: multiple versions of push()
     public pObject push(pObject v) {
+        if (v.is_array()) {
+            return this.push( (pArray)v );
+        }
         this.a.add(v.scalar());
         return this.length_of_array();
     }
