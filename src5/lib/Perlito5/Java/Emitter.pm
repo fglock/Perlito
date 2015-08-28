@@ -2967,20 +2967,18 @@ package Perlito5::AST::Apply;
 
             if (ref($fun) eq 'Perlito5::AST::Block') {
                 # the sort function is optional
-                $fun =
-                      'function (p5want) {' . "\n"
-                    . Perlito5::Java::tab($level+1) . (Perlito5::Java::LexicalBlock->new( block => $fun->{stmts} ))->emit_java( $level + 1, $wantarray ) . "\n"
-                    . Perlito5::Java::tab($level) . '}'
+                $fun = $fun->{stmts};
             }
             else {
-                $fun = 'null';
+                die "TODO: sort without block not implemented yet";
             }
             $list = Perlito5::Java::to_list(\@in);
 
-            'p5sort(' . Perlito5::Java::pkg() . ', '
-                    .   $fun . ', '
-                    .   $list
-                    . ')';
+            my $sub = Perlito5::AST::Sub->new( block => Perlito5::AST::Block->new( stmts => $fun ) );
+
+            'PerlOp.sort(' . $sub->emit_java( $level + 1 ) . ', '
+                . $list . ', '
+                . Perlito5::Java::to_context($wantarray) . ')';
         },
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;

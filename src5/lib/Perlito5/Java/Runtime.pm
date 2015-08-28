@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -181,6 +183,17 @@ class pCORE {
             //Handle exception
         }
         return new pDouble(s / 1000.0);
+    }
+}
+class PerlCompare implements Comparator<pObject> {
+    public pClosure sorter;
+    public PerlCompare (pClosure sorter) {
+        this.sorter = sorter;
+    }
+    public int compare (pObject a, pObject b) {
+        pV.set("main|v_a", a);
+        pV.set("main|v_b", b);
+        return this.sorter.apply( pCx.SCALAR, new pArray() ).to_int();
     }
 }
 class PerlOp {
@@ -345,6 +358,17 @@ class PerlOp {
             ret.push(c.apply(pCx.LIST, new pArray()));
         }
         pV.set("main|v__", underline);
+        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+    }
+    public static final pObject sort(pClosure c, pArray a, int wantarray) {
+        pArray ret = new pArray(a);
+        int size = a.to_int();
+        PerlCompare comp = new PerlCompare(c);
+        pObject sort_a = pV.get("main|v_a");
+        pObject sort_b = pV.get("main|v_b");
+        Collections.sort(ret.a, comp);
+        pV.set("main|v_a", sort_a);
+        pV.set("main|v_b", sort_b);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final pObject match(pObject s, pRegex pat, int want) {
@@ -1304,6 +1328,10 @@ EOT
 class pArray extends pObject {
     public ArrayList<pObject> a;
     public int each_iterator;
+    public pArray( ArrayList<pObject> a ) {
+        this.each_iterator = 0;
+        this.a = a;
+    }
     public pArray() {
         this.each_iterator = 0;
         this.a = new ArrayList<pObject>();
