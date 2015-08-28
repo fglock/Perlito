@@ -2913,12 +2913,11 @@ package Perlito5::AST::Apply;
                 $fun = [$fun];
             }
 
-            'p5map(' . Perlito5::Java::pkg() . ', '
-                    . 'function (p5want) {' . "\n"
-                    . Perlito5::Java::tab($level+1) . (Perlito5::Java::LexicalBlock->new( block => $fun ))->emit_java( $level + 1, $wantarray ) . "\n"
-                    . Perlito5::Java::tab($level) . '}, '
-                    .   $list
-                    . ')';
+            my $sub = Perlito5::AST::Sub->new( block => Perlito5::AST::Block->new( stmts => $fun ) );
+
+            'PerlOp.map(' . $sub->emit_java( $level + 1 ) . ', '
+                . $list . ', '
+                . Perlito5::Java::to_context($wantarray) . ')';
         },
         'grep' => sub {
             my ($self, $level, $wantarray) = @_;

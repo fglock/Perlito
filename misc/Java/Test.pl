@@ -9,7 +9,7 @@
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
 
-print "1..76\n";
+print "1..78\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -406,14 +406,24 @@ print 'not ' unless join( ',', @a ) eq 'ryba,lufa,ryba,lufa';
 say "ok 74 - long list replication in list context: [ @a ]";
 
 @a = ( qw/ryba lufa ryba/ );
-my $x = grep { $_ eq 'ryba' } @a;
+$x = grep { $_ eq 'ryba' } @a;
 print 'not ' unless $x == 2;
 say "ok 75 - simple grep {eq} in scalar context works: [ @a ]";
 
 @a = ( qw/ryba lufa ryba koza/ );
-my $x = grep { $_ =~ /[bz]a$/ } @a;
+$x = grep { $_ =~ /[bz]a$/ } @a;
 print 'not ' unless $x == 3;
 say "ok 76 - simple grep {=~} in scalar context works: [ @a ]";
+
+@a = ( qw/ryba lufa ryba/ );
+@y = grep { $_ eq 'ryba' } @a;
+print 'not ' unless @y == 2 and $y[0] eq 'ryba' and $y[1] eq 'ryba';
+say "ok 77 - simple grep {eq} in list context works: [ @a => @y ]";
+
+@a = ( qw/ryb luf ryb/ );
+@y = map { $_ . 'a' } @a;
+print 'not ' unless @y == 3 and $y[0] eq 'ryba' and $y[1] eq 'lufa';
+say "ok 78 - simple map {.} in list context works: [ @a => @y ]";
 
 # TODO - range not yet implemented
 # my @yarr = 1..4;

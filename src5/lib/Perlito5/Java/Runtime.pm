@@ -336,6 +336,17 @@ class PerlOp {
         pV.set("main|v__", underline);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
+    public static final pObject map(pClosure c, pArray a, int wantarray) {
+        pArray ret = new pArray();
+        int size = a.to_int();
+        pObject underline = pV.get("main|v__");
+        for (int i = 0; i < size; i++) {
+            pV.set("main|v__", a.aget(i));
+            ret.push(c.apply(pCx.SCALAR, new pArray()));
+        }
+        pV.set("main|v__", underline);
+        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+    }
     public static final pObject match(pObject s, pRegex pat, int want) {
         if (want != pCx.LIST) {
             return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
