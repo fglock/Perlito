@@ -93,10 +93,20 @@ class pReturnException  extends pControlException {
         this.ret = ret;
     }
 }
+
+class pContext {
+}
+class pContextVoid extends pContext {
+}
+class pContextScalar extends pContext {
+}
+class pContextList extends pContext {
+}
+
 class pCx {
-    public static final int     VOID   = 0;
-    public static final int     SCALAR = 1;
-    public static final int     LIST   = 2;
+    public static final pContextVoid    VOID   = new pContextVoid();
+    public static final pContextScalar  SCALAR = new pContextScalar();
+    public static final pContextList    LIST   = new pContextList();
     public static final pUndef  UNDEF  = new pUndef();
     public static final pBool   TRUE   = new pBool(true);
     public static final pBool   FALSE  = new pBool(false);
@@ -108,14 +118,14 @@ EOT
     . <<'EOT'
 }
 class pCORE {
-    public static final pObject print(int want, pObject filehandle, pArray List__) {
+    public static final pObject print(pContext want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).to_string());
         }
         return new pInt(1);
     }
-    public static final pObject say(int want, pObject filehandle, pArray List__) {
+    public static final pObject say(pContext want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).to_string());
@@ -127,7 +137,7 @@ class pCORE {
         // say() shortcut
         return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
     }
-    public static final pObject die(int want, pArray List__) {
+    public static final pObject die(pContext want, pArray List__) {
         for (int i = 0; i < List__.to_int(); i++) {
             System.err.print(List__.aget(i).to_string());
         }
@@ -138,25 +148,25 @@ class pCORE {
         // die() shortcut
         return pCORE.die(pCx.VOID, new pArray(new pString(s)));
     }
-    public static final pObject ref(int want, pArray List__) {
+    public static final pObject ref(pContext want, pArray List__) {
         return List__.aget(0).ref();
     }
-    public static final pObject values(int want, pObject List__) {
+    public static final pObject values(pContext want, pObject List__) {
         return want == pCx.LIST ? List__.values() : List__.values().scalar();
     }
-    public static final pObject keys(int want, pObject List__) {
+    public static final pObject keys(pContext want, pObject List__) {
         return want == pCx.LIST ? List__.keys() : List__.keys().scalar();
     }
-    public static final pObject each(int want, pObject List__) {
+    public static final pObject each(pContext want, pObject List__) {
         return want == pCx.LIST ? List__.each() : List__.each().aget(0);
     }
-    public static final pObject scalar(int want, pArray List__) {
+    public static final pObject scalar(pContext want, pArray List__) {
         if (List__.to_int() == 0) {
             return pCx.UNDEF;
         }
         return List__.aget(-1).scalar();
     }
-    public static final pObject join(int want, pArray List__) {
+    public static final pObject join(pContext want, pArray List__) {
         String s = List__.shift().to_string();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
@@ -170,10 +180,10 @@ class pCORE {
         }
         return new pString(sb.toString());
     }
-    public static final pObject time(int want, pArray List__) {
+    public static final pObject time(pContext want, pArray List__) {
         return new pDouble( System.currentTimeMillis() * 0.001 );
     }
-    public static final pObject sleep(int want, pArray List__) {
+    public static final pObject sleep(pContext want, pArray List__) {
         long s = (new Double(List__.shift().to_double() * 1000)).longValue();
         try {
             TimeUnit.MILLISECONDS.sleep(s);
@@ -196,17 +206,21 @@ class PerlOp {
 
     // context()
     //      - handles run-time scalar/list/void context in expression results
-    public static final pObject context(int want, pObject arg) {
-        if (want == pCx.LIST) {
-            return arg;
-        }
+    public static final pObject context(pContext want, pObject arg) {
         return arg.scalar();
     }
-    public static final pObject context(int want) {
-        if (want == pCx.LIST) {
-            return new pArray();
-        }
+    public static final pObject context(pContextList want, pObject arg) {
+        return arg;
+    }
+    public static final pArray context(pContextList want, pArray arg) {
+        return arg;
+    }
+
+    public static final pObject context(pContext want) {
         return pCx.UNDEF;
+    }
+    public static final pObject context(pContextList want) {
+        return new pArray();
     }
 
     // statement()
@@ -310,7 +324,7 @@ class PerlOp {
             return new pString(sb.toString());
         }
     }
-    public static final pObject list_replicate(pArray o, pObject c, int wantarray) {
+    public static final pObject list_replicate(pArray o, pObject c, pContext wantarray) {
         int count = c.to_int();
         pArray a = new pArray();
         if (count > 0) {
@@ -320,7 +334,7 @@ class PerlOp {
         }
         return (wantarray == pCx.LIST ) ? a : a.length_of_array();
     }
-    public static final pObject grep(pClosure c, pArray a, int wantarray) {
+    public static final pObject grep(pClosure c, pArray a, pContext wantarray) {
         pArray ret = new pArray();
         int size = a.to_int();
         pObject underline = pV.get("main|v__");
@@ -336,7 +350,7 @@ class PerlOp {
         pV.set("main|v__", underline);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject map(pClosure c, pArray a, int wantarray) {
+    public static final pObject map(pClosure c, pArray a, pContext wantarray) {
         pArray ret = new pArray();
         int size = a.to_int();
         pObject underline = pV.get("main|v__");
@@ -347,29 +361,29 @@ class PerlOp {
         pV.set("main|v__", underline);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject match(pObject s, pRegex pat, int want) {
+    public static final pObject match(pObject s, pRegex pat, pContext want) {
         if (want != pCx.LIST) {
             return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
         }
         pCORE.die("not implemented string match in list context");
         return s;
     }
-    public static final pObject match(pObject s, pLvalue pat, int want) {
+    public static final pObject match(pObject s, pLvalue pat, pContext want) {
         return match(s, pat.get(), want);
     }
-    public static final pObject match(pObject s, pObject pat, int want) {
+    public static final pObject match(pObject s, pObject pat, pContext want) {
         // TODO - cache the compiled pattern
         return match(s, new pRegex(pat, 0), want);
     }
 
-    public static final pObject replace(pObject s, pRegex pat, pObject rep, int want) {
-        if (want == 0) {
+    public static final pObject replace(pObject s, pRegex pat, pObject rep, pContext want) {
+        if (want != pCx.LIST) {
             return new pString(pat.p.matcher(s.to_string()).replaceAll(rep.to_string()));
         }
         pCORE.die("not implemented string replace in list context");
         return s;
     }
-    public static final pObject replace(pObject s, pObject pat, pObject rep, int want) {
+    public static final pObject replace(pObject s, pObject pat, pObject rep, pContext want) {
         // TODO - cache the compiled pattern
         return replace(s, new pRegex(pat, 0), rep, want);
     }
@@ -458,7 +472,7 @@ EOT
     public boolean is_undef() {
         return false;
     }
-    public pObject apply(int want, pArray List__) {
+    public pObject apply(pContext want, pArray List__) {
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
         pCORE.die("subroutine call error");
@@ -862,7 +876,7 @@ class pClosure extends pReference {
         this.env = env;
     }
     // Note: apply() is inherited from pObject
-    public pObject apply(int want, pArray List__) {
+    public pObject apply(pContext want, pArray List__) {
         pCORE.die("it looks like you have a closure without a block");
         return this;
     }
@@ -1156,7 +1170,7 @@ class pLvalue extends pObject {
         }
         return pCORE.die("Not a HASH reference");
     }
-    public pObject apply(int want, pArray List__) {
+    public pObject apply(pContext want, pArray List__) {
         return this.o.apply(want, List__);
     }
 
@@ -2100,7 +2114,7 @@ EOT
 class pUndef extends pObject {
     public pUndef() {
     }
-    public pObject apply(int want, pArray List__) {
+    public pObject apply(pContext want, pArray List__) {
         // $a->()
         pCORE.die("Can't use an undefined value as a subroutine reference");
         return this;
