@@ -183,8 +183,8 @@ class pCORE {
         return new pDouble(s / 1000.0);
     }
 }
-class pOp {
-    // pOp implements operators: && || 
+class PerlOp {
+    // PerlOp implements operators: && || 
     //      and auxiliary functions
     //
     // note: '+' add() and '-' sub() are pObject methods, not implemented here.
@@ -2446,7 +2446,7 @@ class pString extends pObject {
             case '5': case '6': case '7': case '8': case '9':
                 return this.add(new pInt(1));
         }
-        return new pString(pOp.string_increment(this.s));
+        return new pString(PerlOp.string_increment(this.s));
     }
     public pObject neg() {
         final int length = s.length();

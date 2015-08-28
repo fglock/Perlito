@@ -439,7 +439,7 @@ package Perlito5::Java;
         return $items->[0]->emit_java($level, $wantarray)
             if @$items == 1 && is_scalar($items->[0]);
 
-        'pOp.context(want, ' 
+        'PerlOp.context(want, ' 
             .   join(', ', map( $_->emit_java($level, $wantarray), @$items ))
             . ')'
     }
@@ -625,7 +625,7 @@ package Perlito5::Java::LexicalBlock;
                     && !( $decl->{code} eq 'infix:<=>' || $decl->{code} eq 'print' || $decl->{code} eq 'say' ) )
                 {
                     # workaround for "Error: not a statement"
-                    push @str, 'pOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
+                    push @str, 'PerlOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
                 }
                 else {
                     push @str, $decl->emit_java( $level, 'void' ) . ';';
@@ -658,12 +658,12 @@ package Perlito5::Java::LexicalBlock;
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
-                push @str, 'return (pOp.context(want));'; 
+                push @str, 'return (PerlOp.context(want));'; 
             }
             else {
                 if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
                     if (!@{$last_statement->{arguments}}) {
-                        push @str, 'return (pOp.context(want));'; 
+                        push @str, 'return (PerlOp.context(want));'; 
                     }
                     else {
                         push @str, 'return ('
@@ -1832,7 +1832,7 @@ package Perlito5::AST::Apply;
                         );
                 $modifier =~ s/e//g;
             }
-            $str = 'pOp.replace('
+            $str = 'PerlOp.replace('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $replace, $modifier, $level ) . ', '
                     . $replace->emit_java() . ', '
@@ -1840,7 +1840,7 @@ package Perlito5::AST::Apply;
                   . ")";
         }
         elsif ($code eq 'p5:m') {
-            $str = 'pOp.match('
+            $str = 'PerlOp.match('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $regex_args->[0], $regex_args->[1], $level ) . ', '
                     . Perlito5::Java::to_context($wantarray)
@@ -2119,9 +2119,9 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
             }
             # and1(x) ? y : and3()
-            'pOp.and1('
+            'PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PerlOp.and3()'
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2131,9 +2131,9 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pCx.UNDEF';
             }
             # and1(x) ? y : and3()
-            'pOp.and1('
+            'PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : pOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PerlOp.and3()'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2143,8 +2143,8 @@ package Perlito5::AST::Apply;
                 . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
             }
             # or1(x) ? or2() : y
-            'pOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
+            'PerlOp.or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'infix:<or>' => sub {
@@ -2155,8 +2155,8 @@ package Perlito5::AST::Apply;
                 . ' pCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
             }
             # or1(x) ? or2() : y
-            'pOp.or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.or2() : '
+            'PerlOp.or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'infix:<xor>' => sub {
@@ -2349,13 +2349,13 @@ package Perlito5::AST::Apply;
             {
                 # ($v) x $i
                 # qw( 1 2 3 ) x $i
-                return 'pOp.list_replicate('
+                return 'PerlOp.list_replicate('
                            . Perlito5::Java::to_list( [$self->{arguments}->[0] ], $level) . ', '
                            . Perlito5::Java::to_num($self->{arguments}->[1], $level) . ', '
                            . Perlito5::Java::to_context($wantarray)
                         . ')'
             }
-            'pOp.string_replicate('
+            'PerlOp.string_replicate('
                            . Perlito5::Java::to_str($self->{arguments}->[0], $level) . ','
                            . Perlito5::Java::to_num($self->{arguments}->[1], $level) . ')'
         },
@@ -2370,7 +2370,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<..>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'pOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
+            return 'PerlOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
                               . $self->{arguments}->[1]->emit_java($level) . ', '
                               . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
@@ -2379,7 +2379,7 @@ package Perlito5::AST::Apply;
         },
         'infix:<...>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'pOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
+            return 'PerlOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
                               . $self->{arguments}->[1]->emit_java($level) . ', '
                               . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
@@ -2443,21 +2443,21 @@ package Perlito5::AST::Apply;
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of my($x,$y)
-            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'our' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of our($x,$y)
-            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'local' => sub {
             my ($self, $level, $wantarray) = @_;
             # 'local ($x, $y[10])'
-            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'circumfix:<( )>' => sub {
             my ($self, $level, $wantarray) = @_;
-            'pOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
         'infix:<=>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2506,29 +2506,29 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             # TODO - label_id
-            'pOp.next(' . 123 . ')';
+            'PerlOp.next(' . 123 . ')';
         },
         'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             # TODO - label_id
-            'pOp.last(' . 123 . ')';
+            'PerlOp.last(' . 123 . ')';
         },
         'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label =  $self->{arguments}[0]{code} || "";
             # TODO - label_id
-            'pOp.redo(' . 123 . ')';
+            'PerlOp.redo(' . 123 . ')';
         },
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             if ( ! @{ $self->{arguments} } ) {
-                return 'pOp.ret(pOp.context(want))';
+                return 'PerlOp.ret(PerlOp.context(want))';
             }
-            'pOp.ret('
+            'PerlOp.ret('
                 . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
         },
         'goto' => sub {
@@ -2988,8 +2988,8 @@ package Perlito5::AST::Apply;
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
             # defined_or1(x) ? defined_or2() : y
-            'pOp.defined_or1('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? pOp.defined_or2() : '
+            'PerlOp.defined_or1('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.defined_or2() : '
                 . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
         },
         'exists' => sub {
