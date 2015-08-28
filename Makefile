@@ -161,6 +161,9 @@ test-5js ::
 test-5java ::
 	prove -r -e 'perl run_java_test.pl' t5
 
+test-5javaunit ::
+	prove -r -e 'perl run_java_test.pl' t5/unit
+
 boot-5to5 ::
 	time perl perlito5.pl --bootstrapping -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
 
