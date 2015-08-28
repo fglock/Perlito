@@ -320,17 +320,6 @@ class PerlOp {
         }
         return (wantarray == pCx.LIST ) ? a : a.length_of_array();
     }
-    public static final pObject list_replicate(pObject o, pObject c, int wantarray) {
-        int count = c.to_int();
-        pArray a = new pArray();
-        if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                a.push( o );
-            }
-        }
-        return (wantarray == pCx.LIST ) ? a : a.length_of_array();
-    }
-
     public static final pObject match(pObject s, pRegex pat, int want) {
         if (want == 0) {
             return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
