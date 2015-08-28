@@ -356,7 +356,7 @@ class PerlOp {
         pObject underline = pV.get("main|v__");
         for (int i = 0; i < size; i++) {
             pV.set("main|v__", a.aget(i));
-            ret.push(c.apply(pCx.SCALAR, new pArray()));
+            ret.push(c.apply(pCx.LIST, new pArray()));
         }
         pV.set("main|v__", underline);
         return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
