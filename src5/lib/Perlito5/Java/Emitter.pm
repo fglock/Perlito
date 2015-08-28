@@ -1797,6 +1797,7 @@ package Perlito5::AST::Apply;
             ( $flags{'m'} ? 'Pattern.MULTILINE'        : () ),
             ( $flags{'s'} ? 'Pattern.DOTALL'           : () ),
         ) || '0';
+
         my $s = 'new pRegex(' . Perlito5::Java::to_str( $regex ) . ', ' . $flag_string . ')';
         if ( ref( $regex ) eq "Perlito5::AST::Buf" ) {
             # precompile regex
@@ -1834,7 +1835,7 @@ package Perlito5::AST::Apply;
             }
             $str = 'PerlOp.replace('
                     . $var->emit_java() . ', '
-                    . emit_qr_java( $replace, $modifier, $level ) . ', '
+                    . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . $replace->emit_java() . ', '
                     . Perlito5::Java::to_context($wantarray)
                   . ")";
