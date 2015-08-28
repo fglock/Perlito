@@ -8,7 +8,12 @@
 #   one liner:
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
+<<<<<<< HEAD
 print "1..81\n";
+=======
+
+print "1..80\n";
+>>>>>>> Perlito5 - java - Added more tests for map
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -424,10 +429,25 @@ say "ok 77 - simple grep {eq} in list context works: [ @a => @y ]";
 print 'not ' unless @y == 3 and $y[0] eq 'ryba' and $y[1] eq 'lufa';
 say "ok 78 - simple map {.} in list context works: [ @a => @y ]";
 
+@a = ( qw/ryb luf ryb/ );
+$x = map { $_ . 'a' } @a;
+print 'not ' unless $x == 3;
+say "ok 79 - simple map {.} in scalar context works: [ @a => @y ]";
+
+@a = ( qw/ryb luf ryb/ );
+@y = map { $_ =~ /^ry/ ? $_ . 'a' : () } @a;
+print 'not ' unless @y == 2 and $y[0] eq 'ryba' and $y[1] eq 'ryba';
+say "ok 80 - map { ? . : () } in list context works: [ @a => @y ]";
+
+@a = ( qw/ryb luf ryb/ );
+$x = map { $_ =~ /^ry/ ? $_ . 'a' : () } @a;
+print 'not ' unless $x == 2;
+say "ok 80 - map { ? . : () } in scalar context works: [ @a => @y ]";
+
 my $val = '2015-08-28';
 $val =~ s/-//g;
 print 'not ' unless $val eq '20150828';
-say 'ok 81';
+say 'ok 82 - search-replace regex works';
 
 # TODO - range not yet implemented
 # my @yarr = 1..4;
