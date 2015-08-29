@@ -2806,9 +2806,11 @@ package Perlito5::AST::Apply;
         },
         'join' => sub {
             my ($self, $level, $wantarray) = @_;
-            my @in  = @{$self->{arguments}};
-            my $list = Perlito5::Java::to_list(\@in);
-            'pCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . $list . ')';
+            'pCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
+        'reverse' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'pCORE.reverse(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
         'values' => sub {
             my ($self, $level, $wantarray) = @_;

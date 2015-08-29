@@ -172,6 +172,18 @@ class pCORE {
         }
         return new pString(sb.toString());
     }
+    public static final pObject reverse(int want, pArray List__) {
+        if (want == pCx.LIST) {
+            pArray ret = new pArray(List__);
+            Collections.reverse(ret.a);
+            return ret;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < List__.to_int(); i++) {
+            sb.append( List__.aget(i).to_string() );
+        }
+        return new pString(sb.reverse().toString());
+    }
     public static final pObject time(int want, pArray List__) {
         return new pDouble( System.currentTimeMillis() * 0.001 );
     }
