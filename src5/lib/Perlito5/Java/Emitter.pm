@@ -558,16 +558,6 @@ package Perlito5::Java::LexicalBlock;
         return 0;
     }
 
-    sub emit_java_subroutine_body {
-        my ($self, $level, $wantarray) = @_;
-        $self->{top_level} = 1;
-        my $outer_throw = $Perlito5::THROW;
-        $Perlito5::THROW = 0;
-        my $s = $self->emit_java($level, $wantarray);
-        $Perlito5::THROW    = $outer_throw;
-        return $s;
-    }
-
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $original_level = $level;
@@ -662,18 +652,33 @@ package Perlito5::Java::LexicalBlock;
             }
             else {
                 if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-                    if (!@{$last_statement->{arguments}}) {
-                        push @str, 'return (PerlOp.context(want));'; 
+
+                    if ( $self->{top_level} ) {
+                        if (!@{$last_statement->{arguments}}) {
+                            push @str, 'return (PerlOp.context(want));'; 
+                        }
+                        else {
+                            push @str, 'return ('
+                                . ( $wantarray eq 'runtime'
+                                  ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                                  : $wantarray eq 'scalar'
+                                  ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
+                                  : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
+                                  )
+                            . ');';
+                        }
                     }
                     else {
-                        push @str, 'return ('
-                            . ( $wantarray eq 'runtime'
-                              ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
-                              : $wantarray eq 'scalar'
-                              ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
-                              : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
-                              )
-                        . ');';
+                        if (!@{$last_statement->{arguments}}) {
+                            $Perlito5::THROW = 1;
+                            push @str, 'return PerlOp.ret(PerlOp.context(want));'; 
+                        }
+                        else {
+                            $Perlito5::THROW = 1;
+                            push @str, 'return PerlOp.ret('
+                                . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
+                                . ');';
+                        }
                     }
                 }
                 elsif ( $has_local ) {
@@ -938,16 +943,6 @@ package Perlito5::AST::Block;
 
         return "// TODO - Perlito5::AST::Block\n"
                 . Perlito5::Java::tab($level + 2) .    $body->emit_java($level + 1, $wantarray) . "\n";
-
-        return 'p5for_lex('
-                . "function () {\n"
-                .                                             $init
-                . Perlito5::Java::tab($level + 2) .    $body->emit_java($level + 2, $wantarray) . "\n"
-                . Perlito5::Java::tab($level + 1) . '}, '
-                .   '[0], '
-                . $self->emit_java_continue($level, $wantarray) . ', '
-                . Perlito5::Java::escape_string($self->{label} || "") . "\n"
-                . Perlito5::Java::tab($level) . ')'
     }
     sub emit_java_continue {
         my $self = shift;
@@ -2532,8 +2527,7 @@ package Perlito5::AST::Apply;
             if ( ! @{ $self->{arguments} } ) {
                 return 'PerlOp.ret(PerlOp.context(want))';
             }
-            'PerlOp.ret('
-                . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
+            'PerlOp.ret(' . Perlito5::Java::to_runtime_context( $self->{arguments}, $level+1 ) . ')';
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2553,6 +2547,7 @@ package Perlito5::AST::Apply;
                     'invocant' => Perlito5::AST::Sub->new(
                         'block' => $arg,
                         'attributes' => [],
+                        _do_block => 1,
                     ),
                     'arguments' => [],
                 );
@@ -3629,8 +3624,18 @@ package Perlito5::AST::Sub;
             $i++;
         }
 
-        # TODO - access captured variables via this.env[index]
-        my $js_block = $block->emit_java_subroutine_body( $level + 3, 'runtime' );
+        my $js_block;
+        if (!$self->{_do_block}) {
+            $block->{top_level} = 1;
+            my $outer_throw = $Perlito5::THROW;
+            $Perlito5::THROW = 0;
+            $js_block = $block->emit_java( $level + 3, 'runtime' );
+            $Perlito5::THROW    = $outer_throw;
+        }
+        else {
+            # do-block
+            $js_block = $block->emit_java( $level + 3, $wantarray );
+        }
 
         my $s = Perlito5::Java::emit_wrap_java($level,
             "new pClosure($prototype, new pObject[]{ " . join(', ', @captures_java) . " } ) {",
