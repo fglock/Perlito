@@ -503,7 +503,7 @@ package Perlito5::Java;
     }
 
     sub emit_wrap_java {
-        my ($level, $wantarray, @argument) = @_;
+        my ($level, @argument) = @_;
         my $s;
         $s = shift @argument if !ref($argument[0]);
         return join("\n", ($s ? $s : ()),
@@ -536,7 +536,7 @@ package Perlito5::Java;
         if ($wantarray eq 'void') {
             return $argument;
         }
-        emit_wrap_java( $level, $wantarray, $argument )
+        emit_wrap_java( $level, $argument )
     }
 
 }
@@ -760,7 +760,7 @@ package Perlito5::AST::CompUnit;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+        return Perlito5::Java::emit_wrap_java($level, 
             Perlito5::Java::LexicalBlock->new( block => $self->{body} )->emit_java( $level + 1, $wantarray )
         );
     }
@@ -1043,7 +1043,7 @@ package Perlito5::AST::Index;
         {
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+            return Perlito5::Java::emit_wrap_java($level, 
                     'var a = [];',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . Perlito5::Java::to_list([$arguments], $level) . ";",
@@ -1076,7 +1076,7 @@ package Perlito5::AST::Index;
         {
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+            return Perlito5::Java::emit_wrap_java($level, 
                     'var a = [];',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . ";",
@@ -1214,7 +1214,7 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+            return Perlito5::Java::emit_wrap_java($level, 
                     'var a = [];',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . Perlito5::Java::to_list([$arguments], $level) . ";",
@@ -1252,7 +1252,7 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+            return Perlito5::Java::emit_wrap_java($level, 
                     'var a = [];',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . $v->emit_java($level) . ";",
@@ -1554,7 +1554,7 @@ package Perlito5::AST::Decl;
                 my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name, _decl => 'my' );
                 $var_set = $var->emit_java_set($tmp);
             }
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+            return Perlito5::Java::emit_wrap_java($level, 
                      'var v_' . $tmp_name . ' = ' . $var->emit_java . ';',
                      'p5LOCAL.push(function(){ ' . $var_set . ' });',
                      'return ' . $var->emit_java_set(
@@ -1849,7 +1849,7 @@ package Perlito5::AST::Apply;
                   . ")";
         }
         elsif ($code eq 'p5:tr') {
-            $str = Perlito5::Java::emit_wrap_java($level+1, $wantarray, 
+            $str = Perlito5::Java::emit_wrap_java($level+1, 
                 "var tmp = p5tr("
                     . $var->emit_java() . ', '
                     . $regex_args->[0]->emit_java() . ', '
@@ -2486,7 +2486,7 @@ package Perlito5::AST::Apply;
 
                 my $tmp  = Perlito5::Java::get_label();
                 my $tmp2 = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, $wantarray, 
+                return Perlito5::Java::emit_wrap_java($level, 
                             'var ' . $tmp  . ' = ' . Perlito5::Java::to_list([$arguments], $level+1) . ";",
                             'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);",
                             ( map $_->emit_java_set_list($level+1, $tmp) . ";",
@@ -2601,7 +2601,7 @@ package Perlito5::AST::Apply;
 
             my $context = Perlito5::Java::to_context($wantarray);
 
-            Perlito5::Java::emit_wrap_java($level, $wantarray,
+            Perlito5::Java::emit_wrap_java($level,
                 ( $context eq 'p5want'
                   ? ()
                   : "var p5want = " . $context . ";",
@@ -2837,7 +2837,7 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             if (ref($fun) ne 'Perlito5::AST::Apply') {
                 # doesn't look like STDERR or FILE; initialize the variable with a GLOB
-                return Perlito5::Java::emit_wrap_java($level, $wantarray,
+                return Perlito5::Java::emit_wrap_java($level,
                     $fun->emit_java( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);',
                     'return CORE.open(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')'
                 );
@@ -2851,7 +2851,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             # TODO - chomp assignment: chomp($answer = <STDIN>)
             my $v  = $self->{arguments}[0];
-            return Perlito5::Java::emit_wrap_java($level, $wantarray,
+            return Perlito5::Java::emit_wrap_java($level,
                 'var r = p5chomp(' . $v->emit_java( $level ) . ');',
                 $v->emit_java( $level ) . ' = r[1];',
                 'return r[0]',
@@ -2860,7 +2860,7 @@ package Perlito5::AST::Apply;
         'chop' => sub {
             my ($self, $level, $wantarray) = @_;
             my $v  = $self->{arguments}[0];
-            return Perlito5::Java::emit_wrap_java($level, $wantarray,
+            return Perlito5::Java::emit_wrap_java($level,
                 'var r = p5chop(' . $v->emit_java( $level ) . ');',
                 $v->emit_java( $level ) . ' = r[1];',
                 'return r[0]',
@@ -2873,7 +2873,7 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             my $scalar = shift(@in);
             my $length = shift(@in);
-            return Perlito5::Java::emit_wrap_java($level, $wantarray,
+            return Perlito5::Java::emit_wrap_java($level,
                 'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_java( $level ) . ', [' . $length->emit_java( $level ) . ']);',
                 $scalar->emit_java( $level ) . ' = r[1];',
                 'return r[0]',
@@ -3382,7 +3382,7 @@ package Perlito5::AST::If;
                   ? "return "
                   : ""
                   )
-                . Perlito5::Java::emit_wrap_java($level, $wantarray, @str);
+                . Perlito5::Java::emit_wrap_java($level, @str);
         }
         else {
             return join( "\n" . Perlito5::Java::tab($level), @str );
@@ -3453,7 +3453,7 @@ package Perlito5::AST::While;
         if (@str) {
             $level = $old_level;
             # create js scope for 'my' variables
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, @str);
+            return Perlito5::Java::emit_wrap_java($level, @str);
         }
         else {
             return join( "\n" . Perlito5::Java::tab($level), @str );
@@ -3508,7 +3508,7 @@ package Perlito5::AST::For;
                       ],
                 '}';
 
-            # push @str, Perlito5::Java::emit_wrap_java($level, $wantarray,
+            # push @str, Perlito5::Java::emit_wrap_java($level,
             #     'var label = ' . Perlito5::Java::escape_string(($self->{label} || "") ) . ';',
             #     'for ( '
             #         . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
@@ -3582,7 +3582,7 @@ package Perlito5::AST::For;
         if (@str > 1) {
             # $level = $old_level;
             # create js scope for 'my' variables
-            return Perlito5::Java::emit_wrap_java($level, $wantarray, @str);
+            return Perlito5::Java::emit_wrap_java($level, @str);
         }
         else {
             return join( "\n" . Perlito5::Java::tab($level), @str );
@@ -3630,7 +3630,7 @@ package Perlito5::AST::Sub;
         # TODO - access captured variables via this.env[index]
         my $js_block = $block->emit_java_subroutine_body( $level + 3, 'runtime' );
 
-        my $s = Perlito5::Java::emit_wrap_java($level, 'scalar', 
+        my $s = Perlito5::Java::emit_wrap_java($level,
             "new pClosure($prototype, new pObject[]{ " . join(', ', @captures_java) . " } ) {",
                 [ "public pObject apply(int want, pArray List__) {",
                     [ $js_block ],
