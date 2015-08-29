@@ -14246,7 +14246,7 @@ package Perlito5::AST::CompUnit;
 {
     sub Perlito5::AST::CompUnit::emit_java {
         my($self, $level, $wantarray) = @_;
-        return Perlito5::Java::emit_wrap_java($level, Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'})->emit_java($level + 1, $wantarray))
+        return Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'})->emit_java($level + 1, $wantarray)
     }
     sub Perlito5::AST::CompUnit::emit_java_program {
         my($comp_units, %options) = @_;
@@ -14281,14 +14281,14 @@ package Perlito5::AST::CompUnit;
                 }
             }
         }
-        my $main = '';
+        my @main;
         for my $comp_unit (@{$comp_units}) {
-            $main = $main . $comp_unit->emit_java($level + 1, $wantarray) . chr(10)
+            push(@main, $comp_unit->emit_java($level + 1, $wantarray))
         }
         if ($options{'expand_use'}) {
             $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
         }
-        $str .= Perlito5::Java::emit_wrap_java(-1, 'class Test {', ['public static void main(String[] args) throws Exception {', ['pEnv.init(args);', 'int want = pCx.VOID;', @Perlito5::Java::Java_init, $main], '}'], '}') . chr(10);
+        $str .= Perlito5::Java::emit_wrap_java(-1, 'class Test {', ['public static void main(String[] args) throws Exception {', ['pEnv.init(args);', 'int want = pCx.VOID;', @Perlito5::Java::Java_init, @main], '}'], '}') . chr(10);
         return $str
     }
     sub Perlito5::AST::CompUnit::emit_java_get_decl {
