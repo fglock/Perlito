@@ -847,26 +847,30 @@ package Perlito5::AST::CompUnit;
         }
 
 
-        my $init = "";
         my $main = "";
         for my $comp_unit ( @$comp_units ) {
             $main = $main . $comp_unit->emit_java($level + 1, $wantarray) . "\n";
         }
-        $init = join("\n", @Perlito5::Java::Java_init);
         if ($options{'expand_use'}) {
             $str .= Perlito5::Java::Runtime->emit_java(
                 java_classes => $Java_class,
                 java_constants => \@Perlito5::Java::Java_constants,
             );
         }
-        $str .= "class Test {\n"
-             .  "    public static void main(String[] args) throws Exception {\n"
-             .  "        pEnv.init(args);\n"
-             .  "        int want = pCx.VOID;\n"
-             .  "        $init\n"
-             .  "        $main\n"
-             .  "    }\n"
-             .  "}\n";
+
+        $str .= Perlito5::Java::emit_wrap_java(-1,
+             "class Test {",
+               [ "public static void main(String[] args) throws Exception {",
+                   [ "pEnv.init(args);",
+                     "int want = pCx.VOID;",
+                     @Perlito5::Java::Java_init,
+                     "$main",
+                   ],
+                 "}",
+               ],
+             "}",
+        ) . "\n";
+
         return $str;
     }
     sub emit_java_get_decl { () }
