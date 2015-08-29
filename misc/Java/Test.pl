@@ -8,7 +8,7 @@
 #   one liner:
 #   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
 #
-print "1..87\n";
+print "1..94\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -478,8 +478,17 @@ say 'ok 87 - range in list context works';
 
 my @yarr = 1..4;
 print 'not ' unless (shift @yarr) == 1;
-say "ok 75 - array shift: [ @yarr ]";
+say "ok 88 - array shift: [ @yarr ]";
 
+for (89..90) {
+    say "ok $_ - for loop with \$_";
+}
+for my $x (91..92) {
+    say "ok $x - for loop with lexical";
+}
+for $x_global (93..94) {
+    say "ok $x_global - for loop with global";
+}
 
 __END__
 

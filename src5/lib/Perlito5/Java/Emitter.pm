@@ -3474,7 +3474,7 @@ package Perlito5::AST::For;
 
         # extract declarations from 'cond'
         my @str;
-        my $old_level = $level;
+        # my $old_level = $level;
         # print Perlito5::Dumper::Dumper($self);
         # print Perlito5::Dumper::Dumper($self->{cond});
         my $cond = ref( $self->{cond} ) eq 'ARRAY'
@@ -3484,7 +3484,7 @@ package Perlito5::AST::For;
             if ($expr) {
                 my @var_decl = $expr->emit_java_get_decl();
                 for my $arg (@var_decl) {
-                    $level = $old_level + 1;
+                    # $level = $old_level + 1;
                     push @str, $arg->emit_java_init($level, $wantarray);
                 }
             }
@@ -3547,35 +3547,27 @@ package Perlito5::AST::For;
             my $namespace = $v->{namespace} || $v->{_namespace} || $Perlito5::PKG_NAME;
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
-                my $sig = $v->emit_java( $level + 1 );
                 push @str,
-                        'p5for_lex('
-                        . "function ($sig) {\n"
-                        . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
-                        . Perlito5::Java::tab($level + 1) . '}, '
-                        .   $cond . ', '
-                        . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
-                        . Perlito5::Java::escape_string($self->{label} || "")
-                        . ')';
+                        'for (pObject item : ' . $cond . '.a) {',
+                          [ $v->emit_java($level + 1) . ".set(item);",
+                            (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
+                          ],
+                        '}';
             }
             else {
                 # use global variable or $_
+                # TODO - localize variable
                 push @str,
-                       'p5for(' 
-                        . 'p5make_package(' . Perlito5::Java::escape_string($namespace ) . '), '
-                        . '"v_' . $v->{name} . '", '
-                        . 'function () {' . "\n"
-                        . Perlito5::Java::tab($level + 2) .  (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
-                        . Perlito5::Java::tab($level + 1) . '}, '
-                        .   $cond . ', '
-                        . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
-                        . Perlito5::Java::escape_string($self->{label} || "")
-                        . ')'
+                        'for (pObject item : ' . $cond . '.a) {',
+                          [ $v->emit_java($level + 1) . ".set(item);",
+                            (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
+                          ],
+                        '}';
             }
         }
 
         if (@str > 1) {
-            $level = $old_level;
+            # $level = $old_level;
             # create js scope for 'my' variables
             return Perlito5::Java::emit_wrap_java($level, $wantarray, @str);
         }

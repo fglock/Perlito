@@ -15957,13 +15957,11 @@ package Perlito5::AST::For;
         my($self, $level, $wantarray) = @_;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
         my @str;
-        my $old_level = $level;
         my $cond = ref($self->{'cond'}) eq 'ARRAY' ? $self->{'cond'} : [$self->{'cond'}];
         for my $expr (@{$cond}, $self->{'topic'}) {
             if ($expr) {
                 my @var_decl = $expr->emit_java_get_decl();
                 for my $arg (@var_decl) {
-                    $level = $old_level + 1;
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
             }
@@ -15986,15 +15984,13 @@ package Perlito5::AST::For;
             my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
-                my $sig = $v->emit_java($level + 1);
-                push(@str, 'p5for_lex(' . 'function (' . $sig . ') {' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', ' . Perlito5::Java::escape_string($self->{'label'} || '') . ')')
+                push(@str, 'for (pObject item : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(item);', (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray)], '}')
             }
             else {
-                push(@str, 'p5for(' . 'p5make_package(' . Perlito5::Java::escape_string($namespace) . '), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', ' . Perlito5::Java::escape_string($self->{'label'} || '') . ')')
+                push(@str, 'for (pObject item : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(item);', (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray)], '}')
             }
         }
         if (@str > 1) {
-            $level = $old_level;
             return Perlito5::Java::emit_wrap_java($level, $wantarray, @str)
         }
         else {
