@@ -492,6 +492,7 @@ for $x_global (93..94) {
 for  (my $x = 95; $x < 97; $x++) {
     say "ok $x - C-style for loop";
 }
+say "ok $_ - for statement modifier" for 97..98;
 
 __END__
 
