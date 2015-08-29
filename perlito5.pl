@@ -14686,7 +14686,7 @@ package Perlito5::AST::Var;
         my($self, $level, $list) = @_;
         my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
         if ($sigil eq '$') {
-            return $self->emit_java() . ' = ' . $list . '.shift()'
+            return $self->emit_java() . '.set(' . $list . '.shift())'
         }
         if ($sigil eq '@') {
             return join(';' . chr(10) . Perlito5::Java::tab($level), $self->emit_java() . ' = ' . $list, $list . ' = []')
@@ -15321,11 +15321,11 @@ package Perlito5::AST::Apply;
         if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
             if ($wantarray eq 'void') {
                 my $tmp = Perlito5::Java::get_label();
-                return join(';' . chr(10) . Perlito5::Java::tab($level), 'var ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
+                return join(';' . chr(10) . Perlito5::Java::tab($level), 'pArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
             }
             my $tmp = Perlito5::Java::get_label();
             my $tmp2 = Perlito5::Java::get_label();
-            return Perlito5::Java::emit_wrap_java($level, 'var ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1) . ';', 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0);', (map($_->emit_java_set_list($level + 1, $tmp) . ';', @{$parameters->arguments()})), 'return ' . $tmp2)
+            return Perlito5::Java::emit_wrap_java($level, 'pArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1) . ';', 'pArray ' . $tmp2 . ' = ' . $tmp . '.slice(0);', (map($_->emit_java_set_list($level + 1, $tmp) . ';', @{$parameters->arguments()})), 'return ' . $tmp2)
         }
         return $parameters->emit_java_set($arguments, $level + 1, $wantarray)
     }, 'break' => sub {
