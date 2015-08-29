@@ -14290,7 +14290,7 @@ package Perlito5::AST::CompUnit;
         if ($options{'expand_use'}) {
             $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
         }
-        $str .= 'class Test {' . chr(10) . '    public static void main(String[] args) throws Exception {' . chr(10) . '        pEnv.init(args);' . chr(10) . '        ' . $init . chr(10) . '        ' . $main . chr(10) . '    }' . chr(10) . '}' . chr(10);
+        $str .= 'class Test {' . chr(10) . '    public static void main(String[] args) throws Exception {' . chr(10) . '        pEnv.init(args);' . chr(10) . '        int want = pCx.VOID;' . chr(10) . '        ' . $init . chr(10) . '        ' . $main . chr(10) . '    }' . chr(10) . '}' . chr(10);
         return $str
     }
     sub Perlito5::AST::CompUnit::emit_java_get_decl {
