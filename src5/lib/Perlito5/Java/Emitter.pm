@@ -3495,39 +3495,51 @@ package Perlito5::AST::For;
             # C-style for
             # TODO - loop label
             # TODO - make continue-block a syntax error
-            push @str, Perlito5::Java::emit_wrap_java($level, $wantarray,
-                'var label = ' . Perlito5::Java::escape_string(($self->{label} || "") ) . ';',
+            push @str,
                 'for ( '
                     . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[1] ? Perlito5::Java::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[2] ? $self->{cond}[2]->emit_java($level + 1) . ' '   : ''  )
                   . ') {',
-                  [ 'var _redo = true;',
-                    'while(_redo) {',
-                      [ '_redo = false;',
-                        'try {',
-                          [
-                            Perlito5::Java::LexicalBlock->new( block => $body )->emit_java($level + 4, $wantarray),
-                          ],
-                        '}',
-                        'catch(err) {',
-                          [ 'if (err instanceof p5_error && (err.v == label || err.v == \'\')) {',
-                              [ 'if (err.type == \'last\') { return }',
-                                'else if (err.type == \'redo\') { _redo = true }',
-                                'else if (err.type != \'next\') { throw(err) }',
-                              ],
-                            '}',
-                            'else {',
-                              [ 'throw(err)',
-                              ],
-                            '}',
-                          ],
-                        '}',
+                      [
+                        # $v->emit_java($level + 1) . ".set(item);",
+                        (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
                       ],
-                    '}',
-                  ],
-                '}',
-            );
+                '}';
+
+            # push @str, Perlito5::Java::emit_wrap_java($level, $wantarray,
+            #     'var label = ' . Perlito5::Java::escape_string(($self->{label} || "") ) . ';',
+            #     'for ( '
+            #         . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
+            #         . ( $self->{cond}[1] ? Perlito5::Java::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
+            #         . ( $self->{cond}[2] ? $self->{cond}[2]->emit_java($level + 1) . ' '   : ''  )
+            #       . ') {',
+            #       [ 'var _redo = true;',
+            #         'while(_redo) {',
+            #           [ '_redo = false;',
+            #             'try {',
+            #               [
+            #                 Perlito5::Java::LexicalBlock->new( block => $body )->emit_java($level + 4, $wantarray),
+            #               ],
+            #             '}',
+            #             'catch(err) {',
+            #               [ 'if (err instanceof p5_error && (err.v == label || err.v == \'\')) {',
+            #                   [ 'if (err.type == \'last\') { return }',
+            #                     'else if (err.type == \'redo\') { _redo = true }',
+            #                     'else if (err.type != \'next\') { throw(err) }',
+            #                   ],
+            #                 '}',
+            #                 'else {',
+            #                   [ 'throw(err)',
+            #                   ],
+            #                 '}',
+            #               ],
+            #             '}',
+            #           ],
+            #         '}',
+            #       ],
+            #     '}',
+            # );
         }
         else {
 

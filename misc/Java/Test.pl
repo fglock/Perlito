@@ -489,6 +489,9 @@ for my $x (91..92) {
 for $x_global (93..94) {
     say "ok $x_global - for loop with global";
 }
+for  (my $x = 95; $x < 97; $x++) {
+    say "ok $x - C-style for loop";
+}
 
 __END__
 
