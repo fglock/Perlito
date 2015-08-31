@@ -701,7 +701,7 @@ EOT
     public boolean is_array() {
         return false;
     }
-    public boolean is_scalar() {
+    public boolean is_lvalue() {
         return false;
     }
     public boolean is_scalarref() {
@@ -1300,7 +1300,7 @@ EOT
     public boolean is_undef() {
         return this.o.is_undef();
     }
-    public boolean is_scalar() {
+    public boolean is_lvalue() {
         return true;
     }
 
@@ -1939,7 +1939,7 @@ class pHash extends pObject {
             this.h.put(i.to_string(), a);
             return a;
         }
-        else if (o.is_scalar()) {
+        else if (o.is_lvalue()) {
             return o;
         }
         pLvalue a = new pLvalue(o);
@@ -1953,7 +1953,7 @@ class pHash extends pObject {
             this.h.put(i, a);
             return a;
         }
-        else if (o.is_scalar()) {
+        else if (o.is_lvalue()) {
             return o;
         }
         pLvalue a = new pLvalue(o);
