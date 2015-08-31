@@ -57,6 +57,13 @@ token term_map_or_grep {
 #         @contact = sort(find_records @key);
 #         @contact = sort(find_records (@key));
 
+token non_core_ident {
+     <Perlito5::Grammar::full_ident>
+     {
+         my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
+         return if $Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name};
+     }
+};
 
 token term_sort {
     # Note: this is sort-block; sort-expr is parsed as a normal subroutine
@@ -65,11 +72,10 @@ token term_sort {
         '(' <.Perlito5::Grammar::Space::opt_ws>
         [
             # sort '(' <opt_ws> SUBNAME <ws> LIST ')'
-            <Perlito5::Grammar::full_ident>
+            <Perlito5::Grammar::Map::non_core_ident>
             <.Perlito5::Grammar::Space::ws>      # must have space
             {
-                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
-                return if $Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name};
+                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Map::non_core_ident"});  # TODO - split namespace
                 $MATCH->{_tmp} = $name;
             }
         |
@@ -108,10 +114,9 @@ token term_sort {
             }
         |
             # sort SUBNAME LIST
-            <Perlito5::Grammar::full_ident>
+            <Perlito5::Grammar::Map::non_core_ident>
             {
-                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
-                return if $Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name};
+                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Map::non_core_ident"});  # TODO - split namespace
                 $MATCH->{_tmp} = $name; 
             }
         |

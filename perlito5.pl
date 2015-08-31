@@ -5963,6 +5963,28 @@ sub Perlito5::Grammar::Map::term_map_or_grep {
     })));
     $tmp ? $MATCH : 0
 }
+sub Perlito5::Grammar::Map::non_core_ident {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+    my $tmp = (((do {
+        my $m2 = Perlito5::Grammar::full_ident($str, $MATCH->{'to'});
+        if ($m2) {
+            $MATCH->{'to'} = $m2->{'to'};
+            $MATCH->{'Perlito5::Grammar::full_ident'} = $m2;
+            1
+        }
+        else {
+            0
+        }
+    }) && (do {
+        $MATCH->{'str'} = $str;
+        my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
+        ($Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name}) && return ;
+        1
+    })));
+    $tmp ? $MATCH : 0
+}
 sub Perlito5::Grammar::Map::term_sort {
     my $str = $_[0];
     my $pos = $_[1];
@@ -5992,10 +6014,10 @@ sub Perlito5::Grammar::Map::term_sort {
                 my $pos1 = $MATCH->{'to'};
                 (do {
                     ((do {
-                        my $m2 = Perlito5::Grammar::full_ident($str, $MATCH->{'to'});
+                        my $m2 = Perlito5::Grammar::Map::non_core_ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
-                            $MATCH->{'Perlito5::Grammar::full_ident'} = $m2;
+                            $MATCH->{'Perlito5::Grammar::Map::non_core_ident'} = $m2;
                             1
                         }
                         else {
@@ -6012,8 +6034,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         }
                     }) && (do {
                         $MATCH->{'str'} = $str;
-                        my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
-                        ($Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name}) && return ;
+                        my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Map::non_core_ident'});
                         $MATCH->{'_tmp'} = $name;
                         1
                     }))
@@ -6098,10 +6119,10 @@ sub Perlito5::Grammar::Map::term_sort {
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ((do {
-                        my $m2 = Perlito5::Grammar::full_ident($str, $MATCH->{'to'});
+                        my $m2 = Perlito5::Grammar::Map::non_core_ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
-                            $MATCH->{'Perlito5::Grammar::full_ident'} = $m2;
+                            $MATCH->{'Perlito5::Grammar::Map::non_core_ident'} = $m2;
                             1
                         }
                         else {
@@ -6109,8 +6130,7 @@ sub Perlito5::Grammar::Map::term_sort {
                         }
                     }) && (do {
                         $MATCH->{'str'} = $str;
-                        my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
-                        ($Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name}) && return ;
+                        my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Map::non_core_ident'});
                         $MATCH->{'_tmp'} = $name;
                         1
                     }))
