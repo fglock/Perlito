@@ -524,5 +524,11 @@ say "ok 100 - string reverse [$r]";
     say "ok 103 - 'our' variable [$s]";
 }
 
+@a = qw/ryba lufa koza/;
+@y = sort @a;
+print 'not ' unless $y[0] eq 'koza' and $y[1] eq 'lufa' and $y[2] eq 'ryba';
+say "ok 104 - sort {list} works: [ @a => @y ]";
+
+
 __END__
 

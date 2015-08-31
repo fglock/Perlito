@@ -62,41 +62,6 @@ token term_sort {
     # Note: this is sort-block; sort-expr is parsed as a normal subroutine
     'sort' <.Perlito5::Grammar::Space::opt_ws>
     [
-        [
-            # sort BLOCK LIST
-            <Perlito5::Grammar::block> 
-            {
-                $MATCH->{_tmp} = $MATCH->{'Perlito5::Grammar::block'}{capture};
-            }
-        |
-            # sort SUBNAME LIST
-            <Perlito5::Grammar::full_ident>
-            {
-                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
-                return if $Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name};
-                $MATCH->{_tmp} = $name; 
-            }
-        |
-            # sort VAR LIST
-            <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
-            {
-                my $var = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
-                return if ref($var) ne 'Perlito5::AST::Var';
-                $MATCH->{_tmp} = $var;
-            }
-        ]
-        <Perlito5::Grammar::Expression::list_parse>
-        {
-            $MATCH->{capture} = [ 'term',
-                 Perlito5::AST::Apply->new(
-                    code        => 'sort',
-                    special_arg => $MATCH->{_tmp},
-                    arguments => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}{capture}),
-                    namespace => ''
-                 )
-               ]
-        }
-    |
         '(' <.Perlito5::Grammar::Space::opt_ws>
         [
             # sort '(' <opt_ws> SUBNAME <ws> LIST ')'
@@ -131,6 +96,59 @@ token term_sort {
                     special_arg => $MATCH->{_tmp},
                     arguments   => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}{capture}), 
                     namespace   => ''
+                 )
+               ]
+        }
+    |
+        [
+            # sort BLOCK LIST
+            <Perlito5::Grammar::block> 
+            {
+                $MATCH->{_tmp} = $MATCH->{'Perlito5::Grammar::block'}{capture};
+            }
+        |
+            # sort SUBNAME LIST
+            <Perlito5::Grammar::full_ident>
+            {
+                my $name = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});  # TODO - split namespace
+                return if $Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name};
+                $MATCH->{_tmp} = $name; 
+            }
+        |
+            # sort VAR LIST
+            <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
+            {
+                my $var = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
+                return if ref($var) ne 'Perlito5::AST::Var';
+                $MATCH->{_tmp} = $var;
+            }
+        |
+            # sort LIST
+            {
+                $MATCH->{_tmp} = Perlito5::AST::Block->new(
+                    'stmts' => [ Perlito5::AST::Apply->new(
+                                    'code' => 'infix:<cmp>',
+                                    'arguments' => [
+                                        Perlito5::AST::Var->new(
+                                            name => 'a', namespace => $Perlito5::PKG, sigil => '$',
+                                        ),
+                                        Perlito5::AST::Var->new(
+                                            name => 'b', namespace => $Perlito5::PKG, sigil => '$',
+                                        ),
+                                    ]
+                                 ),
+                               ],
+                    );
+            }
+        ]
+        <Perlito5::Grammar::Expression::list_parse>
+        {
+            $MATCH->{capture} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code        => 'sort',
+                    special_arg => $MATCH->{_tmp},
+                    arguments => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}{capture}),
+                    namespace => ''
                  )
                ]
         }
