@@ -1479,10 +1479,10 @@ package Perlito5::AST::Var;
                 return $open . $self->emit_java() . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' . $close
             }
 
-            return $open . $self->emit_java() . ' = ' . Perlito5::Java::to_list([$arguments], $level+1) . $close
+            return $self->emit_java() . '.set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '%' ) {
-            return $open . $self->emit_java() . ' = new pHash(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')' . $close 
+            return $self->emit_java() . '.set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
         }
         if ( $sigil eq '*' ) {
             my $namespace = $self->{namespace} || $self->{_namespace};
