@@ -2056,20 +2056,33 @@ class pHash extends pObject {
 
     // Note: multiple versions of set()
     public pObject hset(pObject s, pObject v) {
-        this.h.put(s.to_string(), v.scalar());
+        String key = s.to_string();
+        pObject value = v.scalar();
+        pObject o = this.h.get(key);
+        if (o != null && o.is_lvalue()) {
+            o.set(value);
+        }
+        else {
+            this.h.put(key, value);
+        }
         return v;
     }
-    public pObject hset(String s, pObject v) {
-        this.h.put(s, v.scalar());
+    public pObject hset(String key, pObject v) {
+        pObject value = v.scalar();
+        pObject o = this.h.get(key);
+        if (o != null && o.is_lvalue()) {
+            o.set(value);
+        }
+        else {
+            this.h.put(key, value);
+        }
         return v;
     }
     public pObject hset(pObject s, pLvalue v) {
-        this.h.put(s.to_string(), v.get());
-        return v;
+        return this.hset(s, v.get());
     }
     public pObject hset(String s, pLvalue v) {
-        this.h.put(s, v.get());
-        return v;
+        return this.hset(s, v.get());
     }
 
     public pObject exists(pObject i) {
