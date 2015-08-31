@@ -502,5 +502,27 @@ $r = reverse @s;
 print 'not ' unless $r eq 'tahtsiht';
 say "ok 100 - string reverse [$r]";
 
+{
+    package X;
+
+    our @x;
+    @x = (4,5,6);
+    push @X::x, 7;
+    print 'not ' unless "@x" eq "4 5 6 7";
+    say "ok 101 - 'our' variable [@x] [@X::x]";
+
+    our %h;
+    %h = (4,5);
+    $X::h{6} = 7;
+    print 'not ' unless "@{[ %h ]}" eq "4 5 6 7" || "@{[ %h ]}" eq "6 7 4 5";
+    say "ok 102 - 'our' variable [@{[ %h ]}] [@{[ %X::h ]}]";
+
+    our $s;
+    $s = 4;
+    $X::s = 5;
+    print 'not ' unless $s == 5;
+    say "ok 103 - 'our' variable [$s]";
+}
+
 __END__
 

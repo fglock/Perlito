@@ -609,7 +609,7 @@ package Perlito5::Java::LexicalBlock;
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
 
-            if ( !( $decl->isa('Perlito5::AST::Decl') && $decl->decl eq 'my' ) ) {
+            if ( !( $decl->isa('Perlito5::AST::Decl') && ($decl->decl eq 'my' || $decl->decl eq 'our') ) ) {
                 if ( $decl->isa('Perlito5::AST::Apply')
                     && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
                     && !( $decl->{code} eq 'infix:<=>' || $decl->{code} eq 'print' || $decl->{code} eq 'say' ) )
@@ -1427,7 +1427,7 @@ package Perlito5::AST::Var;
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $decl_type = $self->{_decl} || 'global';
-        if ( $decl_type ne 'my' ) {
+        if ( $decl_type ne 'my' && $decl_type ne 'our' ) {
             return $self->emit_java_global($level, $wantarray);
         }
         my $str_name = $table->{$sigil} . $self->{name} . "_" . $self->{_id};
@@ -1455,7 +1455,7 @@ package Perlito5::AST::Var;
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
         my $decl_type = $self->{_decl} || 'global';
-        if ( $decl_type ne 'my' ) {
+        if ( $decl_type ne 'my' && $decl_type ne 'our' ) {
             return $self->emit_java_global_set($arguments, $level, $wantarray);
         }
         my $open  = $wantarray eq 'void' ? '' : '(';
@@ -1578,19 +1578,16 @@ package Perlito5::AST::Decl;
             }
         }
         elsif ($self->{decl} eq 'our') {
-            my $str = $self->{var}->emit_java();
+            my $v = Perlito5::AST::Var->new( %{$self->{var}}, _decl => 'my' );
             if ($self->{var}->sigil eq '%') {
-                $str = $str . ' = {};';
+                return 'pHash ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
             elsif ($self->{var}->sigil eq '@') {
-                $str = $str . ' = [];';
+                return 'pArray ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
             else {
-                return '// our ' . $str;
+                return 'pLvalue ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
-            return 'if (typeof ' . $self->{var}->emit_java() . ' == "undefined" ) { '
-                    . $str
-                    . '}';
         }
         elsif ($self->{decl} eq 'state') {
             # TODO

@@ -444,22 +444,22 @@ class pV {
 
     public static final pHash var = new pHash();
 
-    public static final pObject get(String name) {
-        return var.hget_lvalue(name);
+    public static final pLvalue get(String name) {
+        return (pLvalue)var.hget_lvalue(name);
     }
     public static final pObject set(String name, pObject v) {
         return var.hset(name, v);
     }
 
-    public static final pObject hash_get(String name) {
-        return var.hget_hashref(name).get();
+    public static final pHash hash_get(String name) {
+        return (pHash)var.hget_hashref(name).get();
     }
     public static final pObject hash_set(String name, pObject v) {
         return var.hget_hashref(name).hash_deref_set(v);
     }
 
-    public static final pObject array_get(String name) {
-        return var.hget_arrayref(name).get();
+    public static final pArray array_get(String name) {
+        return (pArray)var.hget_arrayref(name).get();
     }
     public static final pObject array_set(String name, pObject v) {
         return var.hget_arrayref(name).array_deref_set(v);
