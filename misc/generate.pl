@@ -5,7 +5,7 @@
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
 
-sub r { int( sqrt( rand(5) ) ) }
+sub r { int( sqrt( rand($_[0] // 5) ) ) }
 
 my @v = qw/ a b x self /;
 my @bool = qw{ infix:<&&> infix:<&&> infix:<||> infix:<||> infix:<//> };
@@ -17,6 +17,19 @@ sub gen_ident {
 }
 
 sub gen_var {
+    my $r = rand();
+    if ( $r > 0.96 ) {
+        return Perlito5::AST::Index->new(
+            index_exp => gen_exp(),
+            obj => gen_var(),
+        );
+    }
+    if ( $r > 0.92 ) {
+        return Perlito5::AST::Lookup->new(
+            index_exp => gen_exp(),
+            obj => gen_var(),
+        );
+    }
     return Perlito5::AST::Var->new( sigil => '$', name => gen_ident(), _decl => 'my' );
 }
 
@@ -44,13 +57,13 @@ sub gen_compare {
 
 sub gen_exp {
     my $r = rand();
-    if ( $r > 0.8 ) {
+    if ( $r > 0.80 ) {
         return Perlito5::AST::Apply->new(
             code => $oper[ rand(@oper) ],
             arguments => [ gen_exp(), gen_exp() ],
         );
     }
-    if ( $r > 0.7 ) {
+    if ( $r > 0.75 ) {
         return Perlito5::AST::Apply->new(
             code => "infix:<=>",
             arguments => [ gen_var(), gen_exp() ],
@@ -73,7 +86,7 @@ sub gen_stmt {
             body => gen_block(),
         );
     }
-    if ( $r > 0.4 ) {
+    if ( $r > 0.3 ) {
         return Perlito5::AST::Apply->new(
             code => "infix:<=>",
             arguments => [ gen_var(), gen_exp() ],
@@ -83,10 +96,11 @@ sub gen_stmt {
 }
 
 sub gen_block {
-    return Perlito5::AST::Block->new( stmts => [ map { gen_stmt() } 0 .. r() ], );
+    my ($level) = @_;
+    return Perlito5::AST::Block->new( stmts => [ map { gen_stmt() } 0 .. r($level // 5) ], );
 }
 
-my @data = Perlito5::AST::CompUnit::emit_perl5_program( [ gen_block() ] );
+my @data = Perlito5::AST::CompUnit::emit_perl5_program( [ gen_block(5) ] );
 
 # print Perlito5::Dumper::ast_dumper( \@data );
 my $out = [];
