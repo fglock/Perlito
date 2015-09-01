@@ -1,3 +1,7 @@
+#
+# $ perl -Isrc5/lib misc/generate.pl 
+#
+
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
 
