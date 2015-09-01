@@ -218,10 +218,25 @@ class PerlOp {
     //
     // note: '+' add() and '-' sub() are pObject methods, not implemented here.
     //
-    // TODO - 'stack' should be reset when an exception happens
     // TODO - see Perlito5/Javascript2/Runtime.pm for more operator implementations
+    // TODO - 'boolean_stack' should be reset when an exception happens
 
-    private static ArrayList<pObject> stack = new ArrayList<pObject>();
+    private static ArrayList<pObject> boolean_stack = new ArrayList<pObject>();
+    private static ArrayList<pObject> local_stack = new ArrayList<pObject>();
+
+    // TODO - local()
+    // public static final pObject push_local(pObject container, pObject index) {
+    //     local_stack.push(container);
+    //     local_stack.push(index);
+    //     local_stack.push(container.hget_lvalue(index));
+    //     return container.hset(index, pCx.UNDEF);
+    // }
+    // public static final void pop_local() {
+    //     pLvalue lvalue    = (pLvalue)local_stack.pop();
+    //     pObject index     = local_stack.pop();
+    //     pObject container = local_stack.pop();
+    //     container.hset_lvalue(index, lvalue);
+    // }
 
     // context()
     //      - handles run-time scalar/list/void context in expression results
@@ -279,18 +294,18 @@ class PerlOp {
             return true;
         }
         else {
-            stack.add(0, arg1);
+            boolean_stack.add(0, arg1);
             return false;
         }
     }
     public static final pObject and3() {
-        return stack.remove(0);
+        return boolean_stack.remove(0);
     }
 
     // or1(x) ? or2() : y
     public static final boolean or1(pObject arg1) {
         if (arg1.to_bool()) {
-            stack.add(0, arg1);
+            boolean_stack.add(0, arg1);
             return true;
         }
         else {
@@ -298,13 +313,13 @@ class PerlOp {
         }
     }
     public static final pObject or2() {
-        return stack.remove(0);
+        return boolean_stack.remove(0);
     }
 
     // defined_or1(x) ? defined_or2() : y
     public static final boolean defined_or1(pObject arg1) {
         if (!arg1.is_undef()) {
-            stack.add(0, arg1);
+            boolean_stack.add(0, arg1);
             return true;
         }
         else {
@@ -312,7 +327,7 @@ class PerlOp {
         }
     }
     public static final pObject defined_or2() {
-        return stack.remove(0);
+        return boolean_stack.remove(0);
     }
 
     // $x++ when $x is pString
