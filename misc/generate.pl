@@ -21,7 +21,7 @@ sub gen_var {
 
 sub gen_bool {
     my $r = rand();
-    if ( $r > 0.7 ) {
+    if ( $r > 0.5 ) {
         return Perlito5::AST::Apply->new(
             code => $bool[ rand(@bool) ],
             arguments => [ gen_exp(), gen_exp() ],
@@ -31,10 +31,17 @@ sub gen_bool {
 }
 
 sub gen_exp {
-    if ( $r > 0.7 ) {
+    my $r = rand();
+    if ( $r > 0.8 ) {
         return Perlito5::AST::Apply->new(
             code => $oper[ rand(@oper) ],
             arguments => [ gen_exp(), gen_exp() ],
+        );
+    }
+    if ( $r > 0.6 ) {
+        return Perlito5::AST::Apply->new(
+            code => "infix:<=>",
+            arguments => [ gen_var(), gen_exp() ],
         );
     }
     return gen_var();
