@@ -222,21 +222,34 @@ class PerlOp {
     // TODO - 'boolean_stack' should be reset when an exception happens
 
     private static ArrayList<pObject> boolean_stack = new ArrayList<pObject>();
-    private static ArrayList<pObject> local_stack = new ArrayList<pObject>();
+    private static pArray local_stack = new pArray();
 
-    // TODO - local()
-    // public static final pObject push_local(pObject container, pObject index) {
-    //     local_stack.push(container);
-    //     local_stack.push(index);
-    //     local_stack.push(container.hget_lvalue(index));
-    //     return container.hset(index, pCx.UNDEF);
-    // }
-    // public static final void pop_local() {
-    //     pLvalue lvalue    = (pLvalue)local_stack.pop();
-    //     pObject index     = local_stack.pop();
-    //     pObject container = local_stack.pop();
-    //     container.hset_lvalue(index, lvalue);
-    // }
+    // local()
+    public static final pObject push_local(pObject container, pObject index) {
+        local_stack.push(container);
+        local_stack.push(index);
+        pLvalue empty = new pLvalue();
+        if (container.is_array()) {
+            local_stack.push(((pArray)container).aget_lvalue(index));
+            ((pArray)container).a.add(index.to_int(), empty);
+        }
+        else {
+            local_stack.push(container.hget_lvalue(index));
+            ((pHash)container).h.put(index.to_string(), empty);
+        }
+        return empty;
+    }
+    public static final void pop_local() {
+        pLvalue lvalue    = (pLvalue)local_stack.pop();
+        pObject index     = local_stack.pop();
+        pObject container = local_stack.pop();
+        if (container.is_array()) {
+            ((pArray)container).a.add(index.to_int(), lvalue);
+        }
+        else {
+            ((pHash)container).h.put(index.to_string(), lvalue);
+        }
+    }
 
     // context()
     //      - handles run-time scalar/list/void context in expression results
@@ -1523,6 +1536,29 @@ EOT
             return pCx.UNDEF;
         }
         return this.a.get(pos);
+    }
+    public pObject aget_lvalue(pObject i) {
+        int size = this.a.size();
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        while (size < pos) {
+            this.a.add( pCx.UNDEF );
+            size++;
+        }
+        pObject o = this.a.get(pos);
+        if (o == null) {
+            pLvalue a = new pLvalue();
+            this.a.set(pos, a);
+            return a;
+        }
+        else if (o.is_lvalue()) {
+            return o;
+        }
+        pLvalue a = new pLvalue(o);
+        this.a.set(pos, a);
+        return a;
     }
 
     public pObject get_scalar(pObject i) {

@@ -1528,11 +1528,19 @@ package Perlito5::AST::Decl;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        $self->{var}->emit_java( $level );
+
+        my $var = $self->{var};
+        if ($self->{decl} eq 'local') {
+            if ( ref($var) eq 'Perlito5::AST::Var' ) {
+                return 'pCx.push_local(' . $var->emit_java . ')';
+            }
+        }
+        $var->emit_java( $level );
     }
     sub emit_java_init {
         my ($self, $level, $wantarray) = @_;
 
+        my $var = $self->{var};
         my $Java_var = Perlito5::Java::get_java_var_info();
         my $type = $self->{type} || 'pLvalue';
         my $id = $self->{var}{_id};
@@ -1541,24 +1549,7 @@ package Perlito5::AST::Decl;
         }
 
         if ($self->{decl} eq 'local') {
-            my $var = $self->{var};
-            my $var_set;
-            my $tmp_name  = Perlito5::Java::get_label();
-            if ( ref($var) eq 'Perlito5::AST::Var' ) {
-                $var_set = $var->emit_java . ' = v_' . $tmp_name;
-            }
-            else {
-                my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name, _decl => 'my' );
-                $var_set = $var->emit_java_set($tmp);
-            }
-            return Perlito5::Java::emit_wrap_java($level, 
-                     'var v_' . $tmp_name . ' = ' . $var->emit_java . ';',
-                     'p5LOCAL.push(function(){ ' . $var_set . ' });',
-                     'return ' . $var->emit_java_set(
-                                    Perlito5::AST::Apply->new( code => 'undef', arguments => [], namespace => '' ),
-                                    $level+1
-                                 ) . ';',
-                ) . ';';
+            return '';
         }
         if ($self->{decl} eq 'my') {
             if ($self->{var}->sigil eq '%') {
@@ -1599,7 +1590,22 @@ package Perlito5::AST::Decl;
     }
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
-        $self->var->emit_java_set($arguments, $level, $wantarray);
+        my $var = $self->{var};
+        if ($self->{decl} eq 'local') {
+            if ( ref($var) eq 'Perlito5::AST::Var' ) {
+                my $sigil = $var->{_real_sigil} || $var->{sigil};
+                if ( $sigil eq '$' ) {
+                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
+                }
+                if ( $sigil eq '@' ) {
+                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
+                }
+                if ( $sigil eq '%' ) {
+                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
+                }
+            }
+        }
+        $var->emit_java_set($arguments, $level, $wantarray);
     }
     sub emit_java_set_list {
         my ($self, $level, $list) = @_;
