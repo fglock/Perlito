@@ -29,16 +29,16 @@
 
     - any other differences are not-yet-implemented or bugs.
 
--- document Java import options
+    - Java import and typed variables
 
-    package The::Class {
-          import           => 'full.path.Class',  # mandatory
-          java_type        => 'Class',            # auto generated, can be overriden: 'Class<String>'
-          perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overriden
-          # perl_package   => 'The::Class',       # auto generated, Perl package name
-    }
+        package The::Class {
+            import           => 'full.path.Class',  # mandatory
+            java_type        => 'Class',            # auto generated, can be overriden: 'Class<String>'
+            perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overriden
+            # perl_package   => 'The::Class',       # auto generated, Perl package name
+        }
 
--- "import"
+-- Java import
 
     package Sample {
         import => "misc.Java.Sample"
@@ -201,9 +201,6 @@
 
     delete local EXPR
 
-    "our" should use lexicals (it currently compiles to a "global")
-        - lexicals are faster
-
     subroutine lookups could also be "our"-like (also method lookups)
 
 -- TODO symbolic references
@@ -235,6 +232,11 @@
 -- Overflow from int to double
 
     partially implemented - needs more work
+
+    Note: integer operations may have problems with type erasure
+    example:
+        $i + subr();  # subr() returns pObject instead of pInt
+    this needs more tests
 
 -- Missing features, or partially implemented, or untested
 
