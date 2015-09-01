@@ -10,5 +10,5 @@ if ( 0 ) {
 	say 'not ok - false';		
 }
 
-say 'ok 2 - after false'.
+say 'ok 2 - after false';
 
