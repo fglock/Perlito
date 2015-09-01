@@ -11,6 +11,7 @@ my @v = qw/ a b x self /;
 my @bool = qw{ infix:<&&> infix:<&&> infix:<||> infix:<||> infix:<//> };
 my @oper = qw{ infix:<+> infix:<-> infix:<*> infix:</> };
 my @compare = qw{ infix:<==> infix:<>=> infix:<<=> infix:<>> infix:<<> };
+my @hash_op = qw{ keys values };
 
 sub gen_ident {
     my (%args) = @_;
@@ -81,6 +82,14 @@ sub gen_exp {
         return Perlito5::AST::Apply->new(
             code => "infix:<=>",
             arguments => [ gen_var(%args), gen_exp(%args) ],
+        );
+    }
+    if ( $r > 0.70 ) {
+        return Perlito5::AST::Apply->new(
+            code => $hash_op[ rand(@hash_op) ],
+            arguments => [ Perlito5::AST::Apply->new(
+                            code => 'prefix:<%>', arguments => [ gen_var(%args) ] ),
+                         ],
         );
     }
     return gen_var(%args);
