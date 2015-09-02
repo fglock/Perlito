@@ -484,6 +484,10 @@ class pV {
     public static final pObject set(String name, pObject v) {
         return var.hset(name, v);
     }
+    public static final pObject set_local(String name, pObject v) {
+        PerlOp.push_local(var, name);
+        return var.hset(name, v);
+    }
 
     public static final pHash hash_get(String name) {
         return (pHash)var.hget_hashref(name).get();
@@ -495,6 +499,10 @@ class pV {
     public static final pObject hash_set(String name, pObject v) {
         return var.hget_hashref(name).hash_deref_set(v);
     }
+    public static final pObject hash_set_local(String name, pObject v) {
+        PerlOp.push_local(var, name);
+        return var.hget_hashref(name).hash_deref_set(v);
+    }
 
     public static final pArray array_get(String name) {
         return (pArray)var.hget_arrayref(name).get();
@@ -504,6 +512,10 @@ class pV {
         return (pArray)var.hget_arrayref(name).get();
     }
     public static final pObject array_set(String name, pObject v) {
+        return var.hget_arrayref(name).array_deref_set(v);
+    }
+    public static final pObject array_set_local(String name, pObject v) {
+        PerlOp.push_local(var, name);
         return var.hget_arrayref(name).array_deref_set(v);
     }
 }
