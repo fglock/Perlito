@@ -1312,7 +1312,8 @@ package Perlito5::AST::Var;
     };
 
     sub emit_java_global {
-        my ($self, $level, $wantarray) = @_;
+        my ($self, $level, $wantarray, $localize) = @_;
+        my $local = $localize ? "_local" : "";
         my $str_name = $self->{name};
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $namespace = $self->{namespace} || $self->{_namespace};
@@ -1344,7 +1345,7 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '|' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
-            return 'pV.get(' . $index . ')';
+            return "pV.get$local(" . $index . ')';
         }
         if ( $sigil eq '*' ) {
         }
@@ -1353,16 +1354,16 @@ package Perlito5::AST::Var;
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {
-                return 'pV.array_get(' . $index . ').end_of_array_index()'
+                return "pV.array_get$local(" . $index . ').end_of_array_index()'
             }
-            my $s = 'pV.array_get(' . $index . ')';
+            my $s = "pV.array_get$local(" . $index . ')';
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.length_of_array()';
             }
             return $s;
         }
         if ($sigil eq '%') {
-            return 'pV.hash_get(' . $index . ')';
+            return "pV.hash_get$local(" . $index . ')';
         }
         die "don't know how to access variable ", $sigil, $self->name;
     }
@@ -1532,7 +1533,8 @@ package Perlito5::AST::Decl;
         my $var = $self->{var};
         if ($self->{decl} eq 'local') {
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
-                return 'pCx.push_local(' . $var->emit_java . ')';
+                my $localize = 1;
+                return $var->emit_java_global($level, $wantarray, $localize);
             }
         }
         $var->emit_java( $level );
@@ -1594,14 +1596,15 @@ package Perlito5::AST::Decl;
         if ($self->{decl} eq 'local') {
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
                 my $sigil = $var->{_real_sigil} || $var->{sigil};
+                my $localize = 1;
                 if ( $sigil eq '$' ) {
-                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
+                    return $var->emit_java_global($level, $wantarray, $localize) . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
                 }
                 if ( $sigil eq '@' ) {
-                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
+                    return $var->emit_java_global($level, $wantarray, $localize) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
                 }
                 if ( $sigil eq '%' ) {
-                    return 'pCx.push_local(' . $var->emit_java() . ').set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
+                    return $var->emit_java_global($level, $wantarray, $localize) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
                 }
             }
         }

@@ -225,18 +225,20 @@ class PerlOp {
     private static pArray local_stack = new pArray();
 
     // local()
-    public static final pObject push_local(pObject container, pObject index) {
+    public static final pObject push_local(pObject container, String index) {
         local_stack.push(container);
         local_stack.push(index);
         pLvalue empty = new pLvalue();
-        if (container.is_array()) {
-            local_stack.push(((pArray)container).aget_lvalue(index));
-            ((pArray)container).a.add(index.to_int(), empty);
-        }
-        else {
-            local_stack.push(container.hget_lvalue(index));
-            ((pHash)container).h.put(index.to_string(), empty);
-        }
+        local_stack.push(container.hget_lvalue(index));
+        ((pHash)container).h.put(index, empty);
+        return empty;
+    }
+    public static final pObject push_local(pObject container, int index) {
+        local_stack.push(container);
+        local_stack.push(index);
+        pLvalue empty = new pLvalue();
+        local_stack.push(((pArray)container).aget_lvalue(index));
+        ((pArray)container).a.add(index, empty);
         return empty;
     }
     public static final void pop_local() {
@@ -475,6 +477,10 @@ class pV {
     public static final pLvalue get(String name) {
         return (pLvalue)var.hget_lvalue(name);
     }
+    public static final pLvalue get_local(String name) {
+        PerlOp.push_local(var, name);
+        return (pLvalue)var.hget_lvalue(name);
+    }
     public static final pObject set(String name, pObject v) {
         return var.hset(name, v);
     }
@@ -482,11 +488,19 @@ class pV {
     public static final pHash hash_get(String name) {
         return (pHash)var.hget_hashref(name).get();
     }
+    public static final pHash hash_get_local(String name) {
+        PerlOp.push_local(var, name);
+        return (pHash)var.hget_hashref(name).get();
+    }
     public static final pObject hash_set(String name, pObject v) {
         return var.hget_hashref(name).hash_deref_set(v);
     }
 
     public static final pArray array_get(String name) {
+        return (pArray)var.hget_arrayref(name).get();
+    }
+    public static final pArray array_get_local(String name) {
+        PerlOp.push_local(var, name);
         return (pArray)var.hget_arrayref(name).get();
     }
     public static final pObject array_set(String name, pObject v) {
@@ -1537,9 +1551,8 @@ EOT
         }
         return this.a.get(pos);
     }
-    public pObject aget_lvalue(pObject i) {
+    public pObject aget_lvalue(int pos) {
         int size = this.a.size();
-        int pos  = i.to_int();
         if (pos < 0) {
             pos = size + pos;
         }
@@ -1559,6 +1572,9 @@ EOT
         pLvalue a = new pLvalue(o);
         this.a.set(pos, a);
         return a;
+    }
+    public pObject aget_lvalue(pObject i) {
+        return this.aget_lvalue(i.to_int());
     }
 
     public pObject get_scalar(pObject i) {
@@ -1714,6 +1730,10 @@ EOT
     }
     public pObject aset(int i, $native s) {
         return this.aset(i, new $perl(s));
+    }
+    public pObject push($native s) {
+        this.a.add(new $perl(s));
+        return this.length_of_array();
     }
 " : ()
             }
