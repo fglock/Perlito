@@ -478,15 +478,13 @@ class pV {
         return (pLvalue)var.hget_lvalue(name);
     }
     public static final pLvalue get_local(String name) {
-        PerlOp.push_local(var, name);
-        return (pLvalue)var.hget_lvalue(name);
+        return (pLvalue)var.hget_lvalue_local(name);
     }
     public static final pObject set(String name, pObject v) {
         return var.hset(name, v);
     }
     public static final pObject set_local(String name, pObject v) {
-        PerlOp.push_local(var, name);
-        return var.hset(name, v);
+        return var.hget_lvalue_local(name).set(v);
     }
 
     public static final pHash hash_get(String name) {
@@ -2042,6 +2040,13 @@ class pHash extends pObject {
         pLvalue a = new pLvalue(o);
         this.h.put(i, a);
         return a;
+    }
+    public pObject hget_lvalue_local(pObject i) {
+        return this.hget_lvalue_local(i.to_string());
+    }
+    public pObject hget_lvalue_local(String i) {
+        PerlOp.push_local(this, i);
+        return this.hget_lvalue(i);
     }
 
     public pObject get_scalar(pObject i) {
