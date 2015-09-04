@@ -241,7 +241,8 @@ class PerlOp {
         container.a.add(index, empty);
         return empty;
     }
-    public static final void pop_local() {
+    public static final pObject cleanup_local(int pos, pObject ret) {
+        // TODO - loop until "pos"
         pLvalue lvalue    = (pLvalue)local_stack.pop();
         pObject index     = local_stack.pop();
         pObject container = local_stack.pop();
@@ -251,6 +252,7 @@ class PerlOp {
         else {
             ((pHash)container).h.put(index.to_string(), lvalue);
         }
+        return ret;
     }
 
     // context()

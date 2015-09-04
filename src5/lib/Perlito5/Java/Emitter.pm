@@ -581,12 +581,11 @@ package Perlito5::Java::LexicalBlock;
         my $has_regex = 0;
         if (grep {$_->emit_java_has_regex()} @block) {
             # regex variables like '$1' are implicitly 'local'
-            $has_local = 1;
+            # $has_local = 1; # TODO: fix, temporarily turn it off
             $has_regex = 1;
         }
 
-	#TODO: fix it, temporarily turn it off
-	$has_local = 0;
+        # $has_local = 0;
 
         my $create_context = $self->{create_context} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
@@ -682,7 +681,7 @@ package Perlito5::Java::LexicalBlock;
                     }
                 }
                 elsif ( $has_local ) {
-                    push @str, 'return p5cleanup_local(local_idx, ('
+                    push @str, 'return PerlOp.cleanup_local(local_idx, ('
                         . ( $wantarray eq 'runtime'
                           ? Perlito5::Java::to_runtime_context([$last_statement], $level+1)
                           : $wantarray eq 'scalar'
@@ -704,16 +703,18 @@ package Perlito5::Java::LexicalBlock;
             }
         }
         if ( $has_local ) {
-            unshift @str, (
-                    '// var local_idx = p5LOCAL.length;',
-                    ( $has_regex
-                      ? ( 'var regex_tmp = p5_regex_capture;',
-                          'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
-                      )
-                      : ()
-                    )
-                );
-            push    @str, '// p5cleanup_local(local_idx, null);';
+            # TODO
+
+            # unshift @str, (
+            #         'int local_idx = p5LOCAL.length;',
+            #         ( $has_regex
+            #           ? ( 'var regex_tmp = p5_regex_capture;',
+            #               'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
+            #           )
+            #           : ()
+            #         )
+            #     );
+            # push    @str, 'PerlOp.cleanup_local(local_idx, null);';
         }
         my $out;
         if ($self->{top_level} && $Perlito5::THROW) {
@@ -730,7 +731,7 @@ package Perlito5::Java::LexicalBlock;
                 . Perlito5::Java::tab($level)     . '}';
                 # . Perlito5::Java::tab($level + 2)
                 #     . ( $has_local
-                #       ? 'return p5cleanup_local(local_idx, err)'
+                #       ? 'return PerlOp.cleanup_local(local_idx, err)'
                 #       : 'return(err)'
                 #       )
                 #     . ";\n"
