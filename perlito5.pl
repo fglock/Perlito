@@ -14438,6 +14438,7 @@ package Perlito5::AST::Index;
         $autovivification_type eq 'scalar' && ($method = 'aget_scalarref');
         $autovivification_type eq 'array' && ($method = 'aget_arrayref');
         $autovivification_type eq 'hash' && ($method = 'aget_hashref');
+        $autovivification_type eq 'local' && ($method = 'aget_lvalue_local');
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@') || ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>')) {
             return 'p5list_slice(' . $self->{'obj'}->emit_java($level, 'list') . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
         }
@@ -14504,6 +14505,7 @@ package Perlito5::AST::Lookup;
         $autovivification_type eq 'scalar' && ($method = 'hget_scalarref');
         $autovivification_type eq 'array' && ($method = 'hget_arrayref');
         $autovivification_type eq 'hash' && ($method = 'hget_hashref');
+        $autovivification_type eq 'local' && ($method = 'hget_lvalue_local');
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
             if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
@@ -14748,13 +14750,14 @@ package Perlito5::AST::Decl;
     sub Perlito5::AST::Decl::emit_java {
         my($self, $level, $wantarray) = @_;
         my $var = $self->{'var'};
+        my $localize = '';
         if ($self->{'decl'} eq 'local') {
+            $localize = 'local';
             if (ref($var) eq 'Perlito5::AST::Var') {
-                my $localize = 1;
                 return $var->emit_java_global($level, $wantarray, $localize)
             }
         }
-        $var->emit_java($level)
+        $var->emit_java($level, $wantarray, $localize)
     }
     sub Perlito5::AST::Decl::emit_java_init {
         my($self, $level, $wantarray) = @_;
@@ -14808,13 +14811,14 @@ package Perlito5::AST::Decl;
     sub Perlito5::AST::Decl::emit_java_set {
         my($self, $arguments, $level, $wantarray) = @_;
         my $var = $self->{'var'};
+        my $localize = '';
         if ($self->{'decl'} eq 'local') {
+            $localize = 'local';
             if (ref($var) eq 'Perlito5::AST::Var') {
-                my $localize = 1;
                 return $var->emit_java_global_set($arguments, $level, $wantarray, $localize)
             }
         }
-        $var->emit_java_set($arguments, $level, $wantarray)
+        $var->emit_java_set($arguments, $level, $wantarray, $localize)
     }
     sub Perlito5::AST::Decl::emit_java_set_list {
         my($self, $level, $list) = @_;
