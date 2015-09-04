@@ -245,15 +245,16 @@ class PerlOp {
         return local_stack.to_int();
     }
     public static final pObject cleanup_local(int pos, pObject ret) {
-        // TODO - loop until "pos"
-        pLvalue lvalue    = (pLvalue)local_stack.pop();
-        pObject index     = local_stack.pop();
-        pObject container = local_stack.pop();
-        if (container.is_array()) {
-            ((pArray)container).a.add(index.to_int(), lvalue);
-        }
-        else {
-            ((pHash)container).h.put(index.to_string(), lvalue);
+        while (local_stack.to_int() > pos) {
+            pLvalue lvalue    = (pLvalue)local_stack.pop();
+            pObject index     = local_stack.pop();
+            pObject container = local_stack.pop();
+            if (container.is_array()) {
+                ((pArray)container).a.add(index.to_int(), lvalue);
+            }
+            else {
+                ((pHash)container).h.put(index.to_string(), lvalue);
+            }
         }
         return ret;
     }
