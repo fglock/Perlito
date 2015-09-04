@@ -14173,6 +14173,7 @@ package Perlito5::Java::LexicalBlock;
             push(@block, Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => []))
         }
         my @str;
+        my @pre;
         my $has_local = $self->has_decl('local');
         my $has_regex = 0;
         if (grep {
@@ -14181,6 +14182,9 @@ package Perlito5::Java::LexicalBlock;
             $has_regex = 1
         }
         my $local_label = Perlito5::Java::get_label();
+        if ($has_local) {
+            push(@pre, 'int ' . $local_label . ' = PerlOp.local_length();')
+        }
         my $create_context = $self->{'create_context'} && $self->has_decl('my');
         my $outer_pkg = $Perlito5::PKG_NAME;
         if ($self->{'top_level'} || $create_context) {
@@ -14241,27 +14245,20 @@ package Perlito5::Java::LexicalBlock;
                 push(@str, 'return (' . ($wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement], $level + 1) : $last_statement->emit_java($level, $wantarray)) . ');')
             }
         }
-        if ($has_local) {
-            unshift(@str, 'int ' . $local_label . ' = PerlOp.local_length();')
-        }
         my $out;
         if ($self->{'top_level'} && $Perlito5::THROW) {
             $level = $original_level;
+            my $return = $has_local ? 'return PerlOp.cleanup_local(' . $local_label . ', e.ret)' : 'return e.ret';
             my $tab = chr(10) . Perlito5::Java::tab($level + 1);
-            $out = 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pReturnException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . 'return e.ret;' . chr(10) . Perlito5::Java::tab($level) . '}'
-        }
-        elsif ($create_context) {
-            $level = $original_level;
-            my $tab = chr(10) . Perlito5::Java::tab($level + 1);
-            $out = '(function () {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '})();'
+            push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pReturnException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . $return . ';' . chr(10) . Perlito5::Java::tab($level) . '}');
+            @str = ()
         }
         else {
-            $level = $original_level;
-            my $tab = chr(10) . Perlito5::Java::tab($level);
-            $out = join($tab, @str)
+            $level = $original_level
         }
         $Perlito5::PKG_NAME = $outer_pkg;
-        return $out
+        my $tab = chr(10) . Perlito5::Java::tab($level);
+        return join($tab, @pre, @str)
     }
     sub Perlito5::Java::LexicalBlock::emit_java_has_regex {
         ()
