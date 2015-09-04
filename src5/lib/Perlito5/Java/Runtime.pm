@@ -226,18 +226,18 @@ class PerlOp {
 
     // local()
     public static final pObject push_local(pHash container, String index) {
-        local_stack.push(container);
-        local_stack.push(index);
+        local_stack.a.add(container);
+        local_stack.a.add(new pString(index));
         pLvalue empty = new pLvalue();
-        local_stack.push(container.hget_lvalue(index));
+        local_stack.a.add(container.hget_lvalue(index));
         container.h.put(index, empty);
         return empty;
     }
     public static final pObject push_local(pArray container, int index) {
-        local_stack.push(container);
-        local_stack.push(index);
+        local_stack.a.add(container);
+        local_stack.a.add(new pInt(index));
         pLvalue empty = new pLvalue();
-        local_stack.push(((pArray)container).aget_lvalue(index));
+        local_stack.a.add(((pArray)container).aget_lvalue(index));
         container.a.add(index, empty);
         return empty;
     }
