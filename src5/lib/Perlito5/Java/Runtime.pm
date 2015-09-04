@@ -1594,8 +1594,7 @@ EOT
         return this.aget_lvalue_local(i.to_int());
     }
     public pObject aget_lvalue_local(int i) {
-        PerlOp.push_local(this, i);
-        return this.aget_lvalue(i);
+        return PerlOp.push_local(this, i);
     }
 
     public pObject get_scalar(pObject i) {
@@ -2056,8 +2055,7 @@ class pHash extends pObject {
         return this.hget_lvalue_local(i.to_string());
     }
     public pObject hget_lvalue_local(String i) {
-        PerlOp.push_local(this, i);
-        return this.hget_lvalue(i);
+        return PerlOp.push_local(this, i);
     }
 
     public pObject get_scalar(pObject i) {
