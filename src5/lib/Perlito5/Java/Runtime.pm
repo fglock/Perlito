@@ -225,20 +225,20 @@ class PerlOp {
     private static pArray local_stack = new pArray();
 
     // local()
-    public static final pObject push_local(pObject container, String index) {
+    public static final pObject push_local(pHash container, String index) {
         local_stack.push(container);
         local_stack.push(index);
         pLvalue empty = new pLvalue();
         local_stack.push(container.hget_lvalue(index));
-        ((pHash)container).h.put(index, empty);
+        container.h.put(index, empty);
         return empty;
     }
-    public static final pObject push_local(pObject container, int index) {
+    public static final pObject push_local(pArray container, int index) {
         local_stack.push(container);
         local_stack.push(index);
         pLvalue empty = new pLvalue();
         local_stack.push(((pArray)container).aget_lvalue(index));
-        ((pArray)container).a.add(index, empty);
+        container.a.add(index, empty);
         return empty;
     }
     public static final void pop_local() {
@@ -1589,6 +1589,13 @@ EOT
     }
     public pObject aget_lvalue(pObject i) {
         return this.aget_lvalue(i.to_int());
+    }
+    public pObject aget_lvalue_local(pObject i) {
+        return this.aget_lvalue_local(i.to_int());
+    }
+    public pObject aget_lvalue_local(int i) {
+        PerlOp.push_local(this, i);
+        return this.aget_lvalue(i);
     }
 
     public pObject get_scalar(pObject i) {
