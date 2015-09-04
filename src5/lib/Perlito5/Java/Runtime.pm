@@ -237,8 +237,8 @@ class PerlOp {
         local_stack.a.add(container);
         local_stack.a.add(new pInt(index));
         pLvalue empty = new pLvalue();
-        local_stack.a.add(((pArray)container).aget_lvalue(index));
-        container.a.add(index, empty);
+        local_stack.a.add(container.aget_lvalue(index));
+        container.aset(index, empty);
         return empty;
     }
     public static final int local_length() {
@@ -250,7 +250,7 @@ class PerlOp {
             pObject index     = local_stack.pop();
             pObject container = local_stack.pop();
             if (container.is_array()) {
-                ((pArray)container).a.add(index.to_int(), lvalue);
+                ((pArray)container).a.set(index.to_int(), lvalue);
             }
             else {
                 ((pHash)container).h.put(index.to_string(), lvalue);
@@ -1576,9 +1576,14 @@ EOT
         if (pos < 0) {
             pos = size + pos;
         }
-        while (size < pos) {
-            this.a.add( pCx.UNDEF );
-            size++;
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( pCx.UNDEF );
+                size++;
+            }
+            pLvalue a = new pLvalue();
+            this.a.add(a);
+            return a;
         }
         pObject o = this.a.get(pos);
         if (o == null) {
@@ -1713,11 +1718,15 @@ EOT
         if (pos < 0) {
             pos = size + pos;
         }
-        while (size < pos) {
-            this.a.add( pCx.UNDEF );
-            size++;
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( pCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
         }
-        this.a.add(pos, v.scalar());
+        this.a.set(pos, v.scalar());
         return v;
     }
     public pObject aset(int i, pObject v) {
@@ -1726,11 +1735,15 @@ EOT
         if (pos < 0) {
             pos = size + pos;
         }
-        while (size < pos) {
-            this.a.add( pCx.UNDEF );
-            size++;
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( pCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
         }
-        this.a.add(pos, v.scalar());
+        this.a.set(pos, v.scalar());
         return v;
     }
     public pObject aset(pObject i, pLvalue v) {
@@ -1739,11 +1752,15 @@ EOT
         if (pos < 0) {
             pos = size + pos;
         }
-        while (size < pos) {
-            this.a.add( pCx.UNDEF );
-            size++;
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( pCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
         }
-        this.a.add(pos, v.get());
+        this.a.set(pos, v.get());
         return v;
     }
 EOT
