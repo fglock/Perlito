@@ -1030,7 +1030,7 @@ package Perlito5::AST::Index;
                     . ')';
     }
     sub emit_java_set {
-        my ($self, $arguments, $level, $wantarray) = @_;
+        my ($self, $arguments, $level, $wantarray, $localize) = @_;
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1055,6 +1055,12 @@ package Perlito5::AST::Index;
                     '}',
                     'return a',
             )
+        }
+        if ($localize) {
+            return $self->emit_java_container($level) . '.aget_lvalue_local('
+                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ').set('
+                    . Perlito5::Java::to_scalar([$arguments], $level+1)
+            . ')';
         }
         return $self->emit_java_container($level) . '.aset(' 
                     . Perlito5::Java::to_num($self->{index_exp}, $level+1) . ', ' 
@@ -1197,7 +1203,7 @@ package Perlito5::AST::Lookup;
             . ')';
     }
     sub emit_java_set {
-        my ($self, $arguments, $level, $wantarray) = @_;
+        my ($self, $arguments, $level, $wantarray, $localize) = @_;
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
               )
@@ -1227,6 +1233,12 @@ package Perlito5::AST::Lookup;
                     '}',
                     'return a',
             )
+        }
+        if ($localize) {
+            return $self->emit_java_container($level) . '.hget_lvalue_local('
+                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ').set('
+                    . Perlito5::Java::to_scalar([$arguments], $level+1)
+            . ')';
         }
         return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '

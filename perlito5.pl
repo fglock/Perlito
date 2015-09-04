@@ -14451,9 +14451,12 @@ package Perlito5::AST::Index;
         return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::to_num($self->{'index_exp'}, $level) . ')'
     }
     sub Perlito5::AST::Index::emit_java_set {
-        my($self, $arguments, $level, $wantarray) = @_;
+        my($self, $arguments, $level, $wantarray, $localize) = @_;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             return Perlito5::Java::emit_wrap_java($level, 'var a = [];', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var src=' . Perlito5::Java::to_list([$arguments], $level) . ';', 'var out=' . Perlito5::Java::emit_java_autovivify($self->{'obj'}, $level, 'array') . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i) {', ['tmp = src.aget(i);', 'out.aset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
+        }
+        if ($localize) {
+            return $self->emit_java_container($level) . '.aget_lvalue_local(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ').set(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         return $self->emit_java_container($level) . '.aset(' . Perlito5::Java::to_num($self->{'index_exp'}, $level + 1) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
     }
@@ -14525,12 +14528,15 @@ package Perlito5::AST::Lookup;
         return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ')'
     }
     sub Perlito5::AST::Lookup::emit_java_set {
-        my($self, $arguments, $level, $wantarray) = @_;
+        my($self, $arguments, $level, $wantarray, $localize) = @_;
         if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
             my $v;
             $self->{'obj'}->isa('Perlito5::AST::Var') && ($v = $self->{'obj'});
             $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
             return Perlito5::Java::emit_wrap_java($level, 'var a = [];', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var src=' . Perlito5::Java::to_list([$arguments], $level) . ';', 'var out=' . $v->emit_java($level) . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i)' . '{', ['tmp = src.hget(i);', 'out.hset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
+        }
+        if ($localize) {
+            return $self->emit_java_container($level) . '.hget_lvalue_local(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ').set(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
     }
