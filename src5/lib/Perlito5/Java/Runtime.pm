@@ -491,30 +491,26 @@ class pV {
         return (pHash)var.hget_hashref(name).get();
     }
     public static final pHash hash_get_local(String name) {
-        PerlOp.push_local(var, name);
-        return (pHash)var.hget_hashref(name).get();
+        return (pHash)var.hget_lvalue_local(name).get_hashref().get();
     }
     public static final pObject hash_set(String name, pObject v) {
         return var.hget_hashref(name).hash_deref_set(v);
     }
     public static final pObject hash_set_local(String name, pObject v) {
-        PerlOp.push_local(var, name);
-        return var.hget_hashref(name).hash_deref_set(v);
+        return var.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
     }
 
     public static final pArray array_get(String name) {
         return (pArray)var.hget_arrayref(name).get();
     }
     public static final pArray array_get_local(String name) {
-        PerlOp.push_local(var, name);
-        return (pArray)var.hget_arrayref(name).get();
+        return (pArray)var.hget_lvalue_local(name).get_arrayref().get();
     }
     public static final pObject array_set(String name, pObject v) {
         return var.hget_arrayref(name).array_deref_set(v);
     }
     public static final pObject array_set_local(String name, pObject v) {
-        PerlOp.push_local(var, name);
-        return var.hget_arrayref(name).array_deref_set(v);
+        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
 }
 class pEnv {
@@ -674,6 +670,14 @@ EOT
         return this;
     }
     public pObject hget_lvalue(String i) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
+    public pObject hget_lvalue_local(pObject i) {
+        pCORE.die("Not a HASH reference");
+        return this;
+    }
+    public pObject hget_lvalue_local(String i) {
         pCORE.die("Not a HASH reference");
         return this;
     }
