@@ -585,6 +585,7 @@ package Perlito5::Java::LexicalBlock;
             $has_regex = 1;
         }
 
+        my $local_label = Perlito5::Java::get_label();
         # $has_local = 0;
 
         my $create_context = $self->{create_context} && $self->has_decl("my");
@@ -681,7 +682,7 @@ package Perlito5::Java::LexicalBlock;
                     }
                 }
                 elsif ( $has_local ) {
-                    push @str, 'return PerlOp.cleanup_local(local_idx, ('
+                    push @str, 'return PerlOp.cleanup_local(' . $local_label . ', ('
                         . ( $wantarray eq 'runtime'
                           ? Perlito5::Java::to_runtime_context([$last_statement], $level+1)
                           : $wantarray eq 'scalar'
@@ -703,10 +704,10 @@ package Perlito5::Java::LexicalBlock;
             }
         }
         if ( $has_local ) {
-            # TODO
+            unshift @str, 'int ' . $local_label . ' = PerlOp.local_length();';
 
+            # TODO
             # unshift @str, (
-            #         'int local_idx = p5LOCAL.length;',
             #         ( $has_regex
             #           ? ( 'var regex_tmp = p5_regex_capture;',
             #               'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
@@ -714,7 +715,7 @@ package Perlito5::Java::LexicalBlock;
             #           : ()
             #         )
             #     );
-            # push    @str, 'PerlOp.cleanup_local(local_idx, null);';
+            # push    @str, 'PerlOp.cleanup_local(' . $local_label . ', null);';
         }
         my $out;
         if ($self->{top_level} && $Perlito5::THROW) {
@@ -731,7 +732,7 @@ package Perlito5::Java::LexicalBlock;
                 . Perlito5::Java::tab($level)     . '}';
                 # . Perlito5::Java::tab($level + 2)
                 #     . ( $has_local
-                #       ? 'return PerlOp.cleanup_local(local_idx, err)'
+                #       ? 'return PerlOp.cleanup_local(' . $local_label . ', err)'
                 #       : 'return(err)'
                 #       )
                 #     . ";\n"

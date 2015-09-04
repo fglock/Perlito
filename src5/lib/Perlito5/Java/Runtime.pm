@@ -241,6 +241,9 @@ class PerlOp {
         container.a.add(index, empty);
         return empty;
     }
+    public static final int local_length() {
+        return local_stack.to_int();
+    }
     public static final pObject cleanup_local(int pos, pObject ret) {
         // TODO - loop until "pos"
         pLvalue lvalue    = (pLvalue)local_stack.pop();
