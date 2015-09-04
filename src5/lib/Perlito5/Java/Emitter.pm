@@ -558,6 +558,13 @@ package Perlito5::Java::LexicalBlock;
         return 0;
     }
 
+    sub emit_return {
+        my ($has_local, $local_label, $value) = @_;
+          $has_local
+        ? 'return PerlOp.cleanup_local(' . $local_label . ', ' . $value . ')'
+        : 'return ' . $value;
+    }
+
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $original_level = $level;
@@ -663,24 +670,23 @@ package Perlito5::Java::LexicalBlock;
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
-                push @str, 'return (PerlOp.context(want));'; 
+                push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
             }
             else {
                 if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
 
                     if ( $self->{top_level} ) {
                         if (!@{$last_statement->{arguments}}) {
-                            push @str, 'return (PerlOp.context(want));'; 
+                            push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
                         }
                         else {
-                            push @str, 'return ('
-                                . ( $wantarray eq 'runtime'
+                            push @str, emit_return($has_local, $local_label,
+                                    $wantarray eq 'runtime'
                                   ? Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
                                   : $wantarray eq 'scalar'
                                   ? Perlito5::Java::to_scalar([$last_statement->{arguments}[0]], $level+1)
                                   : $last_statement->{arguments}[0]->emit_java($level, $wantarray)
-                                  )
-                            . ');';
+                                ) . ';';
                         }
                     }
                     else {
@@ -696,25 +702,14 @@ package Perlito5::Java::LexicalBlock;
                         }
                     }
                 }
-                elsif ( $has_local ) {
-                    push @str, 'return PerlOp.cleanup_local(' . $local_label . ', ('
-                        . ( $wantarray eq 'runtime'
-                          ? Perlito5::Java::to_runtime_context([$last_statement], $level+1)
-                          : $wantarray eq 'scalar'
-                          ? Perlito5::Java::to_scalar([$last_statement], $level+1)
-                          : $last_statement->emit_java($level, $wantarray)
-                          )
-                    . '));';
-                }
                 else {
-                    push @str, 'return ('
-                        . ( $wantarray eq 'runtime'
+                    push @str, emit_return($has_local, $local_label,
+                            $wantarray eq 'runtime'
                           ? Perlito5::Java::to_runtime_context([$last_statement], $level+1)
                           : $wantarray eq 'scalar'
                           ? Perlito5::Java::to_scalar([$last_statement], $level+1)
                           : $last_statement->emit_java($level, $wantarray)
-                          )
-                    . ');';
+                    ) . ';';
                 }
             }
         }
@@ -724,18 +719,12 @@ package Perlito5::Java::LexicalBlock;
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
             $level = $original_level;
-
-            my $return = 
-                  $has_local
-                ? 'return PerlOp.cleanup_local(' . $local_label . ', e.ret)'
-                : 'return e.ret';
-
             my $tab = "\n" . Perlito5::Java::tab($level + 1);
             push @pre,                              "try {"
                 . $tab                            .    join($tab, @str) . "\n"
                 . Perlito5::Java::tab($level)     . '}' . "\n"
                 . Perlito5::Java::tab($level)     . 'catch(pReturnException e) {' . "\n"
-                . Perlito5::Java::tab($level + 1) .    $return . ";\n"
+                . Perlito5::Java::tab($level + 1) .    emit_return($has_local, $local_label, 'e.ret') . ";\n"
                 . Perlito5::Java::tab($level)     . '}';
             @str = ();
         }
