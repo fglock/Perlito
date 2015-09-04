@@ -14254,7 +14254,10 @@ package Perlito5::Java::LexicalBlock;
             @str = ()
         }
         else {
-            $level = $original_level
+            $level = $original_level;
+            if ($has_local) {
+                push(@str, 'PerlOp.cleanup_local(' . $local_label . ', pCx.UNDEF);')
+            }
         }
         $Perlito5::PKG_NAME = $outer_pkg;
         my $tab = chr(10) . Perlito5::Java::tab($level);
@@ -14399,7 +14402,7 @@ package Perlito5::AST::Block;
             my $tmp = 'p5pkg.main.' . Perlito5::Java::get_label();
             $init = Perlito5::Java::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
         }
-        return '// TODO - Perlito5::AST::Block' . chr(10) . Perlito5::Java::tab($level + 2) . $body->emit_java($level + 1, $wantarray) . chr(10)
+        return '// TODO - Perlito5::AST::Block' . chr(10) . Perlito5::Java::tab($level + 1) . $body->emit_java($level + 1, $wantarray) . chr(10)
     }
     sub Perlito5::AST::Block::emit_java_continue {
         my $self = shift;
