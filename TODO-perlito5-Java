@@ -197,7 +197,9 @@
 
     - test slice interpolation in strings
 
--- TODO namespaces, global variables, local, our
+-- TODO variables
+
+    'state'
 
     delete local EXPR
 
@@ -243,7 +245,6 @@
     overload
     tie()
     exceptions
-        die() works
         "next", "goto", "last", "redo"
         "eval BLOCK"
         Note: remember to cleanup the stacks (boolean, local).
@@ -265,7 +266,6 @@
         http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
     pos()
     typeglob operations
-    local
 
 -- Extra things to test
 
