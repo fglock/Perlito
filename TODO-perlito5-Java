@@ -1,5 +1,8 @@
 * Java backend
 
+-- Initial 'eval string' support could be achieved by embedding
+    a Javascript-in-Java interpreter
+
 -- According to the Java Virtual Machine specification,
    the bytecode of a method must not be bigger than 65536 bytes:
 
