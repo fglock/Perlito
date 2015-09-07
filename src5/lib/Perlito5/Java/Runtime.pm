@@ -105,6 +105,9 @@ class pCx {
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
+    public static final String  ARGV   = "main|List_ARGV";
+    public static final String  ENV    = "main|Hash_ENV";
+
 EOT
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
@@ -476,8 +479,6 @@ class pV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see pClosure implementation)
 
-    public static final String ARGV = "main|List_ARGV";
-
     public static final pHash var = new pHash();
 
     public static final pLvalue get(String name) {
@@ -521,8 +522,9 @@ class pV {
 }
 class pEnv {
     public static final void init(String[] args) {
-        pV.array_set(pV.ARGV, new pArray(args));
-        pV.set("main|v_" + (char)34, new pString(" "));   // $" = " "
+        pV.array_set(pCx.ARGV, new pArray(args));               // args is String[]
+        pV.hash_set(pCx.ENV,   new pArray(System.getenv()));    // env  is Map<String, String>
+        pV.set("main|v_" + (char)34, new pString(" "));         // $" = " "
     }
 }
 class pObject {
@@ -1516,6 +1518,23 @@ class pArray extends pObject {
         this.each_iterator = arr.each_iterator;
         this.a = arr.a;
     }
+
+    public pObject set(Map<String, String> env) {
+        this.a.clear();
+        for (String envName : env.keySet()) {
+            this.a.add(new pString(envName));
+            this.a.add(new pString(env.get(envName)));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public pArray(Map<String, String> strings) {
+        pArray arr = new pArray();
+        arr.set(strings);
+        this.each_iterator = arr.each_iterator;
+        this.a = arr.a;
+    }
+
     // TODO - Double[]
 EOT
         # add "box" array-of Java classes
