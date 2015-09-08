@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..8';
+say '1..12';
 
 for ( 1 .. 4 ) {
     next if $_ == 1 || $_ == 3;
@@ -21,4 +21,23 @@ for my $i ( 1 .. 2 ) {
         next OUTER if $j == 1 || $j == 3;
     }
 }
+
+my $count = 17;
+while ($count < 20) {
+    $count++;
+    next if $count == 19;
+    say "ok ", ( $count / 2 ), " - while loop, next";
+}
+
+{
+    next;
+    print "not ";
+}
+say "ok 11 - block next";
+
+THIS: {
+    next THIS;
+    print "not ";
+}
+say "ok 12 - block next";
 

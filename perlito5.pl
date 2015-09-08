@@ -14414,10 +14414,10 @@ package Perlito5::AST::Block;
         local $Perlito5::THROW = 0;
         my $body;
         if ($wantarray ne 'void') {
-            $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'})
+            $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'})
         }
         else {
-            $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'})
+            $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'})
         }
         my $init = '';
         if ($self->{'name'} eq 'INIT') {
@@ -16002,7 +16002,7 @@ package Perlito5::AST::While;
         else {
             $expression = Perlito5::Java::to_bool($cond, $level + 1)
         }
-        push(@str, 'while (' . $expression . ') ' . '{' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}');
+        push(@str, 'while (' . $expression . ') ' . '{' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}');
         if (@str) {
             $level = $old_level;
             return Perlito5::Java::emit_wrap_java($level, @str)

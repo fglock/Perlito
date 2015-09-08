@@ -946,10 +946,10 @@ package Perlito5::AST::Block;
         local $Perlito5::THROW = 0;
         my $body;
         if ($wantarray ne 'void') {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts} );
+            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label} );
         }
         else {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts} );
+            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label} );
         }
 
         my $init = "";
@@ -3477,7 +3477,7 @@ package Perlito5::AST::While;
 
         push @str, 'while (' . $expression . ') '
                     . "{\n"
-                    . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray) . "\n"
+                    . Perlito5::Java::tab($level + 2) .   (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray) . "\n"
                     . Perlito5::Java::tab($level + 1) . '}';
                     # . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
                     # . Perlito5::Java::escape_string($self->{label} || "") . ', '
