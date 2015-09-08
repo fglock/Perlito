@@ -14234,11 +14234,11 @@ package Perlito5::Java::LexicalBlock;
                     }
                 }
                 elsif (!@{$last_statement->{'arguments'}}) {
-                    $Perlito5::THROW = 1;
+                    $Perlito5::THROW_RETURN = 1;
                     push(@str, 'return PerlOp.ret(PerlOp.context(want));')
                 }
                 else {
-                    $Perlito5::THROW = 1;
+                    $Perlito5::THROW_RETURN = 1;
                     push(@str, 'return PerlOp.ret(' . Perlito5::Java::to_runtime_context([$last_statement->{'arguments'}->[0]], $level + 1) . ');')
                 }
             }
@@ -14247,10 +14247,16 @@ package Perlito5::Java::LexicalBlock;
             }
         }
         my $out;
-        if ($self->{'top_level'} && $Perlito5::THROW) {
+        if ($self->{'top_level'} && $Perlito5::THROW_RETURN) {
             $level = $original_level;
             my $tab = chr(10) . Perlito5::Java::tab($level + 1);
             push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pReturnException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . emit_return($has_local, $local_label, 'e.ret') . ';' . chr(10) . Perlito5::Java::tab($level) . '}');
+            @str = ()
+        }
+        elsif ($Perlito5::THROW) {
+            $level = $original_level;
+            my $tab = chr(10) . Perlito5::Java::tab($level + 1);
+            push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pNextException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . '// continue' . chr(10) . Perlito5::Java::tab($level) . '}');
             @str = ()
         }
         else {
@@ -14284,6 +14290,8 @@ package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::emit_java_program {
         my($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
+        $Perlito5::THROW = 0;
+        $Perlito5::THROW_RETURN = 0;
         my $level = 0;
         my $wantarray = 'void';
         my $str;
@@ -14390,6 +14398,7 @@ package Perlito5::AST::Block;
 {
     sub Perlito5::AST::Block::emit_java {
         my($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $body;
         if ($wantarray ne 'void') {
             $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'})
@@ -15397,7 +15406,7 @@ package Perlito5::AST::Apply;
         'PerlOp.redo(' . 123 . ')'
     }, 'return' => sub {
         my($self, $level, $wantarray) = @_;
-        $Perlito5::THROW = 1;
+        $Perlito5::THROW_RETURN = 1;
         if (!@{$self->{'arguments'}}) {
             return 'PerlOp.ret(PerlOp.context(want))'
         }
@@ -15421,7 +15430,7 @@ package Perlito5::AST::Apply;
         return $js
     }, 'eval' => sub {
         my($self, $level, $wantarray) = @_;
-        $Perlito5::THROW = 1;
+        $Perlito5::THROW_RETURN = 1;
         my $arg = $self->{'arguments'}->[0];
         my $eval;
         if ($arg->isa('Perlito5::AST::Block')) {
@@ -15960,6 +15969,7 @@ package Perlito5::AST::While;
 {
     sub Perlito5::AST::While::emit_java {
         my($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $cond = $self->{'cond'};
         my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do' ? 1 : 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
@@ -16002,6 +16012,7 @@ package Perlito5::AST::For;
 {
     sub Perlito5::AST::For::emit_java {
         my($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
         my @str;
         my $cond = ref($self->{'cond'}) eq 'ARRAY' ? $self->{'cond'} : [$self->{'cond'}];
@@ -16082,10 +16093,10 @@ package Perlito5::AST::Sub;
         my $js_block;
         if (!$self->{'_do_block'}) {
             $block->{'top_level'} = 1;
-            my $outer_throw = $Perlito5::THROW;
-            $Perlito5::THROW = 0;
+            my $outer_throw = $Perlito5::THROW_RETURN;
+            $Perlito5::THROW_RETURN = 0;
             $js_block = $block->emit_java($level + 3, 'runtime');
-            $Perlito5::THROW = $outer_throw
+            $Perlito5::THROW_RETURN = $outer_throw
         }
         else {
             $js_block = $block->emit_java($level + 3, $wantarray)

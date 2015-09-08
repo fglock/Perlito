@@ -691,11 +691,11 @@ package Perlito5::Java::LexicalBlock;
                     }
                     else {
                         if (!@{$last_statement->{arguments}}) {
-                            $Perlito5::THROW = 1;
+                            $Perlito5::THROW_RETURN = 1;
                             push @str, 'return PerlOp.ret(PerlOp.context(want));'; 
                         }
                         else {
-                            $Perlito5::THROW = 1;
+                            $Perlito5::THROW_RETURN = 1;
                             push @str, 'return PerlOp.ret('
                                 . Perlito5::Java::to_runtime_context([$last_statement->{arguments}[0]], $level+1)
                                 . ');';
@@ -714,10 +714,7 @@ package Perlito5::Java::LexicalBlock;
             }
         }
         my $out;
-        if ($self->{top_level} && $Perlito5::THROW) {
-
-            # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
-
+        if ($self->{top_level} && $Perlito5::THROW_RETURN) {
             $level = $original_level;
             my $tab = "\n" . Perlito5::Java::tab($level + 1);
             push @pre,                              "try {"
@@ -728,13 +725,20 @@ package Perlito5::Java::LexicalBlock;
                 . Perlito5::Java::tab($level)     . '}';
             @str = ();
         }
-        # elsif ( $create_context ) {
-        #     $level = $original_level;
-        #     my $tab = "\n" . Perlito5::Java::tab($level + 1);
-        #     $out =                                        "(function () {"
-        #           . $tab                               .     join($tab, @str) . "\n"
-        #           . Perlito5::Java::tab($level) .  "})();";
-        # }
+        elsif ($Perlito5::THROW) {
+
+            # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
+
+            $level = $original_level;
+            my $tab = "\n" . Perlito5::Java::tab($level + 1);
+            push @pre,                              "try {"
+                . $tab                            .    join($tab, @str) . "\n"
+                . Perlito5::Java::tab($level)     . '}' . "\n"
+                . Perlito5::Java::tab($level)     . 'catch(pNextException e) {' . "\n"
+                . Perlito5::Java::tab($level + 1) .    "// continue\n"
+                . Perlito5::Java::tab($level)     . '}';
+            @str = ();
+        }
         else {
             $level = $original_level;
             if ($has_local) {
@@ -765,6 +769,8 @@ package Perlito5::AST::CompUnit;
     sub emit_java_program {
         my ($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
+        $Perlito5::THROW = 0;
+        $Perlito5::THROW_RETURN = 0;
         my $level = 0;
         my $wantarray = 'void';
         my $str;
@@ -917,6 +923,7 @@ package Perlito5::AST::Block;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $body;
         if ($wantarray ne 'void') {
             $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts} );
@@ -2532,7 +2539,7 @@ package Perlito5::AST::Apply;
         },
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::THROW = 1;
+            $Perlito5::THROW_RETURN = 1;
             if ( ! @{ $self->{arguments} } ) {
                 return 'PerlOp.ret(PerlOp.context(want))';
             }
@@ -2586,7 +2593,7 @@ package Perlito5::AST::Apply;
 
         'eval' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::THROW = 1;   # we can return() from inside eval
+            $Perlito5::THROW_RETURN = 1;   # we can return() from inside eval
 
             my $arg = $self->{arguments}->[0];
             my $eval;
@@ -3418,6 +3425,7 @@ package Perlito5::AST::While;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $cond = $self->{cond};
 
         # body is 'Perlito5::AST::Apply' in this construct:
@@ -3476,6 +3484,7 @@ package Perlito5::AST::For;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        local $Perlito5::THROW = 0;
         my $body =
               ref($self->{body}) ne 'Perlito5::AST::Block'
             ? [ $self->{body} ]
@@ -3638,10 +3647,10 @@ package Perlito5::AST::Sub;
         my $js_block;
         if (!$self->{_do_block}) {
             $block->{top_level} = 1;
-            my $outer_throw = $Perlito5::THROW;
-            $Perlito5::THROW = 0;
+            my $outer_throw = $Perlito5::THROW_RETURN;
+            $Perlito5::THROW_RETURN = 0;
             $js_block = $block->emit_java( $level + 3, 'runtime' );
-            $Perlito5::THROW    = $outer_throw;
+            $Perlito5::THROW_RETURN = $outer_throw;
         }
         else {
             # do-block
