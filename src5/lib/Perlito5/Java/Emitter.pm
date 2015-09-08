@@ -38,6 +38,17 @@ package Perlito5::Java;
         return \%Java_var;
     }
 
+    our %Java_loop_label;
+    sub get_java_loop_label {
+        my $s = shift;
+        return 0 if !$s;
+        return $Java_loop_label{$s} if exists $Java_loop_label{$s};
+        my $label = $Perlito5::ID++;
+        $Java_loop_label{$s} = $label;
+        # push @Perlito5::Java::Java_constants, "public static final int Loop$s = $label;";
+        return $label;
+    }
+
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
         'prefix:<-A>' => 'p5atime',
@@ -568,6 +579,8 @@ package Perlito5::Java::LexicalBlock;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $original_level = $level;
+        my $block_label = Perlito5::Java::get_java_loop_label( $self->{block_label} );
+        $Perlito5::THROW = 1 if $block_label;
 
         my @block;
         for my $stmt (@{$self->{block}}) {
@@ -731,11 +744,18 @@ package Perlito5::Java::LexicalBlock;
 
             $level = $original_level;
             my $tab = "\n" . Perlito5::Java::tab($level + 1);
+
+            my $test_label = 'e.label_id != 0';
+            $test_label = "e.label_id != $block_label && e.label_id != 0"
+                if $block_label;
+
             push @pre,                              "try {"
                 . $tab                            .    join($tab, @str) . "\n"
                 . Perlito5::Java::tab($level)     . '}' . "\n"
                 . Perlito5::Java::tab($level)     . 'catch(pNextException e) {' . "\n"
-                . Perlito5::Java::tab($level + 1) .    "// continue\n"
+                . Perlito5::Java::tab($level + 1) .    "if ($test_label) {\n"
+                . Perlito5::Java::tab($level + 2) .         "throw e;\n"
+                . Perlito5::Java::tab($level + 1) .    "}\n"
                 . Perlito5::Java::tab($level)     . '}';
             @str = ();
         }
@@ -2519,23 +2539,20 @@ package Perlito5::AST::Apply;
         'next' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
-            # TODO - label_id
-            'PerlOp.next(' . 123 . ')';
+            my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
+            'PerlOp.next(' . $label . ')';
         },
         'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
-            # TODO - label_id
-            'PerlOp.last(' . 123 . ')';
+            my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
+            'PerlOp.last(' . $label . ')';
         },
         'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
-            # TODO - label_id
-            'PerlOp.redo(' . 123 . ')';
+            my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
+            'PerlOp.redo(' . $label . ')';
         },
         'return' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3521,7 +3538,7 @@ package Perlito5::AST::For;
                   . ') {',
                       [
                         # $v->emit_java($level + 1) . ".set(item);",
-                        (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
+                        (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
                       ],
                 '}';
 
@@ -3537,7 +3554,7 @@ package Perlito5::AST::For;
             #           [ '_redo = false;',
             #             'try {',
             #               [
-            #                 Perlito5::Java::LexicalBlock->new( block => $body )->emit_java($level + 4, $wantarray),
+            #                 Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} )->emit_java($level + 4, $wantarray),
             #               ],
             #             '}',
             #             'catch(err) {',
@@ -3564,6 +3581,7 @@ package Perlito5::AST::For;
             my $cond = Perlito5::Java::to_list([$self->{cond}], $level + 1);
 
             my $topic = $self->{topic};
+            my $local_label = Perlito5::Java::get_label();
 
             my $decl = '';
             my $v = $topic;
@@ -3578,9 +3596,9 @@ package Perlito5::AST::For;
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
                 push @str,
-                        'for (pObject item : ' . $cond . '.a) {',
-                          [ $v->emit_java($level + 1) . ".set(item);",
-                            (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
+                        'for (pObject ' . $local_label . ' : ' . $cond . '.a) {',
+                          [ $v->emit_java($level + 1) . ".set($local_label);",
+                            (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
                           ],
                         '}';
             }
@@ -3588,9 +3606,9 @@ package Perlito5::AST::For;
                 # use global variable or $_
                 # TODO - localize variable
                 push @str,
-                        'for (pObject item : ' . $cond . '.a) {',
-                          [ $v->emit_java($level + 1) . ".set(item);",
-                            (Perlito5::Java::LexicalBlock->new( block => $body ))->emit_java($level + 2, $wantarray),
+                        'for (pObject ' . $local_label . ' : ' . $cond . '.a) {',
+                          [ $v->emit_java($level + 1) . ".set($local_label);",
+                            (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
                           ],
                         '}';
             }

@@ -13884,6 +13884,15 @@ package Perlito5::Java;
     sub Perlito5::Java::get_java_var_info {
         return \%Java_var
     }
+    our %Java_loop_label;
+    sub Perlito5::Java::get_java_loop_label {
+        my $s = shift;
+        !$s && return 0;
+        exists($Java_loop_label{$s}) && return $Java_loop_label{$s};
+        my $label = $Perlito5::ID++;
+        $Java_loop_label{$s} = $label;
+        return $label
+    }
     our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size');
     our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
     our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
@@ -14164,6 +14173,8 @@ package Perlito5::Java::LexicalBlock;
     sub Perlito5::Java::LexicalBlock::emit_java {
         my($self, $level, $wantarray) = @_;
         my $original_level = $level;
+        my $block_label = Perlito5::Java::get_java_loop_label($self->{'block_label'});
+        $block_label && ($Perlito5::THROW = 1);
         my @block;
         for my $stmt (@{$self->{'block'}}) {
             if (defined($stmt)) {
@@ -14256,7 +14267,9 @@ package Perlito5::Java::LexicalBlock;
         elsif ($Perlito5::THROW) {
             $level = $original_level;
             my $tab = chr(10) . Perlito5::Java::tab($level + 1);
-            push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pNextException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . '// continue' . chr(10) . Perlito5::Java::tab($level) . '}');
+            my $test_label = 'e.label_id != 0';
+            $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
+            push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pNextException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . 'if (' . $test_label . ') {' . chr(10) . Perlito5::Java::tab($level + 2) . 'throw e;' . chr(10) . Perlito5::Java::tab($level + 1) . '}' . chr(10) . Perlito5::Java::tab($level) . '}');
             @str = ()
         }
         else {
@@ -15392,18 +15405,18 @@ package Perlito5::AST::Apply;
     }, 'next' => sub {
         my($self, $level, $wantarray) = @_;
         $Perlito5::THROW = 1;
-        my $label = $self->{'arguments'}->[0]->{'code'} || '';
-        'PerlOp.next(' . 123 . ')'
+        my $label = Perlito5::Java::get_java_loop_label($self->{'arguments'}->[0]->{'code'});
+        'PerlOp.next(' . $label . ')'
     }, 'last' => sub {
         my($self, $level, $wantarray) = @_;
         $Perlito5::THROW = 1;
-        my $label = $self->{'arguments'}->[0]->{'code'} || '';
-        'PerlOp.last(' . 123 . ')'
+        my $label = Perlito5::Java::get_java_loop_label($self->{'arguments'}->[0]->{'code'});
+        'PerlOp.last(' . $label . ')'
     }, 'redo' => sub {
         my($self, $level, $wantarray) = @_;
         $Perlito5::THROW = 1;
-        my $label = $self->{'arguments'}->[0]->{'code'} || '';
-        'PerlOp.redo(' . 123 . ')'
+        my $label = Perlito5::Java::get_java_loop_label($self->{'arguments'}->[0]->{'code'});
+        'PerlOp.redo(' . $label . ')'
     }, 'return' => sub {
         my($self, $level, $wantarray) = @_;
         $Perlito5::THROW_RETURN = 1;
@@ -16025,11 +16038,12 @@ package Perlito5::AST::For;
             }
         }
         if (ref($self->{'cond'}) eq 'ARRAY') {
-            push(@str, 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_java($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Java::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_java($level + 1) . ' ' : '') . ') {', [(Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray)], '}')
+            push(@str, 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_java($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Java::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_java($level + 1) . ' ' : '') . ') {', [(Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
         }
         else {
             my $cond = Perlito5::Java::to_list([$self->{'cond'}], $level + 1);
             my $topic = $self->{'topic'};
+            my $local_label = Perlito5::Java::get_label();
             my $decl = '';
             my $v = $topic;
             if ($v->{'decl'}) {
@@ -16042,10 +16056,10 @@ package Perlito5::AST::For;
             my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
-                push(@str, 'for (pObject item : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(item);', (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray)], '}')
+                push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
             }
             else {
-                push(@str, 'for (pObject item : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(item);', (Perlito5::Java::LexicalBlock::->new('block' => $body))->emit_java($level + 2, $wantarray)], '}')
+                push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
             }
         }
         if (@str > 1) {
