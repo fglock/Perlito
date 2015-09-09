@@ -12,16 +12,16 @@ General Information:
     The perl code is compiled to java code. The supported
     Perl syntax is a compatible subset of Perl5.
 
-    That model of operation implies two mayor tradeoffs:
+    That model of operation implies two major tradeoffs:
 
         CON: Some Perl5 modules will not compile. Specifically,
-             this applies to XS modules, modules dependandt on
+             this applies to XS modules, modules dependent on
              XS modules and modules which use syntax constructs
              outside of supported subset.
 
-        PRO: All the java classes ever written can be usedi with
+        PRO: All the java classes ever written can be used with
              the supported subset of Perl syntax (which is large
-             enough for writting usefull code).
+             enough for writting useful code).
 
 
 How to run:
@@ -85,7 +85,7 @@ Example 2: (Using regexes: file => benchmark_regex.pl)
 
 
     In our benchmarks, the java code and the perl code
-    performed roughly the same. This is not supprising
+    performed roughly the same. This is not surprising
     since even though Java is a compiled language, Perl
     is made for text processing and its regex engine is
     writen in highly optimized C code.
@@ -126,7 +126,7 @@ Example 3: (HBase Get example: file => HBaseGet.pl)
 
 Example 4: (HBase Scanner example: file => HBaseScanner.pl)
 
-    This example follows up on example 3 with addition of casting java
+    This example follows up on example 3 with the addition of casting java
     objects back to perl objects.
 
         package IOException { import => "java.io.IOException" };
@@ -178,7 +178,7 @@ Example 4: (HBase Scanner example: file => HBaseScanner.pl)
         }
 
 
-    Casting from java to perl is currentyl manual. In the future this
+    Casting from java to perl is currently manual. In the future this
     will be automatic, like:
 
 
