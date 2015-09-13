@@ -581,6 +581,9 @@ EOT
         return this;
     }
 
+    public pObject length() {
+        return new pInt(this.to_string().length());
+    }
     public pObject get_arrayref() {
         return pCORE.die("Not an ARRAY reference");
     }
@@ -2326,6 +2329,9 @@ class pUndef extends pObject {
         // $a->()
         pCORE.die("Can't use an undefined value as a subroutine reference");
         return this;
+    }
+    public pObject length() {
+        return pCx.UNDEF;
     }
     public int to_int() {
         return 0;
