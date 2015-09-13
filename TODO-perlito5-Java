@@ -280,3 +280,5 @@
 
     memoize method-name lookups
 
+    do-block and eval-block in void-context don't need a subroutine wrapper
+
