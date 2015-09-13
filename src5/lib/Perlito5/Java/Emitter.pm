@@ -2615,12 +2615,18 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Block" )) {
-                # eval block
-
-                $eval = Perlito5::AST::Apply->new(
-                            code => 'do',
-                            arguments => [$arg]
-                        )->emit_java( $level + 1, $wantarray );
+                # eval BLOCK
+                # rewrite to:   sub {...}->()
+                my $ast = Perlito5::AST::Call->new(
+                    'method' => 'postcircumfix:<( )>',
+                    'invocant' => Perlito5::AST::Sub->new(
+                        'block' => $arg,
+                        'attributes' => [],
+                        _eval_block => 1,
+                    ),
+                    'arguments' => [],
+                );
+                return $ast->emit_java( $level + 1, $wantarray );
             }
             else {
                 # eval string
