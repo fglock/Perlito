@@ -133,11 +133,12 @@ class pCORE {
         return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
     }
     public static final pObject die(int want, pArray List__) {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < List__.to_int(); i++) {
-            System.err.print(List__.aget(i).to_string());
+            String item = List__.aget(i).to_string();
+            sb.append(item);
         }
-        System.err.println("");
-        throw new RuntimeException();
+        throw new RuntimeException(sb.toString());
     }
     public static final pObject die(String s) {
         // die() shortcut
