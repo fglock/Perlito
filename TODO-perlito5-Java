@@ -248,8 +248,7 @@
     overload
     tie()
     exceptions
-        "next", "goto", "last", "redo"
-        "eval BLOCK"
+        "goto", "last", "redo"
         Note: remember to cleanup the stacks (boolean, local).
     "continue" blocks
     "dualvars"
@@ -273,4 +272,11 @@
 -- Extra things to test
 
     threads
+
+-- Optimizations
+
+    use "our"-ish variables to avoid global variable lookups
+        Note: remember the special-cases for "local" keyword
+
+    memoize method-name lookups
 
