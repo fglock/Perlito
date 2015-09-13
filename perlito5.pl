@@ -15443,7 +15443,6 @@ package Perlito5::AST::Apply;
         return $js
     }, 'eval' => sub {
         my($self, $level, $wantarray) = @_;
-        $Perlito5::THROW_RETURN = 1;
         my $arg = $self->{'arguments'}->[0];
         my $eval;
         if ($arg->isa('Perlito5::AST::Block')) {
@@ -16105,26 +16104,25 @@ package Perlito5::AST::Sub;
             $Perlito5::Java::Java_var_name{$_->{'_id'}} = 'this.env[' . $i . ']';
             $i++
         }
-        my $js_block;
+        my @js_block;
         if ($self->{'_do_block'}) {
-            $js_block = $block->emit_java($level + 3, $wantarray)
+            @js_block = $block->emit_java($level + 3, $wantarray)
         }
         elsif ($self->{'_eval_block'}) {
-            warn('TODO Java eval-block');
             $block->{'top_level'} = 1;
             my $outer_throw = $Perlito5::THROW_RETURN;
             $Perlito5::THROW_RETURN = 0;
-            $js_block = $block->emit_java($level + 3, 'runtime');
+            push(@js_block, 'try {', [$block->emit_java($level + 4, 'runtime')], '}', 'catch(pNextException|pLastException|pRedoException e) {', ['throw e;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}');
             $Perlito5::THROW_RETURN = $outer_throw
         }
         else {
             $block->{'top_level'} = 1;
             my $outer_throw = $Perlito5::THROW_RETURN;
             $Perlito5::THROW_RETURN = 0;
-            $js_block = $block->emit_java($level + 3, 'runtime');
+            @js_block = $block->emit_java($level + 3, 'runtime');
             $Perlito5::THROW_RETURN = $outer_throw
         }
-        my $s = Perlito5::Java::emit_wrap_java($level, 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public pObject apply(int want, pArray List__) {', [$js_block], '}'], '}');
+        my $s = Perlito5::Java::emit_wrap_java($level, 'new pClosure(' . $prototype . ', new pObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public pObject apply(int want, pArray List__) {', \@js_block, '}'], '}');
         if ($self->{'name'}) {
             return 'pV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '|' . $self->{'name'}) . ', ' . $s . ')'
         }
