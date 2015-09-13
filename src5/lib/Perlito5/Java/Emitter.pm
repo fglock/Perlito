@@ -3669,7 +3669,15 @@ package Perlito5::AST::Sub;
         }
 
         my $js_block;
-        if (!$self->{_do_block}) {
+        if ($self->{_do_block}) {
+            # do-block
+            $js_block = $block->emit_java( $level + 3, $wantarray );
+        }
+        elsif ($self->{_eval_block}) {
+            # eval-block
+
+            warn "TODO Java eval-block";
+
             $block->{top_level} = 1;
             my $outer_throw = $Perlito5::THROW_RETURN;
             $Perlito5::THROW_RETURN = 0;
@@ -3677,8 +3685,11 @@ package Perlito5::AST::Sub;
             $Perlito5::THROW_RETURN = $outer_throw;
         }
         else {
-            # do-block
-            $js_block = $block->emit_java( $level + 3, $wantarray );
+            $block->{top_level} = 1;
+            my $outer_throw = $Perlito5::THROW_RETURN;
+            $Perlito5::THROW_RETURN = 0;
+            $js_block = $block->emit_java( $level + 3, 'runtime' );
+            $Perlito5::THROW_RETURN = $outer_throw;
         }
 
         my $s = Perlito5::Java::emit_wrap_java($level,
