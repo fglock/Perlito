@@ -14354,7 +14354,10 @@ use feature 'say';
                     }
                 }
                 my $out;
-                if ($self->{'top_level'} && $Perlito5::THROW_RETURN) {
+                if ($self->{'eval_block'}) {
+                    return (@pre, 'try {', \@str, '}', 'catch(pReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}', 'catch(pNextException e) {', ['throw e;'], '}', 'catch(pLastException e) {', ['throw e;'], '}', 'catch(pRedoException e) {', ['throw e;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}')
+                }
+                elsif ($self->{'top_level'} && $Perlito5::THROW_RETURN) {
                     $level = $original_level;
                     my $tab = chr(10) . Perlito5::Java::tab($level + 1);
                     push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pReturnException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . emit_return($has_local, $local_label, 'e.ret') . ';' . chr(10) . Perlito5::Java::tab($level) . '}');
@@ -16210,10 +16213,10 @@ use feature 'say';
                 }
                 elsif ($self->{'_eval_block'}) {
                     $block->{'top_level'} = 1;
+                    $block->{'eval_block'} = 1;
                     my $outer_throw = $Perlito5::THROW_RETURN;
                     $Perlito5::THROW_RETURN = 0;
-                    push(@js_block, 'try {', [$block->emit_java($level + 4, 'runtime')], '}', 'catch(pNextException e) {', ['throw e;'], '}', 'catch(pLastException e) {', ['throw e;'], '}', 'catch(pRedoException e) {', ['throw e;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}', 'return pCx.UNDEF;');
-                    $Perlito5::THROW_RETURN = $outer_throw
+                    @js_block = $block->emit_java($level + 3, 'runtime'), $Perlito5::THROW_RETURN = $outer_throw
                 }
                 else {
                     $block->{'top_level'} = 1;
