@@ -16212,7 +16212,7 @@ use feature 'say';
                     $block->{'top_level'} = 1;
                     my $outer_throw = $Perlito5::THROW_RETURN;
                     $Perlito5::THROW_RETURN = 0;
-                    push(@js_block, 'try {', [$block->emit_java($level + 4, 'runtime')], '}', 'catch(pNextException|pLastException|pRedoException e) {', ['throw e;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}');
+                    push(@js_block, 'try {', [$block->emit_java($level + 4, 'runtime')], '}', 'catch(pNextException e) {', ['throw e;'], '}', 'catch(pLastException e) {', ['throw e;'], '}', 'catch(pRedoException e) {', ['throw e;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}', 'return pCx.UNDEF;');
                     $Perlito5::THROW_RETURN = $outer_throw
                 }
                 else {
