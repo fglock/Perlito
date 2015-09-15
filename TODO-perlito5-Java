@@ -257,7 +257,8 @@
     subroutine signatures
     return (list)
     assignment to splice
-    rw @_
+    rw @_ in subroutines
+    rw $_ in loops
     sprintf
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
@@ -281,4 +282,6 @@
     memoize method-name lookups
 
     do-block and eval-block in void-context don't need a subroutine wrapper
+
+    don't pre-expand ranges in loops
 
