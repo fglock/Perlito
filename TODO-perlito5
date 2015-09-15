@@ -490,6 +490,21 @@ TODO list for Perlito5
     at eval (eval at <anonymous> (/perlito5.js:31586:57), <anonymous>:32:7)
     ..."
 
+-- die() details
+
+    If the output is empty and $@ already contains a value (typically
+    from a previous eval) that value is reused after appending
+    "\t...propagated". This is useful for propagating exceptions:
+
+        eval { ... };
+        die unless $@ =~ /Expected exception/;
+
+    If the output is empty and $@ contains an object reference that
+    has a "PROPAGATE" method, that method will be called with
+    additional file and line number parameters. The return value
+    replaces the value in $@; i.e., as if "$@ = eval {
+    $@->PROPAGATE(__FILE__, __LINE__) };" were called.
+
 
 * Javascript - implemented but missing more tests
 
