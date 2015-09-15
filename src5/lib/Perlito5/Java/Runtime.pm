@@ -95,6 +95,16 @@ class pReturnException  extends pControlException {
         this.ret = ret;
     }
 }
+class pDieException  extends pControlException {
+    public pObject ret;
+
+    public pDieException(pObject ret) {
+        this.ret = ret;
+    }
+    public String getMessage() {
+        return this.ret.to_string();
+    }
+}
 class pCx {
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
@@ -105,6 +115,7 @@ class pCx {
     public static final pString STDOUT = new pString("STDOUT");
     public static final pString STDERR = new pString("STDERR");
     public static final pString STDIN  = new pString("STDIN");
+    public static final pString DIED   = new pString("Died");
     public static final String  ARGV   = "main|List_ARGV";
     public static final String  ENV    = "main|Hash_ENV";
 
@@ -133,12 +144,19 @@ class pCORE {
         return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
     }
     public static final pObject die(int want, pArray List__) {
+        pObject arg = List__.aget(0);
+        if (arg.is_undef() || (arg.is_string() && arg.to_string() == "")) {
+            throw new pDieException(pCx.DIED);
+        }
+        if (List__.to_int() == 1) {
+            throw new pDieException(arg);
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < List__.to_int(); i++) {
             String item = List__.aget(i).to_string();
             sb.append(item);
         }
-        throw new RuntimeException(sb.toString());
+        throw new pDieException(new pString(sb.toString()));
     }
     public static final pObject die(String s) {
         // die() shortcut
