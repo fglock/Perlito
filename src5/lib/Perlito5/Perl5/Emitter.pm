@@ -19,9 +19,11 @@ package Perlito5::AST::CompUnit;
 {
     sub emit_perl5 {
         my $self = $_[0];
-        return ( [ stmt => [ keyword => 'package'], [ bareword => $self->{name} ] ],
-                 map { defined($_) && $_->emit_perl5() } @{$self->{body}}
-               );
+        return [ 'block', (
+                        [ stmt => [ keyword => 'package'], [ bareword => $self->{name} ] ],
+                        map { defined($_) && $_->emit_perl5() } @{$self->{body}}
+                    )
+               ];
     }
     sub emit_perl5_program {
         my $comp_units = $_[0];
