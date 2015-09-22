@@ -14693,7 +14693,11 @@ use feature 'say';
                 ()
             }
             sub Perlito5::AST::Lookup::emit_java_get_captures {
-                ()
+                my $self = shift;
+                my @var;
+                push(@var, $self->{'obj'}->emit_java_get_captures());
+                push(@var, $self->{'index_exp'}->emit_java_get_captures());
+                return @var
             }
         }
         package Perlito5::AST::Var;
