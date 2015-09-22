@@ -373,6 +373,11 @@ class PerlOp {
         return boolean_stack.remove(0);
     }
 
+    public static final pInt ord(pString s) {
+        String item = s.to_string();
+        return new pInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
+    }
+
     // $x++ when $x is pString
     public static final String string_increment(String s) {
         if (s.length() < 2) {

@@ -2036,6 +2036,10 @@ package Perlito5::AST::Apply;
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_string().indexOf('
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_string()))'
         },
+        'ord' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PerlOp.ord(' . Perlito5::Java::to_str($self->{arguments}->[0], $level) . ')'
+        },
         'chr' => sub {
             my ($self, $level, $wantarray) = @_;
               'new pString((char)'
