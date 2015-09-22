@@ -3679,7 +3679,17 @@ package Perlito5::AST::For;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
+    sub emit_java_get_captures {
+        my $self      = shift;
+        my @var;
+        my $body =
+              ref($self->{body}) ne 'Perlito5::AST::Block'
+            ? [ $self->{body} ]
+            : $self->{body}{stmts};
+        push @var, map { $_->emit_java_get_captures() } @$body;
+        return @var;
+    }
+
 }
 
 package Perlito5::AST::Sub;
