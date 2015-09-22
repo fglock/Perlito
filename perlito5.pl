@@ -16071,7 +16071,12 @@ use feature 'say';
                 ()
             }
             sub Perlito5::AST::If::emit_java_get_captures {
-                ()
+                my $self = shift;
+                my @var;
+                push(@var, $self->{'cond'}->emit_java_get_captures());
+                push(@var, $self->{'body'}->emit_java_get_captures());
+                push(@var, $self->{'otherwise'}->emit_java_get_captures());
+                return @var
             }
         }
         package Perlito5::AST::When;
@@ -16129,7 +16134,11 @@ use feature 'say';
                 ()
             }
             sub Perlito5::AST::While::emit_java_get_captures {
-                ()
+                my $self = shift;
+                my @var;
+                push(@var, $self->{'cond'}->emit_java_get_captures());
+                push(@var, $self->{'body'}->emit_java_get_captures());
+                return @var
             }
         }
         package Perlito5::AST::For;
@@ -16192,7 +16201,7 @@ use feature 'say';
                 my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
                 push(@var, map {
                     $_->emit_java_get_captures()
-                } @{$body});
+                } @{$body}, $self->{'topic'});
                 return @var
             }
         }

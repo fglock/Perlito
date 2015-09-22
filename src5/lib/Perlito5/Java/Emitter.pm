@@ -3477,7 +3477,15 @@ package Perlito5::AST::If;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
+    sub emit_java_get_captures {
+        my $self      = shift;
+        my @var;
+        push @var, $self->{cond}->emit_java_get_captures();
+        push @var, $self->{body}->emit_java_get_captures();
+        push @var, $self->{otherwise}->emit_java_get_captures();
+        return @var;
+    }
+
 }
 
 
@@ -3548,7 +3556,14 @@ package Perlito5::AST::While;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
+    sub emit_java_get_captures {
+        my $self      = shift;
+        my @var;
+        push @var, $self->{cond}->emit_java_get_captures();
+        push @var, $self->{body}->emit_java_get_captures();
+        return @var;
+    }
+
 }
 
 package Perlito5::AST::For;
@@ -3686,7 +3701,7 @@ package Perlito5::AST::For;
               ref($self->{body}) ne 'Perlito5::AST::Block'
             ? [ $self->{body} ]
             : $self->{body}{stmts};
-        push @var, map { $_->emit_java_get_captures() } @$body;
+        push @var, map { $_->emit_java_get_captures() } @$body, $self->{topic};
         return @var;
     }
 
