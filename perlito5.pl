@@ -14012,6 +14012,7 @@ use feature 'say';
                     }
                 }
                 $tmp ne '' && push(@out, '"' . $tmp . '"');
+                scalar(@out) > 1 && unshift(@out, '""');
                 return join(' + ', @out)
             }
             sub Perlito5::Java::is_native {

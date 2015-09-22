@@ -169,6 +169,7 @@ package Perlito5::Java;
             }
         }
         push @out, "\"$tmp\"" if $tmp ne '';
+        unshift @out, '""' if scalar(@out) > 1;
         return join(' + ', @out);
     }
 
