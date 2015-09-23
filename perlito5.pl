@@ -14544,7 +14544,7 @@ use feature 'say';
             sub Perlito5::AST::Block::emit_java_get_captures {
                 my($self) = @_;
                 my @var;
-                for my $stmt (@{$self->{'block'}}) {
+                for my $stmt (@{$self->{'stmts'}}) {
                     push(@var, $stmt->emit_java_get_captures())
                 }
                 return @var
