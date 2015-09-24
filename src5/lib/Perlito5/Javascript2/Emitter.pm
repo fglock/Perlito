@@ -2200,7 +2200,11 @@ package Perlito5::AST::Apply;
                     ],
                 "}",
                 "catch(err) {",
-                [  "if ( err instanceof p5_error || err instanceof Error ) {",
+                 [
+                   "if (err instanceof p5_error && (err.type == 'last' || err.type == 'redo' || err.type == 'next')) {",
+                        [ 'throw(err)' ],
+                   '}',
+                   "else if ( err instanceof p5_error || err instanceof Error ) {",
                      [ 'p5pkg["main"]["v_@"] = err;',
                        'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\n") {',
                            [ # try to add a stack trace
