@@ -42,6 +42,12 @@
             # perl_package   => 'The::Class',       # auto generated, Perl package name
         }
 
+
+-- TODO - fix: module compilation requires the "bootstrapping" switch
+
+    perl perlito5.pl -I src5/lib --bootstrapping -Cjava -e ' use Data::Dumper; print Data::Dumper::Dumper [ 123 , { 4 => 4 } ]'
+
+
 -- Java import
 
     package Sample {
