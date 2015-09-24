@@ -1965,6 +1965,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'prefix:<*>') {
+            return 'pCORE.die("prefix:<*> not implemented")';
             return 'p5typeglob_deref_set(' 
                 . Perlito5::Java::to_scalar($self->{arguments}, $level+1) . ', '
                 . Perlito5::Java::to_scalar([$arguments], $level+1)       . ', '
@@ -2608,6 +2609,13 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             die "TODO - goto() not implemented";
+        },
+        'caller' => sub {
+            my ($self, $level, $wantarray) = @_;
+            return 'PerlOp.caller('
+                            . Perlito5::Java::to_context($wantarray) . ', '
+                            . $self->{arguments}->[0]->emit_java($level)
+                        . ')'
         },
 
         'do' => sub {

@@ -316,6 +316,12 @@ class PerlOp {
         throw new pReturnException(ret);
     }
 
+    public static final pObject caller(int ctx, pObject s) {
+        int item = s.to_int();
+        pCORE.die("caller() not implemented");
+        return null;
+    }
+
     public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {
         if (ctx == pCx.LIST) {
             int start = _start.to_int(),
