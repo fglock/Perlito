@@ -16319,7 +16319,7 @@ use feature 'say';
                 my $perl = $_;
                 my $native = $number_binop{$perl}->{'op'};
                 my $returns = $number_binop{$perl}->{'returns'};
-                '    public pObject ' . $perl . '(pObject s) {' . chr(10) . '        return s.' . $perl . '2(this);' . chr(10) . '    }' . chr(10) . '    public pObject ' . $perl . '2(pObject s) {' . chr(10) . '        return new ' . $returns . '( s.to_int() ' . $native . ' this.to_int() );' . chr(10) . '    }' . chr(10)
+                '    public pObject ' . $perl . '(pObject s) {' . chr(10) . '        return s.' . $perl . '2(this);' . chr(10) . '    }' . chr(10) . ($returns eq 'pDouble' ? '    public pObject ' . $perl . '2(pObject s) {' . chr(10) . '        return new ' . $returns . '( s.to_double() ' . $native . ' this.to_double() );' . chr(10) . '    }' . chr(10) : '    public pObject ' . $perl . '2(pObject s) {' . chr(10) . '        return new ' . $returns . '( s.to_int() ' . $native . ' this.to_int() );' . chr(10) . '    }' . chr(10))
             } keys(%number_binop))) . (join('', map {
                 my $perl = $_;
                 my $native = $string_binop{$perl}->{'op'};

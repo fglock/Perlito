@@ -959,10 +959,17 @@ EOT
 "    public pObject ${perl}(pObject s) {
         return s.${perl}2(this);
     }
-    public pObject ${perl}2(pObject s) {
-        return new ${returns}( s.to_int() ${native} this.to_int() );
+"
+    .   ( $returns eq 'pDouble' ?
+"    public pObject ${perl}2(pObject s) {
+        return new ${returns}( s.to_double() ${native} this.to_double() );
     }
 "
+        :
+"    public pObject ${perl}2(pObject s) {
+        return new ${returns}( s.to_int() ${native} this.to_int() );
+    }
+"       )
             }
             keys %number_binop ))
 
