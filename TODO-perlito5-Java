@@ -294,3 +294,5 @@
 
     replace regex with index
 
+    use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
+

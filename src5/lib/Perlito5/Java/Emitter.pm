@@ -536,7 +536,7 @@ package Perlito5::Java;
              '}',
              'catch(pLastException e) {',
                 [ "if ($test_label) {",
-                     "throw e;",
+                     [ "throw e;" ],
                   "}"
                 ],
              '}' );

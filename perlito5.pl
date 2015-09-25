@@ -14235,7 +14235,7 @@ use feature 'say';
                 my $block_label = Perlito5::Java::get_java_loop_label($self->{'label'});
                 my $test_label = 'e.label_id != 0';
                 $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
-                return ('try {', [@{$stmts}], '}', 'catch(pLastException e) {', ['if (' . $test_label . ') {', 'throw e;', '}'], '}')
+                return ('try {', [@{$stmts}], '}', 'catch(pLastException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}')
             }
         }
         package Perlito5::Java::LexicalBlock;
