@@ -3441,7 +3441,6 @@ package Perlito5::AST::If;
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
         }
-
         my $body =
               ref($self->{body}) ne 'Perlito5::AST::Block'
             ? $self->{body} # may be undef
@@ -3478,22 +3477,7 @@ package Perlito5::AST::If;
                     '}';
             }
         }
-
         return Perlito5::Java::emit_wrap_java($level, @str);
-        # if (@str) {
-        #     $level = $old_level;
-        #     # create js scope for 'my' variables
-        #     return 
-        #           ( $wantarray ne 'void'
-        #           ? "return "
-        #           : ""
-        #           )
-        #         . Perlito5::Java::emit_wrap_java($level, @str);
-        # }
-        # else {
-        #     return join( "\n" . Perlito5::Java::tab($level), @str );
-        # }
-
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -3568,14 +3552,7 @@ package Perlito5::AST::While;
         if ($Perlito5::THROW) {
             @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
         }
-        if (@str) {
-            $level = $old_level;
-            # create js scope for 'my' variables
-            return Perlito5::Java::emit_wrap_java($level, @str);
-        }
-        else {
-            return join( "\n" . Perlito5::Java::tab($level), @str );
-        }
+        return Perlito5::Java::emit_wrap_java($level, @str);
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -3620,7 +3597,6 @@ package Perlito5::AST::For;
 
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
-            # TODO - loop label
             # TODO - make continue-block a syntax error
             push @str,
                 'for ( '
@@ -3633,48 +3609,11 @@ package Perlito5::AST::For;
                         (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
                       ],
                 '}';
-
-            # push @str, Perlito5::Java::emit_wrap_java($level,
-            #     'var label = ' . Perlito5::Java::escape_string(($self->{label} || "") ) . ';',
-            #     'for ( '
-            #         . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
-            #         . ( $self->{cond}[1] ? Perlito5::Java::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
-            #         . ( $self->{cond}[2] ? $self->{cond}[2]->emit_java($level + 1) . ' '   : ''  )
-            #       . ') {',
-            #       [ 'var _redo = true;',
-            #         'while(_redo) {',
-            #           [ '_redo = false;',
-            #             'try {',
-            #               [
-            #                 Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} )->emit_java($level + 4, $wantarray),
-            #               ],
-            #             '}',
-            #             'catch(err) {',
-            #               [ 'if (err instanceof p5_error && (err.v == label || err.v == \'\')) {',
-            #                   [ 'if (err.type == \'last\') { return }',
-            #                     'else if (err.type == \'redo\') { _redo = true }',
-            #                     'else if (err.type != \'next\') { throw(err) }',
-            #                   ],
-            #                 '}',
-            #                 'else {',
-            #                   [ 'throw(err)',
-            #                   ],
-            #                 '}',
-            #               ],
-            #             '}',
-            #           ],
-            #         '}',
-            #       ],
-            #     '}',
-            # );
         }
         else {
-
             my $cond = Perlito5::Java::to_list([$self->{cond}], $level + 1);
-
             my $topic = $self->{topic};
             my $local_label = Perlito5::Java::get_label();
-
             my $decl = '';
             my $v = $topic;
             if ($v->{decl}) {
@@ -3708,14 +3647,7 @@ package Perlito5::AST::For;
         if ($Perlito5::THROW) {
             @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
         }
-        if (@str > 1) {
-            # $level = $old_level;
-            # create js scope for 'my' variables
-            return Perlito5::Java::emit_wrap_java($level, @str);
-        }
-        else {
-            return join( "\n" . Perlito5::Java::tab($level), @str );
-        }
+        return Perlito5::Java::emit_wrap_java($level, @str);
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }

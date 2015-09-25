@@ -16127,13 +16127,7 @@ use feature 'say';
                 if ($Perlito5::THROW) {
                     @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
-                if (@str) {
-                    $level = $old_level;
-                    return Perlito5::Java::emit_wrap_java($level, @str)
-                }
-                else {
-                    return join(chr(10) . Perlito5::Java::tab($level), @str)
-                }
+                return Perlito5::Java::emit_wrap_java($level, @str)
             }
             sub Perlito5::AST::While::emit_java_get_decl {
                 ()
@@ -16193,12 +16187,7 @@ use feature 'say';
                 if ($Perlito5::THROW) {
                     @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
-                if (@str > 1) {
-                    return Perlito5::Java::emit_wrap_java($level, @str)
-                }
-                else {
-                    return join(chr(10) . Perlito5::Java::tab($level), @str)
-                }
+                return Perlito5::Java::emit_wrap_java($level, @str)
             }
             sub Perlito5::AST::For::emit_java_get_decl {
                 ()
