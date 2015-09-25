@@ -292,3 +292,5 @@
 
     don't pre-expand ranges in loops
 
+    replace regex with index
+
