@@ -551,6 +551,24 @@ package Perlito5::Java;
         emit_wrap_java( $level, $argument )
     }
 
+    sub emit_wrap_last_exception_java {
+        my ($self, $stmts) = @_;
+        my $block_label = Perlito5::Java::get_java_loop_label( $self->{label} );
+        my $test_label = 'e.label_id != 0';
+        $test_label = "e.label_id != $block_label && e.label_id != 0"
+            if $block_label;
+        return (
+             "try {",
+                [ @$stmts ],
+             '}',
+             'catch(pLastException e) {',
+                [ "if ($test_label) {",
+                     "throw e;",
+                  "}"
+                ],
+             '}' );
+    }
+
 }
 
 package Perlito5::Java::LexicalBlock;
@@ -994,8 +1012,11 @@ package Perlito5::AST::Block;
 
         }
 
-        return "// TODO - Perlito5::AST::Block\n"
-                . Perlito5::Java::tab($level + 1) .    $body->emit_java($level + 1, $wantarray) . "\n";
+        my @str = $body->emit_java($level + 1, $wantarray);
+        if ($Perlito5::THROW) {
+            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+        }
+        return Perlito5::Java::emit_wrap_java($level, @str);
     }
     sub emit_java_continue {
         my $self = shift;
@@ -3553,6 +3574,9 @@ package Perlito5::AST::While;
                     # . Perlito5::Java::escape_string($self->{label} || "") . ', '
                     # . $do_at_least_once
 
+        if ($Perlito5::THROW) {
+            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+        }
         if (@str) {
             $level = $old_level;
             # create js scope for 'my' variables
@@ -3690,7 +3714,9 @@ package Perlito5::AST::For;
                         '}';
             }
         }
-
+        if ($Perlito5::THROW) {
+            @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
+        }
         if (@str > 1) {
             # $level = $old_level;
             # create js scope for 'my' variables

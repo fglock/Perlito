@@ -14243,6 +14243,13 @@ use feature 'say';
                 }
                 emit_wrap_java($level, $argument)
             }
+            sub Perlito5::Java::emit_wrap_last_exception_java {
+                my($self, $stmts) = @_;
+                my $block_label = Perlito5::Java::get_java_loop_label($self->{'label'});
+                my $test_label = 'e.label_id != 0';
+                $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
+                return ('try {', [@{$stmts}], '}', 'catch(pLastException e) {', ['if (' . $test_label . ') {', 'throw e;', '}'], '}')
+            }
         }
         package Perlito5::Java::LexicalBlock;
         {
@@ -14524,7 +14531,11 @@ use feature 'say';
                     my $tmp = 'p5pkg.main.' . Perlito5::Java::get_label();
                     $init = Perlito5::Java::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
                 }
-                return '// TODO - Perlito5::AST::Block' . chr(10) . Perlito5::Java::tab($level + 1) . $body->emit_java($level + 1, $wantarray) . chr(10)
+                my @str = $body->emit_java($level + 1, $wantarray);
+                if ($Perlito5::THROW) {
+                    @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
+                }
+                return Perlito5::Java::emit_wrap_java($level, @str)
             }
             sub Perlito5::AST::Block::emit_java_continue {
                 my $self = shift;
@@ -16123,6 +16134,9 @@ use feature 'say';
                     $expression = Perlito5::Java::to_bool($cond, $level + 1)
                 }
                 push(@str, 'while (' . $expression . ') ' . '{' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}');
+                if ($Perlito5::THROW) {
+                    @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
+                }
                 if (@str) {
                     $level = $old_level;
                     return Perlito5::Java::emit_wrap_java($level, @str)
@@ -16185,6 +16199,9 @@ use feature 'say';
                     else {
                         push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
                     }
+                }
+                if ($Perlito5::THROW) {
+                    @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
                 if (@str > 1) {
                     return Perlito5::Java::emit_wrap_java($level, @str)
