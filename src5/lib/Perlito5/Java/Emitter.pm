@@ -763,19 +763,32 @@ package Perlito5::Java::LexicalBlock;
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
+            my $redo_label = Perlito5::Java::get_label();
             my $test_label = 'e.label_id != 0';
             $test_label = "e.label_id != $block_label && e.label_id != 0"
                 if $block_label;
             push @pre,
-                 "try {",
-                    [ @str ],
-                 '}',
-                 'catch(pNextException e) {',
-                    [ "if ($test_label) {",
-                         [ "throw e;" ],
-                      "}"
-                    ],
-                 '}';
+                "boolean $redo_label = false;",
+                "do {",
+                  [
+                    "try {",
+                       [ @str ],
+                    '}',
+                    'catch(pNextException e) {',
+                       [ "if ($test_label) {",
+                            [ "throw e;" ],
+                         "}"
+                       ],
+                    '}',
+                    'catch(pRedoException e) {',
+                       [ "if ($test_label) {",
+                            [ "throw e;" ],
+                         "}",
+                         "$redo_label = true;",
+                       ],
+                    '}'
+                  ],
+                "} while ($redo_label);";
             @str = ();
         }
         else {
