@@ -3002,7 +3002,7 @@ package Perlito5::AST::While;
                     . "function () {\n"
                     . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body ))->emit_javascript2($level + 2, $wantarray) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
-                    . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'void', $cond) . ', '
+                    . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'scalar', $cond) . ', '
                     . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', '
                     . Perlito5::Javascript2::escape_string($self->{label} || "") . ', '
                     . $do_at_least_once
