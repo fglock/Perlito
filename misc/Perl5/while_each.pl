@@ -1,3 +1,5 @@
+# http://blogs.perl.org/users/vkroll/2015/09/how-each-drove-me-crazy.html
+
 use strict;
 
 my @data = qw( bla fasel foo org jawohl hmblamm glfoo sdfoo sadfasffoo) ;
