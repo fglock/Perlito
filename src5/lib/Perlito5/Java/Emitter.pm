@@ -768,9 +768,10 @@ package Perlito5::Java::LexicalBlock;
             $test_label = "e.label_id != $block_label && e.label_id != 0"
                 if $block_label;
             push @pre,
-                "boolean $redo_label = false;",
+                "boolean $redo_label;",
                 "do {",
                   [
+                    "$redo_label = false;",
                     "try {",
                        [ @str ],
                     '}',

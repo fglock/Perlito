@@ -14360,7 +14360,7 @@ use feature 'say';
                     my $redo_label = Perlito5::Java::get_label();
                     my $test_label = 'e.label_id != 0';
                     $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
-                    push(@pre, 'boolean ' . $redo_label . ' = false;', 'do {', ['try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}'], '} while (' . $redo_label . ');');
+                    push(@pre, 'boolean ' . $redo_label . ';', 'do {', [$redo_label . ' = false;', 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}'], '} while (' . $redo_label . ');');
                     @str = ()
                 }
                 elsif ($has_local) {
