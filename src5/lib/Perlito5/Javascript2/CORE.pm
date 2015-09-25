@@ -50,6 +50,10 @@ if (!CORE.sleep) {
     }
 }
 
+CORE.time = function(List__) {
+    return Date.now() / 1000;
+}
+
 CORE.bless = function(List__) {
     var o        = List__[0];
     var pkg_name = List__[1];
