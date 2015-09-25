@@ -1189,14 +1189,15 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
     p5cleanup_local(local_idx, null);
 };
 
-var p5for_lex = function(func, args, cont, label) {
+var p5for_lex = function(set_var, func, args, cont, label) {
     var local_idx = p5LOCAL.length;
     var _redo;
     for(var i = 0; i < args.length; i++) {
+        set_var(args[i]);
         do {
             _redo = false;
             try {
-                func(args[i])
+                func()
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {

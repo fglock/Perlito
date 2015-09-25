@@ -773,6 +773,7 @@ package Perlito5::AST::Block;
         }
 
         return 'p5for_lex('
+                . "function (v) {}, "
                 . "function () {\n"
                 .                                             $init
                 . Perlito5::Javascript2::tab($level + 2) .    $body->emit_javascript2($level + 2, $wantarray) . "\n"
@@ -3106,14 +3107,18 @@ package Perlito5::AST::For;
             if ($decl eq 'my' || $decl eq 'state') {
                 my $sig = $v->emit_javascript2( $level + 1 );
                 push @str,
-                        'p5for_lex('
-                        . "function ($sig) {\n"
-                        . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body ))->emit_javascript2($level + 2, $wantarray) . "\n"
-                        . Perlito5::Javascript2::tab($level + 1) . '}, '
-                        .   $cond . ', '
-                        . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', '
-                        . Perlito5::Javascript2::escape_string($self->{label} || "")
-                        . ')';
+                    '(function(){ '
+                        . "var $sig; "
+                        . 'p5for_lex('
+                            . "function (v) { $sig = v }, "
+                            . "function () {\n"
+                            . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body ))->emit_javascript2($level + 2, $wantarray) . "\n"
+                            . Perlito5::Javascript2::tab($level + 1) . '}, '
+                            .   $cond . ', '
+                            . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', '
+                            . Perlito5::Javascript2::escape_string($self->{label} || "")
+                        . ') '
+                    . '})()';
             }
             else {
                 # use global variable or $_
