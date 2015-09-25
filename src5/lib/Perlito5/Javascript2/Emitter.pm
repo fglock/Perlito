@@ -3059,8 +3059,8 @@ package Perlito5::AST::For;
                     . ( $self->{cond}[1] ? Perlito5::Javascript2::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[2] ? $self->{cond}[2]->emit_javascript2($level + 1) . ' '   : ''  )
                   . ') {',
-                  [ 'var _redo = true;',
-                    'while(_redo) {',
+                  [ 'var _redo;',
+                    'do {',
                       [ '_redo = false;',
                         'try {',
                           [
@@ -3081,7 +3081,7 @@ package Perlito5::AST::For;
                           ],
                         '}',
                       ],
-                    '}',
+                    '} while (_redo);',
                   ],
                 '}',
             );

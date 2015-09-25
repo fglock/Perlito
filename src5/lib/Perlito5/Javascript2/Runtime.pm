@@ -1142,31 +1142,16 @@ var p5chomp = function(s) {
 };
 
 var p5for = function(namespace, var_name, func, args, cont, label) {
-    var _redo = false;
     var local_idx = p5LOCAL.length;
     var v_old = namespace[var_name];
+    var _redo;
     p5LOCAL.push(function(){ namespace[var_name] = v_old });
     for(var i = 0; i < args.length; i++) {
         namespace[var_name] = args[i];
-        try {
-            func()
-        }
-        catch(err) {
-            if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                if (err.type == 'last') {
-                    p5cleanup_local(local_idx, null);
-                    return
-                }
-                else if (err.type == 'redo') { i--; _redo = true }
-                else if (err.type != 'next') { throw(err) }
-            }
-            else {
-                throw(err)
-            }
-        }
-        if (cont) {
+        do {
+            _redo = false;
             try {
-                if (!_redo) { cont() }
+                func()
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {
@@ -1176,39 +1161,42 @@ var p5for = function(namespace, var_name, func, args, cont, label) {
                     }
                     else if (err.type == 'redo') { _redo = true }
                     else if (err.type != 'next') { throw(err) }
-                }            
+                }
                 else {
                     throw(err)
                 }
             }
-       }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
     }
     p5cleanup_local(local_idx, null);
 };
 
 var p5for_lex = function(func, args, cont, label) {
-    var _redo = false;
     var local_idx = p5LOCAL.length;
+    var _redo;
     for(var i = 0; i < args.length; i++) {
-        try {
-            func(args[i])
-        }
-        catch(err) {
-            if (err instanceof p5_error && (err.v == label || err.v == '')) {
-                if (err.type == 'last') {
-                    p5cleanup_local(local_idx, null);
-                    return
-                }
-                else if (err.type == 'redo') { i--; _redo = true }
-                else if (err.type != 'next') { throw(err) }
-            }            
-            else {
-                throw(err)
-            }
-        }
-        if (cont) {
+        do {
+            _redo = false;
             try {
-                if (!_redo) { cont() }
+                func(args[i])
             }
             catch(err) {
                 if (err instanceof p5_error && (err.v == label || err.v == '')) {
@@ -1223,7 +1211,25 @@ var p5for_lex = function(func, args, cont, label) {
                     throw(err)
                 }
             }
-        }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
     }
     p5cleanup_local(local_idx, null);
 };
