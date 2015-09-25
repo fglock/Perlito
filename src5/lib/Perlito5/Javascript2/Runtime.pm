@@ -908,9 +908,6 @@ var p5hash_lookup_slice = function(o, ix, want) {
 }
 
 var p5str_inc = function(s) {
-    return p5str_inc_(p5str(s))
-}
-var p5str_inc_ = function(s) {
     if (s.length < 2) {
         if ((s >= "0" && s <= "8") || (s >= "A" && s <= "Y") || (s >= "a" && s <= "y")) {
             return String.fromCharCode(s.charCodeAt(0) + 1);
@@ -930,11 +927,11 @@ var p5str_inc_ = function(s) {
     if (c0 >= "0" && c0 <= "9") {
         return p5str(p5num(s)+1);
     }
-    var c = p5str_inc_(s.substr(s.length-1, 1));
+    var c = p5str_inc(s.substr(s.length-1, 1));
     if (c.length == 1) {
         return s.substr(0, s.length-1) + c;
     }
-    return p5str_inc_(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
 var p5range_state = {};
