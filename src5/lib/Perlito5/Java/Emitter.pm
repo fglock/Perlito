@@ -506,14 +506,6 @@ package Perlito5::Java;
                    @$argument;
     }
 
-    sub emit_func_java {
-        my ($level, $wantarray, @argument) = @_;
-        return join("\n", "function () {",
-                          emit_java_list_with_tabs($level, [
-                                \@argument, "}"
-                          ]));
-    }
-
     sub emit_wrap_java {
         my ($level, @argument) = @_;
         my $s;
@@ -522,25 +514,6 @@ package Perlito5::Java;
                           emit_java_list_with_tabs($level, [
                                 \@argument, 
                           ]));
-    }
-
-    sub emit_function_java {
-        my ($level, $wantarray, $argument) = @_;
-        if (  $argument->isa( 'Perlito5::AST::Apply' )
-           && (  $argument->code eq 'return'
-              || $argument->code eq 'last'
-              || $argument->code eq 'next'
-              || $argument->code eq 'redo' ) )
-        {
-            emit_func_java( $level, $wantarray,
-                $argument->emit_java($level, $wantarray)
-            );
-        }
-        else {
-            emit_func_java( $level, $wantarray,
-                'return ' . $argument->emit_java($level+1, $wantarray)
-            );
-        }
     }
 
     sub emit_wrap_statement_java {
@@ -790,8 +763,6 @@ package Perlito5::Java::LexicalBlock;
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
-            $level = $original_level;
-            my $tab = "\n" . Perlito5::Java::tab($level + 1);
             my $test_label = 'e.label_id != 0';
             $test_label = "e.label_id != $block_label && e.label_id != 0"
                 if $block_label;

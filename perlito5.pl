@@ -14217,24 +14217,11 @@ use feature 'say';
                     ref($_) eq 'ARRAY' ? emit_java_list_with_tabs($level + 1, $_) : $tab . $_
                 } @{$argument}
             }
-            sub Perlito5::Java::emit_func_java {
-                my($level, $wantarray, @argument) = @_;
-                return join(chr(10), 'function () {', emit_java_list_with_tabs($level, [\@argument, '}']))
-            }
             sub Perlito5::Java::emit_wrap_java {
                 my($level, @argument) = @_;
                 my $s;
                 !ref($argument[0]) && ($s = shift(@argument));
                 return join(chr(10), ($s ? $s : ()), emit_java_list_with_tabs($level, [\@argument]))
-            }
-            sub Perlito5::Java::emit_function_java {
-                my($level, $wantarray, $argument) = @_;
-                if ($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return' || $argument->code() eq 'last' || $argument->code() eq 'next' || $argument->code() eq 'redo')) {
-                    emit_func_java($level, $wantarray, $argument->emit_java($level, $wantarray))
-                }
-                else {
-                    emit_func_java($level, $wantarray, 'return ' . $argument->emit_java($level + 1, $wantarray))
-                }
             }
             sub Perlito5::Java::emit_wrap_statement_java {
                 my($level, $wantarray, $argument) = @_;
@@ -14370,8 +14357,6 @@ use feature 'say';
                     @str = ()
                 }
                 elsif ($Perlito5::THROW) {
-                    $level = $original_level;
-                    my $tab = chr(10) . Perlito5::Java::tab($level + 1);
                     my $test_label = 'e.label_id != 0';
                     $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
                     push(@pre, 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}');
