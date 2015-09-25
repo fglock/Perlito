@@ -14386,8 +14386,7 @@ use feature 'say';
                     }
                 }
                 $Perlito5::PKG_NAME = $outer_pkg;
-                my $tab = chr(10) . Perlito5::Java::tab($level);
-                return join($tab, @pre, @str)
+                return (@pre, @str)
             }
             sub Perlito5::Java::LexicalBlock::emit_java_has_regex {
                 ()
@@ -16055,29 +16054,20 @@ use feature 'say';
                 }
                 my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? $self->{'body'} : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts()) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1);
                 my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts()) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'create_context' => 1);
-                my $s = 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
+                push(@str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {');
                 if ($body) {
-                    $s = $s . chr(10) . Perlito5::Java::tab($level + 1) . $body->emit_java($level + 1, $wantarray) . chr(10) . Perlito5::Java::tab($level) . '}'
+                    push(@str, [$body->emit_java($level + 1, $wantarray)])
                 }
-                else {
-                    $s = $s . '}'
-                }
+                push(@str, '}');
                 if ($otherwise) {
                     if (@{$otherwise->{'block'}} == 1 && ref($otherwise->{'block'}->[0]) eq 'Perlito5::AST::If') {
-                        $s = $s . chr(10) . Perlito5::Java::tab($level) . 'else ' . $otherwise->{'block'}->[0]->emit_java($level, $wantarray)
+                        push(@str, 'else', [$otherwise->{'block'}->[0]->emit_java($level, $wantarray)])
                     }
                     else {
-                        $s = $s . chr(10) . Perlito5::Java::tab($level) . 'else {' . chr(10) . Perlito5::Java::tab($level + 1) . $otherwise->emit_java($level + 1, $wantarray) . chr(10) . Perlito5::Java::tab($level) . '}'
+                        push(@str, 'else {', [$otherwise->emit_java($level + 1, $wantarray)], '}')
                     }
                 }
-                push(@str, $s);
-                if (@str) {
-                    $level = $old_level;
-                    return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::Java::emit_wrap_java($level, @str)
-                }
-                else {
-                    return join(chr(10) . Perlito5::Java::tab($level), @str)
-                }
+                return Perlito5::Java::emit_wrap_java($level, @str)
             }
             sub Perlito5::AST::If::emit_java_get_decl {
                 ()
@@ -16133,7 +16123,7 @@ use feature 'say';
                 else {
                     $expression = Perlito5::Java::to_bool($cond, $level + 1)
                 }
-                push(@str, 'while (' . $expression . ') ' . '{' . chr(10) . Perlito5::Java::tab($level + 2) . (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}');
+                push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'})->emit_java($level + 2, $wantarray)], '}');
                 if ($Perlito5::THROW) {
                     @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
