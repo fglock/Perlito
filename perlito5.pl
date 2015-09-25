@@ -14366,9 +14366,7 @@ use feature 'say';
                     return (@pre, 'try {', \@str, '}', 'catch(pReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}', 'catch(pNextException e) {', ['throw e;'], '}', 'catch(pLastException e) {', ['throw e;'], '}', 'catch(pRedoException e) {', ['throw e;'], '}', 'catch(pDieException e) {', ['pV.set("main|v_@", e.ret);', 'return pCx.UNDEF;'], '}', 'catch(Exception e) {', ['pV.set("main|v_@", new pString(e.getMessage()));', 'return pCx.UNDEF;'], '}')
                 }
                 elsif ($self->{'top_level'} && $Perlito5::THROW_RETURN) {
-                    $level = $original_level;
-                    my $tab = chr(10) . Perlito5::Java::tab($level + 1);
-                    push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pReturnException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . emit_return($has_local, $local_label, 'e.ret') . ';' . chr(10) . Perlito5::Java::tab($level) . '}');
+                    push(@pre, 'try {', [@str], '}', 'catch(pReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}');
                     @str = ()
                 }
                 elsif ($Perlito5::THROW) {
@@ -14376,14 +14374,11 @@ use feature 'say';
                     my $tab = chr(10) . Perlito5::Java::tab($level + 1);
                     my $test_label = 'e.label_id != 0';
                     $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
-                    push(@pre, 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::Java::tab($level) . '}' . chr(10) . Perlito5::Java::tab($level) . 'catch(pNextException e) {' . chr(10) . Perlito5::Java::tab($level + 1) . 'if (' . $test_label . ') {' . chr(10) . Perlito5::Java::tab($level + 2) . 'throw e;' . chr(10) . Perlito5::Java::tab($level + 1) . '}' . chr(10) . Perlito5::Java::tab($level) . '}');
+                    push(@pre, 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}');
                     @str = ()
                 }
-                else {
-                    $level = $original_level;
-                    if ($has_local) {
-                        push(@str, 'PerlOp.cleanup_local(' . $local_label . ', pCx.UNDEF);')
-                    }
+                elsif ($has_local) {
+                    push(@str, 'PerlOp.cleanup_local(' . $local_label . ', pCx.UNDEF);')
                 }
                 $Perlito5::PKG_NAME = $outer_pkg;
                 return (@pre, @str)

@@ -777,14 +777,13 @@ package Perlito5::Java::LexicalBlock;
             );
         }
         elsif ($self->{top_level} && $Perlito5::THROW_RETURN) {
-            $level = $original_level;
-            my $tab = "\n" . Perlito5::Java::tab($level + 1);
-            push @pre,                              "try {"
-                . $tab                            .    join($tab, @str) . "\n"
-                . Perlito5::Java::tab($level)     . '}' . "\n"
-                . Perlito5::Java::tab($level)     . 'catch(pReturnException e) {' . "\n"
-                . Perlito5::Java::tab($level + 1) .    emit_return($has_local, $local_label, 'e.ret') . ";\n"
-                . Perlito5::Java::tab($level)     . '}';
+            push @pre,
+                "try {",
+                   [ @str ],
+                '}',
+                'catch(pReturnException e) {',
+                   [ emit_return($has_local, $local_label, 'e.ret') . ";" ],
+                '}';
             @str = ();
         }
         elsif ($Perlito5::THROW) {
@@ -793,23 +792,22 @@ package Perlito5::Java::LexicalBlock;
 
             $level = $original_level;
             my $tab = "\n" . Perlito5::Java::tab($level + 1);
-
             my $test_label = 'e.label_id != 0';
             $test_label = "e.label_id != $block_label && e.label_id != 0"
                 if $block_label;
-
-            push @pre,                              "try {"
-                . $tab                            .    join($tab, @str) . "\n"
-                . Perlito5::Java::tab($level)     . '}' . "\n"
-                . Perlito5::Java::tab($level)     . 'catch(pNextException e) {' . "\n"
-                . Perlito5::Java::tab($level + 1) .    "if ($test_label) {\n"
-                . Perlito5::Java::tab($level + 2) .         "throw e;\n"
-                . Perlito5::Java::tab($level + 1) .    "}\n"
-                . Perlito5::Java::tab($level)     . '}';
+            push @pre,
+                 "try {",
+                    [ @str ],
+                 '}',
+                 'catch(pNextException e) {',
+                    [ "if ($test_label) {",
+                         [ "throw e;" ],
+                      "}"
+                    ],
+                 '}';
             @str = ();
         }
         else {
-            $level = $original_level;
             if ($has_local) {
                 push @str, 'PerlOp.cleanup_local(' . $local_label . ', pCx.UNDEF);';
             }
