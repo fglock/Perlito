@@ -28,6 +28,28 @@ var CORE = p5pkg.CORE;
 
 var isNode = typeof require != "undefined";
 
+
+if (isNode) {
+    try {
+        var sleep = require("sleep");
+        CORE.sleep = function(List__) {
+            var n = p5num(List__[0]) || 1;
+            sleep.usleep(n * 1000000);  // sleep for n seconds (1 second is 1000000 microseconds)
+            return n;
+        }
+    }
+    catch (err) {
+        CORE.sleep = function(List__) {
+            CORE.die("sleep() function failed. Maybe you need 'npm install sleep'?\n" + err);
+        }
+    }
+}
+if (!CORE.sleep) {
+    CORE.sleep = function(List__) {
+        CORE.die("sleep() not supported for this platform");
+    }
+}
+
 CORE.bless = function(List__) {
     var o        = List__[0];
     var pkg_name = List__[1];
