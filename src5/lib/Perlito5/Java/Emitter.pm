@@ -2062,6 +2062,15 @@ package Perlito5::AST::Apply;
               'new pInt('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())'
         },
+        'rand' => sub {
+            my ($self, $level, $wantarray) = @_;
+              'PerlOp.rand('
+            . ( $self->{arguments}->[0]
+              ? $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_double()'
+              : '1.0'
+              )
+            . ')'
+        },
         ( map {
                 my $op = $_;
                 ( $op => sub {

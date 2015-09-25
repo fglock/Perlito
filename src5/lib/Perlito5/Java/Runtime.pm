@@ -43,6 +43,7 @@ sub emit_java {
 
 import java.lang.Math;
 import java.lang.System;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,6 +110,7 @@ class pCx {
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
     public static final int     LIST   = 2;
+    public static final Random  RANDOM = new Random();
     public static final pUndef  UNDEF  = new pUndef();
     public static final pBool   TRUE   = new pBool(true);
     public static final pBool   FALSE  = new pBool(false);
@@ -320,6 +322,13 @@ class PerlOp {
         int item = s.to_int();
         pCORE.die("caller() not implemented");
         return null;
+    }
+
+    public static final pObject rand(double s) {
+        if (s == 0.0) {
+            s = 1.0;
+        }
+        return new pDouble(s * pCx.RANDOM.nextDouble());
     }
 
     public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {
