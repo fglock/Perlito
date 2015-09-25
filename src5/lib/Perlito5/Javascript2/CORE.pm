@@ -51,7 +51,57 @@ if (!CORE.sleep) {
 }
 
 CORE.time = function(List__) {
-    return Date.now() / 1000;
+    return CORE.int([Date.now() / 1000]);
+}
+EOT
+
+#
+# Note: gmtime / localtime test:
+#
+# $ node perlito5.js -I src5/lib -e ' print gmtime . " @{[ gmtime ]}\n" . localtime . " @{[ localtime ]}\n" ' ; perl -e ' print gmtime . " @{[ gmtime ]}\n" . localtime . " @{[ localtime ]}\n" '
+#
+# TODO - isdst is not implemented
+# See:
+# http://stackoverflow.com/questions/11887934/check-if-daylight-saving-time-is-in-effect-and-if-it-is-for-how-many-hours
+#
+
+    . <<'EOT'
+var _fmt_date = function(date) {
+    return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()] + ' ' +
+        ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][date.getMonth()] + ' ' +
+        date.getDate() + ' ' + 
+        CORE.sprintf([ "%02d:%02d:%02d ", date.getHours(), date.getMinutes(), date.getSeconds() ]) +
+        date.getFullYear();
+}
+var _list_date = function(date) {
+    var year_start = new Date(date);
+    year_start.setMonth(0, 1);
+    var year_day = Math.round((date-year_start)/8.64e7);
+
+    var isdst = 0;  // not implemented
+
+    return [date.getSeconds(),date.getMinutes(),date.getHours(),date.getDate(),
+        date.getMonth(),date.getFullYear()-1900,date.getDay(),
+        year_day,
+        isdst
+    ];
+}
+CORE.localtime = function(List__, want) {
+    var n = List__.length ? p5num(List__[0]) : CORE.time() ;
+    var date = new Date(n*1000);
+    if (!want) {
+        return _fmt_date(date);
+    }
+    return _list_date(date);
+}
+CORE.gmtime = function(List__, want) {
+    var n = List__.length ? p5num(List__[0]) : CORE.time() ;
+    var ofs = new Date().getTimezoneOffset() * 60;
+    var date = new Date((n + ofs)*1000);
+    if (!want) {
+        return _fmt_date(date);
+    }
+    return _list_date(date);
 }
 
 CORE.bless = function(List__) {
