@@ -145,6 +145,11 @@ class pCORE {
         // say() shortcut
         return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
     }
+    public static final pObject exit(int want, pArray List__) {
+        int arg = List__.aget(0).to_int();
+        System.exit(arg);
+        return pCx.UNDEF;
+    }
     public static final pObject die(int want, pArray List__) {
         pObject arg = List__.aget(0);
         if (arg.is_undef() || (arg.is_string() && arg.to_string() == "")) {

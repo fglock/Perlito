@@ -2828,6 +2828,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'pCORE.ref(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
+        'exit' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'pCORE.exit(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
         'die' => sub {
             my ($self, $level, $wantarray) = @_;
             'pCORE.die(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
