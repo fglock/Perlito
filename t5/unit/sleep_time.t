@@ -1,5 +1,5 @@
 
-# use strict;
+use strict;
 
 print "1..2\n";
 my $t0 = time;

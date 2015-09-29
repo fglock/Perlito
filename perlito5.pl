@@ -14312,6 +14312,9 @@ use feature 'say';
                         if ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
                             push(@str, 'PerlOp.statement(' . $decl->emit_java($level, 'void') . ');')
                         }
+                        elsif ($decl->isa('Perlito5::AST::CompUnit')) {
+                            push(@str, $decl->emit_java($level, 'void'))
+                        }
                         else {
                             push(@str, $decl->emit_java($level, 'void') . ';')
                         }
