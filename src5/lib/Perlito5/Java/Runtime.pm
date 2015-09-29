@@ -110,7 +110,6 @@ class pCx {
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
     public static final int     LIST   = 2;
-    public static final Random  RANDOM = new Random();
     public static final pUndef  UNDEF  = new pUndef();
     public static final pBool   TRUE   = new pBool(true);
     public static final pBool   FALSE  = new pBool(false);
@@ -252,6 +251,7 @@ class PerlOp {
 
     private static ArrayList<pObject> boolean_stack = new ArrayList<pObject>();
     private static pArray local_stack = new pArray();
+    private static Random random = new Random();
 
     // local()
     public static final pObject push_local(pHash container, String index) {
@@ -329,11 +329,20 @@ class PerlOp {
         return null;
     }
 
+    public static final pObject srand() {
+        random = new Random();
+        return pCx.UNDEF;
+    }
+    public static final pObject srand(int s) {
+        random = new Random(s);
+        return new pInt(s);
+    }
+
     public static final pObject rand(double s) {
         if (s == 0.0) {
             s = 1.0;
         }
-        return new pDouble(s * pCx.RANDOM.nextDouble());
+        return new pDouble(s * random.nextDouble());
     }
 
     public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {

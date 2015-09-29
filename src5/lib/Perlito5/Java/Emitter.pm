@@ -2074,6 +2074,15 @@ package Perlito5::AST::Apply;
               )
             . ')'
         },
+        'srand' => sub {
+            my ($self, $level, $wantarray) = @_;
+              'PerlOp.srand('
+            . ( $self->{arguments}->[0]
+              ? $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int()'
+              : ''
+              )
+            . ')'
+        },
         ( map {
                 my $op = $_;
                 ( $op => sub {
