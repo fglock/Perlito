@@ -158,6 +158,9 @@ boot-5js ::
 test-5js ::
 	prove -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
 
+test-5js-parallel ::
+	prove -j 9 -r -e 'nodejs perlito5.js -I./src5/lib -I./t ' t5
+
 test-5java ::
 	prove -r -e 'perl run_java_test.pl' t5
 
