@@ -271,7 +271,7 @@ package Perlito5::Java;
                 return Perlito5::Java::escape_string( $cond->{num} );
             }
             else {
-                return $cond->emit_java($level, $wantarray) . '.to_string()';
+                return $cond->emit_java($level, $wantarray) . '.toString()';
             }
     }
 
@@ -293,7 +293,7 @@ package Perlito5::Java;
                 return $cond->emit_java($level, $wantarray);
             }
             else {
-                return 'new pString(' . $cond->emit_java($level, $wantarray) . '.to_string())';
+                return 'new pString(' . $cond->emit_java($level, $wantarray) . '.toString())';
             }
     }
     sub to_num {
@@ -2026,12 +2026,12 @@ package Perlito5::AST::Apply;
         'uc' => sub {
             my ($self, $level, $wantarray) = @_;
               'new pString('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_string().toUpperCase())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().toUpperCase())'
         },
         'lc' => sub {
             my ($self, $level, $wantarray) = @_;
               'new pString('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_string().toLowerCase())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().toLowerCase())'
         },
         'ucfirst' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2048,8 +2048,8 @@ package Perlito5::AST::Apply;
         'index' => sub {
             my ($self, $level, $wantarray) = @_;
               'new pInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_string().indexOf('
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_string()))'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().indexOf('
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString()))'
         },
         'ord' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3746,7 +3746,7 @@ package Perlito5::AST::Sub;
 
         # pClosure c = new pClosure( "", new pObject[]{ v1, v2, v3 } ) {
         #     public PerlitoObject apply( context, args ) {
-        #         System.out.println("called MyClosure with " + this.env[2].to_string());
+        #         System.out.println("called MyClosure with " + this.env[2].toString());
         #         return new PerlitoInt(0);
         #     }
         # };

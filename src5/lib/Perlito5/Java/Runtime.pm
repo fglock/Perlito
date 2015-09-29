@@ -103,7 +103,7 @@ class pDieException  extends pControlException {
         this.ret = ret;
     }
     public String getMessage() {
-        return this.ret.to_string();
+        return this.ret.toString();
     }
 }
 class pCx {
@@ -128,14 +128,14 @@ class pCORE {
     public static final pObject print(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
-            System.out.print(List__.aget(i).to_string());
+            System.out.print(List__.aget(i).toString());
         }
         return new pInt(1);
     }
     public static final pObject say(int want, pObject filehandle, pArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
-            System.out.print(List__.aget(i).to_string());
+            System.out.print(List__.aget(i).toString());
         }
         System.out.println("");
         return new pInt(1);
@@ -151,7 +151,7 @@ class pCORE {
     }
     public static final pObject die(int want, pArray List__) {
         pObject arg = List__.aget(0);
-        if (arg.is_undef() || (arg.is_string() && arg.to_string() == "")) {
+        if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
             throw new pDieException(pCx.DIED);
         }
         if (List__.to_int() == 1) {
@@ -159,7 +159,7 @@ class pCORE {
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < List__.to_int(); i++) {
-            String item = List__.aget(i).to_string();
+            String item = List__.aget(i).toString();
             sb.append(item);
         }
         throw new pDieException(new pString(sb.toString()));
@@ -187,11 +187,11 @@ class pCORE {
         return List__.aget(-1).scalar();
     }
     public static final pObject join(int want, pArray List__) {
-        String s = List__.shift().to_string();
+        String s = List__.shift().toString();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (int i = 0; i < List__.to_int(); i++) {
-            String item = List__.aget(i).to_string();
+            String item = List__.aget(i).toString();
             if (first)
                 first = false;
             else
@@ -208,7 +208,7 @@ class pCORE {
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < List__.to_int(); i++) {
-            sb.append( List__.aget(i).to_string() );
+            sb.append( List__.aget(i).toString() );
         }
         return new pString(sb.reverse().toString());
     }
@@ -282,7 +282,7 @@ class PerlOp {
                 ((pArray)container).a.set(index.to_int(), lvalue);
             }
             else {
-                ((pHash)container).h.put(index.to_string(), lvalue);
+                ((pHash)container).h.put(index.toString(), lvalue);
             }
         }
         return ret;
@@ -403,7 +403,7 @@ class PerlOp {
     }
 
     public static final pInt ord(pString s) {
-        String item = s.to_string();
+        String item = s.toString();
         return new pInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
 
@@ -438,7 +438,7 @@ class PerlOp {
             return new pString("");
         }
         else {
-            String raw_s = s.to_string();
+            String raw_s = s.toString();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < count; i++) {
                 sb.append(raw_s);
@@ -500,7 +500,7 @@ class PerlOp {
     }
     public static final pObject match(pObject s, pRegex pat, int want) {
         if (want != pCx.LIST) {
-            return pat.p.matcher(s.to_string()).find() ? pCx.TRUE : pCx.FALSE;
+            return pat.p.matcher(s.toString()).find() ? pCx.TRUE : pCx.FALSE;
         }
         pCORE.die("not implemented string match in list context");
         return s;
@@ -515,7 +515,7 @@ class PerlOp {
 
     public static final pObject replace(pLvalue s, pRegex pat, pObject rep, int want) {
         if (want != pCx.LIST) {
-            return s.set(new pString(pat.p.matcher(s.to_string()).replaceAll(rep.to_string())));
+            return s.set(new pString(pat.p.matcher(s.toString()).replaceAll(rep.toString())));
         }
         pCORE.die("not implemented string replace in list context");
         return s;
@@ -605,7 +605,7 @@ EOT
             values %java_classes
       ))
     . <<'EOT'
-    public String to_string() {
+    public String toString() {
         return this.toString();
     }
     public int to_int() {
@@ -634,7 +634,7 @@ EOT
     }
 
     public pObject length() {
-        return new pInt(this.to_string().length());
+        return new pInt(this.toString().length());
     }
     public pObject get_arrayref() {
         return pCORE.die("Not an ARRAY reference");
@@ -880,7 +880,7 @@ EOT
     }
 
     public pObject lcfirst() {
-        String s = this.to_string();
+        String s = this.toString();
         int len = s.length();
         if (len == 0) {
             return new pString(s);
@@ -891,7 +891,7 @@ EOT
         return new pString( s.substring(0,1).toLowerCase() + s.substring(1) );
     }
     public pObject ucfirst() {
-        String s = this.to_string();
+        String s = this.toString();
         int len = s.length();
         if (len == 0) {
             return new pString(s);
@@ -902,13 +902,13 @@ EOT
         return new pString( s.substring(0,1).toUpperCase() + s.substring(1) );
     }
     public pObject quotemeta() {
-        String s = this.to_string();
+        String s = this.toString();
         return new pString(Matcher.quoteReplacement(s));
     }
 
     public pObject substr(pObject offset) {
         // substr EXPR,OFFSET
-        String s = this.to_string();
+        String s = this.toString();
         int ofs = offset.to_int();
         if (ofs < 0) {
             ofs = s.length() + ofs;
@@ -923,7 +923,7 @@ EOT
     }
     public pObject substr(pObject offset, pObject length) {
         // substr EXPR,OFFSET,LENGTH
-        String s = this.to_string();
+        String s = this.toString();
         int ofs = offset.to_int();
         int len = length.to_int();
         if (ofs < 0) {
@@ -964,7 +964,7 @@ EOT
         return this;
     }
     public pObject str_cmp(pObject b) {
-        int c = this.to_string().compareTo(b.to_string());
+        int c = this.toString().compareTo(b.toString());
         return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
     public pObject num_cmp(pObject b) {
@@ -1001,7 +1001,7 @@ EOT
             my $native  = $string_binop{$perl}{op};
             my $returns = $string_binop{$perl}{returns};
 "    public pObject ${perl}(pObject b) {
-        return new ${returns}(this.to_string().compareTo(b.to_string()) ${native});
+        return new ${returns}(this.toString().compareTo(b.toString()) ${native});
     }
 "
             }
@@ -1012,8 +1012,8 @@ EOT
 class pReference extends pObject {
     public static final pString REF = new pString("REF");
 
-    public String to_string() {
-        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+    public String toString() {
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pObject ref() {
         return REF;
@@ -1028,9 +1028,9 @@ class pRegex extends pReference {
         this.p = Pattern.compile(p, flags);
     }
     public pRegex(pObject p, int flags) {
-        this.p = Pattern.compile(p.to_string(), flags);
+        this.p = Pattern.compile(p.toString(), flags);
     }
-    public String to_string() {
+    public String toString() {
         // TODO - show flags
         return this.p.toString();
     }
@@ -1082,8 +1082,8 @@ class pLvalueRef extends pReference {
 class pArrayRef extends pArray {
     public static final pString REF = new pString("ARRAY");
 
-    public String to_string() {
-        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+    public String toString() {
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pArrayRef() {
         this.each_iterator = 0;
@@ -1128,8 +1128,8 @@ class pArrayRef extends pArray {
 class pHashRef extends pHash {
     public static final pString REF = new pString("HASH");
 
-    public String to_string() {
-        return this.ref().to_string() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+    public String toString() {
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
     public pHashRef() {
         this.h = new HashMap<String, pObject>();
@@ -1379,8 +1379,8 @@ EOT
             keys %native_to_perl ))
 
     . <<'EOT'
-    public String to_string() {
-        return this.o.to_string();
+    public String toString() {
+        return this.o.toString();
     }
     public int to_int() {
         return this.o.to_int();
@@ -1976,11 +1976,11 @@ EOT
         }
         return aa;
     }
-    public String to_string() {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         int size = this.a.size();
         for (int i = 0; i < size; i++) {
-            String item = this.a.get(i).to_string();
+            String item = this.a.get(i).toString();
             sb.append(item);
         }
         return sb.toString();
@@ -2115,7 +2115,7 @@ class pHash extends pObject {
     }
 
     public pObject hget(pObject i) {
-        pObject o = this.h.get(i.to_string());
+        pObject o = this.h.get(i.toString());
         if (o == null) {
             return pCx.UNDEF;
         }
@@ -2129,17 +2129,17 @@ class pHash extends pObject {
         return o;
     }
     public pObject hget_lvalue(pObject i) {
-        pObject o = this.h.get(i.to_string());
+        pObject o = this.h.get(i.toString());
         if (o == null) {
             pLvalue a = new pLvalue();
-            this.h.put(i.to_string(), a);
+            this.h.put(i.toString(), a);
             return a;
         }
         else if (o.is_lvalue()) {
             return o;
         }
         pLvalue a = new pLvalue(o);
-        this.h.put(i.to_string(), a);
+        this.h.put(i.toString(), a);
         return a;
     }
     public pObject hget_lvalue(String i) {
@@ -2157,7 +2157,7 @@ class pHash extends pObject {
         return a;
     }
     public pObject hget_lvalue_local(pObject i) {
-        return this.hget_lvalue_local(i.to_string());
+        return this.hget_lvalue_local(i.toString());
     }
     public pObject hget_lvalue_local(String i) {
         return PerlOp.push_local(this, i);
@@ -2258,7 +2258,7 @@ class pHash extends pObject {
 
     // Note: multiple versions of set()
     public pObject hset(pObject s, pObject v) {
-        String key = s.to_string();
+        String key = s.toString();
         pObject value = v.scalar();
         pObject o = this.h.get(key);
         if (o != null && o.is_lvalue()) {
@@ -2348,7 +2348,7 @@ EOT
 
     . <<'EOT'
 
-    public String to_string() {
+    public String toString() {
         // TODO
         return "" + this.hashCode();
     }
@@ -2378,7 +2378,7 @@ EOT
         return true;
     }
     public pObject scalar() {
-        return new pString(this.to_string());
+        return new pString(this.toString());
     }
 }
 class pUndef extends pObject {
@@ -2398,7 +2398,7 @@ class pUndef extends pObject {
     public double to_double() {
         return 0.0;
     }
-    public String to_string() {
+    public String toString() {
         return "";
     }
     public boolean to_bool() {
@@ -2432,7 +2432,7 @@ class pBool extends pObject {
             return 0.0;
         }
     }
-    public String to_string() {
+    public String toString() {
         if (this.i) {
             return "1";
         }
@@ -2484,7 +2484,7 @@ class pInt extends pObject {
     public double to_double() {
         return (double)(this.i);
     }
-    public String to_string() {
+    public String toString() {
         return "" + this.i;
     }
     public boolean to_bool() {
@@ -2516,7 +2516,7 @@ class pDouble extends pObject {
     public double to_double() {
         return this.i;
     }
-    public String to_string() {
+    public String toString() {
         String s = "" + this.i;
         final int length = s.length();
         final int dot = s.indexOf('.');
@@ -2721,7 +2721,7 @@ class pString extends pObject {
     public double to_double() {
         return this.parse().to_double();
     }
-    public String to_string() {
+    public String toString() {
         return this.s;
     }
     public boolean to_bool() {
