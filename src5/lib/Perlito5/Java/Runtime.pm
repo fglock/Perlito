@@ -149,6 +149,13 @@ class pCORE {
         System.exit(arg);
         return pCx.UNDEF;
     }
+    public static final pObject warn(int want, pArray List__) {
+        for (int i = 0; i < List__.to_int(); i++) {
+            System.err.print(List__.aget(i).toString());
+        }
+        System.err.println("");
+        return new pInt(1);
+    }
     public static final pObject die(int want, pArray List__) {
         pObject arg = List__.aget(0);
         if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
