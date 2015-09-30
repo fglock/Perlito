@@ -215,9 +215,21 @@ CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
 CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
 CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
 
+var p5rand = function(v) { return Math.random() * v };
+CORE.srand = function(List__) {
+    if (List__.length > 0) {
+        var v = p5num(List__[0]) || 1;
+        p5rand = function() {
+            v = Math.sin(v) * 10000;
+            return v - Math.floor(v);
+        };
+        return List__[0];
+    }
+    return CORE.int(CORE.rand(100000));
+};
 CORE.rand = function(List__) {
     var v = p5num(List__[0]) || 1;
-    return Math.random() * v;
+    return p5rand(v);
 };
 
 CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
