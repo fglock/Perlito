@@ -769,7 +769,7 @@ package Perlito5::Java::LexicalBlock;
                 '}';
             @str = ();
         }
-        elsif ( ($Perlito5::THROW || $self->{continue}) && !$self->{in_continue} ) {
+        elsif ( ($Perlito5::THROW || $self->{continue}) && !$self->{not_a_loop} ) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
@@ -788,7 +788,7 @@ package Perlito5::Java::LexicalBlock;
                       [ "try {",
                            [ Perlito5::Java::LexicalBlock->new(
                                block => $self->{continue}{stmts},
-                               in_continue => 1,
+                               not_a_loop => 1,
                              )->emit_java($level + 2, $wantarray)
                            ],
                         '}',
@@ -3489,16 +3489,16 @@ package Perlito5::AST::If;
             : (!@{ $self->{body}->stmts })
             ? undef
             : $wantarray ne 'void'
-            ? Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, )
-            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1 );
+            ? Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 )
+            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1, not_a_loop => 1 );
         my $otherwise =
               ref($self->{otherwise}) ne 'Perlito5::AST::Block'
             ? $self->{otherwise}  # may be undef
             : (!@{ $self->{otherwise}->stmts })
             ? undef
             : $wantarray ne 'void'
-            ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts )
-            : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1 );
+            ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, not_a_loop => 1 )
+            : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1, not_a_loop => 1 );
  
         push @str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
         if ($body) {
