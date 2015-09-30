@@ -769,7 +769,7 @@ package Perlito5::Java::LexicalBlock;
                 '}';
             @str = ();
         }
-        elsif ($Perlito5::THROW || $self->{continue}) {
+        elsif ( ($Perlito5::THROW || $self->{continue}) && !$self->{in_continue} ) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
@@ -785,9 +785,26 @@ package Perlito5::Java::LexicalBlock;
 
                 push @continue, 
                     "if (!$redo_label) {",
-                      [ Perlito5::Java::LexicalBlock->new(
-                          block => $self->{continue}{stmts},
-                        )->emit_java($level + 2, $wantarray)
+                      [ "try {",
+                           [ Perlito5::Java::LexicalBlock->new(
+                               block => $self->{continue}{stmts},
+                               in_continue => 1,
+                             )->emit_java($level + 2, $wantarray)
+                           ],
+                        '}',
+                        'catch(pNextException e) {',
+                           [ "if ($test_label) {",
+                                [ "throw e;" ],
+                             "}"
+                           ],
+                        '}',
+                        'catch(pRedoException e) {',
+                           [ "if ($test_label) {",
+                                [ "throw e;" ],
+                             "}",
+                             "$redo_label = true;",
+                           ],
+                        '}',
                       ],
                     "}";
             }

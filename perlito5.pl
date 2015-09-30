@@ -14360,13 +14360,13 @@ use feature 'say';
                     push(@pre, 'try {', [@str], '}', 'catch(pReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}');
                     @str = ()
                 }
-                elsif ($Perlito5::THROW || $self->{'continue'}) {
+                elsif (($Perlito5::THROW || $self->{'continue'}) && !$self->{'in_continue'}) {
                     my $redo_label = Perlito5::Java::get_label();
                     my $test_label = 'e.label_id != 0';
                     $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
                     my @continue;
                     if ($self->{'continue'}) {
-                        push(@continue, 'if (!' . $redo_label . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'continue'}->{'stmts'})->emit_java($level + 2, $wantarray)], '}')
+                        push(@continue, 'if (!' . $redo_label . ') {', ['try {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'continue'}->{'stmts'}, 'in_continue' => 1)->emit_java($level + 2, $wantarray)], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}'], '}')
                     }
                     push(@pre, 'boolean ' . $redo_label . ';', 'do {', [$redo_label . ' = false;', 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}', @continue], '} while (' . $redo_label . ');');
                     @str = ()
