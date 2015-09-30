@@ -14219,6 +14219,7 @@ use feature 'say';
             }
             sub Perlito5::Java::emit_wrap_java {
                 my($level, @argument) = @_;
+                wantarray && return @argument;
                 my $s;
                 !ref($argument[0]) && ($s = shift(@argument));
                 return join(chr(10), ($s ? $s : ()), emit_java_list_with_tabs($level, [\@argument]))
@@ -14312,7 +14313,7 @@ use feature 'say';
                         if ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
                             push(@str, 'PerlOp.statement(' . $decl->emit_java($level, 'void') . ');')
                         }
-                        elsif ($decl->isa('Perlito5::AST::CompUnit')) {
+                        elsif ($decl->isa('Perlito5::AST::CompUnit') || $decl->isa('Perlito5::AST::For') || $decl->isa('Perlito5::AST::While') || $decl->isa('Perlito5::AST::If') || $decl->isa('Perlito5::AST::Block')) {
                             push(@str, $decl->emit_java($level, 'void'))
                         }
                         else {

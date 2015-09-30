@@ -508,6 +508,7 @@ package Perlito5::Java;
 
     sub emit_wrap_java {
         my ($level, @argument) = @_;
+        return @argument if wantarray;  # nested calls will execute the formatting only once
         my $s;
         $s = shift @argument if !ref($argument[0]);
         return join("\n", ($s ? $s : ()),
@@ -644,7 +645,13 @@ package Perlito5::Java::LexicalBlock;
                     # workaround for "Error: not a statement"
                     push @str, 'PerlOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
                 }
-                elsif ( $decl->isa('Perlito5::AST::CompUnit') ) {
+                elsif ( $decl->isa('Perlito5::AST::CompUnit')
+                      || $decl->isa('Perlito5::AST::For' )
+                      || $decl->isa('Perlito5::AST::While' )
+                      || $decl->isa('Perlito5::AST::If' )
+                      || $decl->isa('Perlito5::AST::Block' )
+                      )
+                {
                     push @str, $decl->emit_java( $level, 'void' );
                 }
                 else {
