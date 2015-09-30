@@ -797,7 +797,12 @@ package Perlito5::Java::LexicalBlock;
                          "}",
                          "$redo_label = true;",
                        ],
-                    '}'
+                    '}',
+
+                    # insert "continue" block here
+                    # if (!$redo_label) {
+                    #   ...
+                    # }
                   ],
                 "} while ($redo_label);";
             @str = ();
