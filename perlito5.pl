@@ -14360,11 +14360,15 @@ use feature 'say';
                     push(@pre, 'try {', [@str], '}', 'catch(pReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}');
                     @str = ()
                 }
-                elsif ($Perlito5::THROW) {
+                elsif ($Perlito5::THROW || $self->{'continue'}) {
                     my $redo_label = Perlito5::Java::get_label();
                     my $test_label = 'e.label_id != 0';
                     $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
-                    push(@pre, 'boolean ' . $redo_label . ';', 'do {', [$redo_label . ' = false;', 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}'], '} while (' . $redo_label . ');');
+                    my @continue;
+                    if ($self->{'continue'}) {
+                        push(@continue, 'if (!' . $redo_label . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'continue'}->{'stmts'})->emit_java($level + 2, $wantarray)], '}')
+                    }
+                    push(@pre, 'boolean ' . $redo_label . ';', 'do {', [$redo_label . ' = false;', 'try {', [@str], '}', 'catch(pNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(pRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}', @continue], '} while (' . $redo_label . ');');
                     @str = ()
                 }
                 elsif ($has_local) {
@@ -14505,10 +14509,10 @@ use feature 'say';
                 local $Perlito5::THROW = 0;
                 my $body;
                 if ($wantarray ne 'void') {
-                    $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'})
+                    $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})
                 }
                 else {
-                    $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'})
+                    $body = Perlito5::Java::LexicalBlock::->new('block' => $self->{'stmts'}, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})
                 }
                 my $init = '';
                 if ($self->{'name'} eq 'INIT') {
@@ -14520,15 +14524,6 @@ use feature 'say';
                     @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
                 return Perlito5::Java::emit_wrap_java($level, @str)
-            }
-            sub Perlito5::AST::Block::emit_java_continue {
-                my $self = shift;
-                my $level = shift;
-                my $wantarray = shift;
-                if (!$self->{'continue'} || !@{$self->{'continue'}->{'stmts'}}) {
-                    return 'false'
-                }
-                return 'function () {' . chr(10) . (Perlito5::Java::LexicalBlock::->new('block' => $self->{'continue'}->stmts()))->emit_java($level + 2, $wantarray) . chr(10) . Perlito5::Java::tab($level + 1) . '}'
             }
             sub Perlito5::AST::Block::emit_java_get_decl {
                 ()
@@ -16120,7 +16115,7 @@ use feature 'say';
                 else {
                     $expression = Perlito5::Java::to_bool($cond, $level + 1)
                 }
-                push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'})->emit_java($level + 2, $wantarray)], '}');
+                push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
                 if ($Perlito5::THROW) {
                     @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
                 }
@@ -16175,10 +16170,10 @@ use feature 'say';
                     my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
                     my $s;
                     if ($decl eq 'my' || $decl eq 'state') {
-                        push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
+                        push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                     }
                     else {
-                        push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', (Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
+                        push(@str, 'for (pObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                     }
                 }
                 if ($Perlito5::THROW) {

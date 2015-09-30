@@ -769,7 +769,7 @@ package Perlito5::Java::LexicalBlock;
                 '}';
             @str = ();
         }
-        elsif ($Perlito5::THROW) {
+        elsif ($Perlito5::THROW || $self->{continue}) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
@@ -777,6 +777,21 @@ package Perlito5::Java::LexicalBlock;
             my $test_label = 'e.label_id != 0';
             $test_label = "e.label_id != $block_label && e.label_id != 0"
                 if $block_label;
+
+            my @continue;
+            if ($self->{continue}) {
+
+                # TODO - set up next/last/redo inside continue block
+
+                push @continue, 
+                    "if (!$redo_label) {",
+                      [ Perlito5::Java::LexicalBlock->new(
+                          block => $self->{continue}{stmts},
+                        )->emit_java($level + 2, $wantarray)
+                      ],
+                    "}";
+            }
+
             push @pre,
                 "boolean $redo_label;",
                 "do {",
@@ -798,11 +813,7 @@ package Perlito5::Java::LexicalBlock;
                          "$redo_label = true;",
                        ],
                     '}',
-
-                    # insert "continue" block here
-                    # if (!$redo_label) {
-                    #   ...
-                    # }
+                    @continue,
                   ],
                 "} while ($redo_label);";
             @str = ();
@@ -992,10 +1003,14 @@ package Perlito5::AST::Block;
         local $Perlito5::THROW = 0;
         my $body;
         if ($wantarray ne 'void') {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label} );
+            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label},
+                continue => $self->{continue},
+            );
         }
         else {
-            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label} );
+            $body = Perlito5::Java::LexicalBlock->new( block => $self->{stmts}, block_label => $self->{label},
+                continue => $self->{continue},
+            );
         }
 
         my $init = "";
@@ -1014,20 +1029,6 @@ package Perlito5::AST::Block;
             @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
         }
         return Perlito5::Java::emit_wrap_java($level, @str);
-    }
-    sub emit_java_continue {
-        my $self = shift;
-        my $level = shift;
-        my $wantarray = shift;
-
-        if (!$self->{continue} || !@{ $self->{continue}{stmts} }) {
-            return 'false'
-        }
-
-        return
-              "function () {\n"
-            .   (Perlito5::Java::LexicalBlock->new( block => $self->{continue}->stmts ))->emit_java($level + 2, $wantarray) . "\n"
-            . Perlito5::Java::tab($level + 1) . '}'
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -3566,12 +3567,13 @@ package Perlito5::AST::While;
         }
 
         push @str, 'while (' . $expression . ') {',
-                      [ Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} )->emit_java($level + 2, $wantarray)
+                      [ Perlito5::Java::LexicalBlock->new(
+                            block => $body,
+                            block_label => $self->{label},
+                            continue => $self->{continue},
+                        )->emit_java($level + 2, $wantarray)
                       ],
                     '}';
-                    # . Perlito5::AST::Block::emit_java_continue($self, $level, $wantarray) . ', '
-                    # . Perlito5::Java::escape_string($self->{label} || "") . ', '
-                    # . $do_at_least_once
 
         if ($Perlito5::THROW) {
             @str = Perlito5::Java::emit_wrap_last_exception_java( $self, \@str );
@@ -3653,7 +3655,11 @@ package Perlito5::AST::For;
                 push @str,
                         'for (pObject ' . $local_label . ' : ' . $cond . '.a) {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
-                            (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
+                            Perlito5::Java::LexicalBlock->new(
+                                block => $body,
+                                block_label => $self->{label},
+                                continue => $self->{continue},
+                            )->emit_java($level + 2, $wantarray),
                           ],
                         '}';
             }
@@ -3663,7 +3669,11 @@ package Perlito5::AST::For;
                 push @str,
                         'for (pObject ' . $local_label . ' : ' . $cond . '.a) {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
-                            (Perlito5::Java::LexicalBlock->new( block => $body, block_label => $self->{label} ))->emit_java($level + 2, $wantarray),
+                            Perlito5::Java::LexicalBlock->new(
+                                block => $body,
+                                block_label => $self->{label},
+                                continue => $self->{continue},
+                            )->emit_java($level + 2, $wantarray),
                           ],
                         '}';
             }
