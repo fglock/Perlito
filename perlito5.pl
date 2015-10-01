@@ -14441,7 +14441,7 @@ use feature 'say';
                 if ($options{'expand_use'}) {
                     $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
                 }
-                $str .= Perlito5::Java::emit_wrap_java(-1, 'class Test {', ['public static void main(String[] args) throws Exception {', ['pEnv.init(args);', 'int want = pCx.VOID;', @Perlito5::Java::Java_init, @main], '}'], '}') . chr(10);
+                $str .= Perlito5::Java::emit_wrap_java(-1, 'class Test {', ['public static void main(String[] args) throws Exception {', ['pEnv.init(args);', 'int want = pCx.VOID;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(pReturnException e) {', ['pCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(pNextException e) {', ['pCORE.die("Can' . chr(39) . 't ' . chr(92) . '"next' . chr(92) . '" outside a loop block");'], '}', 'catch(pLastException e) {', ['pCORE.die("Can' . chr(39) . 't ' . chr(92) . '"last' . chr(92) . '" outside a loop block");'], '}', 'catch(pRedoException e) {', ['pCORE.die("Can' . chr(39) . 't ' . chr(92) . '"redo' . chr(92) . '" outside a loop block");'], '}'], '}'], '}') . chr(10);
                 return $str
             }
             sub Perlito5::AST::CompUnit::emit_java_get_decl {
