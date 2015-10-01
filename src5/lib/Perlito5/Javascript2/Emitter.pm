@@ -2976,15 +2976,6 @@ package Perlito5::AST::While;
         my ($self, $level, $wantarray) = @_;
         my $cond = $self->{cond};
 
-        # body is 'Perlito5::AST::Apply' in this construct:
-        #   do { ... } while ...;
-        my $do_at_least_once = ref($self->{body}) eq 'Perlito5::AST::Apply' && $self->{body}{code} eq 'do' ? 1 : 0;
-
-        my $body =
-              ref($self->{body}) ne 'Perlito5::AST::Block'
-            ? [ $self->{body} ]
-            : $self->{body}{stmts};
-
         # extract declarations from 'cond'
         my @str;
         my $old_level = $level;
@@ -2998,15 +2989,31 @@ package Perlito5::AST::While;
             }
         }
 
-        push @str, 'p5while('
+        # body is 'Perlito5::AST::Apply' in this construct:
+        #   do { ... } while ...;
+        if ( ref($self->{body}) eq 'Perlito5::AST::Apply' && $self->{body}{code} eq 'do' ) {
+            push @str,
+                  'do {'
+                .   $self->{body}->emit_javascript2($level + 2, $wantarray) . "\n"
+                . Perlito5::Javascript2::tab($level + 1) . '} while ('
+                .   Perlito5::Javascript2::to_bool($cond, $level + 2)
+                . ')';
+        }
+        else {
+            my $body =
+                  ref($self->{body}) ne 'Perlito5::AST::Block'
+                ? [ $self->{body} ]
+                : $self->{body}{stmts};
+            push @str, 'p5while('
                     . "function () {\n"
                     . Perlito5::Javascript2::tab($level + 2) .   (Perlito5::Javascript2::LexicalBlock->new( block => $body ))->emit_javascript2($level + 2, $wantarray) . "\n"
                     . Perlito5::Javascript2::tab($level + 1) . '}, '
                     . Perlito5::Javascript2::emit_function_javascript2($level + 1, 'scalar', $cond) . ', '
                     . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', '
                     . Perlito5::Javascript2::escape_string($self->{label} || "") . ', '
-                    . $do_at_least_once
+                    . '0'
                     . ')';
+        }
 
         if (@str) {
             $level = $old_level;
