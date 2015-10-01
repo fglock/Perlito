@@ -14397,7 +14397,7 @@ use feature 'say';
         {
             sub Perlito5::AST::CompUnit::emit_java {
                 my($self, $level, $wantarray) = @_;
-                return Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'})->emit_java($level + 1, $wantarray)
+                return Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}, 'not_a_loop' => 1)->emit_java($level + 1, $wantarray)
             }
             sub Perlito5::AST::CompUnit::emit_java_program {
                 my($comp_units, %options) = @_;
