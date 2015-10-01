@@ -1235,6 +1235,53 @@ var p5for_lex = function(set_var, func, args, cont, label) {
     p5cleanup_local(local_idx, null);
 };
 
+var p5block = function(set_var, func, args, cont, label) {
+    var local_idx = p5LOCAL.length;
+    var _redo;
+    for(var i = 0; i < args.length; i++) {
+        set_var(args[i]);
+        do {
+            _redo = false;
+            try {
+                return func()
+            }
+            catch(err) {
+                if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                    if (err.type == 'last') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
+                    else if (err.type == 'redo') { _redo = true }
+                    else if (err.type != 'next') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == '')) {
+                        if (err.type == 'last') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == 'redo') { _redo = true }
+                        else if (err.type != 'next') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
+    }
+    p5cleanup_local(local_idx, null);
+};
+
+
 var p5while = function(func, cond, cont, label, redo) {
     var local_idx = p5LOCAL.length;
     while (redo || p5bool(cond())) {

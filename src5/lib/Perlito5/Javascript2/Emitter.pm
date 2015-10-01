@@ -772,7 +772,12 @@ package Perlito5::AST::Block;
 
         }
 
-        return 'p5for_lex('
+        return 
+                  ( $wantarray ne 'void'
+                  ? "return "
+                  : ""
+                  )
+                . 'p5block('
                 . "function (v) {}, "
                 . "function () {\n"
                 .                                             $init
