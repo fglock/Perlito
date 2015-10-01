@@ -16101,8 +16101,6 @@ use feature 'say';
                 my($self, $level, $wantarray) = @_;
                 local $Perlito5::THROW = 0;
                 my $cond = $self->{'cond'};
-                my $do_at_least_once = ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do' ? 1 : 0;
-                my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
                 my @str;
                 my $old_level = $level;
                 if ($cond) {
@@ -16119,9 +16117,15 @@ use feature 'say';
                 else {
                     $expression = Perlito5::Java::to_bool($cond, $level + 1)
                 }
-                push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
-                if ($Perlito5::THROW) {
-                    @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
+                if (ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do') {
+                    push(@str, 'do {', [$self->{'body'}->emit_java($level + 2, $wantarray)], '}', 'while (' . $expression . ');')
+                }
+                else {
+                    my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
+                    push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
+                    if ($Perlito5::THROW) {
+                        @str = Perlito5::Java::emit_wrap_last_exception_java($self, \@str)
+                    }
                 }
                 return Perlito5::Java::emit_wrap_java($level, @str)
             }
