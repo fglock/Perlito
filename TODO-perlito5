@@ -636,6 +636,10 @@ TODO list for Perlito5
     $ perl -lwe '*4 = sub { print "yes" }; 4->()'
     yes
 
+-- return value of continue-block
+
+    $ perl -e ' sub x {  { 456 } continue { 789 } } print "@{[ x() ]}\n" '
+    456 789
 
 * Deprecate
 
