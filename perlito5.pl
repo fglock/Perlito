@@ -16118,7 +16118,7 @@ use feature 'say';
                     $expression = Perlito5::Java::to_bool($cond, $level + 1)
                 }
                 if (ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do') {
-                    push(@str, 'do {', [$self->{'body'}->emit_java($level + 2, $wantarray)], '}', 'while (' . $expression . ');')
+                    push(@str, 'do {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->{'arguments'}->[0]->{'stmts'}, 'not_a_loop' => 1)->emit_java($level + 2, $wantarray)], '}', 'while (' . $expression . ');')
                 }
                 else {
                     my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};

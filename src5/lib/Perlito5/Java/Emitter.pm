@@ -3573,12 +3573,16 @@ package Perlito5::AST::While;
             $expression =  Perlito5::Java::to_bool($cond, $level + 1);    
         }
 
-        # body is 'Perlito5::AST::Apply' in this construct:
-        #   do { ... } while ...;
         if ( ref($self->{body}) eq 'Perlito5::AST::Apply' && $self->{body}{code} eq 'do' ) {
+            # body is 'Perlito5::AST::Apply' in this construct:
+            #   do { ... } while ...;
             push @str,
                 'do {',
-                  [ $self->{body}->emit_java($level + 2, $wantarray) ],
+                  [ Perlito5::Java::LexicalBlock->new(
+                        block => $self->{body}{arguments}[0]{stmts},
+                        not_a_loop => 1,
+                    )->emit_java($level + 2, $wantarray)
+                  ],
                 '}',
                 'while (' . $expression . ');';
         }
