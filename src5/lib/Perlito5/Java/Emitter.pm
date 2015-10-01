@@ -3550,7 +3550,6 @@ package Perlito5::AST::While;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
-        local $Perlito5::THROW = 0;
         my $cond = $self->{cond};
 
         # extract declarations from 'cond'
@@ -3587,6 +3586,7 @@ package Perlito5::AST::While;
                 'while (' . $expression . ');';
         }
         else {
+            local $Perlito5::THROW = 0;
             my $body =
                   ref($self->{body}) ne 'Perlito5::AST::Block'
                 ? [ $self->{body} ]

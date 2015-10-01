@@ -16099,7 +16099,6 @@ use feature 'say';
         {
             sub Perlito5::AST::While::emit_java {
                 my($self, $level, $wantarray) = @_;
-                local $Perlito5::THROW = 0;
                 my $cond = $self->{'cond'};
                 my @str;
                 my $old_level = $level;
@@ -16121,6 +16120,7 @@ use feature 'say';
                     push(@str, 'do {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->{'arguments'}->[0]->{'stmts'}, 'not_a_loop' => 1)->emit_java($level + 2, $wantarray)], '}', 'while (' . $expression . ');')
                 }
                 else {
+                    local $Perlito5::THROW = 0;
                     my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
                     push(@str, 'while (' . $expression . ') {', [Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
                     if ($Perlito5::THROW) {
