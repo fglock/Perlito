@@ -24,7 +24,7 @@ $scan->addColumn(Bytes->toBytes("d"), Bytes->toBytes("max_price"));
 my ResultScanner $resultScanner = $table->getScanner($scan);
 
 # not declared as Result (java object) since we want lValue (perl object)
-# containing pResult (perl object)
+# containing PlResult (perl object)
 my $scan_result = $resultScanner->next();
 
 while (defined $scan_result) {

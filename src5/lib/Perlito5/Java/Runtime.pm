@@ -7,31 +7,31 @@ sub emit_java {
     my %java_classes = %{ $args{java_classes} // {} };
 
     my %number_binop = (
-        add    => { op => '+',  returns => 'pInt',  num_returns => 'pDouble'}, 
-        sub    => { op => '-',  returns => 'pInt',  num_returns => 'pDouble'},
-        mul    => { op => '*',  returns => 'pInt',  num_returns => 'pDouble'},
-        div    => { op => '/',  returns => 'pDouble',  num_returns => 'pDouble'},
-        num_eq => { op => '==', returns => 'pBool', num_returns => 'pBool' },
-        num_ne => { op => '!=', returns => 'pBool', num_returns => 'pBool' },
-        num_lt => { op => '<',  returns => 'pBool', num_returns => 'pBool' },
-        num_le => { op => '<=', returns => 'pBool', num_returns => 'pBool' },
-        num_gt => { op => '>',  returns => 'pBool', num_returns => 'pBool' },
-        num_ge => { op => '>=', returns => 'pBool', num_returns => 'pBool' },
+        add    => { op => '+',  returns => 'PlInt',  num_returns => 'PlDouble'}, 
+        sub    => { op => '-',  returns => 'PlInt',  num_returns => 'PlDouble'},
+        mul    => { op => '*',  returns => 'PlInt',  num_returns => 'PlDouble'},
+        div    => { op => '/',  returns => 'PlDouble',  num_returns => 'PlDouble'},
+        num_eq => { op => '==', returns => 'PlBool', num_returns => 'PlBool' },
+        num_ne => { op => '!=', returns => 'PlBool', num_returns => 'PlBool' },
+        num_lt => { op => '<',  returns => 'PlBool', num_returns => 'PlBool' },
+        num_le => { op => '<=', returns => 'PlBool', num_returns => 'PlBool' },
+        num_gt => { op => '>',  returns => 'PlBool', num_returns => 'PlBool' },
+        num_ge => { op => '>=', returns => 'PlBool', num_returns => 'PlBool' },
     );
     my %string_binop = (
-        str_eq => { op => '== 0', returns => 'pBool' },
-        str_ne => { op => '!= 0', returns => 'pBool' },
-        str_lt => { op => '< 0',  returns => 'pBool' },
-        str_le => { op => '<= 0', returns => 'pBool' },
-        str_gt => { op => '> 0',  returns => 'pBool' },
-        str_ge => { op => '>= 0', returns => 'pBool' },
+        str_eq => { op => '== 0', returns => 'PlBool' },
+        str_ne => { op => '!= 0', returns => 'PlBool' },
+        str_lt => { op => '< 0',  returns => 'PlBool' },
+        str_le => { op => '<= 0', returns => 'PlBool' },
+        str_gt => { op => '> 0',  returns => 'PlBool' },
+        str_ge => { op => '>= 0', returns => 'PlBool' },
     );
 
     my %native_to_perl = (
-        int     => 'pInt',
-        double  => 'pDouble',
-        boolean => 'pBool',
-        String  => 'pString',
+        int     => 'PlInt',
+        double  => 'PlDouble',
+        boolean => 'PlBool',
+        String  => 'PlString',
     );
     for (values %java_classes) {
         $native_to_perl{$_->{java_type}} = $_->{java_native_to_perl};
@@ -66,57 +66,57 @@ EOT
             values %java_classes
       ))
     . <<'EOT'
-class pControlException extends RuntimeException {
+class PlControlException extends RuntimeException {
 }
-class pNextException    extends pControlException {
+class PlNextException    extends PlControlException {
     public int label_id;
 
-    public pNextException(int i) {
+    public PlNextException(int i) {
         this.label_id = i;
     }
 }
-class pLastException    extends pControlException {
+class PlLastException    extends PlControlException {
     public int label_id;
 
-    public pLastException(int i) {
+    public PlLastException(int i) {
         this.label_id = i;
     }
 }
-class pRedoException    extends pControlException {
+class PlRedoException    extends PlControlException {
     public int label_id;
 
-    public pRedoException(int i) {
+    public PlRedoException(int i) {
         this.label_id = i;
     }
 }
-class pReturnException  extends pControlException {
-    public pObject ret;
+class PlReturnException  extends PlControlException {
+    public PlObject ret;
 
-    public pReturnException(pObject ret) {
+    public PlReturnException(PlObject ret) {
         this.ret = ret;
     }
 }
-class pDieException  extends pControlException {
-    public pObject ret;
+class PlDieException  extends PlControlException {
+    public PlObject ret;
 
-    public pDieException(pObject ret) {
+    public PlDieException(PlObject ret) {
         this.ret = ret;
     }
     public String getMessage() {
         return this.ret.toString();
     }
 }
-class pCx {
+class PlCx {
     public static final int     VOID   = 0;
     public static final int     SCALAR = 1;
     public static final int     LIST   = 2;
-    public static final pUndef  UNDEF  = new pUndef();
-    public static final pBool   TRUE   = new pBool(true);
-    public static final pBool   FALSE  = new pBool(false);
-    public static final pString STDOUT = new pString("STDOUT");
-    public static final pString STDERR = new pString("STDERR");
-    public static final pString STDIN  = new pString("STDIN");
-    public static final pString DIED   = new pString("Died");
+    public static final PlUndef  UNDEF  = new PlUndef();
+    public static final PlBool   TRUE   = new PlBool(true);
+    public static final PlBool   FALSE  = new PlBool(false);
+    public static final PlString STDOUT = new PlString("STDOUT");
+    public static final PlString STDERR = new PlString("STDERR");
+    public static final PlString STDIN  = new PlString("STDIN");
+    public static final PlString DIED   = new PlString("Died");
     public static final String  ARGV   = "main|List_ARGV";
     public static final String  ENV    = "main|Hash_ENV";
 
@@ -124,76 +124,76 @@ EOT
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
 }
-class pCORE {
-    public static final pObject print(int want, pObject filehandle, pArray List__) {
+class PlCORE {
+    public static final PlObject print(int want, PlObject filehandle, PlArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).toString());
         }
-        return new pInt(1);
+        return new PlInt(1);
     }
-    public static final pObject say(int want, pObject filehandle, pArray List__) {
+    public static final PlObject say(int want, PlObject filehandle, PlArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).toString());
         }
         System.out.println("");
-        return new pInt(1);
+        return new PlInt(1);
     }
-    public static final pObject say(String s) {
+    public static final PlObject say(String s) {
         // say() shortcut
-        return pCORE.say(pCx.VOID, pCx.STDOUT, new pArray(new pString(s)));
+        return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));
     }
-    public static final pObject exit(int want, pArray List__) {
+    public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();
         System.exit(arg);
-        return pCx.UNDEF;
+        return PlCx.UNDEF;
     }
-    public static final pObject warn(int want, pArray List__) {
+    public static final PlObject warn(int want, PlArray List__) {
         for (int i = 0; i < List__.to_int(); i++) {
             System.err.print(List__.aget(i).toString());
         }
         System.err.println("");
-        return new pInt(1);
+        return new PlInt(1);
     }
-    public static final pObject die(int want, pArray List__) {
-        pObject arg = List__.aget(0);
+    public static final PlObject die(int want, PlArray List__) {
+        PlObject arg = List__.aget(0);
         if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
-            throw new pDieException(pCx.DIED);
+            throw new PlDieException(PlCx.DIED);
         }
         if (List__.to_int() == 1) {
-            throw new pDieException(arg);
+            throw new PlDieException(arg);
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < List__.to_int(); i++) {
             String item = List__.aget(i).toString();
             sb.append(item);
         }
-        throw new pDieException(new pString(sb.toString()));
+        throw new PlDieException(new PlString(sb.toString()));
     }
-    public static final pObject die(String s) {
+    public static final PlObject die(String s) {
         // die() shortcut
-        return pCORE.die(pCx.VOID, new pArray(new pString(s)));
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
     }
-    public static final pObject ref(int want, pArray List__) {
+    public static final PlObject ref(int want, PlArray List__) {
         return List__.aget(0).ref();
     }
-    public static final pObject values(int want, pObject List__) {
-        return want == pCx.LIST ? List__.values() : List__.values().scalar();
+    public static final PlObject values(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.values() : List__.values().scalar();
     }
-    public static final pObject keys(int want, pObject List__) {
-        return want == pCx.LIST ? List__.keys() : List__.keys().scalar();
+    public static final PlObject keys(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.keys() : List__.keys().scalar();
     }
-    public static final pObject each(int want, pObject List__) {
-        return want == pCx.LIST ? List__.each() : List__.each().aget(0);
+    public static final PlObject each(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.each() : List__.each().aget(0);
     }
-    public static final pObject scalar(int want, pArray List__) {
+    public static final PlObject scalar(int want, PlArray List__) {
         if (List__.to_int() == 0) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return List__.aget(-1).scalar();
     }
-    public static final pObject join(int want, pArray List__) {
+    public static final PlObject join(int want, PlArray List__) {
         String s = List__.shift().toString();
         StringBuilder sb = new StringBuilder();
         boolean first = true;
@@ -205,11 +205,11 @@ class pCORE {
                 sb.append(s);
             sb.append(item);
         }
-        return new pString(sb.toString());
+        return new PlString(sb.toString());
     }
-    public static final pObject reverse(int want, pArray List__) {
-        if (want == pCx.LIST) {
-            pArray ret = new pArray(List__);
+    public static final PlObject reverse(int want, PlArray List__) {
+        if (want == PlCx.LIST) {
+            PlArray ret = new PlArray(List__);
             Collections.reverse(ret.a);
             return ret;
         }
@@ -217,62 +217,62 @@ class pCORE {
         for (int i = 0; i < List__.to_int(); i++) {
             sb.append( List__.aget(i).toString() );
         }
-        return new pString(sb.reverse().toString());
+        return new PlString(sb.reverse().toString());
     }
-    public static final pObject time(int want, pArray List__) {
-        return new pDouble( System.currentTimeMillis() * 0.001 );
+    public static final PlObject time(int want, PlArray List__) {
+        return new PlDouble( System.currentTimeMillis() * 0.001 );
     }
-    public static final pObject sleep(int want, pArray List__) {
+    public static final PlObject sleep(int want, PlArray List__) {
         long s = (new Double(List__.shift().to_double() * 1000)).longValue();
         try {
             TimeUnit.MILLISECONDS.sleep(s);
         } catch (InterruptedException e) {
             //Handle exception
         }
-        return new pDouble(s / 1000.0);
+        return new PlDouble(s / 1000.0);
     }
 }
-class PerlCompare implements Comparator<pObject> {
-    public pClosure sorter;
-    public pLvalue v_a;
-    public pLvalue v_b;
-    public PerlCompare (pClosure sorter, pLvalue a, pLvalue b) {
+class PerlCompare implements Comparator<PlObject> {
+    public PlClosure sorter;
+    public PlLvalue v_a;
+    public PlLvalue v_b;
+    public PerlCompare (PlClosure sorter, PlLvalue a, PlLvalue b) {
         this.sorter = sorter;
         this.v_a = a;
         this.v_b = b;
     }
-    public int compare (pObject a, pObject b) {
+    public int compare (PlObject a, PlObject b) {
         v_a.set(a);
         v_b.set(b);
-        return this.sorter.apply( pCx.SCALAR, new pArray() ).to_int();
+        return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();
     }
 }
 class PerlOp {
     // PerlOp implements operators: && || 
     //      and auxiliary functions
     //
-    // note: '+' add() and '-' sub() are pObject methods, not implemented here.
+    // note: '+' add() and '-' sub() are PlObject methods, not implemented here.
     //
     // TODO - see Perlito5/Javascript2/Runtime.pm for more operator implementations
     // TODO - 'boolean_stack' should be reset when an exception happens
 
-    private static ArrayList<pObject> boolean_stack = new ArrayList<pObject>();
-    private static pArray local_stack = new pArray();
+    private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();
+    private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
     // local()
-    public static final pObject push_local(pHash container, String index) {
+    public static final PlObject push_local(PlHash container, String index) {
         local_stack.a.add(container);
-        local_stack.a.add(new pString(index));
-        pLvalue empty = new pLvalue();
+        local_stack.a.add(new PlString(index));
+        PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.hget_lvalue(index));
         container.h.put(index, empty);
         return empty;
     }
-    public static final pObject push_local(pArray container, int index) {
+    public static final PlObject push_local(PlArray container, int index) {
         local_stack.a.add(container);
-        local_stack.a.add(new pInt(index));
-        pLvalue empty = new pLvalue();
+        local_stack.a.add(new PlInt(index));
+        PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.aget_lvalue(index));
         container.aset(index, empty);
         return empty;
@@ -280,16 +280,16 @@ class PerlOp {
     public static final int local_length() {
         return local_stack.to_int();
     }
-    public static final pObject cleanup_local(int pos, pObject ret) {
+    public static final PlObject cleanup_local(int pos, PlObject ret) {
         while (local_stack.to_int() > pos) {
-            pLvalue lvalue    = (pLvalue)local_stack.pop();
-            pObject index     = local_stack.pop();
-            pObject container = local_stack.pop();
+            PlLvalue lvalue    = (PlLvalue)local_stack.pop();
+            PlObject index     = local_stack.pop();
+            PlObject container = local_stack.pop();
             if (container.is_array()) {
-                ((pArray)container).a.set(index.to_int(), lvalue);
+                ((PlArray)container).a.set(index.to_int(), lvalue);
             }
             else {
-                ((pHash)container).h.put(index.toString(), lvalue);
+                ((PlHash)container).h.put(index.toString(), lvalue);
             }
         }
         return ret;
@@ -297,63 +297,63 @@ class PerlOp {
 
     // context()
     //      - handles run-time scalar/list/void context in expression results
-    public static final pObject context(int want, pObject arg) {
-        if (want == pCx.LIST) {
+    public static final PlObject context(int want, PlObject arg) {
+        if (want == PlCx.LIST) {
             return arg;
         }
         return arg.scalar();
     }
-    public static final pObject context(int want) {
-        if (want == pCx.LIST) {
-            return new pArray();
+    public static final PlObject context(int want) {
+        if (want == PlCx.LIST) {
+            return new PlArray();
         }
-        return pCx.UNDEF;
+        return PlCx.UNDEF;
     }
 
     // statement()
     //      - workaround for "Error: not a statement"
     //      - this is the compile-time version of context(null, arg)
-    public static final void statement(pObject arg) { }
+    public static final void statement(PlObject arg) { }
     public static final void statement() { }
 
     // control-flow exceptions
-    public static final pObject next(int label_id) {
-        throw new pNextException(label_id);
+    public static final PlObject next(int label_id) {
+        throw new PlNextException(label_id);
     }
-    public static final pObject last(int label_id) {
-        throw new pLastException(label_id);
+    public static final PlObject last(int label_id) {
+        throw new PlLastException(label_id);
     }
-    public static final pObject redo(int label_id) {
-        throw new pRedoException(label_id);
+    public static final PlObject redo(int label_id) {
+        throw new PlRedoException(label_id);
     }
-    public static final pObject ret(pObject ret) {
-        throw new pReturnException(ret);
+    public static final PlObject ret(PlObject ret) {
+        throw new PlReturnException(ret);
     }
 
-    public static final pObject caller(int ctx, pObject s) {
+    public static final PlObject caller(int ctx, PlObject s) {
         int item = s.to_int();
-        pCORE.die("caller() not implemented");
+        PlCORE.die("caller() not implemented");
         return null;
     }
 
-    public static final pObject srand() {
+    public static final PlObject srand() {
         random = new Random();
-        return pCx.UNDEF;
+        return PlCx.UNDEF;
     }
-    public static final pObject srand(int s) {
+    public static final PlObject srand(int s) {
         random = new Random(s);
-        return new pInt(s);
+        return new PlInt(s);
     }
 
-    public static final pObject rand(double s) {
+    public static final PlObject rand(double s) {
         if (s == 0.0) {
             s = 1.0;
         }
-        return new pDouble(s * random.nextDouble());
+        return new PlDouble(s * random.nextDouble());
     }
 
-    public static final int[] range(pObject _start, pObject _end, int ctx, String var, int ignore) {
-        if (ctx == pCx.LIST) {
+    public static final int[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
+        if (ctx == PlCx.LIST) {
             int start = _start.to_int(),
                 end   = _end.to_int();
             int size = Math.max(0, end - start + 1);
@@ -363,12 +363,12 @@ class PerlOp {
             }
             return ret;
         }
-        pCORE.die("Range not implemented for context " + ctx);
+        PlCORE.die("Range not implemented for context " + ctx);
         return null;
     }
 
     // and1(x) ? y : and3()
-    public static final boolean and1(pObject arg1) {
+    public static final boolean and1(PlObject arg1) {
         if (arg1.to_bool()) {
             return true;
         }
@@ -377,12 +377,12 @@ class PerlOp {
             return false;
         }
     }
-    public static final pObject and3() {
+    public static final PlObject and3() {
         return boolean_stack.remove(0);
     }
 
     // or1(x) ? or2() : y
-    public static final boolean or1(pObject arg1) {
+    public static final boolean or1(PlObject arg1) {
         if (arg1.to_bool()) {
             boolean_stack.add(0, arg1);
             return true;
@@ -391,12 +391,12 @@ class PerlOp {
             return false;
         }
     }
-    public static final pObject or2() {
+    public static final PlObject or2() {
         return boolean_stack.remove(0);
     }
 
     // defined_or1(x) ? defined_or2() : y
-    public static final boolean defined_or1(pObject arg1) {
+    public static final boolean defined_or1(PlObject arg1) {
         if (!arg1.is_undef()) {
             boolean_stack.add(0, arg1);
             return true;
@@ -405,16 +405,16 @@ class PerlOp {
             return false;
         }
     }
-    public static final pObject defined_or2() {
+    public static final PlObject defined_or2() {
         return boolean_stack.remove(0);
     }
 
-    public static final pInt ord(pString s) {
+    public static final PlInt ord(PlString s) {
         String item = s.toString();
-        return new pInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
+        return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
 
-    // $x++ when $x is pString
+    // $x++ when $x is PlString
     public static final String string_increment(String s) {
         if (s.length() < 2) {
             final int c = s.codePointAt(0);
@@ -439,10 +439,10 @@ class PerlOp {
         return string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
     }
 
-    public static final pString string_replicate(pObject s, pObject c) {
+    public static final PlString string_replicate(PlObject s, PlObject c) {
         int count = c.to_int();
         if ( count < 1 ) {
-            return new pString("");
+            return new PlString("");
         }
         else {
             String raw_s = s.toString();
@@ -450,148 +450,148 @@ class PerlOp {
             for (int i = 0; i < count; i++) {
                 sb.append(raw_s);
             }
-            return new pString(sb.toString());
+            return new PlString(sb.toString());
         }
     }
-    public static final pObject list_replicate(pArray o, pObject c, int wantarray) {
+    public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
         int count = c.to_int();
-        pArray a = new pArray();
+        PlArray a = new PlArray();
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 a.push( o );
             }
         }
-        return (wantarray == pCx.LIST ) ? a : a.length_of_array();
+        return (wantarray == PlCx.LIST ) ? a : a.length_of_array();
     }
-    public static final pObject grep(pClosure c, pArray a, int wantarray) {
-        pArray ret = new pArray();
+    public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
+        PlArray ret = new PlArray();
         int size = a.to_int();
-        pLvalue v__ref = (pLvalue)pV.get("main|v__");
-        pObject v__val = v__ref.get();
+        PlLvalue v__ref = (PlLvalue)PlV.get("main|v__");
+        PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
-            pObject temp = a.aget(i);
+            PlObject temp = a.aget(i);
             v__ref.set(temp);
-            result = c.apply(pCx.SCALAR, new pArray()).to_bool();
+            result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
             if (result) {
                 ret.push(temp);
             }
         }
         v__ref.set(v__val);
-        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject map(pClosure c, pArray a, int wantarray) {
-        pArray ret = new pArray();
+    public static final PlObject map(PlClosure c, PlArray a, int wantarray) {
+        PlArray ret = new PlArray();
         int size = a.to_int();
-        pLvalue v__ref = (pLvalue)pV.get("main|v__");
-        pObject v__val = v__ref.get();
+        PlLvalue v__ref = (PlLvalue)PlV.get("main|v__");
+        PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             v__ref.set(a.aget(i));
-            ret.push(c.apply(pCx.LIST, new pArray()));
+            ret.push(c.apply(PlCx.LIST, new PlArray()));
         }
         v__ref.set(v__val);
-        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject sort(pClosure c, pArray a, int wantarray, String pckg) {
-        pArray ret = new pArray(a);
+    public static final PlObject sort(PlClosure c, PlArray a, int wantarray, String pckg) {
+        PlArray ret = new PlArray(a);
         int size = a.to_int();
-        pLvalue v_a_ref = (pLvalue)pV.get(pckg + "|v_a");
-        pLvalue v_b_ref = (pLvalue)pV.get(pckg + "|v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pckg + "|v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pckg + "|v_b");
         PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
-        pObject v_a_val = v_a_ref.get();
-        pObject v_b_val = v_b_ref.get();
+        PlObject v_a_val = v_a_ref.get();
+        PlObject v_b_val = v_b_ref.get();
         Collections.sort(ret.a, comp);
         v_a_ref.set(v_a_val);
         v_b_ref.set(v_b_val);
-        return (wantarray == pCx.LIST ) ? ret : ret.length_of_array();
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final pObject match(pObject s, pRegex pat, int want) {
-        if (want != pCx.LIST) {
-            return pat.p.matcher(s.toString()).find() ? pCx.TRUE : pCx.FALSE;
+    public static final PlObject match(PlObject s, PlRegex pat, int want) {
+        if (want != PlCx.LIST) {
+            return pat.p.matcher(s.toString()).find() ? PlCx.TRUE : PlCx.FALSE;
         }
-        pCORE.die("not implemented string match in list context");
+        PlCORE.die("not implemented string match in list context");
         return s;
     }
-    public static final pObject match(pObject s, pLvalue pat, int want) {
+    public static final PlObject match(PlObject s, PlLvalue pat, int want) {
         return match(s, pat.get(), want);
     }
-    public static final pObject match(pObject s, pObject pat, int want) {
+    public static final PlObject match(PlObject s, PlObject pat, int want) {
         // TODO - cache the compiled pattern
-        return match(s, new pRegex(pat, 0), want);
+        return match(s, new PlRegex(pat, 0), want);
     }
 
-    public static final pObject replace(pLvalue s, pRegex pat, pObject rep, int want) {
-        if (want != pCx.LIST) {
-            return s.set(new pString(pat.p.matcher(s.toString()).replaceAll(rep.toString())));
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want) {
+        if (want != PlCx.LIST) {
+            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep.toString())));
         }
-        pCORE.die("not implemented string replace in list context");
+        PlCORE.die("not implemented string replace in list context");
         return s;
     }
-    public static final pObject replace(pObject s, pObject pat, pObject rep, int want) {
+    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want) {
         // TODO - cache the compiled pattern
-        return replace(s, new pRegex(pat, 0), rep, want);
+        return replace(s, new PlRegex(pat, 0), rep, want);
     }
 
 }
-class pV {
-    // pV implements namespaces and global variables
+class PlV {
+    // PlV implements namespaces and global variables
     //
     // TODO - import CORE subroutines in new namespaces, if needed
-    // TODO - cache lookups in lexical variables (see pClosure implementation)
+    // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static final pHash var = new pHash();
+    public static final PlHash var = new PlHash();
 
-    public static final pLvalue get(String name) {
-        return (pLvalue)var.hget_lvalue(name);
+    public static final PlLvalue get(String name) {
+        return (PlLvalue)var.hget_lvalue(name);
     }
-    public static final pLvalue get_local(String name) {
-        return (pLvalue)var.hget_lvalue_local(name);
+    public static final PlLvalue get_local(String name) {
+        return (PlLvalue)var.hget_lvalue_local(name);
     }
-    public static final pObject set(String name, pObject v) {
+    public static final PlObject set(String name, PlObject v) {
         return var.hset(name, v);
     }
-    public static final pObject set_local(String name, pObject v) {
+    public static final PlObject set_local(String name, PlObject v) {
         return var.hget_lvalue_local(name).set(v);
     }
 
-    public static final pHash hash_get(String name) {
-        return (pHash)var.hget_hashref(name).get();
+    public static final PlHash hash_get(String name) {
+        return (PlHash)var.hget_hashref(name).get();
     }
-    public static final pHash hash_get_local(String name) {
-        return (pHash)var.hget_lvalue_local(name).get_hashref().get();
+    public static final PlHash hash_get_local(String name) {
+        return (PlHash)var.hget_lvalue_local(name).get_hashref().get();
     }
-    public static final pObject hash_set(String name, pObject v) {
+    public static final PlObject hash_set(String name, PlObject v) {
         return var.hget_hashref(name).hash_deref_set(v);
     }
-    public static final pObject hash_set_local(String name, pObject v) {
+    public static final PlObject hash_set_local(String name, PlObject v) {
         return var.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
     }
 
-    public static final pArray array_get(String name) {
-        return (pArray)var.hget_arrayref(name).get();
+    public static final PlArray array_get(String name) {
+        return (PlArray)var.hget_arrayref(name).get();
     }
-    public static final pArray array_get_local(String name) {
-        return (pArray)var.hget_lvalue_local(name).get_arrayref().get();
+    public static final PlArray array_get_local(String name) {
+        return (PlArray)var.hget_lvalue_local(name).get_arrayref().get();
     }
-    public static final pObject array_set(String name, pObject v) {
+    public static final PlObject array_set(String name, PlObject v) {
         return var.hget_arrayref(name).array_deref_set(v);
     }
-    public static final pObject array_set_local(String name, pObject v) {
+    public static final PlObject array_set_local(String name, PlObject v) {
         return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
 }
-class pEnv {
+class PlEnv {
     public static final void init(String[] args) {
-        pV.array_set(pCx.ARGV, new pArray(args));               // args is String[]
-        pV.hash_set(pCx.ENV,   new pArray(System.getenv()));    // env  is Map<String, String>
-        pV.set("main|v_" + (char)34, new pString(" "));         // $" = " "
+        PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
+        PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
+        PlV.set("main|v_" + (char)34, new PlString(" "));         // $" = " "
     }
 }
-class pObject {
+class PlObject {
     // extends java object ???
-    public static final pString REF = new pString("");
+    public static final PlString REF = new PlString("");
 
-    public pObject() {
+    public PlObject() {
     }
 EOT
         # add interfaces to Java classes
@@ -605,7 +605,7 @@ EOT
                     my $perl_to_java = $class->{perl_to_java};
                     $class->{import} ? 
                     "    public ${java_class_name} ${perl_to_java}() {\n"
-                  . "        pCORE.die(\"error .${perl_to_java}!\");\n"
+                  . "        PlCORE.die(\"error .${perl_to_java}!\");\n"
                   . "        return null;\n"
                   . "    }\n" : ()
             }
@@ -616,198 +616,198 @@ EOT
         return this.toString();
     }
     public int to_int() {
-        pCORE.die("error .to_int!");
+        PlCORE.die("error .to_int!");
         return 0;
     }
-    public pObject end_of_array_index() {
-        return pCORE.die("Not an ARRAY reference");
+    public PlObject end_of_array_index() {
+        return PlCORE.die("Not an ARRAY reference");
     }
     public double to_double() {
-        pCORE.die("error .to_double!");
+        PlCORE.die("error .to_double!");
         return 0.0;
     }
     public boolean to_bool() {
-        pCORE.die("error .to_bool!");
+        PlCORE.die("error .to_bool!");
         return true;
     }
     public boolean is_undef() {
         return false;
     }
-    public pObject apply(int want, pArray List__) {
+    public PlObject apply(int want, PlArray List__) {
         // $ perl -e ' $a = 5; $a->() '
         // Undefined subroutine &main::5 called
-        pCORE.die("subroutine call error");
+        PlCORE.die("subroutine call error");
         return this;
     }
 
-    public pObject length() {
-        return new pInt(this.toString().length());
+    public PlObject length() {
+        return new PlInt(this.toString().length());
     }
-    public pObject get_arrayref() {
-        return pCORE.die("Not an ARRAY reference");
-    }
-
-    public pObject shift() {
-        return pCORE.die("Not an ARRAY reference");
+    public PlObject get_arrayref() {
+        return PlCORE.die("Not an ARRAY reference");
     }
 
-    public pObject get_hashref() {
-        return pCORE.die("Not a HASH reference");
+    public PlObject shift() {
+        return PlCORE.die("Not an ARRAY reference");
     }
 
-    public pObject hget_scalarref(pObject i) {
-        pCORE.die("Not a SCALAR reference");
-        return this;
-    }
-    public pObject hget_scalarref(String i) {
-        pCORE.die("Not a SCALAR reference");
-        return this;
-    }
-    public pObject scalar_deref_set(pObject v) {
-        pCORE.die("Not a SCALAR reference");
-        return this;
-    }
-    public pObject aget_scalarref(pObject i) {
-        pCORE.die("Not a SCALAR reference");
-        return this;
-    }
-    public pObject aget_scalarref(int i) {
-        pCORE.die("Not a SCALAR reference");
-        return this;
+    public PlObject get_hashref() {
+        return PlCORE.die("Not a HASH reference");
     }
 
-    public pObject array_deref() {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_scalarref(PlObject i) {
+        PlCORE.die("Not a SCALAR reference");
         return this;
     }
-    public pObject array_deref_set(pObject i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_scalarref(String i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject aget_scalarref(PlObject i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject aget_scalarref(int i) {
+        PlCORE.die("Not a SCALAR reference");
         return this;
     }
 
-    public pObject hget_arrayref(pObject i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject array_deref() {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject hget_arrayref(String i) {
-        pCORE.die("Not a HASH reference");
-        return this;
-    }
-    public pObject hget_hashref(pObject i) {
-        pCORE.die("Not a HASH reference");
-        return this;
-    }
-    public pObject hget_hashref(String i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject array_deref_set(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
 
-    public pObject aget_arrayref(pObject i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_arrayref(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject aget_arrayref(int i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_arrayref(String i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject aget_hashref(pObject i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_hashref(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject aget_hashref(int i) {
-        pCORE.die("Not an ARRAY reference");
-        return this;
-    }
-
-    public pObject hash_deref() {
-        pCORE.die("Not a HASH reference");
-        return this;
-    }
-    public pObject hash_deref_set(pObject i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject hget_hashref(String i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
 
-    public pObject hget(pObject i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject aget_arrayref(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject hget(String i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject aget_arrayref(int i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject hget_lvalue(pObject i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject aget_hashref(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject hget_lvalue(String i) {
-        pCORE.die("Not a HASH reference");
-        return this;
-    }
-    public pObject hget_lvalue_local(pObject i) {
-        pCORE.die("Not a HASH reference");
-        return this;
-    }
-    public pObject hget_lvalue_local(String i) {
-        pCORE.die("Not a HASH reference");
+    public PlObject aget_hashref(int i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
 
-    public pObject hset(pObject s, pObject v) {
-        pCORE.die("Not a HASH reference");
+    public PlObject hash_deref() {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject hset(String s, pObject v) {
-        pCORE.die("Not a HASH reference");
+    public PlObject hash_deref_set(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
 
-    public pObject aget(pObject i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject aget(int i) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget(String i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject aset(pObject i, pObject v) {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_lvalue(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject to_array() {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_lvalue(String i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject length_of_array() {
-        pCORE.die("Not an ARRAY reference");
+    public PlObject hget_lvalue_local(PlObject i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject values() {
-        pCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
+    public PlObject hget_lvalue_local(String i) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject keys() {
-        pCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
+
+    public PlObject hset(PlObject s, PlObject v) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject each() {
-        pCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
+    public PlObject hset(String s, PlObject v) {
+        PlCORE.die("Not a HASH reference");
         return this;
     }
-    public pObject exists(pObject i) {
-        pCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+
+    public PlObject aget(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject delete(pObject i) {
-        pCORE.die("delete argument is not a HASH or ARRAY element or slice");
+    public PlObject aget(int i) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject set(pObject o) {
-        pCORE.die("Modification of a read-only value attempted");
+    public PlObject aset(PlObject i, PlObject v) {
+        PlCORE.die("Not an ARRAY reference");
         return this;
     }
-    public pObject get() {
-        pCORE.die("error .get!");
+    public PlObject to_array() {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject length_of_array() {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject values() {
+        PlCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject keys() {
+        PlCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject each() {
+        PlCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject exists(PlObject i) {
+        PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+        return this;
+    }
+    public PlObject delete(PlObject i) {
+        PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
+        return this;
+    }
+    public PlObject set(PlObject o) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject get() {
+        PlCORE.die("error .get!");
         return this;
     }
     public boolean is_int() {
@@ -841,79 +841,79 @@ EOT
         return false;
     }
 
-    public pObject _decr() {
+    public PlObject _decr() {
         // --$x
-        return new pInt(-1);
+        return new PlInt(-1);
     }
-    public pObject _incr() {
+    public PlObject _incr() {
         // ++$x
-        return new pInt(1);
+        return new PlInt(1);
     }
-    public pObject neg() {
-        return new pInt(-this.to_int());
+    public PlObject neg() {
+        return new PlInt(-this.to_int());
     }
-    public pObject abs() {
+    public PlObject abs() {
         int c = this.to_int();
-        return new pInt(c < 0 ? -c : c);
+        return new PlInt(c < 0 ? -c : c);
     }
 
-    public pObject sqrt() { return new pDouble(Math.sqrt(this.to_double())); }
-    public pObject cos()  { return new pDouble(Math.cos(this.to_double())); }
-    public pObject sin()  { return new pDouble(Math.sin(this.to_double())); }
-    public pObject exp()  { return new pDouble(Math.exp(this.to_double())); }
-    public pObject log()  { return new pDouble(Math.log(this.to_double())); }
-    public pObject pow(pObject arg)    { return new pDouble(Math.pow(this.to_double(), arg.to_double())); }
-    public pObject atan2(pObject arg)  { return new pDouble(Math.atan2(this.to_double(), arg.to_double())); }
+    public PlObject sqrt() { return new PlDouble(Math.sqrt(this.to_double())); }
+    public PlObject cos()  { return new PlDouble(Math.cos(this.to_double())); }
+    public PlObject sin()  { return new PlDouble(Math.sin(this.to_double())); }
+    public PlObject exp()  { return new PlDouble(Math.exp(this.to_double())); }
+    public PlObject log()  { return new PlDouble(Math.log(this.to_double())); }
+    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double())); }
+    public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }
 
-    public pObject pre_decr() {
+    public PlObject pre_decr() {
         // --$x
-        pCORE.die("Can't modify constant item in predecrement (--)");
+        PlCORE.die("Can't modify constant item in predecrement (--)");
         return this;
     }
-    public pObject post_decr() {
+    public PlObject post_decr() {
         // $x--
-        pCORE.die("Can't modify constant item in postdecrement (--)");
+        PlCORE.die("Can't modify constant item in postdecrement (--)");
         return this;
     }
-    public pObject pre_incr() {
+    public PlObject pre_incr() {
         // ++$x
-        pCORE.die("Can't modify constant item in preincrement (++)");
+        PlCORE.die("Can't modify constant item in preincrement (++)");
         return this;
     }
-    public pObject post_incr() {
+    public PlObject post_incr() {
         // $x++
-        pCORE.die("Can't modify constant item in postincrement (++)");
+        PlCORE.die("Can't modify constant item in postincrement (++)");
         return this;
     }
 
-    public pObject lcfirst() {
+    public PlObject lcfirst() {
         String s = this.toString();
         int len = s.length();
         if (len == 0) {
-            return new pString(s);
+            return new PlString(s);
         }
         if (len == 1) {
-            return new pString(s.toLowerCase());
+            return new PlString(s.toLowerCase());
         }
-        return new pString( s.substring(0,1).toLowerCase() + s.substring(1) );
+        return new PlString( s.substring(0,1).toLowerCase() + s.substring(1) );
     }
-    public pObject ucfirst() {
+    public PlObject ucfirst() {
         String s = this.toString();
         int len = s.length();
         if (len == 0) {
-            return new pString(s);
+            return new PlString(s);
         }
         if (len == 1) {
-            return new pString(s.toUpperCase());
+            return new PlString(s.toUpperCase());
         }
-        return new pString( s.substring(0,1).toUpperCase() + s.substring(1) );
+        return new PlString( s.substring(0,1).toUpperCase() + s.substring(1) );
     }
-    public pObject quotemeta() {
+    public PlObject quotemeta() {
         String s = this.toString();
-        return new pString(Matcher.quoteReplacement(s));
+        return new PlString(Matcher.quoteReplacement(s));
     }
 
-    public pObject substr(pObject offset) {
+    public PlObject substr(PlObject offset) {
         // substr EXPR,OFFSET
         String s = this.toString();
         int ofs = offset.to_int();
@@ -924,11 +924,11 @@ EOT
             ofs = 0;
         }
         if (ofs >= s.length()) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
-        return new pString(s.substring(ofs));
+        return new PlString(s.substring(ofs));
     }
-    public pObject substr(pObject offset, pObject length) {
+    public PlObject substr(PlObject offset, PlObject length) {
         // substr EXPR,OFFSET,LENGTH
         String s = this.toString();
         int ofs = offset.to_int();
@@ -937,7 +937,7 @@ EOT
             ofs = s.length() + ofs;
         }
         if (ofs >= s.length()) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
 
         if (len < 0) {
@@ -951,52 +951,52 @@ EOT
             len = s.length();
         }
         if (len <= 0) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         if (ofs < 0) {
             ofs = 0;
         }
-        return new pString(s.substring(ofs, len));
+        return new PlString(s.substring(ofs, len));
     }
-    public pObject substr(pObject offset, pObject length, pObject replacement) {
+    public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {
         // substr EXPR,OFFSET,LENGTH,REPLACEMENT
-        pCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
+        PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
         return this;
     }
 
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
-    public pObject scalar() {
+    public PlObject scalar() {
         return this;
     }
-    public pObject str_cmp(pObject b) {
+    public PlObject str_cmp(PlObject b) {
         int c = this.toString().compareTo(b.toString());
-        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
-    public pObject num_cmp(pObject b) {
+    public PlObject num_cmp(PlObject b) {
         return b.num_cmp2(this);
     }
-    public pObject num_cmp2(pObject b) {
+    public PlObject num_cmp2(PlObject b) {
         int c = new Integer(b.to_int()).compareTo(this.to_int());
-        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
 EOT
     . ( join('', map {
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
-"    public pObject ${perl}(pObject s) {
+"    public PlObject ${perl}(PlObject s) {
         return s.${perl}2(this);
     }
 "
-    .   ( $returns eq 'pDouble' ?
-"    public pObject ${perl}2(pObject s) {
+    .   ( $returns eq 'PlDouble' ?
+"    public PlObject ${perl}2(PlObject s) {
         return new ${returns}( s.to_double() ${native} this.to_double() );
     }
 "
         :
-"    public pObject ${perl}2(pObject s) {
+"    public PlObject ${perl}2(PlObject s) {
         return new ${returns}( s.to_int() ${native} this.to_int() );
     }
 "       )
@@ -1007,7 +1007,7 @@ EOT
             my $perl = $_;
             my $native  = $string_binop{$perl}{op};
             my $returns = $string_binop{$perl}{returns};
-"    public pObject ${perl}(pObject b) {
+"    public PlObject ${perl}(PlObject b) {
         return new ${returns}(this.toString().compareTo(b.toString()) ${native});
     }
 "
@@ -1016,106 +1016,106 @@ EOT
 
     . <<'EOT'
 }
-class pReference extends pObject {
-    public static final pString REF = new pString("REF");
+class PlReference extends PlObject {
+    public static final PlString REF = new PlString("REF");
 
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pRegex extends pReference {
+class PlRegex extends PlReference {
     public Pattern p;
     // public Matcher m;
-    public static final pString REF = new pString("Regexp");
+    public static final PlString REF = new PlString("Regexp");
 
-    public pRegex(String p, int flags) {
+    public PlRegex(String p, int flags) {
         this.p = Pattern.compile(p, flags);
     }
-    public pRegex(pObject p, int flags) {
+    public PlRegex(PlObject p, int flags) {
         this.p = Pattern.compile(p.toString(), flags);
     }
     public String toString() {
         // TODO - show flags
         return this.p.toString();
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pClosure extends pReference {
-    public pObject[] env;       // new pObject[]{ v1, v2, v3 }
-    public pObject prototype;    // '$$$'
-    public static final pString REF = new pString("CODE");
+class PlClosure extends PlReference {
+    public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
+    public PlObject prototype;    // '$$$'
+    public static final PlString REF = new PlString("CODE");
 
-    public pClosure(pObject prototype, pObject[] env) {
+    public PlClosure(PlObject prototype, PlObject[] env) {
         this.prototype = prototype;
         this.env = env;
     }
-    // Note: apply() is inherited from pObject
-    public pObject apply(int want, pArray List__) {
-        pCORE.die("it looks like you have a closure without a block");
+    // Note: apply() is inherited from PlObject
+    public PlObject apply(int want, PlArray List__) {
+        PlCORE.die("it looks like you have a closure without a block");
         return this;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pLvalueRef extends pReference {
-    private pObject o;
-    public static final pString REF = new pString("SCALAR");
+class PlLvalueRef extends PlReference {
+    private PlObject o;
+    public static final PlString REF = new PlString("SCALAR");
 
-    public pLvalueRef(pLvalue o) {
+    public PlLvalueRef(PlLvalue o) {
         this.o = o;
     }
-    public pLvalueRef(pObject o) {
+    public PlLvalueRef(PlObject o) {
         this.o = o;
     }
-    public pObject scalar_deref_set(pObject v) {
+    public PlObject scalar_deref_set(PlObject v) {
         return this.o.set(v);
     }
     public boolean is_scalarref() {
         return true;
     }
-    public pObject get() {
+    public PlObject get() {
         return this.o;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pArrayRef extends pArray {
-    public static final pString REF = new pString("ARRAY");
+class PlArrayRef extends PlArray {
+    public static final PlString REF = new PlString("ARRAY");
 
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
-    public pArrayRef() {
+    public PlArrayRef() {
         this.each_iterator = 0;
-        this.a = new ArrayList<pObject>();
+        this.a = new ArrayList<PlObject>();
     }
-    public pArrayRef(pArray o) {
+    public PlArrayRef(PlArray o) {
         this.a = o.a;
         this.each_iterator = o.each_iterator;
     }
-    public pObject set(pArray o) {
+    public PlObject set(PlArray o) {
         this.a = o.a;
         this.each_iterator = o.each_iterator;
         return o;
     }
-    public pObject get() {
-        pArray o = new pArray();
+    public PlObject get() {
+        PlArray o = new PlArray();
         o.a = this.a;
         return o;
     }
-    public pObject array_deref() {
-        pArray o = new pArray();
+    public PlObject array_deref() {
+        PlArray o = new PlArray();
         o.a = this.a;
         return o;
     }
-    public pObject array_deref_set(pObject v) {
+    public PlObject array_deref_set(PlObject v) {
         super.set(v);
         return v;
     }
@@ -1125,43 +1125,43 @@ class pArrayRef extends pArray {
     public boolean is_arrayref() {
         return true;
     }
-    public pObject scalar() {
+    public PlObject scalar() {
         return this;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pHashRef extends pHash {
-    public static final pString REF = new pString("HASH");
+class PlHashRef extends PlHash {
+    public static final PlString REF = new PlString("HASH");
 
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
-    public pHashRef() {
-        this.h = new HashMap<String, pObject>();
+    public PlHashRef() {
+        this.h = new HashMap<String, PlObject>();
         this.each_iterator = null;
     }
-    public pHashRef(pHash o) {
+    public PlHashRef(PlHash o) {
         this.h = o.h;
         this.each_iterator = o.each_iterator;
     }
-    public pObject set(pHash o) {
+    public PlObject set(PlHash o) {
         this.h = o.h;
         this.each_iterator = o.each_iterator;
         return o;
     }
-    public pObject get() {
-        pHash o = new pHash();
+    public PlObject get() {
+        PlHash o = new PlHash();
         o.h = this.h;
         return o;
     }
-    public pObject hash_deref() {
-        pHash o = new pHash();
+    public PlObject hash_deref() {
+        PlHash o = new PlHash();
         o.h = this.h;
         return o;
     }
-    public pObject hash_deref_set(pObject v) {
+    public PlObject hash_deref_set(PlObject v) {
         super.set(v);
         return v;
     }
@@ -1171,41 +1171,41 @@ class pHashRef extends pHash {
     public boolean is_hashref() {
         return true;
     }
-    public pObject scalar() {
+    public PlObject scalar() {
         return this;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
-class pLvalue extends pObject {
-    private pObject o;
+class PlLvalue extends PlObject {
+    private PlObject o;
 
-    // Note: several versions of pLvalue()
-    public pLvalue() {
-        this.o = pCx.UNDEF;
+    // Note: several versions of PlLvalue()
+    public PlLvalue() {
+        this.o = PlCx.UNDEF;
     }
-    public pLvalue(pObject o) {
+    public PlLvalue(PlObject o) {
         this.o = o;
     }
-    public pLvalue(pLvalue o) {
+    public PlLvalue(PlLvalue o) {
         this.o = o.get();
     }
-    public pLvalue(pArray o) {
+    public PlLvalue(PlArray o) {
         // $a = @x
         this.o = o.scalar();
     }
-    public pLvalue(pHash o) {
+    public PlLvalue(PlHash o) {
         // $a = %x
         this.o = o.scalar();
     }
 
-    public pObject get() {
+    public PlObject get() {
         return this.o;
     }
-    public pObject get_scalarref() {
+    public PlObject get_scalarref() {
         if (this.o.is_undef()) {
-            pLvalueRef ar = new pLvalueRef(new pLvalue());
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.o = ar;
             return ar;
         }
@@ -1215,159 +1215,159 @@ class pLvalue extends pObject {
         // Modification of a read-only value attempted
         return this.o;
     }
-    public pObject get_arrayref() {
+    public PlObject get_arrayref() {
         if (this.o.is_undef()) {
-            pArrayRef ar = new pArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.o = ar;
             return ar;
         }
         else if (this.o.is_arrayref()) {
             return this.o;
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
-    public pObject get_hashref() {
+    public PlObject get_hashref() {
         if (this.o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.o = hr;
             return this.o;
         }
         else if (this.o.is_hashref()) {
             return this.o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
-    public pObject aget(pObject i) {
+    public PlObject aget(PlObject i) {
         return this.o.aget(i);
     }
-    public pObject aget(int i) {
+    public PlObject aget(int i) {
         return this.o.aget(i);
     }
 
-    public pObject aget_scalarref(pObject i) {
+    public PlObject aget_scalarref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pArrayRef();
+            this.o = new PlArrayRef();
         }
         return this.o.aget_scalarref(i);
     }
-    public pObject aget_arrayref(pObject i) {
+    public PlObject aget_arrayref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pArrayRef();
+            this.o = new PlArrayRef();
         }
         return this.o.aget_arrayref(i);
     }
-    public pObject aget_hashref(pObject i) {
+    public PlObject aget_hashref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pArrayRef();
+            this.o = new PlArrayRef();
         }
         return this.o.aget_hashref(i);
     }
 
-    public pObject aset(pObject i, pObject v) {
+    public PlObject aset(PlObject i, PlObject v) {
         return this.o.aset(i, v);
     }
-    public pObject hget(pObject i) {
+    public PlObject hget(PlObject i) {
         return this.o.hget(i);
     }
-    public pObject hget(String i) {
+    public PlObject hget(String i) {
         return this.o.hget(i);
     }
 
-    public pObject hget_scalarref(pObject i) {
+    public PlObject hget_scalarref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pHashRef();
+            this.o = new PlHashRef();
         }
         return this.o.hget_scalarref(i);
     }
-    public pObject hget_arrayref(pObject i) {
+    public PlObject hget_arrayref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pHashRef();
+            this.o = new PlHashRef();
         }
         return this.o.hget_arrayref(i);
     }
-    public pObject hget_hashref(pObject i) {
+    public PlObject hget_hashref(PlObject i) {
         if (this.o.is_undef()) {
-            this.o = new pHashRef();
+            this.o = new PlHashRef();
         }
         return this.o.hget_hashref(i);
     }
 
-    public pObject hset(pObject s, pObject v) {
+    public PlObject hset(PlObject s, PlObject v) {
         return this.o.hset(s, v);
     }
-    public pObject hset(String s, pObject v) {
+    public PlObject hset(String s, PlObject v) {
         return this.o.hset(s, v);
     }
 
-    public pObject scalar_deref() {
+    public PlObject scalar_deref() {
         return this.get_scalarref().get();
     }
-    public pObject scalar_deref_set(pObject v) {
+    public PlObject scalar_deref_set(PlObject v) {
         return this.get_scalarref().scalar_deref_set(v);
     }
 
-    public pObject array_deref() {
+    public PlObject array_deref() {
         // @$x doesn't autovivify
         if (this.o.is_undef()) {
-            return new pArray();
+            return new PlArray();
         }
         else if (this.o.is_arrayref()) {
             return this.o.get();
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
-    public pObject array_deref_set(pObject v) {
+    public PlObject array_deref_set(PlObject v) {
         // @$x = ...
         if (this.o.is_undef()) {
-            this.o = new pArrayRef();
+            this.o = new PlArrayRef();
             return this.o.array_deref_set(v);
         }
         else if (this.o.is_arrayref()) {
             return this.o.array_deref_set(v);
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
 
-    public pObject hash_deref() {
+    public PlObject hash_deref() {
         // %$x doesn't autovivify
         if (this.o.is_undef()) {
-            return new pHash();
+            return new PlHash();
         }
         else if (this.o.is_hashref()) {
             return this.o.get();
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
-    public pObject hash_deref_set(pObject v) {
+    public PlObject hash_deref_set(PlObject v) {
         // %$x = ...
         if (this.o.is_undef()) {
-            this.o = new pHashRef();
+            this.o = new PlHashRef();
             return this.o.hash_deref_set(v);
         }
         else if (this.o.is_hashref()) {
             return this.o.hash_deref_set(v);
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
-    public pObject apply(int want, pArray List__) {
+    public PlObject apply(int want, PlArray List__) {
         return this.o.apply(want, List__);
     }
 
     // Note: several versions of set()
-    public pObject set(pObject o) {
+    public PlObject set(PlObject o) {
         this.o = o;
         return this;
     }
-    public pObject set(pLvalue o) {
+    public PlObject set(PlLvalue o) {
         this.o = o.get();
         return this;
     }
-    public pObject set(pArray o) {
+    public PlObject set(PlArray o) {
         // $a = @x
         this.o = o.scalar();
         return this;
     }
-    public pObject set(pHash o) {
+    public PlObject set(PlHash o) {
         // $a = %x
         this.o = o.scalar();
         return this;
@@ -1377,7 +1377,7 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
-"    public pObject set($native s) {
+"    public PlObject set($native s) {
         this.o = new $perl(s);
         return this;
     }
@@ -1398,20 +1398,20 @@ EOT
     public boolean to_bool() {
         return this.o.to_bool();
     }
-    public pObject num_cmp(pObject b) {
+    public PlObject num_cmp(PlObject b) {
         return this.o.num_cmp(b);
     }
-    public pObject num_cmp2(pObject b) {
+    public PlObject num_cmp2(PlObject b) {
         return b.num_cmp(this.o);
     }
 EOT
     . ( join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}{op};
-"    public pObject ${perl}(pObject s) {
+"    public PlObject ${perl}(PlObject s) {
         return this.o.${perl}(s);
     }
-    public pObject ${perl}2(pObject s) {
+    public PlObject ${perl}2(PlObject s) {
         return s.${perl}(this.o);
     }
 "
@@ -1438,39 +1438,39 @@ EOT
         return true;
     }
 
-    public pObject pre_decr() {
+    public PlObject pre_decr() {
         // --$x
         this.o = this.o._decr();
         return this.o;
     }
-    public pObject post_decr() {
+    public PlObject post_decr() {
         // $x--
-        pObject res = this.o;
+        PlObject res = this.o;
         this.o = this.o._decr();
         return res;
     }
-    public pObject pre_incr() {
+    public PlObject pre_incr() {
         // ++$x
         this.o = this.o._incr();
         return this.o;
     }
-    public pObject post_incr() {
+    public PlObject post_incr() {
         // $x++
-        pObject res = this.o;
+        PlObject res = this.o;
         this.o = this.o._incr();
         return res;
     }
-    public pObject neg() {
+    public PlObject neg() {
         return this.o.neg();
     }
-    public pObject abs() {
+    public PlObject abs() {
         return this.o.abs();
     }
 
-    public pObject scalar() {
+    public PlObject scalar() {
         return this.o;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return this.o.ref();
     }
 EOT
@@ -1494,20 +1494,20 @@ EOT
 
     . <<'EOT'
 }
-class pArray extends pObject {
-    public ArrayList<pObject> a;
+class PlArray extends PlObject {
+    public ArrayList<PlObject> a;
     public int each_iterator;
-    public pArray( ArrayList<pObject> a ) {
+    public PlArray( ArrayList<PlObject> a ) {
         this.each_iterator = 0;
         this.a = a;
     }
-    public pArray() {
+    public PlArray() {
         this.each_iterator = 0;
-        this.a = new ArrayList<pObject>();
+        this.a = new ArrayList<PlObject>();
     }
-    public pArray(pObject... args) {
-        ArrayList<pObject> aa = new ArrayList<pObject>();
-        for (pObject s : args) {
+    public PlArray(PlObject... args) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (PlObject s : args) {
             if (s.is_hash()) {
                 // @x = %x;
                 s = s.to_array();
@@ -1525,7 +1525,7 @@ class pArray extends pObject {
         this.each_iterator = 0;
         this.a = aa;
     }
-    public pObject set(pObject s) {
+    public PlObject set(PlObject s) {
         this.a.clear();
         if (s.is_hash()) {
             // @x = %x;
@@ -1543,63 +1543,63 @@ class pArray extends pObject {
         this.each_iterator = 0;
         return this;
     }
-    public pObject set(byte[] bs) {
+    public PlObject set(byte[] bs) {
         this.a.clear();
         // @x = byte[] native;
         for(byte b : bs){
             int i = b;
-            this.a.add(new pInt(i));
+            this.a.add(new PlInt(i));
         }
         this.each_iterator = 0;
         return this;
     }
-    public pArray(byte[] bs) {
-        pArray aa = new pArray();
+    public PlArray(byte[] bs) {
+        PlArray aa = new PlArray();
         aa.set(bs);
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-    public pObject set(int[] ints) {
+    public PlObject set(int[] ints) {
         this.a.clear();
         // @x = int[] native;
         for(int i : ints){
-            this.a.add(new pInt(i));
+            this.a.add(new PlInt(i));
         }
         this.each_iterator = 0;
         return this;
     }
-    public pArray(int[] ints) {
-        pArray aa = new pArray();
+    public PlArray(int[] ints) {
+        PlArray aa = new PlArray();
         aa.set(ints);
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
-    public pObject set(String[] strings) {
+    public PlObject set(String[] strings) {
         this.a.clear();
         for (String s : strings) {
-            this.a.add(new pString(s));
+            this.a.add(new PlString(s));
         }
         this.each_iterator = 0;
         return this;
     }
-    public pArray(String[] strings) {
-        pArray arr = new pArray();
+    public PlArray(String[] strings) {
+        PlArray arr = new PlArray();
         arr.set(strings);
         this.each_iterator = arr.each_iterator;
         this.a = arr.a;
     }
 
-    public pObject set(Map<String, String> env) {
+    public PlObject set(Map<String, String> env) {
         this.a.clear();
         for (String envName : env.keySet()) {
-            this.a.add(new pString(envName));
-            this.a.add(new pString(env.get(envName)));
+            this.a.add(new PlString(envName));
+            this.a.add(new PlString(env.get(envName)));
         }
         this.each_iterator = 0;
         return this;
     }
-    public pArray(Map<String, String> strings) {
-        pArray arr = new pArray();
+    public PlArray(Map<String, String> strings) {
+        PlArray arr = new PlArray();
         arr.set(strings);
         this.each_iterator = arr.each_iterator;
         this.a = arr.a;
@@ -1619,7 +1619,7 @@ EOT
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} ? 
-"    public pObject set(${java_class_name}[] stuffs) {
+"    public PlObject set(${java_class_name}[] stuffs) {
         this.a.clear();
         // \@x = ${java_class_name}[] native;
         for(${java_class_name} i : stuffs){
@@ -1628,8 +1628,8 @@ EOT
         this.each_iterator = 0;
         return this;
     }
-    public pArray(${java_class_name}[] stuffs) {
-        pArray aa = new pArray();
+    public PlArray(${java_class_name}[] stuffs) {
+        PlArray aa = new PlArray();
         aa.set(stuffs);
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
@@ -1640,168 +1640,168 @@ EOT
       ))
 
     . <<'EOT'
-    public pObject aget(pObject i) {
+    public PlObject aget(PlObject i) {
         int pos  = i.to_int();
         if (pos < 0) {
             pos = this.a.size() + pos;
         }
         if (pos < 0 || pos >= this.a.size()) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return this.a.get(pos);
     }
-    public pObject aget(int i) {
+    public PlObject aget(int i) {
         int pos  = i;
         if (pos < 0) {
             pos = this.a.size() + pos;
         }
         if (pos < 0 || pos >= this.a.size()) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return this.a.get(pos);
     }
-    public pObject aget_lvalue(int pos) {
+    public PlObject aget_lvalue(int pos) {
         int size = this.a.size();
         if (pos < 0) {
             pos = size + pos;
         }
         if (size <= pos) {
             while (size < pos) {
-                this.a.add( pCx.UNDEF );
+                this.a.add( PlCx.UNDEF );
                 size++;
             }
-            pLvalue a = new pLvalue();
+            PlLvalue a = new PlLvalue();
             this.a.add(a);
             return a;
         }
-        pObject o = this.a.get(pos);
+        PlObject o = this.a.get(pos);
         if (o == null) {
-            pLvalue a = new pLvalue();
+            PlLvalue a = new PlLvalue();
             this.a.set(pos, a);
             return a;
         }
         else if (o.is_lvalue()) {
             return o;
         }
-        pLvalue a = new pLvalue(o);
+        PlLvalue a = new PlLvalue(o);
         this.a.set(pos, a);
         return a;
     }
-    public pObject aget_lvalue(pObject i) {
+    public PlObject aget_lvalue(PlObject i) {
         return this.aget_lvalue(i.to_int());
     }
-    public pObject aget_lvalue_local(pObject i) {
+    public PlObject aget_lvalue_local(PlObject i) {
         return this.aget_lvalue_local(i.to_int());
     }
-    public pObject aget_lvalue_local(int i) {
+    public PlObject aget_lvalue_local(int i) {
         return PerlOp.push_local(this, i);
     }
 
-    public pObject get_scalar(pObject i) {
+    public PlObject get_scalar(PlObject i) {
         // $$x
-        pObject o = this.aget(i);
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pLvalue a = new pLvalue();
-            this.aset(i, new pLvalueRef(a));
+            PlLvalue a = new PlLvalue();
+            this.aset(i, new PlLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
             return o.get();
         }
         // Modification of a read-only value attempted
-        // return pCORE.die("Not an SCALAR reference");
+        // return PlCORE.die("Not an SCALAR reference");
         return o;
     }
-    public pObject aget_scalarref(pObject i) {
-        pObject o = this.aget(i);
+    public PlObject aget_scalarref(PlObject i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pLvalueRef ar = new pLvalueRef(new pLvalue());
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.aset(i, ar);
             return ar;
         }
         else if (o.is_scalarref()) {
             return o;
         }
-        return pCORE.die("Not a SCALAR reference");
+        return PlCORE.die("Not a SCALAR reference");
     }
-    public pObject aget_scalarref(int i) {
-        pObject o = this.aget(i);
+    public PlObject aget_scalarref(int i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pLvalueRef ar = new pLvalueRef(new pLvalue());
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.aset(i, ar);
             return ar;
         }
         else if (o.is_scalarref()) {
             return o;
         }
-        return pCORE.die("Not a SCALAR reference");
+        return PlCORE.die("Not a SCALAR reference");
     }
 
-    public pObject aget_arrayref(pObject i) {
-        pObject o = this.aget(i);
+    public PlObject aget_arrayref(PlObject i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.aset(i, ar);
             return ar;
         }
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
-    public pObject aget_arrayref(int i) {
-        pObject o = this.aget(i);
+    public PlObject aget_arrayref(int i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.aset(i, ar);
             return ar;
         }
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
 
-    public pObject aget_hashref(pObject i) {
-        pObject o = this.aget(i);
+    public PlObject aget_hashref(PlObject i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.aset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
-    public pObject aget_hashref(int i) {
-        pObject o = this.aget(i);
+    public PlObject aget_hashref(int i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.aset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
 
-    public pObject get_hash(int i) {
-        pObject o = this.aget(i);
+    public PlObject get_hash(int i) {
+        PlObject o = this.aget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.aset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
 
     // Note: multiple versions of set()
-    public pObject aset(pObject i, pObject v) {
+    public PlObject aset(PlObject i, PlObject v) {
         int size = this.a.size();
         int pos  = i.to_int();
         if (pos < 0) {
@@ -1809,7 +1809,7 @@ EOT
         }
         if (size <= pos) {
             while (size < pos) {
-                this.a.add( pCx.UNDEF );
+                this.a.add( PlCx.UNDEF );
                 size++;
             }
             this.a.add(v.scalar());
@@ -1818,7 +1818,7 @@ EOT
         this.a.set(pos, v.scalar());
         return v;
     }
-    public pObject aset(int i, pObject v) {
+    public PlObject aset(int i, PlObject v) {
         int size = this.a.size();
         int pos  = i;
         if (pos < 0) {
@@ -1826,7 +1826,7 @@ EOT
         }
         if (size <= pos) {
             while (size < pos) {
-                this.a.add( pCx.UNDEF );
+                this.a.add( PlCx.UNDEF );
                 size++;
             }
             this.a.add(v.scalar());
@@ -1835,7 +1835,7 @@ EOT
         this.a.set(pos, v.scalar());
         return v;
     }
-    public pObject aset(pObject i, pLvalue v) {
+    public PlObject aset(PlObject i, PlLvalue v) {
         int size = this.a.size();
         int pos  = i.to_int();
         if (pos < 0) {
@@ -1843,7 +1843,7 @@ EOT
         }
         if (size <= pos) {
             while (size < pos) {
-                this.a.add( pCx.UNDEF );
+                this.a.add( PlCx.UNDEF );
                 size++;
             }
             this.a.add(v.scalar());
@@ -1857,13 +1857,13 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
-"    public pObject aset(pObject i, $native s) {
+"    public PlObject aset(PlObject i, $native s) {
         return this.aset(i, new $perl(s));
     }
-    public pObject aset(int i, $native s) {
+    public PlObject aset(int i, $native s) {
         return this.aset(i, new $perl(s));
     }
-    public pObject push($native s) {
+    public PlObject push($native s) {
         this.a.add(new $perl(s));
         return this.length_of_array();
     }
@@ -1874,20 +1874,20 @@ EOT
     . <<'EOT'
 
     // Note: multiple versions of push()
-    public pObject push(pObject v) {
+    public PlObject push(PlObject v) {
         if (v.is_array()) {
-            return this.push( (pArray)v );
+            return this.push( (PlArray)v );
         }
         this.a.add(v.scalar());
         return this.length_of_array();
     }
-    public pObject push(pLvalue v) {
+    public PlObject push(PlLvalue v) {
         this.a.add(v.get());
         return this.length_of_array();
     }
-    public pObject push(pArray args) {
+    public PlObject push(PlArray args) {
         for (int i = 0; i < args.to_int(); i++) {
-            pObject s = args.aget(i);
+            PlObject s = args.aget(i);
             if (s.is_hash()) {
                 // @x = %x;
                 s = s.to_array();
@@ -1903,20 +1903,20 @@ EOT
     }
 
     // Note: multiple versions of unshift()
-    public pObject unshift(pObject v) {
+    public PlObject unshift(PlObject v) {
         if (v.is_array()) {
-            return this.unshift( (pArray)v );
+            return this.unshift( (PlArray)v );
         }
         this.a.add(0, v.scalar());
         return this.length_of_array();
     }
-    public pObject unshift(pLvalue v) {
+    public PlObject unshift(PlLvalue v) {
         this.a.add(0, v.get());
         return this.length_of_array();
     }
-    public pObject unshift(pArray args) {
+    public PlObject unshift(PlArray args) {
         for (int i = args.to_int() - 1; i >= 0; i--) {
-            pObject s = args.aget(i);
+            PlObject s = args.aget(i);
             if (s.is_hash()) {
                 // @x = %x;
                 s = s.to_array();
@@ -1931,49 +1931,49 @@ EOT
         return this.length_of_array();
     }
 
-    public pObject pop() {
+    public PlObject pop() {
         int size = this.a.size() - 1;
         if (size >= 0) {
             return this.a.remove(size);
         }
         else {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
     }
-    public pObject shift() {
+    public PlObject shift() {
         int size = this.a.size();
         if (size > 0) {
             return this.a.remove(0);
         }
         else {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
     }
-    public pObject exists(pObject i) {
-        pCORE.die("TODO - array exists");
+    public PlObject exists(PlObject i) {
+        PlCORE.die("TODO - array exists");
         return this;
     }
-    public pObject delete(pObject i) {
-        pCORE.die("TODO - array delete");
+    public PlObject delete(PlObject i) {
+        PlCORE.die("TODO - array delete");
         return this;
     }
-    public pObject values() {
+    public PlObject values() {
         // return a copy
-        return new pArray(this);
+        return new PlArray(this);
     }
-    public pObject keys() {
-        pArray aa = new pArray();
+    public PlObject keys() {
+        PlArray aa = new PlArray();
         int size = this.a.size();
         for (int i = 0; i < size; i++) {
-            aa.push(new pInt(i));
+            aa.push(new PlInt(i));
         }
         return aa;
     }
-    public pObject each() {
-        pArray aa = new pArray();
+    public PlObject each() {
+        PlArray aa = new PlArray();
         int size = this.a.size();
         if (this.each_iterator < size) {
-            aa.push(new pInt(this.each_iterator));
+            aa.push(new PlInt(this.each_iterator));
             aa.push(this.aget(this.each_iterator));
             this.each_iterator++;
         }
@@ -1995,11 +1995,11 @@ EOT
     public int to_int() {
         return this.a.size();
     }
-    public pObject length_of_array() {
-        return new pInt(this.a.size());
+    public PlObject length_of_array() {
+        return new PlInt(this.a.size());
     }
-    public pObject end_of_array_index() {
-        return new pInt(this.a.size() - 1);
+    public PlObject end_of_array_index() {
+        return new PlInt(this.a.size() - 1);
     }
     public double to_double() {
         return 0.0 + this.to_int();
@@ -2022,23 +2022,23 @@ EOT
     public boolean is_array() {
         return true;
     }
-    public pObject scalar() {
+    public PlObject scalar() {
         return this.length_of_array();
     }
 }
-class pHash extends pObject {
-    public HashMap<String, pObject> h;
-    public Iterator<Map.Entry<String, pObject>> each_iterator;
+class PlHash extends PlObject {
+    public HashMap<String, PlObject> h;
+    public Iterator<Map.Entry<String, PlObject>> each_iterator;
 
-    public pHash() {
+    public PlHash() {
         this.each_iterator = null;
-        this.h = new HashMap<String, pObject>();
+        this.h = new HashMap<String, PlObject>();
     }
-    public pHash(pObject... args) {
-        pHash hh = new pHash();
+    public PlHash(PlObject... args) {
+        PlHash hh = new PlHash();
         int args_size = args.length;
         for (int i = 0; i < args_size; i++) {
-            pObject s = args[i];
+            PlObject s = args[i];
             if (s.is_hash()) {
                 // @x = %x;
                 s = s.to_array();
@@ -2047,12 +2047,12 @@ class pHash extends pObject {
                 // %x = ( @x, @y );
                 int array_size = s.to_int();
                 for (int j = 0; j < array_size; j++) {
-                    pObject key = s.aget(j);
+                    PlObject key = s.aget(j);
                     j++;
-                    pObject value;
+                    PlObject value;
                     if ( j >= array_size ) {
                         // TODO - emit warning about odd number of arguments
-                        value = pCx.UNDEF;
+                        value = PlCx.UNDEF;
                     }
                     else {
                         value = s.aget(j);
@@ -2062,10 +2062,10 @@ class pHash extends pObject {
             }
             else {
                 i++;
-                pObject value;
+                PlObject value;
                 if ( i >= args_size ) {
                     // TODO - emit warning about odd number of arguments
-                    value = pCx.UNDEF;
+                    value = PlCx.UNDEF;
                 }
                 else {
                     value = args[i];
@@ -2076,10 +2076,10 @@ class pHash extends pObject {
         this.each_iterator = null;
         this.h = hh.to_HashMap();
     }
-    private HashMap<String, pObject> to_HashMap() {
+    private HashMap<String, PlObject> to_HashMap() {
         return this.h;
     }
-    public pObject set(pObject s) {
+    public PlObject set(PlObject s) {
         this.h.clear();
         if (s.is_hash()) {
             // @x = %x;
@@ -2089,12 +2089,12 @@ class pHash extends pObject {
             // %x = ( @x, @y );
             int array_size = s.to_int();
             for (int j = 0; j < array_size; j++) {
-                pObject key = s.aget(j);
+                PlObject key = s.aget(j);
                 j++;
-                pObject value;
+                PlObject value;
                 if ( j >= array_size ) {
                     // TODO - emit warning about odd number of arguments
-                    value = pCx.UNDEF;
+                    value = PlCx.UNDEF;
                 }
                 else {
                     value = s.aget(j);
@@ -2104,92 +2104,92 @@ class pHash extends pObject {
         }
         else {
             // TODO - emit warning about odd number of arguments
-            this.hset(s, pCx.UNDEF);
+            this.hset(s, PlCx.UNDEF);
         }
         this.each_iterator = null;
         return this;
     }
 
-    public pObject to_array() {
-        pArray aa = new pArray();
-        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
+    public PlObject to_array() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
-            pObject value = entry.getValue();
-            aa.push(new pString(key));
+            PlObject value = entry.getValue();
+            aa.push(new PlString(key));
             aa.push(value);
         }
         return aa;
     }
 
-    public pObject hget(pObject i) {
-        pObject o = this.h.get(i.toString());
+    public PlObject hget(PlObject i) {
+        PlObject o = this.h.get(i.toString());
         if (o == null) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return o;
     }
-    public pObject hget(String i) {
-        pObject o = this.h.get(i);
+    public PlObject hget(String i) {
+        PlObject o = this.h.get(i);
         if (o == null) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return o;
     }
-    public pObject hget_lvalue(pObject i) {
-        pObject o = this.h.get(i.toString());
+    public PlObject hget_lvalue(PlObject i) {
+        PlObject o = this.h.get(i.toString());
         if (o == null) {
-            pLvalue a = new pLvalue();
+            PlLvalue a = new PlLvalue();
             this.h.put(i.toString(), a);
             return a;
         }
         else if (o.is_lvalue()) {
             return o;
         }
-        pLvalue a = new pLvalue(o);
+        PlLvalue a = new PlLvalue(o);
         this.h.put(i.toString(), a);
         return a;
     }
-    public pObject hget_lvalue(String i) {
-        pObject o = this.h.get(i);
+    public PlObject hget_lvalue(String i) {
+        PlObject o = this.h.get(i);
         if (o == null) {
-            pLvalue a = new pLvalue();
+            PlLvalue a = new PlLvalue();
             this.h.put(i, a);
             return a;
         }
         else if (o.is_lvalue()) {
             return o;
         }
-        pLvalue a = new pLvalue(o);
+        PlLvalue a = new PlLvalue(o);
         this.h.put(i, a);
         return a;
     }
-    public pObject hget_lvalue_local(pObject i) {
+    public PlObject hget_lvalue_local(PlObject i) {
         return this.hget_lvalue_local(i.toString());
     }
-    public pObject hget_lvalue_local(String i) {
+    public PlObject hget_lvalue_local(String i) {
         return PerlOp.push_local(this, i);
     }
 
-    public pObject get_scalar(pObject i) {
+    public PlObject get_scalar(PlObject i) {
         // $$x
-        pObject o = this.hget(i);
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pLvalue a = new pLvalue();
-            this.hset(i, new pLvalueRef(a));
+            PlLvalue a = new PlLvalue();
+            this.hset(i, new PlLvalueRef(a));
             return a;
         }
         else if (o.is_scalarref()) {
             return o.get();
         }
         // Modification of a read-only value attempted
-        // return pCORE.die("Not an SCALAR reference");
+        // return PlCORE.die("Not an SCALAR reference");
         return o;
     }
 
-    public pObject hget_scalarref(pObject i) {
-        pObject o = this.hget(i);
+    public PlObject hget_scalarref(PlObject i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pLvalueRef ar = new pLvalueRef(new pLvalue());
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.hset(i, ar);
             return ar;
         }
@@ -2199,10 +2199,10 @@ class pHash extends pObject {
         // Modification of a read-only value attempted
         return o;
     }
-    public pObject hget_scalarref(String i) {
-        pObject o = this.hget(i);
+    public PlObject hget_scalarref(String i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pLvalueRef ar = new pLvalueRef(new pLvalue());
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.hset(i, ar);
             return ar;
         }
@@ -2213,61 +2213,61 @@ class pHash extends pObject {
         return o;
     }
 
-    public pObject hget_arrayref(pObject i) {
-        pObject o = this.hget(i);
+    public PlObject hget_arrayref(PlObject i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.hset(i, ar);
             return ar;
         }
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
-    public pObject hget_arrayref(String i) {
-        pObject o = this.hget(i);
+    public PlObject hget_arrayref(String i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pArrayRef ar = new pArrayRef();
+            PlArrayRef ar = new PlArrayRef();
             this.hset(i, ar);
             return ar;
         }
         else if (o.is_arrayref()) {
             return o;
         }
-        return pCORE.die("Not an ARRAY reference");
+        return PlCORE.die("Not an ARRAY reference");
     }
 
-    public pObject hget_hashref(pObject i) {
-        pObject o = this.hget(i);
+    public PlObject hget_hashref(PlObject i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.hset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
-    public pObject hget_hashref(String i) {
-        pObject o = this.hget(i);
+    public PlObject hget_hashref(String i) {
+        PlObject o = this.hget(i);
         if (o.is_undef()) {
-            pHashRef hr = new pHashRef();
+            PlHashRef hr = new PlHashRef();
             this.hset(i, hr);
             return hr;
         }
         else if (o.is_hashref()) {
             return o;
         }
-        return pCORE.die("Not a HASH reference");
+        return PlCORE.die("Not a HASH reference");
     }
 
     // Note: multiple versions of set()
-    public pObject hset(pObject s, pObject v) {
+    public PlObject hset(PlObject s, PlObject v) {
         String key = s.toString();
-        pObject value = v.scalar();
-        pObject o = this.h.get(key);
+        PlObject value = v.scalar();
+        PlObject o = this.h.get(key);
         if (o != null && o.is_lvalue()) {
             o.set(value);
         }
@@ -2276,9 +2276,9 @@ class pHash extends pObject {
         }
         return v;
     }
-    public pObject hset(String key, pObject v) {
-        pObject value = v.scalar();
-        pObject o = this.h.get(key);
+    public PlObject hset(String key, PlObject v) {
+        PlObject value = v.scalar();
+        PlObject o = this.h.get(key);
         if (o != null && o.is_lvalue()) {
             o.set(value);
         }
@@ -2287,49 +2287,49 @@ class pHash extends pObject {
         }
         return v;
     }
-    public pObject hset(pObject s, pLvalue v) {
+    public PlObject hset(PlObject s, PlLvalue v) {
         return this.hset(s, v.get());
     }
-    public pObject hset(String s, pLvalue v) {
+    public PlObject hset(String s, PlLvalue v) {
         return this.hset(s, v.get());
     }
 
-    public pObject exists(pObject i) {
-        return this.h.containsKey(i) ? pCx.TRUE : pCx.FALSE;
+    public PlObject exists(PlObject i) {
+        return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
     }
-    public pObject delete(pObject i) {
-        pObject r = this.h.remove(i);
+    public PlObject delete(PlObject i) {
+        PlObject r = this.h.remove(i);
         if (r == null) {
-            return pCx.UNDEF;
+            return PlCx.UNDEF;
         }
         return r;
     }
-    public pObject values() {
-        pArray aa = new pArray();
-        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
-            pObject value = entry.getValue();
+    public PlObject values() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            PlObject value = entry.getValue();
             aa.push(value);
         }
         return aa;
     }
-    public pObject keys() {
-        pArray aa = new pArray();
-        for (Map.Entry<String, pObject> entry : this.h.entrySet()) {
+    public PlObject keys() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
-            aa.push(new pString(key));
+            aa.push(new PlString(key));
         }
         return aa;
     }
-    public pObject each() {
+    public PlObject each() {
         if (this.each_iterator == null) {
             this.each_iterator = this.h.entrySet().iterator();
         }
-        pArray aa = new pArray();
+        PlArray aa = new PlArray();
         if (this.each_iterator.hasNext()) {
-            Map.Entry<String, pObject> entry = this.each_iterator.next();
+            Map.Entry<String, PlObject> entry = this.each_iterator.next();
             String key = entry.getKey();
-            aa.push(new pString(key));
-            pObject value = entry.getValue();
+            aa.push(new PlString(key));
+            PlObject value = entry.getValue();
             aa.push(value);
         }
         else {
@@ -2343,10 +2343,10 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ?
-"    public pObject hset(pObject s, $native v) {
+"    public PlObject hset(PlObject s, $native v) {
         return this.hset(s, new $perl(v));
     }
-    public pObject hset(String s, $native v) {
+    public PlObject hset(String s, $native v) {
         return this.hset(s, new $perl(v));
     }
 " : ()
@@ -2384,20 +2384,20 @@ EOT
     public boolean is_hash() {
         return true;
     }
-    public pObject scalar() {
-        return new pString(this.toString());
+    public PlObject scalar() {
+        return new PlString(this.toString());
     }
 }
-class pUndef extends pObject {
-    public pUndef() {
+class PlUndef extends PlObject {
+    public PlUndef() {
     }
-    public pObject apply(int want, pArray List__) {
+    public PlObject apply(int want, PlArray List__) {
         // $a->()
-        pCORE.die("Can't use an undefined value as a subroutine reference");
+        PlCORE.die("Can't use an undefined value as a subroutine reference");
         return this;
     }
-    public pObject length() {
-        return pCx.UNDEF;
+    public PlObject length() {
+        return PlCx.UNDEF;
     }
     public int to_int() {
         return 0;
@@ -2418,9 +2418,9 @@ class pUndef extends pObject {
         return true;
     }
 }
-class pBool extends pObject {
+class PlBool extends PlObject {
     private boolean i;
-    public pBool(boolean i) {
+    public PlBool(boolean i) {
         this.i = i;
     }
     public int to_int() {
@@ -2453,36 +2453,36 @@ class pBool extends pObject {
     public boolean is_bool() {
         return true;
     }
-    public pObject _decr() {
+    public PlObject _decr() {
         // --$x
         if (i) {
-            return new pInt(0);
+            return new PlInt(0);
         }
         else {
-            return new pInt(-1);
+            return new PlInt(-1);
         }
     }
-    public pObject _incr() {
+    public PlObject _incr() {
         // ++$x
         if (i) {
-            return new pInt(2);
+            return new PlInt(2);
         }
         else {
-            return new pInt(1);
+            return new PlInt(1);
         }
     }
-    public pObject neg() {
+    public PlObject neg() {
         if (i) {
-            return new pInt(-1);
+            return new PlInt(-1);
         }
         else {
-            return new pInt(0);
+            return new PlInt(0);
         }
     }
 }
-class pInt extends pObject {
+class PlInt extends PlObject {
     private int i;
-    public pInt(int i) {
+    public PlInt(int i) {
         this.i = i;
     }
     public int to_int() {
@@ -2500,21 +2500,21 @@ class pInt extends pObject {
     public boolean is_int() {
         return true;
     }
-    public pObject _decr() {
+    public PlObject _decr() {
         // --$x
-        return new pInt(i-1);
+        return new PlInt(i-1);
     }
-    public pObject _incr() {
+    public PlObject _incr() {
         // ++$x
-        return new pInt(i+1);
+        return new PlInt(i+1);
     }
-    public pObject neg() {
-        return new pInt(-i);
+    public PlObject neg() {
+        return new PlInt(-i);
     }
 }
-class pDouble extends pObject {
+class PlDouble extends PlObject {
     private double i;
-    public pDouble(double i) {
+    public PlDouble(double i) {
         this.i = i;
     }
     public int to_int() {
@@ -2540,38 +2540,38 @@ class pDouble extends pObject {
     public boolean to_bool() {
         return this.i != 0.0;
     }
-    public pObject _decr() {
+    public PlObject _decr() {
         // --$x
-        return new pDouble(i-1);
+        return new PlDouble(i-1);
     }
-    public pObject _incr() {
+    public PlObject _incr() {
         // ++$x
-        return new pDouble(i+1);
+        return new PlDouble(i+1);
     }
-    public pObject neg() {
-        return new pDouble(-i);
+    public PlObject neg() {
+        return new PlDouble(-i);
     }
-    public pObject abs() {
-        return new pDouble(i < 0.0 ? -i : i);
+    public PlObject abs() {
+        return new PlDouble(i < 0.0 ? -i : i);
     }
-    public pObject num_cmp(pObject b) {
+    public PlObject num_cmp(PlObject b) {
         int c = new Double(this.i).compareTo(b.to_double());
-        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
-    public pObject num_cmp2(pObject b) {
+    public PlObject num_cmp2(PlObject b) {
         int c = new Double(b.to_double()).compareTo(this.i);
-        return new pInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
 EOT
     . ( join('', map {
             my $perl = $_;
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{num_returns};
-"    public pObject ${perl}(pObject s) {
+"    public PlObject ${perl}(PlObject s) {
         // num - int, num - num
         return new ${returns}( this.i ${native} s.to_double() );
     }
-    public pObject ${perl}2(pObject s) {
+    public PlObject ${perl}2(PlObject s) {
         // int - num
         return new ${returns}( s.to_double() ${native} this.i );
     }
@@ -2584,15 +2584,15 @@ EOT
         return true;
     }
 }
-class pString extends pObject {
+class PlString extends PlObject {
     private java.lang.String s;
-    public pString(String s) {
+    public PlString(String s) {
         this.s = s;
     }
-    public pString(char s) {
+    public PlString(char s) {
         this.s = "" + s;
     }
-    private pObject _parse_exp(int length, int signal, int offset, int next) {
+    private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
         int offset3 = next;
         for ( ; offset3 < length; ) {
@@ -2605,13 +2605,13 @@ class pString extends pObject {
                 case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:    // invalid
-                    return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
             }
             offset3++;
         }
-        return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
+        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }
-    private pObject _parse_dot(int length, int signal, int offset, int next) {
+    private PlObject _parse_dot(int length, int signal, int offset, int next) {
         // 123.^^^
         int offset3 = next;
         for ( ; offset3 < length; ) {
@@ -2624,13 +2624,13 @@ class pString extends pObject {
                     // start exponential part
                     return _parse_exp(length, signal, offset, offset3+1);
                 default:    // invalid
-                    return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
+                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
             }
             offset3++;
         }
-        return new pDouble(Double.parseDouble(this.s.substring(0, offset3)));
+        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }
-    public pObject parse() {
+    public PlObject parse() {
         final int length = s.length();
         int signal = 0;
         for (int offset = 0; offset < length; ) {
@@ -2639,18 +2639,18 @@ class pString extends pObject {
                 case 'i': case 'I':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
                                 if (signal < 0) {
-                                    return new pDouble(Double.NEGATIVE_INFINITY);
+                                    return new PlDouble(Double.NEGATIVE_INFINITY);
                                 }
                                 else {
-                                    return new pDouble(Double.POSITIVE_INFINITY);
+                                    return new PlDouble(Double.POSITIVE_INFINITY);
                                 }
                             }
-                            return new pInt(0);
+                            return new PlInt(0);
                 case 'n': case 'N':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
-                                return new pDouble(Double.NaN);
+                                return new PlDouble(Double.NaN);
                             }
-                            return new pInt(0);
+                            return new PlInt(0);
                 case '.':   // starts with dot
                             if (signal != 0) {
                                 signal = 1;
@@ -2679,32 +2679,32 @@ class pString extends pObject {
                                     default:
                                         // return integer
                                         if (signal < 0) {
-                                            return new pInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                            return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
                                         }
                                         else {
-                                            return new pInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                            return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
                                         }
                                 }
                                 offset2++;
                             }
                             // integer
                             if (signal < 0) {
-                                return new pInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
                             }
                             else {
-                                return new pInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
                             }
                 case '+':   // starts with +
                             if (signal != 0) {
                                 // invalid
-                                return new pInt(0);
+                                return new PlInt(0);
                             }
                             signal = 1;
                             break;
                 case '-':   // starts with -
                             if (signal != 0) {
                                 // invalid
-                                return new pInt(0);
+                                return new PlInt(0);
                             }
                             signal = -1;
                             break;
@@ -2712,15 +2712,15 @@ class pString extends pObject {
                             // starts with space
                             if (signal != 0) {
                                 // invalid
-                                return new pInt(0);
+                                return new PlInt(0);
                             }
                             break;
                 default:    // invalid
-                            return new pInt(0);
+                            return new PlInt(0);
             }
             offset++;
         }
-        return new pInt(0);
+        return new PlInt(0);
     }
     public int to_int() {
         return this.parse().to_int();
@@ -2738,15 +2738,15 @@ class pString extends pObject {
     public boolean is_string() {
         return true;
     }
-    public pObject _decr() {
+    public PlObject _decr() {
         // --$x
-        return this.add(new pInt(-1));
+        return this.add(new PlInt(-1));
     }
-    public pObject _incr() {
+    public PlObject _incr() {
         // ++$x
         final int length = s.length();
         if (length == 0) {
-            return new pInt(1);
+            return new PlInt(1);
         }
         final int c = this.s.codePointAt(0);
         switch (c) {        
@@ -2754,23 +2754,23 @@ class pString extends pObject {
             case '+': case '-': case '.':
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
-                return this.add(new pInt(1));
+                return this.add(new PlInt(1));
         }
-        return new pString(PerlOp.string_increment(this.s));
+        return new PlString(PerlOp.string_increment(this.s));
     }
-    public pObject neg() {
+    public PlObject neg() {
         final int length = s.length();
         if (length == 0) {
-            return new pInt(0);
+            return new PlInt(0);
         }
         final int c = this.s.codePointAt(0);
         switch (c) {        
             case '+': case '-':
                 if (c == '+') {
-                    return new pString( '-' + s.substring(1) );
+                    return new PlString( '-' + s.substring(1) );
                 }
                 if (c == '-') {
-                    return new pString( '+' + s.substring(1) );
+                    return new PlString( '+' + s.substring(1) );
                 }
             case '.':
             case ' ': case '\t': case '\n': case '\r':
@@ -2779,17 +2779,17 @@ class pString extends pObject {
                 return this.parse().neg();
         }
         if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            return new pString( '-' + s );
+            return new PlString( '-' + s );
         }
-        return new pInt(0);
+        return new PlInt(0);
     }
-    public pObject abs() {
+    public PlObject abs() {
         return this.parse().abs();
     }
-    public pObject num_cmp(pObject b) {
+    public PlObject num_cmp(PlObject b) {
         return this.parse().num_cmp(b);
     }
-    public pObject num_cmp2(pObject b) {
+    public PlObject num_cmp2(PlObject b) {
         return b.num_cmp2(this.parse());
     }
 EOT
@@ -2798,23 +2798,23 @@ EOT
             my $native  = $number_binop{$perl}{op};
             my $returns = $number_binop{$perl}{returns};
             my $num_returns = $number_binop{$perl}{num_returns};
-            if ($returns eq 'pDouble') {
-"    public pObject ${perl}(pObject b) {
+            if ($returns eq 'PlDouble') {
+"    public PlObject ${perl}(PlObject b) {
         // 'num' - int, 'num' - num
         return this.parse().${perl}(b);
     }
-    public pObject ${perl}2(pObject b) {
+    public PlObject ${perl}2(PlObject b) {
         // int - 'num'
         return b.${perl}(this.parse());
     }
 "
             }
             else {
-"    public pObject ${perl}(pObject b) {
+"    public PlObject ${perl}(PlObject b) {
         // 'num' - int, 'num' - num
         return this.parse().${perl}(b);
     }
-    public pObject ${perl}2(pObject b) {
+    public PlObject ${perl}2(PlObject b) {
         // int - 'num'
         return b.${perl}(this.parse());
     }
@@ -2838,8 +2838,8 @@ EOT
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
                     $class->{import} ? 
-"class ${java_native_to_perl} extends pReference {
-    public static final pString REF = new pString(\"${perl_package}\");
+"class ${java_native_to_perl} extends PlReference {
+    public static final PlString REF = new PlString(\"${perl_package}\");
     private ${java_class_name} stuff;
 
     public ${java_native_to_perl}(${java_class_name} stuff) {
@@ -2851,7 +2851,7 @@ EOT
     public boolean is_undef() {
         return stuff == null;
     }
-    public pObject ref() {
+    public PlObject ref() {
         return REF;
     }
 }
