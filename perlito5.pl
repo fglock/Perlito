@@ -4665,6 +4665,7 @@ use feature 'say';
             my $str = $_[0];
             my $pos = $_[1];
             my $p = $pos;
+            local $Perlito5::BLOCK_HAS_SEMICOLON;
             my $m = Perlito5::Grammar::block($str, $p);
             !$m && return ;
             $p = $m->{'to'};
@@ -4673,7 +4674,7 @@ use feature 'say';
             $p = $m->{'to'};
             my $continue = Perlito5::Match::flat($m);
             my $v = $block;
-            $continue->{'is_continue'} || ($v = Perlito5::Grammar::Expression::block_or_hash($v));
+            !$continue->{'is_continue'} && !$Perlito5::BLOCK_HAS_SEMICOLON && ($v = Perlito5::Grammar::Expression::block_or_hash($v));
             $m->{'capture'} = $v;
             if ($continue->{'is_continue'}) {
                 $m->{'capture'}->{'continue'} = $continue
@@ -7380,6 +7381,7 @@ use feature 'say';
                 }
             }
             $Perlito5::PKG_NAME = pop(@PKG);
+            $Perlito5::BLOCK_HAS_SEMICOLON ||= $has_semicolon;
             return {'str' => $str, 'to' => $pos, 'capture' => \@stmts}
         }
     }

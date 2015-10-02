@@ -151,6 +151,7 @@ sub exp_stmts {
         }
     }
     $Perlito5::PKG_NAME = pop @PKG;
+    $Perlito5::BLOCK_HAS_SEMICOLON ||= $has_semicolon;
     return { str => $str, to => $pos, capture => \@stmts };
 }
 

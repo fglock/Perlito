@@ -61,7 +61,7 @@ sub pop_term {
     my $num_stack = shift;
     my $v = pop @$num_stack;
     if (ref($v) eq 'ARRAY') {
-        return $v->[1] if ref($v->[1]);     # optimization - avoid strigifying objects
+        return $v->[1] if ref($v->[1]);     # optimization - avoid stringifying objects
         if ($v->[1] eq 'methcall_no_params') {
             $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => [] );
             return $v;

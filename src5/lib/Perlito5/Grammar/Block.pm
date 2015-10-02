@@ -75,6 +75,7 @@ sub anon_block {
     my $pos = $_[1];
 
     my $p = $pos;
+    local $Perlito5::BLOCK_HAS_SEMICOLON;
     my $m = Perlito5::Grammar::block( $str, $p );
     return if !$m;
     $p = $m->{to};
@@ -90,7 +91,8 @@ sub anon_block {
     # TODO - this is not recognized as a statement: { 123 => 4;}
     # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
     $v = Perlito5::Grammar::Expression::block_or_hash($v)
-        unless $continue->{is_continue};
+        if !$continue->{is_continue}
+        && !$Perlito5::BLOCK_HAS_SEMICOLON;
     $m->{capture} = $v;
     if ( $continue->{is_continue} ) {
         $m->{capture}{continue} = $continue;
