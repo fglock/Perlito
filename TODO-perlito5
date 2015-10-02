@@ -179,6 +179,18 @@ TODO list for Perlito5
 
 * Add tests for fixed bugs:
 
+    unit tests:
+
+    local() vs. next/redo/last
+
+    our()
+
+    aliasing inside for-loop
+
+    aliasing of subroutine parameters
+
+    prototypes
+
     ---
     prototypes can change during compilation
 
