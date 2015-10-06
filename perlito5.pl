@@ -10101,11 +10101,11 @@ use feature 'say';
             }, 'chomp' => sub {
                 my($self, $level, $wantarray) = @_;
                 my $v = $self->{'arguments'}->[0];
-                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5chomp(' . $v->emit_javascript2($level) . ');', $v->emit_javascript2($level) . ' = r[1];', 'return r[0]')
+                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5chomp(' . Perlito5::Javascript2::to_str($v, $level) . ');', $v->emit_javascript2($level) . ' = r[1];', 'return r[0]')
             }, 'chop' => sub {
                 my($self, $level, $wantarray) = @_;
                 my $v = $self->{'arguments'}->[0];
-                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5chop(' . $v->emit_javascript2($level) . ');', $v->emit_javascript2($level) . ' = r[1];', 'return r[0]')
+                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var r = p5chop(' . Perlito5::Javascript2::to_str($v, $level) . ');', $v->emit_javascript2($level) . ' = r[1];', 'return r[0]')
             }, 'read' => sub {
                 my($self, $level, $wantarray) = @_;
                 my @in = @{$self->{'arguments'}};
