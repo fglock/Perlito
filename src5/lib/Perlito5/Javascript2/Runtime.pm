@@ -184,6 +184,12 @@ function p5method_lookup(method, class_name, seen) {
     }
 }
 
+function p5method_not_found(method, class_name) {
+    return "Can't locate object method \""
+        + method + "\" via package \"" + class_name + "\" (perhaps you forgot to load \""
+        + class_name + "\"?)";
+}
+
 function p5call(invocant, method, list, p5want) {
     var invocant_original = invocant;
     if (typeof invocant === "string") {
@@ -216,7 +222,7 @@ function p5call(invocant, method, list, p5want) {
             if (m) {
                 return m(list, p5want)
             }
-            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
+            p5pkg.CORE.die([p5method_not_found(name, pkg_name)]);
         }
 
         if (method == "print" || method == "printf" || method == "say" || method == "close") {
@@ -229,13 +235,9 @@ function p5call(invocant, method, list, p5want) {
             p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
             return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
         }
-
-        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);
-
+        p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
     }
-
     p5pkg.CORE.die(["Can't call method ", method, " on unblessed reference"]);
-
 }
 
 function p5call_sub(namespace, name, list, p5want) {
