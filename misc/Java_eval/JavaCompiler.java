@@ -21,6 +21,7 @@ public class JavaCompiler
         StringBuffer sourceCode = new StringBuffer();
         sourceCode.append("package org.mdkt;\n");
         sourceCode.append("import org.perlito5.PlInterface;\n");
+        sourceCode.append("import java.lang.reflect.Method;\n");
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(PlInterface x) { System.out.print(\"hello \" + x.add(3,4) + \"\\n\"); }");
         sourceCode.append("}");

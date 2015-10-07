@@ -20,6 +20,9 @@ public class DynamicClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+
+        System.out.println("DynamicClassLoader get compiled code: " + name);
+
         CompiledCode cc = customCompiledCode.get(name);
         if (cc == null) {
             return super.findClass(name);
