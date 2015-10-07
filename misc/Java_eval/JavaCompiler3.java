@@ -19,21 +19,34 @@ public class JavaCompiler3
         StringBuffer source3 = new StringBuffer();
         source3.append("import org.perlito5.PlInterface;");
         source3.append("public class Adder implements PlInterface {");
+        source3.append("    public Adder() {");
+        source3.append("    }");
         source3.append("    public int add(int x, int y) {");
         source3.append("        return x + y;");
         source3.append("    }");
-        source3.append("    public static Adder getAdder() {");
-        source3.append("        return new Adder();");
-        source3.append("    }");
+        // source3.append("    public static Adder getAdder() {");
+        // source3.append("        return new Adder();");
+        // source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
         InMemoryJavaCompiler compiler3 = new InMemoryJavaCompiler();
         compiler3.addSource("Adder", cls3);
         Map<String,Class<?>> compiled3 = compiler3.compileAll();
         Class<?> helloClass3 = compiled3.get("Adder");
+
+        System.out.println("Methods:");
+        for ( Method method : helloClass3.getMethods() ) {
+            System.out.println( method.toString() );
+        }
+        System.out.println("Constructors:");
+        for ( Constructor constructor : helloClass3.getConstructors() ) {
+            System.out.println( constructor.toString() );
+        }
+
         // Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
         // Object aaa = method3.invoke(null);
 
+        // Constructor constructor3 = helloClass3.getConstructor(new Class[]{});
 
         // String cls2 = // "package org.perlito5;\n"
         //             "public interface PlInterface { int add(int x, int y); }";
