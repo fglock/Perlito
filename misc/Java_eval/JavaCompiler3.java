@@ -24,9 +24,9 @@ public class JavaCompiler3
         source3.append("    public int add(int x, int y) {");
         source3.append("        return x + y;");
         source3.append("    }");
-        // source3.append("    public static Adder getAdder() {");
-        // source3.append("        return new Adder();");
-        // source3.append("    }");
+        source3.append("    public static Adder getAdder() {");
+        source3.append("        return new Adder();");
+        source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
         InMemoryJavaCompiler compiler3 = new InMemoryJavaCompiler();
@@ -43,8 +43,8 @@ public class JavaCompiler3
             System.out.println( constructor.toString() );
         }
 
-        // Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
-        // Object aaa = method3.invoke(null);
+        Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
+        Object aaa = method3.invoke(null);
 
         // Constructor constructor3 = helloClass3.getConstructor(new Class[]{});
 
@@ -71,8 +71,6 @@ public class JavaCompiler3
         
         Class<?> helloClass = compiled.get("HelloClass");
 
-        // Class<?> helloClass = InMemoryJavaCompiler.compile("org.mdkt.HelloClass", sourceCode.toString());
-
         // System.out.println("Loaded class name: " + helloClass.getName());
 
         // Getting the target method from the loaded class and invoke it using its name
@@ -81,6 +79,6 @@ public class JavaCompiler3
 
         // Adder aaa = new Adder();
 
-        // method.invoke(null, aaa);
+        method.invoke(null, aaa);
     }
 }
