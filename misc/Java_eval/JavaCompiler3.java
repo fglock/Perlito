@@ -8,13 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.perlito5.PlInterface;
 
-class Adder implements PlInterface {
-    public int add(int x, int y) {
-        return x + y;
-    }
-}
 
 public class JavaCompiler3
 {
@@ -22,15 +16,34 @@ public class JavaCompiler3
     {
 
 
-        String cls2 = // "package org.perlito5;\n"
-                    "public interface PlInterface { int add(int x, int y); }";
+        StringBuffer source3 = new StringBuffer();
+        source3.append("import org.perlito5.PlInterface;");
+        source3.append("public class Adder implements PlInterface {");
+        source3.append("    public int add(int x, int y) {");
+        source3.append("        return x + y;");
+        source3.append("    }");
+        source3.append("    public static Adder getAdder() {");
+        source3.append("        return new Adder();");
+        source3.append("    }");
+        source3.append("}");
+        String cls3 = source3.toString();
+        InMemoryJavaCompiler compiler3 = new InMemoryJavaCompiler();
+        compiler3.addSource("Adder", cls3);
+        Map<String,Class<?>> compiled3 = compiler3.compileAll();
+        Class<?> helloClass3 = compiled3.get("Adder");
+        // Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
+        // Object aaa = method3.invoke(null);
+
+
+        // String cls2 = // "package org.perlito5;\n"
+        //             "public interface PlInterface { int add(int x, int y); }";
 
         StringBuffer sourceCode = new StringBuffer();
         // sourceCode.append("package org.mdkt;\n");
         // sourceCode.append("import org.perlito5.PlInterface;\n");
         sourceCode.append("import org.perlito5.PlInterface;\n");
         sourceCode.append("public class HelloClass {\n");
-        sourceCode.append("   public static void hello(PlInterface x) { System.out.print(\"hello \" + x.add(3,4) + \"\\n\"); }");
+        sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
 
 
@@ -39,7 +52,7 @@ public class JavaCompiler3
         // String cls2 = "public class B{ public String toString() { return \"B!\"; }}";
         
         InMemoryJavaCompiler compiler = new InMemoryJavaCompiler();
-        compiler.addSource("PlInterface", cls2);
+        // compiler.addSource("PlInterface", cls2);
         compiler.addSource("HelloClass", cls1);
         Map<String,Class<?>> compiled = compiler.compileAll();
         
@@ -50,11 +63,11 @@ public class JavaCompiler3
         // System.out.println("Loaded class name: " + helloClass.getName());
 
         // Getting the target method from the loaded class and invoke it using its name
-        Method method = helloClass.getMethod("hello", new Class[]{PlInterface.class});
+        Method method = helloClass.getMethod("hello", new Class[]{Object.class});
         // System.out.println("Invoked method name: " + method.getName());
 
-        Adder aaa = new Adder();
+        // Adder aaa = new Adder();
 
-        method.invoke(null, aaa);
+        // method.invoke(null, aaa);
     }
 }
