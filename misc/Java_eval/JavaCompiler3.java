@@ -21,10 +21,14 @@ public class JavaCompiler3
     public static void main(String[] args) throws Exception
     {
 
+
+        String cls2 = // "package org.perlito5;\n"
+                    "public interface PlInterface { int add(int x, int y); }";
+
         StringBuffer sourceCode = new StringBuffer();
         // sourceCode.append("package org.mdkt;\n");
+        // sourceCode.append("import org.perlito5.PlInterface;\n");
         sourceCode.append("import org.perlito5.PlInterface;\n");
-        sourceCode.append("import java.lang.reflect.Method;\n");
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(PlInterface x) { System.out.print(\"hello \" + x.add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
@@ -35,8 +39,8 @@ public class JavaCompiler3
         // String cls2 = "public class B{ public String toString() { return \"B!\"; }}";
         
         InMemoryJavaCompiler compiler = new InMemoryJavaCompiler();
+        compiler.addSource("PlInterface", cls2);
         compiler.addSource("HelloClass", cls1);
-        // compiler.addSource("B", cls2);
         Map<String,Class<?>> compiled = compiler.compileAll();
         
         Class<?> helloClass = compiled.get("HelloClass");
