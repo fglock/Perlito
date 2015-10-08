@@ -13,3 +13,7 @@ resources for in-memory compilation:
     http://unkrig.de/w/Janino
         (almost) complete Java™ compiler
 
+        http://stackoverflow.com/questions/16655577/janino-dynamic-compile-interface-class
+        Janino is a Java 1.4 compatible compiler -- i.e., it can't handle generics, which were introduced in Java 5. Line 22 is the line that begins List<Course> -- a use of generics, which this compiler can't handle.
+
+
