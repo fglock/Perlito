@@ -1,0 +1,13 @@
+resources for in-memory compilation:
+
+    http://www.ateam-oracle.com/dynamic-java-compilation/
+        Code:
+        http://www.ateam-oracle.com/wp-content/uploads/2011/07/InFlightCompilation.zip    
+
+    https://github.com/trung/InMemoryJavaCompiler
+                <name>Apache License, Version 2.0</name>
+                 <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    
+    https://github.com/turpid-monkey/InMemoryJavaCompiler
+
+
