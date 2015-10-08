@@ -10,4 +10,6 @@ resources for in-memory compilation:
     
     https://github.com/turpid-monkey/InMemoryJavaCompiler
 
+    http://unkrig.de/w/Janino
+        (almost) complete Java™ compiler
 
