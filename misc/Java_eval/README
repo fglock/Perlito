@@ -1,8 +1,10 @@
 resources for in-memory compilation:
 
-JavaCompiler uses the file system. It could be combined with -classpath <path>
-and a temporary directory:
-http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#createTempDirectory(java.lang.String,%20java.nio.file.attribute.FileAttribute...)
+    JavaCompiler uses the file system. It could be combined with -classpath <path>
+    and a temporary directory:
+
+        http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#createTempDirectory(java.lang.String,%20java.nio.file.attribute.FileAttribute...)
+        http://stackoverflow.com/questions/1563909/how-to-set-classpath-when-i-use-javax-tools-javacompiler-compile-the-source
 
     http://www.ateam-oracle.com/dynamic-java-compilation/
         Code:
