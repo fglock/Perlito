@@ -1045,7 +1045,7 @@ class PlRegex extends PlReference {
         return REF;
     }
 }
-class PlClosure extends PlReference {
+class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
     public PlObject prototype;    // '$$$'
     public static final PlString REF = new PlString("CODE");
@@ -1058,6 +1058,10 @@ class PlClosure extends PlReference {
     public PlObject apply(int want, PlArray List__) {
         PlCORE.die("it looks like you have a closure without a block");
         return this;
+    }
+    public void run() {
+        // run as a thread
+        this.apply(PlCx.VOID, new PlArray());
     }
     public PlObject ref() {
         return REF;
