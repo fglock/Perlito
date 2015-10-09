@@ -4,13 +4,15 @@
 // https://github.com/turpid-monkey/InMemoryJavaCompiler
 //
 import org.mdkt.compiler.InMemoryJavaCompiler;
+import org.mdkt.compiler.ExtendedStandardJavaFileManager;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 
 
-public class JavaCompiler4
+public class JavaCompiler4_broken
 {
     public static void main(String[] args) throws Exception
     {
