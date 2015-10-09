@@ -612,9 +612,9 @@ EOT
             values %java_classes
       ))
     . <<'EOT'
-    public String toString() {
-        return this.toString();
-    }
+    // public String toString() {
+    //     return this.toString();
+    // }
     public int to_int() {
         PlCORE.die("error .to_int!");
         return 0;
