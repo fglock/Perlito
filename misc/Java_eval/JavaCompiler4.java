@@ -26,7 +26,7 @@ import javax.tools.ToolProvider;
 import java.util.ArrayList;
 
 
-public class JavaCompiler4_broken
+public class JavaCompiler4
 {
     public static void main(String[] args) throws Exception
     {
