@@ -77,16 +77,16 @@ public class JavaCompiler4
 
 	    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
 	    DynamicClassLoader classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
-		ArrayList<SourceCode> compilationUnits3 = new ArrayList<SourceCode>();
-        compilationUnits3.add(new SourceCode(name4, cls4));
-        compilationUnits3.add(new SourceCode(name3, cls3));
-		CompiledCode[] code3 = new CompiledCode[compilationUnits3.size()];
-		code3[0] = new CompiledCode(name4);
-		code3[1] = new CompiledCode(name3);
+		ArrayList<SourceCode> compilationUnits = new ArrayList<SourceCode>();
+        compilationUnits.add(new SourceCode(name4, cls4));
+        compilationUnits.add(new SourceCode(name3, cls3));
+		CompiledCode[] code = new CompiledCode[compilationUnits.size()];
+		code[0] = new CompiledCode(name4);
+		code[1] = new CompiledCode(name3);
 		ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
-				javac.getStandardFileManager(null, null, null), classLoader, code3);
+				javac.getStandardFileManager(null, null, null), classLoader, code);
 		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-				null, null, null, compilationUnits3);
+				null, null, null, compilationUnits);
 		boolean result = task.call();
 		if (!result)
 			throw new RuntimeException("Unknown error during compilation.");
@@ -112,8 +112,8 @@ public class JavaCompiler4
         Class<?> helloClass = compile_class(
             "org.perlito5.HelloClass",
             cls1,
-            compilationUnits3,
-            code3,
+            compilationUnits,
+            code,
             fileManager,
             classLoader,
             javac
@@ -124,6 +124,25 @@ public class JavaCompiler4
 
         // Adder aaa = new Adder();
         method.invoke(null, aaa);
+
+
+
+        helloClass = compile_class(
+            "org.perlito5.HelloClass2",
+            "package org.perlito5;" +
+            "public class HelloClass2 {\n" +
+            "   public static void hello(Object x) { System.out.println(\"hello2\"); }" +
+            "}",
+            compilationUnits,
+            code,
+            fileManager,
+            classLoader,
+            javac
+        );
+        method = helloClass.getMethod("hello", new Class[]{Object.class});
+        method.invoke(null, aaa);
+
+
     }
 }
 
