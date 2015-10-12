@@ -109,6 +109,7 @@ public class JavaCompiler4_broken
 
 		compilationUnits3.set(1, clazzCode.get("org.perlito5.HelloClass"));
 		code3[1] = new CompiledCode("org.perlito5.HelloClass");
+		classLoader.addCode(code3[1]);
 
         System.out.println("start 2nd compilation unit");
 		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
