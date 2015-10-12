@@ -29,6 +29,9 @@ public class JavaCompiler4_broken
     public static void main(String[] args) throws Exception
     {
 
+	    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
+	    DynamicClassLoader classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
+
 
         StringBuffer source4 = new StringBuffer();
         source4.append("package org.perlito5;");
@@ -50,10 +53,38 @@ public class JavaCompiler4_broken
         source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
-        InMemoryJavaCompiler compiler3 = new InMemoryJavaCompiler();
-        compiler3.addSource("org.perlito5.PlInterface", cls4);
-        compiler3.addSource("org.perlito5.Adder", cls3);
-        Map<String,Class<?>> compiled3 = compiler3.compileAll();
+
+
+
+	    Map<String, SourceCode> clazzCode3 = new HashMap<String, SourceCode>();
+		clazzCode3.put("org.perlito5.PlInterface", new SourceCode("org.perlito5.PlInterface", cls4));
+		clazzCode3.put("org.perlito5.Adder", new SourceCode("org.perlito5.Adder", cls3));
+
+
+		Collection<SourceCode> compilationUnits3 = clazzCode3.values();
+		CompiledCode[] code3;
+		code3 = new CompiledCode[compilationUnits3.size()];
+		Iterator<SourceCode> iter3 = compilationUnits3.iterator();
+		for (int i=0; i<code3.length; i++)
+		{
+			code3[i] = new CompiledCode(iter3.next().getClassName());
+		}
+		
+		ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
+				javac.getStandardFileManager(null, null, null), classLoader, code3);
+		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
+				null, null, null, compilationUnits3);
+		boolean result = task.call();
+		if (!result)
+			throw new RuntimeException("Unknown error during compilation.");
+		Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
+		for (String className : clazzCode3.keySet()) {
+			classes.put(className, classLoader.loadClass(className));
+		}
+        Map<String,Class<?>> compiled3 = classes;
+
+
+
         Class<?> helloClass3 = compiled3.get("org.perlito5.Adder");
 
         System.out.println("Methods:");
@@ -80,18 +111,37 @@ public class JavaCompiler4_broken
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
-
-
         String cls1 = sourceCode.toString();
-            // "public class A{ public B b() { return new B(); }}";
-        // String cls2 = "public class B{ public String toString() { return \"B!\"; }}";
-        
-        InMemoryJavaCompiler compiler = new InMemoryJavaCompiler();
-        // compiler.addSource("PlInterface", cls2);
-        compiler.addSource("org.perlito5.PlInterface", cls4);
-        compiler.addSource("org.perlito5.HelloClass", cls1);
-        Map<String,Class<?>> compiled = compiler.compileAll();
-        
+
+	    Map<String, SourceCode> clazzCode = new HashMap<String, SourceCode>();
+		clazzCode.put("org.perlito5.HelloClass", new SourceCode("org.perlito5.HelloClass", cls1));
+
+
+		Collection<SourceCode> compilationUnits = clazzCode.values();
+		CompiledCode[] code;
+		code = new CompiledCode[compilationUnits.size()];
+		Iterator<SourceCode> iter = compilationUnits.iterator();
+		for (int i=0; i<code.length; i++)
+		{
+			code[i] = new CompiledCode(iter.next().getClassName());
+		}
+
+		// ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
+		// 		javac.getStandardFileManager(null, null, null), classLoader, code);
+		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
+				null, null, null, compilationUnits);
+		result = task2.call();
+		if (!result)
+			throw new RuntimeException("Unknown error during compilation.");
+		classes = new HashMap<String, Class<?>>();
+		for (String className : clazzCode.keySet()) {
+			classes.put(className, classLoader.loadClass(className));
+		}
+        Map<String,Class<?>> compiled = classes;
+
+
+
+
         Class<?> helloClass = compiled.get("org.perlito5.HelloClass");
 
         // System.out.println("Loaded class name: " + helloClass.getName());
