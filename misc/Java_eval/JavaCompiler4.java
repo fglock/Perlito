@@ -27,6 +27,33 @@ import javax.tools.ToolProvider;
 
 public class JavaCompiler4
 {
+    static Class<?> compile_class(
+            String className,
+            String classSourceCode,
+            ArrayList<SourceCode> compilationUnits,
+            CompiledCode[] code3,
+            ExtendedStandardJavaFileManager fileManager,
+            DynamicClassLoader classLoader,
+            JavaCompiler javac
+        ) throws Exception
+    {
+        SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
+		CompiledCode compiledCodeObj = new CompiledCode(className);
+
+		compilationUnits.set(1, sourceCodeObj);
+		code3[1] = compiledCodeObj;
+		classLoader.addCode(compiledCodeObj);
+
+		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
+				null, null, null, compilationUnits);
+		boolean result = task2.call();
+		if (!result)
+			throw new RuntimeException("Unknown error during compilation.");
+
+        return classLoader.loadClass(className);
+    }
+
+
     public static void main(String[] args) throws Exception
     {
 
@@ -96,39 +123,22 @@ public class JavaCompiler4
         Object aaa = method3.invoke(null);
 
 
-	    Map<String, SourceCode> clazzCode = new HashMap<String, SourceCode>();
         StringBuffer sourceCode = new StringBuffer();
         sourceCode.append("package org.perlito5;");
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
         String cls1 = sourceCode.toString();
-		clazzCode.put("org.perlito5.HelloClass", new SourceCode("org.perlito5.HelloClass", cls1));
-
-
-		compilationUnits3.set(1, clazzCode.get("org.perlito5.HelloClass"));
-		code3[1] = new CompiledCode("org.perlito5.HelloClass");
-		classLoader.addCode(code3[1]);
-
-        System.out.println("start 2nd compilation unit");
-		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
-				null, null, null, compilationUnits3);
-		result = task2.call();
-		if (!result)
-			throw new RuntimeException("Unknown error during compilation.");
-		classes = new HashMap<String, Class<?>>();
-		for (String className : clazzCode.keySet()) {
-			classes.put(className, classLoader.loadClass(className));
-		}
-        Map<String,Class<?>> compiled = classes;
-
-
-
-
-        System.out.println("finished 2nd compilation unit");
-
-        Class<?> helloClass = compiled.get("org.perlito5.HelloClass");
-
+        Class<?> helloClass = compile_class(
+            "org.perlito5.HelloClass",
+            cls1,
+            compilationUnits3,
+            code3,
+            fileManager,
+            classLoader,
+            javac
+        );
+ 
         // System.out.println("Loaded class name: " + helloClass.getName());
 
         // Getting the target method from the loaded class and invoke it using its name
