@@ -23,6 +23,8 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 
+import java.util.ArrayList;
+
 
 public class JavaCompiler4_broken
 {
@@ -32,6 +34,7 @@ public class JavaCompiler4_broken
 	    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
 	    DynamicClassLoader classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
 
+	    Map<String, SourceCode> clazzCode3 = new HashMap<String, SourceCode>();
 
         StringBuffer source4 = new StringBuffer();
         source4.append("package org.perlito5;");
@@ -39,6 +42,7 @@ public class JavaCompiler4_broken
         source4.append("    int add(int x, int y);");
         source4.append("}");
         String cls4 = source4.toString();
+		clazzCode3.put("org.perlito5.PlInterface", new SourceCode("org.perlito5.PlInterface", cls4));
 
         StringBuffer source3 = new StringBuffer();
         source3.append("package org.perlito5;");
@@ -53,15 +57,12 @@ public class JavaCompiler4_broken
         source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
-
-
-
-	    Map<String, SourceCode> clazzCode3 = new HashMap<String, SourceCode>();
-		clazzCode3.put("org.perlito5.PlInterface", new SourceCode("org.perlito5.PlInterface", cls4));
 		clazzCode3.put("org.perlito5.Adder", new SourceCode("org.perlito5.Adder", cls3));
 
 
-		Collection<SourceCode> compilationUnits3 = clazzCode3.values();
+		ArrayList<SourceCode> compilationUnits3 = new ArrayList<SourceCode>();
+        compilationUnits3.add(clazzCode3.get("org.perlito5.PlInterface"));
+        compilationUnits3.add(clazzCode3.get("org.perlito5.Adder"));
 		CompiledCode[] code3;
 		code3 = new CompiledCode[compilationUnits3.size()];
 		Iterator<SourceCode> iter3 = compilationUnits3.iterator();
@@ -69,7 +70,6 @@ public class JavaCompiler4_broken
 		{
 			code3[i] = new CompiledCode(iter3.next().getClassName());
 		}
-		
 		ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
 				javac.getStandardFileManager(null, null, null), classLoader, code3);
 		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
@@ -84,9 +84,7 @@ public class JavaCompiler4_broken
         Map<String,Class<?>> compiled3 = classes;
 
 
-
         Class<?> helloClass3 = compiled3.get("org.perlito5.Adder");
-
         System.out.println("Methods:");
         for ( Method method : helloClass3.getMethods() ) {
             System.out.println( method.toString() );
@@ -95,41 +93,26 @@ public class JavaCompiler4_broken
         for ( Constructor constructor : helloClass3.getConstructors() ) {
             System.out.println( constructor.toString() );
         }
-
         Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
         Object aaa = method3.invoke(null);
 
-        // Constructor constructor3 = helloClass3.getConstructor(new Class[]{});
 
-        // String cls2 = // "package org.perlito5;\n"
-        //             "public interface PlInterface { int add(int x, int y); }";
-
+	    Map<String, SourceCode> clazzCode = new HashMap<String, SourceCode>();
         StringBuffer sourceCode = new StringBuffer();
-        // sourceCode.append("package org.mdkt;\n");
-        // sourceCode.append("import org.perlito5.PlInterface;\n");
         sourceCode.append("package org.perlito5;");
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
         String cls1 = sourceCode.toString();
-
-	    Map<String, SourceCode> clazzCode = new HashMap<String, SourceCode>();
 		clazzCode.put("org.perlito5.HelloClass", new SourceCode("org.perlito5.HelloClass", cls1));
 
 
-		Collection<SourceCode> compilationUnits = clazzCode.values();
-		CompiledCode[] code;
-		code = new CompiledCode[compilationUnits.size()];
-		Iterator<SourceCode> iter = compilationUnits.iterator();
-		for (int i=0; i<code.length; i++)
-		{
-			code[i] = new CompiledCode(iter.next().getClassName());
-		}
+		compilationUnits3.set(1, clazzCode.get("org.perlito5.HelloClass"));
+		code3[1] = new CompiledCode("org.perlito5.HelloClass");
 
-		// ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
-		// 		javac.getStandardFileManager(null, null, null), classLoader, code);
+        System.out.println("start 2nd compilation unit");
 		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
-				null, null, null, compilationUnits);
+				null, null, null, compilationUnits3);
 		result = task2.call();
 		if (!result)
 			throw new RuntimeException("Unknown error during compilation.");
@@ -141,6 +124,8 @@ public class JavaCompiler4_broken
 
 
 
+
+        System.out.println("finished 2nd compilation unit");
 
         Class<?> helloClass = compiled.get("org.perlito5.HelloClass");
 
