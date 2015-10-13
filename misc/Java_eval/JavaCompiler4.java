@@ -17,9 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -36,26 +34,25 @@ public class JavaCompiler4
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
 
-    static Class<?> compile_class(
+    static Class<?> compileClassInMemory(
             String className,
             String classSourceCode
         ) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
         CompiledCode compiledCodeObj = new CompiledCode(className);
+        classLoader.customCompiledCode.put(className, compiledCodeObj);
         if (fileManager == null) {
             // initializing the file manager
             compilationUnits.add(sourceCodeObj);
-            classLoader.customCompiledCode.put(className, compiledCodeObj);
             fileManager = new ExtendedStandardJavaFileManager(
                     javac.getStandardFileManager(null, null, null), classLoader);
         }
         else {
-            // reusing the file manager
+            // reusing the file manager; replace the source code
             compilationUnits.set(1, sourceCodeObj);
-            classLoader.addCode(compiledCodeObj);
         }
-
+        // run the compiler
         JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
                 null, null, null, compilationUnits);
         boolean result = task.call();
@@ -78,7 +75,7 @@ public class JavaCompiler4
         String name4 = "PlInterface";
         compilationUnits.add(new SourceCode(name4, cls4));
         CompiledCode compiledCodeObj = new CompiledCode(name4);
-        classLoader.addCode(compiledCodeObj);
+        classLoader.customCompiledCode.put(name4, compiledCodeObj);
 
 
 
@@ -95,7 +92,7 @@ public class JavaCompiler4
         source3.append("}");
         String cls3 = source3.toString();
         String name3 = "Adder";
-        Class<?> helloClass3 = compile_class(
+        Class<?> helloClass3 = compileClassInMemory(
             name3,
             cls3
         );
@@ -109,7 +106,7 @@ public class JavaCompiler4
         sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
         String cls1 = sourceCode.toString();
-        Class<?> helloClass = compile_class(
+        Class<?> helloClass = compileClassInMemory(
             "HelloClass",
             cls1
         );
@@ -120,7 +117,7 @@ public class JavaCompiler4
 
 
 
-        helloClass = compile_class(
+        helloClass = compileClassInMemory(
             "HelloClass2",
             "public class HelloClass2 {\n" +
             "   public static void hello(Object x) { System.out.println(\"hello2\"); }" +
