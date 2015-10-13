@@ -43,36 +43,36 @@ public class JavaCompiler4
         ) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
-		CompiledCode compiledCodeObj = new CompiledCode(className);
+        CompiledCode compiledCodeObj = new CompiledCode(className);
         if (fileManager == null) {
             // initializing the file manager
             compilationUnits.add(sourceCodeObj);
-		    code[1] = compiledCodeObj;
-		    classLoader.addCode(compiledCodeObj);
-		    fileManager = new ExtendedStandardJavaFileManager(
-				    javac.getStandardFileManager(null, null, null), classLoader, code);
+            code[1] = compiledCodeObj;
+            classLoader.addCode(compiledCodeObj);
+            fileManager = new ExtendedStandardJavaFileManager(
+                    javac.getStandardFileManager(null, null, null), classLoader, code);
         }
         else {
             // reusing the file manager
-		    compilationUnits.set(1, sourceCodeObj);
-		    code[1] = compiledCodeObj;
-		    classLoader.addCode(compiledCodeObj);
+            compilationUnits.set(1, sourceCodeObj);
+            code[1] = compiledCodeObj;
+            classLoader.addCode(compiledCodeObj);
         }
 
-		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-				null, null, null, compilationUnits);
-		boolean result = task.call();
-		if (!result)
-			throw new RuntimeException("Unknown error during compilation.");
+        JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
+                null, null, null, compilationUnits);
+        boolean result = task.call();
+        if (!result)
+            throw new RuntimeException("Unknown error during compilation.");
         return classLoader.loadClass(className);
     }
 
     public static void main(String[] args) throws Exception
     {
-	    javac = ToolProvider.getSystemJavaCompiler();
-	    classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
-		compilationUnits = new ArrayList<SourceCode>();
-		code = new CompiledCode[2];
+        javac = ToolProvider.getSystemJavaCompiler();
+        classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
+        compilationUnits = new ArrayList<SourceCode>();
+        code = new CompiledCode[2];
         // set up the global Interface
         StringBuffer source4 = new StringBuffer();
         source4.append("public interface PlInterface {");
@@ -81,9 +81,9 @@ public class JavaCompiler4
         String cls4 = source4.toString();
         String name4 = "PlInterface";
         compilationUnits.add(new SourceCode(name4, cls4));
-		CompiledCode compiledCodeObj = new CompiledCode(name4);
-		code[0] = compiledCodeObj;
-		classLoader.addCode(compiledCodeObj);
+        CompiledCode compiledCodeObj = new CompiledCode(name4);
+        code[0] = compiledCodeObj;
+        classLoader.addCode(compiledCodeObj);
 
 
 
@@ -137,38 +137,38 @@ public class JavaCompiler4
 }
 
 class ExtendedStandardJavaFileManager extends
-		ForwardingJavaFileManager<JavaFileManager> {
+        ForwardingJavaFileManager<JavaFileManager> {
 
-	private CompiledCode[] compiledCode;
-	private DynamicClassLoader cl;
+    private CompiledCode[] compiledCode;
+    private DynamicClassLoader cl;
 
-	/**
-	 * Creates a new instance of ForwardingJavaFileManager.
-	 *
-	 * @param fileManager
-	 *            delegate to this file manager
-	 * @param cl
-	 */
-	protected ExtendedStandardJavaFileManager(JavaFileManager fileManager,
-			DynamicClassLoader cl, CompiledCode... compiledCode) {
-		super(fileManager);
-		this.compiledCode = compiledCode;
-		this.cl = cl;
-	}
-
-	@Override
-    public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-    	for (CompiledCode code : compiledCode)
-    	{
-    		if (code.getClassName().equals(className)) return code;
-    	}
-    	throw new FileNotFoundException("Missing source code for class " + className );
+    /**
+     * Creates a new instance of ForwardingJavaFileManager.
+     *
+     * @param fileManager
+     *            delegate to this file manager
+     * @param cl
+     */
+    protected ExtendedStandardJavaFileManager(JavaFileManager fileManager,
+            DynamicClassLoader cl, CompiledCode... compiledCode) {
+        super(fileManager);
+        this.compiledCode = compiledCode;
+        this.cl = cl;
     }
 
-	@Override
-	public ClassLoader getClassLoader(JavaFileManager.Location location) {
-		return cl;
-	}
+    @Override
+    public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+        for (CompiledCode code : compiledCode)
+        {
+            if (code.getClassName().equals(className)) return code;
+        }
+        throw new FileNotFoundException("Missing source code for class " + className );
+    }
+
+    @Override
+    public ClassLoader getClassLoader(JavaFileManager.Location location) {
+        return cl;
+    }
 }
 
 class CompiledCode extends SimpleJavaFileObject {
@@ -181,8 +181,8 @@ class CompiledCode extends SimpleJavaFileObject {
     }
     
     public String getClassName() {
-		return className;
-	}
+        return className;
+    }
 
     @Override
     public OutputStream openOutputStream() throws IOException {
@@ -218,23 +218,23 @@ class DynamicClassLoader extends ClassLoader {
 }
 
 class SourceCode extends SimpleJavaFileObject {
-	private String contents = null;
-	private String className;
+    private String contents = null;
+    private String className;
 
-	public SourceCode(String className, String contents) throws Exception {
-		super(URI.create("string:///" + className.replace('.', '/')
-				+ Kind.SOURCE.extension), Kind.SOURCE);
-		this.contents = contents;
-		this.className = className;
-	}
+    public SourceCode(String className, String contents) throws Exception {
+        super(URI.create("string:///" + className.replace('.', '/')
+                + Kind.SOURCE.extension), Kind.SOURCE);
+        this.contents = contents;
+        this.className = className;
+    }
 
-	public String getClassName() {
-		return className;
-	}
+    public String getClassName() {
+        return className;
+    }
 
-	public CharSequence getCharContent(boolean ignoreEncodingErrors)
-			throws IOException {
-		return contents;
-	}
+    public CharSequence getCharContent(boolean ignoreEncodingErrors)
+            throws IOException {
+        return contents;
+    }
 }
 
