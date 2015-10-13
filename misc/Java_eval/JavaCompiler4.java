@@ -91,6 +91,7 @@ public class JavaCompiler4
             name3,
             cls3
         );
+        Class<?> PlInterface = classLoader.loadClass("PlInterface");
         Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
         Object aaa = method3.invoke(null);
 
@@ -98,15 +99,14 @@ public class JavaCompiler4
 
         StringBuffer sourceCode = new StringBuffer();
         sourceCode.append("public class HelloClass {\n");
-        sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
+        sourceCode.append("   public static void hello(PlInterface x) { System.out.print(\"hello \" + x.add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
         String cls1 = sourceCode.toString();
         Class<?> helloClass = compileClassInMemory(
             "HelloClass",
             cls1
         );
-        // Getting the target method from the loaded class and invoke it using its name
-        Method method = helloClass.getMethod("hello", new Class[]{Object.class});
+        Method method = helloClass.getMethod("hello", new Class[]{PlInterface});
         // Adder aaa = new Adder();
         method.invoke(null, aaa);
 
@@ -115,10 +115,10 @@ public class JavaCompiler4
         helloClass = compileClassInMemory(
             "HelloClass2",
             "public class HelloClass2 {\n" +
-            "   public static void hello(Object x) { System.out.println(\"hello2\"); }" +
+            "   public static void hello(PlInterface x) { System.out.println(\"hello2\"); }" +
             "}"
         );
-        method = helloClass.getMethod("hello", new Class[]{Object.class});
+        method = helloClass.getMethod("hello", new Class[]{PlInterface});
         method.invoke(null, aaa);
     }
 }
