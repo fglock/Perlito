@@ -1,8 +1,12 @@
-// https://github.com/trung/InMemoryJavaCompiler
-//             <name>Apache License, Version 2.0</name>
-//              <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+//
+// Credits:
+//
+// http://udn.yyuap.com/doc/jdk6-api-zh/javax/tools/JavaCompiler.html         
+//  * idea to reuse the same file manager to allow caching of jar files
 // https://github.com/turpid-monkey/InMemoryJavaCompiler
-// and others
+// https://github.com/trung/InMemoryJavaCompiler
+//  * provided a working example
+//  * Apache License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt
 //
 
 import java.io.ByteArrayOutputStream;
@@ -27,24 +31,37 @@ import javax.tools.ToolProvider;
 
 public class JavaCompiler4
 {
+    static ArrayList<SourceCode> compilationUnits;
+    static CompiledCode[] code;
+    static ExtendedStandardJavaFileManager fileManager;
+    static DynamicClassLoader classLoader;
+    static JavaCompiler javac;
+
     static Class<?> compile_class(
             String className,
-            String classSourceCode,
-            ArrayList<SourceCode> compilationUnits,
-            CompiledCode[] code,
-            ExtendedStandardJavaFileManager fileManager,
-            DynamicClassLoader classLoader,
-            JavaCompiler javac
+            String classSourceCode
         ) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
 		CompiledCode compiledCodeObj = new CompiledCode(className);
-		compilationUnits.set(1, sourceCodeObj);
-		code[1] = compiledCodeObj;
-		classLoader.addCode(compiledCodeObj);
-		JavaCompiler.CompilationTask task2 = javac.getTask(null, fileManager,
+        if (fileManager == null) {
+            // initializing the file manager
+            compilationUnits.add(sourceCodeObj);
+		    code[1] = compiledCodeObj;
+		    classLoader.addCode(compiledCodeObj);
+		    fileManager = new ExtendedStandardJavaFileManager(
+				    javac.getStandardFileManager(null, null, null), classLoader, code);
+        }
+        else {
+            // reusing the file manager
+		    compilationUnits.set(1, sourceCodeObj);
+		    code[1] = compiledCodeObj;
+		    classLoader.addCode(compiledCodeObj);
+        }
+
+		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
 				null, null, null, compilationUnits);
-		boolean result = task2.call();
+		boolean result = task.call();
 		if (!result)
 			throw new RuntimeException("Unknown error during compilation.");
         return classLoader.loadClass(className);
@@ -52,16 +69,25 @@ public class JavaCompiler4
 
     public static void main(String[] args) throws Exception
     {
+	    javac = ToolProvider.getSystemJavaCompiler();
+	    classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
+		compilationUnits = new ArrayList<SourceCode>();
+		code = new CompiledCode[2];
+        // set up the global Interface
         StringBuffer source4 = new StringBuffer();
-        source4.append("package org.perlito5;");
         source4.append("public interface PlInterface {");
         source4.append("    int add(int x, int y);");
         source4.append("}");
         String cls4 = source4.toString();
-        String name4 = "org.perlito5.PlInterface";
+        String name4 = "PlInterface";
+        compilationUnits.add(new SourceCode(name4, cls4));
+		CompiledCode compiledCodeObj = new CompiledCode(name4);
+		code[0] = compiledCodeObj;
+		classLoader.addCode(compiledCodeObj);
+
+
 
         StringBuffer source3 = new StringBuffer();
-        source3.append("package org.perlito5;");
         source3.append("public class Adder implements PlInterface {");
         source3.append("    public Adder() {");
         source3.append("    }");
@@ -73,76 +99,40 @@ public class JavaCompiler4
         source3.append("    }");
         source3.append("}");
         String cls3 = source3.toString();
-        String name3 = "org.perlito5.Adder";
-
-	    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
-	    DynamicClassLoader classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
-		ArrayList<SourceCode> compilationUnits = new ArrayList<SourceCode>();
-        compilationUnits.add(new SourceCode(name4, cls4));
-        compilationUnits.add(new SourceCode(name3, cls3));
-		CompiledCode[] code = new CompiledCode[compilationUnits.size()];
-		code[0] = new CompiledCode(name4);
-		code[1] = new CompiledCode(name3);
-		ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(
-				javac.getStandardFileManager(null, null, null), classLoader, code);
-		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager,
-				null, null, null, compilationUnits);
-		boolean result = task.call();
-		if (!result)
-			throw new RuntimeException("Unknown error during compilation.");
-        Class<?> helloClass3 = classLoader.loadClass("org.perlito5.Adder");
-
-        System.out.println("Methods:");
-        for ( Method method : helloClass3.getMethods() ) {
-            System.out.println( method.toString() );
-        }
-        System.out.println("Constructors:");
-        for ( Constructor constructor : helloClass3.getConstructors() ) {
-            System.out.println( constructor.toString() );
-        }
+        String name3 = "Adder";
+        Class<?> helloClass3 = compile_class(
+            name3,
+            cls3
+        );
         Method method3 = helloClass3.getMethod("getAdder", new Class[]{});
         Object aaa = method3.invoke(null);
 
+
+
         StringBuffer sourceCode = new StringBuffer();
-        sourceCode.append("package org.perlito5;");
         sourceCode.append("public class HelloClass {\n");
         sourceCode.append("   public static void hello(Object x) { System.out.print(\"hello \" + ((PlInterface)x).add(3,4) + \"\\n\"); }");
         sourceCode.append("}");
         String cls1 = sourceCode.toString();
         Class<?> helloClass = compile_class(
-            "org.perlito5.HelloClass",
-            cls1,
-            compilationUnits,
-            code,
-            fileManager,
-            classLoader,
-            javac
+            "HelloClass",
+            cls1
         );
- 
         // Getting the target method from the loaded class and invoke it using its name
         Method method = helloClass.getMethod("hello", new Class[]{Object.class});
-
         // Adder aaa = new Adder();
         method.invoke(null, aaa);
 
 
 
         helloClass = compile_class(
-            "org.perlito5.HelloClass2",
-            "package org.perlito5;" +
+            "HelloClass2",
             "public class HelloClass2 {\n" +
             "   public static void hello(Object x) { System.out.println(\"hello2\"); }" +
-            "}",
-            compilationUnits,
-            code,
-            fileManager,
-            classLoader,
-            javac
+            "}"
         );
         method = helloClass.getMethod("hello", new Class[]{Object.class});
         method.invoke(null, aaa);
-
-
     }
 }
 
@@ -164,9 +154,6 @@ class ExtendedStandardJavaFileManager extends
 		super(fileManager);
 		this.compiledCode = compiledCode;
 		this.cl = cl;
-		for (CompiledCode code : compiledCode) {
-			this.cl.addCode(code);
-		}
 	}
 
 	@Override
