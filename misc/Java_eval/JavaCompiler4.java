@@ -32,7 +32,6 @@ import javax.tools.ToolProvider;
 public class JavaCompiler4
 {
     static ArrayList<SourceCode> compilationUnits;
-    static CompiledCode[] code;
     static ExtendedStandardJavaFileManager fileManager;
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
@@ -47,15 +46,13 @@ public class JavaCompiler4
         if (fileManager == null) {
             // initializing the file manager
             compilationUnits.add(sourceCodeObj);
-            code[1] = compiledCodeObj;
-            classLoader.addCode(compiledCodeObj);
+            classLoader.customCompiledCode.put(className, compiledCodeObj);
             fileManager = new ExtendedStandardJavaFileManager(
-                    javac.getStandardFileManager(null, null, null), classLoader, code);
+                    javac.getStandardFileManager(null, null, null), classLoader);
         }
         else {
             // reusing the file manager
             compilationUnits.set(1, sourceCodeObj);
-            code[1] = compiledCodeObj;
             classLoader.addCode(compiledCodeObj);
         }
 
@@ -72,7 +69,6 @@ public class JavaCompiler4
         javac = ToolProvider.getSystemJavaCompiler();
         classLoader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
         compilationUnits = new ArrayList<SourceCode>();
-        code = new CompiledCode[2];
         // set up the global Interface
         StringBuffer source4 = new StringBuffer();
         source4.append("public interface PlInterface {");
@@ -82,7 +78,6 @@ public class JavaCompiler4
         String name4 = "PlInterface";
         compilationUnits.add(new SourceCode(name4, cls4));
         CompiledCode compiledCodeObj = new CompiledCode(name4);
-        code[0] = compiledCodeObj;
         classLoader.addCode(compiledCodeObj);
 
 
@@ -139,7 +134,6 @@ public class JavaCompiler4
 class ExtendedStandardJavaFileManager extends
         ForwardingJavaFileManager<JavaFileManager> {
 
-    private CompiledCode[] compiledCode;
     private DynamicClassLoader cl;
 
     /**
@@ -150,17 +144,16 @@ class ExtendedStandardJavaFileManager extends
      * @param cl
      */
     protected ExtendedStandardJavaFileManager(JavaFileManager fileManager,
-            DynamicClassLoader cl, CompiledCode... compiledCode) {
+            DynamicClassLoader cl) {
         super(fileManager);
-        this.compiledCode = compiledCode;
         this.cl = cl;
     }
 
     @Override
     public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-        for (CompiledCode code : compiledCode)
-        {
-            if (code.getClassName().equals(className)) return code;
+        CompiledCode cc = cl.customCompiledCode.get(className);
+        if (cc != null) {
+            return cc;
         }
         throw new FileNotFoundException("Missing source code for class " + className );
     }
@@ -196,7 +189,7 @@ class CompiledCode extends SimpleJavaFileObject {
 
 class DynamicClassLoader extends ClassLoader {
 
-    private Map<String, CompiledCode> customCompiledCode = new HashMap<String, CompiledCode>();
+    public Map<String, CompiledCode> customCompiledCode = new HashMap<String, CompiledCode>();
 
     public DynamicClassLoader(ClassLoader parent) {
         super(parent);
