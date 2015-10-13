@@ -34,14 +34,10 @@ public class JavaCompiler4
     static DynamicClassLoader classLoader;
     static JavaCompiler javac;
 
-    static Class<?> compileClassInMemory(
-            String className,
-            String classSourceCode
-        ) throws Exception
+    static Class<?> compileClassInMemory(String className, String classSourceCode) throws Exception
     {
         SourceCode sourceCodeObj = new SourceCode(className, classSourceCode);
-        CompiledCode compiledCodeObj = new CompiledCode(className);
-        classLoader.customCompiledCode.put(className, compiledCodeObj);
+        classLoader.customCompiledCode.put(className, new CompiledCode(className));
         if (fileManager == null) {
             // initializing the file manager
             compilationUnits.add(sourceCodeObj);
@@ -74,8 +70,7 @@ public class JavaCompiler4
         String cls4 = source4.toString();
         String name4 = "PlInterface";
         compilationUnits.add(new SourceCode(name4, cls4));
-        CompiledCode compiledCodeObj = new CompiledCode(name4);
-        classLoader.customCompiledCode.put(name4, compiledCodeObj);
+        classLoader.customCompiledCode.put(name4, new CompiledCode(name4));
 
 
 
@@ -128,20 +123,10 @@ public class JavaCompiler4
     }
 }
 
-class ExtendedStandardJavaFileManager extends
-        ForwardingJavaFileManager<JavaFileManager> {
-
+class ExtendedStandardJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
     private DynamicClassLoader cl;
 
-    /**
-     * Creates a new instance of ForwardingJavaFileManager.
-     *
-     * @param fileManager
-     *            delegate to this file manager
-     * @param cl
-     */
-    protected ExtendedStandardJavaFileManager(JavaFileManager fileManager,
-            DynamicClassLoader cl) {
+    protected ExtendedStandardJavaFileManager(JavaFileManager fileManager, DynamicClassLoader cl) {
         super(fileManager);
         this.cl = cl;
     }
@@ -185,7 +170,6 @@ class CompiledCode extends SimpleJavaFileObject {
 }
 
 class DynamicClassLoader extends ClassLoader {
-
     public Map<String, CompiledCode> customCompiledCode = new HashMap<String, CompiledCode>();
 
     public DynamicClassLoader(ClassLoader parent) {
@@ -212,8 +196,7 @@ class SourceCode extends SimpleJavaFileObject {
     private String className;
 
     public SourceCode(String className, String contents) throws Exception {
-        super(URI.create("string:///" + className.replace('.', '/')
-                + Kind.SOURCE.extension), Kind.SOURCE);
+        super(URI.create("string:///" + className.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
         this.contents = contents;
         this.className = className;
     }
@@ -222,8 +205,7 @@ class SourceCode extends SimpleJavaFileObject {
         return className;
     }
 
-    public CharSequence getCharContent(boolean ignoreEncodingErrors)
-            throws IOException {
+    public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
         return contents;
     }
 }
