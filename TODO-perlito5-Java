@@ -1,7 +1,15 @@
 * Java backend
 
--- Initial 'eval string' support could be achieved by embedding
-    a Javascript-in-Java interpreter
+-- 'eval string' support
+
+    JS-eval-string: embedding a Javascript-in-Java interpreter:
+        https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
+
+    Java-eval-string: using the native compiler API:
+        https://github.com/fglock/Perlito/blob/master/misc/Java_eval/JavaCompiler4.java
+
+    ASM:
+        TODO: prototype eval-string with ASM
 
 -- According to the Java Virtual Machine specification,
    the bytecode of a method must not be bigger than 65536 bytes:
@@ -43,7 +51,7 @@
         }
 
 
--- TODO - fix: module compilation requires the "bootstrapping" switch
+-- TODO: fix: module compilation requires the "bootstrapping" switch
 
     perl perlito5.pl -I src5/lib --bootstrapping -Cjava -e ' use Data::Dumper; print Data::Dumper::Dumper [ 123 , { 4 => 4 } ]'
 
@@ -63,8 +71,8 @@
     - import misc.java.Sample;              (DONE)
     - adds a pObject coercion "to_Sample"   (DONE)
     - adds a pObject variant "pSample"      (DONE)
-                                            (TODO - add argument list - test)
-                                            (TODO - maybe unbox the arguments automatically)
+                                            (TODO: add argument list - test)
+                                            (TODO: maybe unbox the arguments automatically)
     - add a pScalar variant "set(Sample)"   (TODO)
     - add pArray and pHash setters          (TODO)
 
@@ -85,14 +93,14 @@
     $x->to_Sample()
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
-                                            (TODO - generate primitive types in emitter)
+                                            (TODO: generate primitive types in emitter)
 
     my $x = $p_put;
     puts the boxed object into a Perl scalar  (DONE)
 
     my Sample $put = new Sample();
     creates a native Java variable          (DONE)
-                                            (TODO - allow Int, String types)
+                                            (TODO: allow Int, String types)
 
     my $x = $put;
     puts the unboxed object into a Perl scalar  (DONE)
@@ -101,13 +109,21 @@
     stores the boxed pSample object in a Perl scalar (DONE)
 
     package Int { import => 'java.lang.Integer' };
-    my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO - test)
+    my Int $x = 3;          # $x is a Java Int (not a pScalar)  (TODO: test)
 
     maybe TODO: automatic casting (my Result $java_obj = $scan_result;)
 
     maybe TODO: make pJavaReference which will have this implementation
         - Note: Boxed Java objects can be undef (null)
 
+    TODO: capture typed variables in closures
+
+    maybe TODO: allow typed variables in parameter list
+        but they would probably lose the type information
+
+        possible workaround:
+
+        my Int $x = $y;     # automatically insert a call to $y->toInt()
 
 -- interoperation between native expressions and perl expressions
 
@@ -119,14 +135,14 @@
     Class method calls on imported classes are "Java",
     all other Class method calls are "Perl".
 
-    Parameters to Java method calls should be converted to Java automatically.  (TODO - test, examples)
+    Parameters to Java method calls should be converted to Java automatically.  (TODO: test, examples)
 
     storing a Java object into a Perl scalar converts the value to a "Perl" object (blessed reference);
     Java "int", "String", "double" are converted to Perl values.
 
-    using Java objects in other types of expressions than scalar assignment is not well defined. (TODO - test, examples)
+    using Java objects in other types of expressions than scalar assignment is not well defined. (TODO: test, examples)
 
-    using Perl objects in Java code is not well defined. (TODO - test, examples)
+    using Perl objects in Java code is not well defined. (TODO: test, examples)
 
     storing a Java object into a typed variable keeps the Java object as-is.
 
@@ -172,7 +188,7 @@
     my $x = my::Sample->new();
     $x->to_mySample()
 
--- TODO autovivification of aliased parameters
+-- TODO: autovivification of aliased parameters
 
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
     $VAR1 = [
@@ -200,14 +216,14 @@
           ]
         ];
 
--- TODO slices
+-- TODO: slices
 
     $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
     @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
 
     - test slice interpolation in strings
 
--- TODO variables
+-- TODO: variables
 
     'state'
 
@@ -215,7 +231,7 @@
 
     subroutine lookups could also be "our"-like (also method lookups)
 
--- TODO symbolic references
+-- TODO: symbolic references
 
     $ perl -e ' $a = 123; my $z; $z = "a"; print $$z '
     123
