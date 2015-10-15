@@ -178,6 +178,15 @@ test-5to6 ::
 
 .PHONY: test-5to6
 
+.PHONY: clean
+
+clean ::
+	-rm *.class
+	-rm *.js
+	-rm *.py
+	-rm *.pyc
+	-rm misc/Java/*.class
+
 # :set tabstop=4
 # :set noexpandtab	  " Use tabs, not spaces
 
