@@ -250,6 +250,26 @@ sub term_sigil {
                 return $caret;
             }
         }
+        my $special = $sigil . substr($str, $p, 1);
+        if ( exists $special_var{$special} ) {
+            # ${@}  - special variable
+            my $m = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
+            my $p2 = $m->{to};
+            my $c2 = substr($str, $p2, 1);
+            if ($c2 eq '}') {
+                $m->{to} = $p2 + 1;
+                $m->{capture} = [ 'term', 
+                        Perlito5::AST::Var->new(
+                                sigil       => $sigil,
+                                namespace   => '',
+                                name        => substr($str, $p, 1),
+                                ( $sigil eq '$#' ? ( _real_sigil => '@' ) : () ),
+                                _namespace  => 'main',
+                            )
+                    ];
+                return $m;
+            }
+        }
         $m = Perlito5::Grammar::Expression::curly_parse( $str, $p );
         if ($m) {
             #  ${ ... }

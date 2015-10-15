@@ -44,10 +44,6 @@ TODO list for Perlito5
     if (keys %hh != 2) { print "not" }
     parses as: keys(%hh != 2)
 
--- syntax error in ${@} in string
-    "${@}";
-    ${"};
-
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
@@ -190,6 +186,11 @@ TODO list for Perlito5
     aliasing of subroutine parameters
 
     prototypes
+
+    ---
+    syntax error in ${@} in string
+    "${@}";
+    ${"};
 
     ---
     prototypes can change during compilation
