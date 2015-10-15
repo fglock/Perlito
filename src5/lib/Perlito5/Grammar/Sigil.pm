@@ -252,7 +252,7 @@ sub term_sigil {
         }
         my $special = $sigil . substr($str, $p, 1);
         if ( exists $special_var{$special} ) {
-            # ${@}  - special variable
+            # ${@}  $#{+}  - special variable
             my $m = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
             my $p2 = $m->{to};
             my $c2 = substr($str, $p2, 1);
