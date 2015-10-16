@@ -1584,55 +1584,92 @@ use feature 'say';
                 }
                 1
             }) && (do {
-                $MATCH->{'str'} = $str;
-                $MATCH->{'_save_scope'} = [@Perlito5::SCOPE_STMT];
-                @Perlito5::SCOPE_STMT = ();
-                1
-            }) && (do {
-                my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{'to'});
-                if ($m2) {
-                    $MATCH->{'to'} = $m2->{'to'};
-                    $MATCH->{'Perlito5::Grammar::exp_stmts'} = $m2;
-                    1
-                }
-                else {
-                    0
-                }
-            }) && (do {
-                $MATCH->{'str'} = $str;
-                @Perlito5::SCOPE_STMT = @{$MATCH->{'_save_scope'}};
-                1
-            }) && (do {
-                my $m = $MATCH;
-                if (!(do {
-                    my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
-                    if ($m2) {
-                        $MATCH->{'to'} = $m2->{'to'};
-                        1
-                    }
-                    else {
-                        0
-                    }
-                })) {
-                    $MATCH = $m
-                }
-                1
-            }) && (do {
                 my $pos1 = $MATCH->{'to'};
                 (do {
-                    ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    ((do {
+                        my $m2 = Perlito5::Grammar::ident($str, $MATCH->{'to'});
+                        if ($m2) {
+                            $MATCH->{'to'} = $m2->{'to'};
+                            $MATCH->{'Perlito5::Grammar::ident'} = $m2;
+                            1
+                        }
+                        else {
+                            0
+                        }
+                    }) && (do {
+                        my $m = $MATCH;
+                        if (!(do {
+                            my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
+                        })) {
+                            $MATCH = $m
+                        }
+                        1
+                    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        $MATCH->{'str'} = $str;
+                        $MATCH->{'capture'} = ['postfix_or_term', 'block', [Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), 'namespace' => '')]];
+                        1
+                    }))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (do {
+                    ((do {
                         $MATCH->{'str'} = $str;
-                        die('Missing right curly or square bracket');
+                        $MATCH->{'_save_scope'} = [@Perlito5::SCOPE_STMT];
+                        @Perlito5::SCOPE_STMT = ();
                         1
-                    })
+                    }) && (do {
+                        my $m2 = Perlito5::Grammar::exp_stmts($str, $MATCH->{'to'});
+                        if ($m2) {
+                            $MATCH->{'to'} = $m2->{'to'};
+                            $MATCH->{'Perlito5::Grammar::exp_stmts'} = $m2;
+                            1
+                        }
+                        else {
+                            0
+                        }
+                    }) && (do {
+                        $MATCH->{'str'} = $str;
+                        @Perlito5::SCOPE_STMT = @{$MATCH->{'_save_scope'}};
+                        1
+                    }) && (do {
+                        my $m = $MATCH;
+                        if (!(do {
+                            my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {
+                                0
+                            }
+                        })) {
+                            $MATCH = $m
+                        }
+                        1
+                    }) && (do {
+                        my $pos1 = $MATCH->{'to'};
+                        (do {
+                            ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        }) || (do {
+                            $MATCH->{'to'} = $pos1;
+                            (do {
+                                $MATCH->{'str'} = $str;
+                                die('Missing right curly or square bracket');
+                                1
+                            })
+                        })
+                    }) && (do {
+                        $MATCH->{'str'} = $str;
+                        $MATCH->{'capture'} = ['postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'})];
+                        1
+                    }))
                 })
-            }) && (do {
-                $MATCH->{'str'} = $str;
-                $MATCH->{'capture'} = ['postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::exp_stmts'})];
-                1
             })));
             $tmp ? $MATCH : 0
         }

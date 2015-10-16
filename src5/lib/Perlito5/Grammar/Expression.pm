@@ -356,14 +356,30 @@ token term_square {
 
 token term_curly {
     '{'  <.Perlito5::Grammar::Space::ws>?
-        { $MATCH->{_save_scope} = [ @Perlito5::SCOPE_STMT ];
-          @Perlito5::SCOPE_STMT = ();
+    [
+            <Perlito5::Grammar::ident>
+            <.Perlito5::Grammar::Space::ws>?
+        \}
+        { $MATCH->{capture} = [ 'postfix_or_term', 'block',
+                [ Perlito5::AST::Apply->new(
+                    'arguments' => [],
+                    'bareword' => 1,
+                    'code' => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}),
+                    'namespace' => '',
+                ) ]
+            ]
         }
-        <Perlito5::Grammar::exp_stmts>
-        { @Perlito5::SCOPE_STMT = @{ $MATCH->{_save_scope} } }
-        <.Perlito5::Grammar::Space::ws>?
-    [ \} | { die 'Missing right curly or square bracket' } ]
-    { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ] }
+    |
+            { $MATCH->{_save_scope} = [ @Perlito5::SCOPE_STMT ];
+              @Perlito5::SCOPE_STMT = ();
+            }
+            <Perlito5::Grammar::exp_stmts>
+            { @Perlito5::SCOPE_STMT = @{ $MATCH->{_save_scope} } }
+            <.Perlito5::Grammar::Space::ws>?
+        [ \} | { die 'Missing right curly or square bracket' } ]
+        { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ]
+        }
+    ]
 };
 
 
