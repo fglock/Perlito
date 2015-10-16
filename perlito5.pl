@@ -5667,10 +5667,10 @@ use feature 'say';
                         $MATCH = $tmp;
                         $res ? 1 : 0
                     }) && (do {
-                        my $m2 = Perlito5::Grammar::Expression::term_curly($str, $MATCH->{'to'});
+                        my $m2 = Perlito5::Grammar::Block::block($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
-                            $MATCH->{'Perlito5::Grammar::Expression::term_curly'} = $m2;
+                            $MATCH->{'Perlito5::Grammar::Block::block'} = $m2;
                             1
                         }
                         else {
@@ -5678,7 +5678,7 @@ use feature 'say';
                         }
                     }) && (do {
                         $MATCH->{'str'} = $str;
-                        $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => $MATCH->{'Perlito5::Grammar::Expression::term_curly'}->{'capture'}->[2]);
+                        $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Block::block'});
                         1
                     }))
                 }) || (do {
