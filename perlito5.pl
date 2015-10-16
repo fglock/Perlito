@@ -15424,7 +15424,16 @@ use feature 'say';
                 'new PlInt(~' . Perlito5::Java::to_num($self->{'arguments'}->[0]) . '.to_int())'
             }, 'prefix:<->' => sub {
                 my($self, $level, $wantarray) = @_;
-                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.neg()'
+                my $arg = $self->{'arguments'}->[0];
+                if ($arg->isa('Perlito5::AST::Int')) {
+                    $arg->{'int'} = -$arg->{'int'};
+                    return $arg->emit_java($level, 'scalar')
+                }
+                if ($arg->isa('Perlito5::AST::Num')) {
+                    $arg->{'num'} = -$arg->{'num'};
+                    return $arg->emit_java($level, 'scalar')
+                }
+                $arg->emit_java($level, 'scalar') . '.neg()'
             }, 'prefix:<+>' => sub {
                 my($self, $level, $wantarray) = @_;
                 $self->{'arguments'}->[0]->emit_java($level, $wantarray)
