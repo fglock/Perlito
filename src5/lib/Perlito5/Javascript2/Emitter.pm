@@ -72,6 +72,7 @@ package Perlito5::Javascript2;
         infix:<le>
         infix:<gt>
         infix:<lt>
+        infix:<~~>
         prefix:<not>
         exists
         defined
@@ -182,15 +183,18 @@ package Perlito5::Javascript2;
                 return 'p5str(' . $cond->emit_javascript2($level, $wantarray) . ')';
             }
     }
+    sub is_num {
+            my $cond = shift;
+            return 1 if $cond->isa( 'Perlito5::AST::Int' )
+                || $cond->isa( 'Perlito5::AST::Num' )
+                || ($cond->isa( 'Perlito5::AST::Apply' )  && exists $op_to_num{ $cond->code } );
+            return 0;
+    }
     sub to_num {
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
-            if  (  $cond->isa( 'Perlito5::AST::Int' ) 
-                || $cond->isa( 'Perlito5::AST::Num' )
-                || ($cond->isa( 'Perlito5::AST::Apply' )  && exists $op_to_num{ $cond->code } )
-                )
-            {
+            if ( is_num($cond) ) {
                 return $cond->emit_javascript2($level, $wantarray);
             }
             else {
@@ -1601,6 +1605,18 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             'p5make_package(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ')';
         },
+        'infix:<~~>' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $arg0 = $self->{arguments}->[0];
+            my $arg1 = $self->{arguments}->[1];
+            # TODO - test argument type
+            #   See: http://perldoc.perl.org/perlop.html#Smartmatch-Operator
+            # if (Perlito5::Javascript2::is_num($arg1)) {
+            #     # ==
+            # }
+            'p5smrt_scalar(' . $arg0->emit_javascript2($level, 'scalar') . ', '
+                             . $arg1->emit_javascript2($level, 'scalar') . ')'
+        },
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
             'p5and('
@@ -2988,7 +3004,7 @@ package Perlito5::AST::When;
                 'arguments' => [
                     Perlito5::AST::Var->new(
                         'name' => '_',
-                        'namespace' => '',
+                        'namespace' => 'main',
                         'sigil' => '$',
                     ),
                     $cond,

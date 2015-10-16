@@ -671,6 +671,19 @@ var p5idx = function(a, i) {
     return i >= 0 ? i : a.length + i
 };
 
+var p5smrt_scalar = function(a1, a2) {
+    if (a2 == null) {
+        return a1 == null;
+    }
+    if (typeof a2 == "string") {
+        return p5str(a1) == a2;
+    }
+    if (typeof a2 == "number") {
+        return p5num(a1) == a2;
+    }
+    CORE.die("Not implemented: smartmatch operator with argument type '", (typeof a2), "'");
+};
+
 var p5str = function(o) {
     if (o == null) {
         return "";
