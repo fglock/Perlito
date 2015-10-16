@@ -3622,7 +3622,13 @@ package Perlito5::AST::When;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
+    sub emit_java_get_captures {
+        my $self      = shift;
+        my @var;
+        push @var, $self->{cond}->emit_java_get_captures();
+        push @var, $self->{body}->emit_java_get_captures();
+        return @var;
+    }
 }
 
 

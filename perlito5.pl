@@ -16206,7 +16206,11 @@ use feature 'say';
                 ()
             }
             sub Perlito5::AST::When::emit_java_get_captures {
-                ()
+                my $self = shift;
+                my @var;
+                push(@var, $self->{'cond'}->emit_java_get_captures());
+                push(@var, $self->{'body'}->emit_java_get_captures());
+                return @var
             }
         }
         package Perlito5::AST::While;
