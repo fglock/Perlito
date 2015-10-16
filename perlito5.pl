@@ -16315,7 +16315,7 @@ use feature 'say';
                 my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
                 push(@var, map {
                     $_->emit_java_get_captures()
-                } @{$body}, $self->{'topic'});
+                } @{$body}, $self->{'topic'}, (ref($self->{'cond'}) eq 'ARRAY' ? @{$self->{'cond'}} : $self->{'cond'}));
                 return @var
             }
         }
