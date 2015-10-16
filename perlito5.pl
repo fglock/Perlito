@@ -10486,7 +10486,36 @@ use feature 'say';
         package Perlito5::AST::When;
         {
             sub Perlito5::AST::When::emit_javascript2 {
-                die(chr(39) . 'when' . chr(39) . ' is not implemented')
+                my($self, $level, $wantarray) = @_;
+                my $cond = $self->{'cond'};
+                my @str;
+                my $old_level = $level;
+                if ($cond) {
+                    my @var_decl = $cond->emit_javascript2_get_decl();
+                    for my $arg (@var_decl) {
+                        $level = $old_level + 1;
+                        push(@str, $arg->emit_javascript2_init($level, $wantarray))
+                    }
+                }
+                $cond = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::->new('name' => '_', 'namespace' => '', 'sigil' => '$'), $cond], 'code' => 'infix:<~~>', 'namespace' => '');
+                my $next = Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'next', 'namespace' => '');
+                my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? Perlito5::Javascript2::LexicalBlock::->new('block' => [$self->{'body'}]) : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Javascript2::LexicalBlock::->new('block' => $self->{'body'}->stmts()) : Perlito5::Javascript2::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1);
+                push(@{$body->{'block'}}, $next);
+                my $s = 'if ( ' . Perlito5::Javascript2::to_bool($cond, $level + 1) . ' ) {';
+                if ($body) {
+                    $s = $s . chr(10) . Perlito5::Javascript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::Javascript2::tab($level) . '}'
+                }
+                else {
+                    $s = $s . '}'
+                }
+                push(@str, $s);
+                if (@str) {
+                    $level = $old_level;
+                    return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, @str)
+                }
+                else {
+                    return join(chr(10) . Perlito5::Javascript2::tab($level), @str)
+                }
             }
             sub Perlito5::AST::When::emit_javascript2_get_decl {
                 ()
