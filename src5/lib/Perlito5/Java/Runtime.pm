@@ -367,6 +367,19 @@ class PerlOp {
         return null;
     }
 
+    public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {
+        if (arg1.is_undef()) {
+            return arg0.is_undef() ? PlCx.TRUE : PlCx.FALSE;
+        }
+        if (arg1.is_string()) {
+            return arg0.str_eq(arg1);
+        }
+        if (arg1.is_num() || arg1.is_int()) {
+            return arg0.num_eq(arg1);
+        }
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type '"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString("'")));
+    }
+
     // and1(x) ? y : and3()
     public static final boolean and1(PlObject arg1) {
         if (arg1.to_bool()) {

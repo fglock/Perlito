@@ -2260,6 +2260,19 @@ package Perlito5::AST::Apply;
               $self->{arguments}->[0]->emit_java($level, 'scalar') . '.str_le('
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
         },
+        'infix:<~~>' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $arg0 = $self->{arguments}->[0];
+            my $arg1 = $self->{arguments}->[1];
+            # TODO - test argument type
+            #   See: http://perldoc.perl.org/perlop.html#Smartmatch-Operator
+            # if (Perlito5::Java::is_num($arg1)) {
+            #     # ==
+            # }
+            'PerlOp.smartmatch_scalar('
+                . $arg0->emit_java($level, 'scalar') . ', '
+                . $arg1->emit_java($level, 'scalar') . ')'
+        },
 
         'infix:<&&>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3556,7 +3569,56 @@ package Perlito5::AST::If;
 package Perlito5::AST::When;
 {
     sub emit_java {
-        die "'when' is not implemented";
+        my ($self, $level, $wantarray) = @_;
+        # TODO - special case when When is inside a Given block
+        # TODO - special case when When is a statement modifier
+        my $cond = $self->{cond};
+        # extract declarations from 'cond'
+        my @str;
+        my $old_level = $level;
+        # print Perlito5::Dumper::Dumper($self);
+        # print Perlito5::Dumper::Dumper($self->{cond});
+        if ($cond) {
+            my @var_decl = $cond->emit_java_get_decl();
+            for my $arg (@var_decl) {
+                $level = $old_level + 1;
+                push @str, $arg->emit_java_init($level, $wantarray);
+            }
+        }
+        $cond = Perlito5::AST::Apply->new(
+                'arguments' => [
+                    Perlito5::AST::Var->new(
+                        'name' => '_',
+                        'namespace' => 'main',
+                        'sigil' => '$',
+                    ),
+                    $cond,
+                ],
+                'code' => 'infix:<~~>',
+                'namespace' => '',
+            );
+        my $next = Perlito5::AST::Apply->new(
+                'arguments' => [],
+                'bareword' => 1,
+                'code' => 'next',
+                'namespace' => '',
+            );
+        my $body =
+              ref($self->{body}) ne 'Perlito5::AST::Block'
+            ? Perlito5::Java::LexicalBlock->new( block => [ $self->{body} ], not_a_loop => 1 )
+            : (!@{ $self->{body}->stmts })
+            ? undef
+            : $wantarray ne 'void'
+            ? Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, not_a_loop => 1 )
+            : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1, not_a_loop => 1 );
+        push @{ $body->{block} }, $next; 
+
+        push @str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
+        if ($body) {
+            push @str, [ $body->emit_java( $level + 1, $wantarray ) ];
+        }
+        push @str, '}';
+        return Perlito5::Java::emit_wrap_java($level, @str);
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
