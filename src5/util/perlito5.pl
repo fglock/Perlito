@@ -237,7 +237,7 @@ if ($backend && @ARGV) {
             warn "// source from file: ", $ARGV[0];
         }
         my $source_filename = shift @ARGV;
-        open FILE, '<', $source_filename
+        open FILE, '<:encoding(UTF-8)', $source_filename
           or die "Cannot read $source_filename: $!\n";
         local $/ = undef;
         $source = <FILE>;

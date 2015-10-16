@@ -341,7 +341,7 @@ if (isNode) {
             else if (flags == '>>') {
                 flags = 'a'
             }
-            else if (flags == '<' || flags == '') {
+            else if (flags == '<' || flags == '' || flags == '<:encoding(UTF-8)') {
                 flags = 'r'
             }
             else if (flags == '+>') {
