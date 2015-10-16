@@ -31,6 +31,10 @@ TODO list for Perlito5
 
 * Parser
 
+-- syntax error in hashref subscript - parses 's' as s///:
+    ${x->{s}}
+    $x->{s}
+
 -- label all blocks
     Note: this is not possible, because a "next" inside a subroutine goes back to the caller.
 
