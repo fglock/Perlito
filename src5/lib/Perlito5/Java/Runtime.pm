@@ -119,6 +119,7 @@ class PlCx {
     public static final PlString DIED   = new PlString("Died");
     public static final String  ARGV   = "main|List_ARGV";
     public static final String  ENV    = "main|Hash_ENV";
+    public static final PlNextException NEXT = new PlNextException(0);
 
 EOT
     . "    " . join("\n    ",
@@ -320,6 +321,9 @@ class PerlOp {
     public static final void statement() { }
 
     // control-flow exceptions
+    public static final PlObject next0() {
+        throw PlCx.NEXT;
+    }
     public static final PlObject next(int label_id) {
         throw new PlNextException(label_id);
     }
