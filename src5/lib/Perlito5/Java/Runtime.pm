@@ -121,6 +121,9 @@ class PlCx {
     public static final String  ENV    = "main|Hash_ENV";
 
 EOT
+    . "    " . join("\n    ",
+        map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }
+            (-2 .. 2) ) . "\n"
     . "    " . join("\n    ", @{ $args{java_constants} // [] } ) . "\n"
     . <<'EOT'
 }

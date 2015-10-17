@@ -1006,6 +1006,12 @@ package Perlito5::AST::Int;
         if ( $v > (2**31-1) ) {
             return "new PlDouble(" . $v . ".0)";
         }
+        if ( $v >= -2 && $v < 0) {
+            return "PlCx.MIN" . abs($v);
+        }
+        if ( $v >= 0 && $v <= 2) {
+            return "PlCx.INT" . abs($v);
+        }
         "new PlInt(" . $v . ")";
     }
     sub emit_java_get_decl { () }
