@@ -134,7 +134,7 @@ class PlCORE {
         for (int i = 0; i < List__.to_int(); i++) {
             System.out.print(List__.aget(i).toString());
         }
-        return new PlInt(1);
+        return PlCx.INT1;
     }
     public static final PlObject say(int want, PlObject filehandle, PlArray List__) {
         // TODO - write to filehandle
@@ -142,7 +142,7 @@ class PlCORE {
             System.out.print(List__.aget(i).toString());
         }
         System.out.println("");
-        return new PlInt(1);
+        return PlCx.INT1;
     }
     public static final PlObject say(String s) {
         // say() shortcut
@@ -158,7 +158,7 @@ class PlCORE {
             System.err.print(List__.aget(i).toString());
         }
         System.err.println("");
-        return new PlInt(1);
+        return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
         PlObject arg = List__.aget(0);
@@ -867,11 +867,11 @@ EOT
 
     public PlObject _decr() {
         // --$x
-        return new PlInt(-1);
+        return PlCx.MIN1;
     }
     public PlObject _incr() {
         // ++$x
-        return new PlInt(1);
+        return PlCx.INT1;
     }
     public PlObject neg() {
         return new PlInt(-this.to_int());
@@ -2504,10 +2504,10 @@ class PlBool extends PlObject {
     public PlObject _decr() {
         // --$x
         if (i) {
-            return new PlInt(0);
+            return PlCx.INT0;
         }
         else {
-            return new PlInt(-1);
+            return PlCx.MIN1;
         }
     }
     public PlObject _incr() {
@@ -2516,15 +2516,15 @@ class PlBool extends PlObject {
             return new PlInt(2);
         }
         else {
-            return new PlInt(1);
+            return PlCx.INT1;
         }
     }
     public PlObject neg() {
         if (i) {
-            return new PlInt(-1);
+            return PlCx.MIN1;
         }
         else {
-            return new PlInt(0);
+            return PlCx.INT0;
         }
     }
 }
@@ -2693,12 +2693,12 @@ class PlString extends PlObject {
                                     return new PlDouble(Double.POSITIVE_INFINITY);
                                 }
                             }
-                            return new PlInt(0);
+                            return PlCx.INT0;
                 case 'n': case 'N':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
                                 return new PlDouble(Double.NaN);
                             }
-                            return new PlInt(0);
+                            return PlCx.INT0;
                 case '.':   // starts with dot
                             if (signal != 0) {
                                 signal = 1;
@@ -2745,14 +2745,14 @@ class PlString extends PlObject {
                 case '+':   // starts with +
                             if (signal != 0) {
                                 // invalid
-                                return new PlInt(0);
+                                return PlCx.INT0;
                             }
                             signal = 1;
                             break;
                 case '-':   // starts with -
                             if (signal != 0) {
                                 // invalid
-                                return new PlInt(0);
+                                return PlCx.INT0;
                             }
                             signal = -1;
                             break;
@@ -2760,15 +2760,15 @@ class PlString extends PlObject {
                             // starts with space
                             if (signal != 0) {
                                 // invalid
-                                return new PlInt(0);
+                                return PlCx.INT0;
                             }
                             break;
                 default:    // invalid
-                            return new PlInt(0);
+                            return PlCx.INT0;
             }
             offset++;
         }
-        return new PlInt(0);
+        return PlCx.INT0;
     }
     public int to_int() {
         return this.parse().to_int();
@@ -2788,13 +2788,13 @@ class PlString extends PlObject {
     }
     public PlObject _decr() {
         // --$x
-        return this.add(new PlInt(-1));
+        return this.add(PlCx.MIN1);
     }
     public PlObject _incr() {
         // ++$x
         final int length = s.length();
         if (length == 0) {
-            return new PlInt(1);
+            return PlCx.INT1;
         }
         final int c = this.s.codePointAt(0);
         switch (c) {        
@@ -2802,14 +2802,14 @@ class PlString extends PlObject {
             case '+': case '-': case '.':
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
-                return this.add(new PlInt(1));
+                return this.add(PlCx.INT1);
         }
         return new PlString(PerlOp.string_increment(this.s));
     }
     public PlObject neg() {
         final int length = s.length();
         if (length == 0) {
-            return new PlInt(0);
+            return PlCx.INT0;
         }
         final int c = this.s.codePointAt(0);
         switch (c) {        
@@ -2829,7 +2829,7 @@ class PlString extends PlObject {
         if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
             return new PlString( '-' + s );
         }
-        return new PlInt(0);
+        return PlCx.INT0;
     }
     public PlObject abs() {
         return this.parse().abs();
