@@ -2710,7 +2710,7 @@ package Perlito5::AST::Apply;
             $Perlito5::THROW = 1;
             my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
             if ($label == 0) {
-                return 'PerlOp.next0()';
+                return 'PerlOp.next()';
             }
             'PerlOp.next(' . $label . ')';
         },
@@ -2718,6 +2718,9 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
             my $label = Perlito5::Java::get_java_loop_label( $self->{arguments}[0]{code} );
+            if ($label == 0) {
+                return 'PerlOp.last()';
+            }
             'PerlOp.last(' . $label . ')';
         },
         'redo' => sub {

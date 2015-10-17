@@ -120,6 +120,7 @@ class PlCx {
     public static final String  ARGV   = "main|List_ARGV";
     public static final String  ENV    = "main|Hash_ENV";
     public static final PlNextException NEXT = new PlNextException(0);
+    public static final PlLastException LAST = new PlLastException(0);
 
 EOT
     . "    " . join("\n    ",
@@ -321,11 +322,14 @@ class PerlOp {
     public static final void statement() { }
 
     // control-flow exceptions
-    public static final PlObject next0() {
+    public static final PlObject next() {
         throw PlCx.NEXT;
     }
     public static final PlObject next(int label_id) {
         throw new PlNextException(label_id);
+    }
+    public static final PlObject last() {
+        throw PlCx.LAST;
     }
     public static final PlObject last(int label_id) {
         throw new PlLastException(label_id);
