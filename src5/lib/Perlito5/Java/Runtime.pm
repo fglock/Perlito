@@ -2634,11 +2634,21 @@ EOT
 }
 class PlString extends PlObject {
     private java.lang.String s;
+    private PlObject numericValue;
+    private boolean hasValue;
+
     public PlString(String s) {
         this.s = s;
     }
     public PlString(char s) {
         this.s = "" + s;
+    }
+    public PlObject parse() {
+        if (!hasValue) {
+            hasValue = true;
+            numericValue = this._parse();
+        }
+        return numericValue;
     }
     private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
@@ -2678,7 +2688,7 @@ class PlString extends PlObject {
         }
         return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }
-    public PlObject parse() {
+    private PlObject _parse() {
         final int length = s.length();
         int signal = 0;
         for (int offset = 0; offset < length; ) {
