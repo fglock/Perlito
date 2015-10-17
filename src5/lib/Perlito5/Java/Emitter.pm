@@ -299,6 +299,7 @@ package Perlito5::Java;
     sub to_num {
             my $cond = shift;
             my $level = shift;
+            my $type = shift;
             my $wantarray = 'scalar';
             if  (  $cond->isa( 'Perlito5::AST::Int' ) 
                 || $cond->isa( 'Perlito5::AST::Num' )
@@ -309,6 +310,9 @@ package Perlito5::Java;
             }
             else {
                 # TODO - this converts to "double" - it should be int/double depending on context
+                if ($type eq 'int') {
+                    return 'new PlInt(' . $cond->emit_java($level, $wantarray) . '.to_int())';
+                }
                 return 'new PlDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())';
             }
     }
@@ -1132,9 +1136,15 @@ package Perlito5::AST::Index;
                         . Perlito5::Java::to_context($wantarray)
                    . ')';
         }
-        return $self->emit_java_container($level) . '.' . $method . '(' 
-                        . Perlito5::Java::to_num($self->{index_exp}, $level) 
-                    . ')';
+        my $arg = $self->{index_exp};
+        my $s;
+        if ($arg->isa('Perlito5::AST::Int')) {
+            $s = $arg->{int};
+        }
+        else {
+            $s = $arg->emit_java($level, 'scalar');
+        }
+        return $self->emit_java_container($level) . '.' . $method . '(' . $s . ')';
     }
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray, $localize) = @_;
@@ -1169,8 +1179,16 @@ package Perlito5::AST::Index;
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
+        my $arg = $self->{index_exp};
+        my $s;
+        if ($arg->isa('Perlito5::AST::Int')) {
+            $s = $arg->{int};
+        }
+        else {
+            $s = $arg->emit_java($level, 'scalar');
+        }
         return $self->emit_java_container($level) . '.aset(' 
-                    . Perlito5::Java::to_num($self->{index_exp}, $level+1) . ', ' 
+                    . $s . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
                 . ')';
     }
@@ -1201,8 +1219,16 @@ package Perlito5::AST::Index;
                     'return a',
             )
         }
+        my $arg = $self->{index_exp};
+        my $s;
+        if ($arg->isa('Perlito5::AST::Int')) {
+            $s = $arg->{int};
+        }
+        else {
+            $s = $arg->emit_java($level, 'scalar');
+        }
         return $self->emit_java_container($level) . '.aset(' 
-                    . Perlito5::Java::to_num($self->{index_exp}, $level+1) . ', ' 
+                    . $s . ', '
                     . $list . '.shift()'
                 . ')';
     }

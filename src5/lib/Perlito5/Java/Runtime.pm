@@ -783,6 +783,10 @@ EOT
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
+    public PlObject aset(int i, PlObject v) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
     public PlObject aset(PlObject i, PlObject v) {
         PlCORE.die("Not an ARRAY reference");
         return this;
@@ -1280,6 +1284,9 @@ class PlLvalue extends PlObject {
         return this.o.aget_hashref(i);
     }
 
+    public PlObject aset(int i, PlObject v) {
+        return this.o.aset(i, v);
+    }
     public PlObject aset(PlObject i, PlObject v) {
         return this.o.aset(i, v);
     }
@@ -1855,6 +1862,23 @@ EOT
     public PlObject aset(PlObject i, PlLvalue v) {
         int size = this.a.size();
         int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
+        }
+        this.a.set(pos, v.get());
+        return v;
+    }
+    public PlObject aset(int i, PlLvalue v) {
+        int size = this.a.size();
+        int pos  = i;
         if (pos < 0) {
             pos = size + pos;
         }
