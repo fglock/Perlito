@@ -438,31 +438,6 @@ class PerlOp {
         return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
 
-    // $x++ when $x is PlString
-    public static final String string_increment(String s) {
-        if (s.length() < 2) {
-            final int c = s.codePointAt(0);
-            if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
-                return "" + Character.toChars(c + 1)[0];
-            }
-            if (c == '9') {
-                return "10";
-            }
-            if (c == 'Z') {
-                return "AA";
-            }
-            if (c == 'z') {
-                return "aa";
-            }
-            return "1";
-        }
-        String c = string_increment(s.substring(s.length()-1, s.length()));
-        if (c.length() == 1) {
-            return s.substring(0, s.length()-1) + c;
-        }
-        return string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
-    }
-
     public static final PlString string_replicate(PlObject s, PlObject c) {
         int count = c.to_int();
         if ( count < 1 ) {
@@ -2804,13 +2779,38 @@ class PlString extends PlObject {
         // --$x
         return this.add(PlCx.MIN1);
     }
+
+    // $x++ when $x is PlString
+    private static final String _string_increment(String s) {
+        if (s.length() < 2) {
+            final int c = s.codePointAt(0);
+            if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
+                return "" + (char)(c + 1);
+            }
+            if (c == '9') {
+                return "10";
+            }
+            if (c == 'Z') {
+                return "AA";
+            }
+            if (c == 'z') {
+                return "aa";
+            }
+            return "1";
+        }
+        String c = _string_increment(s.substring(s.length()-1, s.length()));
+        if (c.length() == 1) {
+            return s.substring(0, s.length()-1) + c;
+        }
+        return _string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
+    }
     public PlObject _incr() {
         // ++$x
         final int length = s.length();
         if (length == 0) {
             return PlCx.INT1;
         }
-        final int c = this.s.codePointAt(0);
+        int c = this.s.codePointAt(0);
         switch (c) {        
             case ' ': case '\t': case '\n': case '\r':
             case '+': case '-': case '.':
@@ -2818,7 +2818,11 @@ class PlString extends PlObject {
             case '5': case '6': case '7': case '8': case '9':
                 return this.add(PlCx.INT1);
         }
-        return new PlString(PerlOp.string_increment(this.s));
+        c = s.codePointAt(length - 1);
+        if ((c >= '0' && c <= '8') || (c >= 'A' && c <= 'Y') || (c >= 'a' && c <= 'y')) {
+            return new PlString(s.substring(0, length-1) + (char)(c + 1));
+        }
+        return new PlString(_string_increment(this.s));
     }
     public PlObject neg() {
         final int length = s.length();
