@@ -438,7 +438,7 @@ Flavio Soibelmann Glock <fglock@gmail.com>.
 
 =head1 SEE ALSO
 
-L<http://www.perlito.org>
+L<http://fglock.github.io/Perlito>
 
 =head1 COPYRIGHT
 

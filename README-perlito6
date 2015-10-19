@@ -15,9 +15,9 @@ Web
 
     Main Perlito repository: http://github.com/fglock/Perlito
 
-    Main Project web page: http://www.perlito.org
+    Main Project web page: http://fglock.github.io/Perlito
 
-    Run Perlito6 online, in the browser: http://perlcabal.org/~fglock/perlito6.html
+    Run Perlito6 online, in the browser: http://fglock.github.io/Perlito/perlito/perlito6.html
 
 Source code
 
@@ -32,7 +32,7 @@ Using the Javascript backend in the browser
 
     Alternately, browse to:
 
-    http://perlcabal.org/~fglock/perlito6.html
+    http://fglock.github.io/Perlito/perlito/perlito6.html
 
 Using the Javascript backend in the command line
 
@@ -114,7 +114,7 @@ SEE ALSO
 
 The Perl 6 homepage at http://dev.perl.org/perl6
 The Pugs homepage at http://pugscode.org
-The Perlito homepage at http://perlito.org
+The Perlito homepage at http://fglock.github.io/Perlito
 
 COPYRIGHT
 
