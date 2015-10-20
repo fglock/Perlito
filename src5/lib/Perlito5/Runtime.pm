@@ -18,6 +18,7 @@ $^V = bless( { 'original' => 'v5.20.0',
                     unless defined $^V;
 
 our $EXPAND_USE   = 1;
+our $EMIT_USE     = 0;
 our $STRICT       = 0;
 our $WARNINGS     = 0;
 our $UTF8         = 0;

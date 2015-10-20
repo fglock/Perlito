@@ -347,6 +347,9 @@ if ($backend && @ARGV) {
                     if ( $expand_use ) {
                         print Perlito5::Perl5::Runtime->emit_perl5();
                     }
+                    else {
+                        $Perlito5::EMIT_USE = 1;
+                    }
                     my @data = Perlito5::AST::CompUnit::emit_perl5_program( $comp_units );
                     # print Perlito5::Dumper::ast_dumper( \@data );
                     my $out = [];
@@ -419,7 +422,7 @@ if ($backend && @ARGV) {
 
 =head1 NAME
 
-perlito5 - Perl5 compiler
+perlito5 - a Perl5 compiler
 
 =head1 SYNOPSIS
 
@@ -448,7 +451,7 @@ Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
-See L<http://www.perl.com/perl/misc/Artistic.html>
+See L<http://dev.perl.org/licenses/artistic.html>
 
 =cut
 

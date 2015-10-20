@@ -1,6 +1,7 @@
 package Perlito5::Grammar;
 use strict;
 use Perlito5::Grammar::Expression;
+use Perlito5::Grammar::Statement;
 
 token unless {
     'unless' <.Perlito5::Grammar::Space::opt_ws>

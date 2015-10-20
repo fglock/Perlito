@@ -459,7 +459,12 @@ package Perlito5::AST::Use;
     sub emit_perl5 {
         my $self = shift;
         Perlito5::Grammar::Use::emit_time_eval($self);
-        return [ comment => "# " . $self->{code} . " " . $self->{mod} ];
+        if ($Perlito5::EMIT_USE) {
+            return [ stmt => [ keyword => 'use' ], [ bareword => $self->{mod} ] ];
+        }
+        else {
+            return [ comment => "# " . $self->{code} . " " . $self->{mod} ];
+        }
     }
 }
 
