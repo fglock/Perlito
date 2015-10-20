@@ -7,6 +7,8 @@ rm -rf scripts
 
 touch META.yml
 
+cp ../ChangeLog ./Changes
+
 mkdir t
 cp -r ../t5/* t/
 
@@ -20,6 +22,13 @@ mkdir scripts
 cp ../src5/util/perlito5.pl scripts/perlito5
 
 perldoc -otext scripts/perlito5 > README
+
+rm t/01-perlito/050-string.t             
+rm t/01-perlito/190-bind-sub-param.t     
+rm t/01-perlito/280-hash-autovivify.t    
+rm t/01-perlito/350-syntax-namespace.t   
+rm t/01-perlito/410-ampersand.t          
+rm t/01-perlito/420-vstring.t            
 
 # perldoc -opod scripts/perlito5 > lib/Perlito5.pm
 # echo '1;' >> lib/Perlito5.pm
@@ -39,7 +48,6 @@ perl ../perlito5.pl --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/
 perl ../perlito5.pl --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Regex6.pm      > lib/Perlito5/Grammar/Regex6.pm    
 perl ../perlito5.pl --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Block.pm       > lib/Perlito5/Grammar/Block.pm     
 perl ../perlito5.pl --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/String.pm      > lib/Perlito5/Grammar/String.pm    
-
 
 perl Makefile.PL
 
