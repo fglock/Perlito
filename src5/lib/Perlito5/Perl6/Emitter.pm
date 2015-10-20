@@ -736,6 +736,8 @@ package Perlito5::AST::Use;
     }
 }
 
+1;
+
 =begin
 
 =head1 NAME

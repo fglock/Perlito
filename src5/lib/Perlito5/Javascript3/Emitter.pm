@@ -1486,7 +1486,7 @@ package Perlito5::AST::Apply;
                 return '(' . $parameters->emit_javascript3( $level ) . ' = ' . $arguments->emit_javascript3( $level+1 ) . ')';
             }
 
-            say Perlito5::Dumper::ast_dumper( $parameters );
+            print Perlito5::Dumper::ast_dumper( $parameters );
             die "assignment: don't know what to do with left side isa ", ref($parameters);
             # $parameters->emit_javascript3( $level ) . '.assign(' . $arguments->emit_javascript3( $level+1 ) . ')';
 
@@ -2136,6 +2136,8 @@ package Perlito5::AST::Use;
         '// ' . $self->{code} . ' ' . $self->{mod} . "\n"
     }
 }
+
+1;
 
 =begin
 

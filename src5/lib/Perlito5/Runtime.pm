@@ -9,7 +9,7 @@ $,  = undef         unless defined $,;
 $!  = ''            unless defined $!;
 $;  = chr(28)       unless defined $;;
 $?  = 0             unless defined $?;
-$[  = 0             unless defined $[;
+# $[  = 0             unless defined $[;    # "assignment to $[ is deprecated"
 $]  = '5.020000'    unless $];      # $] is defined(), but ${"main::]"} is not
 $^V = bless( { 'original' => 'v5.20.0',
                'qv'       => 1,
@@ -49,8 +49,8 @@ our $PACKAGES = {
     encoding     => 1,
     UNIVERSAL    => 1,
     CORE         => 1,
-    CORE::GLOBAL => 1,
-    Perlito5::IO => 1,
+    'CORE::GLOBAL' => 1,
+    'Perlito5::IO' => 1,
 };
 
 push @INC, $_

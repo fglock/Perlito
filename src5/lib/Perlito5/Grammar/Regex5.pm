@@ -209,7 +209,7 @@ token concat_list {
 token concat_exp {
     <concat_list>
     {
-        $arg = Perlito5::Match::flat($MATCH->{concat_list});
+        my $arg = Perlito5::Match::flat($MATCH->{concat_list});
         if (@$arg < 1) {
             $MATCH->{capture} = "empty";
         }
@@ -235,7 +235,7 @@ token or_list_exp {
 token rule {
     <or_list_exp>
     {
-        $arg = Perlito5::Match::flat($MATCH->{or_list_exp});
+        my $arg = Perlito5::Match::flat($MATCH->{or_list_exp});
         if (@$arg < 1) {
             $MATCH->{capture} = "empty";
         }

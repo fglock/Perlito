@@ -1,6 +1,7 @@
 use v5;
 
 package Perlito5;
+use feature 'say';
 use Perlito5::Compiler;
 use Perlito5::Grammar::Regex6;
 use Perlito5::Emitter::Token;
@@ -350,7 +351,7 @@ if ($backend && @ARGV) {
                     # print Perlito5::Dumper::ast_dumper( \@data );
                     my $out = [];
                     Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-                    print join( '', @$out ), "\n";
+                    print join( '', @$out ), ";1\n";
                 }
                 elsif ($backend eq 'perl6') {
                     if ($boilerplate) {

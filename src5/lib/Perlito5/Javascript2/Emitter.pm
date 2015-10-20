@@ -3292,6 +3292,8 @@ package Perlito5::AST::Use;
     sub emit_javascript2_has_regex { () }
 }
 
+1;
+
 =begin
 
 =head1 NAME

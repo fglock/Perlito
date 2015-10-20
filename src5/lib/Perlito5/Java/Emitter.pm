@@ -3967,6 +3967,8 @@ package Perlito5::AST::Use;
     sub emit_java_get_captures { () }
 }
 
+1;
+
 =begin
 
 =head1 NAME

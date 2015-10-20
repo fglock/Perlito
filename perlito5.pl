@@ -262,8 +262,8 @@ use feature 'say';
                 }
                 elsif ($token_is_term) {
                     if ($last_is_term) {
-                        say('#      last:  ', Data::Dumper::Dumper($last));
-                        say('#      token: ', Data::Dumper::Dumper($token));
+                        print('#      last:  ', Data::Dumper::Dumper($last));
+                        print('#      token: ', Data::Dumper::Dumper($token));
                         die('Value tokens must be separated by an operator')
                     }
                     $token->[0] = 'term';
@@ -7445,7 +7445,6 @@ use feature 'say';
         defined(${'!'}) || (${'!'} = '');
         defined(${';'}) || (${';'} = chr(28));
         defined(${'?'}) || (${'?'} = 0);
-        defined(${'['}) || (${'['} = 0);
         ${']'} || (${']'} = '5.020000');
         defined(${chr(22)}) || (${chr(22)} = bless({'original' => 'v5.20.0', 'qv' => 1, 'version' => [5, 20, 0]}, 'version'));
         our $EXPAND_USE = 1;
@@ -11612,7 +11611,7 @@ use feature 'say';
                 if ($parameters->isa('Perlito5::AST::Var') && $parameters->sigil() eq '*') {
                     return '(' . $parameters->emit_javascript3($level) . ' = ' . $arguments->emit_javascript3($level + 1) . ')'
                 }
-                say(Perlito5::Dumper::ast_dumper($parameters));
+                print(Perlito5::Dumper::ast_dumper($parameters));
                 die('assignment: don' . chr(39) . 't know what to do with left side isa ', ref($parameters))
             }, 'break' => sub {
                 my $self = shift;
@@ -16772,7 +16771,7 @@ use feature 'say';
                         my @data = Perlito5::AST::CompUnit::emit_perl5_program($comp_units);
                         my $out = [];
                         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-                        print(join('', @{$out}), chr(10))
+                        print(join('', @{$out}), ';1' . chr(10))
                     }
                     elsif ($backend eq 'perl6') {
                         if ($boilerplate) {
@@ -16830,4 +16829,4 @@ use feature 'say';
         }
     }
 }
-
+;1
