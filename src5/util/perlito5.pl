@@ -1,3 +1,5 @@
+#! /usr/bin/perl
+
 use v5;
 
 package Perlito5;

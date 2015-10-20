@@ -7,7 +7,7 @@ WriteMakefile(
     NAME             => 'Perlito5',
     AUTHOR           => q{Flavio S. Glock <fglock@gmail.com>},
     VERSION_FROM     => 'lib/Perlito5.pm',
-    ABSTRACT_FROM    => 'lib/Perlito5.pm',
+    # ABSTRACT_FROM    => 'lib/Perlito5.pm',
     LICENSE          => 'artistic_2',
     PL_FILES         => {},
     MIN_PERL_VERSION => 5.006,

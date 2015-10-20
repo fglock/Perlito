@@ -1,4 +1,3 @@
-
 package Perlito5;
 
 $VERSION = '9.000';
@@ -30,7 +29,7 @@ $VERSION = '9.000';
 
     perlito5 --help
 
-    perlito5 -Isrc5/lib -Cjs program.pl
+    perlito5 -Cjs program.pl
 
 =head1 DESCRIPTION
 
