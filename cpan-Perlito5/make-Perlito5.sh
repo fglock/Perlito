@@ -14,9 +14,11 @@ cp -r ../t5/* t/
 
 mkdir lib
 cp -r ../src5/lib/* lib/
+cp -r ../src5/lib/Perlito5.pm lib/
 
 mkdir src
 cp -r ../src5/lib/* src/
+cp -r ../src5/lib/Perlito5.pm src/
 
 mkdir scripts
 cp ../src5/util/perlito5.pl scripts/perlito5
