@@ -18,9 +18,29 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM => {
-        #'ABC'              => 1.6,
-        #'Foo::Bar::Module' => 5.0401,
+        # no prerequisites
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Perlito5-*' },
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+         resources => {
+             repository => {
+                 type => 'git',
+                 url  => 'https://github.com/fglock/Perlito.git',
+                 web  => 'https://github.com/fglock/Perlito',
+             },
+         },
+         no_index => {
+             directory => [
+                'lib/Perlito5X',
+                'lib/Perlito5',
+                'src5',
+             ],
+             package => [
+                'name',     # ... package name ... - misparse
+             ],
+         },
+    },
 );
+
