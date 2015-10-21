@@ -50,7 +50,7 @@ sub _dumper {
         push @out, 
             $tab1 . qq{"$i": } . _dumper($obj->{$i}, $tab1, $seen, $here);
     }
-    return "[ " . join (",\n", @out ) . "\n" . $tab . "]";
+    return "{ " . join (",\n", @out ) . "\n" . $tab . "}";
 }
 
 my %safe_char = (
@@ -68,7 +68,6 @@ my %safe_char = (
     ',' => 1,
     '-' => 1,
     '.' => 1,
-    '/' => 1,
     ':' => 1,
     ';' => 1,
     '<' => 1,
@@ -102,7 +101,7 @@ sub escape_string {
         {
             push @out, $c;
         }
-        elsif ( $c eq "\\" || $c eq '"' ) {
+        elsif ( $c eq "\\" || $c eq '"' || $c eq "/" ) {
             push @out, '\\' . $c;
         }
         elsif ( $c eq "\n" ) {
