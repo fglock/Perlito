@@ -35,7 +35,7 @@ WriteMakefile(
              directory => [
                 'lib/Perlito5X',
                 'lib/Perlito5',
-                'src5',
+                'src',
              ],
              package => [
                 'name',     # ... package name ... - misparse
