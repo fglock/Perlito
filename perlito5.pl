@@ -14489,7 +14489,8 @@ use feature 'say';
                         push(@str, $arg->emit_java_init($level, $wantarray))
                     }
                     if (!($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my' || $decl->decl() eq 'our'))) {
-                        if ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
+                        if (($decl->isa('Perlito5::AST::Int')) || ($decl->isa('Perlito5::AST::Num')) || ($decl->isa('Perlito5::AST::Buf'))) {}
+                        elsif ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
                             push(@str, 'PerlOp.statement(' . $decl->emit_java($level, 'void') . ');')
                         }
                         elsif ($decl->isa('Perlito5::AST::CompUnit') || $decl->isa('Perlito5::AST::For') || $decl->isa('Perlito5::AST::While') || $decl->isa('Perlito5::AST::If') || $decl->isa('Perlito5::AST::Block')) {
