@@ -8508,6 +8508,77 @@ use feature 'say';
     # use Perlito5::Dumper
     {
         package main;
+        package Perlito5::JSON;
+        sub Perlito5::JSON::ast_dumper {
+            my $seen = {};
+            my $level = '';
+            my $pos = '[TODO - recursive structure in AST is not supported]';
+            return _dumper($_[0], $level, $seen, $pos)
+        }
+        sub Perlito5::JSON::_dumper {
+            my($obj, $tab, $seen, $pos) = @_;
+            !defined($obj) && return 'null';
+            my $ref = ref($obj);
+            !$ref && return escape_string($obj);
+            my $as_string = $obj;
+            $seen->{$as_string} && return $seen->{$as_string};
+            $seen->{$as_string} = $pos;
+            my $tab1 = $tab . '  ';
+            if ($ref eq 'ARRAY') {
+                @{$obj} || return '[]';
+                my @out;
+                for my $i (0 .. $#{$obj}) {
+                    my $here = $pos . '[' . $i . ']';
+                    push(@out, $tab1 . _dumper($obj->[$i], $tab1, $seen, $here))
+                }
+                return '[' . chr(10) . join(',' . chr(10), @out) . chr(10) . $tab . ']'
+            }
+            elsif ($ref eq 'SCALAR') {
+                return '[ "_type": "SCALAR", "value": ' . _dumper(${$obj}, $tab1, $seen, $pos) . ' ]'
+            }
+            elsif ($ref eq 'CODE') {
+                return '[ "_type": "CODE", "value": { "DUMMY" } ]'
+            }
+            $ref =~ s!^Perlito5::AST::!!;
+            my @out;
+            $ref ne 'HASH' && push(@out, '"_type": "' . $ref . '"');
+            for my $i (sort {
+                $a cmp $b
+            } keys(%{$obj})) {
+                my $here = $pos . '{' . $i . '}';
+                push(@out, $tab1 . '"' . $i . '": ' . _dumper($obj->{$i}, $tab1, $seen, $here))
+            }
+            return '[ ' . join(',' . chr(10), @out) . chr(10) . $tab . ']'
+        }
+        my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
+        sub Perlito5::JSON::escape_string {
+            my $s = shift;
+            my @out;
+            my $tmp = '';
+            $s eq '' && return '""';
+            (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
+            for my $i (0 .. length($s) - 1) {
+                my $c = substr($s, $i, 1);
+                if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
+                    $tmp = $tmp . $c
+                }
+                else {
+                    $tmp ne '' && push(@out, '"' . $tmp . '"');
+                    push(@out, 'chr(' . ord($c) . ')');
+                    $tmp = ''
+                }
+            }
+            $tmp ne '' && push(@out, '"' . $tmp . '"');
+            return join(' . ', @out)
+        }
+        sub Perlito5::JSON::_identity {
+            $_[0] eq $_[1]
+        }
+        1
+    }
+    # use Perlito5::JSON
+    {
+        package main;
         undef();
         package Perlito5::AST::CompUnit;
         sub Perlito5::AST::CompUnit::new {
@@ -16576,7 +16647,7 @@ use feature 'say';
         warn('// Perlito5 compiler');
         warn('// ARGV: ' . join(${'"'}, @ARGV))
     }
-    my $help_message = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10) . '    -h --help' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -[mM][-]module  execute "use/no module..." before executing program' . chr(10) . '    -n              assume "while (<>) { ... }" loop around program' . chr(10) . '    -p              assume loop like -n but print line also, like sed' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    --verbose' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6, xs, java' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    --boilerplate --noboilerplate' . chr(10) . '                    emits or not boilerplate code' . chr(10) . '    --bootstrapping set this when compiling the compiler' . chr(10);
+    my $help_message = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10) . '    -h --help' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -[mM][-]module  execute "use/no module..." before executing program' . chr(10) . '    -n              assume "while (<>) { ... }" loop around program' . chr(10) . '    -p              assume loop like -n but print line also, like sed' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    --verbose' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6, xs, java' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump' . chr(10) . '    -Cast-json      emits a dump of the abstract syntax tree in JSON format' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    --boilerplate --noboilerplate' . chr(10) . '                    emits or not boilerplate code' . chr(10) . '    --bootstrapping set this when compiling the compiler' . chr(10);
     my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.' . chr(10) . chr(10) . 'The Perl language is Copyright 1987-2012, Larry Wall' . chr(10) . 'The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . chr(10) . 'Perl may be copied only under the terms of either the Artistic License or the' . chr(10) . 'GNU General Public License, which may be found in the Perl 5 source kit.' . chr(10) . chr(10) . 'Complete documentation for Perl, including FAQ lists, should be found on' . chr(10) . 'this system using "man perl" or "perldoc perl".  If you have access to the' . chr(10) . 'Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . chr(10);
     sub Perlito5::chomp_switch {
         my $s = substr($ARGV[0], 2);
@@ -16823,6 +16894,9 @@ use feature 'say';
                     }
                     elsif ($backend eq 'ast-perl5') {
                         say(Perlito5::Dumper::ast_dumper($comp_units))
+                    }
+                    elsif ($backend eq 'ast-json') {
+                        say(Perlito5::JSON::ast_dumper($comp_units))
                     }
                     elsif ($backend eq 'ast-pretty') {
                         eval('use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1');

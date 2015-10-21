@@ -8,6 +8,7 @@ use Perlito5::Compiler;
 use Perlito5::Grammar::Regex6;
 use Perlito5::Emitter::Token;
 use Perlito5::Dumper;
+use Perlito5::JSON;
 
 use Perlito5::Javascript2::Emitter;
 use Perlito5::Javascript2::Runtime;
@@ -71,7 +72,8 @@ perlito5 [switches] [programfile]
     -v
     --verbose
     -Ctarget        target backend: js, perl5, perl6, xs, java
-    -Cast-perl5     emits a dump of the abstract syntax tree
+    -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump
+    -Cast-json      emits a dump of the abstract syntax tree in JSON format
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
     --boilerplate --noboilerplate
@@ -398,6 +400,9 @@ if ($backend && @ARGV) {
                 }
                 elsif ($backend eq 'ast-perl5') {
                     say Perlito5::Dumper::ast_dumper( $comp_units );
+                }
+                elsif ($backend eq 'ast-json') {
+                    say Perlito5::JSON::ast_dumper( $comp_units );
                 }
                 elsif ($backend eq 'ast-pretty') {
                     eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
