@@ -56,7 +56,7 @@ sub _dumper {
 my %safe_char = (
     ' ' => 1,
     '!' => 1,
-    '"' => 1,
+    "'" => 1,
     '#' => 1,
     '$' => 1,
     '%' => 1,
@@ -90,7 +90,6 @@ my %safe_char = (
 sub escape_string {
     my $s = shift;
     my @out;
-    my $tmp = '';
     return qq{""} if $s eq '';
     return 0+$s if (0+$s) eq $s && $s =~ /[0-9]/;
     for my $i (0 .. length($s) - 1) {
@@ -101,16 +100,31 @@ sub escape_string {
             || exists( $safe_char{$c} )
             )
         {
-            $tmp = $tmp . $c;
+            push @out, $c;
+        }
+        elsif ( $c eq "\\" || $c eq '"' ) {
+            push @out, '\\' . $c;
+        }
+        elsif ( $c eq "\n" ) {
+            push @out, '\\n';
+        }
+        elsif ( $c eq "\r" ) {
+            push @out, '\\r';
+        }
+        elsif ( $c eq "\t" ) {
+            push @out, '\\t';
+        }
+        elsif ( $c eq "\b" ) {
+            push @out, '\\b';
+        }
+        elsif ( $c eq "\f" ) {
+            push @out, '\\f';
         }
         else {
-            push @out, qq{"$tmp"} if $tmp ne '';
-            push @out, "chr(" . ord($c) . ")";
-            $tmp = '';
+            push @out, $c;     # TODO - encode using unicode
         }
     }
-    push @out, qq{"$tmp"} if $tmp ne '';
-    return join(' . ', @out);
+    return join('', '"', @out, '"');
 }
 
 sub _identity {
