@@ -173,7 +173,7 @@ sub eval {
 }
 
 
-package When;
+package Perlito5::AST::When;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];

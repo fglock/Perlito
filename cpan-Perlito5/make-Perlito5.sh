@@ -5,6 +5,7 @@ rm -rf src
 rm -rf t
 rm -rf bin
 rm -rf blib
+rm -rf Perlito5-*
 rm pm_to_blib
 rm *.tar.gz
 

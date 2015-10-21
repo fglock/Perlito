@@ -1,9 +1,16 @@
-9.001 cpan:Perlito5
-
+9.002 cpan:Perlito5   2015-10-21
 * Perlito5 (Perl 5 compiler):
+- fix CPAN index
 
+9.001 cpan:Perlito5   2015-10-21
+* Perlito5 (Perl 5 compiler):
 - command line: -Cast-json
 - fix CPAN distro
+
+9.000 cpan:Perlito5   2015-10-20
+* Perlito5 (Perl 5 compiler):
+- first CPAN distro
+
 
 dev  2015-08-17
 
