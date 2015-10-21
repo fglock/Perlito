@@ -1,3 +1,10 @@
+9.001 cpan:Perlito5
+
+* Perlito5 (Perl 5 compiler):
+
+- command line: -Cast-json
+- fix CPAN distro
+
 dev  2015-08-17
 
 * Perlito5 (Perl 5 compiler):

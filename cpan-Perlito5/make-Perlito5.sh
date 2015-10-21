@@ -4,6 +4,9 @@ rm -rf lib
 rm -rf src
 rm -rf t
 rm -rf bin
+rm -rf blib
+rm pm_to_blib
+rm *.tar.gz
 
 touch META.yml
 
@@ -12,10 +15,6 @@ cp ../ChangeLog ./Changes
 mkdir lib
 cp -r ../src5/lib/* lib/
 cp -r ../src5/lib/Perlito5.pm lib/
-
-mkdir src
-cp -r ../src5/lib/* src/
-cp -r ../src5/lib/Perlito5.pm src/
 
 mkdir bin
 cp ../src5/util/perlito5.pl bin/perlito5
@@ -86,6 +85,12 @@ rm t/lex.t   # ......................... Use of literal control characters in va
 rm t/380-tie-array.t   # ............... Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
 
 
+
+mkdir src
+mkdir src/Perlito5
+mkdir src/Perlito5/Grammar
+cp -r ../src5/lib/Perlito5/Grammar.pm   src/Perlito5/
+cp -r ../src5/lib/Perlito5/Grammar/*.pm src/Perlito5/Grammar/
 
 # Expand all grammars to Perl code
 # ack -l '^s*token ' ../src5
