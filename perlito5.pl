@@ -8534,10 +8534,10 @@ use feature 'say';
                 return '[' . chr(10) . join(',' . chr(10), @out) . chr(10) . $tab . ']'
             }
             elsif ($ref eq 'SCALAR') {
-                return '[ "_type": "SCALAR", "value": ' . _dumper(${$obj}, $tab1, $seen, $pos) . ' ]'
+                return '{ "_type": "SCALAR", "value": ' . _dumper(${$obj}, $tab1, $seen, $pos) . ' }'
             }
             elsif ($ref eq 'CODE') {
-                return '[ "_type": "CODE", "value": { "DUMMY" } ]'
+                return '{ "_type": "CODE", "value": "DUMMY" }'
             }
             $ref =~ s!^Perlito5::AST::!!;
             my @out;
@@ -8550,7 +8550,6 @@ use feature 'say';
             }
             return '{ ' . join(',' . chr(10), @out) . chr(10) . $tab . '}'
         }
-        my %safe_char = (' ' => 1, '!' => 1, chr(39) => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
         sub Perlito5::JSON::escape_string {
             my $s = shift;
             my @out;
@@ -8558,10 +8557,7 @@ use feature 'say';
             (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
             for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
-                if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
-                    push(@out, $c)
-                }
-                elsif ($c eq chr(92) || $c eq '"' || $c eq '/') {
+                if ($c eq chr(92) || $c eq '"') {
                     push(@out, chr(92) . $c)
                 }
                 elsif ($c eq chr(10)) {
@@ -8579,14 +8575,14 @@ use feature 'say';
                 elsif ($c eq chr(12)) {
                     push(@out, chr(92) . 'f')
                 }
+                elsif ($c le chr(31)) {
+                    push(@out, sprintf(chr(92) . 'u%04x', ord($c)))
+                }
                 else {
                     push(@out, $c)
                 }
             }
             return join('', '"', @out, '"')
-        }
-        sub Perlito5::JSON::_identity {
-            $_[0] eq $_[1]
         }
         1
     }
