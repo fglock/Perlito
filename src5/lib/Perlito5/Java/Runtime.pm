@@ -43,13 +43,8 @@ sub emit_java {
 
 import java.lang.Math;
 import java.lang.System;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Comparator;
-import java.util.Collections;
+import java.util.*;
+import java.io.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -235,6 +230,62 @@ class PlCORE {
             //Handle exception
         }
         return new PlDouble(s / 1000.0);
+    }
+    public static final PlObject system(int want, PlArray List__) {
+        // TODO - see perldoc -f system
+        try {
+            String[] args = new String[List__.to_int()];
+            int i = 0;
+            for (PlObject s : List__.a) {
+                args[i++] = s.toString();
+            }
+            String s = null;
+            Process p = Runtime.getRuntime().exec(args);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            System.out.println("STDOUT\n");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println("  " + s);
+            }
+            System.out.println("STDERR\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println("  " + s);
+            }
+            return PlCx.INT0;
+        }
+        catch (IOException e) {
+            // System.out.println("IOexception: ");
+            // e.printStackTrace();
+            return PlCx.MIN1;
+        }
+    }
+    public static final PlObject qx(int want, PlArray List__) {
+        // TODO - see perldoc -f qx
+        try {
+            String[] args = new String[List__.to_int()];
+            int i = 0;
+            for (PlObject s : List__.a) {
+                args[i++] = s.toString();
+            }
+            String s = null;
+            Process p = Runtime.getRuntime().exec(args);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            System.out.println("STDOUT\n");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println("  " + s);
+            }
+            System.out.println("STDERR\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println("  " + s);
+            }
+            return PlCx.INT0;
+        }
+        catch (IOException e) {
+            // System.out.println("IOexception: ");
+            // e.printStackTrace();
+            return PlCx.UNDEF;
+        }
     }
 }
 class PerlCompare implements Comparator<PlObject> {

@@ -2968,6 +2968,14 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.die(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
+        'system' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.system(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
+        'qx' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.qx(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
         'tie' => sub {
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
