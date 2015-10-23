@@ -35,6 +35,9 @@ TODO list for Perlito5
     ${x->{s}}
     $x->{s}
 
+    $ perl  -e ' use Data::Dumper;  ${ x ->{s} } = 4;  print Dumper \%x '
+    #  { 's' => \4 }
+
 -- label all blocks
     Note: this is not possible, because a "next" inside a subroutine goes back to the caller.
 
@@ -42,6 +45,8 @@ TODO list for Perlito5
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
 -- wrong precedence in keys()
+    keys prototype is '+'
+
     if (keys %hh != 2) { print "not" }
     parses as: keys(%hh != 2)
 
