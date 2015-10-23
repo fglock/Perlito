@@ -274,8 +274,8 @@ class PlCORE {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             System.out.println("STDOUT\n");
             while ((s = stdInput.readLine()) != null) {
-                System.out.println("  " + s);
-                res.push(s);
+                // System.out.println("  " + s);
+                res.push(s + "\n");
             }
             // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             // System.out.println("STDERR\n");
