@@ -112,6 +112,7 @@ class PlCx {
     public static final PlString STDERR = new PlString("STDERR");
     public static final PlString STDIN  = new PlString("STDIN");
     public static final PlString DIED   = new PlString("Died");
+    public static final PlString EMPTY  = new PlString("");
     public static final String  ARGV   = "main|List_ARGV";
     public static final String  ENV    = "main|Hash_ENV";
     public static final PlNextException NEXT = new PlNextException(0);
@@ -241,16 +242,16 @@ class PlCORE {
             }
             String s = null;
             Process p = Runtime.getRuntime().exec(args);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            System.out.println("STDOUT\n");
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println("  " + s);
-            }
-            System.out.println("STDERR\n");
-            while ((s = stdError.readLine()) != null) {
-                System.out.println("  " + s);
-            }
+            // BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            // System.out.println("STDOUT\n");
+            // while ((s = stdInput.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
+            // System.out.println("STDERR\n");
+            // while ((s = stdError.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
             return PlCx.INT0;
         }
         catch (IOException e) {
@@ -267,19 +268,25 @@ class PlCORE {
             for (PlObject s : List__.a) {
                 args[i++] = s.toString();
             }
+            PlArray res = new PlArray();
             String s = null;
             Process p = Runtime.getRuntime().exec(args);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             System.out.println("STDOUT\n");
             while ((s = stdInput.readLine()) != null) {
                 System.out.println("  " + s);
+                res.push(s);
             }
-            System.out.println("STDERR\n");
-            while ((s = stdError.readLine()) != null) {
-                System.out.println("  " + s);
+            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            // System.out.println("STDERR\n");
+            // while ((s = stdError.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
+            if (want == PlCx.LIST) {
+                return res;
             }
-            return PlCx.INT0;
+            res.unshift(PlCx.EMPTY);
+            return join(want, res);
         }
         catch (IOException e) {
             // System.out.println("IOexception: ");
