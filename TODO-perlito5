@@ -162,17 +162,6 @@ TODO list for Perlito5
     $ perl -e ' my @things= map {  no warnings; 123 } @list; '
     "no" not allowed in expression
 
-    quotes vs. hash lookups:
-
-        $ perl -e '  q}} '
-        # ok
-
-        $ perl -e ' $x{ q}} } '
-        Unmatched right curly bracket at -e line 1, at end of line
-
-        $ perl -e ' $x{ q]] } '
-        # ok
-
     string interpolation with nested quotes of the same type:
 
         $ perl -e ' " $x{"x"} " '
@@ -192,6 +181,18 @@ TODO list for Perlito5
     aliasing of subroutine parameters
 
     prototypes
+
+    ---
+    quotes vs. hash lookups:
+
+        $ perl -e '  q}} '
+        # ok
+
+        $ perl -e ' $x{ q}} } '
+        Unmatched right curly bracket at -e line 1, at end of line
+
+        $ perl -e ' $x{ q]] } '
+        # ok
 
     ---
     syntax error in ${@} in string
