@@ -5,6 +5,7 @@ use v5;
 package Perlito5;
 use feature 'say';
 use Perlito5::Compiler;
+use Perlito5::CompileTime;
 use Perlito5::Grammar::Regex6;
 use Perlito5::Emitter::Token;
 use Perlito5::Dumper;
@@ -127,7 +128,7 @@ while (substr($ARGV[0], 0, 1) eq '-'
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-C') {
-        $backend = substr($ARGV[0], 2, 10);
+        $backend = substr($ARGV[0], 2);
         $execute = 0;
         shift @ARGV;
     }
@@ -410,6 +411,9 @@ if ($backend && @ARGV) {
                 }
                 elsif ($backend eq '_comp') {
                     say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
+                }
+                elsif ($backend eq '_compile_time') {
+                    say Perlito5::Dumper::ast_dumper( Perlito5::AST::CompUnit::emit_compile_time_program( $comp_units ) );
                 }
                 else {
                     die "don't know what to do with backend '$backend'";
