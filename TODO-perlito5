@@ -31,6 +31,14 @@ TODO list for Perlito5
 
 * Parser
 
+-- parse example in http://www.perlmonks.org/?node_id=663393
+
+    $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
+        whatever(m! 25 ; # !);
+        die('this dies!')
+    $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
+        'whatever' / 25;
+
 -- syntax error in hashref subscript - parses 's' as s///:
     ${x->{s}}
     $x->{s}
