@@ -412,6 +412,9 @@ if ($backend && @ARGV) {
                 elsif ($backend eq '_comp') {
                     say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
                 }
+                elsif ($backend eq '_globals') {
+                    say Perlito5::Grammar::Scope::emit_globals($Perlito5::SCOPE);
+                }
                 elsif ($backend eq '_compile_time') {
                     say Perlito5::Dumper::ast_dumper( Perlito5::AST::CompUnit::emit_compile_time_program( $comp_units ) );
                 }

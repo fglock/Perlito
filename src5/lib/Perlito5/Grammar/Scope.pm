@@ -153,5 +153,56 @@ sub get_snapshot {
     return { block => \@result };
 }
 
+sub _emit_globals {
+    my $scope = shift();
+    my @result;
+    my $block = $scope->{block};
+    for my $item (@$block) {
+        if (ref($item) eq 'Perlito5::AST::Var' && !$item->{_decl}) {
+            $item->{_decl} = 'global';
+        }
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'global') {
+            $item->{namespace} ||= $item->{_namespace};
+            push @result, $item;
+        }
+        if ( ref($item) eq 'HASH' && $item->{block} ) {
+            # lookup in the inner scope
+            my $look = _emit_globals($item);
+            push @result, @$look;
+        }
+    }
+    return \@result;
+}
+
+sub emit_globals {
+    # return a structure with the global variable declarations
+    # this is used to initialize the ahead-of-time program
+    my $scope = shift() // $Perlito5::BASE_SCOPE;
+    my @vars;
+    my %seen;
+    my $dumper_seen = {};
+    for ( @{ _emit_globals($scope) } ) {
+        next if $_->{name} eq '0' || $_->{name} > 0;  # skip regex and $0
+        my $n = $_->{sigil} . $_->{namespace} . "::" . $_->{name};
+        if (!$seen{$n}) {
+            if ($_->{sigil} eq '$') {
+                push @vars, "$n = " . Perlito5::Dumper::_dumper( eval $n, "  ", $dumper_seen, $n ) . ";\n";
+            }
+            elsif ($_->{sigil} eq '@' || $_->{sigil} eq '%') {
+                my $ref = "\\$n";
+                my $d = Perlito5::Dumper::_dumper( eval $ref, "  ", $dumper_seen, $ref );
+                if ($d eq '[]' || $d eq '{}') {
+                    push @vars, "$n = ();\n"
+                }
+                else {
+                    push @vars, "$n = " . $_->{sigil} . "{" . $d . "};\n";
+                }
+            }
+            $seen{$n} = 1;
+        }
+    }
+    return join("", @vars);
+}
+
 1;
 
