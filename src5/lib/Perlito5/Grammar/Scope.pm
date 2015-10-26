@@ -153,6 +153,36 @@ sub get_snapshot {
     return { block => \@result };
 }
 
+sub _dump_global {
+    my ($item, $seen, $dumper_seen, $vars, $tab) = @_;
+    my $n = $item->{sigil} . $item->{namespace} . "::" . $item->{name};
+    if (!$seen->{$n}) {
+        if ($item->{sigil} eq '$') {
+            push @$vars, $tab . "$n = " . Perlito5::Dumper::_dumper( eval $n, "  ", $dumper_seen, $n ) . ";\n";
+        }
+        elsif ($item->{sigil} eq '@' || $item->{sigil} eq '%') {
+            my $ref = "\\$n";
+            my $d = Perlito5::Dumper::_dumper( eval $ref, $tab . "  ", $dumper_seen, $ref );
+            if ($d eq '[]' || $d eq '{}') {
+                push @$vars, $tab . "$n = ();\n"
+            }
+            else {
+                push @$vars, $tab . "$n = " . $item->{sigil} . "{" . $d . "};\n";
+            }
+        }
+        elsif ($item->{sigil} eq '*') {
+            # TODO - look for aliasing
+            #   *v1 = \$v2
+            push @$vars, $tab . "# $n\n";
+            for (qw/ $ @ % /) {
+                local $item->{sigil} = $_;
+                _dump_global($item, $seen, $dumper_seen, $vars, $tab);
+            }
+        }
+        $seen->{$n} = 1;
+    }
+}
+
 sub _emit_globals {
     my ($scope, $seen, $dumper_seen, $vars, $tab) = @_;
     my $block = $scope->{block};
@@ -162,26 +192,8 @@ sub _emit_globals {
         }
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'global') {
             $item->{namespace} ||= $item->{_namespace};
-
             next if $item->{name} eq '0' || $item->{name} > 0;  # skip regex and $0
-            my $n = $item->{sigil} . $item->{namespace} . "::" . $item->{name};
-            if (!$seen->{$n}) {
-                if ($item->{sigil} eq '$') {
-                    push @$vars, $tab . "$n = " . Perlito5::Dumper::_dumper( eval $n, "  ", $dumper_seen, $n ) . ";\n";
-                }
-                elsif ($item->{sigil} eq '@' || $item->{sigil} eq '%') {
-                    my $ref = "\\$n";
-                    my $d = Perlito5::Dumper::_dumper( eval $ref, $tab . "  ", $dumper_seen, $ref );
-                    if ($d eq '[]' || $d eq '{}') {
-                        push @$vars, $tab . "$n = ();\n"
-                    }
-                    else {
-                        push @$vars, $tab . "$n = " . $item->{sigil} . "{" . $d . "};\n";
-                    }
-                }
-                $seen->{$n} = 1;
-            }
-
+            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
         }
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'my') {
             my $id = $item->{_id};

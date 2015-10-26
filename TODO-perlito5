@@ -79,6 +79,17 @@ TODO list for Perlito5
     BEGIN { $v = "123" }
     use Module $v;  # $v is not accessible at compile-time
 
+-- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
+
+    $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+
+    TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
+          $main::ccc2 = $main::ccc;
+        instead of:
+          *main::ccc2 = \$main::ccc;
+
+    TODO - lexicals and closures are not dumped
+
 -- parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
     create an AST for regexes
