@@ -4627,6 +4627,68 @@ use feature 'say';
             }
             return {'block' => \@result}
         }
+        sub Perlito5::Grammar::Scope::_dump_global {
+            my($item, $seen, $dumper_seen, $vars, $tab) = @_;
+            my $n = $item->{'sigil'} . $item->{'namespace'} . '::' . $item->{'name'};
+            if (!$seen->{$n}) {
+                if ($item->{'sigil'} eq '$') {
+                    push(@{$vars}, $tab . $n . ' = ' . Perlito5::Dumper::_dumper(eval($n), '  ', $dumper_seen, $n) . ';' . chr(10))
+                }
+                elsif ($item->{'sigil'} eq '@' || $item->{'sigil'} eq '%') {
+                    my $ref = chr(92) . $n;
+                    my $d = Perlito5::Dumper::_dumper(eval($ref), $tab . '  ', $dumper_seen, $ref);
+                    if ($d eq '[]' || $d eq '{}') {
+                        push(@{$vars}, $tab . $n . ' = ();' . chr(10))
+                    }
+                    else {
+                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};' . chr(10))
+                    }
+                }
+                elsif ($item->{'sigil'} eq '*') {
+                    push(@{$vars}, $tab . '# ' . $n . chr(10));
+                    for $_ ('$', '@', '%') {
+                        local $item->{'sigil'} = $_;
+                        _dump_global($item, $seen, $dumper_seen, $vars, $tab)
+                    }
+                }
+                $seen->{$n} = 1
+            }
+        }
+        sub Perlito5::Grammar::Scope::_emit_globals {
+            my($scope, $seen, $dumper_seen, $vars, $tab) = @_;
+            my $block = $scope->{'block'};
+            for my $item (@{$block}) {
+                if (ref($item) eq 'Perlito5::AST::Var' && !$item->{'_decl'}) {
+                    $item->{'_decl'} = 'global'
+                }
+                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'global') {
+                    $item->{'namespace'} ||= $item->{'_namespace'};
+                    ($item->{'name'} eq 0 || $item->{'name'} > 0) && next;
+                    _dump_global($item, $seen, $dumper_seen, $vars, $tab)
+                }
+                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'my') {
+                    my $id = $item->{'_id'};
+                    if (!$seen->{$id}) {
+                        push(@{$vars}, $tab . '# my ' . $item->{'sigil'} . $item->{'name'} . ';' . chr(10))
+                    }
+                    $seen->{$id} = 1
+                }
+                if (ref($item) eq 'HASH' && $item->{'block'}) {
+                    push(@{$vars}, $tab . '{' . chr(10));
+                    _emit_globals($item, $seen, $dumper_seen, $vars, $tab . '  ');
+                    push(@{$vars}, $tab . '}' . chr(10))
+                }
+            }
+        }
+        sub Perlito5::Grammar::Scope::emit_globals {
+            my $scope = shift() // $Perlito5::BASE_SCOPE;
+            my @vars;
+            my %seen;
+            my $dumper_seen = {};
+            my $tab = '';
+            _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
+            return join('', @vars)
+        }
         1
     }
     {
@@ -7511,6 +7573,587 @@ use feature 'say';
     # use Perlito5::Compiler
     {
         package main;
+        undef();
+        package Perlito5::AST::CompUnit;
+        sub Perlito5::AST::CompUnit::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::CompUnit::name {
+            $_[0]->{'name'}
+        }
+        sub Perlito5::AST::CompUnit::body {
+            $_[0]->{'body'}
+        }
+        package Perlito5::AST::Int;
+        sub Perlito5::AST::Int::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Int::int {
+            $_[0]->{'int'}
+        }
+        package Perlito5::AST::Num;
+        sub Perlito5::AST::Num::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Num::num {
+            $_[0]->{'num'}
+        }
+        package Perlito5::AST::Buf;
+        sub Perlito5::AST::Buf::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Buf::buf {
+            $_[0]->{'buf'}
+        }
+        package Perlito5::AST::Block;
+        sub Perlito5::AST::Block::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Block::sig {
+            $_[0]->{'sig'}
+        }
+        sub Perlito5::AST::Block::stmts {
+            $_[0]->{'stmts'}
+        }
+        package Perlito5::AST::Index;
+        sub Perlito5::AST::Index::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Index::obj {
+            $_[0]->{'obj'}
+        }
+        sub Perlito5::AST::Index::index_exp {
+            $_[0]->{'index_exp'}
+        }
+        package Perlito5::AST::Lookup;
+        sub Perlito5::AST::Lookup::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Lookup::obj {
+            $_[0]->{'obj'}
+        }
+        sub Perlito5::AST::Lookup::index_exp {
+            $_[0]->{'index_exp'}
+        }
+        sub Perlito5::AST::Lookup::autoquote {
+            my $self = shift;
+            my $index = shift;
+            if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
+                my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
+                if (!exists($Perlito5::PROTO->{$full_name})) {
+                    return Perlito5::AST::Buf::->new('buf' => $full_name)
+                }
+            }
+            elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'prefix:<->' || $index->code() eq 'prefix:<+>')) {
+                my $arg = $index->arguments()->[0];
+                $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
+            }
+            elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
+                my $args = $index->arguments();
+                return Perlito5::AST::Apply::->new('code' => 'join', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('name' => ';', 'namespace' => '', 'sigil' => '$'), map {
+                    defined($_) ? $_ : Perlito5::AST::Buf::->new('buf' => '')
+                } @{$args}])
+            }
+            $index
+        }
+        package Perlito5::AST::Var;
+        sub Perlito5::AST::Var::new {
+            my($class, %args) = @_;
+            my $var = bless(\%args, $class);
+            push(@Perlito5::SCOPE_STMT, $var);
+            return $var
+        }
+        sub Perlito5::AST::Var::sigil {
+            $_[0]->{'sigil'}
+        }
+        sub Perlito5::AST::Var::namespace {
+            $_[0]->{'namespace'}
+        }
+        sub Perlito5::AST::Var::name {
+            $_[0]->{'name'}
+        }
+        sub Perlito5::AST::Var::plain_name {
+            my $self = shift;
+            if ($self->namespace()) {
+                return $self->namespace() . '::' . $self->name()
+            }
+            return $self->name()
+        }
+        package Perlito5::AST::Call;
+        sub Perlito5::AST::Call::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Call::invocant {
+            $_[0]->{'invocant'}
+        }
+        sub Perlito5::AST::Call::method {
+            $_[0]->{'method'}
+        }
+        sub Perlito5::AST::Call::arguments {
+            $_[0]->{'arguments'}
+        }
+        package Perlito5::AST::Apply;
+        sub Perlito5::AST::Apply::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Apply::code {
+            $_[0]->{'code'}
+        }
+        sub Perlito5::AST::Apply::special_arg {
+            $_[0]->{'special_arg'}
+        }
+        sub Perlito5::AST::Apply::arguments {
+            $_[0]->{'arguments'}
+        }
+        sub Perlito5::AST::Apply::namespace {
+            $_[0]->{'namespace'}
+        }
+        package Perlito5::AST::If;
+        sub Perlito5::AST::If::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::If::cond {
+            $_[0]->{'cond'}
+        }
+        sub Perlito5::AST::If::body {
+            $_[0]->{'body'}
+        }
+        sub Perlito5::AST::If::otherwise {
+            $_[0]->{'otherwise'}
+        }
+        package Perlito5::AST::When;
+        sub Perlito5::AST::When::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::When::cond {
+            $_[0]->{'cond'}
+        }
+        sub Perlito5::AST::When::body {
+            $_[0]->{'body'}
+        }
+        package Perlito5::AST::While;
+        sub Perlito5::AST::While::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::While::init {
+            $_[0]->{'init'}
+        }
+        sub Perlito5::AST::While::cond {
+            $_[0]->{'cond'}
+        }
+        sub Perlito5::AST::While::continue {
+            $_[0]->{'continue'}
+        }
+        sub Perlito5::AST::While::body {
+            $_[0]->{'body'}
+        }
+        package Perlito5::AST::For;
+        sub Perlito5::AST::For::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::For::cond {
+            $_[0]->{'cond'}
+        }
+        sub Perlito5::AST::For::continue {
+            $_[0]->{'continue'}
+        }
+        sub Perlito5::AST::For::body {
+            $_[0]->{'body'}
+        }
+        sub Perlito5::AST::For::topic {
+            $_[0]->{'topic'}
+        }
+        package Perlito5::AST::Given;
+        sub Perlito5::AST::Given::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Given::cond {
+            $_[0]->{'cond'}
+        }
+        sub Perlito5::AST::Given::body {
+            $_[0]->{'body'}
+        }
+        package Perlito5::AST::Decl;
+        sub Perlito5::AST::Decl::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Decl::decl {
+            $_[0]->{'decl'}
+        }
+        sub Perlito5::AST::Decl::type {
+            $_[0]->{'type'}
+        }
+        sub Perlito5::AST::Decl::var {
+            $_[0]->{'var'}
+        }
+        sub Perlito5::AST::Decl::attributes {
+            $_[0]->{'attributes'}
+        }
+        package Perlito5::AST::Sub;
+        sub Perlito5::AST::Sub::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Sub::name {
+            $_[0]->{'name'}
+        }
+        sub Perlito5::AST::Sub::sig {
+            $_[0]->{'sig'}
+        }
+        sub Perlito5::AST::Sub::block {
+            $_[0]->{'block'}
+        }
+        sub Perlito5::AST::Sub::attributes {
+            $_[0]->{'attributes'}
+        }
+        package Perlito5::AST::Use;
+        sub Perlito5::AST::Use::new {
+            my $class = shift;
+            bless({@_}, $class)
+        }
+        sub Perlito5::AST::Use::mod {
+            $_[0]->{'mod'}
+        }
+        sub Perlito5::AST::Use::code {
+            $_[0]->{'code'}
+        }
+        1
+    }
+    {
+        package main;
+        undef();
+        # use Perlito5::AST
+        # use strict
+        package Perlito5::CompileTime;
+        {
+            sub Perlito5::CompileTime::emit_compile_time_block {
+                my $block = $_[0];
+                return [map {
+                    defined($_) && $_->emit_compile_time()
+                } @{$block}]
+            }
+        }
+        package Perlito5::AST::CompUnit;
+        {
+            sub Perlito5::AST::CompUnit::emit_compile_time {
+                my $self;
+                $self->{'body'} = Perlito5::CompileTime::emit_compile_time_block($self->{'body'});
+                return $self
+            }
+            sub Perlito5::AST::CompUnit::emit_compile_time_program {
+                my $comp_units = $_[0];
+                return map {
+                    $_->emit_compile_time()
+                } @{$comp_units}
+            }
+        }
+        package Perlito5::AST::Int;
+        {
+            sub Perlito5::AST::Int::emit_compile_time {
+                return $_[0]
+            }
+        }
+        package Perlito5::AST::Num;
+        {
+            sub Perlito5::AST::Num::emit_compile_time {
+                return $_[0]
+            }
+        }
+        package Perlito5::AST::Buf;
+        {
+            sub Perlito5::AST::Buf::emit_compile_time {
+                return $_[0]
+            }
+        }
+        package Perlito5::AST::Block;
+        {
+            sub Perlito5::AST::Block::emit_compile_time {
+                my $self = $_[0];
+                my @out;
+                $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
+                if ($self->{'name'}) {
+                    push(@out, ['stmt' => ['keyword' => $self->{'name'}], Perlito5::Perl5::emit_compile_time_block($self->{'stmts'})])
+                }
+                else {
+                    push(@out, Perlito5::Perl5::emit_compile_time_block($self->{'stmts'}))
+                }
+                if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                }
+                return @out
+            }
+        }
+        package Perlito5::AST::Index;
+        {
+            sub Perlito5::AST::Index::emit_compile_time {
+                my $self = $_[0];
+                if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+                    return ['apply' => '[', $self->{'obj'}->emit_compile_time(), $self->{'index_exp'}->emit_compile_time()]
+                }
+                if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '%'))) {
+                    return ['apply' => '[', $self->{'obj'}->emit_compile_time(), $self->{'index_exp'}->emit_compile_time()]
+                }
+                if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                    return ['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_compile_time(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_compile_time()]]
+                }
+                return ['op' => 'infix:<->>', $self->{'obj'}->emit_compile_time(), ['op' => 'circumfix:<[ ]>', $self->{'index_exp'}->emit_compile_time()]]
+            }
+        }
+        package Perlito5::AST::Lookup;
+        {
+            sub Perlito5::AST::Lookup::emit_compile_time {
+                my $self = $_[0];
+                if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$' || $self->{'obj'}->sigil() eq '@'))) {
+                    return ['apply' => '{', $self->{'obj'}->emit_compile_time(), $self->autoquote($self->{'index_exp'})->emit_compile_time()]
+                }
+                if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '%'))) {
+                    return ['apply' => '{', $self->{'obj'}->emit_compile_time(), $self->autoquote($self->{'index_exp'})->emit_compile_time()]
+                }
+                if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                    return ['op' => 'infix:<->>', $self->{'obj'}->{'arguments'}->[0]->emit_compile_time(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_compile_time()]]
+                }
+                return ['op' => 'infix:<->>', $self->{'obj'}->emit_compile_time(), ['op' => 'circumfix:<{ }>', $self->autoquote($self->{'index_exp'})->emit_compile_time()]]
+            }
+        }
+        package Perlito5::AST::Var;
+        {
+            sub Perlito5::AST::Var::emit_compile_time {
+                my $self;
+                if ($self->{'_decl'} eq 'my') {
+                    $self->{'_decl'} = 'global';
+                    $self->{'namespace'} = 'MY'
+                }
+                return $self
+            }
+        }
+        package Perlito5::AST::Call;
+        {
+            sub Perlito5::AST::Call::emit_compile_time {
+                my $self = $_[0];
+                my $invocant = $self->{'invocant'}->emit_compile_time();
+                if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
+                    return ['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<[ ]>', $self->{'arguments'}->emit_compile_time()]]
+                }
+                if ($self->{'method'} eq 'postcircumfix:<{ }>') {
+                    return ['op' => 'infix:<->>', $invocant, ['op' => 'circumfix:<{ }>', Perlito5::AST::Lookup::->autoquote($self->{'arguments'})->emit_compile_time()]]
+                }
+                my $meth = $self->{'method'};
+                if ($meth eq 'postcircumfix:<( )>') {
+                    if ((ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') || (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>')) {
+                        return ['apply' => '(', $invocant, map {
+                            $_->emit_compile_time()
+                        } @{$self->{'arguments'}}]
+                    }
+                    $meth = ''
+                }
+                if (ref($meth) eq 'Perlito5::AST::Var') {
+                    $meth = $meth->emit_compile_time()
+                }
+                if ($meth) {
+                    return ['call' => $invocant, $meth, map {
+                        $_->emit_compile_time()
+                    } @{$self->{'arguments'}}]
+                }
+                return ['op' => 'infix:<->>', $invocant, ['op' => 'list:<,>', map {
+                    $_->emit_compile_time()
+                } @{$self->{'arguments'}}]]
+            }
+        }
+        package Perlito5::AST::Apply;
+        {
+            sub Perlito5::AST::Apply::emit_compile_time_args {
+                my $self = $_[0];
+                !$self->{'arguments'} && return ();
+                return map {
+                    $_->emit_compile_time()
+                } @{$self->{'arguments'}}
+            }
+            sub Perlito5::AST::Apply::emit_compile_time {
+                my $self = $_[0];
+                if (ref($self->{'code'})) {
+                    return ['op' => 'infix:<->>', $self->{'code'}->emit_compile_time(), $self->emit_compile_time_args()]
+                }
+                if ($self->{'code'} eq 'infix:<=>>') {
+                    return ['op' => $self->{'code'}, Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_compile_time(), $self->{'arguments'}->[1]->emit_compile_time()]
+                }
+                if ($Perlito5::Perl5::PrettyPrinter::op{$self->{'code'}}) {
+                    return ['op' => $self->{'code'}, $self->emit_compile_time_args()]
+                }
+                my $ns = '';
+                if ($self->{'namespace'}) {
+                    $ns = $self->{'namespace'} . '::'
+                }
+                my $code = $ns . $self->{'code'};
+                if ($self->{'code'} eq 'p5:s') {
+                    return 's!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!' . $self->{'arguments'}->[2]->{'buf'}
+                }
+                if ($self->{'code'} eq 'p5:m') {
+                    my $s;
+                    if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Buf')) {
+                        $s = $self->{'arguments'}->[0]->{'buf'}
+                    }
+                    else {
+                        for my $ast (@{$self->{'arguments'}->[0]->{'arguments'}}) {
+                            if ($ast->isa('Perlito5::AST::Buf')) {
+                                $s .= $ast->{'buf'}
+                            }
+                            else {
+                                $s .= $ast->emit_compile_time()
+                            }
+                        }
+                    }
+                    return 'm!' . $s . '!' . $self->{'arguments'}->[1]->{'buf'}
+                }
+                if ($self->{'code'} eq 'p5:tr') {
+                    return 'tr!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]->{'buf'} . '!'
+                }
+                if ($self->{'code'} eq 'package') {
+                    return ['stmt' => 'package', ['bareword' => $self->{'namespace'}]]
+                }
+                if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {
+                    if ($self->{'special_arg'}) {
+                        return ['op' => 'prefix:<' . $code . '>', ['block', map {
+                            $_->emit_compile_time()
+                        } @{$self->{'special_arg'}->{'stmts'}}], ['op' => 'list:<,>', $self->emit_compile_time_args()]]
+                    }
+                    return ['apply' => '(', $code, $self->emit_compile_time_args()]
+                }
+                if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
+                    return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_compile_time()]
+                }
+                if ($code eq 'readline') {
+                    return ['paren' => '<', $self->emit_compile_time_args()]
+                }
+                if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
+                    return ['bareword' => $code]
+                }
+                return ['apply' => '(', $code, $self->emit_compile_time_args()]
+            }
+        }
+        package Perlito5::AST::If;
+        {
+            sub Perlito5::AST::If::emit_compile_time {
+                my $self = $_[0];
+                if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
+                    return ['stmt_modifier' => $self->{'body'}->emit_compile_time(), ['stmt' => 'if', $self->{'cond'}->emit_compile_time()]]
+                }
+                if ($self->{'otherwise'} && ref($self->{'otherwise'}) ne 'Perlito5::AST::Block') {
+                    return ['stmt_modifier' => $self->{'otherwise'}->emit_compile_time(), ['stmt' => 'unless', $self->{'cond'}->emit_compile_time()]]
+                }
+                my @out = (['stmt' => ['keyword' => 'if'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                my $otherwise = $self->{'otherwise'};
+                while ($otherwise && @{$otherwise->{'stmts'}} == 1 && ref($otherwise->{'stmts'}->[0]) eq 'Perlito5::AST::If' && ($otherwise->{'stmts'}->[0]->{'body'} && ref($otherwise->{'stmts'}->[0]->{'body'}) eq 'Perlito5::AST::Block')) {
+                    push(@out, ['stmt' => ['keyword' => 'elsif'], ['paren' => '(', $otherwise->{'stmts'}->[0]->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
+                    $otherwise = $otherwise->{'stmts'}->[0]->{'otherwise'}
+                }
+                !($otherwise && scalar(@{$otherwise->stmts()})) && return @out;
+                push(@out, ['stmt' => ['keyword' => 'else'], Perlito5::Perl5::emit_compile_time_block($otherwise->stmts())]);
+                return @out
+            }
+        }
+        package Perlito5::AST::When;
+        {
+            sub Perlito5::AST::When::emit_compile_time {
+                my $self = $_[0];
+                return ['stmt' => ['keyword' => 'when'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]
+            }
+        }
+        package Perlito5::AST::While;
+        {
+            sub Perlito5::AST::While::emit_compile_time {
+                my $self = $_[0];
+                my @out;
+                $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
+                if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
+                    return @out, ['stmt_modifier' => $self->{'body'}->emit_compile_time(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_compile_time()]]
+                }
+                push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                }
+                return @out
+            }
+        }
+        package Perlito5::AST::For;
+        {
+            sub Perlito5::AST::For::emit_compile_time {
+                my $self = $_[0];
+                my @out;
+                $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
+                if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
+                    return @out, ['stmt_modifier' => $self->{'body'}->emit_compile_time(), ['stmt' => 'for', $self->{'cond'}->emit_compile_time()]]
+                }
+                my $cond;
+                if (ref($self->{'cond'}) eq 'ARRAY') {
+                    $cond = ['paren_semicolon' => '(', ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_compile_time() : []), ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_compile_time() : []), ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_compile_time() : [])]
+                }
+                else {
+                    $cond = ['paren' => '(', $self->{'cond'}->emit_compile_time()]
+                }
+                my @sig;
+                my $sig_ast = $self->{'topic'};
+                if (!$sig_ast) {}
+                else {
+                    @sig = $sig_ast->emit_compile_time()
+                }
+                push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                }
+                return @out
+            }
+        }
+        package Perlito5::AST::Decl;
+        {
+            sub Perlito5::AST::Decl::emit_compile_time {
+                my $self = $_[0];
+                return $self->{'var'}->emit_compile_time()
+            }
+        }
+        package Perlito5::AST::Sub;
+        {
+            sub Perlito5::AST::Sub::emit_compile_time {
+                my $self = $_[0];
+                my @parts;
+                defined($self->{'sig'}) && push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
+                defined($self->{'block'}) && push(@parts, Perlito5::Perl5::emit_compile_time_block($self->{'block'}->{'stmts'}));
+                !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
+                return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts]
+            }
+        }
+        package Perlito5::AST::Use;
+        {
+            sub Perlito5::AST::Use::emit_compile_time {
+                my $self = shift;
+                Perlito5::Grammar::Use::emit_time_eval($self);
+                if ($Perlito5::EMIT_USE) {
+                    return ['stmt' => ['keyword' => 'use'], ['bareword' => $self->{'mod'}]]
+                }
+                else {
+                    return ['comment' => '# ' . $self->{'code'} . ' ' . $self->{'mod'}]
+                }
+            }
+        }
+        1
+    }
+    # use Perlito5::CompileTime::Emitter
+    {
+        package main;
         package Perlito5::Grammar::Regex6;
         # use Perlito5::Grammar::Precedence
         sub Perlito5::Grammar::Regex6::term_token {
@@ -8587,269 +9230,6 @@ use feature 'say';
         1
     }
     # use Perlito5::JSON
-    {
-        package main;
-        undef();
-        package Perlito5::AST::CompUnit;
-        sub Perlito5::AST::CompUnit::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::CompUnit::name {
-            $_[0]->{'name'}
-        }
-        sub Perlito5::AST::CompUnit::body {
-            $_[0]->{'body'}
-        }
-        package Perlito5::AST::Int;
-        sub Perlito5::AST::Int::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Int::int {
-            $_[0]->{'int'}
-        }
-        package Perlito5::AST::Num;
-        sub Perlito5::AST::Num::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Num::num {
-            $_[0]->{'num'}
-        }
-        package Perlito5::AST::Buf;
-        sub Perlito5::AST::Buf::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Buf::buf {
-            $_[0]->{'buf'}
-        }
-        package Perlito5::AST::Block;
-        sub Perlito5::AST::Block::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Block::sig {
-            $_[0]->{'sig'}
-        }
-        sub Perlito5::AST::Block::stmts {
-            $_[0]->{'stmts'}
-        }
-        package Perlito5::AST::Index;
-        sub Perlito5::AST::Index::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Index::obj {
-            $_[0]->{'obj'}
-        }
-        sub Perlito5::AST::Index::index_exp {
-            $_[0]->{'index_exp'}
-        }
-        package Perlito5::AST::Lookup;
-        sub Perlito5::AST::Lookup::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Lookup::obj {
-            $_[0]->{'obj'}
-        }
-        sub Perlito5::AST::Lookup::index_exp {
-            $_[0]->{'index_exp'}
-        }
-        sub Perlito5::AST::Lookup::autoquote {
-            my $self = shift;
-            my $index = shift;
-            if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
-                my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
-                if (!exists($Perlito5::PROTO->{$full_name})) {
-                    return Perlito5::AST::Buf::->new('buf' => $full_name)
-                }
-            }
-            elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'prefix:<->' || $index->code() eq 'prefix:<+>')) {
-                my $arg = $index->arguments()->[0];
-                $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
-            }
-            elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
-                my $args = $index->arguments();
-                return Perlito5::AST::Apply::->new('code' => 'join', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('name' => ';', 'namespace' => '', 'sigil' => '$'), map {
-                    defined($_) ? $_ : Perlito5::AST::Buf::->new('buf' => '')
-                } @{$args}])
-            }
-            $index
-        }
-        package Perlito5::AST::Var;
-        sub Perlito5::AST::Var::new {
-            my($class, %args) = @_;
-            my $var = bless(\%args, $class);
-            push(@Perlito5::SCOPE_STMT, $var);
-            return $var
-        }
-        sub Perlito5::AST::Var::sigil {
-            $_[0]->{'sigil'}
-        }
-        sub Perlito5::AST::Var::namespace {
-            $_[0]->{'namespace'}
-        }
-        sub Perlito5::AST::Var::name {
-            $_[0]->{'name'}
-        }
-        sub Perlito5::AST::Var::plain_name {
-            my $self = shift;
-            if ($self->namespace()) {
-                return $self->namespace() . '::' . $self->name()
-            }
-            return $self->name()
-        }
-        package Perlito5::AST::Call;
-        sub Perlito5::AST::Call::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Call::invocant {
-            $_[0]->{'invocant'}
-        }
-        sub Perlito5::AST::Call::method {
-            $_[0]->{'method'}
-        }
-        sub Perlito5::AST::Call::arguments {
-            $_[0]->{'arguments'}
-        }
-        package Perlito5::AST::Apply;
-        sub Perlito5::AST::Apply::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Apply::code {
-            $_[0]->{'code'}
-        }
-        sub Perlito5::AST::Apply::special_arg {
-            $_[0]->{'special_arg'}
-        }
-        sub Perlito5::AST::Apply::arguments {
-            $_[0]->{'arguments'}
-        }
-        sub Perlito5::AST::Apply::namespace {
-            $_[0]->{'namespace'}
-        }
-        package Perlito5::AST::If;
-        sub Perlito5::AST::If::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::If::cond {
-            $_[0]->{'cond'}
-        }
-        sub Perlito5::AST::If::body {
-            $_[0]->{'body'}
-        }
-        sub Perlito5::AST::If::otherwise {
-            $_[0]->{'otherwise'}
-        }
-        package Perlito5::AST::When;
-        sub Perlito5::AST::When::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::When::cond {
-            $_[0]->{'cond'}
-        }
-        sub Perlito5::AST::When::body {
-            $_[0]->{'body'}
-        }
-        package Perlito5::AST::While;
-        sub Perlito5::AST::While::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::While::init {
-            $_[0]->{'init'}
-        }
-        sub Perlito5::AST::While::cond {
-            $_[0]->{'cond'}
-        }
-        sub Perlito5::AST::While::continue {
-            $_[0]->{'continue'}
-        }
-        sub Perlito5::AST::While::body {
-            $_[0]->{'body'}
-        }
-        package Perlito5::AST::For;
-        sub Perlito5::AST::For::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::For::cond {
-            $_[0]->{'cond'}
-        }
-        sub Perlito5::AST::For::continue {
-            $_[0]->{'continue'}
-        }
-        sub Perlito5::AST::For::body {
-            $_[0]->{'body'}
-        }
-        sub Perlito5::AST::For::topic {
-            $_[0]->{'topic'}
-        }
-        package Perlito5::AST::Given;
-        sub Perlito5::AST::Given::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Given::cond {
-            $_[0]->{'cond'}
-        }
-        sub Perlito5::AST::Given::body {
-            $_[0]->{'body'}
-        }
-        package Perlito5::AST::Decl;
-        sub Perlito5::AST::Decl::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Decl::decl {
-            $_[0]->{'decl'}
-        }
-        sub Perlito5::AST::Decl::type {
-            $_[0]->{'type'}
-        }
-        sub Perlito5::AST::Decl::var {
-            $_[0]->{'var'}
-        }
-        sub Perlito5::AST::Decl::attributes {
-            $_[0]->{'attributes'}
-        }
-        package Perlito5::AST::Sub;
-        sub Perlito5::AST::Sub::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Sub::name {
-            $_[0]->{'name'}
-        }
-        sub Perlito5::AST::Sub::sig {
-            $_[0]->{'sig'}
-        }
-        sub Perlito5::AST::Sub::block {
-            $_[0]->{'block'}
-        }
-        sub Perlito5::AST::Sub::attributes {
-            $_[0]->{'attributes'}
-        }
-        package Perlito5::AST::Use;
-        sub Perlito5::AST::Use::new {
-            my $class = shift;
-            bless({@_}, $class)
-        }
-        sub Perlito5::AST::Use::mod {
-            $_[0]->{'mod'}
-        }
-        sub Perlito5::AST::Use::code {
-            $_[0]->{'code'}
-        }
-        1
-    }
     {
         package main;
         undef();
@@ -16693,7 +17073,7 @@ use feature 'say';
             shift(@ARGV)
         }
         elsif (substr($ARGV[0], 0, 2) eq '-C') {
-            $backend = substr($ARGV[0], 2, 10);
+            $backend = substr($ARGV[0], 2);
             $execute = 0;
             shift(@ARGV)
         }
@@ -16921,6 +17301,12 @@ use feature 'say';
                     }
                     elsif ($backend eq '_comp') {
                         say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
+                    }
+                    elsif ($backend eq '_globals') {
+                        say(Perlito5::Grammar::Scope::emit_globals($Perlito5::SCOPE))
+                    }
+                    elsif ($backend eq '_compile_time') {
+                        say(Perlito5::Dumper::ast_dumper(Perlito5::AST::CompUnit::emit_compile_time_program($comp_units)))
                     }
                     else {
                         die('don' . chr(39) . 't know what to do with backend ' . chr(39) . $backend . chr(39))

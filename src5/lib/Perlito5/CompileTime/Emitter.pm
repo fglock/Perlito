@@ -15,7 +15,8 @@ package Perlito5::CompileTime;
 package Perlito5::AST::CompUnit;
 {
     sub emit_compile_time {
-        my $self = bless { %{$_[0]} }, ref($_[0]);
+        my $self;
+        # my $self = bless { %{$_[0]} }, ref($_[0]);
         $self->{body} = Perlito5::CompileTime::emit_compile_time_block( $self->{body} );
         return $self;
     }
@@ -144,7 +145,8 @@ package Perlito5::AST::Lookup;
 package Perlito5::AST::Var;
 {
     sub emit_compile_time {
-        my $self = bless { %{$_[0]} }, ref($_[0]);
+        my $self;
+        # my $self = bless { %{$_[0]} }, ref($_[0]);
         if ($self->{_decl} eq 'my') {
             $self->{_decl} = 'global';
             $self->{namespace} = 'MY';
