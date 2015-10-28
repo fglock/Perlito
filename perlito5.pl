@@ -1143,7 +1143,7 @@ use feature 'say';
             if (ref($stmt) ne 'Perlito5::AST::Apply') {
                 return $o
             }
-            if ($stmt->code() eq 'infix:<=>>') {
+            if ($stmt->code() eq 'infix:<=>>' || $stmt->code() eq 'prefix:<%>' || $stmt->code() eq 'prefix:<@>') {
                 return Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'namespace' => '', 'arguments' => [$stmt])
             }
             if ($stmt->code() ne 'list:<,>') {

@@ -45,7 +45,7 @@ sub block_or_hash {
         # say "#  not Perlito5::AST::Apply -- not hash";
         return $o
     }
-    if ($stmt->code eq 'infix:<=>>') {
+    if ($stmt->code eq 'infix:<=>>' || $stmt->code eq 'prefix:<%>' || $stmt->code eq 'prefix:<@>') {
         # the argument is a single pair
         # say "#  single pair -- is hash";
         return Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => [ $stmt ])
