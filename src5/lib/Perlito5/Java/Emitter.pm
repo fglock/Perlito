@@ -1,6 +1,7 @@
 use v5;
 
 use Perlito5::AST;
+use Perlito5::AST::Captures;
 use Perlito5::Dumper;
 use strict;
 
@@ -856,14 +857,6 @@ package Perlito5::Java::LexicalBlock;
         return ( @pre, @str );
     }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my ($self) = @_;
-        my @var;
-        for my $stmt (@{$self->{block}}) {
-            push @var, $stmt->emit_java_get_captures();
-        }
-        return @var;
-    }
 }
 
 package Perlito5::AST::CompUnit;
@@ -1003,7 +996,6 @@ package Perlito5::AST::CompUnit;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 package Perlito5::AST::Int;
@@ -1024,7 +1016,6 @@ package Perlito5::AST::Int;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 package Perlito5::AST::Num;
@@ -1035,7 +1026,6 @@ package Perlito5::AST::Num;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 package Perlito5::AST::Buf;
@@ -1046,7 +1036,6 @@ package Perlito5::AST::Buf;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 package Perlito5::AST::Block;
@@ -1085,14 +1074,6 @@ package Perlito5::AST::Block;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my ($self) = @_;
-        my @var;
-        for my $stmt (@{$self->{stmts}}) {
-            push @var, $stmt->emit_java_get_captures();
-        }
-        return @var;
-    }
 }
 
 package Perlito5::AST::Index;
@@ -1278,14 +1259,6 @@ package Perlito5::AST::Index;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        push @var, $self->{obj}->emit_java_get_captures();
-        push @var, $self->{index_exp}->emit_java_get_captures();
-        return @var;
-    }
-
 }
 
 package Perlito5::AST::Lookup;
@@ -1460,14 +1433,6 @@ package Perlito5::AST::Lookup;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        push @var, $self->{obj}->emit_java_get_captures();
-        push @var, $self->{index_exp}->emit_java_get_captures();
-        return @var;
-    }
-
 }
 
 package Perlito5::AST::Var;
@@ -1688,10 +1653,6 @@ package Perlito5::AST::Var;
 
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self = shift;
-        return ($self); 
-    }
 }
 
 package Perlito5::AST::Decl;
@@ -1781,7 +1742,6 @@ package Perlito5::AST::Decl;
         return ($self);
     }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { return { dont => $_[0]{var}{_id} } }
 }
 
 package Perlito5::AST::Call;
@@ -1944,7 +1904,6 @@ package Perlito5::AST::Call;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 package Perlito5::AST::Apply;
@@ -3542,25 +3501,6 @@ package Perlito5::AST::Apply;
         }
         return ()
     }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my $code = $self->{code};
-        my @var;
-        push @var, $code->emit_java_get_captures()
-            if ref($code);
-        push @var, map  { $_->emit_java_get_captures() }
-                        @{ $self->{arguments} }
-                if $self->{arguments};
-        if ($code eq 'my' || $code eq 'our' || $code eq 'state') {
-            push @var, ( map {     ref($_) eq 'Perlito5::AST::Var'
-                             ? ( { dont => $_->{_id} } )
-                             : ()
-                         }
-                         @{ $self->{arguments} }
-                   );
-        }
-        return @var;
-    }
 }
 
 package Perlito5::AST::If;
@@ -3621,15 +3561,6 @@ package Perlito5::AST::If;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        push @var, $self->{cond}->emit_java_get_captures();
-        push @var, $self->{body}->emit_java_get_captures();
-        push @var, $self->{otherwise}->emit_java_get_captures();
-        return @var;
-    }
-
 }
 
 
@@ -3689,13 +3620,6 @@ package Perlito5::AST::When;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        push @var, $self->{cond}->emit_java_get_captures();
-        push @var, $self->{body}->emit_java_get_captures();
-        return @var;
-    }
 }
 
 
@@ -3761,14 +3685,6 @@ package Perlito5::AST::While;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        push @var, $self->{cond}->emit_java_get_captures();
-        push @var, $self->{body}->emit_java_get_captures();
-        return @var;
-    }
-
 }
 
 package Perlito5::AST::For;
@@ -3864,22 +3780,6 @@ package Perlito5::AST::For;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        my $self      = shift;
-        my @var;
-        my $body =
-              ref($self->{body}) ne 'Perlito5::AST::Block'
-            ? [ $self->{body} ]
-            : $self->{body}{stmts};
-        push @var, map { $_->emit_java_get_captures() }
-                @$body,
-                $self->{topic},
-                ( ref( $self->{cond} ) eq 'ARRAY'
-                   ? @{ $self->{cond} }
-                   : $self->{cond} );
-        return @var;
-    }
-
 }
 
 package Perlito5::AST::Sub;
@@ -3895,7 +3795,11 @@ package Perlito5::AST::Sub;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} );
 
         # get list of captured variables, including inner blocks
-        my @captured = $block->emit_java_get_captures();
+        my @captured;
+        for my $stmt (@{$self->{block}{stmts}}) {
+            push @captured, $stmt->get_captures();
+        }
+
         my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
         my %capture = map { $_->{dont} ? ()
                           : $dont_capture{ $_->{_id} } ? ()
@@ -3965,9 +3869,6 @@ package Perlito5::AST::Sub;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures {
-        $_[0]->{block}->emit_java_get_captures()
-    }
 }
 
 package Perlito5::AST::Use;
@@ -3984,7 +3885,6 @@ package Perlito5::AST::Use;
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
-    sub emit_java_get_captures { () }
 }
 
 1;
