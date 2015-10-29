@@ -444,13 +444,70 @@ package Perlito5::AST::Sub;
 {
     sub emit_perl5 {
         my $self = $_[0];
+        my @sig;
         my @parts;
-        push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
+        push @sig, [ paren => '(', [ bareword => $self->{sig} ] ]
             if defined $self->{sig};
-        push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts})
-            if defined $self->{block};
-        return [ op => 'prefix:<sub>', @parts ] if !$self->{name};
-        return [ stmt => [ keyword => 'sub' ], [ bareword => $self->{namespace} . "::" . $self->{name} ], @parts ];
+
+        if (defined $self->{block}) {
+            # this is not a pre-declaration
+            push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts});
+
+            if (0 || $Perlito5::PHASE eq 'BEGIN') {
+                # at compile-time only:
+                #   we are compiling - maybe inside a BEGIN block
+                #   provide a way to dump this closure
+
+                # get list of captured variables, including inner blocks
+                my @captured;
+                for my $stmt (@{$self->{block}{stmts}}) {
+                    push @captured, $stmt->get_captures();
+                }
+                my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
+                my %capture = map { $_->{dont} ? ()
+                                  : $dont_capture{ $_->{_id} } ? ()
+                                  : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
+                                  : ( $_->{_id} => $_ )
+                                  } @captured;
+                my @captures_ast  = values %capture;
+                my @captures_perl = map {
+                        ($_->{_real_sigil} || $_->{sigil}) . $_->{name}
+                    } @captures_ast;
+
+                my @extra;
+                # return a hash with { "variable name" => \"variable value" }
+                # with all captured variables
+                # 
+                #   @_ && ref($_[0]) eq "Perlito5::dump" && return "do { my \$x = $x; sub { \$_[0] + \$x;  } }" }
+                push @extra,
+                  [
+                    'op', 'infix:<&&>',
+                    '@_',
+                    [
+                        'op', 'infix:<&&>',
+                        [
+                            'op', 'infix:<eq>',
+                            [ 'apply', '(', 'ref', [ 'apply', '[', '$_', [ 'number', 0, ], ], ],
+                            '"Perlito5::dump"',
+                        ],
+                        [
+                            'apply', '(', 'return',
+                            [
+                                'op', 'circumfix:<{ }>',
+                                map { [ 'op', 'infix:<=>>', "'$_'", [ 'op', 'prefix:<\\>', $_ ] ], }
+                                  @captures_perl
+                            ],
+                        ]
+                    ]
+                  ];
+
+                my $bl = shift @{$parts[0]};
+                unshift @{$parts[0]}, $bl, @extra;
+            }
+        }
+
+        return [ op => 'prefix:<sub>', @sig, @parts ] if !$self->{name};
+        return [ stmt => [ keyword => 'sub' ], [ bareword => $self->{namespace} . "::" . $self->{name} ], @sig, @parts ];
     }
 }
 
