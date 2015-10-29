@@ -48,7 +48,6 @@ sub index_exp { $_[0]->{index_exp} }
 sub autoquote {
     my $self  = shift;
     my $index = shift;
-    my $obj = $self->obj;
 
     # ok   ' sub x () { 123 } $v{x()} = 12; use Data::Dumper; print Dumper \%v '       # '123'     => 12
     # ok   ' sub x () { 123 } $v{x} = 12; use Data::Dumper; print Dumper \%v '         # 'x'       => 12
@@ -81,6 +80,7 @@ sub autoquote {
           )
     {
 
+        my $obj = $self->obj;
         if ($obj->sigil eq '@') {
             #  @v{ $a, $b, $c }
             return $index;

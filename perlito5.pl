@@ -4627,68 +4627,6 @@ use feature 'say';
             }
             return {'block' => \@result}
         }
-        sub Perlito5::Grammar::Scope::_dump_global {
-            my($item, $seen, $dumper_seen, $vars, $tab) = @_;
-            my $n = $item->{'sigil'} . $item->{'namespace'} . '::' . $item->{'name'};
-            if (!$seen->{$n}) {
-                if ($item->{'sigil'} eq '$') {
-                    push(@{$vars}, $tab . $n . ' = ' . Perlito5::Dumper::_dumper(eval($n), '  ', $dumper_seen, $n) . ';' . chr(10))
-                }
-                elsif ($item->{'sigil'} eq '@' || $item->{'sigil'} eq '%') {
-                    my $ref = chr(92) . $n;
-                    my $d = Perlito5::Dumper::_dumper(eval($ref), $tab . '  ', $dumper_seen, $ref);
-                    if ($d eq '[]' || $d eq '{}') {
-                        push(@{$vars}, $tab . $n . ' = ();' . chr(10))
-                    }
-                    else {
-                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};' . chr(10))
-                    }
-                }
-                elsif ($item->{'sigil'} eq '*') {
-                    push(@{$vars}, $tab . '# ' . $n . chr(10));
-                    for $_ ('$', '@', '%') {
-                        local $item->{'sigil'} = $_;
-                        _dump_global($item, $seen, $dumper_seen, $vars, $tab)
-                    }
-                }
-                $seen->{$n} = 1
-            }
-        }
-        sub Perlito5::Grammar::Scope::_emit_globals {
-            my($scope, $seen, $dumper_seen, $vars, $tab) = @_;
-            my $block = $scope->{'block'};
-            for my $item (@{$block}) {
-                if (ref($item) eq 'Perlito5::AST::Var' && !$item->{'_decl'}) {
-                    $item->{'_decl'} = 'global'
-                }
-                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'global') {
-                    $item->{'namespace'} ||= $item->{'_namespace'};
-                    ($item->{'name'} eq 0 || $item->{'name'} > 0) && next;
-                    _dump_global($item, $seen, $dumper_seen, $vars, $tab)
-                }
-                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'my') {
-                    my $id = $item->{'_id'};
-                    if (!$seen->{$id}) {
-                        push(@{$vars}, $tab . '# my ' . $item->{'sigil'} . $item->{'name'} . ';' . chr(10))
-                    }
-                    $seen->{$id} = 1
-                }
-                if (ref($item) eq 'HASH' && $item->{'block'}) {
-                    push(@{$vars}, $tab . '{' . chr(10));
-                    _emit_globals($item, $seen, $dumper_seen, $vars, $tab . '  ');
-                    push(@{$vars}, $tab . '}' . chr(10))
-                }
-            }
-        }
-        sub Perlito5::Grammar::Scope::emit_globals {
-            my $scope = shift() // $Perlito5::BASE_SCOPE;
-            my @vars;
-            my %seen;
-            my $dumper_seen = {};
-            my $tab = '';
-            _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
-            return join('', @vars)
-        }
         1
     }
     {
@@ -7645,7 +7583,6 @@ use feature 'say';
         sub Perlito5::AST::Lookup::autoquote {
             my $self = shift;
             my $index = shift;
-            my $obj = $self->obj();
             if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
                 my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
                 if (!exists($Perlito5::PROTO->{$full_name})) {
@@ -7657,6 +7594,7 @@ use feature 'say';
                 $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
             }
             elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
+                my $obj = $self->obj();
                 if ($obj->sigil() eq '@') {
                     return $index
                 }
@@ -8156,6 +8094,121 @@ use feature 'say';
         1
     }
     # use Perlito5::CompileTime::Emitter
+    {
+        package main;
+        package Perlito5::CompileTime::Dumper;
+        # use strict
+        sub Perlito5::CompileTime::Dumper::_dumper {
+            my($obj, $tab, $seen, $pos) = @_;
+            !defined($obj) && return 'undef';
+            my $ref = ref($obj);
+            !$ref && return Perlito5::Dumper::escape_string($obj);
+            my $as_string = $obj;
+            $seen->{$as_string} && return $seen->{$as_string};
+            $seen->{$as_string} = $pos;
+            my $tab1 = $tab . '    ';
+            if ($ref eq 'ARRAY') {
+                @{$obj} || return '[]';
+                my @out;
+                for my $i (0 .. $#{$obj}) {
+                    my $here = $pos . '->[' . $i . ']';
+                    push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+                }
+                return join('', '[' . chr(10), @out, $tab, ']')
+            }
+            elsif ($ref eq 'HASH') {
+                keys(%{$obj}) || return '{}';
+                my @out;
+                for my $i (sort {
+                    $a cmp $b
+                } keys(%{$obj})) {
+                    my $here = $pos . '->{' . $i . '}';
+                    push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                }
+                return join('', '{' . chr(10), @out, $tab, '}')
+            }
+            elsif ($ref eq 'SCALAR') {
+                return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
+            }
+            elsif ($ref eq 'CODE') {
+                my $closure_flag = bless({}, 'Perlito5::dump');
+                my $captures = $obj->($closure_flag);
+                return 'sub { "DUMMY" } captures: ' . _dumper($captures, $tab1, $seen, $pos)
+            }
+            my @out;
+            for my $i (sort {
+                $a cmp $b
+            } keys(%{$obj})) {
+                my $here = $pos . '->{' . $i . '}';
+                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            }
+            return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+        }
+        sub Perlito5::CompileTime::Dumper::_dump_global {
+            my($item, $seen, $dumper_seen, $vars, $tab) = @_;
+            my $n = $item->{'sigil'} . $item->{'namespace'} . '::' . $item->{'name'};
+            if (!$seen->{$n}) {
+                if ($item->{'sigil'} eq '$') {
+                    push(@{$vars}, $tab . $n . ' = ' . _dumper(eval($n), '  ', $dumper_seen, $n) . ';' . chr(10))
+                }
+                elsif ($item->{'sigil'} eq '@' || $item->{'sigil'} eq '%') {
+                    my $ref = chr(92) . $n;
+                    my $d = _dumper(eval($ref), $tab . '  ', $dumper_seen, $ref);
+                    if ($d eq '[]' || $d eq '{}') {
+                        push(@{$vars}, $tab . $n . ' = ();' . chr(10))
+                    }
+                    else {
+                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};' . chr(10))
+                    }
+                }
+                elsif ($item->{'sigil'} eq '*') {
+                    push(@{$vars}, $tab . '# ' . $n . chr(10));
+                    for $_ ('$', '@', '%') {
+                        local $item->{'sigil'} = $_;
+                        _dump_global($item, $seen, $dumper_seen, $vars, $tab)
+                    }
+                }
+                $seen->{$n} = 1
+            }
+        }
+        sub Perlito5::CompileTime::Dumper::_emit_globals {
+            my($scope, $seen, $dumper_seen, $vars, $tab) = @_;
+            my $block = $scope->{'block'};
+            for my $item (@{$block}) {
+                if (ref($item) eq 'Perlito5::AST::Var' && !$item->{'_decl'}) {
+                    $item->{'_decl'} = 'global'
+                }
+                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'global') {
+                    $item->{'namespace'} ||= $item->{'_namespace'};
+                    ($item->{'name'} eq 0 || $item->{'name'} > 0) && next;
+                    _dump_global($item, $seen, $dumper_seen, $vars, $tab)
+                }
+                if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'my') {
+                    my $id = $item->{'_id'};
+                    if (!$seen->{$id}) {
+                        push(@{$vars}, $tab . '# my ' . $item->{'sigil'} . $item->{'name'} . ';' . chr(10))
+                    }
+                    $seen->{$id} = 1
+                }
+                if (ref($item) eq 'HASH' && $item->{'block'}) {
+                    push(@{$vars}, $tab . '{' . chr(10));
+                    _emit_globals($item, $seen, $dumper_seen, $vars, $tab . '  ');
+                    push(@{$vars}, $tab . '}' . chr(10))
+                }
+            }
+        }
+        sub Perlito5::CompileTime::Dumper::emit_globals {
+            my $scope = shift() // $Perlito5::BASE_SCOPE;
+            my @vars;
+            my %seen;
+            my $dumper_seen = {};
+            my $tab = '';
+            _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
+            return join('', @vars)
+        }
+        1
+    }
+    # use Perlito5::CompileTime::Dumper
     {
         package main;
         package Perlito5::Grammar::Regex6;
@@ -12790,11 +12843,36 @@ use feature 'say';
         {
             sub Perlito5::AST::Sub::emit_perl5 {
                 my $self = $_[0];
+                my @sig;
                 my @parts;
-                defined($self->{'sig'}) && push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
-                defined($self->{'block'}) && push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
-                !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
-                return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts]
+                defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
+                if (defined($self->{'block'})) {
+                    push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
+                    if (0 && $Perlito5::PHASE eq 'BEGIN') {
+                        my @captured;
+                        for my $stmt (@{$self->{'block'}->{'stmts'}}) {
+                            push(@captured, $stmt->get_captures())
+                        }
+                        my %dont_capture = map {
+                            $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+                        } @captured;
+                        my %capture = map {
+                            $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
+                        } @captured;
+                        my @captures_ast = values(%capture);
+                        my @captures_perl = map {
+                            ($_->{'_real_sigil'} || $_->{'sigil'}) . $_->{'name'}
+                        } @captures_ast;
+                        my @extra;
+                        push(@extra, ['op', 'infix:<&&>', '@_', ['op', 'infix:<&&>', ['op', 'infix:<eq>', ['apply', '(', 'ref', ['apply', '[', '$_', ['number', 0]]], '"Perlito5::dump"'], ['apply', '(', 'return', ['op', 'circumfix:<{ }>', map {
+                            ['op', 'infix:<=>>', chr(39) . $_ . chr(39), ['op', 'prefix:<' . chr(92) . '>', $_]]
+                        } @captures_perl]]]]);
+                        my $bl = shift(@{$parts[0]});
+                        unshift(@{$parts[0]}, $bl, @extra)
+                    }
+                }
+                !$self->{'name'} && return ['op' => 'prefix:<sub>', @sig, @parts];
+                return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @sig, @parts]
             }
         }
         package Perlito5::AST::Use;
@@ -17361,7 +17439,7 @@ use feature 'say';
                         say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
                     }
                     elsif ($backend eq '_globals') {
-                        say(Perlito5::Grammar::Scope::emit_globals($Perlito5::SCOPE))
+                        say(Perlito5::CompileTime::Dumper::emit_globals($Perlito5::SCOPE))
                     }
                     elsif ($backend eq '_compile_time') {
                         say(Perlito5::Dumper::ast_dumper(Perlito5::AST::CompUnit::emit_compile_time_program($comp_units)))
