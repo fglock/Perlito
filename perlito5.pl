@@ -7645,6 +7645,7 @@ use feature 'say';
         sub Perlito5::AST::Lookup::autoquote {
             my $self = shift;
             my $index = shift;
+            my $obj = $self->obj();
             if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
                 my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
                 if (!exists($Perlito5::PROTO->{$full_name})) {
@@ -7656,6 +7657,9 @@ use feature 'say';
                 $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
             }
             elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
+                if ($obj->sigil() eq '@') {
+                    return $index
+                }
                 my $args = $index->arguments();
                 return Perlito5::AST::Apply::->new('code' => 'join', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('name' => ';', 'namespace' => '', 'sigil' => '$'), map {
                     defined($_) ? $_ : Perlito5::AST::Buf::->new('buf' => '')
