@@ -453,7 +453,7 @@ package Perlito5::AST::Sub;
             # this is not a pre-declaration
             push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts});
 
-            if (0 || $Perlito5::PHASE eq 'BEGIN') {
+            if (0 && $Perlito5::PHASE eq 'BEGIN') {
                 # at compile-time only:
                 #   we are compiling - maybe inside a BEGIN block
                 #   provide a way to dump this closure
