@@ -2220,6 +2220,19 @@ class PlHash extends PlObject {
         }
         return o;
     }
+    public PlObject hget(int want, PlArray a) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < a.to_int(); i++) {
+            PlObject r = this.hget(a.aget(i));
+            aa.push(r);
+        }
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
+    }
+
     public PlObject hget_lvalue(PlObject i) {
         PlObject o = this.h.get(i.toString());
         if (o == null) {

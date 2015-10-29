@@ -1288,11 +1288,10 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
-            return 'p5list_lookup_slice('
-                        . $v->emit_java($level, 'list') . ', '
-                        . Perlito5::Java::to_list([$self->{index_exp}], $level) . ', '
-                        . Perlito5::Java::to_context($wantarray)
-                   . ')'
+            return $v->emit_java($level, 'list') . ".$method("
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_list([$self->{index_exp}], $level)
+                    . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'

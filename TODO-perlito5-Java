@@ -218,10 +218,25 @@
 
 -- TODO: slices
 
-    $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
-    @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
+    DONE $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
+    DONE @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
+    url: http://perldoc.perl.org/functions/delete.html
 
-    - test slice interpolation in strings
+    DONE $scalar = @hash{qw(foo bar)}; # $scalar is 22
+    DONE @array  = @hash{qw(foo baz)}; # @array  is (undef,33)
+
+    TODO @hash{qw(foo bar)} = $scalar; # %hash{foo} is $scalar && %hash{bar} is undef
+    TODO @hash{qw(foo baz)} = @array; # %hash{foo} is @array[0] && %hash{bar} is @array[1]
+
+    TODO print "@hash{qw(foo bar)}" # should print: 11 22
+
+    -- TEST
+    print "@hash{qw(foo bar)}" # should print: 11 22
+    %hash = (foo => 11, bar => 22, baz => 33); $scalar = delete @hash{qw(foo bar)}; print "$scalar\n"
+    %hash = (foo => 11, bar => 22, baz => 33); @array = delete @hash{qw(foo bar)}; print "@array\n"
+
+    %hash = (foo => 11, bar => 22, baz => 33); $scalar = @hash{qw(foo bar)}; use feature 'say'; say $scalar
+    %hash = (foo => 11, bar => 22, baz => 33); @array = @hash{qw(foo bar)}; use feature 'say'; say "@array"
 
 -- TODO: variables
 
