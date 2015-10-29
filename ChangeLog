@@ -1,3 +1,4 @@
+- fix CPAN files  [rt.cpan.org #108111]
 
 9.003 cpan:Perlito5   2015-10-21
 * Perlito5 (Perl 5 compiler):
