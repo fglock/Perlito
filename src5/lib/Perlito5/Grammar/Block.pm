@@ -54,7 +54,11 @@ sub eval_begin_block {
     my $code = "package $Perlito5::PKG_NAME;\n"
              . $_[0];
     # say $code;
-    eval "{ $code }; 1"
+
+    # eval-string inside BEGIN block
+    # we add some extra information to the data, to make things more "dumpable"
+    eval Perlito5::CompileTime::Dumper::generate_eval_string( "{ $code }; 1" )
+    # eval "{ $code }; 1"
     or die "Error in BEGIN block: " . $@;
 }
 

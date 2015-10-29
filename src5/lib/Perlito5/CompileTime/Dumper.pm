@@ -2,6 +2,18 @@ package Perlito5::CompileTime::Dumper;
 
 use strict;
 
+sub generate_eval_string {
+    my ($source) = @_;
+    my $m = Perlito5::Grammar::exp_stmts($source, 0);
+    my @data = Perlito5::Match::flat($m)->[0]->emit_perl5;
+    my $out = [];
+    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+    my $source_new = join( '', @$out ), ";1\n";
+    # print STDERR "[[[ $source ]]]\n";
+    # print STDERR "[[[ $source_new ]]]\n";
+    return $source_new;
+}
+
 sub _dumper {
     my ($obj, $tab, $seen, $pos) = @_;
 
@@ -47,8 +59,14 @@ sub _dumper {
     elsif ($ref eq 'CODE') {
         # TODO
         my $closure_flag = bless {}, "Perlito5::dump";
-        my $captures = $obj->($closure_flag);
-        return 'sub { "DUMMY" } captures: ' . _dumper($captures, $tab1, $seen, $pos);
+        my $captures = $obj->($closure_flag) // {};
+        my @vars = keys %$captures;
+        return join('',
+            'do { ',
+            (map { 'my ' . $_ . ' = ' . _dumper($captures->{$_}) . '; ' } @vars),
+            'sub { "DUMMY" } ',
+            '}'
+        );
     }
 
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)

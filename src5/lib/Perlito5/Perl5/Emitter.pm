@@ -296,6 +296,14 @@ package Perlito5::AST::Apply;
             return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
         }
 
+        if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
+            # eval-string inside BEGIN block
+            # we add some extra information to the data, to make things more "dumpable"
+            return [ apply => '(', 'eval',
+                         [ apply => '(', 'Perlito5::CompileTime::Dumper::generate_eval_string',
+                            $self->emit_perl5_args() ]];
+        }
+
         if ($code eq 'readline') {
             return [ paren => '<', $self->emit_perl5_args() ];
         }
@@ -453,7 +461,7 @@ package Perlito5::AST::Sub;
             # this is not a pre-declaration
             push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts});
 
-            if (0 && $Perlito5::PHASE eq 'BEGIN') {
+            if ($Perlito5::PHASE eq 'BEGIN') {
                 # at compile-time only:
                 #   we are compiling - maybe inside a BEGIN block
                 #   provide a way to dump this closure

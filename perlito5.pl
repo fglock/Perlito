@@ -4666,7 +4666,7 @@ use feature 'say';
         sub Perlito5::Grammar::Block::eval_begin_block {
             local ${'@'};
             my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . $_[0];
-            eval('{ ' . $code . ' }; 1') or die('Error in BEGIN block: ' . ${'@'})
+            eval(Perlito5::CompileTime::Dumper::generate_eval_string('{ ' . $code . ' }; 1')) or die('Error in BEGIN block: ' . ${'@'})
         }
         sub Perlito5::Grammar::Block::opt_continue_block {
             my $str = $_[0];
@@ -8098,6 +8098,15 @@ use feature 'say';
         package main;
         package Perlito5::CompileTime::Dumper;
         # use strict
+        sub Perlito5::CompileTime::Dumper::generate_eval_string {
+            my($source) = @_;
+            my $m = Perlito5::Grammar::exp_stmts($source, 0);
+            my @data = Perlito5::Match::flat($m)->[0]->emit_perl5();
+            my $out = [];
+            Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
+            my $source_new = join('', @{$out}), ';1' . chr(10);
+            return $source_new
+        }
         sub Perlito5::CompileTime::Dumper::_dumper {
             my($obj, $tab, $seen, $pos) = @_;
             !defined($obj) && return 'undef';
@@ -8132,8 +8141,11 @@ use feature 'say';
             }
             elsif ($ref eq 'CODE') {
                 my $closure_flag = bless({}, 'Perlito5::dump');
-                my $captures = $obj->($closure_flag);
-                return 'sub { "DUMMY" } captures: ' . _dumper($captures, $tab1, $seen, $pos)
+                my $captures = $obj->($closure_flag) // {};
+                my @vars = keys(%{$captures});
+                return join('', 'do { ', (map {
+                    'my ' . $_ . ' = ' . _dumper($captures->{$_}) . '; '
+                } @vars), 'sub { "DUMMY" } ', '}')
             }
             my @out;
             for my $i (sort {
@@ -12750,6 +12762,9 @@ use feature 'say';
                 if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
                     return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
                 }
+                if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
+                    return ['apply' => '(', 'eval', ['apply' => '(', 'Perlito5::CompileTime::Dumper::generate_eval_string', $self->emit_perl5_args()]]
+                }
                 if ($code eq 'readline') {
                     return ['paren' => '<', $self->emit_perl5_args()]
                 }
@@ -12848,7 +12863,7 @@ use feature 'say';
                 defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
                 if (defined($self->{'block'})) {
                     push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
-                    if (0 && $Perlito5::PHASE eq 'BEGIN') {
+                    if ($Perlito5::PHASE eq 'BEGIN') {
                         my @captured;
                         for my $stmt (@{$self->{'block'}->{'stmts'}}) {
                             push(@captured, $stmt->get_captures())
