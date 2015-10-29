@@ -2383,11 +2383,23 @@ class PlHash extends PlObject {
         return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
     }
     public PlObject delete(PlObject i) {
-        PlObject r = this.h.remove(i);
+        PlObject r = this.h.remove(i.toString());
         if (r == null) {
             return PlCx.UNDEF;
         }
         return r;
+    }
+    public PlObject delete(int want, PlArray a) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < a.to_int(); i++) {
+            PlObject r = this.delete(a.aget(i));
+            aa.push(r);
+        }
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
     }
     public PlObject values() {
         PlArray aa = new PlArray();

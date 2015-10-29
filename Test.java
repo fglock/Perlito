@@ -971,23 +971,11 @@ class PlObject {
         int c = new Integer(b.to_int()).compareTo(this.to_int());
         return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
-    public PlObject add(PlObject s) {
-        return s.add2(this);
+    public PlObject num_ne(PlObject s) {
+        return s.num_ne2(this);
     }
-    public PlObject add2(PlObject s) {
-        return new PlInt( s.to_int() + this.to_int() );
-    }
-    public PlObject num_ge(PlObject s) {
-        return s.num_ge2(this);
-    }
-    public PlObject num_ge2(PlObject s) {
-        return new PlBool( s.to_int() >= this.to_int() );
-    }
-    public PlObject div(PlObject s) {
-        return s.div2(this);
-    }
-    public PlObject div2(PlObject s) {
-        return new PlDouble( s.to_double() / this.to_double() );
+    public PlObject num_ne2(PlObject s) {
+        return new PlBool( s.to_int() != this.to_int() );
     }
     public PlObject sub(PlObject s) {
         return s.sub2(this);
@@ -1001,23 +989,17 @@ class PlObject {
     public PlObject num_le2(PlObject s) {
         return new PlBool( s.to_int() <= this.to_int() );
     }
-    public PlObject num_ne(PlObject s) {
-        return s.num_ne2(this);
+    public PlObject num_ge(PlObject s) {
+        return s.num_ge2(this);
     }
-    public PlObject num_ne2(PlObject s) {
-        return new PlBool( s.to_int() != this.to_int() );
+    public PlObject num_ge2(PlObject s) {
+        return new PlBool( s.to_int() >= this.to_int() );
     }
-    public PlObject num_eq(PlObject s) {
-        return s.num_eq2(this);
+    public PlObject add(PlObject s) {
+        return s.add2(this);
     }
-    public PlObject num_eq2(PlObject s) {
-        return new PlBool( s.to_int() == this.to_int() );
-    }
-    public PlObject num_gt(PlObject s) {
-        return s.num_gt2(this);
-    }
-    public PlObject num_gt2(PlObject s) {
-        return new PlBool( s.to_int() > this.to_int() );
+    public PlObject add2(PlObject s) {
+        return new PlInt( s.to_int() + this.to_int() );
     }
     public PlObject num_lt(PlObject s) {
         return s.num_lt2(this);
@@ -1031,23 +1013,41 @@ class PlObject {
     public PlObject mul2(PlObject s) {
         return new PlInt( s.to_int() * this.to_int() );
     }
-    public PlObject str_lt(PlObject b) {
-        return new PlBool(this.toString().compareTo(b.toString()) < 0);
+    public PlObject div(PlObject s) {
+        return s.div2(this);
+    }
+    public PlObject div2(PlObject s) {
+        return new PlDouble( s.to_double() / this.to_double() );
+    }
+    public PlObject num_gt(PlObject s) {
+        return s.num_gt2(this);
+    }
+    public PlObject num_gt2(PlObject s) {
+        return new PlBool( s.to_int() > this.to_int() );
+    }
+    public PlObject num_eq(PlObject s) {
+        return s.num_eq2(this);
+    }
+    public PlObject num_eq2(PlObject s) {
+        return new PlBool( s.to_int() == this.to_int() );
     }
     public PlObject str_ne(PlObject b) {
         return new PlBool(this.toString().compareTo(b.toString()) != 0);
     }
+    public PlObject str_lt(PlObject b) {
+        return new PlBool(this.toString().compareTo(b.toString()) < 0);
+    }
     public PlObject str_ge(PlObject b) {
         return new PlBool(this.toString().compareTo(b.toString()) >= 0);
     }
-    public PlObject str_le(PlObject b) {
-        return new PlBool(this.toString().compareTo(b.toString()) <= 0);
+    public PlObject str_eq(PlObject b) {
+        return new PlBool(this.toString().compareTo(b.toString()) == 0);
     }
     public PlObject str_gt(PlObject b) {
         return new PlBool(this.toString().compareTo(b.toString()) > 0);
     }
-    public PlObject str_eq(PlObject b) {
-        return new PlBool(this.toString().compareTo(b.toString()) == 0);
+    public PlObject str_le(PlObject b) {
+        return new PlBool(this.toString().compareTo(b.toString()) <= 0);
     }
 }
 class PlReference extends PlObject {
@@ -1413,16 +1413,16 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
         return this;
     }
+    public PlObject set(double s) {
+        this.o = new PlDouble(s);
+        return this;
+    }
     public PlObject set(boolean s) {
         this.o = new PlBool(s);
         return this;
     }
     public PlObject set(String s) {
         this.o = new PlString(s);
-        return this;
-    }
-    public PlObject set(double s) {
-        this.o = new PlDouble(s);
         return this;
     }
     public PlObject set(int s) {
@@ -1447,23 +1447,11 @@ class PlLvalue extends PlObject {
     public PlObject num_cmp2(PlObject b) {
         return b.num_cmp(this.o);
     }
-    public PlObject add(PlObject s) {
-        return this.o.add(s);
+    public PlObject num_ne(PlObject s) {
+        return this.o.num_ne(s);
     }
-    public PlObject add2(PlObject s) {
-        return s.add(this.o);
-    }
-    public PlObject num_ge(PlObject s) {
-        return this.o.num_ge(s);
-    }
-    public PlObject num_ge2(PlObject s) {
-        return s.num_ge(this.o);
-    }
-    public PlObject div(PlObject s) {
-        return this.o.div(s);
-    }
-    public PlObject div2(PlObject s) {
-        return s.div(this.o);
+    public PlObject num_ne2(PlObject s) {
+        return s.num_ne(this.o);
     }
     public PlObject sub(PlObject s) {
         return this.o.sub(s);
@@ -1477,23 +1465,17 @@ class PlLvalue extends PlObject {
     public PlObject num_le2(PlObject s) {
         return s.num_le(this.o);
     }
-    public PlObject num_ne(PlObject s) {
-        return this.o.num_ne(s);
+    public PlObject num_ge(PlObject s) {
+        return this.o.num_ge(s);
     }
-    public PlObject num_ne2(PlObject s) {
-        return s.num_ne(this.o);
+    public PlObject num_ge2(PlObject s) {
+        return s.num_ge(this.o);
     }
-    public PlObject num_eq(PlObject s) {
-        return this.o.num_eq(s);
+    public PlObject add(PlObject s) {
+        return this.o.add(s);
     }
-    public PlObject num_eq2(PlObject s) {
-        return s.num_eq(this.o);
-    }
-    public PlObject num_gt(PlObject s) {
-        return this.o.num_gt(s);
-    }
-    public PlObject num_gt2(PlObject s) {
-        return s.num_gt(this.o);
+    public PlObject add2(PlObject s) {
+        return s.add(this.o);
     }
     public PlObject num_lt(PlObject s) {
         return this.o.num_lt(s);
@@ -1506,6 +1488,24 @@ class PlLvalue extends PlObject {
     }
     public PlObject mul2(PlObject s) {
         return s.mul(this.o);
+    }
+    public PlObject div(PlObject s) {
+        return this.o.div(s);
+    }
+    public PlObject div2(PlObject s) {
+        return s.div(this.o);
+    }
+    public PlObject num_gt(PlObject s) {
+        return this.o.num_gt(s);
+    }
+    public PlObject num_gt2(PlObject s) {
+        return s.num_gt(this.o);
+    }
+    public PlObject num_eq(PlObject s) {
+        return this.o.num_eq(s);
+    }
+    public PlObject num_eq2(PlObject s) {
+        return s.num_eq(this.o);
     }
     public boolean is_int() {
         return this.o.is_int();
@@ -1903,6 +1903,16 @@ class PlArray extends PlObject {
         this.a.set(pos, v.get());
         return v;
     }
+    public PlObject aset(PlObject i, double s) {
+        return this.aset(i, new PlDouble(s));
+    }
+    public PlObject aset(int i, double s) {
+        return this.aset(i, new PlDouble(s));
+    }
+    public PlObject push(double s) {
+        this.a.add(new PlDouble(s));
+        return this.length_of_array();
+    }
     public PlObject aset(PlObject i, boolean s) {
         return this.aset(i, new PlBool(s));
     }
@@ -1921,16 +1931,6 @@ class PlArray extends PlObject {
     }
     public PlObject push(String s) {
         this.a.add(new PlString(s));
-        return this.length_of_array();
-    }
-    public PlObject aset(PlObject i, double s) {
-        return this.aset(i, new PlDouble(s));
-    }
-    public PlObject aset(int i, double s) {
-        return this.aset(i, new PlDouble(s));
-    }
-    public PlObject push(double s) {
-        this.a.add(new PlDouble(s));
         return this.length_of_array();
     }
     public PlObject aset(PlObject i, int s) {
@@ -2369,11 +2369,23 @@ class PlHash extends PlObject {
         return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
     }
     public PlObject delete(PlObject i) {
-        PlObject r = this.h.remove(i);
+        PlObject r = this.h.remove(i.toString());
         if (r == null) {
             return PlCx.UNDEF;
         }
         return r;
+    }
+    public PlObject delete(int want, PlArray a) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < a.to_int(); i++) {
+            PlObject r = this.delete(a.aget(i));
+            aa.push(r);
+        }
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
     }
     public PlObject values() {
         PlArray aa = new PlArray();
@@ -2409,6 +2421,12 @@ class PlHash extends PlObject {
         }
         return aa;
     }
+    public PlObject hset(PlObject s, double v) {
+        return this.hset(s, new PlDouble(v));
+    }
+    public PlObject hset(String s, double v) {
+        return this.hset(s, new PlDouble(v));
+    }
     public PlObject hset(PlObject s, boolean v) {
         return this.hset(s, new PlBool(v));
     }
@@ -2420,12 +2438,6 @@ class PlHash extends PlObject {
     }
     public PlObject hset(String s, String v) {
         return this.hset(s, new PlString(v));
-    }
-    public PlObject hset(PlObject s, double v) {
-        return this.hset(s, new PlDouble(v));
-    }
-    public PlObject hset(String s, double v) {
-        return this.hset(s, new PlDouble(v));
     }
     public PlObject hset(PlObject s, int v) {
         return this.hset(s, new PlInt(v));
@@ -2641,29 +2653,13 @@ class PlDouble extends PlObject {
         int c = new Double(b.to_double()).compareTo(this.i);
         return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
-    public PlObject add(PlObject s) {
+    public PlObject num_ne(PlObject s) {
         // num - int, num - num
-        return new PlDouble( this.i + s.to_double() );
+        return new PlBool( this.i != s.to_double() );
     }
-    public PlObject add2(PlObject s) {
+    public PlObject num_ne2(PlObject s) {
         // int - num
-        return new PlDouble( s.to_double() + this.i );
-    }
-    public PlObject num_ge(PlObject s) {
-        // num - int, num - num
-        return new PlBool( this.i >= s.to_double() );
-    }
-    public PlObject num_ge2(PlObject s) {
-        // int - num
-        return new PlBool( s.to_double() >= this.i );
-    }
-    public PlObject div(PlObject s) {
-        // num - int, num - num
-        return new PlDouble( this.i / s.to_double() );
-    }
-    public PlObject div2(PlObject s) {
-        // int - num
-        return new PlDouble( s.to_double() / this.i );
+        return new PlBool( s.to_double() != this.i );
     }
     public PlObject sub(PlObject s) {
         // num - int, num - num
@@ -2681,29 +2677,21 @@ class PlDouble extends PlObject {
         // int - num
         return new PlBool( s.to_double() <= this.i );
     }
-    public PlObject num_ne(PlObject s) {
+    public PlObject num_ge(PlObject s) {
         // num - int, num - num
-        return new PlBool( this.i != s.to_double() );
+        return new PlBool( this.i >= s.to_double() );
     }
-    public PlObject num_ne2(PlObject s) {
+    public PlObject num_ge2(PlObject s) {
         // int - num
-        return new PlBool( s.to_double() != this.i );
+        return new PlBool( s.to_double() >= this.i );
     }
-    public PlObject num_eq(PlObject s) {
+    public PlObject add(PlObject s) {
         // num - int, num - num
-        return new PlBool( this.i == s.to_double() );
+        return new PlDouble( this.i + s.to_double() );
     }
-    public PlObject num_eq2(PlObject s) {
+    public PlObject add2(PlObject s) {
         // int - num
-        return new PlBool( s.to_double() == this.i );
-    }
-    public PlObject num_gt(PlObject s) {
-        // num - int, num - num
-        return new PlBool( this.i > s.to_double() );
-    }
-    public PlObject num_gt2(PlObject s) {
-        // int - num
-        return new PlBool( s.to_double() > this.i );
+        return new PlDouble( s.to_double() + this.i );
     }
     public PlObject num_lt(PlObject s) {
         // num - int, num - num
@@ -2720,6 +2708,30 @@ class PlDouble extends PlObject {
     public PlObject mul2(PlObject s) {
         // int - num
         return new PlDouble( s.to_double() * this.i );
+    }
+    public PlObject div(PlObject s) {
+        // num - int, num - num
+        return new PlDouble( this.i / s.to_double() );
+    }
+    public PlObject div2(PlObject s) {
+        // int - num
+        return new PlDouble( s.to_double() / this.i );
+    }
+    public PlObject num_gt(PlObject s) {
+        // num - int, num - num
+        return new PlBool( this.i > s.to_double() );
+    }
+    public PlObject num_gt2(PlObject s) {
+        // int - num
+        return new PlBool( s.to_double() > this.i );
+    }
+    public PlObject num_eq(PlObject s) {
+        // num - int, num - num
+        return new PlBool( this.i == s.to_double() );
+    }
+    public PlObject num_eq2(PlObject s) {
+        // int - num
+        return new PlBool( s.to_double() == this.i );
     }
     public boolean is_num() {
         return true;
@@ -2972,29 +2984,13 @@ class PlString extends PlObject {
     public PlObject num_cmp2(PlObject b) {
         return b.num_cmp2(this.parse());
     }
-    public PlObject add(PlObject b) {
+    public PlObject num_ne(PlObject b) {
         // 'num' - int, 'num' - num
-        return this.parse().add(b);
+        return this.parse().num_ne(b);
     }
-    public PlObject add2(PlObject b) {
+    public PlObject num_ne2(PlObject b) {
         // int - 'num'
-        return b.add(this.parse());
-    }
-    public PlObject num_ge(PlObject b) {
-        // 'num' - int, 'num' - num
-        return this.parse().num_ge(b);
-    }
-    public PlObject num_ge2(PlObject b) {
-        // int - 'num'
-        return b.num_ge(this.parse());
-    }
-    public PlObject div(PlObject b) {
-        // 'num' - int, 'num' - num
-        return this.parse().div(b);
-    }
-    public PlObject div2(PlObject b) {
-        // int - 'num'
-        return b.div(this.parse());
+        return b.num_ne(this.parse());
     }
     public PlObject sub(PlObject b) {
         // 'num' - int, 'num' - num
@@ -3012,29 +3008,21 @@ class PlString extends PlObject {
         // int - 'num'
         return b.num_le(this.parse());
     }
-    public PlObject num_ne(PlObject b) {
+    public PlObject num_ge(PlObject b) {
         // 'num' - int, 'num' - num
-        return this.parse().num_ne(b);
+        return this.parse().num_ge(b);
     }
-    public PlObject num_ne2(PlObject b) {
+    public PlObject num_ge2(PlObject b) {
         // int - 'num'
-        return b.num_ne(this.parse());
+        return b.num_ge(this.parse());
     }
-    public PlObject num_eq(PlObject b) {
+    public PlObject add(PlObject b) {
         // 'num' - int, 'num' - num
-        return this.parse().num_eq(b);
+        return this.parse().add(b);
     }
-    public PlObject num_eq2(PlObject b) {
+    public PlObject add2(PlObject b) {
         // int - 'num'
-        return b.num_eq(this.parse());
-    }
-    public PlObject num_gt(PlObject b) {
-        // 'num' - int, 'num' - num
-        return this.parse().num_gt(b);
-    }
-    public PlObject num_gt2(PlObject b) {
-        // int - 'num'
-        return b.num_gt(this.parse());
+        return b.add(this.parse());
     }
     public PlObject num_lt(PlObject b) {
         // 'num' - int, 'num' - num
@@ -3052,6 +3040,30 @@ class PlString extends PlObject {
         // int - 'num'
         return b.mul(this.parse());
     }
+    public PlObject div(PlObject b) {
+        // 'num' - int, 'num' - num
+        return this.parse().div(b);
+    }
+    public PlObject div2(PlObject b) {
+        // int - 'num'
+        return b.div(this.parse());
+    }
+    public PlObject num_gt(PlObject b) {
+        // 'num' - int, 'num' - num
+        return this.parse().num_gt(b);
+    }
+    public PlObject num_gt2(PlObject b) {
+        // int - 'num'
+        return b.num_gt(this.parse());
+    }
+    public PlObject num_eq(PlObject b) {
+        // 'num' - int, 'num' - num
+        return this.parse().num_eq(b);
+    }
+    public PlObject num_eq2(PlObject b) {
+        // int - 'num'
+        return b.num_eq(this.parse());
+    }
 }
 // end Perl-Java runtime
 class Test {
@@ -3059,12 +3071,9 @@ class Test {
         PlEnv.init(args);
         int want = PlCx.VOID;
         try {
-            PlV.set("main|test", new PlClosure(PlCx.UNDEF, new PlObject[]{  } ) {
-                public PlObject apply(int want, PlArray List__) {
-                    return PerlOp.context(want, new PlInt(10).div(List__.aget(0)));
-                }
-            });
-            PlCORE.print(PlCx.VOID, PlCx.STDOUT, new PlArray(PlV.get("main|test").apply(PlCx.LIST, new PlArray(PlCx.INT2)), new PlString((char)10)));
+            PlV.hash_set("main|Hash_hash", new PlArray(new PlString("foo"), new PlInt(11), new PlString("bar"), new PlInt(22), new PlString("baz"), new PlInt(33)));
+            PlV.set("main|v_scalar", (PlV.hash_get("main|Hash_hash").delete(PlCx.SCALAR, new PlArray(new PlString("foo"), new PlString("bar")))));
+            PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(PlV.get("main|v_scalar")));
         }
         catch(PlReturnException e) {
             PlCORE.die("Can't return outside a subroutine");
