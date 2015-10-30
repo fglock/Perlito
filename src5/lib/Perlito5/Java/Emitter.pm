@@ -965,7 +965,7 @@ package Perlito5::AST::CompUnit;
         }
 
         $str .= Perlito5::Java::emit_wrap_java(-1,
-             "class Test {",
+             "class Main {",
                [ "public static void main(String[] args) throws Exception {",
                    [ "PlEnv.init(args);",
                      "int want = PlCx.VOID;",

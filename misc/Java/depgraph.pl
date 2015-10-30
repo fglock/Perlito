@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-# run with cat Test.java | grep class | perl depgraph.pl > deps.svg
+# run with cat Main.java | grep class | perl depgraph.pl > deps.svg
 
 use Data::Dumper;
 use Graph::Easy;

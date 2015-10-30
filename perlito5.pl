@@ -12662,7 +12662,7 @@ use feature 'say';
                     }
                 }
                 my $c = substr($self->{'name'}, 0, 1);
-                if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_')) {
+                if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/')) {
                     return $self->{'sigil'} . $ns . $self->{'name'}
                 }
                 return $self->{'sigil'} . '{' . chr(39) . $ns . $str_name . chr(39) . '}'
@@ -15252,7 +15252,7 @@ use feature 'say';
                 if ($options{'expand_use'}) {
                     $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
                 }
-                $str .= Perlito5::Java::emit_wrap_java(-1, 'class Test {', ['public static void main(String[] args) throws Exception {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"next' . chr(92) . '" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"last' . chr(92) . '" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"redo' . chr(92) . '" outside a loop block");'], '}'], '}'], '}') . chr(10);
+                $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) throws Exception {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"next' . chr(92) . '" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"last' . chr(92) . '" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"redo' . chr(92) . '" outside a loop block");'], '}'], '}'], '}') . chr(10);
                 return $str
             }
             sub Perlito5::AST::CompUnit::emit_java_get_decl {

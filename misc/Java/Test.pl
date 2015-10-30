@@ -1,12 +1,12 @@
 #
-#   $ touch Test.class
-#   $ rm Test.class
-#   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java
-#   $ javac Test.java
-#   $ java Test
+#   $ touch Main.class
+#   $ rm Main.class
+#   $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Main.java
+#   $ javac Main.java
+#   $ java Main
 #
 #   one liner:
-#   $ touch Test.class ; rm Test.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Test.java ; javac Test.java ; java Test
+#   $ touch Main.class ; rm Main.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Main.java ; javac Main.java ; java Main
 #
 print "1..100\n";
 print "ok 1 - print() works\n";

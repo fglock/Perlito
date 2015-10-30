@@ -176,6 +176,7 @@ package Perlito5::AST::Var;
         if (  ($c ge 'a' && $c le 'z')
            || ($c ge 'A' && $c le 'Z')
            || ($c eq '_')
+           || ($self->{name} eq '/')
            ) 
         {
             return $self->{sigil} . $ns . $self->{name}
