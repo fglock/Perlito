@@ -1,4 +1,8 @@
 
+9.006 cpan:Perlito5   2015-10-30
+* Perlito5 (Perl 5 compiler):
+- fix handling of native data parameters
+
 9.004 cpan:Perlito5   2015-10-30
 * Perlito5 (Perl 5 compiler):
 - fix CPAN files  [rt.cpan.org #108111]
