@@ -76,6 +76,21 @@
     - add a pScalar variant "set(Sample)"   (TODO)
     - add pArray and pHash setters          (TODO)
 
+
+-- Java method override using Java::inline
+
+    # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
+    package Date  { import => "java.util.Date" };
+    my Date $dateJavaObject =
+        Java::inline
+            'new Date() {
+                public String toString() {
+                    return "Hello";    
+                }    
+            }';
+    my $dateString_pObject = $dateJavaObject->toString();   # Hello
+
+
 -- Typed variables
 
     - no "global" typed variables (only "my" variables)
