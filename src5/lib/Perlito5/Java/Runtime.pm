@@ -1132,6 +1132,10 @@ class PlLvalueRef extends PlReference {
     private PlObject o;
     public static final PlString REF = new PlString("SCALAR");
 
+    public String toString() {
+        int id = System.identityHashCode(this.o);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+    }
     public PlLvalueRef(PlLvalue o) {
         this.o = o;
     }
