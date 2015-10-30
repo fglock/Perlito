@@ -175,4 +175,48 @@ $_->() for @RUN;
     print g1, "\n"; # still 10
 
 
+#--------------------------
+
+    # original code
+    sub z0 {
+        my $z = shift;
+        sub z1 { eval ' print "in eval $z\\n" '; $z }
+        BEGIN { $z = 5 }
+    }
+    print z1, "\n"; # 5
+    z0(10);
+    print z1, "\n"; # 10
+    z0(20);
+    print z1, "\n"; # still 10
+
+  
+    # after compile-time env
+    {
+        my $g = 5;  # BEGIN ... *side effect* on a captured lexical
+
+                        # skip: $g = shift;
+        sub g1 {
+            eval ' print "in eval $g\\n" ';
+            $g;
+        }
+        sub g0 {
+            *g0 = sub {
+                    my $g = shift;
+                    # skip: sub ... *moved outside*
+                    # skip: BEGIN ... *moved outside*
+                  };
+            # skip: my ...
+            $g = shift;
+            # skip: sub ... *moved outside*
+            # BEGIN executes here
+            # skip: BEGIN side effect *moved outside*
+        }
+    }
+    print g1, "\n"; # 5
+    g0(10);
+    print g1, "\n"; # 10
+    g0(20);
+    print g1, "\n"; # still 10
+
+
 __END__
