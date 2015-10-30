@@ -4446,7 +4446,7 @@ use feature 'say';
             local $Perlito5::LINE_NUMBER = 1;
             my $realfilename = $INC{$filename};
             open(FILE, '<', $realfilename) or die('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
-            local ${'/'} = undef;
+            local $/ = undef;
             my $source = <FILE>;
             close(FILE);
             my $m = Perlito5::Grammar::exp_stmts($source, 0);
@@ -4510,7 +4510,7 @@ use feature 'say';
             };
             my $realfilename = $INC{$filename};
             open(FILE, '<', $realfilename) or die('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
-            local ${'/'} = undef;
+            local $/ = undef;
             my $source = <FILE>;
             close(FILE);
             return $source
@@ -7441,7 +7441,7 @@ use feature 'say';
         # use Perlito5::Grammar::Scope
         # use strict
         defined(${chr(15)}) || (${chr(15)} = 'perlito5');
-        defined(${'/'}) || (${'/'} = chr(10));
+        defined($/) || ($/ = chr(10));
         defined(${'"'}) || (${'"'} = ' ');
         defined(${','}) || (${','} = undef);
         defined(${'!'}) || (${'!'} = '');
@@ -14811,7 +14811,7 @@ use feature 'say';
             our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
             our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
             our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
-            our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>');
+            our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
             my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
             sub Perlito5::Java::escape_string {
                 my $s = shift;
@@ -14867,10 +14867,17 @@ use feature 'say';
                 my $s = '';
                 my @out;
                 for my $cond (@{$args}) {
-                    if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
+                    my $is_apply = $cond->isa('Perlito5::AST::Apply') && $cond->{'arguments'} && @{$cond->{'arguments'}};
+                    if ($is_apply && $cond->code() eq 'circumfix:<( )>') {
                         push(@out, to_native_args($cond->{'arguments'}->[0], $level))
                     }
-                    if ($cond->isa('Perlito5::AST::Buf')) {
+                    elsif ($is_apply && exists($op_to_num{$cond->code()})) {
+                        push(@out, '(' . $cond->emit_java($level, $wantarray) . ').' . ($cond->{'arguments'}->[0]->isa('Perlito5::AST::Num') || $cond->{'arguments'}->[1]->isa('Perlito5::AST::Num') ? 'to_double()' : 'to_int()'))
+                    }
+                    elsif ($is_apply && exists($op_to_str{$cond->code()})) {
+                        push(@out, '(' . $cond->emit_java($level, $wantarray) . ').toString()')
+                    }
+                    elsif ($cond->isa('Perlito5::AST::Buf')) {
                         push(@out, Perlito5::Java::escape_string($cond->{'buf'}))
                     }
                     elsif ($cond->isa('Perlito5::AST::Int')) {
@@ -17337,7 +17344,7 @@ use feature 'say';
             }
             my $source_filename = shift(@ARGV);
             open(FILE, '<:encoding(UTF-8)', $source_filename) or die('Cannot read ' . $source_filename . ': ' . ${'!'} . chr(10));
-            local ${'/'} = undef;
+            local $/ = undef;
             $source = <FILE>;
             close(FILE)
         }

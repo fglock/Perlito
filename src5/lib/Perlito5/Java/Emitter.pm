@@ -113,6 +113,8 @@ package Perlito5::Java;
         infix:</>
         infix:<%>
         infix:<**>
+        infix:<|>
+        infix:<&>
     );
 
     my %safe_char = (
@@ -176,7 +178,7 @@ package Perlito5::Java;
 
     sub is_native {
         my $self = shift;
-        
+
         # class method call in native 'Java' packages
         #
         #   package Sample { import => "misc.Java.Sample" };
@@ -229,14 +231,22 @@ package Perlito5::Java;
             my $wantarray = 'scalar';
             my $s = '';
             my @out;
+
             for my $cond (@$args) {
-                if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-                   && $cond->{arguments} && @{$cond->{arguments}}
-                   ) 
-                {
-                    push @out, to_native_args( $cond->{arguments}[0], $level )
+                my $is_apply = $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
+
+                if ( $is_apply && $cond->code eq 'circumfix:<( )>') {
+                    push @out, to_native_args( $cond->{arguments}[0], $level );
                 }
-                if ($cond->isa( 'Perlito5::AST::Buf' )) {
+                elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
+                    push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
+                        (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
+                            ? 'to_double()' : 'to_int()');
+                }
+                elsif ( $is_apply && exists $op_to_str{ $cond->code } ) {
+                    push @out, '(' . $cond->emit_java($level, $wantarray) . ').toString()';
+                }
+                elsif ($cond->isa( 'Perlito5::AST::Buf' )) {
                     push @out, Perlito5::Java::escape_string( $cond->{buf} );
                 }
                 elsif ($cond->isa( 'Perlito5::AST::Int' )) {
@@ -258,7 +268,7 @@ package Perlito5::Java;
             my $wantarray = shift;
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{arguments} && @{$cond->{arguments}}
-               ) 
+               )
             {
                 return to_native_str( $cond->{arguments}[0], $level, $wantarray )
             }
