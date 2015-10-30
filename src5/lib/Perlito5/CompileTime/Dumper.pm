@@ -53,7 +53,7 @@ sub _dumper {
         }
         return join('', "{\n", @out, $tab, '}');
     }
-    elsif ($ref eq 'SCALAR') {
+    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
         return "\\" . _dumper($$obj, $tab1, $seen, $pos);
     }
     elsif ($ref eq 'CODE') {

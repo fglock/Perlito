@@ -8136,16 +8136,17 @@ use feature 'say';
                 }
                 return join('', '{' . chr(10), @out, $tab, '}')
             }
-            elsif ($ref eq 'SCALAR') {
+            elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
                 return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
             }
             elsif ($ref eq 'CODE') {
                 my $closure_flag = bless({}, 'Perlito5::dump');
                 my $captures = $obj->($closure_flag) // {};
-                my @vars = keys(%{$captures});
-                return join('', 'do { ', (map {
-                    'my ' . $_ . ' = ' . _dumper($captures->{$_}, $tab1, $seen, $pos) . '; '
-                } @vars), 'sub { "DUMMY" } ', '}')
+                my @vars;
+                for my $var (keys(%{$captures})) {
+                    push(@vars, 'my ' . $var . ' = ' . _dumper($captures->{$var}, $tab1, $seen, $pos) . '; ')
+                }
+                return join('', 'do { ', @vars, 'sub { "DUMMY" } ', '}')
             }
             my @out;
             for my $i (sort {
@@ -9176,7 +9177,7 @@ use feature 'say';
                 }
                 return join('', '{' . chr(10), @out, $tab, '}')
             }
-            elsif ($ref eq 'SCALAR') {
+            elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
                 return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
             }
             elsif ($ref eq 'CODE') {
