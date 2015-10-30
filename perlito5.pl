@@ -8144,7 +8144,7 @@ use feature 'say';
                 my $captures = $obj->($closure_flag) // {};
                 my @vars = keys(%{$captures});
                 return join('', 'do { ', (map {
-                    'my ' . $_ . ' = ' . _dumper($captures->{$_}) . '; '
+                    'my ' . $_ . ' = ' . _dumper($captures->{$_}, $tab1, $seen, $pos) . '; '
                 } @vars), 'sub { "DUMMY" } ', '}')
             }
             my @out;

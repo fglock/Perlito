@@ -58,13 +58,20 @@ sub _dumper {
     }
     elsif ($ref eq 'CODE') {
         # TODO
+
+        # get the closed variables - see 'Sub' in Perl5 emitter
         my $closure_flag = bless {}, "Perlito5::dump";
         my $captures = $obj->($closure_flag) // {};
-        my @vars = keys %$captures;
+
+        my @vars;
+        for my $var (keys %$captures) {
+            push @vars, 
+                'my ' . $var . ' = ' . _dumper($captures->{$var}, $tab1, $seen, $pos) . '; ';
+        }
         return join('',
             'do { ',
-            (map { 'my ' . $_ . ' = ' . _dumper($captures->{$_}) . '; ' } @vars),
-            'sub { "DUMMY" } ',
+                @vars,
+                'sub { "DUMMY" } ',
             '}'
         );
     }
