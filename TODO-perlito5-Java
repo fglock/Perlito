@@ -1,5 +1,12 @@
 * Java backend
 
+-- command line
+
+    specify main Class name (currently "Main")
+
+    remove the need for --bootstrapping
+
+
 -- 'eval string' support
 
     JS-eval-string: embedding a Javascript-in-Java interpreter:
@@ -76,6 +83,12 @@
     - add a pScalar variant "set(Sample)"   (TODO)
     - add pArray and pHash setters          (TODO)
 
+    TODO: what happens when a class is imported again
+        - for example, import "Int" or "Byte" again
+
+    TODO: test that Perl modules can import Java classes
+        - only tested in "main" program
+
 
 -- Java method override using Java::inline
 
@@ -93,6 +106,9 @@
 
 -- Typed variables
 
+    my TYPE VARLIST
+        - See also: http://perldoc.perl.org/functions/my.html
+
     - no "global" typed variables (only "my" variables)
 
     Note:
@@ -103,12 +119,17 @@
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
 
     my $p_put = new Sample();
+    my $p_put = Sample->new();
     creates a boxed Java variable           (DONE)
 
     $x->to_Sample()
     retrieves the native Sample object      (DONE)
     allow conversion of primitive types - to_Int(), to_String()
                                             (TODO: generate primitive types in emitter)
+    this only works if $x is a Perl variable that contains a value of type "Sample"
+
+    "$x"      # Sample<0x1234567>
+    $x is a Perl variable that contains a native "Sample"; it behaves like a Perl object
 
     my $x = $p_put;
     puts the boxed object into a Perl scalar  (DONE)
@@ -139,6 +160,17 @@
         possible workaround:
 
         my Int $x = $y;     # automatically insert a call to $y->toInt()
+
+    maybe TODO: call Perl subroutines with native parameters
+        print $x->to_Sample();
+
+    TODO: (wip) call Java methods with Perl parameters
+        Sample->new(10);                # native int
+        Sample->new("abc");             # native String
+        Sample->new($v->to_Sample());   # cast back to Sample
+        Sample->new(0 + $v);            # cast to int
+        Sample->new(0.0 + $v);          # cast to double
+        Sample->new("" . $v);           # cast to string
 
 -- interoperation between native expressions and perl expressions
 

@@ -31,6 +31,8 @@ TODO list for Perlito5
 
 * Parser
 
+-- test that "use" checks the return value of modules (the "1;" thing)
+
 -- parse example in http://www.perlmonks.org/?node_id=663393
 
     $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
