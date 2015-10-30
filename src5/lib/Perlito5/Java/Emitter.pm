@@ -1338,20 +1338,11 @@ package Perlito5::AST::Lookup;
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = [];',
-                    'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . Perlito5::Java::to_list([$arguments], $level) . ";",
-                    'var out=' . $v->emit_java($level) . ";",
-                    'var tmp' . ";",
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'tmp = src.hget(i);',
-                            'out.hset(v[i], tmp);',
-                            'a.push(tmp)',
-                          ],
-                    '}',
-                    'return a',
-            )
+            return $self->emit_java_container($level). '.hset('
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . Perlito5::Java::to_list([$arguments], $level) . ', '
+                    . Perlito5::Java::to_list([$self->{index_exp}], $level)
+                . ')'
         }
         if ($localize) {
             return $self->emit_java_container($level) . '.hget_lvalue_local('

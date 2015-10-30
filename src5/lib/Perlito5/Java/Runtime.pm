@@ -2391,6 +2391,17 @@ class PlHash extends PlObject {
     public PlObject hset(String s, PlLvalue v) {
         return this.hset(s, v.get());
     }
+    public PlObject hset(int want, PlArray s, PlArray v) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < v.to_int(); i++){
+            aa.push(this.hset(v.aget(i), s.aget(i)));
+        };
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
+    }
 
     public PlObject exists(PlObject i) {
         return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;

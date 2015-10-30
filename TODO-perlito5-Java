@@ -216,7 +216,7 @@
           ]
         ];
 
--- TODO: slices
+-- DONE: slices
 
     DONE $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
     DONE @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
@@ -225,18 +225,22 @@
     DONE $scalar = @hash{qw(foo bar)}; # $scalar is 22
     DONE @array  = @hash{qw(foo baz)}; # @array  is (undef,33)
 
-    TODO @hash{qw(foo bar)} = $scalar; # %hash{foo} is $scalar && %hash{bar} is undef
-    TODO @hash{qw(foo baz)} = @array; # %hash{foo} is @array[0] && %hash{bar} is @array[1]
+    DONE print "@hash{qw(foo bar)}" # should print: 11 22
 
-    TODO print "@hash{qw(foo bar)}" # should print: 11 22
+    DONE @hash{qw(foo bar)} = $scalar; # %hash{foo} is $scalar && %hash{bar} is undef
+    DONE @hash{qw(foo baz)} = @array; # %hash{foo} is @array[0] && %hash{bar} is @array[1]
 
     -- TEST
-    print "@hash{qw(foo bar)}" # should print: 11 22
     %hash = (foo => 11, bar => 22, baz => 33); $scalar = delete @hash{qw(foo bar)}; print "$scalar\n"
     %hash = (foo => 11, bar => 22, baz => 33); @array = delete @hash{qw(foo bar)}; print "@array\n"
 
     %hash = (foo => 11, bar => 22, baz => 33); $scalar = @hash{qw(foo bar)}; use feature 'say'; say $scalar
     %hash = (foo => 11, bar => 22, baz => 33); @array = @hash{qw(foo bar)}; use feature 'say'; say "@array"
+
+    %hash = (foo => 11, bar => 22, baz => 33); print "@hash{qw(foo bar)}"
+
+    my $scalar = 11; @hash{qw(foo bar)} = $scalar; use feature "say"; say $hash{foo}
+    my @array = (11, 22); @hash{qw(foo bar)} = @array; use feature "say"; say "@array"
 
 -- TODO: variables
 
