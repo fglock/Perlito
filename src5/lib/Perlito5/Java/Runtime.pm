@@ -1132,6 +1132,10 @@ class PlLvalueRef extends PlReference {
     private PlObject o;
     public static final PlString REF = new PlString("SCALAR");
 
+    public String toString() {
+        int id = System.identityHashCode(this.o);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+    }
     public PlLvalueRef(PlLvalue o) {
         this.o = o;
     }
@@ -1155,7 +1159,8 @@ class PlArrayRef extends PlArray {
     public static final PlString REF = new PlString("ARRAY");
 
     public String toString() {
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+        int id = System.identityHashCode(this.a);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
     }
     public PlArrayRef() {
         this.each_iterator = 0;
@@ -1201,7 +1206,8 @@ class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
 
     public String toString() {
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+        int id = System.identityHashCode(this.h);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
     }
     public PlHashRef() {
         this.h = new HashMap<String, PlObject>();
