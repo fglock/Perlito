@@ -1,4 +1,7 @@
 
+9.007 cpan:Perlito5   2015-10-30
+- add Build.PL
+
 9.006 cpan:Perlito5   2015-10-30
 * Perlito5 (Perl 5 compiler):
 - fix handling of native data parameters
