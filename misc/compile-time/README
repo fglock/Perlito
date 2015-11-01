@@ -1,0 +1,13 @@
+
+The "first" scratchpad of a closure is created at compile-time.
+
+
+http://grokbase.com/t/perl/inline/013epgpdvs/very-ot-technical-query-re-scratchpad-lookups-for-my-vars
+
+a lexical variable
+is unique to its code value's (CV) context which was determined at parse
+time. However, if you recursively call that CV, then Perl has to allocate a
+new value for the lexical.
+
+
+
