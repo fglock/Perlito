@@ -339,8 +339,8 @@ $_->() for @RUN;
     $z__0 = 5;  # BEGIN ... *side effect* on a captured lexical
     $z__1 = 7;  # BEGIN ... *side effect* on a captured lexical
     $z__2 = 9;  # BEGIN ... *side effect* on a captured lexical
-    $z__3 = 40;
-    $count__0 = undef;
+    $z__3 = 40; # BEGIN
+    $count__0 = undef;  # $count is not initialized at compile-time
     *z1 = sub  {
         eval ' print "in eval $z__0\\n" ';
         $z__0;
@@ -353,34 +353,36 @@ $_->() for @RUN;
         eval ' print "in eval $z__2\\n" ';
         $z__2;
     };
+    $RUN__0 = 1;
     *z0 = sub  {
-        # &z0 needs to be redefined at run-time,
-        # to remove the compile-time scratchpad
-        *z0 = sub {
-                my $z = shift;
-                # skip: * = sub ... *moved outside*
-                # skip: BEGIN ... *moved outside*
-                my $z = shift;
-                # skip: * = sub ... *moved outside*
-                # skip: BEGIN ... *moved outside*
-                for my $z (32..35) {
-                    # skip: *z3 = sub  { eval ' print "in eval $z\\n" '; $z }
-                    # skip: BEGIN { $z = 9 }
-                    print "z3() ", z3(), "\n";
-                }
-              };
-        # skip: my ...
-        $z__0 = shift;
-        # skip: sub ... *moved outside*
-        # BEGIN executes here
-        # skip: BEGIN side effect *moved outside*
-        $z__1 = shift;
-        # skip: sub ... *moved outside*
-        for my $z (32..35) {    # note 'my' here - the for-loop variable is "localized"
-            # skip: sub z3 { eval ' print "in eval $z\\n" '; $z }
-            # skip: BEGIN { $z = 9 }
-            print "z3() ", z3(), "\n";
+        if ($RUN__0) {
+            $RUN__0 = 0;
+            # skip: my ...
+            $z__0 = shift;
+            # skip: sub ... *moved outside*
+            # BEGIN executes here
+            # skip: BEGIN side effect *moved outside*
+            $z__1 = shift;
+            # skip: sub ... *moved outside*
+            for my $z (32..35) {    # note 'my' here - the for-loop variable is "localized"
+                # skip: sub z3 { eval ' print "in eval $z\\n" '; $z }
+                # skip: BEGIN { $z = 9 }
+                print "z3() ", z3(), "\n";
+            }
         }
+        else {
+            my $z = shift;
+            # skip: * = sub ... *moved outside*
+            # skip: BEGIN ... *moved outside*
+            my $z = shift;
+            # skip: * = sub ... *moved outside*
+            # skip: BEGIN ... *moved outside*
+            for my $z (32..35) {
+                # skip: *z3 = sub  { eval ' print "in eval $z\\n" '; $z }
+                # skip: BEGIN { $z = 9 }
+                print "z3() ", z3(), "\n";
+            }
+        };
     };
     # end of compile-time dump
     # start of run-time dump
