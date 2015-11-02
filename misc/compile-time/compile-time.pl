@@ -401,6 +401,11 @@ $_->() for @RUN;
     print z3(), "\n"; # 9
     print $v__0, "\n"; # 3
     $count__0 = 0;
+    #
+    # Note:
+    # if the variable "$RUN__1" is false just after compile-time,
+    # then the part "if ($RUN__1) {...}" can be removed as dead code
+    #
     $RUN__1 = 1;
     {
         if ($RUN__1) {
