@@ -406,6 +406,15 @@ $_->() for @RUN;
     # if the variable "$RUN__1" is false just after compile-time,
     # then the part "if ($RUN__1) {...}" can be removed as dead code
     #
+    # Note:
+    # "$RUN__1" is only needed if the block contains a BEGIN-ish expression:
+    #   - BEGIN block
+    #   - "use" statement
+    #   - "sub NAME ..."
+    #   - other special blocks: UNITCHECK, CHECK, INIT, END
+    #
+    # Note: set ${^GLOBAL_PHASE} accordingly
+    #
     $RUN__1 = 1;
     {
         if ($RUN__1) {

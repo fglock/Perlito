@@ -396,6 +396,8 @@
 -- Extra things to test
 
     threads
+        See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
+        CLONE, CLONE_SKIP
 
 -- Optimizations
 
