@@ -219,4 +219,80 @@ $_->() for @RUN;
     print g1, "\n"; # still 10
 
 
+    # using globals - FAIL
+
+    $BEGIN_z = 5;
+    sub z1 { eval ' print "in eval $BEGIN_z\\n" '; $BEGIN_z }
+    sub z0 {
+        my $z = shift;
+    }
+    print z1, "\n"; # 5
+    z0(10);
+    print z1, "\n"; # 10
+    z0(20);
+    print z1, "\n"; # still 10
+
+
+#--------------------------
+
+    # original code
+    sub z0 {
+        my $z = shift;
+        sub z1 { eval ' print "in eval $z\\n" '; $z }
+        BEGIN { $z = 5 }
+        my $z = shift;      # redefine $z
+        sub z2 { eval ' print "in eval $z\\n" '; $z }
+        BEGIN { $z = 7 }
+    }
+    print z1, "\n"; # 5
+    print z2, "\n"; # 7
+    z0(10, 15);
+    print z1, "\n"; # 10
+    print z2, "\n"; # 15
+    z0(20, 25);
+    print z1, "\n"; # still 10
+    print z2, "\n"; # still 15
+
+  
+    # after compile-time env
+    {
+        my $g__0 = 5;  # BEGIN ... *side effect* on a captured lexical
+        my $g__1 = 7;  # BEGIN ... *side effect* on a captured lexical
+
+                        # skip: $g = shift;
+        sub g1 {
+            eval ' print "in eval $g__0\\n" ';
+            $g__0;
+        }
+        sub g2 {
+            eval ' print "in eval $g__1\\n" ';
+            $g__1;
+        }
+        sub g0 {
+            *g0 = sub {
+                    my $g = shift;
+                    # skip: sub ... *moved outside*
+                    # skip: BEGIN ... *moved outside*
+                    my $g = shift;
+                    # skip: sub ... *moved outside*
+                    # skip: BEGIN ... *moved outside*
+                  };
+            # skip: my ...
+            $g__0 = shift;
+            # skip: sub ... *moved outside*
+            # BEGIN executes here
+            # skip: BEGIN side effect *moved outside*
+            $g__1 = shift;
+        }
+    }
+    print g1, "\n"; # 5
+    print g2, "\n"; # 7
+    g0(10, 15);
+    print g1, "\n"; # 10
+    print g2, "\n"; # 15
+    g0(20, 25);
+    print g1, "\n"; # still 10
+    print g2, "\n"; # still 15
+
+
 __END__
