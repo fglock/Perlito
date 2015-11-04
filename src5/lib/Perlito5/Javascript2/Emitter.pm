@@ -2474,7 +2474,11 @@ package Perlito5::AST::Apply;
                        'code' => 'ARGV',
                        'namespace' => '',
                    }, 'Perlito5::AST::Apply');
-            return 'CORE.readline([' . $fun->emit_javascript2( $level ) . '])';
+            return 'CORE.readline(['
+                        . $fun->emit_javascript2( $level )
+                . '], '
+                . Perlito5::Javascript2::to_context($wantarray)
+            . ')';
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
