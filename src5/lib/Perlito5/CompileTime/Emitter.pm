@@ -29,21 +29,21 @@ package Perlito5::AST::CompUnit;
 package Perlito5::AST::Int;
 {
     sub emit_compile_time {
-        return $_[0];
+        return $_[0]->emit_perl5();
     }
 }
 
 package Perlito5::AST::Num;
 {
     sub emit_compile_time {
-        return $_[0];
+        return $_[0]->emit_perl5();
     }
 }
 
 package Perlito5::AST::Buf;
 {
     sub emit_compile_time {
-        return $_[0];
+        return $_[0]->emit_perl5();
     }
 }
 
@@ -55,13 +55,13 @@ package Perlito5::AST::Block;
         push @out, [ label => $self->{label} ]
             if $self->{label};        
         if ($self->{name}) {
-            push @out, [ stmt => [ keyword => $self->{name} ], Perlito5::Perl5::emit_compile_time_block($self->{stmts}) ];
+            push @out, [ stmt => [ keyword => $self->{name} ], Perlito5::CompileTime::emit_compile_time_block($self->{stmts}) ];
         }
         else {
-            push @out, Perlito5::Perl5::emit_compile_time_block($self->{stmts});
+            push @out, Perlito5::CompileTime::emit_compile_time_block($self->{stmts});
         }
         if ($self->{continue} && @{ $self->{continue}{stmts} }) {
-            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_compile_time_block($self->{continue}{stmts}) ]
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::CompileTime::emit_compile_time_block($self->{continue}{stmts}) ]
         }
         return @out;
     }
@@ -292,7 +292,7 @@ package Perlito5::AST::If;
         }
         my @out = ( [ stmt => [ keyword => 'if' ],
                       [ paren => '(', $self->{cond}->emit_compile_time() ],
-                      Perlito5::Perl5::emit_compile_time_block($self->{body}->stmts)
+                      Perlito5::CompileTime::emit_compile_time_block($self->{body}->stmts)
                     ] );
         my $otherwise = $self->{otherwise};
 
@@ -304,7 +304,7 @@ package Perlito5::AST::If;
         {
             push @out, [ stmt => [ keyword => 'elsif' ],
                          [ paren => '(', $otherwise->{stmts}[0]{cond}->emit_compile_time() ],
-                         Perlito5::Perl5::emit_compile_time_block($otherwise->{stmts}[0]{body}{stmts})
+                         Perlito5::CompileTime::emit_compile_time_block($otherwise->{stmts}[0]{body}{stmts})
                        ];
             $otherwise = $otherwise->{stmts}[0]{otherwise};
         }
@@ -312,7 +312,7 @@ package Perlito5::AST::If;
         return @out if !($otherwise && scalar(@{ $otherwise->stmts }));
 
         push @out, [ stmt => [ keyword => 'else' ],
-                     Perlito5::Perl5::emit_compile_time_block($otherwise->stmts)
+                     Perlito5::CompileTime::emit_compile_time_block($otherwise->stmts)
                    ];
         return @out;
     }
@@ -324,7 +324,7 @@ package Perlito5::AST::When;
         my $self = $_[0];
         return [ stmt => [ keyword => 'when' ],
                  [ paren => '(', $self->{cond}->emit_compile_time() ],
-                 Perlito5::Perl5::emit_compile_time_block($self->{body}->stmts)
+                 Perlito5::CompileTime::emit_compile_time_block($self->{body}->stmts)
                ];
     }
 }
@@ -344,10 +344,10 @@ package Perlito5::AST::While;
         }
         push @out, [ stmt => [ keyword => 'while' ],
                      [ paren => '(', $self->{cond}->emit_compile_time() ],
-                     Perlito5::Perl5::emit_compile_time_block($self->{body}->stmts)
+                     Perlito5::CompileTime::emit_compile_time_block($self->{body}->stmts)
                    ];
         if ($self->{continue} && @{ $self->{continue}{stmts} }) {
-            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_compile_time_block($self->{continue}{stmts}) ]
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::CompileTime::emit_compile_time_block($self->{continue}{stmts}) ]
         }
         return @out;
     }
@@ -391,10 +391,10 @@ package Perlito5::AST::For;
         push @out, [ stmt => [ keyword => 'for' ],
                      @sig,
                      $cond,
-                     Perlito5::Perl5::emit_compile_time_block($self->{body}->stmts)
+                     Perlito5::CompileTime::emit_compile_time_block($self->{body}->stmts)
                    ];
         if ($self->{continue} && @{ $self->{continue}{stmts} }) {
-            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::Perl5::emit_compile_time_block($self->{continue}{stmts}) ]
+            push @out, [ stmt => [ keyword => 'continue' ], Perlito5::CompileTime::emit_compile_time_block($self->{continue}{stmts}) ]
         }
         return @out;
     }
@@ -415,7 +415,7 @@ package Perlito5::AST::Sub;
         my @parts;
         push @parts, [ paren => '(', [ bareword => $self->{sig} ] ]
             if defined $self->{sig};
-        push @parts, Perlito5::Perl5::emit_compile_time_block($self->{block}{stmts})
+        push @parts, Perlito5::CompileTime::emit_compile_time_block($self->{block}{stmts})
             if defined $self->{block};
         return [ op => 'prefix:<sub>', @parts ] if !$self->{name};
         return [ stmt => [ keyword => 'sub' ], [ bareword => $self->{namespace} . "::" . $self->{name} ], @parts ];
