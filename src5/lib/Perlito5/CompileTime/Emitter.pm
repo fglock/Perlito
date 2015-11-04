@@ -6,7 +6,7 @@ package Perlito5::CompileTime;
 {
     sub emit_compile_time_block {
         my $block = $_[0];
-        return [ 
+        return [ 'block',
                  map { defined($_) && $_->emit_compile_time() } @$block
                ];
     }
