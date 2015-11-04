@@ -1,8 +1,9 @@
-
-- add bin/perlito5 to EXE_FILES
+9.008 cpan:Perlito5   2015-11-04
+- Makefile - add bin/perlito5 to EXE_FILES section
 - add LICENSE.md
 - Perl5-to-Javascript compiler:
 -- default "print" function tries harder to find a native print
+-- fixed context in readline() - that is, "$x = <$fh>" vs. "@x = <$fh>"
 
 9.007 cpan:Perlito5   2015-10-30
 - add Build.PL

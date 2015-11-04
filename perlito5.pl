@@ -7785,7 +7785,7 @@ use feature 'say';
         {
             sub Perlito5::CompileTime::emit_compile_time_block {
                 my $block = $_[0];
-                return [map {
+                return ['block', map {
                     defined($_) && $_->emit_compile_time()
                 } @{$block}]
             }
@@ -7807,19 +7807,19 @@ use feature 'say';
         package Perlito5::AST::Int;
         {
             sub Perlito5::AST::Int::emit_compile_time {
-                return $_[0]
+                return $_[0]->emit_perl5()
             }
         }
         package Perlito5::AST::Num;
         {
             sub Perlito5::AST::Num::emit_compile_time {
-                return $_[0]
+                return $_[0]->emit_perl5()
             }
         }
         package Perlito5::AST::Buf;
         {
             sub Perlito5::AST::Buf::emit_compile_time {
-                return $_[0]
+                return $_[0]->emit_perl5()
             }
         }
         package Perlito5::AST::Block;
@@ -7829,13 +7829,13 @@ use feature 'say';
                 my @out;
                 $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
                 if ($self->{'name'}) {
-                    push(@out, ['stmt' => ['keyword' => $self->{'name'}], Perlito5::Perl5::emit_compile_time_block($self->{'stmts'})])
+                    push(@out, ['stmt' => ['keyword' => $self->{'name'}], Perlito5::CompileTime::emit_compile_time_block($self->{'stmts'})])
                 }
                 else {
-                    push(@out, Perlito5::Perl5::emit_compile_time_block($self->{'stmts'}))
+                    push(@out, Perlito5::CompileTime::emit_compile_time_block($self->{'stmts'}))
                 }
                 if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
-                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::CompileTime::emit_compile_time_block($self->{'continue'}->{'stmts'})])
                 }
                 return @out
             }
@@ -7997,14 +7997,14 @@ use feature 'say';
                 if ($self->{'otherwise'} && ref($self->{'otherwise'}) ne 'Perlito5::AST::Block') {
                     return ['stmt_modifier' => $self->{'otherwise'}->emit_compile_time(), ['stmt' => 'unless', $self->{'cond'}->emit_compile_time()]]
                 }
-                my @out = (['stmt' => ['keyword' => 'if'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                my @out = (['stmt' => ['keyword' => 'if'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::CompileTime::emit_compile_time_block($self->{'body'}->stmts())]);
                 my $otherwise = $self->{'otherwise'};
                 while ($otherwise && @{$otherwise->{'stmts'}} == 1 && ref($otherwise->{'stmts'}->[0]) eq 'Perlito5::AST::If' && ($otherwise->{'stmts'}->[0]->{'body'} && ref($otherwise->{'stmts'}->[0]->{'body'}) eq 'Perlito5::AST::Block')) {
-                    push(@out, ['stmt' => ['keyword' => 'elsif'], ['paren' => '(', $otherwise->{'stmts'}->[0]->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
+                    push(@out, ['stmt' => ['keyword' => 'elsif'], ['paren' => '(', $otherwise->{'stmts'}->[0]->{'cond'}->emit_compile_time()], Perlito5::CompileTime::emit_compile_time_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
                     $otherwise = $otherwise->{'stmts'}->[0]->{'otherwise'}
                 }
                 !($otherwise && scalar(@{$otherwise->stmts()})) && return @out;
-                push(@out, ['stmt' => ['keyword' => 'else'], Perlito5::Perl5::emit_compile_time_block($otherwise->stmts())]);
+                push(@out, ['stmt' => ['keyword' => 'else'], Perlito5::CompileTime::emit_compile_time_block($otherwise->stmts())]);
                 return @out
             }
         }
@@ -8012,7 +8012,7 @@ use feature 'say';
         {
             sub Perlito5::AST::When::emit_compile_time {
                 my $self = $_[0];
-                return ['stmt' => ['keyword' => 'when'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]
+                return ['stmt' => ['keyword' => 'when'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::CompileTime::emit_compile_time_block($self->{'body'}->stmts())]
             }
         }
         package Perlito5::AST::While;
@@ -8024,9 +8024,9 @@ use feature 'say';
                 if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
                     return @out, ['stmt_modifier' => $self->{'body'}->emit_compile_time(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_compile_time()]]
                 }
-                push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                push(@out, ['stmt' => ['keyword' => 'while'], ['paren' => '(', $self->{'cond'}->emit_compile_time()], Perlito5::CompileTime::emit_compile_time_block($self->{'body'}->stmts())]);
                 if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
-                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::CompileTime::emit_compile_time_block($self->{'continue'}->{'stmts'})])
                 }
                 return @out
             }
@@ -8053,9 +8053,9 @@ use feature 'say';
                 else {
                     @sig = $sig_ast->emit_compile_time()
                 }
-                push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::Perl5::emit_compile_time_block($self->{'body'}->stmts())]);
+                push(@out, ['stmt' => ['keyword' => 'for'], @sig, $cond, Perlito5::CompileTime::emit_compile_time_block($self->{'body'}->stmts())]);
                 if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
-                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl5::emit_compile_time_block($self->{'continue'}->{'stmts'})])
+                    push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::CompileTime::emit_compile_time_block($self->{'continue'}->{'stmts'})])
                 }
                 return @out
             }
@@ -8073,7 +8073,7 @@ use feature 'say';
                 my $self = $_[0];
                 my @parts;
                 defined($self->{'sig'}) && push(@parts, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
-                defined($self->{'block'}) && push(@parts, Perlito5::Perl5::emit_compile_time_block($self->{'block'}->{'stmts'}));
+                defined($self->{'block'}) && push(@parts, Perlito5::CompileTime::emit_compile_time_block($self->{'block'}->{'stmts'}));
                 !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
                 return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @parts]
             }
@@ -8101,7 +8101,8 @@ use feature 'say';
         sub Perlito5::CompileTime::Dumper::generate_eval_string {
             my($source) = @_;
             my $m = Perlito5::Grammar::exp_stmts($source, 0);
-            my @data = Perlito5::Match::flat($m)->[0]->emit_perl5();
+            my $block = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
+            my @data = $block->emit_perl5();
             my $out = [];
             Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
             my $source_new = join('', @{$out}), ';1' . chr(10);
