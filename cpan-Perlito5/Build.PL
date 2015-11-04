@@ -16,6 +16,8 @@ my $build = Module::Build->new
                          },
    requires           => {
                          },
+   script_files       => [ 'bin/perlito5' ],
+   dist_abstract      => 'a Perl5 compiler',
   );
  
 $build->create_build_script;
