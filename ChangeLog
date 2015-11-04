@@ -1,3 +1,5 @@
+- Perl5-to-Javascript compiler:
+-- default "print" function tries harder to find a native print
 
 9.007 cpan:Perlito5   2015-10-30
 - add Build.PL

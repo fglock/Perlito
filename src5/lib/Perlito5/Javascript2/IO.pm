@@ -484,9 +484,23 @@ if (isNode) {
 } else {
     // not running in node.js
     p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
-        var i;
+        var s = "";
         for (var i = 0; i < List__.length; i++) {
-            write(p5str(List__[i]));
+            s = s + p5str(List__[i]);
+        }
+        if (typeof write === 'function') {
+            // d8 shell uses "write"
+            write(s);
+        }
+        else if (typeof print === 'function') {
+            // Rhino uses "print"
+            print(s);
+        }
+        else if (console && typeof console.log === 'function') {
+            console.log(s);
+        }
+        else {
+            alert(s);
         }
         return 1;
     });
