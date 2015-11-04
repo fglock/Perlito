@@ -82,11 +82,11 @@ rm t/wantarray.t                 # (Wstat: 512 Tests: 0 Failed: 0)
 #  Non-zero exit status: 2
 #  Parse errors: No plan found in TAP output
 
-rm t/330-strict.t   # .................. Variable "$x" is not imported at (eval 4) line 1.
-rm t/lex.t   # ......................... Use of literal control characters in variable names is deprecated at (eval 5) line 1.
-rm t/380-tie-array.t   # ............... Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
-rm t/sleep_time.t   # takes time
-
+rm t/330-strict.t       # Variable "$x" is not imported at (eval 4) line 1.
+rm t/lex.t              # Use of literal control characters in variable names is deprecated at (eval 5) line 1.
+rm t/380-tie-array.t    # Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
+rm t/sleep_time.t       # takes time
+rm t/530-hash-slice.t   # https://rt.cpan.org/Public/Bug/Display.html?id=108465
 
 mkdir src
 mkdir src/Perlito5
