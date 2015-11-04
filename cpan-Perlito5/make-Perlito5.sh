@@ -12,6 +12,7 @@ rm *.tar.gz
 touch META.yml
 
 cp ../ChangeLog ./Changes
+cp ../LICENSE.md ./LICENSE.md
 
 mkdir lib
 cp -r ../src5/lib/* lib/
