@@ -10,6 +10,7 @@ WriteMakefile(
     # ABSTRACT_FROM    => 'lib/Perlito5.pm',
     LICENSE          => 'artistic_2',
     PL_FILES         => {},
+    EXE_FILES        => [ 'bin/perlito5' ],
     MIN_PERL_VERSION => 5.006,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,

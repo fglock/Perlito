@@ -1,4 +1,5 @@
 
+- add bin/perlito5 to EXE_FILES
 - add LICENSE.md
 - Perl5-to-Javascript compiler:
 -- default "print" function tries harder to find a native print
