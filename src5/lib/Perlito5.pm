@@ -4,7 +4,11 @@ $VERSION = '9.008';
 
 1;
 
-=head1 Perlito5
+=pod
+
+=head1 NAME
+
+Perlito5 - a Perl5 compiler
 
 =head1 SYNOPSIS
 
@@ -17,11 +21,9 @@ $VERSION = '9.008';
     $Perlito5::PROTO    = {};
     my $ast = Perlito5::Grammar::exp_stmts($perl5_source, 0);
     print Dumper $ast;
-    my $js_source = Perlito5::AST::CompUnit::emit_javascript2_program(
-        [
-            Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) )
-        ]
-    );
+    my $js_source = Perlito5::AST::CompUnit::emit_javascript2_program([
+        Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) )
+    ]);
     print $js_source;
 
 
