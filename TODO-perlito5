@@ -54,12 +54,6 @@ TODO list for Perlito5
 -- tailcalls
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
--- wrong precedence in keys()
-    keys prototype is '+'
-
-    if (keys %hh != 2) { print "not" }
-    parses as: keys(%hh != 2)
-
 -- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
@@ -202,6 +196,12 @@ TODO list for Perlito5
     aliasing of subroutine parameters
 
     prototypes
+
+    ---
+    wrong precedence in keys()
+
+    if (keys %hh != 2) { print "not" }
+    parses as: keys(%hh != 2)
 
     ---
     quotes vs. hash lookups:
