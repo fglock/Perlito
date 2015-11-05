@@ -26,67 +26,32 @@ perldoc -otext lib/Perlito5.pm > README
 mkdir t
 cp -r ../t5/*/*.t t/
 
-rm t/050-string.t                # (Wstat: 0 Tests: 71 Failed: 2)
-#  Failed tests:  37, 58
-rm t/190-bind-sub-param.t        # (Wstat: 0 Tests: 5 Failed: 0)
-#  TODO passed:   4
-rm t/280-hash-autovivify.t       # (Wstat: 0 Tests: 8 Failed: 0)
-#  TODO passed:   8
-rm t/350-syntax-namespace.t      # (Wstat: 0 Tests: 9 Failed: 0)
-#  TODO passed:   6-9
-rm t/410-ampersand.t             # (Wstat: 0 Tests: 32 Failed: 0)
-#  TODO passed:   24-25, 28
-rm t/420-vstring.t               # (Wstat: 0 Tests: 3 Failed: 0)
-#  TODO passed:   1, 3
-rm t/auto.t                      # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/do.t                        # (Wstat: 65280 Tests: 0 Failed: 0)
-#  Non-zero exit status: 255
-#  Parse errors: No plan found in TAP output
-rm t/exp.t                       # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/for.t                       # (Wstat: 0 Tests: 116 Failed: 0)
-#  TODO passed:   13
-rm t/index.t                     # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/list.t                      # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/mod.t                       # (Wstat: 0 Tests: 13 Failed: 1)
-#  Failed test:  8
-rm t/negate.t                    # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/not.t                       # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/pow.t                       # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/repeat.t                    # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/split.t                     # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/sub.t                       # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/unshift.t                   # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-rm t/wantarray.t                 # (Wstat: 512 Tests: 0 Failed: 0)
-#  Non-zero exit status: 2
-#  Parse errors: No plan found in TAP output
-
-rm t/330-strict.t       # Variable "$x" is not imported at (eval 4) line 1.
-rm t/lex.t              # Use of literal control characters in variable names is deprecated at (eval 5) line 1.
-rm t/380-tie-array.t    # Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
-rm t/sleep_time.t       # takes time
-rm t/530-hash-slice.t   # https://rt.cpan.org/Public/Bug/Display.html?id=108465
+rm t/050-string.t            # (Wstat: 0 Tests: 71 Failed: 2) -  Failed tests:  37, 58
+rm t/190-bind-sub-param.t    # (Wstat: 0 Tests: 5 Failed: 0) -  TODO passed:   4
+rm t/280-hash-autovivify.t   # (Wstat: 0 Tests: 8 Failed: 0) -  TODO passed:   8
+rm t/350-syntax-namespace.t  # (Wstat: 0 Tests: 9 Failed: 0) -  TODO passed:   6-9
+rm t/410-ampersand.t         # (Wstat: 0 Tests: 32 Failed: 0) -  TODO passed:   24-25, 28
+rm t/420-vstring.t           # (Wstat: 0 Tests: 3 Failed: 0) -  TODO passed:   1, 3
+rm t/auto.t                  # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/do.t                    # (Wstat: 65280 Tests: 0 Failed: 0) -  Non-zero exit status: 255
+rm t/exp.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/for.t                   # (Wstat: 0 Tests: 116 Failed: 0) -  TODO passed:   13
+rm t/index.t                 # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/list.t                  # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/mod.t                   # (Wstat: 0 Tests: 13 Failed: 1) -  Failed test:  8
+rm t/negate.t                # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/not.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/pow.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/repeat.t                # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/split.t                 # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/sub.t                   # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/unshift.t               # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/wantarray.t             # (Wstat: 512 Tests: 0 Failed: 0) -  Non-zero exit status: 2
+rm t/330-strict.t            # Variable "$x" is not imported at (eval 4) line 1.
+rm t/lex.t                   # Use of literal control characters in variable names is deprecated at (eval 5)
+rm t/380-tie-array.t         # Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
+rm t/sleep_time.t            # takes time
+rm t/530-hash-slice.t        # https://rt.cpan.org/Public/Bug/Display.html?id=108465
 
 mkdir src
 mkdir src/Perlito5
@@ -94,7 +59,13 @@ mkdir src/Perlito5/Grammar
 cp -r ../src5/lib/Perlito5/Grammar.pm   src/Perlito5/
 cp -r ../src5/lib/Perlito5/Grammar/*.pm src/Perlito5/Grammar/
 
-# Expand all grammars to Perl code
+# these grammar files are plain-Perl and do not need precompilation
+# ack -L '^s*token ' ../src5
+rm src/lib/Perlito5/Grammar/Attribute.pm
+rm src/lib/Perlito5/Grammar/Scope.pm
+rm src/lib/Perlito5/Grammar/Sigil.pm
+
+# Expand all grammars to plain-Perl code
 # ack -l '^s*token ' ../src5
 perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Bareword.pm    > lib/Perlito5/Grammar/Bareword.pm  
 perl ../perlito5.pl --noexpand_use --bootstrapping -I ../src5/lib -Cperl5 ../src5/lib/Perlito5/Grammar/Map.pm         > lib/Perlito5/Grammar/Map.pm       
