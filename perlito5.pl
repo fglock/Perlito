@@ -547,7 +547,7 @@ use feature 'say';
                     $m_name->{'to'} = $p;
                     return $m_name
                 }
-                if ($sig eq '_' || $sig eq '$' || $sig eq ';$') {
+                if ($sig eq '_' || $sig eq '$' || $sig eq '+' || $sig eq ';$') {
                     my $m;
                     my $arg;
                     if (substr($str, $p, 1) eq '(') {
@@ -10709,7 +10709,7 @@ use feature 'say';
                 my($self, $level, $wantarray) = @_;
                 my @in = @{$self->{'arguments'}};
                 my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply');
-                return 'CORE.readline([' . $fun->emit_javascript2($level) . '])'
+                return 'CORE.readline([' . $fun->emit_javascript2($level) . '], ' . Perlito5::Javascript2::to_context($wantarray) . ')'
             }, 'map' => sub {
                 my($self, $level, $wantarray) = @_;
                 my @in = @{$self->{'arguments'}};

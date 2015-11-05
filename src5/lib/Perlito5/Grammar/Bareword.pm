@@ -425,7 +425,7 @@ sub term_bareword {
         ### print Perlito5::Dumper::Dumper(\@args);
         ### die "TODO";
 
-        if ( $sig eq '_' || $sig eq '$' || $sig eq ';$' ) {
+        if ( $sig eq '_' || $sig eq '$' || $sig eq '+' || $sig eq ';$' ) {
             my $m;
             my $arg;
             if ( substr($str, $p, 1) eq '(' ) {
