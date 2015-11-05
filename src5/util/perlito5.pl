@@ -80,7 +80,8 @@ perlito5 [switches] [programfile]
                     expand 'use' statements at compile time
     --boilerplate --noboilerplate
                     emits or not boilerplate code
-    --bootstrapping set this when compiling the compiler
+    --bootstrapping set this when compiling the compiler,
+                    otherwise the new subroutine definitions will overwrite the current compiler
 ";
 my $copyright_message = <<"EOT";
 This is Perlito5 $_V5_COMPILER_VERSION, an implementation of the Perl language.
