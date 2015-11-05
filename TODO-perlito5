@@ -3,6 +3,15 @@ TODO list for Perlito5
 
 * perlito5 command-line
 
+-- perlito5 from CPAN has errors when compiling itself to Javascript:
+
+    $ perlito5 --bootstrapping -Cjs `which perlito5` > perlito5.js
+    $ node perlito5.js -Cjs -e ' print "hello, World!\n" '
+        /Users/flavioglock/tmp/perlito5.js:1227
+                            throw(err)
+                                  ^
+        TypeError: Cannot call method 'hasOwnProperty' of undefined
+
 
 * libraries
 
