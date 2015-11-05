@@ -326,21 +326,28 @@ if ($backend && @ARGV) {
             }
             else {
                 my $comp_units;
-                if ($expand_use) {
-                    my $ok;
-                    eval {
-                        $comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m));
-                        $ok = 1;
-                    };
-                    if ( !$ok ) {
-                        my $error = $@
-                            || "Unknown error loading a module";
-                        warn $error;
-                        exit(255);
-                    }
+                if ($ENV{PERLITO5DEV}) {
+                    # "new BEGIN"
+                    $comp_units = Perlito5::Match::flat($m);
                 }
                 else {
-                    $comp_units = Perlito5::Match::flat($m);
+                    # "old BEGIN"
+                    if ($expand_use) {
+                        my $ok;
+                        eval {
+                            $comp_units = Perlito5::Grammar::Use::add_comp_unit(Perlito5::Match::flat($m));
+                            $ok = 1;
+                        };
+                        if ( !$ok ) {
+                            my $error = $@
+                                || "Unknown error loading a module";
+                            warn $error;
+                            exit(255);
+                        }
+                    }
+                    else {
+                        $comp_units = Perlito5::Match::flat($m);
+                    }
                 }
 
                 $comp_units = [

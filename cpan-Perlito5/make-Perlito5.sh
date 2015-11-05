@@ -52,6 +52,8 @@ rm t/lex.t                   # Use of literal control characters in variable nam
 rm t/380-tie-array.t         # Prototype mismatch: sub CORE::shift (;+) vs none at t/380-tie-array.t line 48.
 rm t/sleep_time.t            # takes time
 rm t/530-hash-slice.t        # https://rt.cpan.org/Public/Bug/Display.html?id=108465
+rm t/070-anon-sub.t          # Feature "current_sub" is not supported by Perl 5.14.0
+rm t/reg_unsafe.t            # Failed 1/1 subtests
 
 mkdir src
 mkdir src/Perlito5

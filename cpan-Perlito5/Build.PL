@@ -15,6 +15,7 @@ my $build = Module::Build->new
                           'Module::Build' => '0.20',
                          },
    requires           => {
+                           'perl' => 5.014,
                          },
    script_files       => [ 'bin/perlito5' ],
    dist_abstract      => 'a Perl5 compiler',

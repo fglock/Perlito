@@ -1,5 +1,8 @@
-
-- Build - add bin/perlito5 to script_files section, add dist_abstract
+9.009 cpan:Perlito5  2015-11-05
+- Build:
+-- add bin/perlito5 to script_files section, add dist_abstract
+-- requires perl 5.014 because older versions don't have 'feature.pm',
+   which breaks tests
 - Parser:
 -- update CORE prototypes to Perl v5.22 - use (+) instead of (\\[@%])
 - Perl5-to-Javascript compiler:

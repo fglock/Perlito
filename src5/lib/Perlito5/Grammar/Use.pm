@@ -313,6 +313,17 @@ sub expand_use {
         die('Syntax Error near ', $m->{'to'})
     }
 
+    if ($ENV{PERLITO5DEV}) {
+        # "new BEGIN"
+        push @$comp_units,
+            Perlito5::AST::CompUnit->new(
+                name => 'main',
+                body => Perlito5::Match::flat($m),
+            );
+        return;
+    }
+
+    # "old BEGIN"
     push @$comp_units, @{ add_comp_unit(
         [
             Perlito5::AST::CompUnit->new(
@@ -321,6 +332,7 @@ sub expand_use {
             )
         ]
     ) };
+    return;
 }
 
 sub add_comp_unit {
