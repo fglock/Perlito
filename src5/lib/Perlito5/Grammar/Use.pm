@@ -154,8 +154,7 @@ token stmt_use {
                         mod       => $full_ident,
                         arguments => $list
                     );
-                parse_time_eval($ast);
-                $MATCH->{capture} = $ast;
+                $MATCH->{capture} = parse_time_eval($ast);
             }
         }
     |
@@ -208,6 +207,20 @@ sub parse_time_eval {
                 }
             }
         }
+    }
+
+    my $comp_units = [];
+    expand_use($comp_units, $ast);
+    if (@$comp_units) {
+        # TODO - move @comp_units to top-level of the AST
+        return Perlito5::AST::Block->new( stmts => $comp_units );
+    }
+    else {
+        return Perlito5::AST::Apply->new(
+            code      => 'undef',
+            namespace => '',
+            arguments => []
+        );
     }
 }
 
@@ -302,6 +315,7 @@ sub expand_use {
 }
 
 sub add_comp_unit {
+    # TODO - this subroutine is obsolete
     my $parse = shift;
     my $comp_units = [];
 
