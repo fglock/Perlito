@@ -4,6 +4,7 @@ use v5;
 
 package Perlito5;
 use feature 'say';
+use Perlito5;
 use Perlito5::Compiler;
 use Perlito5::CompileTime::Emitter;
 use Perlito5::CompileTime::Dumper;
@@ -43,7 +44,7 @@ use Perlito5::Java::Runtime;
 use strict;
 
 my $_V5_COMPILER_NAME    = 'Perlito5';
-my $_V5_COMPILER_VERSION = '9.0';
+my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
 my $source      = '';
 my $backend     = $^O;
 my $execute     = 1;
