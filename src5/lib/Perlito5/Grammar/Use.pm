@@ -174,8 +174,18 @@ sub parse_time_eval {
 
     $arguments = [] unless defined $arguments;
 
+    # the first time the module is seen,
+    # load the module source code
+    # and create a syntax tree
+    # TODO: the module should run in a new scope
+    #   without access to the current lexical variables
+    my $comp_units = [];
+    expand_use($comp_units, $ast);
+
     if ( $Perlito5::EXPAND_USE ) {
-        # normal "use" is not disabled, go for it
+        # normal "use" is not disabled, go for it:
+        #   - require the module (evaluate the source code)
+        #   - run import()
 
         my $current_module_name = $Perlito5::PKG_NAME;
 
@@ -209,13 +219,12 @@ sub parse_time_eval {
         }
     }
 
-    my $comp_units = [];
-    expand_use($comp_units, $ast);
     if (@$comp_units) {
         # TODO - move @comp_units to top-level of the AST
         return Perlito5::AST::Block->new( stmts => $comp_units );
     }
     else {
+        # when seeing "use" a second time, no further code is generated
         return Perlito5::AST::Apply->new(
             code      => 'undef',
             namespace => '',
