@@ -2774,6 +2774,34 @@ package Perlito5::AST::Apply;
                 elsif ($c eq '$' || $c eq '_') {
                     push @out, shift(@in)->emit_javascript2( $level + 1, 'scalar' ) if @in || !$optional;
                 }
+                elsif ($c eq '+') {
+
+                    # The "+" prototype is a special alternative to "$" that will act like
+                    # "\[@%]" when given a literal array or hash variable, but will otherwise
+                    # force scalar context on the argument.
+                    if (@in || !$optional) {
+                        my $in = shift(@in);
+                        if (  (  $in->isa('Perlito5::AST::Apply')
+                              && $in->{code} eq 'prefix:<@>'
+                              )
+                           || (  $in->isa('Perlito5::AST::Var')
+                              && $in->sigil eq '@'
+                              )
+                           || (  $in->isa('Perlito5::AST::Apply')
+                              && $in->{code} eq 'prefix:<%>'
+                              )
+                           || (  $in->isa('Perlito5::AST::Var')
+                              && $in->sigil eq '%'
+                              )
+                           )
+                        {
+                            push @out, $in->emit_javascript2( $level + 1, 'list' );
+                        }
+                        else {
+                            push @out, $in->emit_javascript2( $level + 1, 'scalar' );
+                        }
+                    }
+                }
                 elsif ($c eq '@') {
                     $close = '].concat(' . Perlito5::Javascript2::to_list(\@in, $level + 1) . ')'
                         if @in || !$optional;
