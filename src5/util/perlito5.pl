@@ -423,7 +423,7 @@ if ($backend && @ARGV) {
                     say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
                 }
                 elsif ($backend eq '_globals') {
-                    say Perlito5::CompileTime::Dumper::emit_globals_scope($Perlito5::SCOPE);
+                    # say Perlito5::CompileTime::Dumper::emit_globals_scope($Perlito5::SCOPE);
                     say Perlito5::CompileTime::Dumper::emit_globals($Perlito5::GLOBAL);
                 }
                 elsif ($backend eq '_compile_time') {
