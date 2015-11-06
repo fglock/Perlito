@@ -210,13 +210,21 @@ token named_sub_def {
                 $block->{name} = $full_name;
             }
         }
-        $MATCH->{capture} = Perlito5::AST::Sub->new(
+        my $sub = Perlito5::AST::Sub->new(
             name       => $name, 
             namespace  => $namespace,
             sig        => $sig, 
             block      => $MATCH->{_tmp},
             attributes => $attributes,
-        ) 
+        );
+        $MATCH->{capture} = $sub;
+
+        if ($ENV{PERLITO5DEV}) {
+            if ($name) {
+                # add named sub to SCOPE
+                push @Perlito5::SCOPE_STMT, $sub;
+            }
+        }
     }
 };
 
