@@ -222,7 +222,8 @@ token named_sub_def {
         if ($ENV{PERLITO5DEV}) {
             if ($name) {
                 # add named sub to SCOPE
-                push @Perlito5::SCOPE_STMT, $sub;
+                my $full_name = "${namespace}::$name";
+                $Perlito5::GLOBAL->{$full_name} = $sub;
             }
         }
     }

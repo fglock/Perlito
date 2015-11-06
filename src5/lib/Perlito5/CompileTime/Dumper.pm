@@ -191,7 +191,9 @@ sub _emit_globals {
     }
 }
 
-sub emit_globals {
+sub emit_globals_scope {
+    # OBSOLETE
+
     # return a structure with the global variable declarations
     # this is used to initialize the ahead-of-time program
     my $scope = shift() // $Perlito5::BASE_SCOPE;
@@ -201,6 +203,47 @@ sub emit_globals {
     my $tab = "";
     _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
     return join("", @vars);
+}
+
+sub emit_globals {
+    # return a structure with the global variable declarations
+    # this is used to initialize the ahead-of-time program
+    my $scope = shift() // $Perlito5::GLOBAL;
+    my $vars = [];
+    my $seen = {};
+    my $dumper_seen = {};
+    my $tab = "";
+
+    for my $name (keys %$scope) {
+        # print STDERR "dump $name\n";
+        my $item = $scope->{$name};
+        if (ref($item) eq 'Perlito5::AST::Var' && !$item->{_decl}) {
+            $item->{_decl} = 'global';
+        }
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'global') {
+            $item->{namespace} ||= $item->{_namespace};
+            next if $item->{name} eq '0' || $item->{name} > 0;  # skip regex and $0
+            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
+        }
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
+            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
+        }
+        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'my') {
+            my $id = $item->{_id};
+            if (!$seen->{$id}) {
+                push @$vars, $tab . "# my " . $item->{sigil} . $item->{name} . ";\n";
+            }
+            $seen->{$id} = 1;
+        }
+        if ( ref($item) eq 'HASH' && $item->{block} ) {
+            # lookup in the inner scope
+            push @$vars, $tab . "{\n";
+            _emit_globals($item, $seen, $dumper_seen, $vars, $tab . "  ");
+            push @$vars, $tab . "}\n";
+        }
+    }
+
+    return join("", @$vars);
 }
 
 1;

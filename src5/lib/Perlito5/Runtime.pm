@@ -30,6 +30,7 @@ our $LINE_NUMBER  = 0;    # current line number being compiled
 our $FILE_NAME    = '';   # current file name being compiled
 
 # information about the current compilation process
+our $GLOBAL       = {};
 our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
 our $SCOPE_DEPTH  = 0;
