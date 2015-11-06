@@ -4,7 +4,7 @@ MANIFEST.bak
 blib
 MYMETA.json
 MYMETA.yml
-Makefile
+Makefile$
 _build
-Build
+Build$
 

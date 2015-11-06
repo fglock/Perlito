@@ -1,3 +1,7 @@
+
+9.010 cpan:Perlito5  2015-11-06
+- fix MANIFEST.SKIP
+
 9.009 cpan:Perlito5  2015-11-05
 - Build:
 -- add bin/perlito5 to script_files section, add dist_abstract
