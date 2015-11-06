@@ -209,8 +209,15 @@ sub emit_globals {
     my $dumper_seen = {};
     my $tab = "";
 
+    # TODO
+    #   - move global variables from SCOPE to GLOBAL
+
     # problems to look for:
     #   - lexical variables shared across closures
+    #   - our variables
+    #   - in order to conserve memory, create subroutine stubs that expand into instrumented code
+    #       when called
+    #   - bootstrapping rewrites Perlito5::* subroutines and globals, probably breaking the compiler
 
     # example of how to enable this dump:
     #   $ PERLITO5DEV=1 perl perlito5.pl -Isrc5/lib -I. -It -C_globals -e ' use X; xxx(); sub xyz { 123 } my $z; BEGIN { $a = 3; $z = 3 } '
