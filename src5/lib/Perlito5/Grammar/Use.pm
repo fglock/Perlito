@@ -154,7 +154,12 @@ token stmt_use {
                         mod       => $full_ident,
                         arguments => $list
                     );
-                $MATCH->{capture} = parse_time_eval($ast);
+                if ($Perlito5::EMIT_USE) {
+                    $MATCH->{capture} = $ast;
+                }
+                else {
+                    $MATCH->{capture} = parse_time_eval($ast);
+                }
             }
         }
     |
@@ -180,7 +185,10 @@ sub parse_time_eval {
     # TODO: the module should run in a new scope
     #   without access to the current lexical variables
     my $comp_units = [];
-    expand_use($comp_units, $ast);
+
+    if ( !$Perlito5::EXPAND_USE ) {
+        expand_use($comp_units, $ast);
+    }
 
     if ( $Perlito5::EXPAND_USE ) {
         # normal "use" is not disabled, go for it:

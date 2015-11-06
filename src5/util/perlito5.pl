@@ -231,6 +231,10 @@ while (substr($ARGV[0], 0, 1) eq '-'
     }
 }
 
+if (!$expand_use) {
+    $Perlito5::EMIT_USE = 1;
+}
+
 if ($backend && @ARGV) {
     local $Perlito5::FILE_NAME = $ARGV[0];
     local $Perlito5::LINE_NUMBER = 1;
