@@ -1,4 +1,7 @@
 
+9.011 cpan:Perlito5  2015-11-06
+- fix command line option "expand_use"
+
 9.010 cpan:Perlito5  2015-11-06
 - fix MANIFEST.SKIP
 
