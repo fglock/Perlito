@@ -126,7 +126,7 @@ sub _dump_global {
     if (ref($item) eq 'Perlito5::AST::Sub') {
         my $n = $item->{namespace} . "::" . $item->{name};
         if (!$seen->{$n}) {
-            push @$vars, $tab . "sub $n = " . _dumper( eval $n, "  ", $dumper_seen, $n ) . ";\n";
+            push @$vars, $tab . "sub $n = " . _dumper( $item, "  ", $dumper_seen, $n ) . ";\n";
             $seen->{$n} = 1;
         }
     }
@@ -172,9 +172,6 @@ sub _emit_globals {
             next if $item->{name} eq '0' || $item->{name} > 0;  # skip regex and $0
             _dump_global($item, $seen, $dumper_seen, $vars, $tab);
         }
-        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
-            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-        }
         if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'my') {
             my $id = $item->{_id};
             if (!$seen->{$id}) {
@@ -192,8 +189,6 @@ sub _emit_globals {
 }
 
 sub emit_globals_scope {
-    # OBSOLETE
-
     # return a structure with the global variable declarations
     # this is used to initialize the ahead-of-time program
     my $scope = shift() // $Perlito5::BASE_SCOPE;
@@ -213,6 +208,12 @@ sub emit_globals {
     my $seen = {};
     my $dumper_seen = {};
     my $tab = "";
+
+    # problems to look for:
+    #   - lexical variables shared across closures
+
+    # example of how to enable this dump:
+    #   $ PERLITO5DEV=1 perl perlito5.pl -Isrc5/lib -I. -It -C_globals -e ' use X; xxx(); sub xyz { 123 } my $z; BEGIN { $a = 3; $z = 3 } '
 
     for my $name (keys %$scope) {
         # print STDERR "dump $name\n";
