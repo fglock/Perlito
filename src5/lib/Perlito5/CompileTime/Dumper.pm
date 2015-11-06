@@ -234,7 +234,8 @@ sub emit_globals {
             _dump_global($item, $seen, $dumper_seen, $vars, $tab);
         }
         else {
-            push @$vars, "$name = " . _dumper( $item, "  ", $dumper_seen, $name ) . ";\n";
+            $item->{value} = eval($name);
+            push @$vars, "$name = " . _dumper( $item, "  ", $dumper_seen, $name . "->{value}" ) . ";\n";
         }
     }
     return join("", @$vars);
