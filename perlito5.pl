@@ -20,7 +20,7 @@ use feature 'say';
         {
             package main;
             package Perlito5;
-            $VERSION = '9.010';
+            $VERSION = 9.011;
             1
         }
     }

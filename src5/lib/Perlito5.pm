@@ -27,7 +27,7 @@ Perlito5 - a Perl5 compiler
     print $js_source;
 
 
-=head1 COMMAND LINE
+    # in the command line:
 
     perlito5 --help
 
@@ -40,6 +40,28 @@ This program reads Perl5 source code and generates native code.
 The compiler options are available with the command:
 
     perlito5 -h
+
+=head1 COOKBOOK
+
+=head2 Obtaining a "perlito5.js" script that executes in the "node.js" Javascript compiler
+
+    # Step 1: use perlito5 to compile perlito5 to Javascript.
+    perlito5 --bootstrapping -Cjs `which perlito5` > perlito5.js
+
+    # Step 2: ensure that PERL5LIB points to the directory where Perlito5.pm is installed.
+    echo $PERL5LIB
+
+    # Step 3: set PERL5LIB if needed.
+    perldoc -l Perlito5
+       # /usr/local/lib/perl5/site_perl/5.20.1/Perlito5.pm
+    export PERL5LIB=/usr/local/lib/perl5/site_perl/5.20.1
+
+    # Step 4: install nodejs if needed.
+
+    # Step 5: this should work now:
+    nodejs perlito5.js -e ' print "hello, World!\n" '
+        # hello, World!
+
 
 =head1 AUTHORS
 

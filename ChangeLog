@@ -1,3 +1,6 @@
+- Docs:
+-- started "Cookbook" section in Perlito5.pm POD
+   with instructions to generate perlito5.js
 
 9.011 cpan:Perlito5  2015-11-06
 - fix command line option "expand_use"
