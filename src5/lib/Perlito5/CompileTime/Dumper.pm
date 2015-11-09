@@ -219,11 +219,18 @@ sub emit_globals {
     #   - move global variables from SCOPE to GLOBAL
 
     # problems to look for:
+    #   - closures created in loops in BEGIN blocks share variable names,
+    #       but the variables belong to different "pads" / activation records"
     #   - lexical variables shared across closures
     #   - our variables
-    #   - in order to conserve memory, create subroutine stubs that expand into instrumented code
-    #       when called
-    #   - bootstrapping rewrites Perlito5::* subroutines and globals, probably breaking the compiler
+    #   - in order to conserve memory at compile-time,
+    #       create subroutine stubs that expand into instrumented code when called
+    #   - bootstrapping rewrites Perlito5::* subroutines and globals, probably breaking the compiler.
+    #       special-casing the Perlito5 namespace at compile-time should work around the problem.
+
+    # Note
+    #   - variables with 'undef' value don't need to be processed,
+    #     because the runtime will re-create them
 
     # example of how to enable this dump:
     #   $ PERLITO5DEV=1 perl perlito5.pl -Isrc5/lib -I. -It -C_globals -e ' use X; xxx(); sub xyz { 123 } my $z; BEGIN { $a = 3; $z = 3 } '
