@@ -219,6 +219,10 @@ sub emit_globals {
     #   - move global variables from SCOPE to GLOBAL
     #   - analyze the list of captures and resolve aliases (shared lexicals)
 
+    #   - this Perl warning should probably be fatal in Perlito5:
+    #       Variable "$z" will not stay shared
+    #     the "perl" behaviour is hard to replicate - see misc/compile-time/
+
     # problems to look for:
     #   - closures created in loops in BEGIN blocks share variable names,
     #       but the variables belong to different "pads" / activation records"

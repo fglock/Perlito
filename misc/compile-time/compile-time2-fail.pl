@@ -1,4 +1,18 @@
 use strict;
+use warnings;
+
+# Note - this script has 2 problems:
+# - variable redeclarations,
+# - sharing compile-time lexicals in inner closures
+#
+# Variable "$z" will not stay shared at x.pl line 8.
+# Variable "$z" will not stay shared at x.pl line 9.
+# "my" variable $z masks earlier declaration in same scope at x.pl line 10.
+# Variable "$z" will not stay shared at x.pl line 11.
+# Variable "$z" will not stay shared at x.pl line 12.
+# Variable "$z" will not stay shared at x.pl line 14.
+# Variable "$z" will not stay shared at x.pl line 15.
+#
 
 #--------------------------
 
