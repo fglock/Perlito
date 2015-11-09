@@ -236,6 +236,11 @@ sub emit_globals {
     #               BEGIN { *z1 = sub { $z } }
     #        }
     #
+    #       sub z0 {
+    #           my $z = shift;
+    #           BEGIN { $z }
+    #       }
+    #
     #     the variable '$z' will be shared only on the 'first' execution of 'z0';
     #     subsequent executions of 'z0' will create a new pad.
 
@@ -243,7 +248,7 @@ sub emit_globals {
     #   - closures created in loops in BEGIN blocks share variable names,
     #       but the variables belong to different "pads" / activation records"
     #   - closures created after variable redefinition don't share variables
-    #   - lexical variables shared across closures
+    #   - lexical variables can be shared across closures
     #   - our variables
     #   - in order to conserve memory at compile-time,
     #       create subroutine stubs that expand into instrumented code when called
