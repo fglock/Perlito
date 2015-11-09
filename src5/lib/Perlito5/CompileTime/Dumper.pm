@@ -217,12 +217,17 @@ sub emit_globals {
 
     # TODO
     #   - move global variables from SCOPE to GLOBAL
-    #   - analyze the list of captures and resolve aliases (shared lexicals)
+    #   - analyze the list of captures and resolve shared lexicals
+    #       - when 2 closures share code, we need to decide if the captured
+    #         variables are shared or not.
+    #         Closures can have un-shared variables if the closure is created
+    #         in a loop inside BEGIN
+    #       - shared lexicals can be obtained from the data in $Perlito5::SCOPE
 
     #   - this Perl warning should probably be fatal in Perlito5:
     #       Variable "$z" will not stay shared
-    #     the "perl" behaviour is hard to replicate - see misc/compile-time/
-    #     example:
+    #     the "perl" behaviour is hard to replicate - see misc/compile-time.
+    #     Example:
     #
     #       use strict; use warnings;
     #       sub z0 {
@@ -233,8 +238,8 @@ sub emit_globals {
     #     alternately:
     #       sub z0 {
     #           my $z = shift;
-    #               BEGIN { *z1 = sub { $z } }
-    #        }
+    #           BEGIN { *z1 = sub { $z } }
+    #       }
     #
     #       sub z0 {
     #           my $z = shift;
@@ -243,6 +248,10 @@ sub emit_globals {
     #
     #     the variable '$z' will be shared only on the 'first' execution of 'z0';
     #     subsequent executions of 'z0' will create a new pad.
+    #
+    #     BEGIN blocks inside loops have a similar problem, but don't
+    #     generate a warning in "perl".
+
 
     # problems to look for:
     #   - closures created in loops in BEGIN blocks share variable names,

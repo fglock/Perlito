@@ -30,13 +30,13 @@ use warnings;
   
     # after compile-time env
     # 'my' variables in the compile-time scratchpad
-    my @v__0 = (undef);  # $v is not initialized at compile-time
-    my @z__3 = (40); # BEGIN
-    my @count__0 = (undef);  # $count is not initialized at compile-time
+    # my @v__0 = (undef);      # $v is not initialized at compile-time
+    my @z__3 = (40);         # BEGIN
+    # my @count__0 = (undef);  # $count is not initialized at compile-time
 
-    # runtime initialization
-    my $v = shift @v__0;
-    my $count = shift @count__0;
+    # runtime initialization skipped because the compile-time value is 'undef'
+    # my $v = shift @v__0;
+    # my $count = shift @count__0;
 
     # runtime
     my $v = 3;
