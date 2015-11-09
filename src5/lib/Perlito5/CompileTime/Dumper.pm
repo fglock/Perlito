@@ -222,6 +222,22 @@ sub emit_globals {
     #   - this Perl warning should probably be fatal in Perlito5:
     #       Variable "$z" will not stay shared
     #     the "perl" behaviour is hard to replicate - see misc/compile-time/
+    #     example:
+    #
+    #       use strict; use warnings;
+    #       sub z0 {
+    #           my $z = shift;
+    #           sub z1 { $z }
+    #       }
+    #
+    #     alternately:
+    #       sub z0 {
+    #           my $z = shift;
+    #               BEGIN { *z1 = sub { $z } }
+    #        }
+    #
+    #     the variable '$z' will be shared only on the 'first' execution of 'z0';
+    #     subsequent executions of 'z0' will create a new pad.
 
     # problems to look for:
     #   - closures created in loops in BEGIN blocks share variable names,
