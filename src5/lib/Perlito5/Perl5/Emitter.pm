@@ -488,6 +488,7 @@ package Perlito5::AST::Sub;
                 # with all captured variables
                 # 
                 #   @_ && ref($_[0]) eq "Perlito5::dump" && return "do { my \$x = $x; sub { \$_[0] + \$x;  } }" }
+                #   @_ && ref($_[0]) eq "Perlito5::dump" && return { '$x' => \$x }
                 push @extra,
                   [
                     'op', 'infix:<&&>',

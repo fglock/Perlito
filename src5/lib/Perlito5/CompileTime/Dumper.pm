@@ -217,10 +217,12 @@ sub emit_globals {
 
     # TODO
     #   - move global variables from SCOPE to GLOBAL
+    #   - analyze the list of captures and resolve aliases (shared lexicals)
 
     # problems to look for:
     #   - closures created in loops in BEGIN blocks share variable names,
     #       but the variables belong to different "pads" / activation records"
+    #   - closures created after variable redefinition don't share variables
     #   - lexical variables shared across closures
     #   - our variables
     #   - in order to conserve memory at compile-time,
