@@ -11,6 +11,8 @@ our %Named_block = (
     CHECK     => 1,
     INIT      => 1,
     END       => 1,
+    AUTOLOAD  => 1,
+    DESTROY   => 1,
 );
 
 sub block {
@@ -138,6 +140,16 @@ sub special_named_block {
                 code => 'undef',
                 namespace => '',
                 arguments => []
+            );
+    }
+    elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
+        $m->{capture} = 
+            Perlito5::AST::Sub->new(
+                'attributes' => [],
+                'block' => $block,
+                'name' => $block_name,
+                'namespace' => $Perlito5::PKG_NAME,
+                'sig' => undef,
             );
     }
     else {
