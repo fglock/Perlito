@@ -145,6 +145,8 @@ TODO list for Perlito5
     
     $ perl -e ' $; = 3; print ${ ; } '
     3
+    $ perl -e ' $} = 3; print ${ } } '
+    3
 
     Not allowed:
 
