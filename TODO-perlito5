@@ -133,6 +133,26 @@ TODO list for Perlito5
     $ perl -e ' sub x { { 1; } }  print x() , "\n" '
     1
 
+-- sigils in blocks
+
+    Allowed:
+
+    $ perl -e ' ${ for (1,2,3) {} } '
+    $ perl -e ' @{ for (1,2,3) {} } '
+    $ perl -e ' %{ for (1,2,3) {} } '
+    $ perl -e ' *{ for (1,2,3) {} } '
+    $ perl -e ' $#{ for (1,2,3) {} } '
+    
+    Not allowed:
+
+    $ perl -e ' \{ for (1,2,3) {} } '
+    syntax error at -e line 1, near "{ for "
+    Execution of -e aborted due to compilation errors.
+    
+    $ perl -e ' $a{ for (1,2,3) {} } '
+    syntax error at -e line 1, near "{ for "
+
+
 -- "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
