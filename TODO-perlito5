@@ -143,6 +143,9 @@ TODO list for Perlito5
     $ perl -e ' *{ for (1,2,3) {} } '
     $ perl -e ' $#{ for (1,2,3) {} } '
     
+    $ perl -e ' $; = 3; print ${ ; } '
+    3
+
     Not allowed:
 
     $ perl -e ' \{ for (1,2,3) {} } '
@@ -151,6 +154,10 @@ TODO list for Perlito5
     
     $ perl -e ' $a{ for (1,2,3) {} } '
     syntax error at -e line 1, near "{ for "
+
+    $ perl -e ' print ${ } '
+    syntax error at -e line 1, near "${ "
+    Execution of -e aborted due to compilation errors.
 
 
 -- "namespace" parsing
