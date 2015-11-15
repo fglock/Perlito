@@ -4045,6 +4045,9 @@ use feature 'say';
                                             return $m
                                         }
                                     }
+                                    if (substr($str, $p, 1) eq '}') {
+                                        die('syntax error')
+                                    }
                                     $m = Perlito5::Grammar::Expression::curly_parse($str, $p);
                                     if ($m) {
                                         my $p = $m->{'to'};
