@@ -182,6 +182,7 @@ sub term_sigil {
     my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
     $p = $m->{to};
 
+    my $p0 = $p;
     $c1 = substr($str, $p, 1);
     my $q = $p + 1;
     if ( $c1 eq '{' ) {
@@ -237,15 +238,11 @@ sub term_sigil {
             }
             if ( substr($str, $p, 1) eq '}' ) {
                 $caret->{capture} = [ 'term', 
-                        Perlito5::AST::Apply->new(
-                            'arguments' => [
-                                Perlito5::AST::Buf->new(
-                                    'buf' => $name,
-                                )
-                            ],
-                            'code' => 'prefix:<' . $sigil . '>',
-                            'namespace' => '',
-                        )
+                        Perlito5::AST::Var->new(
+                            name => $name,
+                            namespace => '',
+                            sigil => $sigil,
+                        ),
                     ];
                 $caret->{to} = $p + 1;
                 return $caret;
@@ -275,21 +272,43 @@ sub term_sigil {
             # ${}
             die "syntax error";
         }
-        $m = Perlito5::Grammar::Expression::curly_parse( $str, $p );
+        $m = Perlito5::Grammar::block( $str, $p0 );
         if ($m) {
             #  ${ ... }
-            my $p = $m->{to};
-            if ( substr($str, $p, 1) eq '}' ) {
-                $m->{to} = $m->{to} + 1;
-                $m->{capture} = [ 'term',  
-                        Perlito5::AST::Apply->new( 
-                                'arguments' => [ $m->{capture} ],
-                                'code'      => 'prefix:<' . $sigil . '>', 
-                                'namespace' => ''
-                            )
-                    ];
+            my $ast = Perlito5::Match::flat($m);
+
+            if (@{$ast->{stmts}} == 1
+               && (  ref($ast->{stmts}[0]) eq 'Perlito5::AST::Apply'
+                  || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Call' 
+                  || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Var' 
+                  || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Index' 
+                  || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Lookup' )
+            ) {
+                $m->{capture} = [
+                    'term',
+                    Perlito5::AST::Apply->new(
+                        code      => 'prefix:<' . $sigil . '>',
+                        namespace => '',
+                        arguments => [ $ast->{stmts}[0] ],
+                    ),
+                ];
                 return $m;
             }
+            
+            $m->{capture} = [
+                'term',
+                Perlito5::AST::Apply->new(
+                    code      => 'prefix:<' . $sigil . '>',
+                    arguments => [
+                        Perlito5::AST::Apply->new(
+                            code      => 'do',
+                            namespace => '',
+                            arguments => [ $ast ],
+                        )
+                    ]
+                )
+            ];
+            return $m;
         }
     }
     my $caret = Perlito5::Grammar::caret_char( $str, $p );
@@ -297,15 +316,11 @@ sub term_sigil {
         #  $^ ...
         my $name = Perlito5::Match::flat($caret);
         $caret->{capture} = [ 'term',  
-                    Perlito5::AST::Apply->new(
-                        'arguments' => [
-                            Perlito5::AST::Buf->new(
-                                'buf' => $name,
-                            )
-                        ],
-                        'code' => 'prefix:<' . $sigil . '>',
-                        'namespace' => '',
-                    )
+                    Perlito5::AST::Var->new(
+                        name => $name,
+                        namespace => '',
+                        sigil => $sigil,
+                    ),
                 ];
         return $caret;
     }

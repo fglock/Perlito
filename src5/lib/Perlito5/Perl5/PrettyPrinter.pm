@@ -242,9 +242,10 @@ sub op {
         op_render( $data->[4], $level, $out, $spec );
     }
     elsif ( $spec->{fix} eq 'deref' ) {
-        push @$out, $spec->{str}, '{';
+        # push @$out, $spec->{str}, '{';
+        push @$out, $spec->{str};
         op_render( $data->[2], $level, $out, $spec );
-        push @$out, '}';
+        # push @$out, '}';
     }
     elsif ( $spec->{fix} eq 'circumfix' ) {
         push @$out, $spec->{str};

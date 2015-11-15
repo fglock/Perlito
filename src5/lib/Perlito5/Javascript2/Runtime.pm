@@ -263,7 +263,6 @@ function p5sub_exists(name, current_pkg_name) {
     }
     var c = v.charCodeAt(0);
     if (c < 27) {
-        v = String.fromCharCode(c + 64) + v.substr(1);
         pkg_name = 'main';
     }
     return p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v) 
@@ -287,7 +286,6 @@ function p5sub_prototype(name, current_pkg_name) {
     }
     var c = v.charCodeAt(0);
     if (c < 27) {
-        v = String.fromCharCode(c + 64) + v.substr(1);
         pkg_name = 'main';
     }
     if (p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v)) {
@@ -308,7 +306,6 @@ function p5scalar_deref(v, current_pkg_name, autoviv_type) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         var name = "v_"+v;
@@ -351,7 +348,6 @@ function p5scalar_deref_set(v, n, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         var name = "v_"+v;
@@ -374,7 +370,6 @@ function p5array_deref(v, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         var name = "List_"+v;
@@ -398,7 +393,6 @@ function p5hash_deref(v, current_pkg_name) {
         }
         var c = v.charCodeAt(0);
         if (c < 27) {
-            v = String.fromCharCode(c + 64) + v.substr(1);
             pkg_name = 'main';
         }
         var name = "Hash_"+v;

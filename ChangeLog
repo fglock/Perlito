@@ -1,6 +1,7 @@
 
 - Parser:
 -- AUTOLOAD and DESTROY don't need a 'sub' prefix.
+-- ${...} and @{...} are "do-block"-ish
 
 9.013 cpan:Perlito5  2015-11-07
 - no changes; "pause.perl.org" reupload

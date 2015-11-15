@@ -181,7 +181,7 @@ package Perlito5::AST::Var;
         {
             return $self->{sigil} . $ns . $self->{name}
         }
-        return $self->{sigil} . "{'" . $ns . $str_name . "'}"
+        return $self->{sigil} . "{" . Perlito5::Perl5::escape_string( $ns . $str_name ) . "}";
     }
 }
 
@@ -240,15 +240,44 @@ package Perlito5::AST::Apply;
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5(),
                      $self->{arguments}[1]->emit_perl5() ]
         }
-        if ( $Perlito5::Perl5::PrettyPrinter::op{ $self->{code} } ) {
-            return [ op => $self->{code}, $self->emit_perl5_args() ];
-        }
 
         my $ns = '';
         if ($self->{namespace}) {
             $ns = $self->{namespace} . '::';
         }
         my $code = $ns . $self->{code};
+
+        if (  $code eq 'prefix:<$>'
+           || $code eq 'prefix:<@>'
+           || $code eq 'prefix:<%>'
+           || $code eq 'prefix:<&>'
+           || $code eq 'prefix:<*>'
+           || $code eq 'prefix:<$#>')
+        {
+            my $arg = $self->{'arguments'}->[0];
+            if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'do') {
+                my $arg = $arg->{'arguments'}->[0];
+                if (ref($arg) eq 'Perlito5::AST::Block') {
+                    return ['op' => $code, $arg->emit_perl5() ];
+                }
+            }
+            # if (ref($arg) eq 'Perlito5::AST::Apply') {
+                $code =~ /<([^>]+)>/;
+                return [ apply => '{', $1, $arg->emit_perl5() ];
+            # }
+        }
+        if ((  $code eq 'eval'
+            || $code eq 'do'
+            )
+           && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block'
+           )
+        {
+            return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
+        }
+
+        if ( $Perlito5::Perl5::PrettyPrinter::op{ $self->{code} } ) {
+            return [ op => $self->{code}, $self->emit_perl5_args() ];
+        }
 
         if ($self->{code} eq 'p5:s') {
             return 's!' . $self->{arguments}->[0]->{buf}   # emit_perl5() 
@@ -291,10 +320,6 @@ package Perlito5::AST::Apply;
                        ];
             }
             return [ apply => '(', $code, $self->emit_perl5_args() ];
-        }
-
-        if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
-            return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
         }
 
         if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
