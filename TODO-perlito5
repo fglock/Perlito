@@ -40,6 +40,8 @@ TODO list for Perlito5
         die('this dies!')
     $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
         'whatever' / 25;
+    $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
+        this dies! at -e line 1.
 
 -- tailcalls
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
