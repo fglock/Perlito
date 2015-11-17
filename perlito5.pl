@@ -1404,31 +1404,71 @@ use feature 'say';
                                     }) || (do {
                                         $MATCH->{'to'} = $pos1;
                                         (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-                                            my $m2 = curly_parse($str, $MATCH->{'to'});
-                                            if ($m2) {
-                                                $MATCH->{'to'} = $m2->{'to'};
-                                                $MATCH->{'curly_parse'} = $m2;
-                                                1
-                                            }
-                                            else {
-                                                0
-                                            }
-                                        }) && (do {
                                             my $pos1 = $MATCH->{'to'};
                                             (do {
-                                                ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                                                ((do {
+                                                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                }) && (do {
+                                                    my $m2 = Perlito5::Grammar::ident($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        $MATCH->{'Perlito5::Grammar::ident'} = $m2;
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                }) && (do {
+                                                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                                                    $MATCH->{'str'} = $str;
+                                                    $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::AST::Buf::->new('buf' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}))];
+                                                    1
+                                                }))
                                             }) || (do {
                                                 $MATCH->{'to'} = $pos1;
-                                                (do {
+                                                ((do {
+                                                    my $m2 = curly_parse($str, $MATCH->{'to'});
+                                                    if ($m2) {
+                                                        $MATCH->{'to'} = $m2->{'to'};
+                                                        $MATCH->{'curly_parse'} = $m2;
+                                                        1
+                                                    }
+                                                    else {
+                                                        0
+                                                    }
+                                                }) && (do {
+                                                    my $pos1 = $MATCH->{'to'};
+                                                    (do {
+                                                        ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                                                    }) || (do {
+                                                        $MATCH->{'to'} = $pos1;
+                                                        (do {
+                                                            $MATCH->{'str'} = $str;
+                                                            die('Missing right curly or square bracket');
+                                                            1
+                                                        })
+                                                    })
+                                                }) && (do {
                                                     $MATCH->{'str'} = $str;
-                                                    die('Missing right curly or square bracket');
+                                                    $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::Match::flat($MATCH->{'curly_parse'})];
                                                     1
-                                                })
+                                                }))
                                             })
-                                        }) && (do {
-                                            $MATCH->{'str'} = $str;
-                                            $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::Match::flat($MATCH->{'curly_parse'})];
-                                            1
                                         }))
                                     }) || (do {
                                         $MATCH->{'to'} = $pos1;

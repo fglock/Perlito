@@ -41,16 +41,6 @@ TODO list for Perlito5
     $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
         'whatever' / 25;
 
--- syntax error in hashref subscript - parses 's' as s///:
-    ${x->{s}}
-    $x->{s}
-
-    $ perl  -e ' use Data::Dumper;  ${ x ->{s} } = 4;  print Dumper \%x '
-    #  { 's' => \4 }
-
--- label all blocks
-    Note: this is not possible, because a "next" inside a subroutine goes back to the caller.
-
 -- tailcalls
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
@@ -124,35 +114,6 @@ TODO list for Perlito5
     $ perl -e ' sub x { { 1; } }  print x() , "\n" '
     1
 
--- sigils in blocks
-
-    Allowed:
-
-    $ perl -e ' ${ for (1,2,3) {} } '
-    $ perl -e ' @{ for (1,2,3) {} } '
-    $ perl -e ' %{ for (1,2,3) {} } '
-    $ perl -e ' *{ for (1,2,3) {} } '
-    $ perl -e ' $#{ for (1,2,3) {} } '
-    
-    $ perl -e ' $; = 3; print ${ ; } '
-    3
-    $ perl -e ' $} = 3; print ${ } } '
-    3
-
-    Not allowed:
-
-    $ perl -e ' \{ for (1,2,3) {} } '
-    syntax error at -e line 1, near "{ for "
-    Execution of -e aborted due to compilation errors.
-    
-    $ perl -e ' $a{ for (1,2,3) {} } '
-    syntax error at -e line 1, near "{ for "
-
-    $ perl -e ' print ${ } '
-    syntax error at -e line 1, near "${ "
-    Execution of -e aborted due to compilation errors.
-
-
 -- "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
@@ -225,6 +186,43 @@ TODO list for Perlito5
     aliasing of subroutine parameters
 
     prototypes
+
+    ---
+    sigils in blocks
+
+    Allowed:
+
+    $ perl -e ' ${ for (1,2,3) {} } '
+    $ perl -e ' @{ for (1,2,3) {} } '
+    $ perl -e ' %{ for (1,2,3) {} } '
+    $ perl -e ' *{ for (1,2,3) {} } '
+    $ perl -e ' $#{ for (1,2,3) {} } '
+    
+    $ perl -e ' $; = 3; print ${ ; } '
+    3
+    $ perl -e ' $} = 3; print ${ } } '
+    3
+
+    Not allowed:
+
+    $ perl -e ' \{ for (1,2,3) {} } '
+    syntax error at -e line 1, near "{ for "
+    Execution of -e aborted due to compilation errors.
+    
+    $ perl -e ' $a{ for (1,2,3) {} } '
+    syntax error at -e line 1, near "{ for "
+
+    $ perl -e ' print ${ } '
+    syntax error at -e line 1, near "${ "
+    Execution of -e aborted due to compilation errors.
+
+    ---
+    syntax error in hashref subscript - parses 's' as s///:
+    ${x->{s}}
+    $x->{s}
+
+    $ perl  -e ' use Data::Dumper;  ${ x ->{s} } = 4;  print Dumper \%x '
+    #  { 's' => \4 }
 
     ---
     wrong precedence in keys()

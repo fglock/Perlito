@@ -294,9 +294,15 @@ token term_arrow {
             { $MATCH->{capture} = [ 'postfix_or_term',  '.( )',  Perlito5::Match::flat($MATCH->{paren_parse})   ] }
         | '[' <square_parse>  ']'
             { $MATCH->{capture} = [ 'postfix_or_term',  '.[ ]',  Perlito5::Match::flat($MATCH->{square_parse})  ] }
-        | '{' <curly_parse>
-            [ \} | { die 'Missing right curly or square bracket' } ]
-            { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
+        | '{'
+            [ <.Perlito5::Grammar::Space::opt_ws>
+              <Perlito5::Grammar::ident>
+              <.Perlito5::Grammar::Space::opt_ws> '}'
+              { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::AST::Buf->new(buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'})) ] }
+            | <curly_parse>
+              [ \} | { die 'Missing right curly or square bracket' } ]
+              { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
+            ]
 
         | '$' <Perlito5::Grammar::ident> <.Perlito5::Grammar::Space::opt_ws>
             [ '(' <paren_parse> ')'
