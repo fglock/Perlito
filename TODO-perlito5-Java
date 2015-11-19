@@ -366,6 +366,12 @@
         $i + subr();  # subr() returns pObject instead of pInt
     this needs more tests
 
+-- Tail-call
+
+    caller sends a parameter to enable tail-call
+    callee pushes the call to a stack
+    caller pops from the stack and call the closures in order
+
 -- Missing features, or partially implemented, or untested
 
     overload
