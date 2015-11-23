@@ -17409,6 +17409,7 @@ use feature 'say';
     }
     push(@Use, 'no warnings');
     push(@Use, 'no strict');
+    ARG_LOOP:
     while (substr($ARGV[0], 0, 1) eq '-' && substr($ARGV[0], 0, 2) ne '-e') {
         if ($ARGV[0] eq '--verbose') {
             $verbose = 1;
@@ -17517,6 +17518,10 @@ use feature 'say';
             $bootstrapping = 1;
             shift(@ARGV)
         }
+        elsif ($ARGV[0] eq '-') {
+            shift(@ARGV);
+            last(ARG_LOOP)
+        }
         else {
             die('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10))
         }
@@ -17524,7 +17529,7 @@ use feature 'say';
     if (!$expand_use) {
         $Perlito5::EMIT_USE = 1
     }
-    if ($backend && @ARGV) {
+    if ($backend) {
         local $Perlito5::FILE_NAME = $ARGV[0];
         local $Perlito5::LINE_NUMBER = 1;
         if ($ARGV[0] eq '-e') {
@@ -17539,10 +17544,16 @@ use feature 'say';
                 warn('// source from file: ', $ARGV[0])
             }
             my $source_filename = shift(@ARGV);
-            open(FILE, '<:encoding(UTF-8)', $source_filename) or die('Cannot read ' . $source_filename . ': ' . ${'!'} . chr(10));
-            local $/ = undef;
-            $source = <FILE>;
-            close(FILE)
+            if ($source_filename eq '') {
+                local $/ = undef;
+                $source = <STDIN>
+            }
+            else {
+                open(FILE, '<:encoding(UTF-8)', $source_filename) or die('Cannot read ' . $source_filename . ': ' . ${'!'} . chr(10));
+                local $/ = undef;
+                $source = <FILE>;
+                close(FILE)
+            }
         }
         if ($verbose) {
             warn('// backend: ', $backend);

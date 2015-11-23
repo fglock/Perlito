@@ -4,7 +4,9 @@
 -- ${...} and @{...} are "do-block"-ish
 -- $x->{s} doesn't try to parse "s///"
 - Javascript:
--- implement '-p' in nodejs
+-- implement '-p' operator in nodejs
+- Command line "perlito5"
+-- read source code from STDIN or pipe if there is no -e or filename
 
 9.013 cpan:Perlito5  2015-11-07
 - no changes; "pause.perl.org" reupload
