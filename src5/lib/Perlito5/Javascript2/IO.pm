@@ -417,6 +417,43 @@ if (isNode) {
     var p5file_exists = function(s) {
         return p5is_file(s) || p5is_directory(s);
     };
+    var p5is_pipe = function(s) {
+        try {
+            var stat = fs.statSync(s);
+            return stat.isFIFO() ? 1 : "";
+        }
+        catch(err) {
+            try {
+                var filehandle = s;
+                var v = filehandle;
+                var pkg;
+                if (CORE.ref([v])) {
+                    // looks like a filehandle
+                    pkg = v;
+                }
+                else {
+                    // looks like a package name
+                    pkg = p5make_package(v);
+                }
+                if (!pkg.file_handle) {
+                    pkg.file_handle = {};
+                }
+                var handle_id = pkg.file_handle.id;
+                if (handle_id == 0) {
+                    return process.stdin.isTTY ? "" : 1;
+                }
+                else if (handle_id == 1) {
+                    return process.stdout.isTTY ? "" : 1;
+                }
+                else if (handle_id == 2) {
+                    return process.stderr.isTTY ? "" : 1;
+                }
+            }
+            catch(err) {
+            }
+        }
+        return '';
+    };
 
     CORE.binmode = function(List__) {
         try {

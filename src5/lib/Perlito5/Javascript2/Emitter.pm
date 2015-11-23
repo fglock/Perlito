@@ -27,6 +27,7 @@ package Perlito5::Javascript2;
         'prefix:<-e>' => 'p5file_exists',
         'prefix:<-f>' => 'p5is_file',
         'prefix:<-s>' => 'p5size',
+        'prefix:<-p>' => 'p5is_pipe',
     );
 
     # these operators need 2 "str" parameters
