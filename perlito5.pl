@@ -4787,6 +4787,7 @@ use feature 'say';
                                 my $out = [];
                                 Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
                                 my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
+                                local ${chr(7) . 'LOBAL_PHASE'} = 'BEGIN';
                                 eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::opt_continue_block {
@@ -17592,9 +17593,10 @@ use feature 'say';
             $Perlito5::EXPAND_USE = 1;
             local ${'@'};
             my $init = join('; ', @Use);
-            eval('  package main;' . chr(10) . '                ' . $init . ';' . chr(10) . '                $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
+            eval(chr(10) . '            package main;' . chr(10) . '            ' . $init . ';' . chr(10) . '            ${^GLOBAL_PHASE} = "INIT";' . chr(10) . '            $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '            ${^GLOBAL_PHASE} = "RUN";' . chr(10) . '            ' . $source . ';' . chr(10) . '            $@ = undef' . chr(10) . '        ');
             my $error = ${'@'};
             $error && warn($error);
+            ${chr(7) . 'LOBAL_PHASE'} = 'END';
             $_->()
                 for @Perlito5::END_BLOCK;
             if ($error) {

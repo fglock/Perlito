@@ -295,14 +295,18 @@ if ($backend) {
         $Perlito5::EXPAND_USE = 1;
         local $@;
         my $init = join("; ", @Use);
-        eval "  package main;
-                $init;
-                \$_->() for \@Perlito5::INIT_BLOCK;
-                $source;
-                \$@ = undef
-            ";
+        eval qq{
+            package main;
+            $init;
+            \${^GLOBAL_PHASE} = "INIT";
+            \$_->() for \@Perlito5::INIT_BLOCK;
+            \${^GLOBAL_PHASE} = "RUN";
+            $source;
+            \$@ = undef
+        };
         my $error = $@;
         warn $error if $error;
+        ${^GLOBAL_PHASE} = "END";
         $_->() for @Perlito5::END_BLOCK;
         if ( $error ) {
             exit(255);

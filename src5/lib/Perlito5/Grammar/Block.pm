@@ -80,6 +80,7 @@ sub eval_begin_block {
              . join( '', @$out ) . "; 1\n";
     # say "BEGIN block: $code";
 
+    local ${^GLOBAL_PHASE} = "BEGIN";
     # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
     eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )

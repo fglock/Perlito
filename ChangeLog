@@ -3,6 +3,7 @@
 -- AUTOLOAD and DESTROY don't need a 'sub' prefix.
 -- ${...} and @{...} are "do-block"-ish
 -- $x->{s} doesn't try to parse "s///"
+-- set ${^GLOBAL_PHASE}
 - Javascript:
 -- implement '-p' operator in nodejs
 - Command line "perlito5"
