@@ -1,6 +1,7 @@
 
 - Command line "perlito5"
--- '-c' compile-only switch
+-- compile-only switch '-c'
+-- multiple '-e' switches
 
 9.014 cpan:Perlito5  2015-11-24
 - Parser:

@@ -57,6 +57,8 @@ my $wrapper_begin = '';
 my $wrapper_end = '';
 my $wrapper_priority = 0;
 my @Use;
+my @e_switch;
+$Perlito5::FILE_NAME = '';
 
 if ($verbose) {
     warn "// Perlito5 compiler";
@@ -115,9 +117,7 @@ push @Use, "no warnings";
 push @Use, "no strict";
 
 ARG_LOOP:
-while (substr($ARGV[0], 0, 1) eq '-'
-    && substr($ARGV[0], 0, 2) ne '-e'
-    )
+while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
 {
     if ($ARGV[0] eq '--verbose') {
         $verbose = 1;
@@ -132,6 +132,15 @@ while (substr($ARGV[0], 0, 1) eq '-'
         my $lib = substr($ARGV[0], 2);
         unshift @INC, $lib;
         shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-e') {
+        my $arg = shift @ARGV;
+        my $source = substr($arg, 2) || shift(@ARGV);
+        push @e_switch, $source;
+        $Perlito5::FILE_NAME = '-e';
+        if ($verbose) {
+            warn "// source from command line: $source";
+        }
     }
     elsif (substr($ARGV[0], 0, 2) eq '-c') {
         $compile_only = 1;
@@ -249,16 +258,12 @@ if (!$expand_use) {
 }
 
 if ($backend) {
-    local $Perlito5::FILE_NAME = $ARGV[0];
     local $Perlito5::LINE_NUMBER = 1;
-    if ($ARGV[0] eq '-e') {
-        shift @ARGV;
-        if ($verbose) {
-            warn "// source from command line: ", $ARGV[0];
-        }
-        $source = shift @ARGV;
+    if (@e_switch) {
+        $source = "@e_switch";
     }
     else {
+        $Perlito5::FILE_NAME = $ARGV[0];
         if ($verbose) {
             warn "// source from file: ", $ARGV[0];
         }
