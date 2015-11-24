@@ -35,6 +35,7 @@ our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
 our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
 our $SCOPE_DEPTH  = 0;
 our @SCOPE_STMT = ();
+our @END_BLOCK  = ();       # END block LIFO - array of subs
 
 our $ID           = 100;    # generic "id" source; increment after use
 

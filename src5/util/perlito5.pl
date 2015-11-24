@@ -300,9 +300,10 @@ if ($backend) {
                 $source;
                 \$@ = undef
             ";
-        if ( $@ ) {
-            my $error = $@;
-            warn $error;
+        my $error = $@;
+        warn $error if $error;
+        $_->() for @Perlito5::END_BLOCK;
+        if ( $error ) {
             exit(255);
         }
     }
