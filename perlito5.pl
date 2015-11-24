@@ -17620,6 +17620,7 @@ use feature 'say';
                 close(FILE)
             }
         }
+        ${0} = $Perlito5::FILE_NAME;
         if ($verbose) {
             warn('// backend: ', $backend);
             warn('now parsing')

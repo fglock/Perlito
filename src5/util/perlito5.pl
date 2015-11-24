@@ -286,6 +286,7 @@ if ($backend) {
             close FILE;
         }
     }
+    $0 = $Perlito5::FILE_NAME;
 
     if ($verbose) {
         warn "// backend: ", $backend;
