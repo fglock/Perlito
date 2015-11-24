@@ -4772,14 +4772,22 @@ use feature 'say';
                                 return $m
                             }
                             sub Perlito5::Grammar::Block::eval_end_block {
+                                my $block = shift;
                                 local ${'@'};
-                                my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . $_[0] . chr(10);
+                                my @data = $block->emit_perl5();
+                                my $out = [];
+                                Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
+                                my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . join('', @{$out}) . chr(10);
                                 eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::eval_begin_block {
+                                my $block = shift;
                                 local ${'@'};
-                                my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . $_[0];
-                                eval(Perlito5::CompileTime::Dumper::generate_eval_string('{ ' . $code . ' }; 1')) or die('Error in BEGIN block: ' . ${'@'})
+                                my @data = $block->emit_perl5();
+                                my $out = [];
+                                Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
+                                my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
+                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::opt_continue_block {
                                 my $str = $_[0];
@@ -4864,12 +4872,12 @@ use feature 'say';
                                 $compile_block->{'type'} = 'sub';
                                 $compile_block->{'name'} = $block_name;
                                 if ($block_name eq 'END') {
-                                    unshift(@Perlito5::END_BLOCK, eval_end_block(substr($str, $block_start, $m->{'to'} - $block_start)));
+                                    unshift(@Perlito5::END_BLOCK, eval_end_block($block));
                                     $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
                                 }
                                 elsif ($block_name eq 'BEGIN') {
                                     local $Perlito5::PHASE = 'BEGIN';
-                                    eval_begin_block(substr($str, $block_start, $m->{'to'} - $block_start));
+                                    eval_begin_block($block);
                                     $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
                                 }
                                 elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {

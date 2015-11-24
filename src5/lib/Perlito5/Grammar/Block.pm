@@ -52,9 +52,13 @@ sub eval_end_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
+    my $block = shift;
     local $@;
+    my @data = $block->emit_perl5();
+    my $out = [];
+    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
     my $code = "package $Perlito5::PKG_NAME;\n"
-             . "sub $_[0]\n";
+             . "sub " . join( '', @$out ) . "\n";
     # say "END block: $code";
 
     # eval-string inside BEGIN block
@@ -68,14 +72,18 @@ sub eval_begin_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
+    my $block = shift;
     local $@;
+    my @data = $block->emit_perl5();
+    my $out = [];
+    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
     my $code = "package $Perlito5::PKG_NAME;\n"
-             . $_[0];
-    # say $code;
+             . join( '', @$out ) . "; 1\n";
+    # say "BEGIN block: $code";
 
     # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
-    eval Perlito5::CompileTime::Dumper::generate_eval_string( "{ $code }; 1" )
+    eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
     # eval "{ $code }; 1"
     or die "Error in BEGIN block: " . $@;
 }
@@ -149,7 +157,7 @@ sub special_named_block {
     if ($block_name eq 'END') {
         # say "END $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PHASE = 'END';
-        unshift @Perlito5::END_BLOCK, eval_end_block( substr($str, $block_start, $m->{to} - $block_start) );
+        unshift @Perlito5::END_BLOCK, eval_end_block( $block );
         $m->{capture} = 
             Perlito5::AST::Apply->new(
                 code => 'undef',
@@ -161,7 +169,7 @@ sub special_named_block {
         # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
         local $Perlito5::PHASE = 'BEGIN';
-        eval_begin_block( substr($str, $block_start, $m->{to} - $block_start) );
+        eval_begin_block( $block );
         $m->{capture} = 
             Perlito5::AST::Apply->new(
                 code => 'undef',
