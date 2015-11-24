@@ -1,4 +1,8 @@
 
+- Command line "perlito5"
+-- '-c' compile-only switch
+
+9.014 cpan:Perlito5  2015-11-24
 - Parser:
 -- AUTOLOAD and DESTROY don't need a 'sub' prefix.
 -- ${...} and @{...} are "do-block"-ish
