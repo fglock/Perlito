@@ -4772,13 +4772,13 @@ use feature 'say';
                                 return $m
                             }
                             sub Perlito5::Grammar::Block::eval_end_block {
-                                my $block = shift;
+                                my($block, $phase) = @_;
                                 local ${'@'};
                                 my @data = $block->emit_perl5();
                                 my $out = [];
                                 Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
                                 my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . join('', @{$out}) . chr(10);
-                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
+                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in ' . $phase . ' block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::eval_begin_block {
                                 my $block = shift;
@@ -4871,8 +4871,12 @@ use feature 'say';
                                 my $compile_block = $Perlito5::SCOPE->{'block'}->[-1];
                                 $compile_block->{'type'} = 'sub';
                                 $compile_block->{'name'} = $block_name;
-                                if ($block_name eq 'END') {
-                                    unshift(@Perlito5::END_BLOCK, eval_end_block($block));
+                                if ($block_name eq 'INIT') {
+                                    push(@Perlito5::INIT_BLOCK, eval_end_block($block, 'INIT'));
+                                    $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                                }
+                                elsif ($block_name eq 'END') {
+                                    unshift(@Perlito5::END_BLOCK, eval_end_block($block, 'END'));
                                     $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
                                 }
                                 elsif ($block_name eq 'BEGIN') {
@@ -7603,6 +7607,7 @@ use feature 'say';
                     our $SCOPE_DEPTH = 0;
                     our @SCOPE_STMT = ();
                     our @END_BLOCK = ();
+                    our @INIT_BLOCK = ();
                     our $ID = 100;
                     our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
                     push(@INC, $_)
@@ -17587,7 +17592,7 @@ use feature 'say';
             $Perlito5::EXPAND_USE = 1;
             local ${'@'};
             my $init = join('; ', @Use);
-            eval('  package main;' . chr(10) . '                ' . $init . ';' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
+            eval('  package main;' . chr(10) . '                ' . $init . ';' . chr(10) . '                $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '                ' . $source . ';' . chr(10) . '                $@ = undef' . chr(10) . '            ');
             my $error = ${'@'};
             $error && warn($error);
             $_->()

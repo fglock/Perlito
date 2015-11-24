@@ -52,7 +52,7 @@ sub eval_end_block {
     # execute "eval" on this block,
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
-    my $block = shift;
+    my ($block, $phase) = @_;
     local $@;
     my @data = $block->emit_perl5();
     my $out = [];
@@ -61,11 +61,10 @@ sub eval_end_block {
              . "sub " . join( '', @$out ) . "\n";
     # say "END block: $code";
 
-    # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
     eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
     # eval "{ $code }; 1"
-    or die "Error in BEGIN block: " . $@;
+    or die "Error in $phase block: " . $@;
 }
 
 sub eval_begin_block {
@@ -154,10 +153,21 @@ sub special_named_block {
     $compile_block->{type} = 'sub';
     $compile_block->{name} = $block_name;
   
-    if ($block_name eq 'END') {
+    if ($block_name eq 'INIT') {
+        # say "INIT $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
+        # local $Perlito5::PHASE = 'INIT';
+        push @Perlito5::INIT_BLOCK, eval_end_block( $block, 'INIT' );
+        $m->{capture} = 
+            Perlito5::AST::Apply->new(
+                code => 'undef',
+                namespace => '',
+                arguments => []
+            );
+    }
+    elsif ($block_name eq 'END') {
         # say "END $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PHASE = 'END';
-        unshift @Perlito5::END_BLOCK, eval_end_block( $block );
+        unshift @Perlito5::END_BLOCK, eval_end_block( $block, 'END' );
         $m->{capture} = 
             Perlito5::AST::Apply->new(
                 code => 'undef',

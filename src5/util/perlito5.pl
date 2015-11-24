@@ -297,6 +297,7 @@ if ($backend) {
         my $init = join("; ", @Use);
         eval "  package main;
                 $init;
+                \$_->() for \@Perlito5::INIT_BLOCK;
                 $source;
                 \$@ = undef
             ";
