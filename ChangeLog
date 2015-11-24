@@ -2,6 +2,7 @@
 - Command line "perlito5"
 -- compile-only switch '-c'
 -- multiple '-e' switches
+-- show %ENV, @INC in '-V'
 
 9.014 cpan:Perlito5  2015-11-24
 - Parser:

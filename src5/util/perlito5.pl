@@ -212,6 +212,12 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
         $backend = '';
         say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+        if ($ENV{PERL5LIB}) {
+            say '  %ENV:';
+            say qq{    PERL5LIB="$ENV{PERL5LIB}"};
+        }
+        say '  @INC:';
+        say qq{    $_} for @INC;
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-v') {
