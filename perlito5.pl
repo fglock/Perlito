@@ -4787,7 +4787,8 @@ use feature 'say';
                                 my $out = [];
                                 Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
                                 my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
-                                local ${chr(7) . 'LOBAL_PHASE'} = 'BEGIN';
+                                local ${chr(7) . 'LOBAL_PHASE'};
+                                Perlito5::set_global_phase('BEGIN');
                                 eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::opt_continue_block {
@@ -4853,6 +4854,9 @@ use feature 'say';
                                 }
                                 return $m
                             }
+                            sub Perlito5::Grammar::Block::ast_undef {
+                                Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                            }
                             sub Perlito5::Grammar::Block::special_named_block {
                                 my $str = $_[0];
                                 my $pos = $_[1];
@@ -4874,16 +4878,24 @@ use feature 'say';
                                 $compile_block->{'name'} = $block_name;
                                 if ($block_name eq 'INIT') {
                                     push(@Perlito5::INIT_BLOCK, eval_end_block($block, 'INIT'));
-                                    $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                                    $m->{'capture'} = ast_undef()
                                 }
                                 elsif ($block_name eq 'END') {
                                     unshift(@Perlito5::END_BLOCK, eval_end_block($block, 'END'));
-                                    $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                                    $m->{'capture'} = ast_undef()
+                                }
+                                elsif ($block_name eq 'CHECK') {
+                                    unshift(@Perlito5::CHECK_BLOCK, eval_end_block($block, 'CHECK'));
+                                    $m->{'capture'} = ast_undef()
+                                }
+                                elsif ($block_name eq 'UNITCHECK') {
+                                    unshift(@Perlito5::UNITCHECK_BLOCK, eval_end_block($block, 'UNITCHECK'));
+                                    $m->{'capture'} = ast_undef()
                                 }
                                 elsif ($block_name eq 'BEGIN') {
                                     local $Perlito5::PHASE = 'BEGIN';
                                     eval_begin_block($block);
-                                    $m->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                                    $m->{'capture'} = ast_undef()
                                 }
                                 elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
                                     $m->{'capture'} = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => $block_name, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)
@@ -7609,6 +7621,14 @@ use feature 'say';
                     our @SCOPE_STMT = ();
                     our @END_BLOCK = ();
                     our @INIT_BLOCK = ();
+                    our @CHECK_BLOCK = ();
+                    our @UNITCHECK_BLOCK = ();
+                    sub Perlito5::set_global_phase {
+                        my $phase = shift;
+                        eval {
+                            ${chr(7) . 'LOBAL_PHASE'} = $phase
+                        }
+                    }
                     our $ID = 100;
                     our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
                     push(@INC, $_)
@@ -17585,6 +17605,7 @@ use feature 'say';
         }
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::PROTO = {};
+        Perlito5::set_global_phase('BEGIN');
         $source = chr(10) . '# line 1' . chr(10) . $source;
         if ($wrapper_begin) {
             $source = ' ' . $wrapper_begin . ';' . chr(10) . '                    ' . $source . ';' . chr(10) . '                    ' . $wrapper_end . chr(10) . '                  '
@@ -17593,10 +17614,10 @@ use feature 'say';
             $Perlito5::EXPAND_USE = 1;
             local ${'@'};
             my $init = join('; ', @Use);
-            eval(chr(10) . '            package main;' . chr(10) . '            ' . $init . ';' . chr(10) . '            ${^GLOBAL_PHASE} = "INIT";' . chr(10) . '            $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '            ${^GLOBAL_PHASE} = "RUN";' . chr(10) . '            ' . $source . ';' . chr(10) . '            $@ = undef' . chr(10) . '        ');
+            eval(chr(10) . '            Perlito5::set_global_phase("CHECK");' . chr(10) . '            $_->() for @Perlito5::CHECK_BLOCK;' . chr(10) . '            package main;' . chr(10) . '            ' . $init . ';' . chr(10) . '            Perlito5::set_global_phase("INIT");' . chr(10) . '            $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '            Perlito5::set_global_phase("RUN");' . chr(10) . '            ' . $source . ';' . chr(10) . '            $@ = undef' . chr(10) . '        ');
             my $error = ${'@'};
             $error && warn($error);
-            ${chr(7) . 'LOBAL_PHASE'} = 'END';
+            Perlito5::set_global_phase('END');
             $_->()
                 for @Perlito5::END_BLOCK;
             if ($error) {
@@ -17640,6 +17661,12 @@ use feature 'say';
                         $comp_units = Perlito5::Match::flat($m)
                     }
                     $comp_units = [Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => $comp_units)];
+                    {
+                        local ${chr(7) . 'LOBAL_PHASE'};
+                        Perlito5::set_global_phase('CHECK');
+                        $_->()
+                            for @Perlito5::CHECK_BLOCK
+                    }
                     if ($backend eq 'perl5') {
                         say('# Do not edit this file - Generated by ', $_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION);
                         if ($expand_use) {

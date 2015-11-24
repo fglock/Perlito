@@ -8,7 +8,7 @@
 -- implement '-p' operator in nodejs
 - Command line "perlito5"
 -- read source code from STDIN or pipe if there is no -e or filename
--- execute INIT and END blocks
+-- execute CHECK, INIT and END blocks
 
 9.013 cpan:Perlito5  2015-11-07
 - no changes; "pause.perl.org" reupload

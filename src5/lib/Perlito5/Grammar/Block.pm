@@ -80,7 +80,8 @@ sub eval_begin_block {
              . join( '', @$out ) . "; 1\n";
     # say "BEGIN block: $code";
 
-    local ${^GLOBAL_PHASE} = "BEGIN";
+    local ${^GLOBAL_PHASE};
+    Perlito5::set_global_phase("BEGIN");
     # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
     eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
@@ -130,6 +131,14 @@ sub anon_block {
     return $m;
 }
 
+sub ast_undef {
+    Perlito5::AST::Apply->new(
+        code => 'undef',
+        namespace => '',
+        arguments => []
+    );
+}
+
 sub special_named_block {
     my $str = $_[0];
     my $pos = $_[1];
@@ -155,38 +164,27 @@ sub special_named_block {
     $compile_block->{name} = $block_name;
   
     if ($block_name eq 'INIT') {
-        # say "INIT $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
-        # local $Perlito5::PHASE = 'INIT';
         push @Perlito5::INIT_BLOCK, eval_end_block( $block, 'INIT' );
-        $m->{capture} = 
-            Perlito5::AST::Apply->new(
-                code => 'undef',
-                namespace => '',
-                arguments => []
-            );
+        $m->{capture} = ast_undef();
     }
     elsif ($block_name eq 'END') {
-        # say "END $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
-        # local $Perlito5::PHASE = 'END';
         unshift @Perlito5::END_BLOCK, eval_end_block( $block, 'END' );
-        $m->{capture} = 
-            Perlito5::AST::Apply->new(
-                code => 'undef',
-                namespace => '',
-                arguments => []
-            );
+        $m->{capture} = ast_undef();
+    }
+    elsif ($block_name eq 'CHECK') {
+        unshift @Perlito5::CHECK_BLOCK, eval_end_block( $block, 'CHECK' );
+        $m->{capture} = ast_undef();
+    }
+    elsif ($block_name eq 'UNITCHECK') {
+        unshift @Perlito5::UNITCHECK_BLOCK, eval_end_block( $block, 'UNITCHECK' );
+        $m->{capture} = ast_undef();
     }
     elsif ($block_name eq 'BEGIN') {
         # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
         local $Perlito5::PHASE = 'BEGIN';
         eval_begin_block( $block );
-        $m->{capture} = 
-            Perlito5::AST::Apply->new(
-                code => 'undef',
-                namespace => '',
-                arguments => []
-            );
+        $m->{capture} = ast_undef();
     }
     elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
         $m->{capture} = 
