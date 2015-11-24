@@ -209,7 +209,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         }
         chomp_switch();
     }
-    elsif (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
+    elsif ($ARGV[0] eq '-V') {
         $backend = '';
         say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
         if ($ENV{PERL5LIB}) {
@@ -220,7 +220,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         say qq{    $_} for @INC;
         shift @ARGV;
     }
-    elsif ($ARGV[0] eq '-v') {
+    elsif ($ARGV[0] eq '-v' || $ARGV[0] eq '--version') {
         $backend = '';
         say $copyright_message;
         shift @ARGV;
