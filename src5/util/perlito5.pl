@@ -524,6 +524,8 @@ Flavio Soibelmann Glock <fglock@gmail.com>.
 
 L<http://fglock.github.io/Perlito>
 
+L<Perlito5>
+
 =head1 COPYRIGHT
 
 Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
