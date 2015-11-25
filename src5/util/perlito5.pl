@@ -70,6 +70,7 @@ perlito5 [switches] [programfile]
   switches:
     -c              check syntax only (runs BEGIN and CHECK blocks)
     -e program      one line of program (omit programfile)
+    -E program      like -e, but enables all optional features
     -h --help
     -Idirectory     specify \@INC/include directory (several -I's allowed)
     -[mM][-]module  execute \"use/no module...\" before executing program
@@ -133,7 +134,7 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         unshift @INC, $lib;
         shift @ARGV;
     }
-    elsif (substr($ARGV[0], 0, 2) eq '-e') {
+    elsif (substr($ARGV[0], 0, 2) eq '-e' || substr($ARGV[0], 0, 2) eq '-E') {
         my $arg = shift @ARGV;
         my $source = substr($arg, 2) || shift(@ARGV);
         push @e_switch, $source;
