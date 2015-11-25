@@ -525,16 +525,16 @@ if (isNode) {
         for (var i = 0; i < List__.length; i++) {
             s = s + p5str(List__[i]);
         }
-        if (typeof write === 'function') {
+        if (console && typeof console.log === 'function') {
+            console.log(s);
+        }
+        else if (typeof write === 'function') {
             // d8 shell uses "write"
             write(s);
         }
         else if (typeof print === 'function') {
             // Rhino uses "print"
             print(s);
-        }
-        else if (console && typeof console.log === 'function') {
-            console.log(s);
         }
         else {
             alert(s);
