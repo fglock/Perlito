@@ -8,11 +8,14 @@ sub perl5_to_js {
     # say "source: [" . $source . "]";
 
     my    $strict_old         = $Perlito5::STRICT;
+    local $_;
+    local ${^GLOBAL_PHASE};
     local $Perlito5::BASE_SCOPE = $scope_js->[0];
     local @Perlito5::SCOPE_STMT;
     local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
     local $Perlito5::SCOPE_DEPTH = 0;
     local $Perlito5::PKG_NAME = $namespace;
+    local @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval enter\n";
     # warn "External scope ", Data::Dumper::Dumper($scope_js);
     # warn "BASE_SCOPE ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
@@ -36,6 +39,9 @@ sub perl5_to_js {
     # say "ast: [" . ast . "]";
     my $js_code = $ast->emit_javascript2(0, $want);
     # say "js-source: [" . $js_code . "]";
+
+    Perlito5::set_global_phase("UNITCHECK");
+    $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
 
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
     $Perlito5::STRICT   = $strict_old;

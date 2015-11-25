@@ -11418,17 +11418,23 @@ use feature 'say';
             sub Perlito5::Javascript2::Runtime::perl5_to_js {
                 my($source, $namespace, $want, $scope_js) = @_;
                 my $strict_old = $Perlito5::STRICT;
+                local $_;
+                local ${chr(7) . 'LOBAL_PHASE'};
                 local $Perlito5::BASE_SCOPE = $scope_js->[0];
                 local @Perlito5::SCOPE_STMT;
                 local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
                 local $Perlito5::SCOPE_DEPTH = 0;
                 local $Perlito5::PKG_NAME = $namespace;
+                local @Perlito5::UNITCHECK_BLOCK;
                 my $match = Perlito5::Grammar::exp_stmts($source, 0);
                 if (!$match || $match->{'to'} != length($source)) {
                     die('Syntax error in eval near pos ', $match->{'to'})
                 }
                 my $ast = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => $match->{'capture'})]);
                 my $js_code = $ast->emit_javascript2(0, $want);
+                Perlito5::set_global_phase('UNITCHECK');
+                $_->()
+                    while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
                 $Perlito5::STRICT = $strict_old;
                 return $js_code
             }
