@@ -4,6 +4,7 @@
 - Javascript:
 -- console.log() is the default "print"
 - Command line "perlito5"
+-- better switch handling: -Cperl5 / -C perl5 / -C'perl5'
 -- compile-only switch '-c'
 -- multiple '-e' switches
 -- '-E' switches

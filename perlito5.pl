@@ -17460,6 +17460,22 @@ use feature 'say';
             shift(@ARGV)
         }
     }
+    sub Perlito5::get_text_from_switch {
+        my $s = substr($ARGV[0], 2);
+        if (!$s) {
+            shift(@ARGV);
+            $s = $ARGV[0]
+        }
+        if ($s) {
+            my $c = substr($s, 0, 1);
+            if ($c eq '"' || $c eq chr(39)) {
+                if (substr($s, -1, 1) eq $c) {
+                    $s = substr($s, 1, -1)
+                }
+            }
+        }
+        return $s
+    }
     push(@Use, 'no warnings');
     push(@Use, 'no strict');
     ARG_LOOP:
@@ -17468,24 +17484,19 @@ use feature 'say';
             $verbose = 1;
             shift(@ARGV)
         }
-        elsif ($ARGV[0] eq '-I') {
-            shift(@ARGV);
-            my $lib = shift(@ARGV);
-            unshift(@INC, $lib)
-        }
         elsif (substr($ARGV[0], 0, 2) eq '-I') {
-            my $lib = substr($ARGV[0], 2);
+            my $lib = get_text_from_switch();
             unshift(@INC, $lib);
             shift(@ARGV)
         }
         elsif (substr($ARGV[0], 0, 2) eq '-e' || substr($ARGV[0], 0, 2) eq '-E') {
-            my $arg = shift(@ARGV);
-            my $source = substr($arg, 2) || shift(@ARGV);
+            my $source = get_text_from_switch();
             push(@e_switch, $source);
             $Perlito5::FILE_NAME = '-e';
             if ($verbose) {
                 warn('// source from command line: ' . $source)
             }
+            shift(@ARGV)
         }
         elsif (substr($ARGV[0], 0, 2) eq '-c') {
             $compile_only = 1;
@@ -17494,7 +17505,7 @@ use feature 'say';
             chomp_switch()
         }
         elsif (substr($ARGV[0], 0, 2) eq '-C') {
-            $backend = substr($ARGV[0], 2);
+            $backend = get_text_from_switch();
             $execute = 0;
             shift(@ARGV)
         }
