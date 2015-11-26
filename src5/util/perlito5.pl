@@ -57,6 +57,8 @@ my $wrapper_begin = '';
 my $wrapper_end = '';
 my $wrapper_priority = 0;
 my @Use;
+my $i_switch = 0;
+my $i_switch_extension = '';
 my @e_switch;
 $Perlito5::FILE_NAME = '';
 
@@ -165,6 +167,12 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
     elsif (substr($ARGV[0], 0, 2) eq '-C') {
         $backend = get_text_from_switch();
         $execute = 0;
+        shift @ARGV;
+    }
+    elsif (substr($ARGV[0], 0, 2) eq '-i') {
+        $i_switch = 1;
+        $i_switch_extension = get_text_from_switch() if $ARGV[0] ne '-i';
+        die "switch -i $i_switch_extension not yet implemented.\n";
         shift @ARGV;
     }
     elsif ($ARGV[0] eq '-MO=Deparse') {
