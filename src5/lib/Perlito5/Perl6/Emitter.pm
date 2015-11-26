@@ -103,6 +103,7 @@ package Perlito5::AST::CompUnit;
         my $comp_units = $_[0];
         my @body = @$comp_units;
         my @out;
+        push @out, [ comment => Perlito5::Compiler::do_not_edit("#") ];
         my $pkg = { name => 'main', body => [] };
         for my $stmt (@body) {
             if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{code} eq 'package') {

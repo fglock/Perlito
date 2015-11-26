@@ -886,6 +886,7 @@ package Perlito5::AST::CompUnit;
         my $level = 0;
         my $wantarray = 'void';
         my $str;
+        $str .= Perlito5::Compiler::do_not_edit("//");
 
         # look for special 'Java' packages
         my $Java_class = Perlito5::Java::get_java_class_info();

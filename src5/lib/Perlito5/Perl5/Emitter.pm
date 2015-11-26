@@ -27,7 +27,9 @@ package Perlito5::AST::CompUnit;
     }
     sub emit_perl5_program {
         my $comp_units = $_[0];
-        return  map { $_->emit_perl5() } @$comp_units;
+        return  
+            [ comment => Perlito5::Compiler::do_not_edit("#") ],
+            map { $_->emit_perl5() } @$comp_units;
     }
 }
 

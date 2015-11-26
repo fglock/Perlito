@@ -88,7 +88,10 @@ package Perlito5::AST::CompUnit;
         # if ( $expand_use ) {
         #    print Perlito5::XS::Runtime->emit_xs();
         # }
-        my $str = "#include \"EXTERN.h\"\n"
+        my $str =
+                  Perlito5::Compiler::do_not_edit("/*")
+                . "*/\n"
+                . "#include \"EXTERN.h\"\n"
                 . "#include \"perl.h\"\n"
                 . "#include \"XSUB.h\"\n"
                 . "\n";

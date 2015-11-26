@@ -675,6 +675,7 @@ package Perlito5::AST::CompUnit;
         my ($comp_units, %options) = @_;
         $Perlito5::PKG_NAME = 'main';
         my $str;
+        $str .= Perlito5::Compiler::do_not_edit("//");
         if ( $options{expand_use} ) {
             $str .= Perlito5::Javascript3::Runtime->emit_javascript2();
             $str .= Perlito5::Javascript3::Array->emit_javascript2();
