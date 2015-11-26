@@ -3,6 +3,7 @@
 -- cookbook entry "Obtaining a Perl compiler script that runs in the browser"
 - Parser:
 -- error messages for: Scalar/Array/Number/String found where operator expected
+-- improved error message for missing comma
 - Javascript:
 -- console.log() is the default "print"
 - Command line "perlito5"

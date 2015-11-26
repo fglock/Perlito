@@ -280,9 +280,7 @@ use feature 'say';
                                             }
                                             elsif ($token_is_term) {
                                                 if ($last_is_term) {
-                                                    print('#      last:  ', Data::Dumper::Dumper($last));
-                                                    print('#      token: ', Data::Dumper::Dumper($token));
-                                                    die('Value tokens must be separated by an operator')
+                                                    die('Value tokens must be separated by an operator (did you forget a comma?)')
                                                 }
                                                 $token->[0] = 'term';
                                                 push(@{$num_stack}, $token)
