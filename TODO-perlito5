@@ -3,6 +3,13 @@ TODO list for Perlito5
 
 * perlito5 command-line
 
+-- implement -i switch and ARGVOUT
+
+-- shebang processing:
+
+    #!/usr/bin/perl -pi.orig
+    s/foo/bar/;
+
 
 * libraries
 
@@ -421,6 +428,9 @@ TODO list for Perlito5
 -- "default" statement not implemented
 
 -- ${^NAME} needs curly-escaping
+
+-- ${^GLOBAL_PHASE} is not writeable
+    workaround in set_global_phase()
 
 - fix regex delimiters, or escape the regexes
 
