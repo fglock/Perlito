@@ -42,6 +42,7 @@ our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
 
 sub set_global_phase {
     my $phase = shift;
+    local $@;
     eval { ${^GLOBAL_PHASE} = $phase };
 }
 

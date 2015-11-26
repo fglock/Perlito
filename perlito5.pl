@@ -7625,6 +7625,7 @@ use feature 'say';
                     our @UNITCHECK_BLOCK = ();
                     sub Perlito5::set_global_phase {
                         my $phase = shift;
+                        local ${'@'};
                         eval {
                             ${chr(7) . 'LOBAL_PHASE'} = $phase
                         }
