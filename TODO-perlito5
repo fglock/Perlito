@@ -173,6 +173,9 @@ TODO list for Perlito5
 
 -- things that work in perlito5, but which are errors in 'perl'
 
+    $ perl -e ' $c (f) '
+    syntax error at -e line 1, near "$c ("
+
     $ perl -e ' my @things= map {  no warnings; 123 } @list; '
     "no" not allowed in expression
 
@@ -478,6 +481,12 @@ TODO list for Perlito5
 
 -- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
+
+    $ perl -e ' my @x = $x %x '
+    Operator or semicolon missing before %x at -e line 1.
+    Ambiguous use of % resolved as operator % at -e line 1.
+    Illegal modulus zero at -e line 1.
+
 -- no warnings 'redefine';
 
 -- __LINE__, __FILE__

@@ -307,10 +307,17 @@ sub statement_parse_inner {
 
     my $p = $modifier ? $modifier->{to} : $res->{to};
     my $terminator = substr($str, $p, 1);
-    die "Number or Bareword found where operator expected"
-        if $terminator ne ';'
+    if (   $terminator ne ';'
         && $terminator ne '}'
-        && $terminator ne '';
+        && $terminator ne '' )
+    {
+        my $type = "Number or Bareword";
+        $type = "Number" if $terminator ge '0' && $terminator le '9';
+        $type = "String" if $terminator eq '"' || $terminator eq "'";
+        $type = "Scalar" if $terminator eq '$';
+        $type = "Array"  if $terminator eq '@';
+        die "$type found where operator expected";
+    }
 
     if (!$modifier) {
         # TODO - require a statement terminator
