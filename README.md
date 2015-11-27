@@ -11,7 +11,6 @@ languages:
 
   - Perl 5 to Perl 5
   - Perl 5 to Javascript
-
   - Perl 6 to Perl 5
   - Perl 6 to Javascript
   - Perl 6 to Python 2.6
