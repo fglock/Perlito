@@ -16,14 +16,12 @@ languages:
   - Perl 6 to Javascript
   - Perl 6 to Python 2.6
 
-The following compilers are work in progress - some tests pass, some tests fail:
-
-  - Perl 5 to Perl 6
-  - Perl 6 to Ruby 1.9
-
-Perlito 6.0 also compile to additional backends.
+The following compilers are work in progress - some tests pass, some tests fail.
 Check the Changelog file for details:
 
+  - Perl 5 to Perl 6
+  - Perl 5 to Java 6
+  - Perl 6 to Ruby 1.9
   - Perl 6 to Go
   - Perl 6 to Common Lisp (SBCL)
   - Perl 6 to Ruby 1.9
@@ -53,7 +51,7 @@ Perlito6 is written in Perl 6.
 SEE ALSO
 --------
 
-[README-perlito6](README-perlito6)
+  - [README-perlito6](README-perlito6)
 
-[README-perlito5](README-perlito5)
+  - [README-perlito5](README-perlito5)
 
