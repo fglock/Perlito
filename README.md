@@ -9,24 +9,24 @@ Backends
 Perlito can compile Perl 5 or Perl 6 programs into one of the 'backend'
 languages:
 
-    - Perl 5 to Perl 5
-    - Perl 5 to Javascript
+  - Perl 5 to Perl 5
+  - Perl 5 to Javascript
 
-    - Perl 6 to Perl 5
-    - Perl 6 to Javascript
-    - Perl 6 to Python 2.6
+  - Perl 6 to Perl 5
+  - Perl 6 to Javascript
+  - Perl 6 to Python 2.6
 
 The following compilers are work in progress - some tests pass, some tests fail:
 
-    - Perl 5 to Perl 6
-    - Perl 6 to Ruby 1.9
+  - Perl 5 to Perl 6
+  - Perl 6 to Ruby 1.9
 
 Perlito 6.0 also compile to additional backends.
 Check the Changelog file for details:
 
-    - Perl 6 to Go
-    - Perl 6 to Common Lisp (SBCL)
-    - Perl 6 to Ruby 1.9
+  - Perl 6 to Go
+  - Perl 6 to Common Lisp (SBCL)
+  - Perl 6 to Ruby 1.9
 
 Web
 ---
@@ -37,9 +37,9 @@ Main Project web page: http://fglock.github.io/Perlito
 
 Run Perlito online, in the browser:
 
-[http://fglock.github.io/Perlito/perlito/perlito5.html](http://fglock.github.io/Perlito/perlito/perlito5.html)
+  - [http://fglock.github.io/Perlito/perlito/perlito5.html](http://fglock.github.io/Perlito/perlito/perlito5.html)
 
-[http://fglock.github.io/Perlito/perlito/perlito6.html](http://fglock.github.io/Perlito/perlito/perlito6.html)
+  - [http://fglock.github.io/Perlito/perlito/perlito6.html](http://fglock.github.io/Perlito/perlito/perlito6.html)
 
 Source code
 -----------
