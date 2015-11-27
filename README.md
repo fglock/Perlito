@@ -53,7 +53,7 @@ Perlito6 is written in Perl 6.
 SEE ALSO
 --------
 
-[](README-perlito6)
+[README-perlito6](README-perlito6)
 
-[](README-perlito5)
+[README-perlito5](README-perlito5)
 
