@@ -43,6 +43,7 @@ sub term_space {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
+    # $p++ while substr($str, $p, 1) eq ' ';
     while (exists $space{substr($str, $p, 1)}) {
         $p = $space{substr($str, $p, 1)}->($str, $p+1)
     }

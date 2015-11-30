@@ -2738,6 +2738,10 @@ package Perlito5::AST::Apply;
                 $effective_name = "CORE::$name";
                 $sig = $Perlito5::CORE_PROTO->{$effective_name};
             }
+            elsif ( exists $Perlito5::PACKAGES->{$name} ) {
+                # bareword is a package name
+                return Perlito5::Javascript2::escape_string($name);
+            }
             else {
                 # this subroutine was never declared
                 if ($self->{bareword}) {
