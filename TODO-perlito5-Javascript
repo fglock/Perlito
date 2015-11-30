@@ -1,5 +1,10 @@
 * Javascript backend
 
+-- performance
+
+    compilation time (bootstrap) slowed down during the year 2015,
+    from about 10s to 30s.
+
 -- DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
 
