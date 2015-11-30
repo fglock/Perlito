@@ -27,6 +27,9 @@
     # t = 20s
     ff9201b480dba0d594e71029298fb0e07d982b60 is the first bad commit
 
+    # t = 17s
+    bb97211c066848ef417c15fe030dc483f81fc986 is the first bad commit
+
 -- DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
 
