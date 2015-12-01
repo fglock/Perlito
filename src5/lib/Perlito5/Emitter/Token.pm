@@ -264,7 +264,6 @@ sub emit_perl5 {
     my $self = $_[0];
 
     '(do { ' 
-        . '$MATCH->{str} = $str; '
         . $self->{closure} 
         . '; 1 })'
 }
