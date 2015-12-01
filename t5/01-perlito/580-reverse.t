@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..3';
+say '1..7';
 my $test = 1;
 my @v;
 
@@ -25,4 +25,16 @@ for my $i (reverse "abc") {
     push @v, $i;
 }
 is_res "abc";
+
+@v = reverse 4, 5, 6;
+is_res "6 5 4";
+
+@v = (reverse 4, 5, 6);
+is_res "6 5 4";
+
+@v = reverse (4, 5, 6);
+is_res "6 5 4";
+
+@v = scalar reverse (4, 5, 6);
+is_res "654";
 

@@ -341,19 +341,20 @@ CORE.each = function(List__, p5want) {
     return o._each_(p5want);
 };
 
-CORE.reverse = function(List__) {
+CORE.reverse = function(List__, p5want) {
     var o = List__;
-    if (o == null) {
-        return "";
+    if (p5want) {
+        if (o == null) {
+            return [];
+        }
+        var out = [];
+        for(var i = 0; i < o.length; i++) {
+            out.unshift(o[i]);
+        }
+        return out;
     }
-    if (typeof o === "string") {
-        return o.split("").reverse().join("")
-    }
-    var out = [];
-    for(var i = 0; i < o.length; i++) {
-        out.unshift(o[i]);
-    }
-    return out;
+    o = p5str(o);
+    return o.split("").reverse().join("")
 };
 
 CORE.splice = function(List__, p5want) {
