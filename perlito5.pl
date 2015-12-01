@@ -7033,11 +7033,9 @@ use feature 'say';
                         substr($_[0], $_[1], 1) =~ m!\w! ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
                     }
                     sub Perlito5::Grammar::ident {
-                        (substr($_[0], $_[1], 1) !~ m!\w! || substr($_[0], $_[1], 1) =~ m!\d!) && return ;
-                        my $m = {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1};
-                        $m->{'to'}++
-                            while substr($_[0], $m->{'to'}, 1) =~ m!\w!;
-                        $m
+                        substr($_[0], $_[1], 256) !~ m!^([a-zA-Z_]\w*)! && return ;
+                        length(${1}) > 251 && die('Identifier too long');
+                        return {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + length(${1})}
                     }
                     sub Perlito5::Grammar::caret_char {
                         my $c = substr($_[0], $_[1], 1);

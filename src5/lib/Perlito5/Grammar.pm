@@ -25,16 +25,14 @@ sub word {
 
 sub ident {
     return 
-        if substr( $_[0], $_[1], 1 ) !~ m/\w/
-        || substr( $_[0], $_[1], 1 ) =~ m/\d/;
-    my $m = {
+        if substr( $_[0], $_[1], 256 ) !~ m/^([a-zA-Z_]\w*)/;
+    die "Identifier too long"
+        if length($1) > 251;
+    return {
          str  => $_[0],
          from => $_[1],
-         to   => $_[1] + 1,
+         to   => $_[1] + length($1),
        };
-    $m->{to}++
-        while substr( $_[0], $m->{to}, 1 ) =~ m/\w/;
-    $m;
 }
 
 sub caret_char {
