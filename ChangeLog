@@ -6,6 +6,7 @@
 -- improved error message for missing comma
 - Javascript:
 -- console.log() is the default "print"
+-- reverse() bugfix, add tests
 - Command line "perlito5"
 -- better switch handling: -Cperl5 / -C perl5 / -C'perl5'
 -- compile-only switch '-c'

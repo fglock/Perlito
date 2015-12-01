@@ -347,11 +347,7 @@ CORE.reverse = function(List__, p5want) {
         if (o == null) {
             return [];
         }
-        var out = [];
-        for(var i = 0; i < o.length; i++) {
-            out.unshift(o[i]);
-        }
-        return out;
+        return List__.reverse();
     }
     o = p5str(o);
     return o.split("").reverse().join("")
