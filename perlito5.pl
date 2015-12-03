@@ -353,7 +353,7 @@ use feature 'say';
                                             (do {
                                                 ((do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 1 : 0
@@ -745,7 +745,7 @@ use feature 'say';
                                                 $MATCH->{'to'} = $pos1;
                                                 ((do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ((chr(92) eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
                                                         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                                                         if ($m2) {
@@ -2429,7 +2429,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 1 : 0
@@ -2536,7 +2536,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 1 : 0
@@ -2865,7 +2865,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 0 : 1
@@ -2916,7 +2916,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 0 : 1
@@ -2964,7 +2964,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -3010,7 +3010,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 0 : 1
@@ -3058,7 +3058,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -3104,7 +3104,7 @@ use feature 'say';
                                                     }
                                                 }) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 0 : 1
@@ -3180,7 +3180,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -3223,7 +3223,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -5348,7 +5348,7 @@ use feature 'say';
                                     my $to = $MATCH->{'to'};
                                     while (((do {
                                         my $tmp = $MATCH;
-                                        $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                        $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                         my $res = (do {
                                             my $pos1 = $MATCH->{'to'};
                                             (do {
@@ -5741,7 +5741,7 @@ use feature 'say';
                                     (do {
                                         ((do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 1 : 0
@@ -5757,7 +5757,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -5769,7 +5769,7 @@ use feature 'say';
                                         $MATCH->{'to'} = $pos1;
                                         ((do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 1 : 0
@@ -5801,7 +5801,7 @@ use feature 'say';
                                             }
                                         }) && (do {
                                             my $tmp = $MATCH;
-                                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                             my $res = ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                             $MATCH = $tmp;
                                             $res ? 0 : 1
@@ -6206,7 +6206,7 @@ use feature 'say';
                                                 $MATCH->{'to'} = $pos1;
                                                 ((do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 1 : 0
@@ -6281,7 +6281,7 @@ use feature 'say';
                                                 $MATCH->{'to'} = $pos1;
                                                 ((do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 1 : 0
@@ -6607,7 +6607,7 @@ use feature 'say';
                                                 $MATCH->{'to'} = $pos1;
                                                 (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                                                     my $tmp = $MATCH;
-                                                    $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                                     my $res = ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                                     $MATCH = $tmp;
                                                     $res ? 0 : 1
@@ -7109,7 +7109,7 @@ use feature 'say';
                             }
                         }) && (do {
                             my $tmp = $MATCH;
-                            $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                             my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                             $MATCH = $tmp;
                             $res ? 1 : 0
@@ -7128,7 +7128,7 @@ use feature 'say';
                                 }
                             }) && (do {
                                 my $tmp = $MATCH;
-                                $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                 my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
                                 $MATCH = $tmp;
                                 $res ? 1 : 0
@@ -8368,7 +8368,7 @@ use feature 'say';
                             $MATCH->{'to'} = $pos1;
                             ((do {
                                 my $tmp = $MATCH;
-                                $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                 my $res = (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                 $MATCH = $tmp;
                                 $res ? 0 : 1
@@ -8401,7 +8401,7 @@ use feature 'say';
                     my $count = 0;
                     while (((do {
                         my $tmp = $MATCH;
-                        $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                        $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                         my $res = ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                         $MATCH = $tmp;
                         $res ? 0 : 1
@@ -8463,7 +8463,7 @@ use feature 'say';
                             $MATCH->{'to'} = $pos1;
                             ((do {
                                 my $tmp = $MATCH;
-                                $MATCH = {'str' => $str, 'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                                $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
                                 my $res = ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
                                 $MATCH = $tmp;
                                 $res ? 0 : 1
@@ -9163,7 +9163,7 @@ use feature 'say';
             }
             sub Perlito5::Rul::Before::emit_perl5 {
                 my $self = $_[0];
-                '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $tmp; ' . '$res ? 1 : 0 ' . '})'
+                '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $tmp; ' . '$res ? 1 : 0 ' . '})'
             }
             sub Perlito5::Rul::Before::set_captures_to_array {
                 my $self = $_[0]
@@ -9178,7 +9178,7 @@ use feature 'say';
             }
             sub Perlito5::Rul::NotBefore::emit_perl5 {
                 my $self = $_[0];
-                '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'str' . chr(39) . ' => $str, ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $tmp; ' . '$res ? 0 : 1 ' . '})'
+                '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = { ' . chr(39) . 'from' . chr(39) . ' => $tmp->{to}, ' . chr(39) . 'to' . chr(39) . ' => $tmp->{to} }; ' . 'my $res = ' . $self->{'rule_exp'}->emit_perl5() . '; ' . '$MATCH = $tmp; ' . '$res ? 0 : 1 ' . '})'
             }
             sub Perlito5::Rul::NotBefore::set_captures_to_array {
                 my $self = $_[0]
