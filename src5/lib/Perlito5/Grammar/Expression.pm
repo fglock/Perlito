@@ -118,7 +118,12 @@ sub reduce_postfix {
     my $value = shift;
     my $v = $op;
     if ($v->[1] eq 'methcall_no_params') {
-        $v = Perlito5::AST::Call->new( invocant => $value, method => $v->[2], arguments => [] );
+        $v = Perlito5::AST::Call->new(
+            invocant  => $value,
+            method    => $v->[2],
+            arguments => [],
+            ( ref $v->[2] ? () : ( _no_params => 1 ) )
+        );
         return $v;
     }
     if ($v->[1] eq 'funcall_no_params') {
