@@ -1817,7 +1817,13 @@ package Perlito5::AST::Call;
                 if ($meth eq 'new') {
                     return "new $info->{java_type}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
-                return "$info->{java_type}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                if ($self->{_no_params}) {
+                    # Sample->NAME
+                    return "$info->{java_type}.${meth}";
+                }
+                else {
+                    return "$info->{java_type}.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                }
             }
         }
 
@@ -1833,7 +1839,13 @@ package Perlito5::AST::Call;
             my $Java_var = Perlito5::Java::get_java_var_info();
             my $type = $Java_var->{ $id }{type} || 'PlLvalue';
             if ($type ne 'PlLvalue') {
-                return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                if ($self->{_no_params}) {
+                    # $s->NAME
+                    return "$invocant.${meth}";
+                }
+                else {
+                    return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
+                }
             }
         }
 

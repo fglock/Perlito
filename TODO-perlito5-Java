@@ -138,6 +138,10 @@
     creates a native Java variable          (DONE)
                                             (TODO: allow Int, String types)
 
+    my Int $val = Sample->VAL;
+    "method call without parenthesis"
+    read a class or instance variable
+
     my $x = $put;
     puts the unboxed object into a Perl scalar  (DONE)
 
