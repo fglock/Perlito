@@ -1607,6 +1607,17 @@ package Perlito5::AST::Apply;
             my $self = $_[0];
             'p5make_package(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ')';
         },
+        'bless' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $class;
+            if ($self->{arguments}[1]) {
+                $class = Perlito5::Javascript2::to_str( $self->{arguments}[1] );
+            }
+            else { 
+                $class = Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME);
+            }
+            'CORE.bless([' . $self->{arguments}[0]->emit_javascript2($level, 'scalar') . ', ' . $class . '])';
+        },
         'infix:<~~>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg0 = $self->{arguments}->[0];
