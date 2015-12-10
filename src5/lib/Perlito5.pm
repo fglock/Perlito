@@ -65,22 +65,15 @@ The compiler options are available with the command:
 
 =head2 Obtaining a Perl compiler script that runs in the browser
 
-    # Step 1: create a Perl script that implements C<compile_p5_to_js()>.
+    # Step 1: create a Perl script that loads the compiler and evaluates a string.
     #         Save this to "perlito5-browser.pl":
 
-    use strict;
-    use warnings;
     use Perlito5::Compiler;
     use Perlito5::Javascript2::Emitter;
     use Perlito5::Javascript2::Runtime;
-    sub compile_p5_to_js {
-        my $s = shift;
-        $Perlito5::PKG_NAME = 'main';
-        $Perlito5::PROTO    = {};
-        my $ast = Perlito5::Grammar::exp_stmts($s, 0);
-        Perlito5::AST::CompUnit::emit_javascript2_program(
-            [ Perlito5::AST::CompUnit->new( name => 'main', body => Perlito5::Match::flat($ast) ) ]
-        );
+    sub eval_perl5 {
+        eval "$_[0]; 1"
+        or warn "Perl error: $@";
     }
 
     # Step 2: use perlito5 to compile your "perlito5-browser.pl" script to Javascript.
@@ -97,12 +90,10 @@ The compiler options are available with the command:
       <head>
         <script type="text/javascript" src="perlito5-browser.js"></script>
         <script type="text/javascript">
-            function perl_exec(source) {
-                var js_source = p5pkg.main.compile_p5_to_js([source]);
-                eval(js_source);
-            }
             function hello() {
-                perl_exec(' print "hello, World!\n" ');
+                return p5pkg.main.eval_perl5([
+                    ' print "hello, World!\n" '
+                ]);
             }
         </script>
       </head>

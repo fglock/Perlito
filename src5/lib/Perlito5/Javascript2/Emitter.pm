@@ -2620,10 +2620,10 @@ package Perlito5::AST::Apply;
             }
             if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_javascript2() . ')._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . ')';
+                    return Perlito5::Javascript2::emit_javascript2_autovivify( $arg->invocant, $level, 'hash' ) . '._hash_.hasOwnProperty(' . Perlito5::AST::Lookup->autoquote($arg->{arguments})->emit_javascript2($level) . ')';
                 }
                 if ( $arg->method eq 'postcircumfix:<[ ]>' ) {
-                    return '(' . $arg->invocant->emit_javascript2() . ')._array_.hasOwnProperty(' . $arg->{arguments}->emit_javascript2($level) . ')';
+                    return Perlito5::Javascript2::emit_javascript2_autovivify( $arg->invocant, $level, 'array' ) . '._array_.hasOwnProperty(' . $arg->{arguments}->emit_javascript2($level) . ')';
                 }
             }
             if (  $arg->isa('Perlito5::AST::Var')

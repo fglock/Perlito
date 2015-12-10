@@ -39,6 +39,7 @@ our @END_BLOCK       = ();    # END block LIFO - array of subs
 our @INIT_BLOCK      = ();    # INIT block FIFO - array of subs
 our @CHECK_BLOCK     = ();    # CHECK block LIFO - array of subs
 our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
+our $PROTO           = {};
 
 sub set_global_phase {
     my $phase = shift;

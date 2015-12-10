@@ -1,8 +1,11 @@
 
+- Docs:
+-- review cookbook entry "Obtaining a Perl compiler script that runs in the browser"
 - Parser:
 -- error message for: "Identifier too long" (Perl limit is 251 characters)
 - Javascript:
 -- implemented 1-argument bless() - github bug #35
+-- fix autovivification in exists()
 - Java:
 -- a "method call without parenthesis" will access a Java class/instance variable: my Int $val = Sample->VAL;
 
