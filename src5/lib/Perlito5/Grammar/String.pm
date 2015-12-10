@@ -194,7 +194,7 @@ sub s_quote_parse {
         $replace = '{' . $replace . '}';                # make a "block"
         my $m = Perlito5::Grammar::block($replace, 0);  # parse the block
         if (!$m) {
-            die "syntax error";
+            Perlito5::Compiler::error "syntax error";
         }
         $replace = Perlito5::Match::flat($m);
         if ($modifiers =~ /ee/) {
@@ -625,7 +625,7 @@ sub string_interpolation_parse {
         push @args, Perlito5::AST::Buf->new( buf => $buf );
     }
 
-    die "Can't find string terminator '$delimiter' anywhere before EOF"
+    Perlito5::Compiler::error "Can't find string terminator '$delimiter' anywhere before EOF"
         if substr($str, $p, length($delimiter)) ne $delimiter;
 
     $p += length($delimiter);
@@ -814,7 +814,7 @@ sub here_doc {
             return $m;
         }
     }
-    die 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
+    Perlito5::Compiler::error 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
 }
 
 
@@ -895,7 +895,7 @@ sub double_quoted_unescape {
     elsif ( $c2 eq 'N' ) {
         #  \N{name}    named Unicode character
         #  \N{U+263D}  Unicode character     (example: FIRST QUARTER MOON)
-        die "TODO - \\N{charname} not implemented; requires 'use charnames'";
+        Perlito5::Compiler::error "TODO - \\N{charname} not implemented; requires 'use charnames'";
     }
     else {
         $m = {
@@ -919,10 +919,10 @@ sub double_quoted_var_with_subscript {
     if (substr($str, $p, 3) eq '->[') {
         $p += 3;
         $m_index = Perlito5::Grammar::Expression::list_parse($str, $p);
-        die "syntax error" unless $m_index;
+        Perlito5::Compiler::error "syntax error" unless $m_index;
         my $exp = $m_index->{capture};
         $p = $m_index->{to};
-        die "syntax error" if $exp eq '*undef*' || substr($str, $p, 1) ne ']';
+        Perlito5::Compiler::error "syntax error" if $exp eq '*undef*' || substr($str, $p, 1) ne ']';
         $p++;
         $m_index->{capture} = Perlito5::AST::Call->new(
                 method    => 'postcircumfix:<[ ]>',
@@ -935,7 +935,7 @@ sub double_quoted_var_with_subscript {
     if (substr($str, $p, 3) eq '->{') {
         $pos += 2;
         $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
-        die "syntax error" unless $m_index;
+        Perlito5::Compiler::error "syntax error" unless $m_index;
         $m_index->{capture} = Perlito5::AST::Call->new(
                 method    => 'postcircumfix:<{ }>',
                 invocant  => $m_var->{capture},

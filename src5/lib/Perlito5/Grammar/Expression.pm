@@ -127,7 +127,7 @@ sub reduce_postfix {
         return $v;
     }
     if ($v->[1] eq 'funcall_no_params') {
-        die "Bareword found where operator expected";
+        Perlito5::Compiler::error "Bareword found where operator expected";
     }
     if ($v->[1] eq 'methcall') {
         my $param_list = expand_list($v->[3]);
@@ -135,7 +135,7 @@ sub reduce_postfix {
         return $v;
     }
     if ($v->[1] eq 'funcall') {
-        die "unexpected function call";
+        Perlito5::Compiler::error "unexpected function call";
     }
     if ($v->[1] eq '( )') {
         my $param_list = expand_list($v->[2]);
@@ -255,7 +255,7 @@ my $reduce_to_ast = sub {
     }
     elsif (Perlito5::Grammar::Precedence::is_assoc_type('chain', $last_op->[1])) {
         if (scalar(@$num_stack) < 2) {
-            die("Missing value after operator " . $last_op->[1]);
+            Perlito5::Compiler::error("Missing value after operator " . $last_op->[1]);
         }
         my $v2 = pop_term($num_stack);
         my $arg = [ pop_term($num_stack), $v2 ];
@@ -268,7 +268,7 @@ my $reduce_to_ast = sub {
     }
     elsif ($last_op->[0] eq 'ternary') {
         if ( scalar(@$num_stack) < 2 ) {
-            die "Missing value after ternary operator";
+            Perlito5::Compiler::error "Missing value after ternary operator";
         }
         my $v2 = pop_term($num_stack);
         push @$num_stack,
@@ -280,7 +280,7 @@ my $reduce_to_ast = sub {
     }
     else {
         if ( scalar(@$num_stack) < 2 ) {
-            die("missing value after operator '" . $last_op->[1] . "'");
+            Perlito5::Compiler::error("missing value after operator '" . $last_op->[1] . "'");
         }
         my $v2 = pop_term($num_stack);
         push @$num_stack,
@@ -305,7 +305,7 @@ token term_arrow {
               <.Perlito5::Grammar::Space::opt_ws> '}'
               { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::AST::Buf->new(buf => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'})) ] }
             | <curly_parse>
-              [ \} | { die 'Missing right curly or square bracket' } ]
+              [ \} | { Perlito5::Compiler::error 'Missing right curly or square bracket' } ]
               { $MATCH->{capture} = [ 'postfix_or_term',  '.{ }',  Perlito5::Match::flat($MATCH->{curly_parse})   ] }
             ]
 
@@ -387,7 +387,7 @@ token term_curly {
             <Perlito5::Grammar::exp_stmts>
             { @Perlito5::SCOPE_STMT = @{ $MATCH->{_save_scope} } }
             <.Perlito5::Grammar::Space::ws>?
-        [ \} | { die 'Missing right curly or square bracket' } ]
+        [ \} | { Perlito5::Compiler::error 'Missing right curly or square bracket' } ]
         { $MATCH->{capture} = [ 'postfix_or_term', 'block', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::exp_stmts"}) ]
         }
     ]
@@ -419,11 +419,11 @@ token term_declarator {
             my $declarator = Perlito5::Match::flat($MATCH->{declarator});
             my $type = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::opt_type"});
 
-            die "No such class $type"
+            Perlito5::Compiler::error "No such class $type"
                 if $type && ! $Perlito5::PACKAGES->{$type};
 
             my $var  = $MATCH->{"Perlito5::Grammar::var_ident"}{capture};
-            die "No package name allowed for variable $var->{sigil}$var->{name} in \"$declarator\""
+            Perlito5::Compiler::error "No package name allowed for variable $var->{sigil}$var->{name} in \"$declarator\""
                 if $var->{namespace};
             $var->{_decl} = $declarator;
             $var->{_id}   = $Perlito5::ID++;
@@ -462,7 +462,7 @@ token term_local {
 
             my $look = Perlito5::Grammar::Scope::lookup_variable($var);
             if ( $look && ($look->{_decl} eq 'my' || $look->{_decl} eq 'state') ) {
-                die "Can\'t localize lexical variable $var->{sigil}$var->{name}";
+                Perlito5::Compiler::error "Can\'t localize lexical variable $var->{sigil}$var->{name}";
             }
             # warn "look: ", Data::Dumper::Dumper($look)
             #     if ref($look) eq 'Perlito5::AST::Var';
@@ -685,7 +685,7 @@ sub circumfix_parse {
             my $msg = "Expected closing delimiter: $delimiter";
             $msg = 'Missing right curly or square bracket'
                 if $delimiter eq '}' || $delimiter eq ']';
-            die "$msg near ", $last_pos;
+            Perlito5::Compiler::error "$msg near ", $last_pos;
         }
         my $v = $m->{capture};
         if ($v->[0] ne 'end') {

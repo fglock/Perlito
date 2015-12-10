@@ -329,7 +329,7 @@ sub precedence_parse {
             if ($last_is_term) {
                 # print "#      last:  ", Data::Dumper::Dumper($last);
                 # print "#      token: ", Data::Dumper::Dumper($token);
-                die "Value tokens must be separated by an operator (did you forget a comma?)";
+                Perlito5::Compiler::error "Value tokens must be separated by an operator (did you forget a comma?)";
             }
             $token->[0] = 'term';
             push( @$num_stack, $token);
@@ -355,7 +355,7 @@ sub precedence_parse {
             unshift( @$op_stack, $token);
         }
         else {
-            die "Unknown token: '", $token->[1], "'";
+            Perlito5::Compiler::error "Unknown token: '", $token->[1], "'";
         }
         $last = $token;
         $last_is_term = $token_is_term;
@@ -365,7 +365,7 @@ sub precedence_parse {
         }
     }
     if (defined($token) && ($token->[0] ne 'end')) {
-        die "Unexpected end token: ",$token;
+        Perlito5::Compiler::error "Unexpected end token: ", $token;
     }
     while (scalar(@$op_stack)) {
         $reduce->($op_stack, $num_stack);

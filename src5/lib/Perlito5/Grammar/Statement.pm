@@ -158,7 +158,7 @@ sub modifier {
 
     my $modifier_exp = Perlito5::Grammar::Expression::exp_parse($str, $pos);
     if (!$modifier_exp) {
-        die "Expected expression after '", Perlito5::Match::flat($modifier), "'";
+        Perlito5::Compiler::error "Expected expression after '", Perlito5::Match::flat($modifier), "'";
     }
     # TODO - require a statement terminator
 
@@ -240,7 +240,7 @@ sub modifier {
             ) 
         };
     }
-    die "Unexpected statement modifier '$modifier'";
+    Perlito5::Compiler::error "Unexpected statement modifier '$modifier'";
 }
 
 
@@ -316,7 +316,7 @@ sub statement_parse_inner {
         $type = "String" if $terminator eq '"' || $terminator eq "'";
         $type = "Scalar" if $terminator eq '$';
         $type = "Array"  if $terminator eq '@';
-        die "$type found where operator expected";
+        Perlito5::Compiler::error "$type found where operator expected";
     }
 
     if (!$modifier) {

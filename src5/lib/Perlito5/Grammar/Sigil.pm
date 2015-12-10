@@ -270,7 +270,7 @@ sub term_sigil {
         }
         if (substr($str, $p, 1) eq '}') {
             # ${}
-            die "syntax error";
+            Perlito5::Compiler::error "syntax error";
         }
         $m = Perlito5::Grammar::block( $str, $p0 );
         if ($m) {

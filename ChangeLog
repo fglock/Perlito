@@ -3,6 +3,7 @@
 -- review cookbook entry "Obtaining a Perl compiler script that runs in the browser"
 - Parser:
 -- error message for: "Identifier too long" (Perl limit is 251 characters)
+-- new error handler Perlito5::Compiler::error()
 - Javascript:
 -- implemented 1-argument bless() - github bug #35
 -- fix autovivification in exists()

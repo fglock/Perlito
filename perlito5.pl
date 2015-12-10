@@ -280,7 +280,7 @@ use feature 'say';
                                             }
                                             elsif ($token_is_term) {
                                                 if ($last_is_term) {
-                                                    die('Value tokens must be separated by an operator (did you forget a comma?)')
+                                                    Perlito5::Compiler::error('Value tokens must be separated by an operator (did you forget a comma?)')
                                                 }
                                                 $token->[0] = 'term';
                                                 push(@{$num_stack}, $token)
@@ -306,7 +306,7 @@ use feature 'say';
                                                 unshift(@{$op_stack}, $token)
                                             }
                                             else {
-                                                die('Unknown token: ' . chr(39), $token->[1], chr(39))
+                                                Perlito5::Compiler::error('Unknown token: ' . chr(39), $token->[1], chr(39))
                                             }
                                             $last = $token;
                                             $last_is_term = $token_is_term;
@@ -316,7 +316,7 @@ use feature 'say';
                                             }
                                         }
                                         if (defined($token) && ($token->[0] ne 'end')) {
-                                            die('Unexpected end token: ', $token)
+                                            Perlito5::Compiler::error('Unexpected end token: ', $token)
                                         }
                                         while (scalar(@{$op_stack})) {
                                             $reduce->($op_stack, $num_stack)
@@ -1055,7 +1055,7 @@ use feature 'say';
                                         my $expression = $_[3];
                                         my $modifier_exp = Perlito5::Grammar::Expression::exp_parse($str, $pos);
                                         if (!$modifier_exp) {
-                                            die('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
+                                            Perlito5::Compiler::error('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
                                         }
                                         if ($modifier eq 'if') {
                                             return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::Apply::->new('arguments' => [Perlito5::Match::flat($modifier_exp), $expression], 'code' => 'infix:<&&>', 'namespace' => '')}
@@ -1079,7 +1079,7 @@ use feature 'say';
                                         if ($modifier eq 'for' || $modifier eq 'foreach') {
                                             return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For::->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression, 'topic' => Perlito5::AST::Var::->new('namespace' => '', 'name' => '_', 'sigil' => '$'))}
                                         }
-                                        die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
+                                        Perlito5::Compiler::error('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
                                     }
                                     sub Perlito5::Grammar::Statement::statement_parse {
                                         my $m = statement_parse_inner(@_);
@@ -1119,7 +1119,7 @@ use feature 'say';
                                             ($terminator eq '"' || $terminator eq chr(39)) && ($type = 'String');
                                             $terminator eq '$' && ($type = 'Scalar');
                                             $terminator eq '@' && ($type = 'Array');
-                                            die($type . ' found where operator expected')
+                                            Perlito5::Compiler::error($type . ' found where operator expected')
                                         }
                                         if (!$modifier) {
                                             return $res
@@ -1236,7 +1236,7 @@ use feature 'say';
                                     return $v
                                 }
                                 if ($v->[1] eq 'funcall_no_params') {
-                                    die('Bareword found where operator expected')
+                                    Perlito5::Compiler::error('Bareword found where operator expected')
                                 }
                                 if ($v->[1] eq 'methcall') {
                                     my $param_list = expand_list($v->[3]);
@@ -1244,7 +1244,7 @@ use feature 'say';
                                     return $v
                                 }
                                 if ($v->[1] eq 'funcall') {
-                                    die('unexpected function call')
+                                    Perlito5::Compiler::error('unexpected function call')
                                 }
                                 if ($v->[1] eq '( )') {
                                     my $param_list = expand_list($v->[2]);
@@ -1326,7 +1326,7 @@ use feature 'say';
                                 }
                                 elsif (Perlito5::Grammar::Precedence::is_assoc_type('chain', $last_op->[1])) {
                                     if (scalar(@{$num_stack}) < 2) {
-                                        die('Missing value after operator ' . $last_op->[1])
+                                        Perlito5::Compiler::error('Missing value after operator ' . $last_op->[1])
                                     }
                                     my $v2 = pop_term($num_stack);
                                     my $arg = [pop_term($num_stack), $v2];
@@ -1334,14 +1334,14 @@ use feature 'say';
                                 }
                                 elsif ($last_op->[0] eq 'ternary') {
                                     if (scalar(@{$num_stack}) < 2) {
-                                        die('Missing value after ternary operator')
+                                        Perlito5::Compiler::error('Missing value after ternary operator')
                                     }
                                     my $v2 = pop_term($num_stack);
                                     push(@{$num_stack}, Perlito5::AST::Apply::->new('namespace' => '', 'code' => 'ternary:<' . $last_op->[1] . '>', 'arguments' => [pop_term($num_stack), $last_op->[2], $v2]))
                                 }
                                 else {
                                     if (scalar(@{$num_stack}) < 2) {
-                                        die('missing value after operator ' . chr(39) . $last_op->[1] . chr(39))
+                                        Perlito5::Compiler::error('missing value after operator ' . chr(39) . $last_op->[1] . chr(39))
                                     }
                                     my $v2 = pop_term($num_stack);
                                     push(@{$num_stack}, Perlito5::AST::Apply::->new('namespace' => '', 'code' => 'infix:<' . $last_op->[1] . '>', 'arguments' => [pop_term($num_stack), $v2]))
@@ -1449,7 +1449,7 @@ use feature 'say';
                                                     }) || (do {
                                                         $MATCH->{'to'} = $pos1;
                                                         (do {
-                                                            die('Missing right curly or square bracket');
+                                                            Perlito5::Compiler::error('Missing right curly or square bracket');
                                                             1
                                                         })
                                                     })
@@ -1707,7 +1707,7 @@ use feature 'say';
                                             }) || (do {
                                                 $MATCH->{'to'} = $pos1;
                                                 (do {
-                                                    die('Missing right curly or square bracket');
+                                                    Perlito5::Compiler::error('Missing right curly or square bracket');
                                                     1
                                                 })
                                             })
@@ -1834,9 +1834,9 @@ use feature 'say';
                                 }) && (do {
                                     my $declarator = Perlito5::Match::flat($MATCH->{'declarator'});
                                     my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::opt_type'});
-                                    $type && !$Perlito5::PACKAGES->{$type} && die('No such class ' . $type);
+                                    $type && !$Perlito5::PACKAGES->{$type} && Perlito5::Compiler::error('No such class ' . $type);
                                     my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
-                                    $var->{'namespace'} && die('No package name allowed for variable ' . $var->{'sigil'} . $var->{'name'} . ' in "' . $declarator . '"');
+                                    $var->{'namespace'} && Perlito5::Compiler::error('No package name allowed for variable ' . $var->{'sigil'} . $var->{'name'} . ' in "' . $declarator . '"');
                                     $var->{'_decl'} = $declarator;
                                     $var->{'_id'} = $Perlito5::ID++;
                                     $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
@@ -1906,7 +1906,7 @@ use feature 'say';
                                     my $var = $MATCH->{'capture'};
                                     my $look = Perlito5::Grammar::Scope::lookup_variable($var);
                                     if ($look && ($look->{'_decl'} eq 'my' || $look->{'_decl'} eq 'state')) {
-                                        die('Can' . chr(39) . 't localize lexical variable ' . $var->{'sigil'} . $var->{'name'})
+                                        Perlito5::Compiler::error('Can' . chr(39) . 't localize lexical variable ' . $var->{'sigil'} . $var->{'name'})
                                     }
                                     $var->{'_id'} = $Perlito5::ID++;
                                     $var->{'_decl'} = $declarator;
@@ -2042,7 +2042,7 @@ use feature 'say';
                                     if (!$m) {
                                         my $msg = 'Expected closing delimiter: ' . $delimiter;
                                         ($delimiter eq '}' || $delimiter eq ']') && ($msg = 'Missing right curly or square bracket');
-                                        die($msg . ' near ', $last_pos)
+                                        Perlito5::Compiler::error($msg . ' near ', $last_pos)
                                     }
                                     my $v = $m->{'capture'};
                                     if ($v->[0] ne 'end') {
@@ -3341,7 +3341,7 @@ use feature 'say';
                                     $replace = '{' . $replace . '}';
                                     my $m = Perlito5::Grammar::block($replace, 0);
                                     if (!$m) {
-                                        die('syntax error')
+                                        Perlito5::Compiler::error('syntax error')
                                     }
                                     $replace = Perlito5::Match::flat($m);
                                     if ($modifiers =~ m!ee!) {
@@ -3617,7 +3617,7 @@ use feature 'say';
                                 if (length($buf)) {
                                     push(@args, Perlito5::AST::Buf::->new('buf' => $buf))
                                 }
-                                substr($str, $p, length($delimiter)) ne $delimiter && die('Can' . chr(39) . 't find string terminator ' . chr(39) . $delimiter . chr(39) . ' anywhere before EOF');
+                                substr($str, $p, length($delimiter)) ne $delimiter && Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator ' . chr(39) . $delimiter . chr(39) . ' anywhere before EOF');
                                 $p += length($delimiter);
                                 my $ast;
                                 if (!@args) {
@@ -3748,7 +3748,7 @@ use feature 'say';
                                         return $m
                                     }
                                 }
-                                die('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
+                                Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF')
                             }
                             sub Perlito5::Grammar::String::double_quoted_unescape {
                                 my $str = $_[0];
@@ -3793,7 +3793,7 @@ use feature 'say';
                                     $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($tmp))}
                                 }
                                 elsif ($c2 eq 'N') {
-                                    die('TODO - ' . chr(92) . 'N{charname} not implemented; requires ' . chr(39) . 'use charnames' . chr(39))
+                                    Perlito5::Compiler::error('TODO - ' . chr(92) . 'N{charname} not implemented; requires ' . chr(39) . 'use charnames' . chr(39))
                                 }
                                 else {
                                     $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => $c2)}
@@ -3810,10 +3810,10 @@ use feature 'say';
                                 if (substr($str, $p, 3) eq '->[') {
                                     $p += 3;
                                     $m_index = Perlito5::Grammar::Expression::list_parse($str, $p);
-                                    $m_index || die('syntax error');
+                                    $m_index || Perlito5::Compiler::error('syntax error');
                                     my $exp = $m_index->{'capture'};
                                     $p = $m_index->{'to'};
-                                    ($exp eq '*undef*' || substr($str, $p, 1) ne ']') && die('syntax error');
+                                    ($exp eq '*undef*' || substr($str, $p, 1) ne ']') && Perlito5::Compiler::error('syntax error');
                                     $p++;
                                     $m_index->{'capture'} = Perlito5::AST::Call::->new('method' => 'postcircumfix:<[ ]>', 'invocant' => $m_var->{'capture'}, 'arguments' => $exp);
                                     $m_index->{'to'} = $p;
@@ -3822,7 +3822,7 @@ use feature 'say';
                                 if (substr($str, $p, 3) eq '->{') {
                                     $pos += 2;
                                     $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
-                                    $m_index || die('syntax error');
+                                    $m_index || Perlito5::Compiler::error('syntax error');
                                     $m_index->{'capture'} = Perlito5::AST::Call::->new('method' => 'postcircumfix:<{ }>', 'invocant' => $m_var->{'capture'}, 'arguments' => Perlito5::Match::flat($m_index)->[2]->[0]);
                                     return double_quoted_var_with_subscript($m_index, $interpolate)
                                 }
@@ -4019,7 +4019,7 @@ use feature 'say';
                                         }
                                     }
                                     if (substr($str, $p, 1) eq '}') {
-                                        die('syntax error')
+                                        Perlito5::Compiler::error('syntax error')
                                     }
                                     $m = Perlito5::Grammar::block($str, $p0);
                                     if ($m) {
@@ -4634,7 +4634,7 @@ use feature 'say';
                                                     if ($Perlito5::STRICT) {
                                                         my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
                                                         if ($sigil ne '*' && $sigil ne '&') {
-                                                            die('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name' . ' at ' . $Perlito5::FILE_NAME)
+                                                            Perlito5::Compiler::error('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name')
                                                         }
                                                     }
                                                     $var->{'_decl'} = 'global';
@@ -7538,6 +7538,9 @@ use feature 'say';
             sub Perlito5::Compiler::do_not_edit {
                 my $prefix = shift;
                 return $prefix . ' Do not edit this file - Generated by ' . compiler_name() . ' ' . $Perlito5::VERSION . chr(10)
+            }
+            sub Perlito5::Compiler::error {
+                die(join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER)
             }
             1
         }
