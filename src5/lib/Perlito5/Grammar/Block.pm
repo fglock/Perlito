@@ -32,14 +32,14 @@ sub block {
 
     $m = Perlito5::Grammar::exp_stmts($str, $pos);
     if (!$m) {
-        die "syntax error";
+        Perlito5::Compiler::error "syntax error";
     }
     $pos = $m->{to};
     my $capture = Perlito5::Match::flat($m);
     $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
     $pos = $m->{to};
     if ( substr($str, $pos, 1) ne '}' ) {
-        die "syntax error";
+        Perlito5::Compiler::error "syntax error";
     }
     $m->{to} = $pos + 1;
     $m->{capture} = Perlito5::AST::Block->new( stmts => $capture, sig => undef );
@@ -64,7 +64,7 @@ sub eval_end_block {
     # we add some extra information to the data, to make things more "dumpable"
     eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
     # eval "{ $code }; 1"
-    or die "Error in $phase block: " . $@;
+    or Perlito5::Compiler::error "Error in $phase block: " . $@;
 }
 
 sub eval_begin_block {
@@ -86,7 +86,7 @@ sub eval_begin_block {
     # we add some extra information to the data, to make things more "dumpable"
     eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
     # eval "{ $code }; 1"
-    or die "Error in BEGIN block: " . $@;
+    or Perlito5::Compiler::error "Error in BEGIN block: " . $@;
 }
 
 token opt_continue_block {
@@ -215,7 +215,7 @@ token named_sub_def {
     |
         <.Perlito5::Grammar::Statement::statement_parse>
         {
-            die 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), '\''
+            Perlito5::Compiler::error 'Illegal declaration of subroutine \'', Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::ident"}), '\''
         }
     |
         {

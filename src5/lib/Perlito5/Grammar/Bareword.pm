@@ -294,7 +294,7 @@ sub term_bareword {
                 $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
                 $capture = $m->{capture} if $m;
                 if (!$m) {
-                    die "Type of arg $arg_index to $name must be block or sub {}";
+                    Perlito5::Compiler::error "Type of arg $arg_index to $name must be block or sub {}";
                 }
                 $p = $m->{to};
                 push @args, $capture;
@@ -331,7 +331,7 @@ sub term_bareword {
                     $p = $m->{to}
                 }
                 if ( substr($str, $p, 1) ne ')' ) {
-                    die "syntax error near ", substr( $str, $pos, 10 );
+                    Perlito5::Compiler::error "syntax error near ", substr( $str, $pos, 10 );
                 }
                 $p++;
             }
@@ -388,7 +388,7 @@ sub term_bareword {
         ###     elsif ($sig_part eq '$') {
         ###         if (!$m) {
         ###             last SIG if $optional;
-        ###             die "Not enough arguments for $name";
+        ###             Perlito5::Compiler::error "Not enough arguments for $name";
         ###         }
         ###         $p = $m->{to};
         ###         push @args, $capture;
@@ -396,7 +396,7 @@ sub term_bareword {
         ###     elsif ($sig_part eq '&') {
         ###         if (!$m) {
         ###             last SIG if $optional;
-        ###             die "Type of arg $arg_index to $name must be sub {}";
+        ###             Perlito5::Compiler::error "Type of arg $arg_index to $name must be sub {}";
         ###         }
         ###         $p = $m->{to};
         ###         push @args, $capture;
@@ -407,7 +407,7 @@ sub term_bareword {
         ###         #   stat EXPR
         ###         #   stat DIRHANDLE
         ###         #   If EXPR is omitted, it stats $_.
-        ###         die "TODO: '*' sig";
+        ###         Perlito5::Compiler::error "TODO: '*' sig";
         ###         push @args, $capture;
         ###     }
         ###     elsif ($sig_part eq ';') {
@@ -415,7 +415,7 @@ sub term_bareword {
         ###         next SIG;
         ###     }
         ###     else {
-        ###         die "don't know what to do with sig '$sig_part'";
+        ###         Perlito5::Compiler::error "don't know what to do with sig '$sig_part'";
         ###     }
         ### }
         ### continue {
@@ -423,7 +423,7 @@ sub term_bareword {
         ###     $sig = substr($sig, 1);
         ### }
         ### print Perlito5::Dumper::Dumper(\@args);
-        ### die "TODO";
+        ### Perlito5::Compiler::error "TODO";
 
         if ( $sig eq '_' || $sig eq '$' || $sig eq '+' || $sig eq ';$' ) {
             my $m;
@@ -436,7 +436,7 @@ sub term_bareword {
                 $arg = $m->{capture}[2];
                 $arg = Perlito5::Grammar::Expression::expand_list( $arg );
                 my $v = shift @{ $arg };
-                die "Too many arguments for $name"
+                Perlito5::Compiler::error "Too many arguments for $name"
                     if @{ $arg };
                 $arg = $v;
             }
@@ -448,7 +448,7 @@ sub term_bareword {
                 }
                 elsif ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>' ) {
                     my $v = shift @{ $arg->{arguments} };
-                    die "Too many arguments for $name"
+                    Perlito5::Compiler::error "Too many arguments for $name"
                         if @{ $arg->{arguments} };
                     $arg = $v;
                 }
@@ -458,7 +458,7 @@ sub term_bareword {
                 $has_paren = 1;
             }
             else {
-                die "Not enough arguments for $name"
+                Perlito5::Compiler::error "Not enough arguments for $name"
                     if $sig eq '$';
                 push @args, Perlito5::AST::Var->new(
                             namespace => '',

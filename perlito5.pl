@@ -536,7 +536,7 @@ use feature 'say';
                                                     $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
                                                     $m && ($capture = $m->{'capture'});
                                                     if (!$m) {
-                                                        die('Type of arg ' . $arg_index . ' to ' . $name . ' must be block or sub {}')
+                                                        Perlito5::Compiler::error('Type of arg ' . $arg_index . ' to ' . $name . ' must be block or sub {}')
                                                     }
                                                     $p = $m->{'to'};
                                                     push(@args, $capture)
@@ -556,7 +556,7 @@ use feature 'say';
                                                         $p = $m->{'to'}
                                                     }
                                                     if (substr($str, $p, 1) ne ')') {
-                                                        die('syntax error near ', substr($str, $pos, 10))
+                                                        Perlito5::Compiler::error('syntax error near ', substr($str, $pos, 10))
                                                     }
                                                     $p++
                                                 }
@@ -585,7 +585,7 @@ use feature 'say';
                                                     $arg = $m->{'capture'}->[2];
                                                     $arg = Perlito5::Grammar::Expression::expand_list($arg);
                                                     my $v = shift(@{$arg});
-                                                    @{$arg} && die('Too many arguments for ' . $name);
+                                                    @{$arg} && Perlito5::Compiler::error('Too many arguments for ' . $name);
                                                     $arg = $v
                                                 }
                                                 else {
@@ -596,7 +596,7 @@ use feature 'say';
                                                     }
                                                     elsif (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'circumfix:<( )>') {
                                                         my $v = shift(@{$arg->{'arguments'}});
-                                                        @{$arg->{'arguments'}} && die('Too many arguments for ' . $name);
+                                                        @{$arg->{'arguments'}} && Perlito5::Compiler::error('Too many arguments for ' . $name);
                                                         $arg = $v
                                                     }
                                                 }
@@ -605,7 +605,7 @@ use feature 'say';
                                                     $has_paren = 1
                                                 }
                                                 else {
-                                                    $sig eq '$' && die('Not enough arguments for ' . $name);
+                                                    $sig eq '$' && Perlito5::Compiler::error('Not enough arguments for ' . $name);
                                                     $sig eq '_' && push(@args, Perlito5::AST::Var::->new('namespace' => '', 'name' => '_', 'sigil' => '$'))
                                                 }
                                                 my $ast = Perlito5::AST::Apply::->new('code' => $name, 'namespace' => $namespace, 'arguments' => \@args, 'bareword' => ($has_paren == 0));
@@ -795,7 +795,7 @@ use feature 'say';
                                         $ws = Perlito5::Grammar::Space::opt_ws($str, $ws->{'to'} + 1);
                                         my $p = $ws->{'to'};
                                         my $m = Perlito5::Grammar::ident($str, $p);
-                                        !$m && die('syntax error');
+                                        !$m && Perlito5::Compiler::error('syntax error');
                                         my $to;
                                         while (1) {
                                             my $attr = [Perlito5::Match::flat($m), undef];
@@ -803,7 +803,7 @@ use feature 'say';
                                             my $delimiter = substr($str, $to, 1);
                                             if ($delimiter eq '(') {
                                                 my $params = Perlito5::Grammar::String::string_interpolation_parse($str, $m->{'to'} + 1, '(', ')', 0);
-                                                !$params && die('syntax error');
+                                                !$params && Perlito5::Compiler::error('syntax error');
                                                 $attr->[1] = Perlito5::Match::flat($params)->{'buf'};
                                                 $to = $params->{'to'}
                                             }
@@ -4334,7 +4334,7 @@ use feature 'say';
                                             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                                                 my $code = 'our (' . join(', ', @{$list}) . ')';
                                                 my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                                                !$m && die('not a valid variable name: ' . join(${'"'}, @{$list}));
+                                                !$m && Perlito5::Compiler::error('not a valid variable name: ' . join(${'"'}, @{$list}));
                                                 $MATCH->{'capture'} = $m->{'capture'}
                                             }
                                             elsif ($full_ident eq 'strict') {
@@ -4351,7 +4351,7 @@ use feature 'say';
                                                     } keys(%{$name})) {
                                                         my $code = 'sub ' . $key . ' () { ' . Perlito5::Dumper::_dumper($name->{$key}) . ' }';
                                                         my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                                                        !$m && die('not a valid constant: ' . join(${'"'}, @{$list}));
+                                                        !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
                                                         push(@ast, $m->{'capture'})
                                                     }
                                                 }
@@ -4360,7 +4360,7 @@ use feature 'say';
                                                         Perlito5::Dumper::_dumper($_)
                                                     } @{$list}) . ') }';
                                                     my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                                                    !$m && die('not a valid constant: ' . join(${'"'}, @{$list}));
+                                                    !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
                                                     push(@ast, $m->{'capture'})
                                                 }
                                                 $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => \@ast)
@@ -4379,7 +4379,7 @@ use feature 'say';
                                     }) || (do {
                                         $MATCH->{'to'} = $pos1;
                                         (do {
-                                            die('Syntax error');
+                                            Perlito5::Compiler::error('Syntax error');
                                             1
                                         })
                                     })
@@ -4405,14 +4405,14 @@ use feature 'say';
                                         if ($use_or_not eq 'use') {
                                             if (defined(&{$module_name . '::import'})) {
                                                 unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                                                eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->import(@$arguments); 1') or die(${'@'});
+                                                eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->import(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
                                                 shift(@{$Perlito5::CALLER})
                                             }
                                         }
                                         elsif ($use_or_not eq 'no') {
                                             if (defined(&{$module_name . '::unimport'})) {
                                                 unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                                                eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->unimport(@$arguments); 1') or die(${'@'});
+                                                eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->unimport(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
                                                 shift(@{$Perlito5::CALLER})
                                             }
                                         }
@@ -4446,7 +4446,7 @@ use feature 'say';
                                 my $filename = shift;
                                 if (exists($INC{$filename})) {
                                     $INC{$filename} && return 'done';
-                                    die('Compilation failed in require')
+                                    Perlito5::Compiler::error('Compilation failed in require')
                                 }
                                 for my $prefix (@INC, '.') {
                                     my $realfilename = $prefix . '/' . $filename;
@@ -4455,7 +4455,7 @@ use feature 'say';
                                         return 'todo'
                                     }
                                 }
-                                die('Can' . chr(39) . 't locate ' . $filename . ' in @INC ' . '(@INC contains ' . join(' ', @INC) . ').')
+                                Perlito5::Compiler::error('Can' . chr(39) . 't locate ' . $filename . ' in @INC ' . '(@INC contains ' . join(' ', @INC) . ').')
                             }
                             sub Perlito5::Grammar::Use::expand_use {
                                 my $comp_units = shift;
@@ -4466,18 +4466,18 @@ use feature 'say';
                                 local $Perlito5::FILE_NAME = $filename;
                                 local $Perlito5::LINE_NUMBER = 1;
                                 my $realfilename = $INC{$filename};
-                                open(FILE, '<', $realfilename) or die('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
+                                open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
                                 local $/ = undef;
                                 my $source = <FILE>;
                                 close(FILE);
                                 my $m = Perlito5::Grammar::exp_stmts($source, 0);
-                                $m->{'to'} != length($source) && die('Syntax Error near ', $m->{'to'});
+                                $m->{'to'} != length($source) && Perlito5::Compiler::error('Syntax Error near ', $m->{'to'});
                                 if ($m->{'to'} != length($source)) {
                                     my $pos = $m->{'to'} - 10;
                                     $pos < 0 && ($pos = 0);
                                     print('* near: ', substr($source, $pos, 20), chr(10));
                                     print('* filename: ' . $realfilename . chr(10));
-                                    die('Syntax Error near ', $m->{'to'})
+                                    Perlito5::Compiler::error('Syntax Error')
                                 }
                                 if ($ENV{'PERLITO5DEV'}) {
                                     push(@{$comp_units}, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
@@ -4512,12 +4512,12 @@ use feature 'say';
                                 my $result = do($filename);
                                 if (${'@'}) {
                                     $INC{$filename} = undef;
-                                    die(${'@'})
+                                    ${'@'}->Perlito5::Compiler::error()
                                 }
                                 elsif (!$result) {
                                     delete($INC{$filename});
                                     ${'@'} && warn(${'@'});
-                                    die($filename . ' did not return true value')
+                                    Perlito5::Compiler::error($filename . ' did not return true value')
                                 }
                                 else {
                                     return $result
@@ -4535,7 +4535,7 @@ use feature 'say';
                                     return 'undef'
                                 };
                                 my $realfilename = $INC{$filename};
-                                open(FILE, '<', $realfilename) or die('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
+                                open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
                                 local $/ = undef;
                                 my $source = <FILE>;
                                 close(FILE);
@@ -4682,14 +4682,14 @@ use feature 'say';
                                 Perlito5::Grammar::Scope::create_new_compile_time_scope();
                                 $m = Perlito5::Grammar::exp_stmts($str, $pos);
                                 if (!$m) {
-                                    die('syntax error')
+                                    Perlito5::Compiler::error('syntax error')
                                 }
                                 $pos = $m->{'to'};
                                 my $capture = Perlito5::Match::flat($m);
                                 $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
                                 $pos = $m->{'to'};
                                 if (substr($str, $pos, 1) ne '}') {
-                                    die('syntax error')
+                                    Perlito5::Compiler::error('syntax error')
                                 }
                                 $m->{'to'} = $pos + 1;
                                 $m->{'capture'} = Perlito5::AST::Block::->new('stmts' => $capture, 'sig' => undef);
@@ -4703,7 +4703,7 @@ use feature 'say';
                                 my $out = [];
                                 Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
                                 my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . join('', @{$out}) . chr(10);
-                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in ' . $phase . ' block: ' . ${'@'})
+                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or Perlito5::Compiler::error('Error in ' . $phase . ' block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::eval_begin_block {
                                 my $block = shift;
@@ -4714,7 +4714,7 @@ use feature 'say';
                                 my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
                                 local ${chr(7) . 'LOBAL_PHASE'};
                                 Perlito5::set_global_phase('BEGIN');
-                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or die('Error in BEGIN block: ' . ${'@'})
+                                eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
                             }
                             sub Perlito5::Grammar::Block::opt_continue_block {
                                 my $str = $_[0];
@@ -4920,7 +4920,7 @@ use feature 'say';
                                                 0
                                             }
                                         }) && (do {
-                                            die('Illegal declaration of subroutine ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), chr(39));
+                                            Perlito5::Compiler::error('Illegal declaration of subroutine ' . chr(39), Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), chr(39));
                                             1
                                         }))
                                     }) || (do {

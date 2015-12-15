@@ -103,7 +103,7 @@ token stmt_use {
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
                 my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                die "not a valid variable name: @$list"
+                Perlito5::Compiler::error "not a valid variable name: @$list"
                     if !$m;
                 $MATCH->{capture} = $m->{capture};
             }
@@ -126,7 +126,7 @@ token stmt_use {
                             . ' }';
                         # say "will do: $code";
                         my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                        die "not a valid constant: @$list"
+                        Perlito5::Compiler::error "not a valid constant: @$list"
                             if !$m;
                         # say Perlito5::Dumper::Dumper($m->{capture});
                         push @ast, $m->{capture};
@@ -141,7 +141,7 @@ token stmt_use {
                         . ') }';
                     # say "will do: $code";
                     my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                    die "not a valid constant: @$list"
+                    Perlito5::Compiler::error "not a valid constant: @$list"
                         if !$m;
                     # say Perlito5::Dumper::Dumper($m->{capture});
                     push @ast, $m->{capture};
@@ -163,7 +163,7 @@ token stmt_use {
             }
         }
     |
-        { die "Syntax error" }
+        { Perlito5::Compiler::error "Syntax error" }
     ]
 };
 
@@ -210,7 +210,7 @@ sub parse_time_eval {
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
                     eval "package $current_module_name;\n"
                        . '$module_name->import(@$arguments); 1'
-                    or die $@;
+                    or Perlito5::Compiler::error $@;
                     shift @{ $Perlito5::CALLER };
                 }
             }
@@ -220,7 +220,7 @@ sub parse_time_eval {
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
                     eval "package $current_module_name;\n"
                        . '$module_name->unimport(@$arguments); 1'
-                    or die $@;
+                    or Perlito5::Compiler::error $@;
                     shift @{ $Perlito5::CALLER };
                 }
             }
@@ -267,7 +267,7 @@ sub filename_lookup {
 
     if ( exists $INC{$filename} ) {
         return "done" if $INC{$filename};
-        die "Compilation failed in require";
+        Perlito5::Compiler::error "Compilation failed in require";
     }
 
     for my $prefix (@INC, '.') {
@@ -277,7 +277,7 @@ sub filename_lookup {
             return "todo";
         }
     }
-    die "Can't locate $filename in \@INC ".'(@INC contains '.join(" ",@INC).').';
+    Perlito5::Compiler::error "Can't locate $filename in \@INC ".'(@INC contains '.join(" ",@INC).').';
 }
 
 sub expand_use {
@@ -302,7 +302,7 @@ sub expand_use {
     # warn "// now loading: ", $realfilename;
     # load source
     open FILE, '<', $realfilename
-      or die "Cannot read $realfilename: $!\n";
+      or Perlito5::Compiler::error "Cannot read $realfilename: $!\n";
     local $/ = undef;
     my $source = <FILE>;
     close FILE;
@@ -310,7 +310,7 @@ sub expand_use {
     # compile; push AST into comp_units
     # warn $source;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
-    die "Syntax Error near ", $m->{to}
+    Perlito5::Compiler::error "Syntax Error near ", $m->{to}
         if $m->{to} != length($source);
 
     if ($m->{'to'} != length($source)) {
@@ -318,7 +318,7 @@ sub expand_use {
         $pos = 0 if $pos < 0;
         print "* near: ", substr( $source, $pos, 20 ), "\n";
         print "* filename: $realfilename\n";
-        die('Syntax Error near ', $m->{'to'})
+        Perlito5::Compiler::error 'Syntax Error';
     }
 
     if ($ENV{PERLITO5DEV}) {
@@ -375,11 +375,11 @@ sub require {
     my $result = do $filename;
     if ($@) {
         $INC{$filename} = undef;
-        die $@;
+        Perlito5::Compiler::error $@;
     } elsif (!$result) {
         delete $INC{$filename};
         warn $@ if $@;
-        die "$filename did not return true value";
+        Perlito5::Compiler::error "$filename did not return true value";
     } else {
         return $result;
     }
@@ -398,7 +398,7 @@ sub do_file {
     };
     my $realfilename = $INC{$filename};
     open FILE, '<', $realfilename
-      or die "Cannot read $realfilename: $!\n";
+      or Perlito5::Compiler::error "Cannot read $realfilename: $!\n";
     local $/ = undef;
     my $source = <FILE>;
     close FILE;
