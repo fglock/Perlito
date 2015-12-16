@@ -1,8 +1,10 @@
 "Perlito6" Perl 6 compiler
+==========================
 
     This is Perlito6, a compiler that implements a subset of Perl 6.
 
 Backends
+--------
 
     Perlito6 can compile Perl 6 programs into one of the 'backend' 
     languages:
@@ -12,6 +14,7 @@ Backends
     Previous versions of Perlito6 also compile to: Go, Common Lisp, and Ruby 1.9
 
 Web
+---
 
     Main Perlito repository: http://github.com/fglock/Perlito
 
@@ -20,27 +23,31 @@ Web
     Run Perlito6 online, in the browser: http://fglock.github.io/Perlito/perlito/perlito6.html
 
 Source code
+-----------
 
     The source code for Perlito can be found in the 'src' directory.
     Perlito6 is written in Perl 6.
 
-USING PERLITO
+USING PERLITO6
+==============
 
 Using the Javascript backend in the browser
+-------------------------------------------
 
-    Open the file 'html/perlito6.html' in a browser (Firefox, Chrome, Safari).
+Open the file 'html/perlito6.html' in a browser (Firefox, Chrome, Safari).
 
-    Alternately, browse to:
+Alternately, browse to:
 
-    http://fglock.github.io/Perlito/perlito/perlito6.html
+[http://fglock.github.io/Perlito/perlito/perlito6.html](http://fglock.github.io/Perlito/perlito/perlito6.html)
 
 Using the Javascript backend in the command line
+------------------------------------------------
 
     export PERL5LIB=lib5
     perl perlito6.pl -Cjs -e 'class Main { say "hello, World!" }' > tmp.js
     d8 tmp.js
 
-    Creating a bootstrapped compiler:
+Creating a bootstrapped compiler:
 
     # compile src6/util/perlito6.pl to Javascript, using perlito6.pl:
     export PERL5LIB=lib5
@@ -50,31 +57,33 @@ Using the Javascript backend in the command line
     d8 perlito6.js -- -Cjs src6/util/perlito6.pl > perlito-new.js
 
 Using the Perl 5 backend
+------------------------
 
-    From CPAN:
+From CPAN:
 
-    Perlito is available at http://search.cpan.org/dist/v6/lib/v6.pm
+  Perlito is available at [http://search.cpan.org/dist/v6/lib/v6.pm](http://search.cpan.org/dist/v6/lib/v6.pm)
 
-    Installation:
+Installation:
 
-        cpan v6
+    cpan v6
 
-    From the Perlito git project directory:
+From the Perlito git project directory:
 
     export PERL5LIB=lib5
     perl perlito6.pl -Cperl5 -e 'class Main { say "hello, World!" }' | perl
 
-    Creating the bootstrapped compiler:
+Creating the bootstrapped compiler:
 
     # compile src6/util/perlito6.pl using perlito6.pl:
     export PERL5LIB=lib5
     perl perlito6.pl -Cperl5 src6/util/perlito6.pl > perlito-perl5.pl 
 
-    Alternately:
+Alternately:
 
     make build-6to5
 
 Using the Python backend
+------------------------
 
     # initialize "./libpy" and compile "perlito6.py"
     make build-6py
@@ -84,14 +93,17 @@ Using the Python backend
     python perlito6.py -Cpython -e 'class Main { say "hello, World!" }' | python 
 
 Using the Ruby backend
+----------------------
 
     export RUBYLIB=src6/lib
 
 PRODUCING AST OUTPUT
+====================
 
     perl perlito6.pl -Cast-perl6 -e 'class Main { say "hello, World!" }'
 
 RUNNING TESTS
+=============
 
     Perl 5:
 
@@ -106,17 +118,20 @@ RUNNING TESTS
     find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` python perlito6.py -Cpython $_ | python ` '
 
 AUTHORS
+=======
 
 Flavio Soibelmann Glock - fglock@gmail.com
 The Pugs Team - perl6-compiler@perl.org
 
 SEE ALSO
+========
 
 The Perl 6 homepage at http://dev.perl.org/perl6
 The Pugs homepage at http://pugscode.org
 The Perlito homepage at http://fglock.github.io/Perlito
 
 COPYRIGHT
+=========
 
 Copyright 2006, 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock, Audrey Tang and others.
 

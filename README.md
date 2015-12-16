@@ -47,10 +47,10 @@ Perlito5 is written mostly in Perl 5 (the grammar uses its own mini-language.)
 The source code for Perlito6 can be found in the 'src6' directory.
 Perlito6 is written in Perl 6.
 
-SEE ALSO
+See Also
 --------
 
-  - [README-perlito6](README-perlito6)
+  - [README-perlito6](README-perlito6.md)
 
-  - [README-perlito5](README-perlito5)
+  - [README-perlito5](README-perlito5.md)
 

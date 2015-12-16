@@ -1,4 +1,10 @@
-Using make:
+"Perlito6" Perl 5 compiler
+==========================
+
+    This is Perlito5, a compiler that implements a subset of Perl 5.
+    
+Build using make
+----------------
 
     make
         - builds perlito5.js (which runs in node.js)
@@ -9,10 +15,11 @@ Using make:
     make build-5browser
         - builds html/perlito5.js (which runs in the browser)
 
--- See "Makefile" for more options
+-- See [Makefile](Makefile) for more options
 
 
-Running the tests using "node.js":
+Running the tests using "node.js"
+---------------------------------
 
     # this command will compile "perlito5.js"
     perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
@@ -24,7 +31,8 @@ Running the tests using "node.js":
     prove -r -e 'node perlito5.js -I./src5/lib' t5
 
 
-Compile the compiler to Javascript into perlito5.js:
+Compile the compiler to Javascript into perlito5.js
+---------------------------------------------------
 
 -- using perl and perlito5.pl:
 
@@ -34,33 +42,39 @@ Compile the compiler to Javascript into perlito5.js:
 
     node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js
 
-Compile the compiler to Perl5 using perl:
+Compile the compiler to Perl5 using perl
+----------------------------------------
 
     perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl
 
-Compile perlito5-in-browser using perl:
+Compile perlito5-in-browser using perl
+--------------------------------------
 
     perl util-js/make-perlito5-js.sh
 
 
-Running the tests using "perl":
+Running the tests using "perl"
+------------------------------
 
     # this will run all tests
     prove -r -e 'perl perlito5.pl -I./src5/lib ' t5
 
 
-Bootstrap with perl:
+Bootstrap with perl
+-------------------
 
     time perl perlito5.pl -Isrc5/lib -Cperl5 src5/util/perlito5.pl > perlito5-new.pl && diff perlito5-new.pl perlito5.pl ; cp perlito5-new.pl perlito5.pl
 
-Bootstrap with node.js:
+Bootstrap with node.js
+----------------------
 
     time node perlito5.js -Isrc5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js && diff perlito5-new.js perlito5.js ; cp perlito5-new.js perlito5.js
 
 
-Minifying the javascript output:
+Minifying the javascript output
+-------------------------------
 
-    The "jsmin" compressor seems to work, it gives 20% compression:
+    The "jsmin" compressor gives 20% compression:
     
       http://crockford.com/javascript/jsmin
     
@@ -71,7 +85,8 @@ Minifying the javascript output:
     All tests successful.
 
 
-TODO:
+TODO
+----
 
 Running the tests using perl6:
 
