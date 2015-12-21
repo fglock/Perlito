@@ -186,6 +186,15 @@
 
         my $x = $global_queue->to_ConcurrentLinkedQueueOfString()->poll();
 
+    Automatic casting:
+
+        # cast perl object to java object
+        my Result $java_obj_result = $scan_result->to_Result();
+
+    would be: (TODO)
+
+        my Result $java_obj_result = $scan_result;
+
 -- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
