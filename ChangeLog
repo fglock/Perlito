@@ -9,6 +9,7 @@
 -- fix autovivification in exists()
 - Java:
 -- a "method call without parenthesis" will access a Java class/instance variable: my Int $val = Sample->VAL;
+-- closure fix: variables used in method calls are captured
 
 9.015 cpan:Perlito5  2015-12-01
 - Docs:

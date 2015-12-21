@@ -75,7 +75,16 @@ package Perlito5::AST::Decl;
 
 package Perlito5::AST::Call;
 {
-    sub get_captures { () }
+    sub get_captures {
+        my $self      = shift;
+        my @var;
+        push @var, $self->{method}->get_captures() if ref($self->{method});
+        push @var, $self->{invocant}->get_captures();
+        push @var, map  { $_->get_captures() }
+                        @{ $self->{arguments} }
+                if $self->{arguments};
+        return @var;
+    }
 }
 
 package Perlito5::AST::Apply;

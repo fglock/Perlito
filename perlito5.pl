@@ -14812,7 +14812,14 @@ use feature 'say';
                     package Perlito5::AST::Call;
                     {
                         sub Perlito5::AST::Call::get_captures {
-                            ()
+                            my $self = shift;
+                            my @var;
+                            ref($self->{'method'}) && push(@var, $self->{'method'}->get_captures());
+                            push(@var, $self->{'invocant'}->get_captures());
+                            $self->{'arguments'} && push(@var, map {
+                                $_->get_captures()
+                            } @{$self->{'arguments'}});
+                            return @var
                         }
                     }
                     package Perlito5::AST::Apply;
