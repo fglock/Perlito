@@ -185,19 +185,27 @@
     but this doesn't work yet:
 
         my $x = $global_queue->to_ConcurrentLinkedQueueOfString()->poll();
+        (TODO)
 
     Automatic casting:
 
         # cast perl object to java object
         my Result $java_obj_result = $scan_result->to_Result();
 
-    would be: (TODO)
+    would be:
 
         my Result $java_obj_result = $scan_result;
+        (TODO)
 
     Array-deref:
 
         @$native will retrieve an iterator and produce a Perl list
+        (TODO)
+
+        and "keys %$native" can be written like:
+        @{ $native->entrySet() }
+        @{ $native->keySet() }
+        @{ $native->values() }
         (TODO)
 
 -- interoperation between native expressions and perl expressions
