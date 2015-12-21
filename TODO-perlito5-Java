@@ -195,6 +195,11 @@
 
         my Result $java_obj_result = $scan_result;
 
+    Array-deref:
+
+        @$native will retrieve an iterator and produce a Perl list
+        (TODO)
+
 -- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
