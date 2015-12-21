@@ -208,6 +208,16 @@
         @{ $native->values() }
         (TODO)
 
+    Native values in Perl expressions:
+
+        in this case, we can just assign the value to PlLvalue
+        because PlLvalue knows what to do with each type
+        this also takes care of "$x" and 0+$x
+        (TODO)
+        
+        PlLvalue.set() is super-overloaded # Array, Hash, int, string, boolean, ...
+        src5/lib/Perlito5/Java/Runtime.pm 1463
+
 -- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
