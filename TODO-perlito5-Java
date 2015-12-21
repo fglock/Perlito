@@ -428,3 +428,9 @@
     store in a "PerlObject" instead of "PerlLvalue",
     this is one less level of indirection.
 
+    investigate performance of "proxy" lvalues;
+    when taking an lvalue out of an array or hash, return a proxy
+    with a reference to the container and index.
+    Note: there is a working, partial implementation in PerlOp.push_local()
+
+
