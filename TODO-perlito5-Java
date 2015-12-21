@@ -413,11 +413,17 @@
     pos()
     typeglob operations
 
--- Extra things to test
+-- Threads
 
-    threads
-        See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
+    See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
         CLONE, CLONE_SKIP
+
+    global variables should be cloned in threads,
+    use this to get the thread id: Thread.currentThread().getId()
+
+    Examples:
+    misc/Java/TestConcurrent.pl
+    misc/Java/TestThread.pl
 
 -- Optimizations
 
