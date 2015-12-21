@@ -424,3 +424,7 @@
 
     use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
 
+    identify variables that don't need a true "lvalue" container;
+    store in a "PerlObject" instead of "PerlLvalue",
+    this is one less level of indirection.
+
