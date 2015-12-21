@@ -1506,6 +1506,9 @@ EOT
         return this.o.is_bool();
     }
     public boolean is_undef() {
+        if (this.o == null) {
+            return true;
+        }
         return this.o.is_undef();
     }
     public boolean is_lvalue() {
