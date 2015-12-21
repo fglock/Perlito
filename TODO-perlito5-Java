@@ -176,6 +176,16 @@
         Sample->new(0.0 + $v);          # cast to double
         Sample->new("" . $v);           # cast to string
 
+    Method chaining:
+
+        my $global_queue = new ConcurrentLinkedQueue::Of::String();
+        my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();
+        my $x = $queue->poll();
+
+    but this doesn't work yet:
+
+        my $x = $global_queue->to_ConcurrentLinkedQueueOfString()->poll();
+
 -- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
