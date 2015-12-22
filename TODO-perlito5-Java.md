@@ -1,13 +1,19 @@
-* Java backend
+Perlito5 Java backend TODO list
+===============================
 
--- command line
+Java-specific command line options
+----------------------------------
 
     specify main Class name (currently "Main")
 
+-- TODO: fix: module compilation requires the "bootstrapping" switch
+
     remove the need for --bootstrapping
 
+    perl perlito5.pl -I src5/lib --bootstrapping -Cjava -e ' use Data::Dumper; print Data::Dumper::Dumper [ 123 , { 4 => 4 } ]'
 
--- 'eval string' support
+Add 'eval string' support
+-------------------------
 
     JS-eval-string: embedding a Javascript-in-Java interpreter:
         https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
@@ -18,8 +24,11 @@
     ASM:
         TODO: prototype eval-string with ASM
 
--- According to the Java Virtual Machine specification,
-   the bytecode of a method must not be bigger than 65536 bytes:
+Workaround JVM bytecode size limit
+----------------------------------
+
+According to the Java Virtual Machine specification,
+the bytecode of a method must not be bigger than 65536 bytes:
 
     Test.java:2309: error: code too large
 
@@ -35,11 +44,13 @@
                     }->() )
             }->() )
 
--- document Perlito5-Java vs. Perl
+Document Perlito5-Java platform differences
+-------------------------------------------
 
     - no timely destruction (DESTROY) (because Java)
         - files don't "auto-close" at the end of a block
         - Try::Tiny "finally" doesn't work
+
     - no XS (because Java)
     - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
         - "import" also doesn't work when doing precompilation
@@ -47,6 +58,12 @@
         - also no: "do FILE", "require" (because these depend on eval-string)
 
     - any other differences are not-yet-implemented or bugs.
+
+Document Perlito5-Java extensibility
+------------------------------------
+
+The Perlito5 Java backend doesn't support Perl XS extensions.
+It has an extension mechanism that connects Perl with Java.
 
     - Java import and typed variables
 
@@ -56,11 +73,6 @@
             perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overriden
             # perl_package   => 'The::Class',       # auto generated, Perl package name
         }
-
-
--- TODO: fix: module compilation requires the "bootstrapping" switch
-
-    perl perlito5.pl -I src5/lib --bootstrapping -Cjava -e ' use Data::Dumper; print Data::Dumper::Dumper [ 123 , { 4 => 4 } ]'
 
 
 -- Java import
@@ -315,7 +327,20 @@
     my $x = my::Sample->new();
     $x->to_mySample()
 
--- TODO: autovivification of aliased parameters
+-- autobox as-needed
+
+    runtime methods should accept String, int, double, boolean types
+    and maybe other types of number (byte, ...)
+
+    Array and Hash should accept other types of containers
+
+    - String accepts char in constructor (DONE)
+    - Hash accepts String for index (DONE)
+    - Array accepts int for index   (DONE)
+
+
+Autovivification of aliased parameters
+--------------------------------------
 
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
     $VAR1 = [
@@ -343,7 +368,8 @@
           ]
         ];
 
--- DONE: slices
+Slices
+------
 
     DONE $scalar = delete @hash{qw(foo bar)}; # $scalar is 22
     DONE @array  = delete @hash{qw(foo baz)}; # @array  is (undef,33)
@@ -369,7 +395,8 @@
     my $scalar = 11; @hash{qw(foo bar)} = $scalar; use feature "say"; say $hash{foo}
     my @array = (11, 22); @hash{qw(foo bar)} = @array; use feature "say"; say "@array"
 
--- TODO: variables
+Variables
+---------
 
     'state'
 
@@ -377,33 +404,16 @@
 
     subroutine lookups could also be "our"-like (also method lookups)
 
--- TODO: symbolic references
+Symbolic references
+-------------------
 
     $ perl -e ' $a = 123; my $z; $z = "a"; print $$z '
     123
     $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
     ''
 
--- autobox as-needed
-
-    runtime methods should accept String, int, double, boolean types
-    and maybe other types of number (byte, ...)
-
-    Array and Hash should accept other types of containers
-
-    - String accepts char in constructor (DONE)
-    - Hash accepts String for index (DONE)
-    - Array accepts int for index   (DONE)
-
--- Add tests
-
-    NaN, Inf, -0
-
-    @perl_array = java_native[]
-        supported types: byte[], int[], and imported_class[]
-        not implemented: long[], String[], Double[], char[]
-
--- Overflow from int to double
+Overflow from int to double
+---------------------------
 
     partially implemented - needs more work
 
@@ -412,13 +422,17 @@
         $i + subr();  # subr() returns pObject instead of pInt
     this needs more tests
 
--- Tail-call
+    internal code should use "long" instead of "int"
+
+Tail-call
+---------
 
     caller sends a parameter to enable tail-call
     callee pushes the call to a stack
     caller pops from the stack and call the closures in order
 
--- Missing features, or partially implemented, or untested
+Missing features, or partially implemented, or untested
+-------------------------------------------------------
 
     overload
     tie()
@@ -445,7 +459,16 @@
     pos()
     typeglob operations
 
--- Threads
+-- Add tests
+
+    NaN, Inf, -0
+
+    @perl_array = java_native[]
+        supported types: byte[], int[], and imported_class[]
+        not implemented: long[], String[], Double[], char[]
+
+Threads
+-------
 
     See: http://perldoc.perl.org/perlmod.html#Making-your-module-threadsafe
         CLONE, CLONE_SKIP
@@ -457,7 +480,8 @@
     misc/Java/TestConcurrent.pl
     misc/Java/TestThread.pl
 
--- Optimizations
+Optimizations
+-------------
 
     use "our"-ish variables to avoid global variable lookups
         Note: remember the special-cases for "local" keyword
