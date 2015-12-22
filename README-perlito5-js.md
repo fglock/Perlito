@@ -284,6 +284,7 @@ Compile-time / Run-time interleaving (TODO)
     close anonymous block
     add block to the AST
 
+~~~perl
     (sub {
         my $x = 3;
         $NAMESPACE::z = sub { 123 };  # named sub
@@ -293,12 +294,13 @@ Compile-time / Run-time interleaving (TODO)
     })->();
     $_->() for @COMPILING::INIT;
     $_->() for @COMPILING::RUN;
-
+~~~
 
     ---
     $ perl -e ' use strict; my $y = 123; sub x { my $x = 3; sub z { $y } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
     ---
 
+~~~perl
     (sub {
         my $y = 123;
 
@@ -318,7 +320,7 @@ Compile-time / Run-time interleaving (TODO)
     })->();
     $_->() for @COMPILING::INIT;
     $_->() for @COMPILING::RUN;
-
+~~~
 
 
 - disambiguation between block and hash should not backtrack, because any internal special blocks would be compiled/run twice
@@ -354,15 +356,17 @@ Cell-based aliasing (TODO)
 
 - examples:
 
-v = new Cell();
-v.set(5);
-f(v);   // f gets a copy of the cell; v.set() inside f() modifies the original variable.
-1 + v;  // calls v.valueOf()
-x = v;  // alias (copies the cell); v.set() modifies x.valueOf()
-x.set( v.valueOf() );  // copies the value (doesn't alias)
-
-h.lookup("x");  // looks up h["x"] for a cell; autovivifies if needed
-v.lookup("x");  // error if the cell in v contains something else than undef or an arrayref
+~~~javascript
+    v = new Cell();
+    v.set(5);
+    f(v);   // f gets a copy of the cell; v.set() inside f() modifies the original variable.
+    1 + v;  // calls v.valueOf()
+    x = v;  // alias (copies the cell); v.set() modifies x.valueOf()
+    x.set( v.valueOf() );  // copies the value (doesn't alias)
+    
+    h.lookup("x");  // looks up h["x"] for a cell; autovivifies if needed
+    v.lookup("x");  // error if the cell in v contains something else than undef or an arrayref
+~~~
 
 - see mp6_Scalar class in src6/lib/Perlito/Python/Runtime.py
 
@@ -431,18 +435,20 @@ This allows better control over memory allocation (for example, to implement des
     myfun();
     process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
     
-@_ is special:
-$_[n] lvalue can be represented by
+    @_ is special:
+    $_[n] lvalue can be represented by
 
     at_env[n][at_var[n]] = ...
 
 subroutine call:
 
+~~~javascript
     mysub( [
             env,         "var", // a variable
             env.arr,     0,     // a subscript
             [ 123 ],     0      // a value
         ], context );
+~~~
 
 lvalue subroutine call:
 
@@ -466,6 +472,7 @@ which create lexicals dynamically - but the behaviour in this case is undefined 
 
 defineProperty() can be used to provide accessors to non-tied containers:
 
+~~~javascript
     Object.defineProperty( Array.prototype, "p5aget", {
         enumerable : false,
         value : function (i) { return this[i] }
@@ -491,10 +498,11 @@ defineProperty() can be used to provide accessors to non-tied containers:
     h = { x : 4, y : 7 };
     h.p5hset("x", 13);
     process.stdout.write( " " + h.p5hget("x") + "\n" );
-    
+~~~    
 
 - Alternative implementation for lvalue @_ and tail calls
 
+~~~javascript
     // calling function x() 
     // the variables (a,b,c) are lexicals aliased to $_[0], $_[1], $_[2]
     // .mod signals that @_ was modified
@@ -509,4 +517,5 @@ defineProperty() can be used to provide accessors to non-tied containers:
         }
         return r.res 
     }()
+~~~
 
