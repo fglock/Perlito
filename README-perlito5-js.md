@@ -88,10 +88,16 @@ Perlito5 compiler globals
 
 - context: system-wide; shared by all modules
 
+~~~perl
     $Perlito5::CORE_PROTO = { 'CORE::join' => '$@' }
+~~~
+
     - hashref with subroutine-full-name to prototype mappings in the CORE package only
 
+~~~perl
     $Perlito5::PROTO = { 'main::mysub' => undef }
+~~~
+
     - hashref with subroutine-full-name to prototype mappings
 
 - context: module-wide
@@ -261,11 +267,11 @@ Compile-time / Run-time interleaving (TODO)
     while the nested subs still reference the old ones.
 
 
-    ---
+~~~bash
     $ perl -e ' use strict; { my $x = 3; sub z { 123 } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
      123
     3
-    ---
+~~~
 
     open anonymous block in the compiling environment
     add incomplete block to the AST
