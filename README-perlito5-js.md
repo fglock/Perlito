@@ -1,5 +1,9 @@
 
-* Perlito5-in-Javascript - what works
+Perlito5-in-Javascript 
+======================
+
+Perlito5-in-Javascript - what works
+--------------
 
 
 - Subroutines, anonymous subroutines, prototypes, namespaces.
@@ -31,7 +35,8 @@
 
 
 
-* Perlito5-in-Javascript differences from "perl"
+Perlito5-in-Javascript differences from "perl"
+--------------
 
 - "~~" smartmatch is not implemented
 
@@ -77,7 +82,8 @@
 - String increment partially implemented - array and hash lookups; not in scalars.
 
 
-* Perlito5 compiler globals
+Perlito5 compiler globals
+--------------
 
 
 - context: system-wide; shared by all modules
@@ -105,7 +111,8 @@
 
 
 
-* Perlito5 Javascript Data model Overview
+Perlito5 Javascript Data model Overview
+--------------
 
 
 method call
@@ -210,7 +217,8 @@ our
 
 
 
-* Javascript resources
+Javascript resources
+--------------
 
 
 https://github.com/eriwen/javascript-stacktrace
@@ -220,7 +228,8 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 - Pugs Perl6 in javascript
 
 
-* Regex
+Regex
+--------------
 
 - regex extension library: http://xregexp.com
 
@@ -241,7 +250,8 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
 
 
-* Compile-time / Run-time interleaving (TODO)
+Compile-time / Run-time interleaving (TODO)
+--------------
 
 - See perlref:
     named subroutines are created at compile time so their lexical variables
@@ -317,11 +327,13 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
  
 
-* Threads (TODO)
+Threads (TODO)
+--------------
 
 
 
-* Reference counting (TODO)
+Reference counting (TODO)
+--------------
 
 - add a new attribute _cnt_ to all references
 - lexicals, locals decrement the count when going out of scope
@@ -329,7 +341,8 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 
 
 
-* Cell-based aliasing (TODO)
+Cell-based aliasing (TODO)
+--------------
 
 
 - slow
@@ -354,7 +367,8 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
 - see mp6_Scalar class in src6/lib/Perlito/Python/Runtime.py
 
 
-* Tail call (TODO)
+Tail call (TODO)
+--------------
 
 - a tail call can be transformed into a loop at the caller:
 
@@ -372,7 +386,8 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
 
 
 
-* "js3" virtual machine
+"js3" virtual machine
+--------------
 
 
 - "js3" milestones (TODO list)
