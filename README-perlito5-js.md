@@ -102,17 +102,26 @@ Perlito5 compiler globals
 
 - context: module-wide
 
+~~~perl
     $Perlito5::PKG_NAME = "main"
+~~~
+
     - the current package name (unescaped string)
 
 - context: subroutine-wide
 
+~~~perl
     $Perlito5::THROW = 1
+~~~
+
     - boolean value; tracks if the current subroutine needs to catch a javascript "throw" as a return-value
 
 - context: lexical block
 
+~~~perl
     $Perlito5::VAR = [ { '$_'    => { decl => 'our', namespace => 'main' } ]
+~~~
+
     - arrayref-of-hashes with variable-short-names to (declaration type, namespace) mappings
 
 
@@ -426,6 +435,7 @@ Tail call (TODO)
 
 This allows better control over memory allocation (for example, to implement destructors and aliasing)
 
+~~~javascript
     // lexical variables
     function p5env_001 () {};
     var p5env = p5env_001;
@@ -449,6 +459,7 @@ This allows better control over memory allocation (for example, to implement des
     $_[n] lvalue can be represented by
 
     at_env[n][at_var[n]] = ...
+~~~
 
 subroutine call:
 
@@ -467,11 +478,15 @@ lvalue subroutine call:
 tied containers:
 Tie::Scalar magic can be implemented with getters/setters in env
 
+~~~javascript
     p5env.b = 4;    // call b setter if there is a setter
+~~~
 
 Tie::Array, Tie::Hash
 
+~~~javascript
     p5env.list_b[0] = 4; // ??? - but this works if we use a method to get/set the variable
+~~~
 
 problem: tie'ing a variable in the outer scope (p5env_001) using defineProperty() would be
 inherited by the inner scope (p5env_002 in the example above).
