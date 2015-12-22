@@ -7,9 +7,9 @@ package ConcurrentLinkedQueue::Of::String {
     java_type => "ConcurrentLinkedQueue<PlObject>",
 };
 
-my $global_queue = new ConcurrentLinkedQueue::Of::String();
+my $global_queue = ConcurrentLinkedQueue::Of::String->new();
 
-my Java::Thread $producer = new Java::Thread(
+my Java::Thread $producer = Java::Thread->new(
     sub {
         my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();
         my $x = 1;
@@ -20,7 +20,7 @@ my Java::Thread $producer = new Java::Thread(
         }
     }
 );
-my Java::Thread $consumer = new Java::Thread(
+my Java::Thread $consumer = Java::Thread->new(
     sub {
         while(1) {
             my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();

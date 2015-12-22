@@ -8,7 +8,7 @@ package ScriptEngine {
 
 # these are Perl variables, but they are also Java objects
 # so we have to declare which package they belong to:
-my ScriptEngineManager $manager = new ScriptEngineManager();
+my ScriptEngineManager $manager = ScriptEngineManager->new();
 my ScriptEngine $engine = $manager->getEngineByName("JavaScript");
 
 # now we can call the Rhino javascript engine:

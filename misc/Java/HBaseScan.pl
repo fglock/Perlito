@@ -12,10 +12,10 @@ package ResultScanner { import => 'org.apache.hadoop.hbase.client.ResultScanner'
 my Configuration $config = HBaseConfiguration->create();
 
 # Instantiating HTable class
-my HTable $table = new HTable( $config, "prices" );
+my HTable $table = HTable->new( $config, "prices" );
 
 #################### SCAN ##############################
-my Scan $scan = new Scan();
+my Scan $scan = Scan->new();
 
 $scan->setStartRow(Bytes->toBytes("100002303"));
 $scan->setStopRow(Bytes->toBytes("100005303"));

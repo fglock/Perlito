@@ -134,8 +134,8 @@ It has an extension mechanism that connects Perl with Java.
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
 
-    my $p_put = new Sample();
     my $p_put = Sample->new();
+    my $p_put = new Sample();
     creates a boxed Java variable           (DONE)
 
     $x->to_Sample()
@@ -150,7 +150,7 @@ It has an extension mechanism that connects Perl with Java.
     my $x = $p_put;
     puts the boxed object into a Perl scalar  (DONE)
 
-    my Sample $put = new Sample();
+    my Sample $put = Sample->new();
     creates a native Java variable          (DONE)
                                             (TODO: allow Int, String types)
 
@@ -194,7 +194,7 @@ It has an extension mechanism that connects Perl with Java.
 
     Method chaining:
 
-        my $global_queue = new ConcurrentLinkedQueue::Of::String();
+        my $global_queue = ConcurrentLinkedQueue::Of::String->new();
         my ConcurrentLinkedQueue::Of::String $queue = $global_queue->to_ConcurrentLinkedQueueOfString();
         my $x = $queue->poll();
 
