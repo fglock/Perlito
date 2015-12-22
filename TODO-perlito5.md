@@ -1,6 +1,18 @@
 Perlito5 TODO list
 ==================
 
+CPAN distribution
+-----------------
+
+- create Markdown files for github documentation;
+- example: http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html
+- in CPAN, convert all the documentation to POD using one of these:
+
+    $ perl -e ' use Markdown::To::POD "markdown_to_pod"; my @text = <>; my $pod = markdown_to_pod(join "", @text); print $pod; ' README
+
+    $ perl -e ' use Markdown::Pod;my $m2p = Markdown::Pod->new; my @text = <>; my $pod = $m2p->markdown_to_pod(markdown => join "", @text); print $pod; ' README
+
+
 Command-line options
 --------------------
 
