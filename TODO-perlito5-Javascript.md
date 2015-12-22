@@ -1,6 +1,8 @@
-* Javascript backend
+Perlito5 Javascript backend TODO list
+=====================================
 
--- performance
+Performance
+-----------
 
     compilation time (bootstrap) slowed down during the year 2015,
     from about 10s to 30s.
@@ -32,6 +34,9 @@
 
     # t = 17s
     bb97211c066848ef417c15fe030dc483f81fc986 is the first bad commit
+
+Features
+--------
 
 -- DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
@@ -208,7 +213,8 @@
     $@->PROPAGATE(__FILE__, __LINE__) };" were called.
 
 
-* Javascript - implemented but missing more tests
+Implemented but missing more tests
+----------------------------------
 
 -- /e modifier
 

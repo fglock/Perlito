@@ -1,7 +1,8 @@
-TODO list for Perlito5
+Perlito5 TODO list
+==================
 
-
-* perlito5 command-line
+Command-line options
+--------------------
 
 -- implement -i switch and ARGVOUT
 
@@ -11,7 +12,8 @@ TODO list for Perlito5
     s/foo/bar/;
 
 
-* libraries
+Libraries
+---------
 
 -- these should go into namespace Perlito5X::*
 
@@ -36,7 +38,8 @@ TODO list for Perlito5
     and ${^WARNING_BITS} for warnings
 
 
-* Parser
+Parser
+------
 
 -- test that "use" checks the return value of modules (the "1;" thing)
 
@@ -185,7 +188,8 @@ TODO list for Perlito5
         String found where operator expected at -e line 1, near "x"} ""
 
 
-* Add tests for fixed bugs:
+Add tests for fixed bugs
+------------------------
 
     unit tests:
 
@@ -380,7 +384,8 @@ TODO list for Perlito5
 
 
 
-* Perl6 backend
+Perl6 backend
+-------------
 
 -- keep comments
 
@@ -425,7 +430,8 @@ TODO list for Perlito5
 
 
 
-* Perl5 backend
+Perl5 backend
+-------------
 
 -- "given" statement not implemented
 -- "default" statement not implemented
@@ -439,7 +445,8 @@ TODO list for Perlito5
 
 
 
-* Compile-time execution environment
+Compile-time execution environment
+----------------------------------
 
 -- work in progress
 
@@ -467,9 +474,10 @@ TODO list for Perlito5
         change the environment using a BEGIN block
 
 
-* Nice to Have
+Nice to Have
+------------
 
--- keep comments
+-- keep comments in AST
 
 -- debugging symbols
 -- line numbers in error messages
@@ -517,7 +525,8 @@ TODO list for Perlito5
     Both failed with syntax errors.
 
 
-* Oddities
+Oddities
+--------
 
 -- from moritz, Schwern and others at
     http://stackoverflow.com/questions/161872/hidden-features-of-perl
@@ -532,7 +541,8 @@ TODO list for Perlito5
     $ perl -e ' sub x {  { 456 } continue { 789 } } print "@{[ x() ]}\n" '
     456 789
 
-* Deprecate
+Deprecate
+---------
 
 -- Interpreter backend
    this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
