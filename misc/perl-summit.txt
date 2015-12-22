@@ -1,0 +1,89 @@
+perl5 to perl6 compilation
+- source to source
+- readable?
+- bootstrap and support 'use v5'
+
+perl courseware for the web with perl in javascript
+- alternate: use remote execution in the server
+- Gabor
+- "full" implementation (not fast)
+- "restricted" implementation for production code (fast)
+
+perl in jvm
+- claes claesjac
+
+perl in browser
+- load features on demand
+- Jonathan
+
+perl in arduino
+- Martin Berends mberends (perl at autoexec.demon.nl)
+  mirjanaberends -> skype, gmail
+
+perl in java/dalvik and objective-c/ios
+perl in Google apps
+- big apps
+- small apps probably in javascript backend
+
+- m.keating at shadowcat.co.uk
+
+- objective-c source to source
+- java source to "class" (source to source?)
+
+- ahead of time compilation
+- compilation time not a problem (?)
+
+- mentoring new devs (vs getting experienced devs, with not much free time)
+
+- what kind of IDE people expect (Eclipse, XCode)
+
+- limited subset (optionally)
+    no eval (no bootstrap) (required not to have)
+    no tie (performance?)
+    no indirect object syntax (?)
+    type information int, num, string, bool
+        $ perl -e '$int::; my int $x '  # create the 'int' package to fool the parser
+    attributes and/or const'ness
+        $ perl -e 'my int $i : const :unsigned = INT_MAX;'
+        package pkg :const { sub new {bless {@_},shift } 
+        class {} (always const in perl5i, under discussion)
+
+    BUG: perlito5 accepts ' my int $x '
+         which should be a syntax error unless the class "int" exists
+
+- perlito5 or perlcc
+- types (for memory, speed optimization)
+
+- perlito6 or niecza/rakudo/STD
+    add more grammar; optimize
+    rakudo new AST
+
+gui module for perlito backends
+    js
+    objective-C (iPhone)
+    java (android)
+
+little games for demonstration
+
+perlito smoke
+
+move perlito.org to perlito.perl.org
+
+perlito5 support for:
+
+- Mo.pm (pure perl, small); Moo
+- Exporter.pm (needs caller for import()); Sub::Exporter
+
+
+perlito AST
+- shorter names
+- more information
+- preserve comments and space (?)
+- preserve line numbers
+
+---
+perl5 parser
+- markov
+- complete
+- formatted perl5 emitter; remove parenthesis
+
