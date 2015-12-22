@@ -47,6 +47,8 @@ the bytecode of a method must not be bigger than 65536 bytes:
 Document Perlito5-Java platform differences
 -------------------------------------------
 
+This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
+
     - no timely destruction (DESTROY) (because Java)
         - files don't "auto-close" at the end of a block
         - Try::Tiny "finally" doesn't work
@@ -61,6 +63,8 @@ Document Perlito5-Java platform differences
 
 Document Perlito5-Java extensibility
 ------------------------------------
+
+This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
 
 The Perlito5 Java backend doesn't support Perl XS extensions.
 It has an extension mechanism that connects Perl with Java.
