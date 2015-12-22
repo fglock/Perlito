@@ -302,9 +302,9 @@ Compile-time / Run-time interleaving (TODO)
     $_->() for @COMPILING::RUN;
 ~~~
 
-    ---
+~~~bash
     $ perl -e ' use strict; my $y = 123; sub x { my $x = 3; sub z { $y } BEGIN { print "$x ", z, "\n" } INIT { $x = 4 } print "$x\n" } '
-    ---
+~~~
 
 ~~~perl
     (sub {
@@ -382,15 +382,19 @@ Tail call (TODO)
 
 - a tail call can be transformed into a loop at the caller:
 
-    # sub mysub { goto &other }
+~~~perl
+    sub mysub { goto &other }
+~~~
 
   can be called:
 
+~~~perl
     ret = new TailCall(mysub);
     do {
         ret = ret.f();
     }
     while (ret instanceof TailCall);
+~~~
 
 - alternately, the loop can be run at the subroutine itself, but this creates other problems
 
