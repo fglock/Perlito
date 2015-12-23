@@ -14879,6 +14879,8 @@ use feature 'say';
                             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
                             push(@var, map {
                                 $_->get_captures()
+                            } grep {
+                                defined($_)
                             } @{$body}, $self->{'topic'}, (ref($self->{'cond'}) eq 'ARRAY' ? @{$self->{'cond'}} : $self->{'cond'}));
                             return @var
                         }
@@ -15652,7 +15654,7 @@ use feature 'say';
                             return $s . '.length_of_array()'
                         }
                         if ($wantarray eq 'runtime') {
-                            return '(p5want' . ' ? ' . $s . ' : ' . $s . '.to_int()' . ')'
+                            return '(want == PlCx.LIST' . ' ? ' . $s . ' : ' . $s . '.to_int()' . ')'
                         }
                         return $s
                     }
@@ -15698,7 +15700,7 @@ use feature 'say';
                             return $s . '.to_int()'
                         }
                         if ($wantarray eq 'runtime') {
-                            return '(p5want' . ' ? ' . $s . ' : ' . $s . '.to_int()' . ')'
+                            return '(want' . ' ? ' . $s . ' : ' . $s . '.to_int()' . ')'
                         }
                         return $s
                     }
@@ -15742,7 +15744,7 @@ use feature 'say';
                             return $self->emit_java($level, 'list') . '.length_of_array()'
                         }
                         if ($wantarray eq 'runtime') {
-                            return '(p5want' . ' ? ' . $self->emit_java($level, 'list') . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()' . ')'
+                            return '(want == PlCx.LIST' . ' ? ' . $self->emit_java($level, 'list') . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()' . ')'
                         }
                     }
                     if ($self->{'sigil'} eq '$#') {
@@ -16524,7 +16526,7 @@ use feature 'say';
                         die('Java eval string not yet implemented')
                     }
                     my $context = Perlito5::Java::to_context($wantarray);
-                    Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
+                    Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
                 }, 'length' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = shift(@{$self->{'arguments'}});

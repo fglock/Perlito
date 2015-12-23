@@ -156,6 +156,7 @@ package Perlito5::AST::For;
             ? [ $self->{body} ]
             : $self->{body}{stmts};
         push @var, map { $_->get_captures() }
+                   grep { defined }
                 @$body,
                 $self->{topic},
                 ( ref( $self->{cond} ) eq 'ARRAY'

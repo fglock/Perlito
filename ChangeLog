@@ -1,5 +1,6 @@
 -Java
 -- implemented string match in list context
+-- closure fixes: captured variables in for-loop; context
 
 9.016 cpan:Perlito5  2015-12-21
 - Docs:

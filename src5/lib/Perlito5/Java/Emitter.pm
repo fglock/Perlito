@@ -1461,7 +1461,7 @@ package Perlito5::AST::Var;
                 return $s . '.length_of_array()';
             }
             if ( $wantarray eq 'runtime' ) {
-                return '(p5want'
+                return '(want == PlCx.LIST'
                     . ' ? ' . $s
                     . ' : ' . $s . '.to_int()'
                     . ')';
@@ -1518,7 +1518,7 @@ package Perlito5::AST::Var;
                 return $s . '.to_int()';
             }
             if ( $wantarray eq 'runtime' ) {
-                return '(p5want'
+                return '(want'
                     . ' ? ' . $s
                     . ' : ' . $s . '.to_int()'
                     . ')';
@@ -1576,7 +1576,7 @@ package Perlito5::AST::Var;
                 return $self->emit_java($level, 'list') . '.length_of_array()';
             }
             if ( $wantarray eq 'runtime' ) {
-                return '(p5want'
+                return '(want == PlCx.LIST'
                     . ' ? ' . $self->emit_java($level, 'list')
                     . ' : ' . $self->emit_java($level, 'list') . '.length_of_array()'
                     . ')';
@@ -2805,7 +2805,7 @@ package Perlito5::AST::Apply;
             Perlito5::Java::emit_wrap_java($level,
                 ( $context eq 'p5want'
                   ? ()
-                  : "var p5want = " . $context . ";",
+                  : "var want = " . $context . ";",
                 ),
                 "var r;",
                 'p5pkg["main"]["v_@"] = "";',
@@ -3452,7 +3452,7 @@ package Perlito5::AST::Apply;
 
         # TODO - autoload
         # if ( $may_need_autoload ) {
-        #     # p5call_sub(namespace, name, list, p5want)
+        #     # p5call_sub(namespace, name, list, want)
         #     my $name = $self->{code};
         #     my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
         #     return 'p5call_sub('
