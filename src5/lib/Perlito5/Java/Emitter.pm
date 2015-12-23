@@ -1000,6 +1000,27 @@ package Perlito5::AST::CompUnit;
                    ],
                  "}",
                ],
+               [ "public static void init() throws Exception {",
+                 [
+                    "main(new String[]{});"
+                 ],
+                 "}",
+               ],
+               [ "public static PlObject[] apply(String functionName, String[] args) throws Exception {",
+                 [
+                     "String name = functionName.replace(\"::\", \"|\");",
+                     "PlArray list = new PlArray(args);",
+                     "PlArray res = (PlArray)PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlObject[] out = new PlObject[res.to_int()];",
+                     "int i = 0;",
+                     "for (PlObject s : res.a) {",
+                         [ "out[i++] = s;",
+                         ],
+                     "}",
+                     "return out;",
+                 ],
+                 "}",
+               ],
              "}",
         ) . "\n";
 

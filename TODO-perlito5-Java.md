@@ -71,6 +71,21 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
     - any other differences are not-yet-implemented or bugs.
 
+Calling a Perl subroutine from Java
+-----------------------------------
+
+~~~java
+    class MyJava {
+        public static void main(String[] args) throws Exception {
+            Main.init();
+            PlObject[] res = Main.apply("main::test", new String[]{ "123" });
+            for (PlObject s: res) {
+                System.out.println("Java result: " + s.toString());
+            }
+        }
+    }
+~~~
+
 Document Perlito5-Java extensibility
 ------------------------------------
 
