@@ -566,8 +566,14 @@ class PerlOp {
         if (want != PlCx.LIST) {
             return pat.p.matcher(s.toString()).find() ? PlCx.TRUE : PlCx.FALSE;
         }
-        PlCORE.die("not implemented string match in list context");
-        return s;
+        PlArray ret = new PlArray();
+        Matcher matcher = pat.p.matcher(s.toString());
+        while (matcher.find()) {
+            for (int i = 0; i <= matcher.groupCount(); i++) {
+                ret.push(matcher.group(i));
+            }
+        }
+        return ret;
     }
     public static final PlObject match(PlObject s, PlLvalue pat, int want) {
         return match(s, pat.get(), want);
