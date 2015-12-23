@@ -4,9 +4,17 @@ Perlito5 Java backend TODO list
 Java-specific command line options
 ----------------------------------
 
-    specify main Class name (currently "Main")
+  - specify main Class name (currently "Main")
+  
+  - have a way to port a simple .pm to a .java (without a main function)
+  
+    specify input arguments
 
--- TODO: fix: module compilation requires the "bootstrapping" switch
+    specify context (list, scalar, void)
+
+    specify what we want to return: PlObject vs. array of strings, etc
+  
+  - TODO: fix: module compilation requires the "bootstrapping" switch
 
     remove the need for --bootstrapping
 
@@ -15,13 +23,13 @@ Java-specific command line options
 Add 'eval string' support
 -------------------------
 
-    JS-eval-string: embedding a Javascript-in-Java interpreter:
+  - JS-eval-string: embedding a Javascript-in-Java interpreter:
         https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
 
-    Java-eval-string: using the native compiler API:
+  - Java-eval-string: using the native compiler API:
         https://github.com/fglock/Perlito/blob/master/misc/Java_eval/JavaCompiler4.java
 
-    ASM:
+  - ASM:
         TODO: prototype eval-string with ASM
 
 Workaround JVM bytecode size limit
@@ -30,12 +38,13 @@ Workaround JVM bytecode size limit
 According to the Java Virtual Machine specification,
 the bytecode of a method must not be bigger than 65536 bytes:
 
-    Test.java:2309: error: code too large
+  - Test.java:2309: error: code too large
 
-    when compiling misc/Java/code_too_large.pl
+  - when compiling misc/Java/code_too_large.pl
 
-    possible workaround: insert a closure every 100s of lines in a block:
+  - possible workaround: insert a closure every 100s of lines in a block:
 
+~~~perl
         code...
         return (sub {
                 code ...
@@ -43,6 +52,7 @@ the bytecode of a method must not be bigger than 65536 bytes:
                         code ...
                     }->() )
             }->() )
+~~~
 
 Document Perlito5-Java platform differences
 -------------------------------------------
@@ -71,16 +81,18 @@ It has an extension mechanism that connects Perl with Java.
 
     - Java import and typed variables
 
+~~~perl
         package The::Class {
             import           => 'full.path.Class',  # mandatory
             java_type        => 'Class',            # auto generated, can be overriden: 'Class<String>'
             perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overriden
             # perl_package   => 'The::Class',       # auto generated, Perl package name
         }
-
+~~~
 
 -- Java import
 
+~~~perl
     package Sample {
         import => "misc.Java.Sample"
     };
@@ -89,6 +101,7 @@ It has an extension mechanism that connects Perl with Java.
         import => "java.util.ArrayList",
         java_type => "ArrayList<String>",
     }
+~~~
 
     generates:
     - import misc.java.Sample;              (DONE)
@@ -108,6 +121,7 @@ It has an extension mechanism that connects Perl with Java.
 
 -- Java method override using Java::inline
 
+~~~perl
     # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
     package Date  { import => "java.util.Date" };
     my Date $dateJavaObject =
@@ -118,7 +132,7 @@ It has an extension mechanism that connects Perl with Java.
                 }    
             }';
     my $dateString_pObject = $dateJavaObject->toString();   # Hello
-
+~~~
 
 -- Typed variables
 
@@ -273,17 +287,25 @@ It has an extension mechanism that connects Perl with Java.
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
 
         - this should return:
+
+~~~java
         byte[] v_x = new byte[3]; // alocate 3 bytes - the native arrays in java are not dynamic
         byte[0] ='A';
         byte[1] = 'B';
         byte[2] = 'C';
+~~~
 
         - or:
+
+~~~java
         byte[] v_x = new byte[] { "A", "B", "C" };
+~~~
 
     alternately:
 
+~~~perl
         package my_chars { type => 'char[]' }
+~~~
 
     Investigate adding support for plain "Object" arguments.
         See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
@@ -292,6 +314,7 @@ It has an extension mechanism that connects Perl with Java.
 -- mixing Java containers, Perl, and Java::inline
     See: misc/Java/TypedIterator.pl
 
+~~~perl
         package Iterator::Of::String {
             import => "java.util.Iterator",
             java_type => "Iterator<String>",
@@ -320,16 +343,18 @@ It has an extension mechanism that connects Perl with Java.
           my $element = $iterator->next();
           say $element;
         }
-
+~~~
 
 -- coercing method naming rules
 
     - rule: remove '::', add 'to_'
         example:  my::Sample  =>  to_mySample()
 
+~~~perl
     package my::Sample { import => "misc.Java.Sample" };
     my $x = my::Sample->new();
     $x->to_mySample()
+~~~
 
 -- autobox as-needed
 
@@ -346,6 +371,7 @@ It has an extension mechanism that connects Perl with Java.
 Autovivification of aliased parameters
 --------------------------------------
 
+~~~bash
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
     $VAR1 = [
           {
@@ -371,6 +397,7 @@ Autovivification of aliased parameters
             3
           ]
         ];
+~~~
 
 Slices
 ------
@@ -411,10 +438,12 @@ Variables
 Symbolic references
 -------------------
 
+~~~bash
     $ perl -e ' $a = 123; my $z; $z = "a"; print $$z '
     123
     $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
     ''
+~~~
 
 Overflow from int to double
 ---------------------------
