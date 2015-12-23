@@ -146,7 +146,9 @@ It has an extension mechanism that connects Perl with Java.
         - untyped variables are passed by reference - that is, v_x instead of v_x.get()
         - wantarray() context is not passed to native calls
 
+~~~bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package Sample { import => "misc.Java.Sample" }; my $x = Sample->new(); $x->to_Sample() ' > Test.java ; javac Test.java
+~~~
 
     my $p_put = Sample->new();
     my $p_put = new Sample();
@@ -199,12 +201,15 @@ It has an extension mechanism that connects Perl with Java.
         print $x->to_Sample();
 
     TODO: (wip) call Java methods with Perl parameters
+
+~~~perl
         Sample->new(10);                # native int
         Sample->new("abc");             # native String
         Sample->new($v->to_Sample());   # cast back to Sample
         Sample->new(0 + $v);            # cast to int
         Sample->new(0.0 + $v);          # cast to double
         Sample->new("" . $v);           # cast to string
+~~~
 
     Method chaining:
 
@@ -270,7 +275,10 @@ It has an extension mechanism that connects Perl with Java.
     storing a Java object into a typed variable keeps the Java object as-is.
 
     test case:
+
+~~~bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
+~~~
 
     maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
 
@@ -284,7 +292,9 @@ It has an extension mechanism that connects Perl with Java.
 
     @perl_array = JavaCall->toBytes();  (DONE - autobox Java array into a Perl array)
 
+~~~bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
+~~~
 
         - this should return:
 
@@ -487,8 +497,6 @@ Missing features, or partially implemented, or untested
     pack
     unpack
     file operations
-    regex
-        http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
     pos()
     typeglob operations
 
@@ -499,6 +507,17 @@ Missing features, or partially implemented, or untested
     @perl_array = java_native[]
         supported types: byte[], int[], and imported_class[]
         not implemented: long[], String[], Double[], char[]
+
+Regex
+-----
+
+regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+
+Regex variables: $1, $2
+
+Modifiers: /x /e
+
+Quotemeta: \Q
 
 Threads
 -------
@@ -516,24 +535,24 @@ Threads
 Optimizations
 -------------
 
-    use "our"-ish variables to avoid global variable lookups
+  - use "our"-ish variables to avoid global variable lookups
         Note: remember the special-cases for "local" keyword
 
-    memoize method-name lookups
+  - memoize method-name lookups
 
-    do-block and eval-block in void-context don't need a subroutine wrapper
+  - do-block and eval-block in void-context don't need a subroutine wrapper
 
-    don't pre-expand ranges in loops
+  - don't pre-expand ranges in loops
 
-    replace regex with index
+  - replace regex with index
 
-    use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
+  - use 'continue' and 'break' when possible (in place of Perl 'next', 'last')
 
-    identify variables that don't need a true "lvalue" container;
+  - identify variables that don't need a true "lvalue" container;
     store in a "PerlObject" instead of "PerlLvalue",
     this is one less level of indirection.
 
-    investigate performance of "proxy" lvalues;
+  - investigate performance of "proxy" lvalues;
     when taking an lvalue out of an array or hash, return a proxy
     with a reference to the container and index.
     Note: there is a working, partial implementation in PerlOp.push_local()
