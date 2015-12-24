@@ -1006,7 +1006,7 @@ package Perlito5::AST::CompUnit;
                  ],
                  "}",
                ],
-               [ "public static PlObject[] apply(String functionName, String[] args) throws Exception {",
+               [ "public static PlObject[] apply(String functionName, String... args) throws Exception {",
                  [
                      "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
