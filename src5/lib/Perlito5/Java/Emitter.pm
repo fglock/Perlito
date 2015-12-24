@@ -12,7 +12,7 @@ package Perlito5::Java;
     # 'The::Class' => {
     #       import              => 'full.path.Class',   # Java class path
     #       perl_package        => 'The::Class',        # Perl package name
-    #       java_type           => 'Class',             # generated, can be overriden: 'Class<String>'
+    #       java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
     #       perl_to_java        => 'to_TheClass',       # generated
     #       java_native_to_perl => 'PlClass',            # generated
     # }
