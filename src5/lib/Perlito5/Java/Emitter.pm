@@ -372,18 +372,18 @@ package Perlito5::Java;
     }
 
     sub is_scalar {
-            !$_[0]->isa( 'Perlito5::AST::Int' )
-         && !$_[0]->isa( 'Perlito5::AST::Num' )
-         && !$_[0]->isa( 'Perlito5::AST::Buf' )
-         && !$_[0]->isa( 'Perlito5::AST::Sub' )
-         && !($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{sigil} eq '$')
-         && !($_[0]->isa( 'Perlito5::AST::Apply' ) 
-             && (  exists($op_to_str{ $_[0]->{code} })
-                || exists($op_to_num{ $_[0]->{code} })
-                || exists($op_to_bool{ $_[0]->{code} })
-                #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
-                )
-             )
+            $_[0]->isa( 'Perlito5::AST::Int' )
+         || $_[0]->isa( 'Perlito5::AST::Num' )
+         || $_[0]->isa( 'Perlito5::AST::Buf' )
+         || $_[0]->isa( 'Perlito5::AST::Sub' )
+         || ($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{sigil} eq '$')
+         || ($_[0]->isa( 'Perlito5::AST::Apply' ) 
+            && (  exists($op_to_str{ $_[0]->{code} })
+               || exists($op_to_num{ $_[0]->{code} })
+               || exists($op_to_bool{ $_[0]->{code} })
+               #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
+               )
+            )
     }
 
     sub to_list {
