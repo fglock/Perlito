@@ -78,7 +78,7 @@ Calling a Perl subroutine from Java
     class MyJava {
         public static void main(String[] args) throws Exception {
             Main.init();
-            PlObject[] res = Main.apply("main::test", new String[]{ "123" });
+            PlObject[] res = Main.apply("main::test", "123");
             for (PlObject s: res) {
                 System.out.println("Java result: " + s.toString());
             }

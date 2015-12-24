@@ -12,7 +12,7 @@ package Perlito5::Java;
     # 'The::Class' => {
     #       import              => 'full.path.Class',   # Java class path
     #       perl_package        => 'The::Class',        # Perl package name
-    #       java_type           => 'Class',             # generated, can be overriden: 'Class<String>'
+    #       java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
     #       perl_to_java        => 'to_TheClass',       # generated
     #       java_native_to_perl => 'PlClass',            # generated
     # }
@@ -1006,11 +1006,12 @@ package Perlito5::AST::CompUnit;
                  ],
                  "}",
                ],
-               [ "public static PlObject[] apply(String functionName, String[] args) throws Exception {",
+               [ "public static PlObject[] apply(String functionName, String... args) throws Exception {",
                  [
                      "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
-                     "PlArray res = (PlArray)PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
                      "for (PlObject s : res.a) {",
