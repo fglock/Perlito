@@ -140,8 +140,8 @@ It has an extension mechanism that connects Perl with Java.
 ~~~perl
         package The::Class {
             import           => 'full.path.Class',  # mandatory
-            java_type        => 'Class',            # auto generated, can be overriden: 'Class<String>'
-            perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overriden
+            java_type        => 'Class',            # auto generated, can be overridden: 'Class<String>'
+            perl_to_java     => 'to_TheClass',      # auto generated from Perl package name, can be overridden
             # perl_package   => 'The::Class',       # auto generated, Perl package name
         }
 ~~~
