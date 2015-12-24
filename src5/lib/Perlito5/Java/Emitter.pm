@@ -3463,7 +3463,7 @@ package Perlito5::AST::Apply;
                 $sig = substr($sig, 1);
             }
 
-            return $code . '('
+            return $code . '.apply('
                         . Perlito5::Java::to_context($wantarray)
                         . ', [' . join(', ', @out) . $close
                 . ')';
