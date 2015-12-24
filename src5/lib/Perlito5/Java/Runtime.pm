@@ -372,6 +372,12 @@ class PerlOp {
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject context(int want, PlObject... args) {
+        if (want == PlCx.LIST) {
+            return new PlArray(args);
+        }
+        return args[args.length-1].scalar();
+    }
 
     // statement()
     //      - workaround for "Error: not a statement"
