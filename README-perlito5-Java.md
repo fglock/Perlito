@@ -33,6 +33,38 @@ Calling a Perl subroutine from Java
     }
 ~~~
 
+Perlito5 Java development tools
+===============================
+
+Execute a single-line quick test 
+
+~~~bash
+$ perl perlito5.pl -Isrc5/lib -Cjava -e ' sub x { return 123, 5 } my $x = x(); say "$x" ' > Main.java ; javac Main.java ; java Main
+5
+~~~
+
+Perl-Java test suite
+
+~~~bash
+$ make test-5java
+$ make test  # tests the nodejs backend
+~~~
+
+"make test" should pass everything, except for the "sleep" function which requires a nodejs module
+
+"make test-5java" is just starting to pass a few tests
+
+You may find useful when debugging,
+
+~~~bash
+$ perl perlito5.pl -Isrc5/lib -Cast-json -e ' … '
+$ perl perlito5.pl -Isrc5/lib -Cast-perl5 -e ' … '
+~~~
+
+to see the internal representation
+
+and "make clean" to get rid of all those .class files
+
 
 Perlito5 Java backend TODO list
 ===============================
