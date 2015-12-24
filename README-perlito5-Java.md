@@ -1,5 +1,46 @@
+
+Perlito5 Java backend
+=====================
+
+Perlito5-Java platform differences
+-------------------------------------------
+
+
+  - no timely destruction (DESTROY) (because Java)
+      - files don't "auto-close" at the end of a block
+      - Try::Tiny "finally" doesn't work
+
+  - no XS (because Java)
+  - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
+      - "import" also doesn't work when doing precompilation
+  - no eval-string (because not-yet-bootstrapped)
+      - also no: "do FILE", "require" (because these depend on eval-string)
+
+  - any other differences are not-yet-implemented or bugs.
+
+Calling a Perl subroutine from Java
+-----------------------------------
+
+~~~java
+    class MyJava {
+        public static void main(String[] args) throws Exception {
+            Main.init();
+            PlObject[] res = Main.apply("main::test", "123");
+            for (PlObject s: res) {
+                System.out.println("Java result: " + s.toString());
+            }
+        }
+    }
+~~~
+
+
 Perlito5 Java backend TODO list
 ===============================
+
+CPAN distribution
+-----------------
+
+This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
 
 Java-specific command line options
 ----------------------------------
@@ -52,38 +93,6 @@ the bytecode of a method must not be bigger than 65536 bytes:
                         code ...
                     }->() )
             }->() )
-~~~
-
-Document Perlito5-Java platform differences
--------------------------------------------
-
-This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
-
-    - no timely destruction (DESTROY) (because Java)
-        - files don't "auto-close" at the end of a block
-        - Try::Tiny "finally" doesn't work
-
-    - no XS (because Java)
-    - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
-        - "import" also doesn't work when doing precompilation
-    - no eval-string (because not-yet-bootstrapped)
-        - also no: "do FILE", "require" (because these depend on eval-string)
-
-    - any other differences are not-yet-implemented or bugs.
-
-Calling a Perl subroutine from Java
------------------------------------
-
-~~~java
-    class MyJava {
-        public static void main(String[] args) throws Exception {
-            Main.init();
-            PlObject[] res = Main.apply("main::test", "123");
-            for (PlObject s: res) {
-                System.out.println("Java result: " + s.toString());
-            }
-        }
-    }
 ~~~
 
 Document Perlito5-Java extensibility
