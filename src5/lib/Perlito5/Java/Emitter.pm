@@ -1010,7 +1010,8 @@ package Perlito5::AST::CompUnit;
                  [
                      "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
-                     "PlArray res = (PlArray)PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
                      "for (PlObject s : res.a) {",
