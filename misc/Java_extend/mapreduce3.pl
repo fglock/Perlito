@@ -49,39 +49,40 @@ package Boolean {
 
 # Impl
 package MyMapper {
-    sub MODIFY_CODE_ATTRIBUTES {}
-    extends => 'MR::TableMapper',
-    methods => [
-        map => sub :public :void :return(void) {
-                my ImmutableBytesWritable $row = shift;
-                my Result $value               = shift;
-                my Context $context            = shift;
-                # ...
-                return;
-            },
-        resultToPut => sub :private :static :return(Put) {
-                my ImmutableBytesWritable $key = shift;
-                my Result $result              = shift;
+    extends => 'MR::TableMapper';
+    sub MODIFY_CODE_ATTRIBUTES { }
 
-                # ...
-                my Put $put = Put->new();
-                return $put;
-            },
-    ],
+    sub map : public : void : return(void) {
+        my ImmutableBytesWritable $row = shift;
+        my Result $value               = shift;
+        my Context $context            = shift;
+
+        # ...
+        return;
+    }
+
+    sub resultToPut : private : static : return(Put) {
+        my ImmutableBytesWritable $key = shift;
+        my Result $result              = shift;
+
+        # ...
+        my Put $put = Put->new();
+        return $put;
+    }
 }
 
 package MyReducer {
-    sub MODIFY_CODE_ATTRIBUTES {}
-    extends => 'Reducer',
-    methods => [
-        reduce => sub :public :void :return(void) {
-                my Text $key = shift;
-                my Iterable::IntWritable $values = shift;
-                my Context $context = shift;
-                # ...
-                return;
-            },
-    ],
+    extends => 'Reducer';
+    sub MODIFY_CODE_ATTRIBUTES { }
+
+    sub reduce : public : void : return(void) {
+        my Text $key                     = shift;
+        my Iterable::IntWritable $values = shift;
+        my Context $context              = shift;
+
+        # ...
+        return;
+    }
 }
 
 
