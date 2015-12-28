@@ -29,7 +29,7 @@ package MyMapper {
                 my Result $value               = shift;
                 my Context $context            = shift;
                 # ...
-                return $MapReduce::map->(...);
+                return;
             },
         },
         'resultToPut' => {
@@ -40,7 +40,8 @@ package MyMapper {
                 my Result $result              = shift;
 
                 # ...
-                return $MapReduce::put->(...);
+                my Put $put = Put->new();
+                return $put;
             },
         },
     ],
@@ -53,31 +54,18 @@ package MyReducer {
             keywords => [ 'public', 'void' ],
             returns  => 'void',
             code     => sub {
-                # ['Text key', 'Iterable<IntWritable> values', 'Context context'],
-                # my ( $key, $values, $context ) = @_;
-
+                my Text $key = shift;
+                my Iterable::IntWritable $values = shift;
+                my Context $context = shift;
                 # ...
+                return;
             },
         },
     ],
 }
 
-#--- end: HBase::MapReduce
-
-
-#--- start: main
 
 package main;
-use HBase::MapReduce;
-
-HBase::MapReduce->set_map( sub {
-    ...
-} );
-
-
-HBase::MapReduce->set_put( sub {
-    ...
-} );
 
 my Configuration $config = HBaseConfiguration->create();
 my Job $job = Job->new($config,"ExampleSummaryToFile");
