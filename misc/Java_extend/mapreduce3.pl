@@ -49,6 +49,7 @@ package Boolean {
 
 # Impl
 package MyMapper {
+    sub MODIFY_CODE_ATTRIBUTES {}
     extends => 'MR::TableMapper',
     methods => [
         map => sub :public :void :return(void) {
@@ -70,6 +71,7 @@ package MyMapper {
 }
 
 package MyReducer {
+    sub MODIFY_CODE_ATTRIBUTES {}
     extends => 'Reducer',
     methods => [
         reduce => sub :public :void :return(void) {
@@ -114,8 +116,8 @@ FileOutputFormat->setOutputPath(
 );  # adjust directories as required
 
 
-my Boolean $b = job->waitForCompletion(Boolean.true);
+my Boolean $b = $job->waitForCompletion(Boolean.true);
 if (!$b) {
-  throw(IOException->new("error with job!"));
+  die "error with job!";
 }
 
