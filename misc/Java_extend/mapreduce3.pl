@@ -21,21 +21,14 @@ package Boolean {
 package MyMapper {
     extends => 'MR::TableMapper',
     methods => [
-        'map' => {
-            keywords => [ 'public', 'void' ],
-            returns  => 'void',
-            code     => sub {
+        map => sub :public :void :return(void) {
                 my ImmutableBytesWritable $row = shift;
                 my Result $value               = shift;
                 my Context $context            = shift;
                 # ...
                 return;
             },
-        },
-        'resultToPut' => {
-            keywords => [ 'private', 'static' ],
-            returns  => 'Put',
-            code     => sub {
+        resultToPut => sub :private :static :return(Put) {
                 my ImmutableBytesWritable $key = shift;
                 my Result $result              = shift;
 
@@ -43,24 +36,19 @@ package MyMapper {
                 my Put $put = Put->new();
                 return $put;
             },
-        },
     ],
 }
 
 package MyReducer {
     extends => 'Reducer',
     methods => [
-        'reduce' => {
-            keywords => [ 'public', 'void' ],
-            returns  => 'void',
-            code     => sub {
+        reduce => sub :public :void :return(void) {
                 my Text $key = shift;
                 my Iterable::IntWritable $values = shift;
                 my Context $context = shift;
                 # ...
                 return;
             },
-        },
     ],
 }
 
