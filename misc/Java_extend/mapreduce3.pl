@@ -52,7 +52,7 @@ package MyMapper {
     extends => 'MR::TableMapper';
     sub MODIFY_CODE_ATTRIBUTES { }
 
-    sub map : public : void : return(void) {
+    sub map :public :void {
         my ImmutableBytesWritable $row = shift;
         my Result $value               = shift;
         my Context $context            = shift;
@@ -61,7 +61,7 @@ package MyMapper {
         return;
     }
 
-    sub resultToPut : private : static : return(Put) {
+    sub resultToPut :private :static :Put {
         my ImmutableBytesWritable $key = shift;
         my Result $result              = shift;
 
@@ -75,7 +75,7 @@ package MyReducer {
     extends => 'Reducer';
     sub MODIFY_CODE_ATTRIBUTES { }
 
-    sub reduce : public : void : return(void) {
+    sub reduce :public :void {
         my Text $key                     = shift;
         my Iterable::IntWritable $values = shift;
         my Context $context              = shift;
