@@ -3,10 +3,40 @@ package MR::TableMapper {
     java_type => "TableMapper<ImmutableBytesWritable, Put>",
 }
 
-# ... others
+package ImmutableBytesWritable {
+    import => 'org...ImmutableBytesWritable',
+}
 
 package Put {
     import => 'org.apache.hadoop.hbase.Put',
+}
+
+package Result {
+    import => 'org.apache...Result',
+}
+
+package Context {
+    import => 'org.apache...Context',
+}
+
+package Text {
+    import => 'org.apache...Text',
+}
+
+package Iterable::IntWritable {
+    import => 'org.apache...Iterable::IntWritable',
+}
+
+package Configuration {
+    import => 'org.apache...Configuration',
+}
+
+package Job {
+    import => 'org.apache...Job',
+}
+
+package Scan {
+    import => 'org.apache...Scan',
 }
 
 package Reducer {
