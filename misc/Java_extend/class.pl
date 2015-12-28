@@ -1,6 +1,9 @@
+package JavaObject {
+    import => 'java.lang.Object',
+}
 
 package MyClass {
-    extends => 'Object';
+    extends => 'JavaObject';
     sub MODIFY_CODE_ATTRIBUTES   { }
 
     sub meth :public :Int {
@@ -14,7 +17,7 @@ package MyClass {
 
 __END__
 
-    class MyClass extends Object {
+    class MyClass extends java.lang.Object {
         public Int meth(Int param1) throws Exception {
             PlObject[] res = Main.apply("MyClass::meth", param1);
             return res[0].to_Int();
