@@ -2,6 +2,62 @@ use v5;
 
 package Perlito5::Java::Runtime;
 
+sub emit_java_extends {
+    my $class = shift;
+    # extends the imported Java classes
+    # that were declared with
+    #
+    #   package My::Java { extends => "My::Java" }
+    #
+
+    # 'extends' => 'My::Object',
+    # 'extends_java_type' => 'Object',
+    # 'java_native_to_perl' => 'pMyX',
+    # 'java_type' => 'MyX',
+    # 'perl_package' => 'My::X',
+    # 'perl_to_java' => 'to_MyX',
+    # 'methods' => [
+    #     instance_meth => {
+    #         decl => [ "public", "Int" ],
+    #         args => [ "Int" ],     # this/$self is added to the Perl method arguments
+    #         code => "MyClass::instance_meth",
+    #     },
+    #     class_meth => {
+    #         decl => [ "public", "static", "Int" ],
+    #         args => [ "Int" ],     # class name is added to the Perl method arguments
+    #         code => "MyClass::class_meth",
+    #     },
+    # ],
+
+    my @out;
+    push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+    while ( @{ $class->{methods} } ) {
+        my $method = shift @{ $class->{methods} };
+        my $data   = shift @{ $class->{methods} };
+        my $decl = $data->{decl};
+        my @args;
+        my $var = 0;
+        for my $arg ( @{ $data->{args} } ) {
+            push @args, "$arg param$var";
+            $var++;
+        }
+        push @out, "    @$decl $method(" . join(", ", @args) . ") {";
+
+        # public Int instance_meth(Int param1) throws Exception {
+        #     PlObject[] res = Main.apply("MyClass::instance_meth", this, param1);
+        #     return res[0].to_Int();
+        # }
+        # public Int class_meth(Int param1) throws Exception {
+        #     PlObject[] res = Main.apply("MyClass::class_meth", param1);
+        #     return res[0].to_Int();
+        # }
+
+        push @out, "    }";
+    }
+    push @out, "}\n";
+    return join("\n", @out);
+}
+
 sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
@@ -52,7 +108,7 @@ EOT
         # import the Java classes
         # that were declared with
         #
-        #   package My::Java { import => "org.My.Java" }
+        #   package My::Java { import => "org.My.Java", ... }
         #
     . join('', ( map {
                     my $class = $_;
@@ -63,19 +119,11 @@ EOT
         # extends the imported Java classes
         # that were declared with
         #
-        #   package My::Java { extends => "My::Java" }
+        #   package My::Java { extends => "My::Java", ... }
         #
-
-        # 'extends' => 'My::Object',
-        # 'extends_java_type' => 'Object',
-        # 'java_native_to_perl' => 'pMyX',
-        # 'java_type' => 'MyX',
-        # 'perl_package' => 'My::X',
-        # 'perl_to_java' => 'to_MyX',
-
     . join('', ( map {
                     my $class = $_;
-                    $class->{extends} ? "class $class->{java_type} extends $class->{extends_java_type} {}\n" : ()
+                    $class->{extends} ? emit_java_extends($class) : ()
             }
             values %java_classes
       ))
