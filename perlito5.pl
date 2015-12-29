@@ -15391,9 +15391,7 @@ use feature 'say';
                                     $Java_class->{$class}->{'java_native_to_perl'} //= 'p' . $Java_class->{$class}->{'java_type'};
                                     $Java_class->{$class}->{'java_native_to_perl'} =~ s![<>]!_!g;
                                     $Java_class->{$class}->{'perl_to_java'} //= 'to_' . $perl_to_java;
-                                    $Java_class->{$class}->{'perl_package'} = $class;
-                                    warn(Data::Dumper::Dumper($Java_class->{$class}));
-                                    warn(chr(39) . 'extends' . chr(39) . ' not implemented')
+                                    $Java_class->{$class}->{'perl_package'} = $class
                                 }
                                 else {
                                     die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class')
@@ -17273,12 +17271,26 @@ use feature 'say';
                     my @args;
                     my $var = 0;
                     for my $arg (@{$data->{'args'}}) {
-                        push(@args, $arg . ' param' . $var);
+                        my $type = $java_classes->{$arg};
+                        push(@args, $type->{'java_type'} . ' param' . $var);
                         $var++
                     }
-                    push(@out, '    ' . join(${'"'}, @{$decl}) . ' ' . $method . '(' . join(', ', @args) . ') {');
+                    my @java_decl = @{$decl};
+                    if ($java_classes->{$decl->[-1]}) {
+                        my $type = $java_classes->{$decl->[-1]};
+                        my $return_type = $type->{'java_type'};
+                        $java_decl[-1] = $return_type
+                    }
+                    push(@out, '    ' . join(${'"'}, @java_decl) . ' ' . $method . '(' . join(', ', @args) . ') {');
                     @args = ();
-                    push(@args, 'new ' . $class->{'java_native_to_perl'} . '(this)');
+                    if (grep {
+                        $_ eq 'static'
+                    } @{$decl}) {
+                        push(@args, 'new PlString("' . $class->{'perl_package'} . '")')
+                    }
+                    else {
+                        push(@args, 'new ' . $class->{'java_native_to_perl'} . '(this)')
+                    }
                     $var = 0;
                     for my $arg (@{$data->{'args'}}) {
                         my $type = $java_classes->{$arg};
@@ -17286,6 +17298,15 @@ use feature 'say';
                         $var++
                     }
                     push(@out, '        PlObject[] res = Main.apply("' . $code . '", ' . join(', ', @args) . ');');
+                    if (grep {
+                        $_ eq 'void'
+                    } @{$decl}) {
+                        push(@out, '        return;')
+                    }
+                    else {
+                        my $type = $java_classes->{$decl->[-1]};
+                        push(@out, '        return res[0].' . $type->{'perl_to_java'} . '();')
+                    }
                     push(@out, '    }')
                 }
                 push(@out, '}' . chr(10));

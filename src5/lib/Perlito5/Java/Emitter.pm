@@ -1000,8 +1000,8 @@ package Perlito5::AST::CompUnit;
                         $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
                         $Java_class->{$class}->{perl_package} = $class;
 
-                        warn Data::Dumper::Dumper $Java_class->{$class};
-                        warn "'extends' not implemented";
+                        # warn Data::Dumper::Dumper $Java_class->{$class};
+                        # warn "'extends' not implemented";
                     }
                     else {
                         die "missing 'import' argument to generate Java class";

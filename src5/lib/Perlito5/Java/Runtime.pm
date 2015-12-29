@@ -39,13 +39,27 @@ sub emit_java_extends {
         my @args;
         my $var = 0;
         for my $arg ( @{ $data->{args} } ) {
-            push @args, "$arg param$var";
+            my $type = $java_classes->{$arg};
+            push @args, "$type->{java_type} param$var";
             $var++;
         }
-        push @out, "    @$decl $method(" . join(", ", @args) . ") {";
+        my @java_decl = @$decl;
+        if ( $java_classes->{$decl->[-1]} ) {
+            my $type = $java_classes->{$decl->[-1]};
+            my $return_type = $type->{java_type};
+            $java_decl[-1] = $return_type;
+        }
+        push @out, "    @java_decl $method(" . join(", ", @args) . ") {";
 
         @args = ();
-        push @args, "new $class->{java_native_to_perl}(this)";
+        if ( grep { $_ eq "static" } @$decl ) {
+            # class method
+            push @args, "new PlString(\"$class->{perl_package}\")";
+        }
+        else {
+            # instance method
+            push @args, "new $class->{java_native_to_perl}(this)";
+        }
         $var = 0;
         for my $arg ( @{ $data->{args} } ) {
             my $type = $java_classes->{$arg};
@@ -53,6 +67,15 @@ sub emit_java_extends {
             $var++;
         }
         push @out, "        PlObject[] res = Main.apply(\"$code\", " . join(", ", @args) . ");";
+
+        if ( grep { $_ eq "void" } @$decl ) {
+            # void method
+            push @out, "        return;";
+        }
+        else {
+            my $type = $java_classes->{$decl->[-1]};
+            push @out, "        return res[0].$type->{perl_to_java}();";
+        }
 
         # public Int instance_meth(Int param1) throws Exception {
         #     PlInt p1 = new PlInt(param1);

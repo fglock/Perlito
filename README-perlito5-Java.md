@@ -33,6 +33,62 @@ Calling a Perl subroutine from Java
     }
 ~~~
 
+Importing a Java class into Perl
+--------------------------------
+
+~~~perl
+    package Sample {
+        import => "misc.Java.Sample"
+    };
+
+    package Array::Of::String {
+        import => "java.util.ArrayList",
+        java_type => "ArrayList<String>",
+    }
+
+    my Array::Of::String $x = Array::Of::String->new();
+~~~
+
+Extending a Java class with Perl
+--------------------------------
+
+~~~perl
+    package My::Object { import => "java.lang.Object" }
+    package My::Stuff  { import => "java.lang.Stuff" }
+
+    package My::X {
+        extends   => "My::Object",
+        methods => [
+          mymeth => {
+              decl => ["public", "My::Stuff"],
+              args => ["My::Stuff"],
+              code => "main::abc"
+          },
+          classmeth => {
+              decl => [ "public", "static", "void" ],
+              args => [],
+              code => "main::abc"
+          }
+        ];
+    }
+    
+    package main;
+    
+    sub abc {
+        my ($self, $stuff) = @_;
+        if (ref($self)) {
+            # instance method
+        }
+        else {
+            # class method
+        }
+    }
+
+    my My::x $x = My::x->new();
+    $x->mymeth();
+~~~
+
+
 Perlito5 Java development tools
 ===============================
 
