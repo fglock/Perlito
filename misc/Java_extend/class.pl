@@ -2,6 +2,44 @@ package JavaObject {
     import => 'java.lang.Object',
 }
 
+package JavaExtended {
+    extends => 'JavaObject',
+    methods => [
+        instance_meth => {
+            decl => [ "public", "Int" ],
+            args => [ "Int" ],     # this/$self is added to the Perl method arguments
+            code => "MyClass::instance_meth",
+        },
+        class_meth => {
+            decl => [ "public", "static", "Int" ],
+            args => [ "Int" ],     # class name is added to the Perl method arguments
+            code => "MyClass::class_meth",
+        },
+    ],
+}
+
+package MyClass {
+    sub instance_meth {
+        my JavaExtended $self = shift;
+        my Int $param1 = shift;
+        return $param1 + 1;
+    }
+    sub class_meth {
+        my $class = shift;
+        my Int $param1 = shift;
+        return $param1 + 1;
+    }
+}
+
+1;
+
+__END__
+
+
+package JavaObject {
+    import => 'java.lang.Object',
+}
+
 package MyClass {
     extends => 'JavaObject';
     sub MODIFY_CODE_ATTRIBUTES   { }
