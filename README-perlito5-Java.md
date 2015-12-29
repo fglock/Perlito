@@ -2,6 +2,7 @@
 Perlito5 Java backend
 =====================
 
+
 Perlito5-Java platform differences
 -------------------------------------------
 
@@ -18,6 +19,15 @@ Perlito5-Java platform differences
 
   - any other differences are not-yet-implemented or bugs.
 
+
+Perlito5-Java extensibility
+===========================
+
+
+The Perlito5 Java backend doesn't support Perl XS extensions.
+Instead of XS, it has an extension mechanism that connects Perl with Java.
+
+
 Calling a Perl subroutine from Java
 -----------------------------------
 
@@ -33,8 +43,8 @@ Calling a Perl subroutine from Java
     }
 ~~~
 
-Importing a Java class into Perl
---------------------------------
+Importing a Java class into Perl and using typed variables
+----------------------------------------------------------
 
 ~~~perl
     package Sample {
@@ -86,6 +96,25 @@ Extending a Java class with Perl
 
     my My::x $x = My::x->new();
     $x->mymeth();
+~~~
+
+
+Using Java inside Perl code with Java::inline
+---------------------------------------------
+
+Example: Java method override using Java::inline
+
+~~~perl
+    # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
+    package Date  { import => "java.util.Date" };
+    my Date $dateJavaObject =
+        Java::inline
+            'new Date() {
+                public String toString() {
+                    return "Hello";    
+                }    
+            }';
+    my $dateString_pObject = $dateJavaObject->toString();   # Hello
 ~~~
 
 
@@ -200,9 +229,6 @@ Document Perlito5-Java extensibility
 
 This documentation should be copied to file Perlito5::Java, in the CPAN distribution.
 
-The Perlito5 Java backend doesn't support Perl XS extensions.
-It has an extension mechanism that connects Perl with Java.
-
     - Java import and typed variables
 
 ~~~perl
@@ -242,21 +268,6 @@ It has an extension mechanism that connects Perl with Java.
     TODO: test that Perl modules can import Java classes
         - only tested in "main" program
 
-
--- Java method override using Java::inline
-
-~~~perl
-    # See: https://github.com/bdevetak/perl2j/tree/master/examples/myapp
-    package Date  { import => "java.util.Date" };
-    my Date $dateJavaObject =
-        Java::inline
-            'new Date() {
-                public String toString() {
-                    return "Hello";    
-                }    
-            }';
-    my $dateString_pObject = $dateJavaObject->toString();   # Hello
-~~~
 
 -- Typed variables
 
@@ -600,6 +611,8 @@ Tail-call
 
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
+
+    bless
 
     overload
     tie()
