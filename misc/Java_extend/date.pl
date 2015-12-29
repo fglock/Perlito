@@ -15,6 +15,8 @@ package My::Date {
 package main;
 
 sub date_string {
+    my $self = shift;
+    print "date_string: self is $self\n";
     return "Hello";
 }
 
