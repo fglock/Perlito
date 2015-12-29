@@ -61,4 +61,5 @@ See Also
 Build Status
 ------------
 
-[![Build Status](https://travis-ci.org/fredericorecsky/Perlito.svg)](https://travis-ci.org/fredericorecsky/Perlito)
+[![Build Status](https://travis-ci.org/fglock/Perlito.svg)](https://travis-ci.org/fglock/Perlito)
+
