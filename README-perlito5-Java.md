@@ -59,6 +59,16 @@ Importing a Java class into Perl and using typed variables
     my Array::Of::String $x = Array::Of::String->new();
 ~~~
 
+Java value types don't need to be imported, but there must exist a Perl package.
+
+~~~perl
+    package String { }
+    package Integer { }
+    
+    my String $x  = "abc";
+    my Integer $y = 123
+~~~
+
 Extending a Java class with Perl
 --------------------------------
 

@@ -57,6 +57,21 @@ package Perlito5::Java;
         $Java_class->{$perl_package}->{perl_to_java} //= "to_${perl_to_java}";
         $Java_class->{$perl_package}->{perl_package} = $perl_package;
     }
+    sub init_java_class {
+        my $Java_class = Perlito5::Java::get_java_class_info();
+        $Java_class->{String} = {
+            java_type => 'String',
+            java_native_to_perl => 'PlString',
+            perl_to_java => 'toString',
+            perl_package => 'String',
+        }; 
+        $Java_class->{Integer} = {
+            java_type => 'Integer',
+            java_native_to_perl => 'PlInt',
+            perl_to_java => 'to_int',
+            perl_package => 'Integer',
+        }; 
+    }
 
     our %Java_loop_label;
     sub get_java_loop_label {
@@ -908,6 +923,7 @@ package Perlito5::AST::CompUnit;
         $str .= Perlito5::Compiler::do_not_edit("//");
 
         # look for special 'Java' packages
+        Perlito5::Java::init_java_class();
         my $Java_class = Perlito5::Java::get_java_class_info();
         for my $comp_unit ( @$comp_units ) {
             for my $unit_stmt ( @{ $comp_unit->{body} } ) {

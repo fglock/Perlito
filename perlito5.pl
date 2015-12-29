@@ -14925,6 +14925,23 @@ use feature 'say';
                 sub Perlito5::Java::get_java_var_info {
                     return \%Java_var
                 }
+                sub Perlito5::Java::set_java_class_defaults {
+                    my($perl_package, $java_import) = @_;
+                    my $Java_class = Perlito5::Java::get_java_class_info();
+                    my @parts = split(m!\.!, $java_import);
+                    $Java_class->{$perl_package}->{'java_type'} //= $parts[-1];
+                    $Java_class->{$perl_package}->{'java_native_to_perl'} //= 'p' . $Java_class->{$perl_package}->{'java_type'};
+                    $Java_class->{$perl_package}->{'java_native_to_perl'} =~ s![<>]!_!g;
+                    my $perl_to_java = $perl_package;
+                    $perl_to_java =~ s!::!!g;
+                    $Java_class->{$perl_package}->{'perl_to_java'} //= 'to_' . $perl_to_java;
+                    $Java_class->{$perl_package}->{'perl_package'} = $perl_package
+                }
+                sub Perlito5::Java::init_java_class {
+                    my $Java_class = Perlito5::Java::get_java_class_info();
+                    $Java_class->{'String'} = {'java_type' => 'String', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'toString', 'perl_package' => 'String'};
+                    $Java_class->{'Integer'} = {'java_type' => 'Integer', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_int', 'perl_package' => 'Integer'}
+                }
                 our %Java_loop_label;
                 sub Perlito5::Java::get_java_loop_label {
                     my $s = shift;
@@ -15353,6 +15370,7 @@ use feature 'say';
                     my $wantarray = 'void';
                     my $str;
                     $str .= Perlito5::Compiler::do_not_edit('//');
+                    Perlito5::Java::init_java_class();
                     my $Java_class = Perlito5::Java::get_java_class_info();
                     for my $comp_unit (@{$comp_units}) {
                         for my $unit_stmt (@{$comp_unit->{'body'}}) {
@@ -15368,14 +15386,7 @@ use feature 'say';
                                 my $args_perl5 = join('', @{$out});
                                 $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
                                 if ($Java_class->{$class}->{'import'}) {
-                                    my @parts = split(m!\.!, $Java_class->{$class}->{'import'});
-                                    $Java_class->{$class}->{'java_type'} //= $parts[-1];
-                                    $Java_class->{$class}->{'java_native_to_perl'} //= 'p' . $Java_class->{$class}->{'java_type'};
-                                    $Java_class->{$class}->{'java_native_to_perl'} =~ s![<>]!_!g;
-                                    my $perl_to_java = $class;
-                                    $perl_to_java =~ s!::!!g;
-                                    $Java_class->{$class}->{'perl_to_java'} //= 'to_' . $perl_to_java;
-                                    $Java_class->{$class}->{'perl_package'} = $class
+                                    Perlito5::Java::set_java_class_defaults($class, $Java_class->{$class}->{'import'})
                                 }
                                 elsif ($Java_class->{$class}->{'extends'}) {
                                     my $extended = $Java_class->{$Java_class->{$class}->{'extends'}};
@@ -15387,11 +15398,7 @@ use feature 'say';
                                     }
                                     my $perl_to_java = $class;
                                     $perl_to_java =~ s!::!!g;
-                                    $Java_class->{$class}->{'java_type'} //= $perl_to_java;
-                                    $Java_class->{$class}->{'java_native_to_perl'} //= 'p' . $Java_class->{$class}->{'java_type'};
-                                    $Java_class->{$class}->{'java_native_to_perl'} =~ s![<>]!_!g;
-                                    $Java_class->{$class}->{'perl_to_java'} //= 'to_' . $perl_to_java;
-                                    $Java_class->{$class}->{'perl_package'} = $class
+                                    Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
                                 }
                                 else {
                                     die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class')
