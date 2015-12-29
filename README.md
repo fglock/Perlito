@@ -58,3 +58,7 @@ See Also
 
       - [README-perlito5-Java](README-perlito5-Java.md)
 
+Build Status
+------------
+
+[![Build Status](https://travis-ci.org/fredericorecsky/Perlito.svg)](https://travis-ci.org/fredericorecsky/Perlito)
