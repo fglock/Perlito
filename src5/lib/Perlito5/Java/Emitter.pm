@@ -980,6 +980,16 @@ package Perlito5::AST::CompUnit;
                         # java_type           => 'TheClass',          # generated, can be overridden
                         # perl_to_java        => 'to_TheClass',       # generated, can be overridden
                         # java_native_to_perl => 'pTheClass',         # generated
+                        # extends_java_type   => 'java.lang.Object',  # Java class being extended; generated
+
+                        my $extended = $Java_class->{ $Java_class->{$class}->{extends} };
+                        if ($extended) {
+                            $Java_class->{$class}->{extends_java_type} = $extended->{java_type};
+
+                        }
+                        else {
+                            die "cannot extend class '" . $Java_class->{$class}->{extends} . "' because it was not declared";
+                        }
 
                         my $perl_to_java = $class;
                         $perl_to_java =~ s/:://g;
@@ -990,6 +1000,7 @@ package Perlito5::AST::CompUnit;
                         $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
                         $Java_class->{$class}->{perl_package} = $class;
 
+                        warn Data::Dumper::Dumper $Java_class->{$class};
                         warn "'extends' not implemented";
                     }
                     else {

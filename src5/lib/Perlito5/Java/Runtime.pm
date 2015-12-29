@@ -52,7 +52,7 @@ EOT
         # import the Java classes
         # that were declared with
         #
-        #   package MyJavaClass { Java }
+        #   package My::Java { import => "org.My.Java" }
         #
     . join('', ( map {
                     my $class = $_;
@@ -60,6 +60,26 @@ EOT
             }
             values %java_classes
       ))
+        # extends the imported Java classes
+        # that were declared with
+        #
+        #   package My::Java { extends => "My::Java" }
+        #
+
+        # 'extends' => 'My::Object',
+        # 'extends_java_type' => 'Object',
+        # 'java_native_to_perl' => 'pMyX',
+        # 'java_type' => 'MyX',
+        # 'perl_package' => 'My::X',
+        # 'perl_to_java' => 'to_MyX',
+
+    . join('', ( map {
+                    my $class = $_;
+                    $class->{extends} ? "class $class->{java_type} extends $class->{extends_java_type} {}\n" : ()
+            }
+            values %java_classes
+      ))
+        # Perl-Java exceptions
     . <<'EOT'
 class PlControlException extends RuntimeException {
 }
