@@ -13,7 +13,7 @@ package Perlito5::Java;
     #       import              => 'full.path.Class',   # Java class path
     #       perl_package        => 'The::Class',        # Perl package name
     #       java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
-    #       perl_to_java        => 'to_TheClass',       # generated
+    #       perl_to_java        => 'to_TheClass',       # generated, can be overridden
     #       java_native_to_perl => 'pClass',            # generated
     # }
     my %Java_class;
@@ -948,7 +948,7 @@ package Perlito5::AST::CompUnit;
                         # import              => 'full.path.Class',   # Java class path
                         # perl_package        => 'The::Class',        # Perl package name
                         # java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
-                        # perl_to_java        => 'to_TheClass',       # generated
+                        # perl_to_java        => 'to_TheClass',       # generated, can be overridden
                         # java_native_to_perl => 'pClass',            # generated
                         #
                         my @parts = split /\./, $Java_class->{$class}->{import};
@@ -975,9 +975,22 @@ package Perlito5::AST::CompUnit;
                         #         code => "MyClass::class_meth",
                         #     },
                         # ],
-                        #
+                        # # --- internals ---
+                        # perl_package        => 'The::Class',        # this Perl package name
+                        # java_type           => 'TheClass',          # generated, can be overridden
+                        # perl_to_java        => 'to_TheClass',       # generated, can be overridden
+                        # java_native_to_perl => 'pTheClass',         # generated
 
-                        die "'extends' not implemented";
+                        my $perl_to_java = $class;
+                        $perl_to_java =~ s/:://g;
+                        $Java_class->{$class}->{java_type} //= $perl_to_java;
+                        $Java_class->{$class}->{java_native_to_perl} //= 'p' . $Java_class->{$class}->{java_type};
+                        # "List<String>" becomes "PlList_String_"
+                        $Java_class->{$class}->{java_native_to_perl} =~ s/[<>]/_/g;
+                        $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
+                        $Java_class->{$class}->{perl_package} = $class;
+
+                        warn "'extends' not implemented";
                     }
                     else {
                         die "missing 'import' argument to generate Java class";
