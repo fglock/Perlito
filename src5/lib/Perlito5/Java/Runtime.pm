@@ -3,11 +3,11 @@ use v5;
 package Perlito5::Java::Runtime;
 
 sub emit_java_extends {
-    my $class = shift;
+    my ($class, $java_classes) = @_;
     # extends the imported Java classes
     # that were declared with
     #
-    #   package My::Java { extends => "My::Java" }
+    #   package My::X { extends => "My::Object" }
     #
 
     # 'extends' => 'My::Object',
@@ -35,6 +35,7 @@ sub emit_java_extends {
         my $method = shift @{ $class->{methods} };
         my $data   = shift @{ $class->{methods} };
         my $decl = $data->{decl};
+        my $code = $data->{code} or die "Java extends: missing 'code' argument in method '$method'";
         my @args;
         my $var = 0;
         for my $arg ( @{ $data->{args} } ) {
@@ -43,8 +44,19 @@ sub emit_java_extends {
         }
         push @out, "    @$decl $method(" . join(", ", @args) . ") {";
 
+        @args = ();
+        push @args, "new $class->{java_native_to_perl}(this)";
+        $var = 0;
+        for my $arg ( @{ $data->{args} } ) {
+            my $type = $java_classes->{$arg};
+            push @args, "new $type->{java_native_to_perl}(param$var)";
+            $var++;
+        }
+        push @out, "        PlObject[] res = Main.apply(\"$code\", " . join(", ", @args) . ");";
+
         # public Int instance_meth(Int param1) throws Exception {
-        #     PlObject[] res = Main.apply("MyClass::instance_meth", this, param1);
+        #     PlInt p1 = new PlInt(param1);
+        #     PlObject[] res = Main.apply("MyClass::instance_meth", this, p1);
         #     return res[0].to_Int();
         # }
         # public Int class_meth(Int param1) throws Exception {
@@ -123,7 +135,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $_;
-                    $class->{extends} ? emit_java_extends($class) : ()
+                    $class->{extends} ? emit_java_extends($class, \%java_classes) : ()
             }
             values %java_classes
       ))
