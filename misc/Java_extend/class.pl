@@ -1,3 +1,5 @@
+# "extends" example
+
 package JavaObject {
     import => 'java.lang.Object',
 }
