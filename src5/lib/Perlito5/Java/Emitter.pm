@@ -38,6 +38,25 @@ package Perlito5::Java;
     sub get_java_var_info {
         return \%Java_var;
     }
+    sub set_java_class_defaults {
+        my ($perl_package, $java_import) = @_;
+        # import              => 'full.path.Class',   # Java class path
+        # perl_package        => 'The::Class',        # Perl package name
+        # java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
+        # perl_to_java        => 'to_TheClass',       # generated, can be overridden
+        # java_native_to_perl => 'pClass',            # generated
+        #
+        my $Java_class = Perlito5::Java::get_java_class_info();
+        my @parts = split /\./, $java_import;
+        $Java_class->{$perl_package}->{java_type} //= $parts[-1];
+        $Java_class->{$perl_package}->{java_native_to_perl} //= 'p' . $Java_class->{$perl_package}->{java_type};
+        # "List<String>" becomes "PlList_String_"
+        $Java_class->{$perl_package}->{java_native_to_perl} =~ s/[<>]/_/g;
+        my $perl_to_java = $perl_package;
+        $perl_to_java =~ s/:://g;
+        $Java_class->{$perl_package}->{perl_to_java} //= "to_${perl_to_java}";
+        $Java_class->{$perl_package}->{perl_package} = $perl_package;
+    }
 
     our %Java_loop_label;
     sub get_java_loop_label {
@@ -945,21 +964,9 @@ package Perlito5::AST::CompUnit;
 
 
                     if ($Java_class->{$class}->{import}) {
-                        # import              => 'full.path.Class',   # Java class path
-                        # perl_package        => 'The::Class',        # Perl package name
-                        # java_type           => 'Class',             # generated, can be overridden: 'Class<String>'
-                        # perl_to_java        => 'to_TheClass',       # generated, can be overridden
-                        # java_native_to_perl => 'pClass',            # generated
-                        #
-                        my @parts = split /\./, $Java_class->{$class}->{import};
-                        $Java_class->{$class}->{java_type} //= $parts[-1];
-                        $Java_class->{$class}->{java_native_to_perl} //= 'p' . $Java_class->{$class}->{java_type};
-                        # "List<String>" becomes "PlList_String_"
-                        $Java_class->{$class}->{java_native_to_perl} =~ s/[<>]/_/g;
-                        my $perl_to_java = $class;
-                        $perl_to_java =~ s/:://g;
-                        $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
-                        $Java_class->{$class}->{perl_package} = $class;
+                        Perlito5::Java::set_java_class_defaults(
+                            $class, $Java_class->{$class}->{import},
+                        );
                     }
                     elsif ($Java_class->{$class}->{extends}) {
                         # extends => 'JavaObject',              # Perl package name (a class imported from Java)
@@ -993,12 +1000,9 @@ package Perlito5::AST::CompUnit;
 
                         my $perl_to_java = $class;
                         $perl_to_java =~ s/:://g;
-                        $Java_class->{$class}->{java_type} //= $perl_to_java;
-                        $Java_class->{$class}->{java_native_to_perl} //= 'p' . $Java_class->{$class}->{java_type};
-                        # "List<String>" becomes "PlList_String_"
-                        $Java_class->{$class}->{java_native_to_perl} =~ s/[<>]/_/g;
-                        $Java_class->{$class}->{perl_to_java} //= "to_${perl_to_java}";
-                        $Java_class->{$class}->{perl_package} = $class;
+                        Perlito5::Java::set_java_class_defaults(
+                            $class, $perl_to_java,
+                        );
 
                         # warn Data::Dumper::Dumper $Java_class->{$class};
                         # warn "'extends' not implemented";
