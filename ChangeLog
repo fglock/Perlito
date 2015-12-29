@@ -1,4 +1,6 @@
--Java
+- Tests:
+-- Travis-ci integration https://travis-ci.org/fglock/Perlito added by fredericorecsky
+- Java:
 -- implemented string match in list context
 -- closure fixes: captured variables in for-loop; context
 -- implement return followed by comma-separated list
