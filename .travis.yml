@@ -1,0 +1,16 @@
+language: perl
+perl:
+- "5.18"
+install:
+- sudo apt-get update
+- sudo apt-get install nodejs
+- sudo apt-get install java-common
+before_script:
+- make build-5to5
+script:
+- make build-5js build-5browser build-5to6browser
+- make test-5java
+notifications:
+    email:
+    - travis+cartas@frederico.me
+
