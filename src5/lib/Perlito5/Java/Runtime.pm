@@ -73,9 +73,16 @@ sub emit_java_extends {
             push @out, "        return;";
         }
         else {
-            my $type = $java_classes->{$decl->[-1]}
-              or die "Java class '$decl->[-1]' is not imported";
-            push @out, "        return res[0].$type->{perl_to_java}();";
+            my $type_name = $decl->[-1];
+            if ($type_name eq "String") {
+                # TODO - make this more general
+                push @out, "        return res[0].toString();";
+            }
+            else {
+                my $type = $java_classes->{$type_name}
+                  or die "Java class '$decl->[-1]' is not imported";
+                push @out, "        return res[0].$type->{perl_to_java}();";
+            }
         }
 
         # public Int instance_meth(Int param1) {
@@ -1811,8 +1818,7 @@ EOT
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
-                    ($class->{import} || $class->{extends}) && $java_class_name ne "String"
-                    ? 
+                    $class->{import} || $class->{extends} ? 
 "    public PlObject set(${java_class_name}[] stuffs) {
         this.a.clear();
         // \@x = ${java_class_name}[] native;

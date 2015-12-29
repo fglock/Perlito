@@ -1,11 +1,11 @@
 package J::Date   { import => "java.util.Date" };
-package J::String { import => "java.lang.String" };
+# package J::String { import => "java.lang.String" };
 
 package My::Date {
     extends => 'J::Date',
     methods => [
-        toString => {
-            decl => [ "public", "J::String" ],
+        extra_data => {
+            decl => [ "public", "String" ],
             args => [],
             code => "main::date_string",
         },
@@ -15,15 +15,13 @@ package My::Date {
 package main;
 
 sub date_string {
-    my $s = J::String->new("Hello");
-    return $s;
+    return "Hello";
 }
 
 my J::Date $j_date = J::Date->new();
 my $s1 = $j_date->toString();
 my My::Date $date = My::Date->new();
-my J::String $j_str = $date->toString();
-my $s2 = $j_str->toString();
+my $s2 = $date->extra_data();
 
 print $s1, " ", $s2, "\n";   # date / hello
 
