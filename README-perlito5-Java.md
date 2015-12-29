@@ -63,39 +63,36 @@ Extending a Java class with Perl
 --------------------------------
 
 ~~~perl
-    package My::Object { import => "java.lang.Object" }
-    package My::Stuff  { import => "java.lang.Stuff" }
-
-    package My::X {
-        extends   => "My::Object",
+    # import the original Java class
+    package J::Date   { import => "java.util.Date" };
+    
+    # create and import the extended class
+    package My::Date {
+        extends => 'J::Date',
         methods => [
-          mymeth => {
-              decl => ["public", "My::Stuff"],
-              args => ["My::Stuff"],
-              code => "main::abc"
-          },
-          classmeth => {
-              decl => [ "public", "static", "void" ],
-              args => [],
-              code => "main::abc"
-          }
-        ];
+            toString => {
+                decl => [ "public", "String" ],     # public method that returns String
+                args => [],                         # no arguments
+                code => "main::my_date_string",     # implemented in Perl, see below
+            },
+        ],
     }
     
     package main;
     
-    sub abc {
-        my ($self, $stuff) = @_;
-        if (ref($self)) {
-            # instance method
-        }
-        else {
-            # class method
-        }
+    # Perl implementation for My::Date->toString()
+    sub my_date_string {
+        my $self = shift;
+        print "date_string: self is $self\n";       # prints date_string: self is My::Date(0x27ce2dd4)
+        return "Hello";
     }
-
-    my My::x $x = My::x->new();
-    $x->mymeth();
+    
+    my J::Date $j_date = J::Date->new();
+    my $s1 = $j_date->toString();   # original class
+    my My::Date $date = My::Date->new();
+    my $s2 = $date->toString();     # extended class
+    
+    print $s1, " ", $s2, "\n";   # prints date and "Hello"
 ~~~
 
 
