@@ -1028,7 +1028,7 @@ package Perlito5::AST::CompUnit;
 
         $str .= Perlito5::Java::emit_wrap_java(-1,
              "class Main {",
-               [ "public static void main(String[] args) throws Exception {",
+               [ "public static void main(String[] args) {",
                    [ "PlEnv.init(args);",
                      "int want = PlCx.VOID;",
                      "try {",
@@ -1051,13 +1051,13 @@ package Perlito5::AST::CompUnit;
                    ],
                  "}",
                ],
-               [ "public static void init() throws Exception {",
+               [ "public static void init() {",
                  [
                     "main(new String[]{});"
                  ],
                  "}",
                ],
-               [ "public static PlObject[] apply(String functionName, String... args) throws Exception {",
+               [ "public static PlObject[] apply(String functionName, String... args) {",
                  [
                      "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
@@ -1073,7 +1073,7 @@ package Perlito5::AST::CompUnit;
                  ],
                  "}",
                ],
-               [ "public static PlObject[] apply(String functionName, PlObject... args) throws Exception {",
+               [ "public static PlObject[] apply(String functionName, PlObject... args) {",
                  [
                      "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",

@@ -78,12 +78,12 @@ sub emit_java_extends {
             push @out, "        return res[0].$type->{perl_to_java}();";
         }
 
-        # public Int instance_meth(Int param1) throws Exception {
+        # public Int instance_meth(Int param1) {
         #     PlInt p1 = new PlInt(param1);
         #     PlObject[] res = Main.apply("MyClass::instance_meth", this, p1);
         #     return res[0].to_Int();
         # }
-        # public Int class_meth(Int param1) throws Exception {
+        # public Int class_meth(Int param1) {
         #     PlObject[] res = Main.apply("MyClass::class_meth", param1);
         #     return res[0].to_Int();
         # }
