@@ -27,7 +27,6 @@ sub emit_java_extends {
     #     class_meth => {
     #         decl => [ "public", "static" ],
     #         return => "Int",
-    #         throws => [ "IOException" ],
     #         args => [ "Int" ],     # class name is added to the Perl method arguments
     #         code => "MyClass::class_meth",
     #     },
