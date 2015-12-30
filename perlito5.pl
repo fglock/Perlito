@@ -17312,13 +17312,8 @@ use feature 'say';
                     }
                     else {
                         my $type_name = $decl->[-1];
-                        if ($type_name eq 'String') {
-                            push(@out, '        return res[0].toString();')
-                        }
-                        else {
-                            my $type = $java_classes->{$type_name} or die('Java class ' . chr(39) . $decl->[-1] . chr(39) . ' is not imported');
-                            push(@out, '        return res[0].' . $type->{'perl_to_java'} . '();')
-                        }
+                        my $type = $java_classes->{$type_name} or die('Java class ' . chr(39) . $decl->[-1] . chr(39) . ' is not imported');
+                        push(@out, '        return res[0].' . $type->{'perl_to_java'} . '();')
                     }
                     push(@out, '    }')
                 }
