@@ -65,10 +65,16 @@ package Perlito5::Java;
             perl_to_java        => 'toString',
             perl_package        => 'String',
         };
+        $Java_class->{Long} = {
+            java_type           => 'Long',
+            java_native_to_perl => 'PlInt',
+            perl_to_java        => 'to_long',
+            perl_package        => 'Long',
+        };
         $Java_class->{Integer} = {
             java_type           => 'Integer',
             java_native_to_perl => 'PlInt',
-            perl_to_java        => 'to_int',
+            perl_to_java        => 'to_long',
             perl_package        => 'Integer',
         };
         $Java_class->{Boolean} = {
@@ -305,7 +311,7 @@ package Perlito5::Java;
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
                         (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
-                            ? 'to_double()' : 'to_int()');
+                            ? 'to_double()' : 'to_long()');
                 }
                 elsif ( $is_apply && exists $op_to_str{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').toString()';
@@ -386,7 +392,7 @@ package Perlito5::Java;
             else {
                 # TODO - this converts to "double" - it should be int/double depending on context
                 if ($type eq 'int') {
-                    return 'new PlInt(' . $cond->emit_java($level, $wantarray) . '.to_int())';
+                    return 'new PlInt(' . $cond->emit_java($level, $wantarray) . '.to_long())';
                 }
                 return 'new PlDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())';
             }
@@ -1155,7 +1161,7 @@ package Perlito5::AST::Int;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $v = $self->{int};
-        if ( $v > (2**31-1) ) {
+        if ( $v > (2**63-1) ) {
             return "new PlDouble(" . $v . ".0)";
         }
         if ( $v >= -2 && $v < 0) {
@@ -1164,7 +1170,7 @@ package Perlito5::AST::Int;
         if ( $v >= 0 && $v <= 2) {
             return "PlCx.INT" . abs($v);
         }
-        "new PlInt(" . $v . ")";
+        "new PlInt(" . $v . "L)";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -1604,7 +1610,7 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'runtime' ) {
                 return '(want == PlCx.LIST'
                     . ' ? ' . $s
-                    . ' : ' . $s . '.to_int()'
+                    . ' : ' . $s . '.to_long()'
                     . ')';
             }
             return $s;
@@ -1656,12 +1662,12 @@ package Perlito5::AST::Var;
                 return $s . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
             }
             if ( $wantarray eq 'scalar' ) {
-                return $s . '.to_int()';
+                return $s . '.to_long()';
             }
             if ( $wantarray eq 'runtime' ) {
                 return '(want'
                     . ' ? ' . $s
-                    . ' : ' . $s . '.to_int()'
+                    . ' : ' . $s . '.to_long()'
                     . ')';
             }
             return $s;
@@ -2259,12 +2265,12 @@ package Perlito5::AST::Apply;
         'chr' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlString((char)'
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long())'
         },
         'int' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long())'
         },
         'rand' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2279,7 +2285,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
               'PerlOp.srand('
             . ( $self->{arguments}->[0]
-              ? $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int()'
+              ? $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long()'
               : ''
               )
             . ')'
@@ -2297,38 +2303,38 @@ package Perlito5::AST::Apply;
         'infix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() % '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() % '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<>>>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() >>> '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() >>> '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<<<>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() << '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() << '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<^>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() ^ '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() ^ '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() & '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() & '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<|>' => sub {
             my ($self, $level, $wantarray) = @_;
               'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int() | '
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_int())'
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() | '
+            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<+>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2522,7 +2528,7 @@ package Perlito5::AST::Apply;
         },
         'prefix:<~>' => sub {
             my $self = $_[0];
-            'new PlInt(~' . Perlito5::Java::to_num( $self->{arguments}->[0] ) . '.to_int())';
+            'new PlInt(~' . Perlito5::Java::to_num( $self->{arguments}->[0] ) . '.to_long())';
         },
         'prefix:<->' => sub {
             my ($self, $level, $wantarray) = @_;
