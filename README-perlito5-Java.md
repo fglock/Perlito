@@ -107,6 +107,7 @@ Java value types don't need to be imported, but there must exist a Perl package:
 
 ~~~perl
     package String  { }
+    package Long    { }
     package Integer { }
     package Boolean { }
     package Short   { }

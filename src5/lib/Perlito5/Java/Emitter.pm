@@ -66,10 +66,16 @@ package Perlito5::Java;
             perl_to_java        => 'toString',
             perl_package        => 'String',
         };
+        $Java_class->{Long} = {
+            java_type           => 'Long',
+            java_native_to_perl => 'PlInt',
+            perl_to_java        => 'to_long',
+            perl_package        => 'Long',
+        };
         $Java_class->{Integer} = {
             java_type           => 'Integer',
             java_native_to_perl => 'PlInt',
-            perl_to_java        => 'to_int',
+            perl_to_java        => 'to_long',
             perl_package        => 'Integer',
         };
         $Java_class->{Boolean} = {
@@ -1863,6 +1869,12 @@ package Perlito5::AST::Var;
             }
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.to_long()';
+            }
+            if ( $wantarray eq 'runtime' ) {
+                return '(want'
+                    . ' ? ' . $s
+                    . ' : ' . $s . '.to_long()'
+                    . ')';
             }
             # TODO - return in the right context
             # TODO - local()-ize if needed
