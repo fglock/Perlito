@@ -43,8 +43,8 @@ Calling a Perl subroutine from Java
     }
 ~~~
 
-Importing a Java class into Perl and using typed variables
-----------------------------------------------------------
+Importing a Java class into Perl
+--------------------------------
 
 ~~~perl
     package Sample {
@@ -59,15 +59,19 @@ Importing a Java class into Perl and using typed variables
     my Array::Of::String $x = Array::Of::String->new();
 ~~~
 
-Java value types don't need to be imported, but there must exist a Perl package.
+Typed variables
+---------------
+
+Java value types don't need to be imported, but there must exist a Perl package:
 
 ~~~perl
-    package String { }
+    package String  { }
     package Integer { }
     package Boolean { }
-    package Double { }
-    package Short { }
-    package Byte { }
+    package Short   { }
+    package Byte    { }
+    package Double  { }
+    package Float   { }
     
     my String $x  = "abc";
     my Integer $y = 123;
@@ -433,7 +437,18 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
 
 
--- primitive types
+Primitive types
+---------------
+
+Perlito can't represent "Float" values (only Double):
+
+    my Float $b = 100.0;
+
+    Main.java:3282: incompatible types
+    found   : double
+    required: java.lang.Float
+
+Java types
 
     char, boolean, float, long, short, int, byte
 

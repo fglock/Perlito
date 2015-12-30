@@ -60,42 +60,47 @@ package Perlito5::Java;
     sub init_java_class {
         my $Java_class = Perlito5::Java::get_java_class_info();
         $Java_class->{String} = {
-            java_type => 'String',
+            java_type           => 'String',
             java_native_to_perl => 'PlString',
-            perl_to_java => 'toString',
-            perl_package => 'String',
+            perl_to_java        => 'toString',
+            perl_package        => 'String',
         };
         $Java_class->{Integer} = {
-            java_type => 'Integer',
+            java_type           => 'Integer',
             java_native_to_perl => 'PlInt',
-            perl_to_java => 'to_int',
-            perl_package => 'Integer',
+            perl_to_java        => 'to_int',
+            perl_package        => 'Integer',
         };
         $Java_class->{Boolean} = {
-            java_type => 'Boolean',
+            java_type           => 'Boolean',
             java_native_to_perl => 'PlBool',
-            perl_to_java => 'to_bool',
-            perl_package => 'Boolean',
+            perl_to_java        => 'to_bool',
+            perl_package        => 'Boolean',
         };
         $Java_class->{Double} = {
-            java_type => 'Double',
+            java_type           => 'Double',
             java_native_to_perl => 'PlDouble',
-            perl_to_java => 'to_double',
-            perl_package => 'Double',
+            perl_to_java        => 'to_double',
+            perl_package        => 'Double',
         };
         $Java_class->{Byte} = {
-            java_type => 'Byte',
+            java_type           => 'Byte',
             java_native_to_perl => 'PlInt',
-            perl_to_java => 'to_byte',
-            perl_package => 'Byte',
+            perl_to_java        => 'to_byte',
+            perl_package        => 'Byte',
         };
         $Java_class->{Short} = {
-            java_type => 'Short',
+            java_type           => 'Short',
             java_native_to_perl => 'PlInt',
-            perl_to_java => 'to_short',
-            perl_package => 'Short',
+            perl_to_java        => 'to_short',
+            perl_package        => 'Short',
         };
-
+        $Java_class->{Float} = {
+            java_type           => 'Float',
+            java_native_to_perl => 'PlDouble',
+            perl_to_java        => 'to_float',
+            perl_package        => 'Float',
+        };
     }
 
     our %Java_loop_label;

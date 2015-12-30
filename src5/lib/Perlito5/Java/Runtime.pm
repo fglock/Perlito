@@ -803,6 +803,10 @@ EOT
         }
         return (short)v;
     }
+    public float to_float() {
+        double v = this.to_double();
+        return (float)v;
+    }
     public int to_int() {
         PlCORE.die("error .to_int!");
         return 0;
