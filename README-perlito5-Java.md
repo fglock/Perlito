@@ -64,9 +64,14 @@ Java value types don't need to be imported, but there must exist a Perl package.
 ~~~perl
     package String { }
     package Integer { }
+    package Boolean { }
+    package Double { }
     
     my String $x  = "abc";
-    my Integer $y = 123
+    my Integer $y = 123;
+    # assigning a Java value to a Perl variable
+    my $v = Boolean->TRUE;
+    print "$v\n";   # 1
 ~~~
 
 Extending a Java class with Perl

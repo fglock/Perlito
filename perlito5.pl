@@ -14940,7 +14940,9 @@ use feature 'say';
                 sub Perlito5::Java::init_java_class {
                     my $Java_class = Perlito5::Java::get_java_class_info();
                     $Java_class->{'String'} = {'java_type' => 'String', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'toString', 'perl_package' => 'String'};
-                    $Java_class->{'Integer'} = {'java_type' => 'Integer', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_int', 'perl_package' => 'Integer'}
+                    $Java_class->{'Integer'} = {'java_type' => 'Integer', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_int', 'perl_package' => 'Integer'};
+                    $Java_class->{'Boolean'} = {'java_type' => 'Boolean', 'java_native_to_perl' => 'PlBool', 'perl_to_java' => 'to_bool', 'perl_package' => 'Boolean'};
+                    $Java_class->{'Double'} = {'java_type' => 'Double', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_double', 'perl_package' => 'Double'}
                 }
                 our %Java_loop_label;
                 sub Perlito5::Java::get_java_loop_label {

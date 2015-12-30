@@ -64,13 +64,25 @@ package Perlito5::Java;
             java_native_to_perl => 'PlString',
             perl_to_java => 'toString',
             perl_package => 'String',
-        }; 
+        };
         $Java_class->{Integer} = {
             java_type => 'Integer',
             java_native_to_perl => 'PlInt',
             perl_to_java => 'to_int',
             perl_package => 'Integer',
-        }; 
+        };
+        $Java_class->{Boolean} = {
+            java_type => 'Boolean',
+            java_native_to_perl => 'PlBool',
+            perl_to_java => 'to_bool',
+            perl_package => 'Boolean',
+        };
+        $Java_class->{Double} = {
+            java_type => 'Double',
+            java_native_to_perl => 'PlDouble',
+            perl_to_java => 'to_double',
+            perl_package => 'Double',
+        };
     }
 
     our %Java_loop_label;
