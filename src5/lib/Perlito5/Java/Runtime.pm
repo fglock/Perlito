@@ -30,9 +30,18 @@ sub emit_java_extends {
     #         code => "MyClass::class_meth",
     #     },
     # ],
+    # 'variables' => [
+    #
+    # ],
 
     my @out;
     push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+    while ( @{ $class->{variables} } ) {
+        my $method = shift @{ $class->{variables} };
+        my $data   = shift @{ $class->{variables} };
+        # TODO
+        #
+    }
     while ( @{ $class->{methods} } ) {
         my $method = shift @{ $class->{methods} };
         my $data   = shift @{ $class->{methods} };
