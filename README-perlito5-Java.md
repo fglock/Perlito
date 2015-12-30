@@ -454,10 +454,20 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
 
 
-Primitive types
+Value types
 ---------------
 
-Perlito can't represent "Float" values (only Double):
+Char
+
+    Not implemented
+
+Long
+
+    Not implemented
+
+Float
+
+    Perlito can't represent "Float" values (only Double):
 
     my Float $b = 100.0;
 
@@ -465,7 +475,7 @@ Perlito can't represent "Float" values (only Double):
     found   : double
     required: java.lang.Float
 
-Java types
+primitive Java types
 
     char, boolean, float, long, short, int, byte
 
