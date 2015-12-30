@@ -439,6 +439,36 @@ class PerlOp {
     private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
+    // objects
+    public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
+        PlString className;
+
+        // this is only valid for named methods
+        // coderef methods can be called on ANYTHING
+        if ( invocant.is_undef() ) {
+            PlCORE.die( "Can't call method \"" + method
+                + "\" on an undefined value" );
+        }
+
+        if ( !invocant.is_ref() ) {
+            className = invocant.toString();
+
+            if ( className.equals("") ) {
+                PlCORE.die( "Can't call method \"" + method
+                    + "\" without a package or object reference" );
+            }
+
+            // check if invocant is a string, so a class method is called
+            // otherwise
+            // TODO: make the messages bug-compatible with Perl
+            // Can't locate object method "X" via package "Y" (perhaps you forgot to load "Y"?)
+            // Can't call method "X" on unblessed reference
+            PlCORE.die( "Can't call method on a wrong object" );
+        }
+
+        return PlCx.UNDEF;
+    }
+
     // local()
     public static final PlObject push_local(PlHash container, String index) {
         local_stack.a.add(container);
