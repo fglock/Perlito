@@ -397,6 +397,23 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         @{ $native->values() }
         (TODO)
 
+    Array-deref in boolean context:
+        
+        Automatic call to ->hasNext on iterator reference in
+        boolean context. The idea is that instead
+        
+            while ($iterator->hasNext()) { ... }
+
+         we can type:
+
+            while (@$bar) { ... }
+
+         First, the @$bar dereferencing of native java list would obtain
+         an iterator reference and then due to having iterator reference in
+         boolean context, the call to hasNext() would autmatically happen.
+         That way we will be able to write idiomatic Perl loops on
+         native java Lists
+
     Native values in Perl expressions:
 
         in this case, we can just assign the value to PlLvalue
