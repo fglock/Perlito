@@ -1733,6 +1733,7 @@ class PlEnv {
 }
 class PlObject {
     public static final PlString REF = new PlString("");
+	public PlClass bless;
 
     public PlObject() {
     }
@@ -2018,9 +2019,6 @@ EOT
     public boolean is_hashref() {
         return false;
     }
-    public boolean is_coderef() {
-        return false;
-    }
     public PlString ref() {
 		return REF;
     }
@@ -2150,9 +2148,6 @@ EOT
 		PlCORE.die("Can't bless non-reference value");
 		return this;
     }
-    public PlClass blessed() {
-		return null;
-    }
     public PlObject scalar() {
         return this;
     }
@@ -2214,9 +2209,6 @@ class PlReference extends PlObject {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
-		return this.bless;
-    }
 
 	public PlString ref() {
 		if ( this.bless == null ) {
@@ -2230,11 +2222,6 @@ class PlReference extends PlObject {
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
-}
-class PlFileHandle extends PlReference {
-    public static final PlString REF = new PlString("GLOB");
-    public PrintStream outputStream;    // System.out, System.err
-    public InputStream inputStream;     // System.in
 }
 class PlRegex extends PlReference {
     public Pattern p;
@@ -2252,7 +2239,7 @@ class PlRegex extends PlReference {
     }
     public String toString() {
         // TODO - show flags
-        return this.original_string;
+        return this.p.toString();
     }
 }
 class PlClosure extends PlReference implements Runnable {
@@ -2272,20 +2259,6 @@ class PlClosure extends PlReference implements Runnable {
     public void run() {
         // run as a thread
         this.apply(PlCx.VOID, new PlArray());
-    }
-	public PlString ref() {
-		if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
-    public boolean is_coderef() {
-        return true;
-    }
-    public PlObject prototype() {
-        return this.prototype;
     }
 }
 class PlLvalueRef extends PlReference {
@@ -2371,9 +2344,6 @@ class PlArrayRef extends PlArray {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
-		return this.bless;
-    }
 	public PlString ref() {
 		if ( this.bless == null ) {
 			return REF;
@@ -2434,9 +2404,6 @@ class PlHashRef extends PlHash {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
-		return this.bless;
-    }
     public PlString ref() {
 		if ( this.bless == null ) {
 			return REF;
@@ -2459,9 +2426,6 @@ class PlClass {
 	public PlString className() {
 		return this.className;
 	}
-    public boolean is_undef() {
-        return this.className == null;
-    }
 }
 class PlLvalue extends PlObject {
     private PlObject o;
@@ -2483,6 +2447,10 @@ class PlLvalue extends PlObject {
     public PlLvalue(PlHash o) {
         // $a = %x
         this.o = o.scalar();
+    }
+
+    public PlObject bless(PlString className) {
+        return this.o.bless(className);
     }
     public PlObject get() {
         return this.o;
@@ -2770,12 +2738,6 @@ EOT
     }
     public PlObject scalar() {
         return this.o;
-    }
-    public PlObject bless(PlString className) {
-        return this.o.bless(className);
-    }
-    public PlClass blessed() {
-		return this.o.blessed();
     }
     public PlString ref() {
         return this.o.ref();

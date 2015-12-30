@@ -799,22 +799,7 @@ Tail-call
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
-Object-related
-
-    bless (DONE)
-    UNIVERSAL::
-        can
-        isa
-        DOES
-    AUTOLOAD
-    Scalar::blessed
-
-    TODO - unit tests
-    TODO - method dispatch (current impl doesn't look up classes in @INC)
-    TODO - method cache
-    TODO - invalidate method cache when subroutine changes or @INC changes
-
-Perl features
+    bless (blessing as labeling works, method dispatch doesn't)
 
     overload
     tie()

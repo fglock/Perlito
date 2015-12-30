@@ -8,7 +8,7 @@
 #   one liner:
 #   $ touch Main.class ; rm Main.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Main.java ; javac Main.java ; java Main
 #
-print "1..105\n";
+print "1..102\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -507,31 +507,10 @@ say "ok 100 - string reverse [$r]";
 print 'not ' unless $y[0] eq 'koza' and $y[1] eq 'lufa' and $y[2] eq 'ryba';
 say "ok 101 - sort {list} works: [ @a => @y ]";
 
-my $coderef = sub { 1; };
-print 'not ' unless ref $coderef eq 'CODE';
-say "ok 102 - coderef returns proper 'ref': " . ref $coderef;
-
 my $href = {};
 bless $href, "Test::More";
 print 'not ' unless ref $href eq 'Test::More';
-say "ok 103 - blessed hashref returns proper 'ref': " . ref $href;
-
-{
-	package Test::Methods;
-
-	sub do_own { return ref $_[0] ? ref $_[0] : $_[0] };
-}
-
-$href = {};
-my $result;
-bless $href, 'Test::Methods';
-$result = $href->do_own;
-print 'not ' unless $result eq 'Test::Methods';
-say "ok 104 - not inherited methods are being called properly on object: $result";
-
-$result = Test::Methods->do_own();
-print 'not ' unless $result eq 'Test::Methods';
-say "ok 105 - class methods are being called properly: $result";
+say "ok 102 - blessed hashref returns proper 'ref'";
 
 __END__
 
