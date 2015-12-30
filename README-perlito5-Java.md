@@ -581,11 +581,17 @@ Char
 
 Long
 
-    Not implemented
+    Perlito can't represent native "Long" values (only Int):
+
+    my Long $b = 100;
+
+    Main.java:3341: incompatible types
+    found   : int
+    required: java.lang.Long
 
 Float
 
-    Perlito can't represent "Float" values (only Double):
+    Perlito can't represent native "Float" values (only Double):
 
     my Float $b = 100.0;
 
