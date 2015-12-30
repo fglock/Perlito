@@ -2000,7 +2000,7 @@ package Perlito5::AST::Call;
         else {
             $meth = Perlito5::Java::escape_string($meth);
         }
-        return 'p5call(' . $invocant . ', ' 
+        return 'PerlOp.call(' . $invocant . ', ' 
                          . $meth . ', ' 
                          . Perlito5::Java::to_list($self->{arguments}) . ', '
                          . Perlito5::Java::to_context($wantarray)
