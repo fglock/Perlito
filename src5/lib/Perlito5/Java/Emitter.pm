@@ -988,12 +988,14 @@ package Perlito5::AST::CompUnit;
                         # extends => 'JavaObject',              # Perl package name (a class imported from Java)
                         # methods => [
                         #     instance_meth => {
-                        #         decl => [ "public", "Int" ],
+                        #         decl => [ "public" ],
+                        #         return => "Int",
                         #         args => [ "Int" ],     # this/$self is added to the Perl method arguments
                         #         code => "MyClass::instance_meth",
                         #     },
                         #     class_meth => {
-                        #         decl => [ "public", "static", "Int" ],
+                        #         decl => [ "public", "static" ],
+                        #         return => "Int",
                         #         args => [ "Int" ],     # class name is added to the Perl method arguments
                         #         code => "MyClass::class_meth",
                         #     },

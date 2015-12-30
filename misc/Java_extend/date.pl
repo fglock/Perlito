@@ -5,8 +5,9 @@ package My::Date {
     extends => 'J::Date',
     methods => [
         toString => {
-            decl => [ "public", "String" ],
+            decl => [ "public" ],
             args => [],
+            return => "String",
             code => "main::date_string",
         },
     ],

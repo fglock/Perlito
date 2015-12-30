@@ -34,8 +34,9 @@ sub emit_java_extends {
     while ( @{ $class->{methods} } ) {
         my $method = shift @{ $class->{methods} };
         my $data   = shift @{ $class->{methods} };
-        my $decl = $data->{decl};
-        my $code = $data->{code} or die "Java extends: missing 'code' argument in method '$method'";
+        my $decl   = $data->{decl};
+        my $code   = $data->{code}   or die "Java extends: missing 'code' argument in method '$method'";
+        my $return = $data->{return} or die "Java extends: missing 'return' argument in method '$method'";
         my @args;
         my $var = 0;
         for my $arg ( @{ $data->{args} } ) {
@@ -44,12 +45,12 @@ sub emit_java_extends {
             $var++;
         }
         my @java_decl = @$decl;
-        if ( $java_classes->{$decl->[-1]} ) {
-            my $type = $java_classes->{$decl->[-1]};
-            my $return_type = $type->{java_type};
-            $java_decl[-1] = $return_type;
+        my $return_type = $return;
+        if ( $return ne "void" ) {
+            my $type = $java_classes->{$return};
+            $return_type = $type->{java_type};
         }
-        push @out, "    @java_decl $method(" . join(", ", @args) . ") {";
+        push @out, "    @java_decl $return_type $method(" . join(", ", @args) . ") {";
 
         @args = ();
         if ( grep { $_ eq "static" } @$decl ) {
@@ -68,14 +69,13 @@ sub emit_java_extends {
         }
         push @out, "        PlObject[] res = Main.apply(\"$code\", " . join(", ", @args) . ");";
 
-        if ( grep { $_ eq "void" } @$decl ) {
+        if ( $return eq "void" ) {
             # void method
             push @out, "        return;";
         }
         else {
-            my $type_name = $decl->[-1];
-            my $type = $java_classes->{$type_name}
-              or die "Java class '$decl->[-1]' is not imported";
+            my $type = $java_classes->{$return}
+              or die "Java class '$return' is not imported";
             push @out, "        return res[0].$type->{perl_to_java}();";
         }
 

@@ -17275,6 +17275,7 @@ use feature 'say';
                     my $data = shift(@{$class->{'methods'}});
                     my $decl = $data->{'decl'};
                     my $code = $data->{'code'} or die('Java extends: missing ' . chr(39) . 'code' . chr(39) . ' argument in method ' . chr(39) . $method . chr(39));
+                    my $return = $data->{'return'} or die('Java extends: missing ' . chr(39) . 'return' . chr(39) . ' argument in method ' . chr(39) . $method . chr(39));
                     my @args;
                     my $var = 0;
                     for my $arg (@{$data->{'args'}}) {
@@ -17283,12 +17284,12 @@ use feature 'say';
                         $var++
                     }
                     my @java_decl = @{$decl};
-                    if ($java_classes->{$decl->[-1]}) {
-                        my $type = $java_classes->{$decl->[-1]};
-                        my $return_type = $type->{'java_type'};
-                        $java_decl[-1] = $return_type
+                    my $return_type = $return;
+                    if ($return ne 'void') {
+                        my $type = $java_classes->{$return};
+                        $return_type = $type->{'java_type'}
                     }
-                    push(@out, '    ' . join(${'"'}, @java_decl) . ' ' . $method . '(' . join(', ', @args) . ') {');
+                    push(@out, '    ' . join(${'"'}, @java_decl) . ' ' . $return_type . ' ' . $method . '(' . join(', ', @args) . ') {');
                     @args = ();
                     if (grep {
                         $_ eq 'static'
@@ -17305,14 +17306,11 @@ use feature 'say';
                         $var++
                     }
                     push(@out, '        PlObject[] res = Main.apply("' . $code . '", ' . join(', ', @args) . ');');
-                    if (grep {
-                        $_ eq 'void'
-                    } @{$decl}) {
+                    if ($return eq 'void') {
                         push(@out, '        return;')
                     }
                     else {
-                        my $type_name = $decl->[-1];
-                        my $type = $java_classes->{$type_name} or die('Java class ' . chr(39) . $decl->[-1] . chr(39) . ' is not imported');
+                        my $type = $java_classes->{$return} or die('Java class ' . chr(39) . $return . chr(39) . ' is not imported');
                         push(@out, '        return res[0].' . $type->{'perl_to_java'} . '();')
                     }
                     push(@out, '    }')

@@ -81,8 +81,9 @@ Extending a Java class with Perl
         extends => 'J::Date',
         methods => [
             toString => {
-                decl => [ "public", "String" ],     # public method that returns String
+                decl => [ "public" ],               # public method
                 args => [],                         # no arguments
+                return => "String",                 # returns String
                 code => "main::my_date_string",     # implemented in Perl, see below
             },
         ],
