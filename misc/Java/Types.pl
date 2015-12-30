@@ -17,11 +17,12 @@
       # TODO: automatic coercion from Perl to Java
       # $b = $pb;
     }
-    # {
-    #     my Short $b = 100;
-    #     my $pb = $b;
-    #     $b = $pb->to_short();
+    {
+        my Short $b = 100;
+        my $pb = $b;
+        $b = $pb->to_short();
 
-    #   # TODO: automatic coercion from Perl to Java
-    #   # $b = $pb;
-    # }
+      # TODO: automatic coercion from Perl to Java
+      # $b = $pb;
+    }
+
