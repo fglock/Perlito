@@ -4,6 +4,7 @@
     package Double { }
     package Byte { }
     package Short { }
+    package Float { }
 
     my String $x  = "abc";
     my Integer $y = 123;
@@ -21,6 +22,15 @@
         my Short $b = 100;
         my $pb = $b;
         $b = $pb->to_short();
+
+      # TODO: automatic coercion from Perl to Java
+      # $b = $pb;
+    }
+    {
+        my $v = 100;
+        my Float $b = $v->to_float();
+        my $pb = $b;
+        $b = $pb->to_float();
 
       # TODO: automatic coercion from Perl to Java
       # $b = $pb;

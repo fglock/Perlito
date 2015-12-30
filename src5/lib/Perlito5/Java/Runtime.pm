@@ -1777,6 +1777,10 @@ EOT
         }
         return (short)v;
     }
+    public float to_float() {
+        double v = this.to_double();
+        return (float)v;
+    }
     public int to_int() {
         long v = this.to_long();
         if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {

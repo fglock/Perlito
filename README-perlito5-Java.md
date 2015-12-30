@@ -100,18 +100,19 @@ Importing a Java class into Perl
     my Array::Of::String $x = Array::Of::String->new();
 ~~~
 
-Importing Java value types (Typed variables)
---------------------------------------------
+Typed variables
+---------------
 
 Java value types don't need to be imported, but there must exist a Perl package:
 
 ~~~perl
-    package String { }
+    package String  { }
     package Integer { }
     package Boolean { }
-    package Double { }
-    package Short { }
-    package Byte { }
+    package Short   { }
+    package Byte    { }
+    package Double  { }
+    package Float   { }
     
     my String $x  = "abc";
     my Integer $y = 123;
@@ -570,64 +571,10 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
 
 
--- native expressions TODO
-
-~~~perl
-    $x++         # autoincrement
-
-    $x = $x + 1  # assignment
-                 # TODO - cast arguments to "number", "string" or "boolean" depending on operator
-
-    print $x     # print
-~~~
-
-    test case:
-
-~~~perl
-    package Integer {}
-    my Integer $count;
-    my Integer $i = 0;
-    while ( $i < 400 ) {
-        my Integer $j = 0;
-        while ( $j < 400 ) {
-            my Integer $k = 0;
-            while ( $k < 400 ) {
-                $k = $k + 1;
-                $count = $count + 1;
-            }
-            $j = $j + 1;
-        }
-        $i = $i + 1;
-    }
-    my $c = $count;
-    print "done $c\n";
-~~~
-
-
-Value types
+Primitive types
 ---------------
 
-Object
-
-    Not implemented; there is a commented-out patch in Perlito5::Java::Emitter
-
-Character
-
-    Perlito can't represent native "Character" values (only String)
-
-Long
-
-    Perlito can't represent native "Long" values (only Int):
-
-    my Long $b = 100;
-
-    Main.java:3341: incompatible types
-    found   : int
-    required: java.lang.Long
-
-Float
-
-    Perlito can't represent native "Float" values (only Double):
+Perlito can't represent "Float" values (only Double):
 
     my Float $b = 100.0;
 
@@ -635,7 +582,7 @@ Float
     found   : double
     required: java.lang.Float
 
-primitive Java types
+Java types
 
     char, boolean, float, long, short, int, byte
 
