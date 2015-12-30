@@ -66,6 +66,8 @@ Java value types don't need to be imported, but there must exist a Perl package.
     package Integer { }
     package Boolean { }
     package Double { }
+    package Short { }
+    package Byte { }
     
     my String $x  = "abc";
     my Integer $y = 123;
