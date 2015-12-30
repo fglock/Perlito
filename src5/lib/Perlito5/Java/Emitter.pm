@@ -3277,7 +3277,7 @@ package Perlito5::AST::Apply;
         },
         'grep' => sub {
             my ($self, $level, $wantarray) = @_;
-            my @in  = @{$self->{arguments}};
+            my @in = @{$self->{arguments}};
 
             my $fun;
 
@@ -3302,6 +3302,15 @@ package Perlito5::AST::Apply;
             'PerlOp.grep(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
                 . Perlito5::Java::to_context($wantarray) . ')';
+        },
+        'bless' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $ref = shift @in;
+            my $class = shift @in;
+
+            return $ref->emit_java( $level, "scalar" )
+                . '.bless(' . $class->emit_java( $level, "scalar" ) . ')';
         },
         'sort' => sub {
             my ($self, $level, $wantarray) = @_;
