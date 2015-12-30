@@ -1173,17 +1173,23 @@ class PerlOp {
 
     // objects
     public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
-        PlString className;
 
-        // this is only valid for named methods
-        // coderef methods can be called on ANYTHING
+        if ( method.is_coderef() ) {
+            // coderef methods can be called on ANY invocant
+            //  $m = sub {...};
+            //  $a->$m
+            args.unshift(invocant);
+            return method.apply(context, args);
+        }
+
+        // "named" method (not a CODE)
         if ( invocant.is_undef() ) {
             PlCORE.die( "Can't call method \"" + method
                 + "\" on an undefined value" );
         }
 
         if ( !invocant.is_ref() ) {
-            className = invocant.toString();
+            String className = invocant.toString();
 
             if ( className.equals("") ) {
                 PlCORE.die( "Can't call method \"" + method
@@ -1971,6 +1977,9 @@ EOT
     public boolean is_hashref() {
         return false;
     }
+    public boolean is_coderef() {
+        return false;
+    }
     public PlString ref() {
 		return REF;
     }
@@ -2211,6 +2220,9 @@ class PlClosure extends PlReference implements Runnable {
     public void run() {
         // run as a thread
         this.apply(PlCx.VOID, new PlArray());
+    }
+    public boolean is_coderef() {
+        return true;
     }
 }
 class PlLvalueRef extends PlReference {
