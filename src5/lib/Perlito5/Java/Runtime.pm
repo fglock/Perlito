@@ -18,12 +18,14 @@ sub emit_java_extends {
     # 'perl_to_java' => 'to_MyX',
     # 'methods' => [
     #     instance_meth => {
-    #         decl => [ "public", "Int" ],
+    #         decl => [ "public" ],
+    #         return => "Int",
     #         args => [ "Int" ],     # this/$self is added to the Perl method arguments
     #         code => "MyClass::instance_meth",
     #     },
     #     class_meth => {
-    #         decl => [ "public", "static", "Int" ],
+    #         decl => [ "public", "static" ],
+    #         return => "Int",
     #         args => [ "Int" ],     # class name is added to the Perl method arguments
     #         code => "MyClass::class_meth",
     #     },

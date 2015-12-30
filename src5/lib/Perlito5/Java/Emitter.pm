@@ -1022,26 +1022,7 @@ package Perlito5::AST::CompUnit;
                     }
                     elsif ($Java_class->{$class}->{extends}) {
                         # extends => 'JavaObject',              # Perl package name (a class imported from Java)
-                        # methods => [
-                        #     instance_meth => {
-                        #         decl => [ "public" ],
-                        #         return => "Int",
-                        #         args => [ "Int" ],     # this/$self is added to the Perl method arguments
-                        #         code => "MyClass::instance_meth",
-                        #     },
-                        #     class_meth => {
-                        #         decl => [ "public", "static" ],
-                        #         return => "Int",
-                        #         args => [ "Int" ],     # class name is added to the Perl method arguments
-                        #         code => "MyClass::class_meth",
-                        #     },
-                        # ],
-                        # # --- internals ---
-                        # perl_package        => 'The::Class',        # this Perl package name
-                        # java_type           => 'TheClass',          # generated, can be overridden
-                        # perl_to_java        => 'to_TheClass',       # generated, can be overridden
-                        # java_native_to_perl => 'pTheClass',         # generated
-                        # extends_java_type   => 'java.lang.Object',  # Java class being extended; generated
+                        # methods => [ ... ]
 
                         my $extended = $Java_class->{ $Java_class->{$class}->{extends} };
                         if ($extended) {
