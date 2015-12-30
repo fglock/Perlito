@@ -7,6 +7,7 @@
 -- new API to call Perl from Java
 -- new API to extend Java classes using Perl
 -- new API to access Java value types
+-- internal integer number representation is now "long"
 
 9.016 cpan:Perlito5  2015-12-21
 - Docs:

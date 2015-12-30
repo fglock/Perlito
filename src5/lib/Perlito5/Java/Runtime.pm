@@ -532,12 +532,12 @@ class PerlOp {
         return new PlDouble(s * random.nextDouble());
     }
 
-    public static final int[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
+    public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
         if (ctx == PlCx.LIST) {
-            int start = _start.to_int(),
-                end   = _end.to_int();
-            int size = Math.max(0, end - start + 1);
-            int[] ret = new int[size];
+            long start = _start.to_long(),
+                 end   = _end.to_long();
+            int size = Math.max(0, (int)(end - start + 1));
+            long[] ret = new long[size];
             for (int i = 0; i < size; ++i) {
                 ret[i] = start + i;
             }
@@ -789,15 +789,22 @@ EOT
     // public String toString() {
     //     return this.toString();
     // }
+    public int to_int() {
+        long v = this.to_long();
+        if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to int");
+        }
+        return (int)v;
+    }
     public byte to_byte() {
-        int v = this.to_int();
+        long v = this.to_long();
         if (v > Byte.MAX_VALUE || v < Byte.MIN_VALUE) {
             PlCORE.die("numeric overflow converting to byte");
         }
         return (byte)v;
     }
     public short to_short() {
-        int v = this.to_int();
+        long v = this.to_long();
         if (v > Short.MAX_VALUE || v < Short.MIN_VALUE) {
             PlCORE.die("numeric overflow converting to short");
         }
@@ -807,8 +814,8 @@ EOT
         double v = this.to_double();
         return (float)v;
     }
-    public int to_int() {
-        PlCORE.die("error .to_int!");
+    public long to_long() {
+        PlCORE.die("error .to_long!");
         return 0;
     }
     public PlObject end_of_array_index() {
@@ -1046,10 +1053,10 @@ EOT
         return PlCx.INT1;
     }
     public PlObject neg() {
-        return new PlInt(-this.to_int());
+        return new PlInt(-this.to_long());
     }
     public PlObject abs() {
-        int c = this.to_int();
+        long c = this.to_long();
         return new PlInt(c < 0 ? -c : c);
     }
 
@@ -1174,7 +1181,8 @@ EOT
         return b.num_cmp2(this);
     }
     public PlObject num_cmp2(PlObject b) {
-        int c = new Integer(b.to_int()).compareTo(this.to_int());
+        Long blong = new Long(b.to_long());
+        int c = blong.compareTo(this.to_long());
         return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
     }
 EOT
@@ -1193,7 +1201,7 @@ EOT
 "
         :
 "    public PlObject ${perl}2(PlObject s) {
-        return new ${returns}( s.to_int() ${native} this.to_int() );
+        return new ${returns}( s.to_long() ${native} this.to_long() );
     }
 "       )
             }
@@ -1601,8 +1609,8 @@ EOT
     public String toString() {
         return this.o.toString();
     }
-    public int to_int() {
-        return this.o.to_int();
+    public long to_long() {
+        return this.o.to_long();
     }
     public double to_double() {
         return this.o.to_double();
@@ -1726,7 +1734,7 @@ class PlArray extends PlObject {
             }
             if (s.is_array()) {
                 // @x = ( @x, @y );
-                for (int i = 0; i < s.to_int(); i++) {
+                for (int i = 0; i < s.to_long(); i++) {
                     aa.add(s.aget(i));
                 }
             }
@@ -1745,7 +1753,7 @@ class PlArray extends PlObject {
         }
         if (s.is_array()) {
             // @x = ( @x, @y );
-            for (int i = 0; i < s.to_int(); i++) {
+            for (int i = 0; i < s.to_long(); i++) {
                 this.a.add(s.aget(i));
             }
         }
@@ -1771,6 +1779,23 @@ class PlArray extends PlObject {
         this.each_iterator = aa.each_iterator;
         this.a = aa.a;
     }
+
+    public PlObject set(long[] longs) {
+        this.a.clear();
+        // @x = long[] native;
+        for(long i : longs){
+            this.a.add(new PlInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(long[] longs) {
+        PlArray aa = new PlArray();
+        aa.set(longs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
+
     public PlObject set(int[] ints) {
         this.a.clear();
         // @x = int[] native;
@@ -2221,6 +2246,9 @@ EOT
         }
         return sb.toString();
     }
+    public long to_long() {
+        return this.a.size();
+    }
     public int to_int() {
         return this.a.size();
     }
@@ -2231,7 +2259,7 @@ EOT
         return new PlInt(this.a.size() - 1);
     }
     public double to_double() {
-        return 0.0 + this.to_int();
+        return 0.0 + this.to_long();
     }
     public boolean to_bool() {
         return (this.a.size() > 0);
@@ -2624,12 +2652,12 @@ EOT
         // TODO
         return "" + this.hashCode();
     }
-    public int to_int() {
+    public long to_long() {
         // TODO
         return this.hashCode();
     }
     public double to_double() {
-        return 0.0 + this.to_int();
+        return 0.0 + this.to_long();
     }
     public boolean to_bool() {
         return true;
@@ -2664,7 +2692,7 @@ class PlUndef extends PlObject {
     public PlObject length() {
         return PlCx.UNDEF;
     }
-    public int to_int() {
+    public long to_long() {
         return 0;
     }
     public double to_double() {
@@ -2688,7 +2716,7 @@ class PlBool extends PlObject {
     public PlBool(boolean i) {
         this.i = i;
     }
-    public int to_int() {
+    public long to_long() {
         if (this.i) {
             return 1;
         }
@@ -2746,11 +2774,14 @@ class PlBool extends PlObject {
     }
 }
 class PlInt extends PlObject {
-    private int i;
-    public PlInt(int i) {
+    private long i;
+    public PlInt(long i) {
         this.i = i;
     }
-    public int to_int() {
+    public PlInt(int i) {
+        this.i = (long)i;
+    }
+    public long to_long() {
         return this.i;
     }
     public double to_double() {
@@ -2782,8 +2813,8 @@ class PlDouble extends PlObject {
     public PlDouble(double i) {
         this.i = i;
     }
-    public int to_int() {
-        return (int)(this.i);
+    public long to_long() {
+        return (long)(this.i);
     }
     public double to_double() {
         return this.i;
@@ -2997,8 +3028,8 @@ class PlString extends PlObject {
         }
         return PlCx.INT0;
     }
-    public int to_int() {
-        return this.parse().to_int();
+    public long to_long() {
+        return this.parse().to_long();
     }
     public double to_double() {
         return this.parse().to_double();

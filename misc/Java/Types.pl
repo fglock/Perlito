@@ -5,6 +5,7 @@
     package Byte { }
     package Short { }
     package Float { }
+    package Long { }
 
     my String $x  = "abc";
     my Integer $y = 123;
@@ -31,6 +32,15 @@
         my Float $b = $v->to_float();
         my $pb = $b;
         $b = $pb->to_float();
+
+      # TODO: automatic coercion from Perl to Java
+      # $b = $pb;
+    }
+    {
+        my $v = 100;
+        my Long  $b = $v->to_long();
+        my $pb = $b;
+        $b = $pb->to_long();
 
       # TODO: automatic coercion from Perl to Java
       # $b = $pb;
