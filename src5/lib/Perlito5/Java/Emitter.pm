@@ -145,6 +145,19 @@ package Perlito5::Java;
             perl_to_java        => 'to_long',
             perl_package        => 'byte',
         };
+        $Java_class->{Byte} = {
+            java_type => 'Byte',
+            java_native_to_perl => 'PlInt',
+            perl_to_java => 'to_byte',
+            perl_package => 'Byte',
+        };
+        $Java_class->{Short} = {
+            java_type => 'Short',
+            java_native_to_perl => 'PlInt',
+            perl_to_java => 'to_short',
+            perl_package => 'Short',
+        };
+
     }
 
     our %Java_loop_label;

@@ -1763,6 +1763,20 @@ EOT
     // public String toString() {
     //     return this.toString();
     // }
+    public byte to_byte() {
+        int v = this.to_int();
+        if (v > Byte.MAX_VALUE || v < Byte.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to byte");
+        }
+        return (byte)v;
+    }
+    public short to_short() {
+        int v = this.to_int();
+        if (v > Short.MAX_VALUE || v < Short.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to short");
+        }
+        return (short)v;
+    }
     public int to_int() {
         long v = this.to_long();
         if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {

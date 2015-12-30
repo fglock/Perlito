@@ -106,15 +106,12 @@ Importing Java value types (Typed variables)
 Java value types don't need to be imported, but there must exist a Perl package:
 
 ~~~perl
-    package String    { }
-    package Long      { }
-    package Integer   { }
-    package Boolean   { }
-    package Short     { }
-    package Byte      { }
-    package Double    { }
-    package Float     { }
-    package Character { }
+    package String { }
+    package Integer { }
+    package Boolean { }
+    package Double { }
+    package Short { }
+    package Byte { }
     
     my String $x  = "abc";
     my Integer $y = 123;
