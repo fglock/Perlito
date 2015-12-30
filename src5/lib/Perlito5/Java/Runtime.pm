@@ -1172,81 +1172,33 @@ class PerlOp {
     private static Random random = new Random();
 
     // objects
-    // coderef methods can be called on ANY invocant
-    //  $m = sub {...};
-    //  $a->$m
     public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
-        if ( method.is_coderef() ) {
-            args.unshift(invocant);
-            return method.apply(context, args);
-        }
-        else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
-        }
-        else {
-            return call( invocant, method.toString(), args, context );
-        }
-    }
-    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {
-        if ( method.is_coderef() ) {
-            args.unshift( new PlString(invocant) );
-            return method.apply(context, args);
-        }
-        else if ( method.is_lvalue() ) {
-            return call( invocant, method.get(), args, context );
-        }
-        else {
-            return call( invocant, method.toString(), args, context );
-        }
-    }
-    // Intermediate calls, which have to be dispatched properly
-    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
+        PlString className;
+
+        // this is only valid for named methods
+        // coderef methods can be called on ANYTHING
         if ( invocant.is_undef() ) {
             PlCORE.die( "Can't call method \"" + method
                 + "\" on an undefined value" );
-            return PlCx.UNDEF;
         }
 
-        if ( invocant.is_lvalue() ) {
-            invocant = invocant.get();
+        if ( !invocant.is_ref() ) {
+            className = invocant.toString();
+
+            if ( className.equals("") ) {
+                PlCORE.die( "Can't call method \"" + method
+                    + "\" without a package or object reference" );
+            }
+
+            // check if invocant is a string, so a class method is called
+            // otherwise
+            // TODO: make the messages bug-compatible with Perl
+            // Can't locate object method "X" via package "Y" (perhaps you forgot to load "Y"?)
+            // Can't call method "X" on unblessed reference
+            PlCORE.die( "Can't call method on a wrong object" );
         }
 
-        PlClass pClass = invocant.blessed();
-
-        if ( pClass == null ) {
-            PlCORE.die( "Can't call method \"" + method
-                + "\" on unblessed reference" );
-            return PlCx.UNDEF;
-        }
-        else {
-            return call( pClass.className().toString(), method, args, context );
-        }
-    }
-    public static final PlObject call( String invocant, String method, PlArray args, int context ) {
-        if ( invocant.equals("") ) {
-            PlCORE.die( "Can't call method \"" + method
-                + "\" on an undefined value" );
-            return PlCx.UNDEF;
-        }
-
-        PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.get(invocant + "::" + method);
-        }
-        else {
-            // fully qualified method name
-            methodCode = PlV.get(method);
-        }
-
-        if (methodCode.is_undef()) {
-            PlCORE.die( "Can't locate object method \"" + method
-                + "\" via package \"" + invocant
-                + "\" (perhaps you forgot to load \"" + invocant + "\"?" );
-            return PlCx.UNDEF;
-        }
-
-        args.unshift( new PlString(invocant) );
-        return methodCode.apply(context, args);
+        return PlCx.UNDEF;
     }
 
     // local()
