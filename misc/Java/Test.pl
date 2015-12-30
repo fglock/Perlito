@@ -8,7 +8,7 @@
 #   one liner:
 #   $ touch Main.class ; rm Main.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Main.java ; javac Main.java ; java Main
 #
-print "1..100\n";
+print "1..102\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
 
@@ -507,6 +507,10 @@ say "ok 100 - string reverse [$r]";
 print 'not ' unless $y[0] eq 'koza' and $y[1] eq 'lufa' and $y[2] eq 'ryba';
 say "ok 101 - sort {list} works: [ @a => @y ]";
 
+my $href = {};
+bless $href, "Test::More";
+print 'not ' unless ref $href eq 'Test::More';
+say "ok 102 - blessed hashref returns proper 'ref'";
 
 __END__
 

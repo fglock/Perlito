@@ -676,7 +676,7 @@ Tail-call
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
-    bless
+    bless (blessing as labeling works, method dispatch doesn't)
 
     overload
     tie()
