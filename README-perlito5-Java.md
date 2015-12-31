@@ -670,7 +670,7 @@ Overflow from int to double
         $i + subr();  # subr() returns pObject instead of pInt
     this needs more tests
 
-    internal code should use "long" instead of "int"
+    internal code should use "long" instead of "int" (DONE)
 
 Tail-call
 ---------
@@ -682,8 +682,22 @@ Tail-call
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
-    bless
-        TODO - method dispatch (current impl doesn't look up classes in @INC)
+Object-related
+
+    bless (DONE)
+    UNIVERSAL::
+        can
+        isa
+        DOES
+    AUTOLOAD
+    Scalar::blessed
+
+    TODO - unit tests
+    TODO - method dispatch (current impl doesn't look up classes in @INC)
+    TODO - method cache
+    TODO - invalidate method cache when subroutine changes or @INC changes
+
+Perl features
 
     overload
     tie()
