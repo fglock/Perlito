@@ -854,12 +854,12 @@ package Perlito5::Java::LexicalBlock;
                     [ "throw e;" ],
                 "}",
                 "catch(PlDieException e) {",
-                    [ 'PlV.set("main|v_@", e.ret);',
+                    [ 'PlV.set("main::v_@", e.ret);',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
                 "catch(Exception e) {",
-                    [ 'PlV.set("main|v_@", new PlString(e.getMessage()));',
+                    [ 'PlV.set("main::v_@", new PlString(e.getMessage()));',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
@@ -1111,9 +1111,8 @@ package Perlito5::AST::CompUnit;
                ],
                [ "public static PlObject[] apply(String functionName, String... args) {",
                  [
-                     "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
@@ -1127,9 +1126,8 @@ package Perlito5::AST::CompUnit;
                ],
                [ "public static PlObject[] apply(String functionName, PlObject... args) {",
                  [
-                     "String name = functionName.replace(\"::\", \"|\");",
                      "PlArray list = new PlArray(args);",
-                     "PlObject result = PlV.get(name).apply(PlCx.LIST, list);",
+                     "PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);",
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
@@ -1618,7 +1616,7 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $index = Perlito5::Java::escape_string($namespace . '|' . $table->{$sigil} . $str_name);
+        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             return "PlV.get$local(" . $index . ')';
         }
@@ -1675,7 +1673,7 @@ package Perlito5::AST::Var;
             return Perlito5::Java::escape_string( $namespace );
         }
 
-        my $index = Perlito5::Java::escape_string($namespace . '|' . $table->{$sigil} . $str_name);
+        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
             return "PlV.set$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
@@ -3488,10 +3486,10 @@ package Perlito5::AST::Apply;
                     die "Java::inline needs a string constant";
                 }
             }
-            $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{namespace} . '|' . $code ) . ')'
+            $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'
         }
         else {
-            $code = 'PlV.get(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '|' . $code ) . ')'
+            $code = 'PlV.get(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code ) . ')'
         }
 
         my $sig;
@@ -4020,7 +4018,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'PlV.set(' . Perlito5::Java::escape_string($self->{namespace} . '|' . $self->{name} ) . ", " . $s . ')'
+            return 'PlV.set(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", " . $s . ')'
         }
         else {
             return $s;

@@ -243,8 +243,8 @@ class PlCx {
     public static final PlString STDIN  = new PlString("STDIN");
     public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
-    public static final String  ARGV   = "main|List_ARGV";
-    public static final String  ENV    = "main|Hash_ENV";
+    public static final String  ARGV   = "main::List_ARGV";
+    public static final String  ENV    = "main::Hash_ENV";
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);
 
@@ -511,7 +511,7 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        PlObject methodCode = PlV.get(invocant + "|" + method);
+        PlObject methodCode = PlV.get(invocant + "::" + method);
 
         if (methodCode.is_undef()) {
             PlCORE.die( "Can't locate object method \"" + method
@@ -730,7 +730,7 @@ class PerlOp {
     public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.get("main|v__");
+        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
@@ -747,7 +747,7 @@ class PerlOp {
     public static final PlObject map(PlClosure c, PlArray a, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.get("main|v__");
+        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             v__ref.set(a.aget(i));
@@ -759,8 +759,8 @@ class PerlOp {
     public static final PlObject sort(PlClosure c, PlArray a, int wantarray, String pckg) {
         PlArray ret = new PlArray(a);
         int size = a.to_int();
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pckg + "|v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pckg + "|v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pckg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pckg + "::v_b");
         PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
@@ -854,7 +854,7 @@ class PlEnv {
     public static final void init(String[] args) {
         PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
         PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
-        PlV.set("main|v_" + (char)34, new PlString(" "));         // $" = " "
+        PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
     }
 }
 class PlObject {
