@@ -80,9 +80,7 @@ sub get_email_pattern {
 # Main:
 package main;
 
-my $mail = shift @ARGV;
-
-my P::User $user = P::User->new('John', $mail->toString() );
+my P::User $user = P::User->new('John', 'john_cool@cool.com');
 
 my $n = $user->getName();
 my $e = $user->getEmail();
