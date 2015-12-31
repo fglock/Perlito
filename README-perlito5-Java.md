@@ -92,6 +92,7 @@ Extending a Java class with Perl
     # create and import the extended class
     package My::Date {
         extends => 'J::Date',
+        'Java::inline' => " // ... Java code ... \n",
         methods => [
             toString => {
                 decl => [ "public" ],               # public method

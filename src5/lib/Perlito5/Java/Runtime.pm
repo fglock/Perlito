@@ -16,6 +16,7 @@ sub emit_java_extends {
     # 'java_type' => 'MyX',
     # 'perl_package' => 'My::X',
     # 'perl_to_java' => 'to_MyX',
+    # 'Java::inline' => " // ... Java code ... \n",
     # 'methods' => [
     #     instance_meth => {
     #         decl => [ "public" ],
@@ -48,6 +49,7 @@ sub emit_java_extends {
 
     my @out;
     push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+    push @out, $class->{'Java::inline'} if $class->{'Java::inline'};
     while ( @{ $class->{variables} } ) {
         my $method = shift @{ $class->{variables} };
         my $data   = shift @{ $class->{variables} };
