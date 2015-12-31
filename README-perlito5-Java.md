@@ -460,6 +460,10 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 Value types
 ---------------
 
+Object
+
+    Not implemented; there is a commented-out patch in Perlito5::Java::Emitter
+
 Character
 
     Perlito can't represent native "Character" values (only String)
