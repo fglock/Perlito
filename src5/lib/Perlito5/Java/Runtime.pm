@@ -46,9 +46,6 @@ sub emit_java_extends {
     #         type => "String",
     #     },
     # ],
-    # 'variables' => [
-    #
-    # ],
 
     my @out;
     push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
