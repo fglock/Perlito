@@ -65,14 +65,15 @@ Typed variables
 Java value types don't need to be imported, but there must exist a Perl package:
 
 ~~~perl
-    package String  { }
-    package Long    { }
-    package Integer { }
-    package Boolean { }
-    package Short   { }
-    package Byte    { }
-    package Double  { }
-    package Float   { }
+    package String    { }
+    package Long      { }
+    package Integer   { }
+    package Boolean   { }
+    package Short     { }
+    package Byte      { }
+    package Double    { }
+    package Float     { }
+    package Character { }
     
     my String $x  = "abc";
     my Integer $y = 123;
@@ -458,9 +459,9 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 Value types
 ---------------
 
-Char
+Character
 
-    Not implemented
+    Perlito can't represent native "Character" values (only String)
 
 Long
 
