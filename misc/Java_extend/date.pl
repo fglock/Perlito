@@ -3,6 +3,7 @@ package J::Date   { import => "java.util.Date" };
 
 package My::Date {
     extends => 'J::Date',
+    'Java::inline' => " // ... Java code ... \n",
     methods => [
         toString => {
             decl => [ "public" ],
