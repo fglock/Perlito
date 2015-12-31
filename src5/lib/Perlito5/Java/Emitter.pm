@@ -108,6 +108,13 @@ package Perlito5::Java;
             perl_to_java        => 'to_float',
             perl_package        => 'Float',
         };
+        # TODO
+        # $Java_class->{Object} = {
+        #     java_type           => 'Object',
+        #     java_native_to_perl => 'PlObject',
+        #     perl_to_java        => 'to_object',
+        #     perl_package        => 'Object',
+        # };
     }
 
     our %Java_loop_label;

@@ -1691,7 +1691,6 @@ class PlEnv {
 }
 class PlObject {
     public static final PlString REF = new PlString("");
-	public PlClass bless;
 
     public PlObject() {
     }
