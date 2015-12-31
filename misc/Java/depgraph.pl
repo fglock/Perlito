@@ -6,10 +6,21 @@ use warnings;
 use Data::Dumper;
 use Graph::Easy;
 
+use feature 'say';
+
 # get from STDIN
-my @classes = map {
-    chomp; [grep { $_ ne "class" && $_ ne "{" and $_ ne "" } split(/\s/, $_)]
-} (<>);
+my @classes =
+    map {
+        [ $_->[1], $_->[2] || (), $_->[3] || () ]
+    }
+    grep {
+        ($_->[0] eq 'class')
+    }
+    map { 
+        chomp; [
+            grep { $_ ne "{" and $_ ne "" } split(/\s/, $_)
+        ]
+    } (<>);
 
 my $graph = Graph::Easy->new();
 
@@ -28,8 +39,6 @@ for my $cl (@classes) {
 my @nodes = map { { name => $_, extends => $nodes{$_} } } keys %nodes;
 
 add_to_tree(\%tree, \@nodes);
-
-# print Dumper(\%tree);
 
 print $graph->as_svg();
 
