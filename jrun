@@ -35,7 +35,7 @@ cp Main.java ./jout/Main.java
 pushd ./jout
 
     javac Main.java
-    java Main
+    java Main 'john@doe.com'
 
 popd
 
