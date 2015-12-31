@@ -454,47 +454,74 @@ class PerlOp {
     private static Random random = new Random();
 
     // objects
+    // coderef methods can be called on ANY invocant
+    //  $m = sub {...};
+    //  $a->$m
     public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
-        // coderef methods can be called on ANY invocant
-        //  $m = sub {...};
-        //  $a->$m
-        // the code below takes care of all the OTHER cases
-        if ( !method.is_coderef() ) {
-            // "named" method (not a CODE)
-            if ( invocant.is_undef() ) {
-                PlCORE.die( "Can't call method \"" + method
-                    + "\" on an undefined value" );
-                return PlCx.UNDEF;
-            }
-
-            String className;
-            boolean is_class_method = false;
-
-            // check if invocant is a string, so a class method is called
-            if ( !invocant.is_ref() ) {
-                className = invocant.toString();
-                is_class_method = true;
-
-                if ( className.equals("") ) {
-                    PlCORE.die( "Can't call method \"" + method
-                        + "\" without a package or object reference" );
-                    return PlCx.UNDEF;
-                }
-            }
-            // object method
-            else {
-                className = invocant.ref().toString();
-            }
-            // otherwise
-            // TODO: make the messages bug-compatible with Perl
-            // Can't locate object method "X" via package "Y" (perhaps you forgot to load "Y"?)
-            // Can't call method "X" on unblessed reference
-           PlCORE.die( "Can't call method on a wrong object" );
-           return PlCx.UNDEF;
+        if ( method.is_coderef() ) {
+            args.unshift(invocant);
+            return method.apply(context, args);
+        }
+        else if ( method.is_lvalue() ) {
+            return call( invocant, method.get(), args, context );
+        }
+        else {
+            return call( invocant, method.toString(), args, context );
+        }
+    }
+    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {
+        if ( method.is_coderef() ) {
+            args.unshift( new PlString(invocant) );
+            return method.apply(context, args);
+        }
+        else if ( method.is_lvalue() ) {
+            return call( invocant, method.get(), args, context );
+        }
+        else {
+            return call( invocant, method.toString(), args, context );
+        }
+    }
+    // Intermediate calls, which have to be dispatched properly
+    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
+        if ( invocant.is_undef() ) {
+            PlCORE.die( "Can't call method \"" + method
+                + "\" on an undefined value" );
+            return PlCx.UNDEF;
         }
 
-        args.unshift(invocant);
-        return method.apply(context, args);
+        if ( invocant.is_lvalue() ) {
+            invocant = invocant.get();
+        }
+
+        PlClass pClass = invocant.blessed();
+
+        if ( pClass == null ) {
+            PlCORE.die( "Can't call method \"" + method
+                + "\" on unblessed reference" );
+            return PlCx.UNDEF;
+        }
+        else {
+            return call( pClass.className().toString(), method, args, context );
+        }
+    }
+    public static final PlObject call( String invocant, String method, PlArray args, int context ) {
+        if ( invocant.equals("") ) {
+            PlCORE.die( "Can't call method \"" + method
+                + "\" on an undefined value" );
+            return PlCx.UNDEF;
+        }
+
+        PlObject methodCode = PlV.get(invocant + "|" + method);
+
+        if (methodCode.is_undef()) {
+            PlCORE.die( "Can't locate object method \"" + method
+                + "\" via package \"" + invocant
+                + "\" (perhaps you forgot to load \"" + invocant + "\"?" );
+            return PlCx.UNDEF;
+        }
+
+        args.unshift( new PlString(invocant) );
+        return methodCode.apply(context, args);
     }
 
     // local()
@@ -1544,6 +1571,9 @@ class PlClass {
 	public PlString className() {
 		return this.className;
 	}
+    public boolean is_undef() {
+        return this.className == null;
+    }
 }
 class PlLvalue extends PlObject {
     private PlObject o;
@@ -1565,10 +1595,6 @@ class PlLvalue extends PlObject {
     public PlLvalue(PlHash o) {
         // $a = %x
         this.o = o.scalar();
-    }
-
-    public PlObject bless(PlString className) {
-        return this.o.bless(className);
     }
     public PlObject get() {
         return this.o;
@@ -1845,9 +1871,14 @@ EOT
     public PlObject abs() {
         return this.o.abs();
     }
-
     public PlObject scalar() {
         return this.o;
+    }
+    public PlObject bless(PlString className) {
+        return this.o.bless(className);
+    }
+    public PlClass blessed() {
+		return this.o.blessed();
     }
     public PlString ref() {
         return this.o.ref();
