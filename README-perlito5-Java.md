@@ -678,7 +678,8 @@ Tail-call
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
-    bless (blessing as labeling works, method dispatch doesn't)
+    bless
+        TODO - method dispatch (current impl doesn't look up classes in @INC)
 
     overload
     tie()
