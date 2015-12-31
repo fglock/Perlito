@@ -17,4 +17,25 @@
 #       ./jrun
 #
 #   from $PERLITO_ROOT
-perl perlito5.pl -Isrc5/lib -I. -It -Cjava main.pl > Main.java ; cp Main.java ./jout/Main.java; cd ./jout; javac Main.java ; java Main
+
+# mkdir jout
+# mkdir jout/org
+# mkdir jout/org/perlito
+mkdir -p jout/org/perlito/examples
+
+cp misc/Java_extend/override.java jout/org/perlito/examples/JUser.java
+pushd jout/org/perlito/examples
+    javac JUser.java
+popd
+
+cp misc/Java_extend/override.pl main.pl
+perl perlito5.pl -Isrc5/lib -I. -It -Cjava main.pl > Main.java
+
+cp Main.java ./jout/Main.java
+pushd ./jout
+
+    javac Main.java
+    java Main
+
+popd
+
