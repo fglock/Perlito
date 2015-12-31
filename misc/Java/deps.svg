@@ -1,0 +1,322 @@
+<svg width="1099" height="781" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Generated at Thu Dec 31 15:46:03 2015 by:
+  Graph::Easy v0.75
+  Graph::Easy::As_svg v0.23
+-->
+
+<title>Untitled graph</title>
+<defs>
+ <!-- open arrow -->
+ <g id="ah" stroke-linecap="round" stroke-width="1">
+  <line x1="-8" y1="-4" x2="1" y2="0" />
+  <line x1="1" y1="0" x2="-8" y2="4" />
+ </g>
+
+ <!-- class definitions -->
+ <style type="text/css"><![CDATA[
+ .edge {
+  font-size: 13px;
+  stroke: black;
+  text-align: center;
+ }
+ .graph {
+  font-size: 16px;
+  text-align: center;
+ }
+ .node {
+  font-size: 16px;
+  text-align: center;
+ }
+ ]]></style>
+</defs>
+
+<!-- graph background with border (mainly for printing) -->
+<rect x="0.5" y="0.5" width="1097" height="779" fill="white" stroke="white" />
+
+<g id="11" class="edge">
+ <!-- from PlObject to PlBool -->
+ <!-- horizontal -->
+ <line x1="741.24" y1="229" x2="796.56" y2="229" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" x="797.56" y="229"/>
+</g>
+
+<g id="13" class="edge">
+ <!-- from PlObject to PlInt -->
+ <!-- horizontal -->
+ <line x1="412.44" y1="139.4" x2="467.76" y2="139.4" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(411.44 139.4)rotate(180)"/>
+</g>
+
+<g id="15" class="edge">
+ <!-- from PlObject to PlLvalue -->
+ <!-- horizontal -->
+ <line x1="412.44" y1="229" x2="467.76" y2="229" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(411.44 229)rotate(180)"/>
+</g>
+
+<g id="17" class="edge">
+ <!-- from PlObject to PlReference -->
+ <!-- horizontal -->
+ <line x1="412.44" y1="276.8" x2="467.76" y2="276.8" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(411.44 276.8)rotate(180)"/>
+</g>
+
+<g id="19" class="edge">
+ <!-- from PlReference to pPUser -->
+ <!-- horizontal -->
+ <line x1="213" y1="331.2" x2="276.36" y2="331.2" stroke="#000000" />
+
+ <!-- horizontal -->
+ <line x1="95" y1="331.2" x2="213" y2="331.2" stroke="#000000" />
+
+ <!-- north/east corner -->
+ <g stroke="#000000">
+  <line x1="56" y1="306.6" x2="56" y2="331.7" />
+  <line x1="55.5" y1="331.2" x2="95" y2="331.2" />
+ </g>
+ <use stroke="#000000" xlink:href="#ah" transform="translate(56 305.6)rotate(-90)"/>
+</g>
+
+<g id="21" class="edge">
+ <!-- from PlReference to PlRegex -->
+ <!-- horizontal -->
+ <line x1="221.04" y1="385.6" x2="276.36" y2="385.6" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(220.04 385.6)rotate(180)"/>
+</g>
+
+<g id="23" class="edge">
+ <!-- from PlReference to PlLvalueRef -->
+ <!-- horizontal -->
+ <line x1="221.04" y1="276.8" x2="276.36" y2="276.8" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(220.04 276.8)rotate(180)"/>
+</g>
+
+<g id="25" class="edge">
+ <!-- from PlReference to PlClosure -->
+ <!-- vertical -->
+ <line x1="343.9" y1="414.4" x2="343.9" y2="464.6" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(343.9 465.6)rotate(90)"/>
+</g>
+
+<g id="27" class="edge">
+ <!-- from PlReference to pJUser -->
+ <!-- south/west corner -->
+ <g stroke="#000000">
+  <line x1="439.6" y1="385.1" x2="439.6" y2="408" />
+  <line x1="411.44" y1="385.6" x2="440.1" y2="385.6" />
+ </g>
+
+ <!-- vertical -->
+ <line x1="439.6" y1="408" x2="439.6" y2="511" stroke="#000000" />
+
+ <!-- north/west corner -->
+ <g stroke="#000000">
+  <line x1="439.6" y1="511" x2="439.6" y2="529.5" />
+  <line x1="412.44" y1="529" x2="440.1" y2="529" />
+ </g>
+ <use stroke="#000000" xlink:href="#ah" transform="translate(411.44 529)rotate(180)"/>
+</g>
+
+<g id="29" class="edge">
+ <!-- from PlObject to PlString -->
+ <!-- vertical -->
+ <line x1="681.2" y1="60.4" x2="681.2" y2="110.6" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(681.2 59.4)rotate(-90)"/>
+</g>
+
+<g id="31" class="edge">
+ <!-- from PlObject to PlDouble -->
+ <!-- horizontal -->
+ <line x1="741.24" y1="276.8" x2="796.56" y2="276.8" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" x="797.56" y="276.8"/>
+</g>
+
+<g id="33" class="edge">
+ <!-- from PlObject to PlHash -->
+ <!-- vertical -->
+ <line x1="516.3" y1="305.6" x2="516.3" y2="355.8" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" transform="translate(516.3 356.8)rotate(90)"/>
+</g>
+
+<g id="35" class="edge">
+ <!-- from PlHash to PlHashRef -->
+ <!-- horizontal -->
+ <line x1="564.84" y1="385.6" x2="620.16" y2="385.6" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" x="621.16" y="385.6"/>
+</g>
+
+<g id="37" class="edge">
+ <!-- from PlObject to PlArray -->
+ <!-- horizontal -->
+ <line x1="741.24" y1="139.4" x2="796.56" y2="139.4" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" x="797.56" y="139.4"/>
+</g>
+
+<g id="39" class="edge">
+ <!-- from PlArray to PlArrayRef -->
+ <!-- horizontal -->
+ <line x1="902.64" y1="139.4" x2="957.96" y2="139.4" stroke="#000000" />
+ <use stroke="#000000" xlink:href="#ah" x="958.96" y="139.4"/>
+</g>
+
+<g id="9" class="edge">
+ <!-- from PlObject to PlUndef -->
+ <!-- horizontal -->
+ <line x1="741.24" y1="184.2" x2="804.6" y2="184.2" stroke="#000000" />
+
+ <!-- horizontal -->
+ <line x1="804.6" y1="184.2" x2="966" y2="184.2" stroke="#000000" />
+
+ <!-- south/west corner -->
+ <g stroke="#000000">
+  <line x1="1023.5" y1="183.7" x2="1023.5" y2="201.12" />
+  <line x1="966" y1="184.2" x2="1024" y2="184.2" />
+ </g>
+ <use stroke="#000000" xlink:href="#ah" transform="translate(1023.5 202.12)rotate(90)"/>
+</g>
+
+<g id="0" class="node">
+ <!-- PlCx, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="655.5" />
+ <text x="516" y="679" style="font-family:serif" fill="#000000" text-anchor="middle">PlCx</text>
+</g>
+
+<g id="1" class="node">
+ <!-- PlCORE, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="583.5" />
+ <text x="516" y="607" style="font-family:serif" fill="#000000" text-anchor="middle">PlCORE</text>
+</g>
+
+<g id="2" class="node">
+ <!-- PerlOp, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="547.5" />
+ <text x="516" y="571" style="font-family:serif" fill="#000000" text-anchor="middle">PerlOp</text>
+</g>
+
+<g id="3" class="node">
+ <!-- PlV, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="727.5" />
+ <text x="516" y="751" style="font-family:serif" fill="#000000" text-anchor="middle">PlV</text>
+</g>
+
+<g id="4" class="node">
+ <!-- PlEnv, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="691.5" />
+ <text x="516" y="715" style="font-family:serif" fill="#000000" text-anchor="middle">PlEnv</text>
+</g>
+
+<g id="5" class="node">
+ <!-- PlObject, rect -->
+ <rect fill="#ffffff" height="181.2" stroke="#000000" width="258.4" x="475.3" y="117.5" />
+ <text x="604" y="214" style="font-family:serif" fill="#000000" text-anchor="middle">PlObject</text>
+</g>
+
+<g id="6" class="node">
+ <!-- PlClass, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="619.5" />
+ <text x="516" y="643" style="font-family:serif" fill="#000000" text-anchor="middle">PlClass</text>
+</g>
+
+<g id="7" class="node">
+ <!-- Main, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="82" x="475.3" y="17.5" />
+ <text x="516" y="41" style="font-family:serif" fill="#000000" text-anchor="middle">Main</text>
+</g>
+
+<g id="8" class="node">
+ <!-- PlUndef, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="114" x="966.5" y="207.1" />
+ <text x="1023" y="235" style="font-family:serif" fill="#000000" text-anchor="middle">PlUndef</text>
+</g>
+
+<g id="10" class="node">
+ <!-- PlBool, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="90" x="805.1" y="207.1" />
+ <text x="850" y="235" style="font-family:serif" fill="#000000" text-anchor="middle">PlBool</text>
+</g>
+
+<g id="12" class="node">
+ <!-- PlInt, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="120" x="283.9" y="117.5" />
+ <text x="343" y="145" style="font-family:serif" fill="#000000" text-anchor="middle">PlInt</text>
+</g>
+
+<g id="14" class="node">
+ <!-- PlLvalue, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="120" x="283.9" y="207.1" />
+ <text x="343" y="235" style="font-family:serif" fill="#000000" text-anchor="middle">PlLvalue</text>
+</g>
+
+<g id="16" class="node">
+ <!-- PlReference, rect -->
+ <rect fill="#ffffff" height="152.6" stroke="#000000" width="120" x="283.9" y="254.9" />
+ <text x="343" y="337" style="font-family:serif" fill="#000000" text-anchor="middle">PlReference</text>
+</g>
+
+<g id="18" class="node">
+ <!-- pPUser, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="77" x="17.5" y="254.9" />
+ <text x="56" y="282" style="font-family:serif" fill="#000000" text-anchor="middle">pPUser</text>
+</g>
+
+<g id="20" class="node">
+ <!-- PlRegex, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="117" x="95.5" y="363.7" />
+ <text x="154" y="391" style="font-family:serif" fill="#000000" text-anchor="middle">PlRegex</text>
+</g>
+
+<g id="22" class="node">
+ <!-- PlLvalueRef, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="117" x="95.5" y="254.9" />
+ <text x="154" y="282" style="font-family:serif" fill="#000000" text-anchor="middle">PlLvalueRef</text>
+</g>
+
+<g id="24" class="node">
+ <!-- PlClosure, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="120" x="283.9" y="472.5" />
+ <text x="343" y="496" style="font-family:serif" fill="#000000" text-anchor="middle">PlClosure</text>
+</g>
+
+<g id="26" class="node">
+ <!-- pJUser, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="120" x="283.9" y="511.5" />
+ <text x="343" y="535" style="font-family:serif" fill="#000000" text-anchor="middle">pJUser</text>
+</g>
+
+<g id="28" class="node">
+ <!-- PlString, rect -->
+ <rect fill="#ffffff" height="35" stroke="#000000" width="105" x="628.7" y="17.5" />
+ <text x="681" y="41" style="font-family:serif" fill="#000000" text-anchor="middle">PlString</text>
+</g>
+
+<g id="30" class="node">
+ <!-- PlDouble, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="90" x="805.1" y="254.9" />
+ <text x="850" y="282" style="font-family:serif" fill="#000000" text-anchor="middle">PlDouble</text>
+</g>
+
+<g id="32" class="node">
+ <!-- PlHash, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="82" x="475.3" y="363.7" />
+ <text x="516" y="391" style="font-family:serif" fill="#000000" text-anchor="middle">PlHash</text>
+</g>
+
+<g id="34" class="node">
+ <!-- PlHashRef, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="105" x="628.7" y="363.7" />
+ <text x="681" y="391" style="font-family:serif" fill="#000000" text-anchor="middle">PlHashRef</text>
+</g>
+
+<g id="36" class="node">
+ <!-- PlArray, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="90" x="805.1" y="117.5" />
+ <text x="850" y="145" style="font-family:serif" fill="#000000" text-anchor="middle">PlArray</text>
+</g>
+
+<g id="38" class="node">
+ <!-- PlArrayRef, rect -->
+ <rect fill="#ffffff" height="43.8" stroke="#000000" width="114" x="966.5" y="117.5" />
+ <text x="1023" y="145" style="font-family:serif" fill="#000000" text-anchor="middle">PlArrayRef</text>
+</g>
+
+</svg>
