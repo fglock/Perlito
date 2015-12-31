@@ -1341,6 +1341,14 @@ class PlClosure extends PlReference implements Runnable {
         // run as a thread
         this.apply(PlCx.VOID, new PlArray());
     }
+	public PlString ref() {
+		if ( this.bless == null ) {
+			return REF;
+		}
+		else {
+			return this.bless.className();
+		}
+	}
     public boolean is_coderef() {
         return true;
     }
