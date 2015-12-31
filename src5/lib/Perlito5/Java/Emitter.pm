@@ -114,12 +114,12 @@ package Perlito5::Java;
         #     perl_to_java        => 'to_object',
         #     perl_package        => 'Object',
         # };
-        # $Java_class->{Character} = {
-        #     java_type           => 'Character',
-        #     java_native_to_perl => 'PlString',
-        #     perl_to_java        => 'to_character',
-        #     perl_package        => 'Character',
-        # };
+        $Java_class->{Character} = {
+            java_type           => 'Character',
+            java_native_to_perl => 'PlString',
+            perl_to_java        => 'to_character',
+            perl_package        => 'Character',
+        };
     }
 
     our %Java_loop_label;
