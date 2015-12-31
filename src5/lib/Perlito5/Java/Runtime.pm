@@ -29,9 +29,21 @@ sub emit_java_extends {
     #         args => [ "Int" ],     # class name is added to the Perl method arguments
     #         code => "MyClass::class_meth",
     #     },
+    #
+    # TODO: constructors, variables
+    #
+    #     MyX => {
+    #         decl => [ "public" ],
+    #         return => undef,       # a constructor doesn't return anything
+    #         args => [],
+    #         Java::inline => '{ super(123) }',
+    #     },
     # ],
     # 'variables' => [
-    #
+    #     myName => {
+    #         decl => [ "public" ],
+    #         type => "String",
+    #     },
     # ],
 
     my @out;
