@@ -1246,6 +1246,9 @@ EOT
 		PlCORE.die("Can't bless non-reference value");
 		return this;
     }
+    public PlClass blessed() {
+		return null;
+    }
     public PlObject scalar() {
         return this;
     }
@@ -1306,6 +1309,9 @@ class PlReference extends PlObject {
     public PlReference bless(PlString className) {
         this.bless = new PlClass(className);
         return this;
+    }
+    public PlClass blessed() {
+		return this.bless;
     }
 
 	public PlString ref() {
@@ -1450,6 +1456,9 @@ class PlArrayRef extends PlArray {
         this.bless = new PlClass(className);
         return this;
     }
+    public PlClass blessed() {
+		return this.bless;
+    }
 	public PlString ref() {
 		if ( this.bless == null ) {
 			return REF;
@@ -1509,6 +1518,9 @@ class PlHashRef extends PlHash {
     public PlHashRef bless(PlString className) {
         this.bless = new PlClass(className);
         return this;
+    }
+    public PlClass blessed() {
+		return this.bless;
     }
     public PlString ref() {
 		if ( this.bless == null ) {
