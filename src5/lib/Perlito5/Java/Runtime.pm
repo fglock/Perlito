@@ -809,9 +809,7 @@ class PlEnv {
     }
 }
 class PlObject {
-    // extends java object ???
     public static final PlString REF = new PlString("");
-	public PlClass bless;
 
     public PlObject() {
     }
