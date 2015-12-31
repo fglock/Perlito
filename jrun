@@ -1,0 +1,20 @@
+# Requires jout folder to exist in Perlito root. Put all Java classes there.
+#
+# Example:
+#
+#   Java classes, like
+#
+#       class org.perlito.examples.JUser
+#
+#   should be in 
+#
+#   $PERLITO_ROOT/jout/org/perlito/examples/JUser.class
+#
+#   Perl code shoud be in $PERLITO_ROOT/main.pl
+#
+#   then just execute
+#
+#       ./jrun
+#
+#   from $PERLITO_ROOT
+perl perlito5.pl -Isrc5/lib -I. -It -Cjava main.pl > Main.java ; cp Main.java ./jout/Main.java; cd ./jout; javac Main.java ; java Main
