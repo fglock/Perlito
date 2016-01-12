@@ -1980,13 +1980,11 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Perlito5::AST::Var')
-                   && $v->sigil eq '$'
-                   )
-                {
-                    return '(delete ' . $v->emit_javascript2() . '[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
-                }
-                return '(delete ' . $v->emit_javascript2() . '._hash_[' . $arg->autoquote($arg->{index_exp})->emit_javascript2($level) . '])';
+                my $v_js = $v->emit_javascript2();
+                my $key_js = $arg->autoquote($arg->{index_exp})->emit_javascript2($level);
+                my $suffix = ((  $v->isa('Perlito5::AST::Var') && $v->sigil eq '$') ? '' : '._hash_');
+
+                return "((function (v,k) { var ret = v[k]; delete (v[k]); return ret;})(" . $v_js . $suffix . ',' . $key_js . "))";
             }
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
