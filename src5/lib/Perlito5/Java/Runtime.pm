@@ -776,7 +776,7 @@ class PerlOp {
         PlArray ret = new PlArray();
         Matcher matcher = pat.p.matcher(s.toString());
         while (matcher.find()) {
-            for (int i = 0; i <= matcher.groupCount(); i++) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
                 ret.push(matcher.group(i));
             }
         }
