@@ -10,9 +10,9 @@ Perlito can compile Perl 5 or Perl 6 programs into one of the 'backend'
 languages:
 
   - Perl 5 to Perl 5
-  - Perl 5 to Javascript
+  - Perl 5 to JavaScript
   - Perl 6 to Perl 5
-  - Perl 6 to Javascript
+  - Perl 6 to JavaScript
   - Perl 6 to Python 2.6
 
 The following compilers are work in progress - some tests pass, some tests fail.
@@ -54,7 +54,7 @@ See Also
 
   - [README-perlito5](README-perlito5.md)
 
-      - [README-perlito5-Javascript](README-perlito5-Javascript.md)
+      - [README-perlito5-JavaScript](README-perlito5-JavaScript.md)
 
       - [README-perlito5-Java](README-perlito5-Java.md)
 

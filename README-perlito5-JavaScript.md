@@ -1,8 +1,8 @@
 
-Perlito5-in-Javascript 
+Perlito5-in-JavaScript
 ======================
 
-Perlito5-in-Javascript - what works
+Perlito5-in-JavaScript - what works
 --------------
 
 
@@ -35,7 +35,7 @@ Perlito5-in-Javascript - what works
 
 
 
-Perlito5-in-Javascript differences from "perl"
+Perlito5-in-JavaScript differences from "perl"
 --------------
 
 - "~~" smartmatch is not implemented
@@ -47,7 +47,7 @@ Perlito5-in-Javascript differences from "perl"
 - Perlito5 in the browser doesn't implement many of the perl I/O operators;
   Perlito5 in node.js should implement most of the I/O operators.
 
-- Javascript doesn't implement reference counting;
+- JavaScript doesn't implement reference counting;
   DESTROY will not work;
   weaken() will be a no-op.
 
@@ -126,7 +126,7 @@ Perlito5 compiler globals
 
 
 
-Perlito5 Javascript Data model Overview
+Perlito5 JavaScript Data model Overview
 --------------
 
 
@@ -137,7 +137,7 @@ method call
 - additional arguments can be used to pass out-of-band data, such as: caller(), wantarray()
 - the invocant is the first argument. "this" is not used.
 
-subroutine call 
+subroutine call
 - lookup the subroutine in the current namespace; follow the hierarchy until the CORE base class.
 - do a native method call.
 - the argument list is the named array "List__" (that is, "@_").
@@ -232,7 +232,7 @@ our
 
 
 
-Javascript resources
+JavaScript resources
 --------------
 
 
@@ -261,7 +261,7 @@ Regex
     No named capturing groups. Use numbered capturing groups instead.
     No mode modifiers to set matching options within the regular expression.
     No conditionals.
-    No regular expression comments. 
+    No regular expression comments.
 
 
 
@@ -271,7 +271,7 @@ Compile-time / Run-time interleaving (TODO)
 - See perlref:
     named subroutines are created at compile time so their lexical variables
     get assigned to the parent lexicals from the first execution of the parent
-    block. 
+    block.
     If a parent scope is entered a second time, its lexicals are created again,
     while the nested subs still reference the old ones.
 
@@ -342,7 +342,7 @@ Compile-time / Run-time interleaving (TODO)
 
 - anonymous blocks, named subroutines and variables must be instantiated at compile-time
 
- 
+
 
 Threads (TODO)
 --------------
@@ -378,7 +378,7 @@ Cell-based aliasing (TODO)
     1 + v;  // calls v.valueOf()
     x = v;  // alias (copies the cell); v.set() modifies x.valueOf()
     x.set( v.valueOf() );  // copies the value (doesn't alias)
-    
+
     h.lookup("x");  // looks up h["x"] for a cell; autovivifies if needed
     v.lookup("x");  // error if the cell in v contains something else than undef or an arrayref
 ~~~
@@ -416,13 +416,13 @@ Tail call (TODO)
 - "js3" milestones (TODO list)
 
     - timely destruction (depends on reference counting); weaken()
-    
+
     - tie()
-    
+
     - Overload
-    
+
     - variable aliasing ($_[0], for-loop, map)
-    
+
     - variable redeclaration
 
     - make perlito usable for CPAN smoke tests:
@@ -440,21 +440,21 @@ This allows better control over memory allocation (for example, to implement des
     function p5env_001 () {};
     var p5env = p5env_001;
     p5env.a = 3;
-    
+
     function myfun () {
         var p5env_002 = function () {};
         p5env_002.prototype = p5env_001;
-    
+
         var p5env = new p5env_002();
         p5env.b = 4;
         process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
         p5env.a = 5;
         process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
     }
-    
+
     myfun();
     process.stdout.write( ""  + p5env.a + " " + p5env.b + "\n" );
-    
+
     @_ is special:
     $_[n] lvalue can be represented by
 
@@ -492,7 +492,7 @@ problem: tie'ing a variable in the outer scope (p5env_001) using defineProperty(
 inherited by the inner scope (p5env_002 in the example above).
 
 workaround: access variables from the outer scope directly, without using inheritance.
-This can be complicated by statements like { my $v = 0 if $x } 
+This can be complicated by statements like { my $v = 0 if $x }
 which create lexicals dynamically - but the behaviour in this case is undefined anyway.
 
 defineProperty() can be used to provide accessors to non-tied containers:
@@ -506,7 +506,7 @@ defineProperty() can be used to provide accessors to non-tied containers:
         enumerable : false,
         value : function (i, v) { this[i] = v; return this[i] }
     });
-    
+
     Object.defineProperty( Object.prototype, "p5hget", {
         enumerable : false,
         value : function (i) { return this[i] }
@@ -515,38 +515,38 @@ defineProperty() can be used to provide accessors to non-tied containers:
         enumerable : false,
         value : function (i, v) { this[i] = v; return this[i] }
     });
-    
+
     b = [5,6,8];
     b.p5aset(2, 13);
     process.stdout.write( " " + b.p5aget(2) + "\n" );
-    
+
     h = { x : 4, y : 7 };
     h.p5hset("x", 13);
     process.stdout.write( " " + h.p5hget("x") + "\n" );
-~~~    
+~~~
 
 - Alternative implementation for lvalue @_ and tail calls
 
 ~~~javascript
-    // calling function x() 
+    // calling function x()
     // the variables (a,b,c) are lexicals aliased to $_[0], $_[1], $_[2]
     // .mod signals that @_ was modified
     // .at  returns @_
     // .res is the funtion result
     // .tail is a tail-call result flag
-    function(){ 
-        r = x([a,b,c], want); 
-        if (r.mod) { a=r.at[0]; b=r.at[1]; c=r.at[2] }; 
+    function(){
+        r = x([a,b,c], want);
+        if (r.mod) { a=r.at[0]; b=r.at[1]; c=r.at[2] };
         while (r.tail) {
             // do tail calls
         }
-        return r.res 
+        return r.res
     }()
 ~~~
 
 
 
-Perlito5 Javascript backend TODO list
+Perlito5 JavaScript backend TODO list
 =====================================
 
 Performance
@@ -589,11 +589,11 @@ Features
 -- DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
 
-    $ nodejs perlito5.js -Isrc5/lib -I. -I /usr/local/lib/perl5/site_perl/5.20.0  -e ' use Try::Tiny; try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } ' 
+    $ nodejs perlito5.js -Isrc5/lib -I. -I /usr/local/lib/perl5/site_perl/5.20.0  -e ' use Try::Tiny; try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } '
     this
     catched
-    
-    $ perl -e ' use Try::Tiny;  try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } ' 
+
+    $ perl -e ' use Try::Tiny;  try { print "this\n" }; try { die "this" } catch { print "catched\n" } finally { print "done\n" } '
     this
     catched
     done
