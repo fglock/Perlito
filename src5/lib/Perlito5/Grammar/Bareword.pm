@@ -294,7 +294,7 @@ sub term_bareword {
                 $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
                 $capture = $m->{capture} if $m;
                 if (!$m) {
-                    Perlito5::Compiler::error "Type of arg $arg_index to $name must be block or sub {}";
+                    Perlito5::Compiler::error("Type of arg $arg_index to $name must be block or sub {}");
                 }
                 $p = $m->{to};
                 push @args, $capture;
@@ -331,7 +331,7 @@ sub term_bareword {
                     $p = $m->{to}
                 }
                 if ( substr($str, $p, 1) ne ')' ) {
-                    Perlito5::Compiler::error "syntax error near ", substr( $str, $pos, 10 );
+                    Perlito5::Compiler::error( "syntax error near ", substr( $str, $pos, 10 ));
                 }
                 $p++;
             }
@@ -436,7 +436,7 @@ sub term_bareword {
                 $arg = $m->{capture}[2];
                 $arg = Perlito5::Grammar::Expression::expand_list( $arg );
                 my $v = shift @{ $arg };
-                Perlito5::Compiler::error "Too many arguments for $name"
+                Perlito5::Compiler::error( "Too many arguments for $name")
                     if @{ $arg };
                 $arg = $v;
             }
@@ -448,7 +448,7 @@ sub term_bareword {
                 }
                 elsif ( ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'circumfix:<( )>' ) {
                     my $v = shift @{ $arg->{arguments} };
-                    Perlito5::Compiler::error "Too many arguments for $name"
+                    Perlito5::Compiler::error( "Too many arguments for $name" )
                         if @{ $arg->{arguments} };
                     $arg = $v;
                 }
@@ -458,7 +458,7 @@ sub term_bareword {
                 $has_paren = 1;
             }
             else {
-                Perlito5::Compiler::error "Not enough arguments for $name"
+                Perlito5::Compiler::error( "Not enough arguments for $name")
                     if $sig eq '$';
                 push @args, Perlito5::AST::Var->new(
                             namespace => '',
