@@ -87,7 +87,7 @@ if (typeof p5pkg !== "object") {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
-            return p5method_lookup(s, o._class_._ref__, {})
+            return p5method_lookup(s, o._class_._ref_, {})
         }
         var c = s.split("::");
         s = c.pop(); 
