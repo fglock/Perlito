@@ -1486,9 +1486,7 @@ use feature 'say';
                                 if ($stmt->code() eq 'infix:<=>>' || $stmt->code() eq 'prefix:<%>' || $stmt->code() eq 'prefix:<@>') {
                                     return Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'namespace' => '', 'arguments' => [$stmt])
                                 }
-                                if ($stmt->code() ne 'list:<,>') {
-                                    return $o
-                                }
+                                if ($stmt->code() ne 'list:<,>') {}
                                 return Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'namespace' => '', 'arguments' => expand_list($stmt))
                             }
                             sub Perlito5::Grammar::Expression::pop_term {

@@ -24,7 +24,7 @@ sub block_or_hash {
     my $o = shift;
     if (defined($o->sig)) {
         # say "#  has sig -- not a block";
-        return $o
+        return $o;
     }
     my $stmts = $o->stmts;
     if (!(defined $stmts) || scalar(@$stmts) == 0) {
@@ -33,7 +33,7 @@ sub block_or_hash {
     }
     if (scalar(@$stmts) != 1) {
         # say "#  more statements -- not hash";
-        return $o
+        return $o;
     }
     my $stmt = $stmts->[0];
     if ( ref($stmt) eq 'Perlito5::AST::Var' ) {
@@ -52,7 +52,7 @@ sub block_or_hash {
     }
     if ($stmt->code ne 'list:<,>') {
         # say "#  not a list -- not hash";
-        return $o
+        # return $o
     }
     return Perlito5::AST::Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => expand_list($stmt));
 }
