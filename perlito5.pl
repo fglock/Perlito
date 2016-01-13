@@ -10288,7 +10288,7 @@ use feature 'say';
                     else {
                         $class = Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME)
                     }
-                    'CORE.bless([' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . $class . '])'
+                    'CORE.bless(p5list_to_a([' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . $class . ']))'
                 }, 'infix:<~~>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg0 = $self->{'arguments'}->[0];
@@ -10311,7 +10311,7 @@ use feature 'say';
                     'p5xor(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
                 }, 'infix:<=>>' => sub {
                     my($self, $level, $wantarray) = @_;
-                    Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_javascript2($level) . ', ' . $self->{'arguments'}->[1]->emit_javascript2($level)
+                    return 'p5list_to_a([' . Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_javascript2($level) . ', ' . $self->{'arguments'}->[1]->emit_javascript2($level) . '])'
                 }, 'infix:<cmp>' => sub {
                     my $self = $_[0];
                     'p5cmp(' . join(', ', map(Perlito5::Javascript2::to_str($_), @{$self->{'arguments'}})) . ')'
