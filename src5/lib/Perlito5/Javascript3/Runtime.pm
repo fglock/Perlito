@@ -48,7 +48,7 @@ if (typeof p5pkg !== "object") {
             o = o.FETCH();
         }
         if ( s.indexOf("::") == -1 ) {
-            return p5method_lookup(s, o._class_._ref__, {})
+            return p5method_lookup(s, o._class_._ref_, {})
         }
         var c = s.split("::");
         s = c.pop(); 
