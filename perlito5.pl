@@ -6936,17 +6936,55 @@ use feature 'say';
                     else {
                         0
                     }
-                }) && (do {
-                    $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'});
-                    1
-                }))
-            }) || (do {
-                $MATCH->{'to'} = $pos1;
-                ((do {
-                    my $m2 = Perlito5::Grammar::Statement::statement_parse($str, $MATCH->{'to'});
-                    if ($m2) {
-                        $MATCH->{'to'} = $m2->{'to'};
-                        1
+                    'CORE.bless(p5list_to_a([' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . $class . ']))'
+                }, 'infix:<~~>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    my $arg0 = $self->{'arguments'}->[0];
+                    my $arg1 = $self->{'arguments'}->[1];
+                    'p5smrt_scalar(' . $arg0->emit_javascript2($level, 'scalar') . ', ' . $arg1->emit_javascript2($level, 'scalar') . ')'
+                }, 'infix:<&&>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    'p5and(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
+                }, 'infix:<and>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    'p5and(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
+                }, 'infix:<||>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    'p5or(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
+                }, 'infix:<or>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    'p5or(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
+                }, 'infix:<xor>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    'p5xor(' . $self->{'arguments'}->[0]->emit_javascript2($level, 'scalar') . ', ' . Perlito5::Javascript2::emit_function_javascript2($level, $wantarray, $self->{'arguments'}->[1]) . ')'
+                }, 'infix:<=>>' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    return 'p5list_to_a([' . Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_javascript2($level) . ', ' . $self->{'arguments'}->[1]->emit_javascript2($level) . '])'
+                }, 'infix:<cmp>' => sub {
+                    my $self = $_[0];
+                    'p5cmp(' . join(', ', map(Perlito5::Javascript2::to_str($_), @{$self->{'arguments'}})) . ')'
+                }, 'infix:<<=>>' => sub {
+                    my $self = $_[0];
+                    'p5cmp(' . join(', ', map(Perlito5::Javascript2::to_num($_), @{$self->{'arguments'}})) . ')'
+                }, 'infix:<**>' => sub {
+                    my $self = $_[0];
+                    'Math.pow(' . join(', ', map(Perlito5::Javascript2::to_num($_), @{$self->{'arguments'}})) . ')'
+                }, 'infix:<<<>' => sub {
+                    my $self = $_[0];
+                    'p5shift_left(' . join(', ', map(Perlito5::Javascript2::to_num($_), @{$self->{'arguments'}})) . ')'
+                }, 'infix:<%>' => sub {
+                    my $self = $_[0];
+                    'p5modulo(' . join(', ', map(Perlito5::Javascript2::to_num($_), @{$self->{'arguments'}})) . ')'
+                }, 'prefix:<!>' => sub {
+                    my $self = shift;
+                    my $level = shift;
+                    '!( ' . Perlito5::Javascript2::to_bool($self->{'arguments'}->[0], $level) . ')'
+                }, 'prefix:<not>' => sub {
+                    my $self = shift;
+                    my $level = shift;
+                    my $arg = pop(@{$self->{'arguments'}});
+                    if (!$arg) {
+                        return 'true'
                     }
                     else {
                         0
