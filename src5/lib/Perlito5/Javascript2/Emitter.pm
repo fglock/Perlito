@@ -727,6 +727,16 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript2_has_regex { () }
 }
 
+package Perlito5::AST::Undef;
+{
+    sub emit_javascript2 {
+        my ($self, $level, $wantarray) = @_;
+        return 'null';
+    }
+    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
+}
+
 package Perlito5::AST::Int;
 {
     sub emit_javascript2 {
@@ -2296,11 +2306,7 @@ package Perlito5::AST::Apply;
                 }
                 return '('. _emit_assignment_javascript2(
                     $arg,
-                    Perlito5::AST::Apply->new(
-                        'arguments' => [],
-                        'bareword' => 1,
-                        'code' => 'undef',
-                    ),
+                    (bless {}, 'Perlito5::AST::Undef'),
                     $level+1,
                     $wantarray,
                 ) . ')';
