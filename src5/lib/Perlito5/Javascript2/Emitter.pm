@@ -725,6 +725,16 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript2_has_regex { () }
 }
 
+package Perlito5::AST::Undef;
+{
+    sub emit_javascript2 {
+        my ($self, $level, $wantarray) = @_;
+        return 'null';
+    }
+    sub emit_javascript2_get_decl { () }
+    sub emit_javascript2_has_regex { () }
+}
+
 package Perlito5::AST::Int;
 {
     sub emit_javascript2 {
@@ -1467,6 +1477,40 @@ package Perlito5::AST::Call;
 
 package Perlito5::AST::Apply;
 {
+    sub _emit_assignment_javascript2 {
+        my ($parameters, $arguments, $level, $wantarray) = @_;
+        if (   $parameters->isa( 'Perlito5::AST::Apply' )
+            &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
+        )
+        {
+            # my ($x, $y) = ...
+            # local ($x, $y) = ...
+            # ($x, $y) = ...
+
+            if ( $wantarray eq 'void' ) {
+                my $tmp  = Perlito5::Javascript2::get_label();
+                return join( ";\n" . Perlito5::Javascript2::tab($level),
+                    'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
+                    ( map $_->emit_javascript2_set_list($level, $tmp),
+                        @{ $parameters->arguments }
+                    ),
+                );
+            }
+
+            my $tmp  = Perlito5::Javascript2::get_label();
+            my $tmp2 = Perlito5::Javascript2::get_label();
+            return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
+                'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ";",
+                'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);",
+                ( map $_->emit_javascript2_set_list($level+1, $tmp) . ";",
+                    @{ $parameters->arguments }
+                ),
+                'return ' . $tmp2,
+            );
+        }
+        return $parameters->emit_javascript2_set($arguments, $level+1, $wantarray);
+    }
+
     sub emit_regex_javascript2 {
         my $op = shift;
         my $var = shift;
@@ -2057,38 +2101,8 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my $parameters = $self->{arguments}->[0];
             my $arguments  = $self->{arguments}->[1];
-
-            if (   $parameters->isa( 'Perlito5::AST::Apply' )
-               &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
-               )
-            {
-                # my ($x, $y) = ...
-                # local ($x, $y) = ...
-                # ($x, $y) = ...
-
-                if ( $wantarray eq 'void' ) {
-                    my $tmp  = Perlito5::Javascript2::get_label();
-                    return join( ";\n" . Perlito5::Javascript2::tab($level),
-                            'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
-                            ( map $_->emit_javascript2_set_list($level, $tmp),
-                                  @{ $parameters->arguments }
-                            ),
-                    );
-                }
-
-                my $tmp  = Perlito5::Javascript2::get_label();
-                my $tmp2 = Perlito5::Javascript2::get_label();
-                return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
-                            'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1) . ";",
-                            'var ' . $tmp2 . ' = ' . $tmp . ".slice(0);",
-                            ( map $_->emit_javascript2_set_list($level+1, $tmp) . ";",
-                                  @{ $parameters->arguments }
-                            ),
-                            'return ' . $tmp2,
-                );
-            }
-            return $parameters->emit_javascript2_set($arguments, $level+1, $wantarray);
-        },
+            return _emit_assignment_javascript2($parameters, $arguments, $level, $wantarray);
+                    },
 
         'break' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -2282,15 +2296,20 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
                 my $arg = $self->{arguments}[0];
-                if (  ref( $arg ) eq 'Perlito5::AST::Var' 
+                if (  ref( $arg ) eq 'Perlito5::AST::Var'
                    && $arg->{sigil} eq '&'
                    )
                 {
                     return '(delete p5pkg[' . Perlito5::Javascript2::escape_string(($arg->{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Javascript2::escape_string($arg->{name} ) . '])';
                 }
-                return '(' . $arg->emit_javascript2 . ' = null)'
+                return '('. _emit_assignment_javascript2(
+                    $arg,
+                    (bless {}, 'Perlito5::AST::Undef'),
+                    $level+1,
+                    $wantarray,
+                ) . ')';
             }
-            return 'null'
+            return 'null';
         },
         'defined' => sub { 
             my ($self, $level, $wantarray) = @_;
