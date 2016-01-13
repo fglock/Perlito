@@ -144,7 +144,10 @@ if (isNode) {
     } );
 
     var p5ARGV = 0;
-    p5typeglob_set("Perlito5::IO", "readline", function (List__, p5want) {
+    (function (f) {
+        p5typeglob_set("Perlito5::IO", "readline", f);
+        p5typeglob_set("Perlito5::IO", "getline", f);
+    })(function (List__, p5want) {
         var filehandle = List__.shift();
 
         if (p5want) {
@@ -228,7 +231,7 @@ if (isNode) {
             return null
         }
         return s;
-    } );
+    });
 
     p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
         try {
