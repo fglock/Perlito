@@ -1616,7 +1616,7 @@ package Perlito5::AST::Apply;
             else { 
                 $class = Perlito5::Javascript2::escape_string($Perlito5::PKG_NAME);
             }
-            'CORE.bless([' . $self->{arguments}[0]->emit_javascript2($level, 'scalar') . ', ' . $class . '])';
+            'CORE.bless(p5list_to_a([' . $self->{arguments}[0]->emit_javascript2($level, 'scalar') . ', ' . $class . ']))';
         },
         'infix:<~~>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1667,8 +1667,10 @@ package Perlito5::AST::Apply;
         },
         'infix:<=>>' => sub {
             my ($self, $level, $wantarray) = @_;
-              Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_javascript2($level)  . ', ' 
+            return 'p5list_to_a([' .
+              Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_javascript2($level)  . ', '
             . $self->{arguments}[1]->emit_javascript2($level)
+            . '])';
         },
         'infix:<cmp>' => sub {
             my $self = $_[0];
