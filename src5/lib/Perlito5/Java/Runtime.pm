@@ -189,7 +189,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $java_classes{$_};
-                    $class->{extends} || $class->{implements} ? emit_java_extends($class, \%java_classes) : ()
+                    $class->{extends} ? emit_java_extends($class, \%java_classes) : ()
             }
             sort keys %java_classes
       ))
