@@ -20312,8 +20312,36 @@ use feature 'say';
                     for my $stmt (@{$self->{'block'}->{'stmts'}}) {
                         push(@captured, $stmt->get_captures())
                     }
-                    elsif ($c eq '$' || $c eq '_') {
-                        (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
+                    my %dont_capture = map {
+                        $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+                    } @captured;
+                    my %capture = map {
+                        $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
+                    } @captured;
+                    my @captures_ast = map {
+                        $capture{$_}
+                    } sort {
+                        $a cmp $b
+                    } keys(%capture);
+                    my @captures_java = map {
+                        $_->emit_java($level, 'list')
+                    } @captures_ast;
+                    local %Perlito5::Java::Java_var_name;
+                    my $i = 0;
+                    for $_ (@captures_ast) {
+                        $Perlito5::Java::Java_var_name{$_->{'_id'}} = 'this.env[' . $i . ']';
+                        $i++
+                    }
+                    my @js_block;
+                    if ($self->{'_do_block'}) {
+                        @js_block = $block->emit_java($level + 3, $wantarray)
+                    }
+                    elsif ($self->{'_eval_block'}) {
+                        $block->{'top_level'} = 1;
+                        $block->{'eval_block'} = 1;
+                        my $outer_throw = $Perlito5::THROW_RETURN;
+                        $Perlito5::THROW_RETURN = 0;
+                        @js_block = $block->emit_java($level + 3, 'runtime'), $Perlito5::THROW_RETURN = $outer_throw
                     }
                     elsif ($c eq '@') {
                         (@in || !$optional) && push(@out, Perlito5::Java::to_list(\@in, $level + 1));
