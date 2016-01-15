@@ -173,10 +173,10 @@ EOT
         #   package My::Java { import => "org.My.Java", ... }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     $class->{import} ? "import $class->{import};\n" : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
         # extends the imported Java classes
         # that were declared with
@@ -184,10 +184,10 @@ EOT
         #   package My::Java { extends => "My::Java", ... }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     $class->{extends} ? emit_java_extends($class, \%java_classes) : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
         # Perl-Java exceptions
     . <<'EOT'
@@ -869,7 +869,7 @@ EOT
         #   package MyJavaClass { Java }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
                     $class->{import} || $class->{extends} ? 
@@ -878,7 +878,7 @@ EOT
                   . "        return null;\n"
                   . "    }\n" : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
     . <<'EOT'
     // public String toString() {
@@ -1311,7 +1311,7 @@ EOT
     }
 "       )
             }
-            keys %number_binop ))
+            sort keys %number_binop ))
 
     . ( join('', map {
             my $perl = $_;
@@ -1322,7 +1322,7 @@ EOT
     }
 "
             }
-            keys %string_binop ))
+            sort keys %string_binop ))
 
     . <<'EOT'
 }
@@ -1785,7 +1785,7 @@ EOT
     }
 " : ()
             }
-            keys %native_to_perl ))
+            sort keys %native_to_perl ))
 
     . <<'EOT'
     public String toString() {
@@ -1818,7 +1818,7 @@ EOT
     }
 "
             }
-            keys %number_binop ))
+            sort keys %number_binop ))
 
     . <<'EOT'
     public boolean is_int() {
@@ -1890,7 +1890,7 @@ EOT
         #   package MyJavaClass { Java }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
                     $class->{import} || $class->{extends} ? 
@@ -1899,7 +1899,7 @@ EOT
     }
 " : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
 
     . <<'EOT'
@@ -2040,7 +2040,7 @@ EOT
         #   package MyJavaClass { Java }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
@@ -2063,7 +2063,7 @@ EOT
     }
 " : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
 
     . <<'EOT'
@@ -2313,7 +2313,7 @@ EOT
     }
 " : ()
             }
-            keys %native_to_perl ))
+            sort keys %native_to_perl ))
 
     . <<'EOT'
 
@@ -2834,7 +2834,7 @@ EOT
     }
 " : ()
             }
-            keys %native_to_perl ))
+            sort keys %native_to_perl ))
 
     . <<'EOT'
 
@@ -3063,7 +3063,7 @@ EOT
     }
 "
             }
-            keys %number_binop ))
+            sort keys %number_binop ))
 
     . <<'EOT'
     public boolean is_num() {
@@ -3346,7 +3346,7 @@ EOT
 "
             }
             }
-            keys %number_binop ))
+            sort keys %number_binop ))
 
     . <<'EOT'
 }
@@ -3357,7 +3357,7 @@ EOT
         #   package MyJavaClass { Java }
         #
     . join('', ( map {
-                    my $class = $_;
+                    my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
@@ -3382,7 +3382,7 @@ EOT
 }
 " : ()
             }
-            values %java_classes
+            sort keys %java_classes
       ))
 
     . <<'EOT'
