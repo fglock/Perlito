@@ -17347,7 +17347,11 @@ use feature 'say';
                     my %capture = map {
                         $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
                     } @captured;
-                    my @captures_ast = values(%capture);
+                    my @captures_ast = map {
+                        $capture{$_}
+                    } sort {
+                        $a cmp $b
+                    } keys(%capture);
                     my @captures_java = map {
                         $_->emit_java($level, 'list')
                     } @captures_ast;
