@@ -80,9 +80,15 @@ package Perlito5::AST::Call;
         my @var;
         push @var, $self->{method}->get_captures() if ref($self->{method});
         push @var, $self->{invocant}->get_captures();
-        push @var, map  { $_->get_captures() }
-                        @{ $self->{arguments} }
-                if $self->{arguments};
+        my $args = $self->{arguments};
+        if ($args) {
+            if (ref($args) eq "ARRAY") {
+                push @var, map { $_->get_captures() } @$args;
+            }
+            else {
+                push @var, $args->get_captures();
+            }
+        }
         return @var;
     }
 }

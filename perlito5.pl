@@ -14943,9 +14943,17 @@ use feature 'say';
                             my @var;
                             ref($self->{'method'}) && push(@var, $self->{'method'}->get_captures());
                             push(@var, $self->{'invocant'}->get_captures());
-                            $self->{'arguments'} && push(@var, map {
-                                $_->get_captures()
-                            } @{$self->{'arguments'}});
+                            my $args = $self->{'arguments'};
+                            if ($args) {
+                                if (ref($args) eq 'ARRAY') {
+                                    push(@var, map {
+                                        $_->get_captures()
+                                    } @{$args})
+                                }
+                                else {
+                                    push(@var, $args->get_captures())
+                                }
+                            }
                             return @var
                         }
                     }
