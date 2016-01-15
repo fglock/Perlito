@@ -47,6 +47,7 @@
 -- new API to access Java value types
 -- internal integer number representation is now "long"
 -- bless() and initial method call implementation (work in progress) by Bruno Czekay
+-- generated code has a smaller diff between runs - github bug #39
 
 9.016 cpan:Perlito5  2015-12-21
 - Docs:
