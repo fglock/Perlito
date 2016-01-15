@@ -9978,19 +9978,6 @@ use feature 'say';
                     ()
                 }
             }
-            package Perlito5::AST::Undef;
-            {
-                sub Perlito5::AST::Undef::emit_javascript2 {
-                    my($self, $level, $wantarray) = @_;
-                    return 'null'
-                }
-                sub Perlito5::AST::Undef::emit_javascript2_get_decl {
-                    ()
-                }
-                sub Perlito5::AST::Undef::emit_javascript2_has_regex {
-                    ()
-                }
-            }
             package Perlito5::AST::Int;
             {
                 sub Perlito5::AST::Int::emit_javascript2 {
@@ -10882,7 +10869,7 @@ use feature 'say';
                         if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {
                             return '(delete p5pkg[' . Perlito5::Javascript2::escape_string(($arg->{'namespace'} || $Perlito5::PKG_NAME)) . '][' . Perlito5::Javascript2::escape_string($arg->{'name'}) . '])'
                         }
-                        return '(' . _emit_assignment_javascript2($arg, (bless({}, 'Perlito5::AST::Undef')), $level + 1, $wantarray) . ')'
+                        return '(' . _emit_assignment_javascript2($arg, Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'undef'), $level + 1, $wantarray) . ')'
                     }
                     return 'null'
                 }, 'defined' => sub {
