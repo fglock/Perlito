@@ -3970,7 +3970,8 @@ package Perlito5::AST::Sub;
         # warn Data::Dumper::Dumper(\@captured);
         # warn Data::Dumper::Dumper(\%dont_capture);
         # warn Data::Dumper::Dumper(\%capture);
-        my @captures_ast  = values %capture;
+        my @captures_ast  = map { $capture{$_} }
+                            sort keys %capture;
         my @captures_java = map { $_->emit_java( $level, 'list' ) } @captures_ast;
 
         # set the new variable names inside the closure
