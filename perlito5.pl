@@ -3869,180 +3869,17 @@ use feature 'say';
             else {
                 0
             }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'Perlito5::Grammar::var_ident'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Attribute::opt_attribute($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $declarator = Perlito5::Match::flat($MATCH->{'declarator'});
-            my $type = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::opt_type'});
-            $type && !$Perlito5::PACKAGES->{$type} && Perlito5::Compiler::error('No such class ' . $type);
-            my $var = $MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'};
-            $var->{'namespace'} && Perlito5::Compiler::error('No package name allowed for variable ' . $var->{'sigil'} . $var->{'name'} . ' in "' . $declarator . '"');
-            $var->{'_decl'} = $declarator;
-            $var->{'_id'} = $Perlito5::ID++;
-            $declarator eq 'our' && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
-            my $decl = Perlito5::AST::Decl::->new('decl' => $declarator, 'type' => $type, 'var' => $var, 'attributes' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Attribute::opt_attribute'}));
-            $MATCH->{'capture'} = ['term', $decl];
-            1
-        })));
-        $tmp ? $MATCH : 0
-    }
-    sub Perlito5::Grammar::Expression::term_not {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('not' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                1
-            }
-            else {
-                0
-            }
-        }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-            my $m2 = paren_parse($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'paren_parse'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
-            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'prefix:<not>', 'arguments' => expand_list(Perlito5::Match::flat($MATCH->{'paren_parse'})), 'namespace' => '')];
-            1
-        })));
-        $tmp ? $MATCH : 0
-    }
-    sub Perlito5::Grammar::Expression::term_local {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('local' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $m2 = Perlito5::Grammar::Sigil::term_sigil($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'Perlito5::Grammar::Sigil::term_sigil'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $declarator = 'local';
-            my $type = '';
-            $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
-            $MATCH = Perlito5::Grammar::String::double_quoted_var_with_subscript($MATCH);
-            my $var = $MATCH->{'capture'};
-            my $look = Perlito5::Grammar::Scope::lookup_variable($var);
-            if ($look && ($look->{'_decl'} eq 'my' || $look->{'_decl'} eq 'state')) {
-                Perlito5::Compiler::error('Can' . chr(39) . 't localize lexical variable ' . $var->{'sigil'} . $var->{'name'})
-            }
-            $var->{'_id'} = $Perlito5::ID++;
-            $var->{'_decl'} = $declarator;
-            !$var->{'namespace'} && !$var->{'_namespace'} && ($var->{'_namespace'} = $Perlito5::PKG_NAME);
-            my $decl = Perlito5::AST::Decl::->new('decl' => $declarator, 'type' => $type, 'var' => $var);
-            $MATCH->{'capture'} = ['term', $decl];
-            1
-        })));
-        $tmp ? $MATCH : 0
-    }
-    sub Perlito5::Grammar::Expression::term_return {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('return' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
-            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $m2 = list_parse($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'list_parse'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            my $args = Perlito5::Match::flat($MATCH->{'list_parse'});
-            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => $args eq '*undef*' ? [] : [$args], 'namespace' => '')];
-            1
-        })));
-        $tmp ? $MATCH : 0
-    }
-    sub Perlito5::Grammar::Expression::term_eval {
-        my $str = $_[0];
-        my $pos = $_[1];
-        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('eval' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
-            my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
-            if ($m2) {
-                $MATCH->{'to'} = $m2->{'to'};
-                $MATCH->{'Perlito5::Grammar::block'} = $m2;
-                1
-            }
-            else {
-                0
-            }
-        }) && (do {
-            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'eval', 'arguments' => [Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::block'})], 'namespace' => '')];
-            1
-        })));
-        $tmp ? $MATCH : 0
-    }
-    my $Expr_end_token_chars = [7, 6, 5, 4, 3, 2, 1];
-    my $Expr_end_token = {']' => 1, ')' => 1, '}' => 1, ';' => 1, 'if' => 1, 'for' => 1, 'else' => 1, 'when' => 1, 'while' => 1, 'until' => 1, 'elsif' => 1, 'unless' => 1, 'foreach' => 1};
-    my $List_end_token = {':' => 1, 'or' => 1, 'and' => 1, 'xor' => 1, %{$Expr_end_token}};
-    my $Argument_end_token = {',' => 1, '<' => 1, '>' => 1, '=' => 1, '|' => 1, '^' => 1, '?' => 1, '=>' => 1, 'lt' => 1, 'le' => 1, 'gt' => 1, 'ge' => 1, '<=' => 1, '>=' => 1, '==' => 1, '!=' => 1, 'ne' => 1, 'eq' => 1, '..' => 1, '~~' => 1, '&&' => 1, '||' => 1, '+=' => 1, '-=' => 1, '*=' => 1, '/=' => 1, 'x=' => 1, '|=' => 1, '&=' => 1, '.=' => 1, '^=' => 1, '%=' => 1, '//' => 1, '...' => 1, '<=>' => 1, 'cmp' => 1, '<<=' => 1, '>>=' => 1, '||=' => 1, '&&=' => 1, '//=' => 1, '**=' => 1, %{$List_end_token}};
-    sub Perlito5::Grammar::Expression::list_parser {
-        my($str, $pos, $end_token) = @_;
-        my $expr;
-        my $last_pos = $pos;
-        my $is_first_token = 1;
-        my $lexer_stack = [];
-        my $last_token_was_space = 1;
-        my $get_token = sub {
-            my $last_is_term = $_[0];
-            my $v;
-            if (scalar(@{$lexer_stack})) {
-                $v = pop(@{$lexer_stack});
-                if ($is_first_token && ($v->[0] eq 'op') && !(Perlito5::Grammar::Precedence::is_fixity_type('prefix', $v->[1]))) {
-                    $v->[0] = 'end'
+            package Perlito5::AST::Int;
+            {
+                sub Perlito5::AST::Int::emit_javascript2 {
+                    my($self, $level, $wantarray) = @_;
+                    $self->{'int'}
+                }
+                sub Perlito5::AST::Int::emit_javascript2_get_decl {
+                    ()
+                }
+                sub Perlito5::AST::Int::emit_javascript2_has_regex {
+                    ()
                 }
             }
             else {
@@ -6726,6 +6563,7 @@ use feature 'say';
                         if ($sigil ne '*' && $sigil ne '&') {
                             Perlito5::Compiler::error('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name')
                         }
+                        return '(' . _emit_assignment_javascript2($arg, Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'undef'), $level + 1, $wantarray) . ')'
                     }
                     $var->{'_decl'} = 'global';
                     $var->{'_namespace'} = $Perlito5::PKG_NAME
