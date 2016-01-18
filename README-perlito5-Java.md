@@ -20,6 +20,20 @@ Perlito5-Java platform differences
   - any other differences are not-yet-implemented or bugs.
 
 
+Regex differences
+-----------------
+
+Perlito5 compiles Perl regexes into Java regexes with some wrapping code.
+Some differences between the regex engines will show up:
+
+  - /x switch
+
+    Java ignores whitespace and comments inside character classes.
+    So in Java's free-spacing mode, [abc] is identical to [ a b c ].
+    To add a space to a character class, you'll have to escape it with a backslash.
+    See: http://www.regular-expressions.info/freespacing.html
+
+
 Perlito5-Java extensibility
 ===========================
 
