@@ -12,8 +12,10 @@ Perlito5-Java platform differences
       - Try::Tiny "finally" doesn't work
 
   - no XS (because Java)
+
   - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
       - "import" also doesn't work when doing precompilation
+
   - no eval-string (because not-yet-bootstrapped)
       - also no: "do FILE", "require" (because these depend on eval-string)
 
@@ -30,8 +32,15 @@ Some differences between the regex engines will show up:
 
     Java ignores whitespace and comments inside character classes.
     So in Java's free-spacing mode, [abc] is identical to [ a b c ].
+    The character class [ ] is invalid.
     To add a space to a character class, you'll have to escape it with a backslash.
     See: http://www.regular-expressions.info/freespacing.html
+
+  - named captures
+
+    Java 7 is required for named groups in regex, like: (?<name>X).
+    Discussion about alternative implementations:
+    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
 
 Perlito5-Java extensibility
