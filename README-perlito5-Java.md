@@ -29,22 +29,12 @@ Regex differences
 Perlito5 compiles Perl regexes into Java regexes with some wrapping code.
 Some differences between the regex engines will show up:
 
-  - named captures
+  - /x switch
 
-    Java 7 is required for named groups in regex, like: (?<name>X).
-    Discussion about alternative implementations:
-    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
-
-    Named captures in Java cannot have an underline in the name.
-    Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
-
-  - regex comments with "(?#text)" are not implemented in Java
-
-See also:
-
-    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#jcc
-
-    http://www.regular-expressions.info/reference.html
+    Java ignores whitespace and comments inside character classes.
+    So in Java's free-spacing mode, [abc] is identical to [ a b c ].
+    To add a space to a character class, you'll have to escape it with a backslash.
+    See: http://www.regular-expressions.info/freespacing.html
 
 
 Perlito5-Java extensibility
