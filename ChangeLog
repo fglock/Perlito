@@ -48,6 +48,9 @@
 -- internal integer number representation is now "long"
 -- bless() and initial method call implementation (work in progress) by Bruno Czekay
 -- generated code has a smaller diff between runs - github bug #39
+-- regex: implemented string match in list context
+-- regex: space in character classes is significant when /x is active - bug #40
+-- regex: string replace preserves escape character - bug #41
 
 9.016 cpan:Perlito5  2015-12-21
 - Docs:
