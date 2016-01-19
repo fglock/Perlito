@@ -1503,73 +1503,27 @@ class PerlOp {
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
 
-    public static PlObject prototype(PlObject arg, String packageName) {
-        if (arg.is_coderef()) {
-            if (arg.is_lvalue()) {
-                return ((PlClosure)arg.get()).prototype();
-            }
-            return ((PlClosure)arg).prototype();
-        }
-        String method = arg.toString();
-        PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.get(packageName + "::" + method);
-        }
-        else {
-            // fully qualified name
-            methodCode = PlV.get(method);
-        }
-        if (methodCode.is_coderef()) {
-            return prototype(methodCode, packageName); 
-        }
-        return PlCx.UNDEF;
-    }
-
     private static String double_escape(String s) {
         // add double escapes: \\w instead of \w
-        return s.replace("\\", "\\\\");
-    }
-
-    private static int _character_class_escape(int offset, String s, StringBuilder sb, int length) {
-        // [ ... ]
-        int offset3 = offset;
-        for ( ; offset3 < length; ) {
-            final int c3 = s.codePointAt(offset3);
-            switch (c3) {
-                case ']':
-                    sb.append(Character.toChars(c3));
-                    return offset3;
-                case ' ':
-                    sb.append("\\ ");   // make this space a "token", even inside /x
-                    break;
-                default:
-                    sb.append(Character.toChars(c3));
-                    break;
-            }
-            offset3++;
-        }
-        return offset3;
-    }
-
-    public static String character_class_escape(String s) {
-        // escape spaces in character classes
         final int length = s.length();
         StringBuilder sb = new StringBuilder();
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
-            switch (c) {
-                case '\\':  // escape - \[
+            switch (c) {        
+                case '\\':  // escape
                             sb.append(Character.toChars(c));
+                            sb.append(Character.toChars(c));   // double escape
                             if (offset < length) {
                                 offset++;
                                 int c2 = s.codePointAt(offset);
-                                sb.append(Character.toChars(c2));
+                                if (c2 == '\\') {
+                                    sb.append(Character.toChars(c2));
+                                    sb.append(Character.toChars(c2));  // double escape
+                                }
+                                else {
+                                    sb.append(Character.toChars(c2));
+                                }
                             }
-                            break;
-                case '[':   // character class
-                            sb.append(Character.toChars(c));
-                            offset++;
-                            offset = _character_class_escape(offset, s, sb, length);
                             break;
                 default:    // normal char
                             sb.append(Character.toChars(c));
@@ -2235,25 +2189,6 @@ class PlRegex extends PlReference {
     public String toString() {
         // TODO - show flags
         return this.p.toString();
-    }
-    private static String preprocess(String s, int flags) {
-        // TODO - work in progress
-        // add double escapes: \\w instead of \w
-        // escape spaces inside character classes: [\\ ] instead of [ ]
-        final int length = s.length();
-        StringBuilder sb = new StringBuilder();
-        for (int offset = 0; offset < length; ) {
-            final int c = s.codePointAt(offset);
-            switch (c) {        
-                case '.':   // placeholder
-                            sb.append(c);
-                            break;
-                default:    // invalid
-                            return "";
-            }
-            offset++;
-        }
-        return sb.toString();
     }
 }
 class PlClosure extends PlReference implements Runnable {
