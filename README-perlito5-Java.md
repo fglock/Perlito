@@ -34,6 +34,9 @@ Some differences between the regex engines will show up:
     Discussion about alternative implementations:
     http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
+    Named captures in Java cannot have an underline in the name.
+    Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
+
 
 Perlito5-Java extensibility
 ===========================
