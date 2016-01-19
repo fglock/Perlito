@@ -1508,6 +1508,56 @@ class PerlOp {
         return s.replace("\\", "\\\\");
     }
 
+    private static int _character_class_escape(int offset, String s, StringBuilder sb, int length) {
+        // [ ... ]
+        int offset3 = offset;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {        
+                case ']':
+                    sb.append(Character.toChars(c3));
+                    return offset3;
+                case ' ':
+                    sb.append("\\ ");   // make this space a "token", even inside /x
+                    break;
+                default:
+                    sb.append(Character.toChars(c3));
+                    break;
+            }
+            offset3++;
+        }
+        return offset3;
+    }
+
+    public static String character_class_escape(String s) {
+        // escape spaces in character classes
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {        
+                case '\\':  // escape - \[
+                            sb.append(Character.toChars(c));
+                            if (offset < length) {
+                                offset++;
+                                int c2 = s.codePointAt(offset);
+                                sb.append(Character.toChars(c2));
+                            }
+                            break;
+                case '[':   // character class
+                            sb.append(Character.toChars(c));
+                            offset++;
+                            offset = _character_class_escape(offset, s, sb, length);
+                            break;
+                default:    // normal char
+                            sb.append(Character.toChars(c));
+                            break;
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
+
     public static final PlObject match(PlObject s, PlRegex pat, int want) {
         if (want != PlCx.LIST) {
             return pat.p.matcher(s.toString()).find() ? PlCx.TRUE : PlCx.FALSE;
@@ -2153,12 +2203,10 @@ class PlRegex extends PlReference {
     public static final PlString REF = new PlString("Regexp");
 
     public PlRegex(String p, int flags) {
-        this.original_string = p;
-        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+        this.p = Pattern.compile(PerlOp.character_class_escape(p), flags);
     }
     public PlRegex(PlObject p, int flags) {
-        this.original_string = p.toString();
-        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+        this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
     }
     public String toString() {
         // TODO - show flags
