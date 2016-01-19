@@ -781,6 +781,9 @@ but a qr// on an existing qr// behaves differently:
 ~~~bash
 $ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
 (?^: (\w) )
+
+$ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
+(?^x:before (?^: (\w) ) after)
 ~~~
 
 Threads
