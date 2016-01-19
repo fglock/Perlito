@@ -772,33 +772,7 @@ class PerlOp {
 
     private static String double_escape(String s) {
         // add double escapes: \\w instead of \w
-        final int length = s.length();
-        StringBuilder sb = new StringBuilder();
-        for (int offset = 0; offset < length; ) {
-            final int c = s.codePointAt(offset);
-            switch (c) {        
-                case '\\':  // escape
-                            sb.append(Character.toChars(c));
-                            sb.append(Character.toChars(c));   // double escape
-                            if (offset < length) {
-                                offset++;
-                                int c2 = s.codePointAt(offset);
-                                if (c2 == '\\') {
-                                    sb.append(Character.toChars(c2));
-                                    sb.append(Character.toChars(c2));  // double escape
-                                }
-                                else {
-                                    sb.append(Character.toChars(c2));
-                                }
-                            }
-                            break;
-                default:    // normal char
-                            sb.append(Character.toChars(c));
-                            break;
-            }
-            offset++;
-        }
-        return sb.toString();
+        return s.replace("\\", "\\\\");
     }
 
     public static final PlObject match(PlObject s, PlRegex pat, int want) {
