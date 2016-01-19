@@ -1513,7 +1513,7 @@ class PerlOp {
         int offset3 = offset;
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
-            switch (c3) {        
+            switch (c3) {
                 case ']':
                     sb.append(Character.toChars(c3));
                     return offset3;
@@ -1535,7 +1535,7 @@ class PerlOp {
         StringBuilder sb = new StringBuilder();
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
-            switch (c) {        
+            switch (c) {
                 case '\\':  // escape - \[
                             sb.append(Character.toChars(c));
                             if (offset < length) {
