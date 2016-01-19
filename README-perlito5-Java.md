@@ -750,7 +750,7 @@ Regex
 
 regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
-Regex variables: $1, $2
+Regex variables: $1, $2 and named captures
 
 Modifiers:
 
