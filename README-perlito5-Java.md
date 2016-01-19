@@ -850,10 +850,6 @@ Modifiers:
 
     /x (DONE)
 
-Modifiers:
-
-    /x (DONE)
-
     /e (TODO)
 
 Quotemeta: \Q
