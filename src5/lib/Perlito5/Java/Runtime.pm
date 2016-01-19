@@ -2203,14 +2203,16 @@ class PlRegex extends PlReference {
     public static final PlString REF = new PlString("Regexp");
 
     public PlRegex(String p, int flags) {
-        this.p = Pattern.compile(PerlOp.character_class_escape(p), flags);
+        this.original_string = p;
+        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
     }
     public PlRegex(PlObject p, int flags) {
-        this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
+        this.original_string = p.toString();
+        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
     }
     public String toString() {
         // TODO - show flags
-        return this.p.toString();
+        return this.original_string;
     }
 }
 class PlClosure extends PlReference implements Runnable {
