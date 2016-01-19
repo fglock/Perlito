@@ -441,7 +441,7 @@ class PerlCompare implements Comparator<PlObject> {
     }
 }
 class PerlOp {
-    // PerlOp implements operators: && || 
+    // PerlOp implements operators: && ||
     //      and auxiliary functions
     //
     // note: '+' add() and '-' sub() are PlObject methods, not implemented here.
@@ -780,7 +780,7 @@ class PerlOp {
         int offset3 = offset;
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
-            switch (c3) {        
+            switch (c3) {
                 case ']':
                     sb.append(Character.toChars(c3));
                     return offset3;
@@ -802,7 +802,7 @@ class PerlOp {
         StringBuilder sb = new StringBuilder();
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
-            switch (c) {        
+            switch (c) {
                 case '\\':  // escape - \[
                             sb.append(Character.toChars(c));
                             if (offset < length) {
@@ -3149,7 +3149,7 @@ class PlString extends PlObject {
         int offset3 = next;
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
-            switch (c3) {        
+            switch (c3) {
                 case '+': case '-':
                     // TODO
                     break;
@@ -3168,7 +3168,7 @@ class PlString extends PlObject {
         int offset3 = next;
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
-            switch (c3) {        
+            switch (c3) {
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     break;
@@ -3187,7 +3187,7 @@ class PlString extends PlObject {
         int signal = 0;
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
-            switch (c) {        
+            switch (c) {
                 case 'i': case 'I':
                             if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
                                 if (signal < 0) {
@@ -3217,7 +3217,7 @@ class PlString extends PlObject {
                             int offset2 = offset+1;
                             for ( ; offset2 < length; ) {
                                 final int c2 = s.codePointAt(offset2);
-                                switch (c2) {        
+                                switch (c2) {
                                     case '0': case '1': case '2': case '3': case '4':
                                     case '5': case '6': case '7': case '8': case '9':
                                         // more numbers
@@ -3326,7 +3326,7 @@ class PlString extends PlObject {
             return PlCx.INT1;
         }
         int c = this.s.codePointAt(0);
-        switch (c) {        
+        switch (c) {
             case ' ': case '\t': case '\n': case '\r':
             case '+': case '-': case '.':
             case '0': case '1': case '2': case '3': case '4':
@@ -3345,7 +3345,7 @@ class PlString extends PlObject {
             return PlCx.INT0;
         }
         final int c = this.s.codePointAt(0);
-        switch (c) {        
+        switch (c) {
             case '+': case '-':
                 if (c == '+') {
                     return new PlString( '-' + s.substring(1) );
