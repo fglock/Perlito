@@ -752,9 +752,36 @@ regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Patter
 
 Regex variables: $1, $2
 
-Modifiers: /x /e
+Modifiers:
+
+    /x (DONE)
+
+    /e (TODO)
 
 Quotemeta: \Q
+
+Modifiers are not serialized yet
+
+~~~java
+public String toString() {
+   // TODO - show flags
+   return this.original_string;
+}
+~~~
+
+that is:
+
+~~~bash
+$ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
+(?^x:123)
+~~~
+
+but a qr// on an existing qr// behaves differently:
+
+~~~bash
+$ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
+(?^: (\w) )
+~~~
 
 Threads
 -------
