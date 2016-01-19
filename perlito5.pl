@@ -145,16 +145,12 @@ use feature 'say';
         }
         return Perlito5::Grammar::Bareword::term_bareword($str, $pos)
     }
-    sub Perlito5::Grammar::Precedence::add_op {
-        my($fixity, $names, $precedence, $param) = @_;
-        $param //= {};
-        my $assoc = $param->{'assoc'} || 'left';
-        for my $name (@{$names}) {
-            $Operator->{$fixity}->{$name} = 1;
-            $Precedence->{$name} = $precedence;
-            $fixity eq 'prefix' && ($PrefixPrecedence->{$name} = $precedence);
-            $Assoc->{$assoc}->{$name} = 1;
-            $Op{$name} = 1
+    {
+        {
+            package main;
+            package Perlito5;
+            $VERSION = 9.017;
+            1
         }
     }
     my $prec = 100;
