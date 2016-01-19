@@ -1369,6 +1369,25 @@ class PlRegex extends PlReference {
         // TODO - show flags
         return this.p.toString();
     }
+    private static String preprocess(String s, int flags) {
+        // TODO - work in progress
+        // add double escapes: \\w instead of \w
+        // escape spaces inside character classes: [\\ ] instead of [ ]
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {        
+                case '.':   // placeholder
+                            sb.append(c);
+                            break;
+                default:    // invalid
+                            return "";
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
