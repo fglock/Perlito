@@ -54,6 +54,11 @@ rm t/sleep_time.t            # takes time
 rm t/530-hash-slice.t        # https://rt.cpan.org/Public/Bug/Display.html?id=108465
 rm t/070-anon-sub.t          # Feature "current_sub" is not supported by Perl 5.14.0
 rm t/reg_unsafe.t            # Failed 1/1 subtests
+rm t/hash_ref_with_map.t            # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/hash_ref_with_map.t line 6.
+rm t/hash_with_map_and_fat_arrow.t  # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/hash_with_map_and_fat_arrow.t line 6.
+rm t/object-can.t                   # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/object-can.t line 6.
+rm t/undef-on-obj-slot-index.t      # Can't locate ./test.pl in @INC (@INC contains: ../lib) at t/undef-on-obj-slot-index.t line 6.
+
 
 mkdir src
 mkdir src/Perlito5
