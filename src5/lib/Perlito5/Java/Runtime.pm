@@ -769,6 +769,38 @@ class PerlOp {
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
+
+    private static String double_escape(String s) {
+        // add double escapes: \\w instead of \w
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {        
+                case '\\':  // escape
+                            sb.append(Character.toChars(c));
+                            sb.append(Character.toChars(c));   // double escape
+                            if (offset < length) {
+                                offset++;
+                                int c2 = s.codePointAt(offset);
+                                if (c2 == '\\') {
+                                    sb.append(Character.toChars(c2));
+                                    sb.append(Character.toChars(c2));  // double escape
+                                }
+                                else {
+                                    sb.append(Character.toChars(c2));
+                                }
+                            }
+                            break;
+                default:    // normal char
+                            sb.append(Character.toChars(c));
+                            break;
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
+
     public static final PlObject match(PlObject s, PlRegex pat, int want) {
         if (want != PlCx.LIST) {
             return pat.p.matcher(s.toString()).find() ? PlCx.TRUE : PlCx.FALSE;
@@ -792,7 +824,7 @@ class PerlOp {
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want) {
         if (want != PlCx.LIST) {
-            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep.toString())));
+            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
         }
         PlCORE.die("not implemented string replace in list context");
         return s;
@@ -1368,25 +1400,6 @@ class PlRegex extends PlReference {
     public String toString() {
         // TODO - show flags
         return this.p.toString();
-    }
-    private static String preprocess(String s, int flags) {
-        // TODO - work in progress
-        // add double escapes: \\w instead of \w
-        // escape spaces inside character classes: [\\ ] instead of [ ]
-        final int length = s.length();
-        StringBuilder sb = new StringBuilder();
-        for (int offset = 0; offset < length; ) {
-            final int c = s.codePointAt(offset);
-            switch (c) {        
-                case '.':   // placeholder
-                            sb.append(c);
-                            break;
-                default:    // invalid
-                            return "";
-            }
-            offset++;
-        }
-        return sb.toString();
     }
 }
 class PlClosure extends PlReference implements Runnable {
