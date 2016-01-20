@@ -37,6 +37,8 @@ Some differences between the regex engines will show up:
     Named captures in Java cannot have an underline in the name.
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
+  - regex comments with "(?#text)" are not implemented in Java
+
 See also:
 
     http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#jcc
