@@ -1,3 +1,6 @@
+
+# $ perl perlito5.pl -I src5/lib -Cjava misc/Java/Http.pl > Main.java
+
 use strict;
 
 package IOException       { import => "java.io.IOException" }
