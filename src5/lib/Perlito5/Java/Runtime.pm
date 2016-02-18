@@ -27,6 +27,7 @@ sub emit_java_extends {
     #     class_meth => {
     #         decl => [ "public", "static" ],
     #         return => "Int",
+    #         throws => [ "IOException" ],
     #         args => [ "Int" ],     # class name is added to the Perl method arguments
     #         code => "MyClass::class_meth",
     #     },
@@ -80,7 +81,11 @@ sub emit_java_extends {
             my $type = $java_classes->{$return};
             $return_type = $type->{java_type};
         }
-        push @out, "    @java_decl $return_type $method(" . join(", ", @args) . ") {";
+        my $throws = '';
+        if ( $data->{throws} ) {
+            $throws = "throws @{ $data->{throws} }";
+        }
+        push @out, "    @java_decl $return_type $method(" . join(", ", @args) . ") $throws {";
 
         @args = ();
         if ( grep { $_ eq "static" } @$decl ) {
