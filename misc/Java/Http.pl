@@ -43,18 +43,3 @@ $server->createContext("/test", MyHandler->new());
 $server->setExecutor(undef); # creates a default executor
 $server->start();
 
-__END__
-public class Test {
-
-    static class MyHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange t) throws IOException {
-            String response = "This is the response";
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-        }
-    }
-
-}
