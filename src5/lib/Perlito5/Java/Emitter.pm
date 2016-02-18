@@ -1358,6 +1358,28 @@ package Perlito5::AST::CompUnit;
                         # warn Data::Dumper::Dumper $Java_class->{$class};
                         # warn "'extends' not implemented";
                     }
+                    elsif ($Java_class->{$class}->{implements}) {
+                        # implements => 'JavaObject',              # Perl package name (a class imported from Java)
+                        # methods => [ ... ]
+
+                        my $implemented = $Java_class->{ $Java_class->{$class}->{implements} };
+                        if ($implemented) {
+                            $Java_class->{$class}->{implements_java_type} = $implemented->{java_type};
+
+                        }
+                        else {
+                            die "cannot implement class '" . $Java_class->{$class}->{implements} . "' because it was not declared";
+                        }
+
+                        my $perl_to_java = $class;
+                        $perl_to_java =~ s/:://g;
+                        Perlito5::Java::set_java_class_defaults(
+                            $class, $perl_to_java,
+                        );
+
+                        # warn Data::Dumper::Dumper $Java_class->{$class};
+                        # warn "'implements' not implemented";
+                    }
                     else {
                         die "missing 'import' argument to generate Java class";
                     }

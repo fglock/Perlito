@@ -48,7 +48,12 @@ sub emit_java_extends {
     # ],
 
     my @out;
-    push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+    if ($class->{extends}) { 
+        push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+    }
+    else {
+        push @out, "class $class->{java_type} implements $class->{implements_java_type} {";
+    }
     push @out, $class->{'Java::inline'} if $class->{'Java::inline'};
     while ( @{ $class->{variables} } ) {
         my $method = shift @{ $class->{variables} };
@@ -189,7 +194,7 @@ EOT
         #
     . join('', ( map {
                     my $class = $java_classes{$_};
-                    $class->{extends} ? emit_java_extends($class, \%java_classes) : ()
+                    $class->{extends} || $class->{implements} ? emit_java_extends($class, \%java_classes) : ()
             }
             sort keys %java_classes
       ))
