@@ -17456,7 +17456,11 @@ use feature 'say';
                         my $type = $java_classes->{$return};
                         $return_type = $type->{'java_type'}
                     }
-                    push(@out, '    ' . join(${'"'}, @java_decl) . ' ' . $return_type . ' ' . $method . '(' . join(', ', @args) . ') {');
+                    my $throws = '';
+                    if ($data->{'throws'}) {
+                        $throws = 'throws ' . join(${'"'}, @{$data->{'throws'}})
+                    }
+                    push(@out, '    ' . join(${'"'}, @java_decl) . ' ' . $return_type . ' ' . $method . '(' . join(', ', @args) . ') ' . $throws . ' {');
                     @args = ();
                     if (grep {
                         $_ eq 'static'
