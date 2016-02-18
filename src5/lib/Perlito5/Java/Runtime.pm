@@ -933,7 +933,7 @@ EOT
                     my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
-                    $class->{import} || $class->{extends} ? 
+                    $class->{import} || $class->{extends} || $class->{implements} ? 
                     "    public ${java_class_name} ${perl_to_java}() {\n"
                   . "        PlCORE.die(\"error .${perl_to_java}!\");\n"
                   . "        return null;\n"
@@ -1957,7 +1957,7 @@ EOT
                     my $class = $java_classes{$_};
                     my $java_class_name = $class->{java_type};
                     my $perl_to_java = $class->{perl_to_java};
-                    $class->{import} || $class->{extends} ? 
+                    $class->{import} || $class->{extends} || $class->{implements} ? 
 "    public ${java_class_name} ${perl_to_java}() {
         return this.o.${perl_to_java}();
     }
@@ -2109,7 +2109,7 @@ EOT
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
-                    $class->{import} || $class->{extends} ? 
+                    $class->{import} || $class->{extends} || $class->{implements} ? 
 "    public PlObject set(${java_class_name}[] stuffs) {
         this.a.clear();
         // \@x = ${java_class_name}[] native;
@@ -3426,7 +3426,7 @@ EOT
                     my $perl_to_java    = $class->{perl_to_java};
                     my $perl_package    = $class->{perl_package};
                     my $java_native_to_perl = $class->{java_native_to_perl};
-                    $class->{import} || $class->{extends} ? 
+                    $class->{import} || $class->{extends} || $class->{implements} ? 
 "class ${java_native_to_perl} extends PlReference {
     public static final PlString REF = new PlString(\"${perl_package}\");
     private ${java_class_name} stuff;
