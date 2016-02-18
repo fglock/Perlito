@@ -27,7 +27,8 @@ package MyHandler {
 }
 
 sub action {
-    my HttpExchange $t = shift;
+    my $self = shift;
+    my HttpExchange $t = $self->to_HttpExchange();
     my String $response = "This is the response";
     $t->sendResponseHeaders(200, $response->length());
     my OutputStream $os = $t->getResponseBody();
