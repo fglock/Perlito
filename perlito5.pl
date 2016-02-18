@@ -15529,6 +15529,18 @@ use feature 'say';
                                     $perl_to_java =~ s!::!!g;
                                     Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
                                 }
+                                elsif ($Java_class->{$class}->{'implements'}) {
+                                    my $implemented = $Java_class->{$Java_class->{$class}->{'implements'}};
+                                    if ($implemented) {
+                                        $Java_class->{$class}->{'implements_java_type'} = $implemented->{'java_type'}
+                                    }
+                                    else {
+                                        die('cannot implement class ' . chr(39) . $Java_class->{$class}->{'implements'} . chr(39) . ' because it was not declared')
+                                    }
+                                    my $perl_to_java = $class;
+                                    $perl_to_java =~ s!::!!g;
+                                    Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
+                                }
                                 else {
                                     die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class')
                                 }
@@ -17411,7 +17423,12 @@ use feature 'say';
             sub Perlito5::Java::Runtime::emit_java_extends {
                 my($class, $java_classes) = @_;
                 my @out;
-                push(@out, 'class ' . $class->{'java_type'} . ' extends ' . $class->{'extends_java_type'} . ' {');
+                if ($class->{'extends'}) {
+                    push(@out, 'class ' . $class->{'java_type'} . ' extends ' . $class->{'extends_java_type'} . ' {')
+                }
+                else {
+                    push(@out, 'class ' . $class->{'java_type'} . ' implements ' . $class->{'implements_java_type'} . ' {')
+                }
                 $class->{'Java::inline'} && push(@out, $class->{'Java::inline'});
                 while (@{$class->{'variables'}}) {
                     my $method = shift(@{$class->{'variables'}});
@@ -17481,7 +17498,7 @@ use feature 'say';
                     $a cmp $b
                 } keys(%java_classes))) . join('', (map {
                     my $class = $java_classes{$_};
-                    $class->{'extends'} ? emit_java_extends($class, \%java_classes) : ()
+                    $class->{'extends'} || $class->{'implements'} ? emit_java_extends($class, \%java_classes) : ()
                 } sort {
                     $a cmp $b
                 } keys(%java_classes))) . 'class PlControlException extends RuntimeException {' . chr(10) . '}' . chr(10) . 'class PlNextException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlNextException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlLastException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlLastException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlRedoException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlRedoException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlReturnException  extends PlControlException {' . chr(10) . '    public PlObject ret;' . chr(10) . chr(10) . '    public PlReturnException(PlObject ret) {' . chr(10) . '        this.ret = ret;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlDieException  extends PlControlException {' . chr(10) . '    public PlObject ret;' . chr(10) . chr(10) . '    public PlDieException(PlObject ret) {' . chr(10) . '        this.ret = ret;' . chr(10) . '    }' . chr(10) . '    public String getMessage() {' . chr(10) . '        return this.ret.toString();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlCx {' . chr(10) . '    public static final int     VOID   = 0;' . chr(10) . '    public static final int     SCALAR = 1;' . chr(10) . '    public static final int     LIST   = 2;' . chr(10) . '    public static final PlUndef  UNDEF  = new PlUndef();' . chr(10) . '    public static final PlBool   TRUE   = new PlBool(true);' . chr(10) . '    public static final PlBool   FALSE  = new PlBool(false);' . chr(10) . '    public static final PlString STDOUT = new PlString("STDOUT");' . chr(10) . '    public static final PlString STDERR = new PlString("STDERR");' . chr(10) . '    public static final PlString STDIN  = new PlString("STDIN");' . chr(10) . '    public static final PlString DIED   = new PlString("Died");' . chr(10) . '    public static final PlString EMPTY  = new PlString("");' . chr(10) . '    public static final String  ARGV   = "main::List_ARGV";' . chr(10) . '    public static final String  ENV    = "main::Hash_ENV";' . chr(10) . '    public static final PlNextException NEXT = new PlNextException(0);' . chr(10) . '    public static final PlLastException LAST = new PlLastException(0);' . chr(10) . chr(10) . '    ' . join(chr(10) . '    ', map {
