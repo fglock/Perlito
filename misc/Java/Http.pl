@@ -21,6 +21,7 @@ package MyHandler {
             decl => [ "public" ],               # public method
             args => [ "HttpExchange" ],         # 1 argument
             return => "void",                   # return void
+            throws => [ "IOException" ],        # throws IOException
             code => "main::action",             # implemented in Perl, see below
         },
     ],
