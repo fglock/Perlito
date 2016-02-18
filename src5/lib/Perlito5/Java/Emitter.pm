@@ -329,6 +329,9 @@ package Perlito5::Java;
                 elsif ( $is_apply && exists $op_to_str{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').toString()';
                 }
+                elsif ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'undef' ) {
+                    push @out, 'null';
+                }
                 elsif ($cond->isa( 'Perlito5::AST::Buf' )) {
                     push @out, Perlito5::Java::escape_string( $cond->{buf} );
                 }
