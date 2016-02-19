@@ -29,17 +29,23 @@ package MyHandler {
 
 sub action {
     my $self = shift;
-    my HttpExchange $t = $self->to_HttpExchange();
-    my String $response = "This is the response";
-    $t->sendResponseHeaders(200, $response->length());
-    my OutputStream $os = $t->getResponseBody();
-    $os->write($response->getBytes());
-    $os->close();
+    eval {
+        my HttpExchange $t = $self->to_HttpExchange();
+        my String $response = "This is the response";
+        $t->sendResponseHeaders(200, $response->length());
+        my OutputStream $os = $t->getResponseBody();
+        $os->write($response->getBytes());
+        $os->close();
+        1;
+    } or die $@;
     return;
 }
 
-my HttpServer $server = HttpServer->create(InetSocketAddress->new(8000), 0);
-$server->createContext("/test", MyHandler->new());
-$server->setExecutor(undef); # creates a default executor
-$server->start();
+eval {
+    my HttpServer $server = HttpServer->create(InetSocketAddress->new(8000), 0);
+    $server->createContext("/test", MyHandler->new());
+    $server->setExecutor(undef); # creates a default executor
+    $server->start();
+    1;
+} or die $@;
 
