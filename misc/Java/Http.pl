@@ -2,6 +2,7 @@
 # $ perl perlito5.pl -I src5/lib -Cjava misc/Java/Http.pl > Main.java
 
 use strict;
+use feature 'say';
 
 package IOException       { import => "java.io.IOException" }
 package OutputStream      { import => "java.io.OutputStream" }
@@ -29,6 +30,7 @@ package MyHandler {
 
 sub action {
     my $self = shift;
+    say "processing action";
     eval {
         my HttpExchange $t = $self->to_HttpExchange();
         my String $response = "This is the response";
@@ -41,6 +43,7 @@ sub action {
     return;
 }
 
+say "starting server at http://localhost:8000/test";
 eval {
     my HttpServer $server = HttpServer->create(InetSocketAddress->new(8000), 0);
     $server->createContext("/test", MyHandler->new());
