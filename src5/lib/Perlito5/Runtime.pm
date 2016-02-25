@@ -392,5 +392,9 @@ sub test_perl_version {
     }
 }
 
+sub get_label {
+    'tmp' . $Perlito5::ID++
+}
+
 1;          
 
