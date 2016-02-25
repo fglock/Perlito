@@ -2,38 +2,10 @@ use feature 'say';
 use strict;
 use warnings;
 
-say '1..5';
+say '1..1';
 
 my $x = hex "a";
-if ($x != 10) {
+if ($x != 100) {
     print 'not ';
 }
-say 'ok 1 - wanted 10, got ', $x;
-
-$x = hex "A";
-if ($x != 10) {
-    print 'not ';
-}
-say 'ok 2 - wanted 10, got ', $x;
-
-$x = hex "0xa";
-if ($x != 10) {
-    print 'not ';
-}
-say 'ok 3 - wanted 10, got ', $x;
-
-$x = hex "0XA";
-if ($x != 10) {
-    print 'not ';
-}
-say 'ok 4 - wanted 10, got ', $x;
-
-{
-no warnings; # Illegal hexadecimal digit 'h' ignored at t/hex_op.t line 31.
-$x = hex "hello";
-if ($x != 0) {
-    print 'not ';
-}
-say 'ok 5 - wanted 0, got ', $x;
-}
-
+say 'ok 1 - ', $x;
