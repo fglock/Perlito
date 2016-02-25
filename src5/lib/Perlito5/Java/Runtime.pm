@@ -334,6 +334,17 @@ class PlCORE {
         }
         return List__.aget(-1).scalar();
     }
+    public static final PlObject hex(int want, PlObject List__) {
+        String s = List__.toString();
+        if(s.startsWith("0x") || s.startsWith("0X")) {
+            s = s.substring(2);
+        }
+        try {
+            return new PlInt(Long.parseLong(s, 16));
+        } catch (java.lang.NumberFormatException e) {
+            return new PlInt(0);
+        }
+    }
     public static final PlObject join(int want, PlArray List__) {
         String s = List__.shift().toString();
         StringBuilder sb = new StringBuilder();
