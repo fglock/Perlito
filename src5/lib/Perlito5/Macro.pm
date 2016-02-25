@@ -104,7 +104,6 @@ sub maybe_rewrite_statevars {
     my @vars;
     for my $idx (0..$#{ $block->{stmts} }) {
         my $stmt = $block->{stmts}[$idx];
-
         # my ($expr, @path) = _find_state_expr($stmt, "{block}", "{stmts}", "[$idx]");
         # next unless ($expr);
         # my $strpath = join '->', @path;
@@ -112,15 +111,14 @@ sub maybe_rewrite_statevars {
         # die 'hard';
         # my ($transformed, $var, $flagvar) = rewrite_state_expr($expr);
         # set_path_to($self, \@path, $transformed);
-
-
         my $ptr_expr = get_state_expr_ptr(\$stmt);
-        my ($transformed, $var, $flagvar) = rewrite_state_expr($ptr_expr);
-
-        # TODO: Should we be mutating the tree in place?
-        #my $ptr = \$expr;
-        #$$ptr = $transformed;
-        push @vars, $var, $flagvar;
+        if (defined $ptr_expr) {
+            my ($transformed, $var, $flagvar) = rewrite_state_expr($ptr_expr);
+            # Everything in @vars will be added to a big `my` decl block. See below.
+            push @vars, $var, $flagvar;
+            # Replace the state node in the tree with the transformed version.
+            $$ptr_expr = $transformed;
+        }
     }
     # A final mutation we need to do is to find all usages of the state vars
     # in the sub and change their `decl` to `my`.
@@ -132,7 +130,7 @@ sub maybe_rewrite_statevars {
                          arguments => [Perlito5::AST::Block->new(
                              sig   => undef,
                              stmts => [
-                                 myvar_declaration_stmt(@vars),
+    
                                  $self,
                              ]
                          )],
@@ -233,19 +231,37 @@ sub index_fragment {
     return ($_[0] =~ /\[(.+)\]/) ? $1 : undef;
 }
 
+# rewrite_state_expr($refnode)
+#
+# Given a reference to an AST node that is a state variable declaration/assignment,
+# returns a list of three items:
+# 
+#    - $transformed  The transformed node. Specifically, a state declaration or assignment is
+#                    transformed to a `do` block that closes over a `my` variable with the same
+#                    name as the original state variable. An additional flag variable is created
+#                    for initializing this closed over `my` variable exactly once.
+#   
+#    - $var          An *AST node* representing the aforementioned `my` variable. It is the job
+#                    of the caller to place this in a scope that can be closed over by
+#                    $transformed.
+#
+#    - $flagvar      The flag variable node, which must also be placed in the enclosing scope
+#                    of $transformed.
+#
 sub rewrite_state_expr {
     my ($target) = @_;
     my ($decl, $rhs);
-    if (ref $target eq 'Perlito5::AST::Apply') {
-        ($decl, $rhs) = @{ $target->{arguments} }; 
-    } elsif (ref $target eq 'Perlito5::AST::Decl') {
+    if (ref $$target eq 'Perlito5::AST::Apply') {
+        $decl = \( ${$target}->{arguments}[0] );
+        $rhs = \( ${$target}->{arguments}[1] );
+    } elsif (ref $$target eq 'Perlito5::AST::Decl') {
         $decl = $target;
     } else {
-        die "Invalid node type for state variable transformation: " . (ref $target);
+        die "Invalid node type for state variable transformation: " . (ref $$target);
     }
-    my $state_var = $decl->{var};
+    my $state_var = ${$decl}->{var};
     # This is the lexical variable that we'll inject into the surrounding
-    # do block.
+    # do block
     my $var = Perlito5::AST::Var->new(
         namespace => $state_var->{namespace},
         sigil     => $state_var->{sigil},
@@ -265,14 +281,14 @@ sub rewrite_state_expr {
     # the "state" variable (and of course sets the flag).
     my $init_block = Perlito5::AST::Apply->new(
         code      => 'do',
-        namespace => $decl->{namespace},
+        namespace => ${$decl}->{namespace},
         arguments => [Perlito5::AST::Block->new(
             sig   => undef,
             stmts => [
                 # First statement in the do block sets the init flag to 1.
                 Perlito5::AST::Apply->new(
                     code      => 'infix:<=>',
-                    namespace => $decl->{namespace},
+                    namespace => ${$decl}->{namespace},
                     arguments => [
                         $flagvar,
                         Perlito5::AST::Int->new(int => 1),
@@ -281,11 +297,13 @@ sub rewrite_state_expr {
                 # Next, we set the variable to whatever the original state
                 # variable was set to. This being the last statement of the
                 # do block, it will also become the value of the block.
-                ((ref $target eq 'Perlito5::AST::Apply') ?
+                # If $target points to an Apply node, then we also construct
+                # an apply node, else we leave it as a my decl.
+                ((ref $$target eq 'Perlito5::AST::Apply') ?
                     Perlito5::AST::Apply->new(
                         code      => 'infix:<=>',
-                        namespace => $decl->{namespace},
-                        arguments => [$var, $rhs],
+                        namespace => ${$decl}->{namespace},
+                        arguments => [$var, $$rhs],
                     ) : $var),
             ],
         )],
@@ -295,7 +313,7 @@ sub rewrite_state_expr {
     # block if not.
     my $transformed = Perlito5::AST::Apply->new(
         code      => 'ternary:<? :>',
-        namespace => $decl->{namespace},
+        namespace => ${$decl}->{namespace},
         arguments => [$flagvar, $var, $init_block],
     );
     # Return our new code and all the variables that need to be in scope for
@@ -344,6 +362,9 @@ sub _find_state_expr {
 }
 
 
+# Given a ref to a statement node, return a ref to the first state variable expression
+# (searched depth first) in the tree rooted at the given node. Returns undef if no state
+# variable node can be found.
 sub get_state_expr_ptr {
     my ($ptr_stmt) = @_;
     return $ptr_stmt
@@ -352,7 +373,7 @@ sub get_state_expr_ptr {
 
     if (exists ${$ptr_stmt}->{arguments}) {
         for (0..$#{ ${$ptr_stmt}->{arguments} }) {
-            my $ptr_arg = \${$ptr_stmt}->{arguments}[$_];
+            my $ptr_arg = \(${$ptr_stmt}->{arguments}[$_]);
             my $found = get_state_expr_ptr($ptr_arg);
             return $found
                 if ($found);

@@ -4296,6 +4296,10 @@ package Perlito5::AST::Sub;
 {
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
+        # Statevar transformation. See lib/Perlito5/Macro.pm
+        if (my $node = $self->maybe_rewrite_statevars()) {
+            return $node->emit_java($level, $wantarray);
+        }
         my $prototype = defined($self->{sig}) 
                         ? 'new PlString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
                         : 'PlCx.UNDEF';
