@@ -949,21 +949,20 @@ class PlCORE {
     }
     public static final PlObject oct(int want, PlObject List__) {
 	String valueTobeCoverted = List__.toString();
-	String result = "";
 	try {
 		if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {
-			result = Long.toOctalString(Long.parseLong(valueTobeCoverted.substring(2), 16));
+			return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));
 		} else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
-			result = Long.toOctalString(Long.parseLong(valueTobeCoverted.substring(2), 2));
+			return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
 		} else {
-			result = Long.toOctalString(Long.parseLong(valueTobeCoverted));
+			return new PlInt(Long.parseLong(valueTobeCoverted));
 		}
 	} catch (NumberFormatException n) {
-		result = "0";
+		
 	} catch (Exception e) {
 		result = e.getMessage();
 	}
-	return new PlString(result);
+	return new PlInt(0);
     }
     public static final PlObject join(int want, PlArray List__) {
         String s = List__.shift().toString();
