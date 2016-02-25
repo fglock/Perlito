@@ -3611,6 +3611,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.crypt(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
+        'hex' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.hex(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
+        },
         'join' => sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.join(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
