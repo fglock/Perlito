@@ -265,7 +265,8 @@ package Perlito5::AST::Apply;
             }
             # if (ref($arg) eq 'Perlito5::AST::Apply') {
                 $code =~ /<([^>]+)>/;
-                return [ apply => '{', $1, $arg->emit_perl5() ];
+                my $cap = $1;
+                return [ apply => '{', $cap, $arg->emit_perl5() ];
             # }
         }
         if ((  $code eq 'eval'
