@@ -346,21 +346,21 @@ class PlCORE {
         }
     }
     public static final PlObject oct(int want, PlObject List__) {
-	String valueTobeCoverted = List__.toString();
-	try {
-		if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {
-			return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));
-		} else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
-			return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
-		} else {
-			return new PlInt(Long.parseLong(valueTobeCoverted));
-		}
-	} catch (NumberFormatException n) {
-		
-	} catch (Exception e) {
-		result = e.getMessage();
-	}
-	return new PlInt(0);
+	    String valueTobeCoverted = List__.toString();
+	    try {
+	    	if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {
+	    		return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));
+	    	} else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
+	    		return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
+	    	} else {
+	    		return new PlInt(Long.parseLong(valueTobeCoverted));
+	    	}
+	    } catch (NumberFormatException n) {
+	    	
+	    } catch (Exception e) {
+	    	// result = e.getMessage();
+	    }
+	    return new PlInt(0);
     }
     public static final PlObject join(int want, PlArray List__) {
         String s = List__.shift().toString();
@@ -3220,6 +3220,9 @@ class PlString extends PlObject {
                     return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
             }
             offset3++;
+        }
+        if (offset3 == 1) {
+            return PlCx.INT0;   // string is "."
         }
         return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
     }

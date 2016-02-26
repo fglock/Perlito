@@ -1,7 +1,9 @@
 
+- Java:
 -- API to extend Java classes using Perl: new keywords "implements", "throws"
 -- native "undef" is "null"
 -- regex character class fixup - avoid double escape
+-- hex() by Bas Appelo
 
 9.017 cpan:Perlito5  2016-01-19
 - Tests:
