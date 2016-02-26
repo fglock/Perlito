@@ -188,6 +188,7 @@ package Perlito5::Java;
     our %op_to_num = map +($_ => 1), qw(
         length
         index
+        rindex
         ord
         oct
         infix:<->
@@ -2274,6 +2275,19 @@ package Perlito5::AST::Apply;
               'new PlInt('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().indexOf('
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString()))'
+        },
+        'rindex' => sub {
+            my ($self, $level, $wantarray) = @_;
+            if($self->{arguments}->[2]) {
+                'new PlInt('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString(), ' . $self->{arguments}->[2]->emit_java($level, 'scalar') . '.to_int()))'
+            }
+            else {
+                'new PlInt('
+                . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString()))'
+            }
         },
         'ord' => sub {
             my ($self, $level, $wantarray) = @_;
