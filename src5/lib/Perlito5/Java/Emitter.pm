@@ -3272,22 +3272,11 @@ package Perlito5::AST::Apply;
         },
         'chomp' => sub {
             my ($self, $level, $wantarray) = @_;
-            # TODO - chomp assignment: chomp($answer = <STDIN>)
-            my $v  = $self->{arguments}[0];
-            return Perlito5::Java::emit_wrap_java($level,
-                'var r = p5chomp(' . $v->emit_java( $level ) . ');',
-                $v->emit_java( $level ) . ' = r[1];',
-                'return r[0]',
-            );
+            'PlCORE.chomp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
         },
         'chop' => sub {
             my ($self, $level, $wantarray) = @_;
-            my $v  = $self->{arguments}[0];
-            return Perlito5::Java::emit_wrap_java($level,
-                'var r = p5chop(' . $v->emit_java( $level ) . ');',
-                $v->emit_java( $level ) . ' = r[1];',
-                'return r[0]',
-            );
+            'PlCORE.chop(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
         },
         'read' => sub {
             my ($self, $level, $wantarray) = @_;

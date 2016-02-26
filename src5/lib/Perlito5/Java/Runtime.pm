@@ -888,6 +888,48 @@ class PlCORE {
     public static final PlObject each(int want, PlObject List__) {
         return want == PlCx.LIST ? List__.each() : List__.each().aget(0);
     }
+    public static final PlObject chomp(int want, PlObject Object__) {
+        String sep = PlV.get("main::v_/").toString();
+        int sepSize = sep.length();
+        int result = 0;
+        String toChomp = Object__.toString();
+        if(toChomp.substring(toChomp.length() - sepSize, toChomp.length()).equals(sep)) {
+            toChomp = toChomp.substring(0, toChomp.length() - sepSize);
+            result += sepSize;
+        }
+
+        Object__.set(new PlString(toChomp));
+            
+        return new PlInt(result);
+    }
+    public static final PlObject chomp(int want, PlArray List__) {
+        int result = 0;
+        for(int i = 0; i < List__.to_int(); ++i) {
+            PlObject item = List__.aget_lvalue(i);
+            result += chomp(want, item).to_int();
+        }
+
+        return new PlInt(result);
+    }
+    public static final PlString chop(int want, PlObject Object__) {
+        String str = Object__.toString();
+        String returnValue = "";
+        if (str.length() > 0) {
+            returnValue = str.substring(str.length() -1);
+            Object__.set(new PlString(str.substring(0, str.length()-1)));
+        }
+
+        return new PlString(returnValue);
+    }
+    public static final PlObject chop(int want, PlArray List__) {
+        PlString result = PlCx.EMPTY;
+        for(int i = 0; i < List__.to_int(); ++i) {
+            PlObject item = List__.aget_lvalue(i);
+            result = chop(want, item);
+        }
+
+        return result;
+    }
     public static final PlObject scalar(int want, PlArray List__) {
         if (List__.to_int() == 0) {
             return PlCx.UNDEF;
@@ -965,7 +1007,7 @@ class PlCORE {
         return new PlString(sb.reverse().toString());
     }
     public static final PlObject time(int want, PlArray List__) {
-        return new PlDouble( System.currentTimeMillis() * 0.001 );
+        return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
     public static final PlObject sleep(int want, PlArray List__) {
         long s = (new Double(List__.shift().to_double() * 1000)).longValue();
@@ -1525,6 +1567,7 @@ class PlEnv {
         PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
         PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
+        PlV.set("main::v_/", new PlString("\n"));                  // $/ = "\n"
     }
 }
 class PlObject {
