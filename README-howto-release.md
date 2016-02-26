@@ -32,3 +32,41 @@ Perlito5 Release
 
 * publish to pause.perl.org
 
+Perlito6 Release
+----------------
+
+* run tests
+
+    make test-6to5
+
+* increment version number in "cpan-v6/v6.pm"
+
+    example: "$v6::VERSION = '0.045';"
+
+* update "Changelog" header
+
+    example: "0.045 cpan:v6  2016-01-19"
+
+* go to "cpan-v6" directory and execute "make-v6.sh"
+
+    cd cpan-v6
+
+    . make-v6.sh
+
+* build and test the module inside "cpan-v6" directory
+
+    perl Makefile.PL
+    make
+    make test
+
+* make dist
+
+* publish to pause.perl.org
+
+TODO for the release process
+----------------------------
+
+* BUG - "cpan-v6/ChangeLog" is not updated automatically
+
+* BUG - the README files are not included in the cpan distribution
+
