@@ -58,6 +58,8 @@ See Also
 
       - [README-perlito5-Java](README-perlito5-Java.md)
 
+  - [README-howto-release](README-howto-release.md)
+
 Build Status
 ------------
 
