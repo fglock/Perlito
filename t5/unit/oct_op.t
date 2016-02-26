@@ -5,10 +5,10 @@ use warnings;
 say '1..4';
 
 my $x = oct "8";
-if ($x != 10) {
+if ($x != 0) {
     print 'not ';
 }
-say 'ok 1 - wanted 10, got ', $x;
+say 'ok 1 - 0, got ', $x;
 
 $x = oct "0xa";
 if ($x != 10) {
