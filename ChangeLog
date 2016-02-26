@@ -1,4 +1,6 @@
 
+- Docs:
+-- new documentation file "README-howto-release.md"
 - Java:
 -- API to extend Java classes using Perl: new keywords "implements", "throws"
 -- native "undef" is "null"
