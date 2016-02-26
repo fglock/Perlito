@@ -3017,53 +3017,21 @@ package Perlito5::AST::Apply;
         'postfix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if ( ref($arg) eq 'Perlito5::AST::Var' && $arg->{_id} ) {
-                my $id = $arg->{_id};
-                my $Java_var = Perlito5::Java::get_java_var_info();
-                my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-                if ($type ne 'PlLvalue') {
-                    return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '++';
-                }
-            }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
         },
         'postfix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if ( ref($arg) eq 'Perlito5::AST::Var' && $arg->{_id} ) {
-                my $id = $arg->{_id};
-                my $Java_var = Perlito5::Java::get_java_var_info();
-                my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-                if ($type ne 'PlLvalue') {
-                    return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '--';
-                }
-            }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
         },
         'prefix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if ( ref($arg) eq 'Perlito5::AST::Var' && $arg->{_id} ) {
-                my $id = $arg->{_id};
-                my $Java_var = Perlito5::Java::get_java_var_info();
-                my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-                if ($type ne 'PlLvalue') {
-                    return '++' . Perlito5::Java::to_native_num($arg, $level, $wantarray);
-                }
-            }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
         },
         'prefix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            if ( ref($arg) eq 'Perlito5::AST::Var' && $arg->{_id} ) {
-                my $id = $arg->{_id};
-                my $Java_var = Perlito5::Java::get_java_var_info();
-                my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-                if ($type ne 'PlLvalue') {
-                    return '--' . Perlito5::Java::to_native_num($arg, $level, $wantarray);
-                }
-            }
             $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'
         },
 

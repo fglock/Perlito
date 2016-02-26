@@ -14840,7 +14840,7 @@ use feature 'say';
                 our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
                 our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
                 our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
-                our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
+                our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
                 my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
                 sub Perlito5::Java::escape_string {
                     my $s = shift;
@@ -16147,17 +16147,34 @@ use feature 'say';
                 }
                 $code = $self->{'code'}
             }
-            $op_translate{$code} && ($code = $op_translate{$code});
-            if ($code eq 'prefix:<$>') {
-                my $arg = $self->{'arguments'}->[0];
-                $arg->isa('Perlito5::AST::Buf') && exists($special_var{$arg->{'buf'}}) && return $special_var{$arg->{'buf'}}
-            }
-            if ($Perlito5::Perl6::PrettyPrinter::op{$code}) {
-                return ['op' => $code, $self->emit_perl6_args()]
-            }
-            if ($code eq 'undef') {
-                if (@{$self->{'arguments'}}) {
-                    die('TODO - undef(expr)')
+            package Perlito5::AST::Index;
+            {
+                sub Perlito5::AST::Index::emit_java {
+                    my($self, $level, $wantarray, $autovivification_type) = @_;
+                    my $method = $autovivification_type || 'aget';
+                    $autovivification_type eq 'scalar' && ($method = 'aget_scalarref');
+                    $autovivification_type eq 'array' && ($method = 'aget_arrayref');
+                    $autovivification_type eq 'hash' && ($method = 'aget_hashref');
+                    $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
+                    $autovivification_type eq 'local' && ($method = 'aget_lvalue_local');
+                    if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@') || ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>')) {
+                        return 'p5list_slice(' . $self->{'obj'}->emit_java($level, 'list') . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
+                    }
+                    if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '%')) {
+                        my $obj = $self->{'obj'};
+                        $obj->{'sigil'} eq '%' && ($obj->{'sigil'} = '@');
+                        $obj->{'code'} eq 'prefix:<%>' && ($obj->{'code'} = 'prefix:<@>');
+                        return 'p5hash_slice(' . $self->{'obj'}->emit_java($level, 'list') . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
+                    }
+                    my $arg = $self->{'index_exp'};
+                    my $s;
+                    if ($arg->isa('Perlito5::AST::Int')) {
+                        $s = $arg->{'int'}
+                    }
+                    else {
+                        $s = $arg->emit_java($level, 'scalar')
+                    }
+                    return $self->emit_java_container($level) . '.' . $method . '(' . $s . ')'
                 }
                 else {
                     return 'Any'
@@ -16207,213 +16224,33 @@ use feature 'say';
                 }
                 return ['apply' => '(', $code, $self->emit_perl6_args()]
             }
-            if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
-                return ['bareword' => $code]
-            }
-            if ($code eq 'eval') {
-                $code = 'EVAL'
-            }
-            return ['apply' => '(', $code, $self->emit_perl6_args()]
-        }
-    }
-    package Perlito5::AST::If;
-    {
-        sub Perlito5::AST::If::emit_perl6 {
-            my $self = $_[0];
-            if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
-                return ['stmt_modifier' => $self->{'body'}->emit_perl6(), ['stmt' => 'if', $self->{'cond'}->emit_perl6()]]
-            }
-            if ($self->{'otherwise'} && ref($self->{'otherwise'}) ne 'Perlito5::AST::Block') {
-                return ['stmt_modifier' => $self->{'otherwise'}->emit_perl6(), ['stmt' => 'unless', $self->{'cond'}->emit_perl6()]]
-            }
-            my @out = (['stmt' => ['keyword' => 'if'], $self->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
-            my $otherwise = $self->{'otherwise'};
-            while ($otherwise && @{$otherwise->{'stmts'}} == 1 && ref($otherwise->{'stmts'}->[0]) eq 'Perlito5::AST::If' && ($otherwise->{'stmts'}->[0]->{'body'} && ref($otherwise->{'stmts'}->[0]->{'body'}) eq 'Perlito5::AST::Block')) {
-                push(@out, ['stmt' => ['keyword' => 'elsif'], $otherwise->{'stmts'}->[0]->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($otherwise->{'stmts'}->[0]->{'body'}->{'stmts'})]);
-                $otherwise = $otherwise->{'stmts'}->[0]->{'otherwise'}
-            }
-            !($otherwise && scalar(@{$otherwise->stmts()})) && return @out;
-            push(@out, ['stmt' => ['keyword' => 'else'], Perlito5::Perl6::emit_perl6_block($otherwise->stmts())]);
-            return @out
-        }
-    }
-    package Perlito5::AST::When;
-    {
-        sub Perlito5::AST::When::emit_perl6 {
-            my $self = $_[0];
-            return ['stmt' => ['keyword' => 'when'], $self->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]
-        }
-    }
-    package Perlito5::AST::While;
-    {
-        sub Perlito5::AST::While::emit_perl6 {
-            my $self = $_[0];
-            Perlito5::Perl6::TreeGrammar::->refactor_while_glob($self);
-            if (ref($self) ne 'Perlito5::AST::While') {
-                return $self->emit_perl6()
-            }
-            my @out;
-            $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
-            if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
-                return @out, ['stmt_modifier' => $self->{'body'}->emit_perl6(), ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl6()]]
-            }
-            push(@out, ['stmt' => ['keyword' => 'while'], $self->{'cond'}->emit_perl6(), Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
-            if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
-                push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl6::emit_perl6_block($self->{'continue'}->{'stmts'})])
-            }
-            return @out
-        }
-    }
-    package Perlito5::AST::For;
-    {
-        sub Perlito5::AST::For::emit_perl6 {
-            my $self = $_[0];
-            my @out;
-            $self->{'label'} && push(@out, ['label' => $self->{'label'}]);
-            if ($self->{'body'} && ref($self->{'body'}) ne 'Perlito5::AST::Block') {
-                return @out, ['stmt_modifier' => $self->{'body'}->emit_perl6(), ['stmt' => 'for', $self->{'cond'}->emit_perl6()]]
-            }
-            my $cond;
-            my $keyword;
-            if (ref($self->{'cond'}) eq 'ARRAY') {
-                $keyword = 'loop';
-                $cond = ['paren_semicolon' => '(', ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_perl6() : []), ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_perl6() : []), ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_perl6() : [])]
-            }
-            else {
-                $keyword = 'for';
-                $cond = $self->{'cond'}->emit_perl6()
-            }
-            my @sig;
-            my $sig_ast = $self->{'topic'};
-            if (!$sig_ast) {}
-            else {
-                ref($sig_ast) eq 'Perlito5::AST::Decl' && ($sig_ast = $sig_ast->{'var'});
-                @sig = ('->', $sig_ast->emit_perl6())
-            }
-            push(@out, ['stmt' => ['keyword' => $keyword], $cond, @sig, Perlito5::Perl6::emit_perl6_block($self->{'body'}->stmts())]);
-            if ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}}) {
-                push(@out, ['stmt' => ['keyword' => 'continue'], Perlito5::Perl6::emit_perl6_block($self->{'continue'}->{'stmts'})])
-            }
-            return @out
-        }
-    }
-    package Perlito5::AST::Decl;
-    {
-        sub Perlito5::AST::Decl::emit_perl6 {
-            my $self = $_[0];
-            return ['op' => 'prefix:<' . $self->{'decl'} . '>', ($self->{'type'} ? $self->{'type'} : ()), $self->{'var'}->emit_perl6()]
-        }
-    }
-    package Perlito5::AST::Sub;
-    {
-        sub Perlito5::AST::Sub::emit_perl6 {
-            my $self = $_[0];
-            Perlito5::Perl6::TreeGrammar::->refactor_sub_arguments($self);
-            my @parts;
-            if ($self->{'args'}) {
-                push(@parts, ['paren' => '(', (map {
-                    ['var' => $_->emit_perl6(), '?']
-                } @{$self->{'args'}}), ['var' => '*@_']])
-            }
-            else {
-                push(@parts, ['paren' => '(', ['var' => '*@_']])
-            }
-            defined($self->{'block'}) && push(@parts, Perlito5::Perl6::emit_perl6_block($self->{'block'}->{'stmts'}));
-            !$self->{'name'} && return ['op' => 'prefix:<sub>', @parts];
-            my $is_our = 1;
-            $self->{'decl'} eq 'my' && ($is_our = 0);
-            my $name = $self->{'name'};
-            if ($Perlito5::PKG_NAME ne $self->{'namespace'}) {
-                $name = $self->{'namespace'} . '::' . $name;
-                $is_our = 0
-            }
-            if ($is_our) {
-                return ['stmt' => ['keyword' => 'our'], ['keyword' => 'sub'], ['bareword' => $name], @parts]
-            }
-            else {
-                return ['stmt' => ['keyword' => 'sub'], ['bareword' => $name], @parts]
-            }
-        }
-    }
-    package Perlito5::AST::Use;
-    {
-        sub Perlito5::AST::Use::emit_perl6 {
-            my $self = shift;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            return ['comment' => '# ' . $self->{'code'} . ' ' . $self->{'mod'}]
-        }
-    }
-    1
-}
-{
-    package main;
-    package Perlito5::Perl6::PrettyPrinter;
-    # use strict
-    undef();
-    my %dispatch = ('stmt' => sub {
-        statement(@_)
-    }, 'stmt_modifier' => sub {
-        statement_modifier(@_)
-    }, 'block' => sub {
-        block(@_)
-    }, 'keyword' => sub {
-        keyword(@_)
-    }, 'bareword' => sub {
-        bareword(@_)
-    }, 'number' => sub {
-        number(@_)
-    }, 'op' => sub {
-        op(@_)
-    }, 'paren' => sub {
-        paren(@_)
-    }, 'paren_semicolon' => sub {
-        paren_semicolon(@_)
-    }, 'apply' => sub {
-        apply(@_)
-    }, 'call' => sub {
-        call(@_)
-    }, 'comment' => sub {
-        comment(@_)
-    }, 'label' => sub {
-        label(@_)
-    }, 'var' => sub {
-        var(@_)
-    });
-    my %pair = ('(' => ')', '[' => ']', '{' => '}');
-    our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'p6_prefix:<^>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '^'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<~>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<leq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' leq '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<~=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ~= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'prefix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
-    $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
-        for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
-    $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 8, 'str' => $_}
-        for 'do', 'sub', 'my', 'our', 'state', 'local', 'map', 'grep', 'sort';
-    my %tab;
-    sub Perlito5::Perl6::PrettyPrinter::tab {
-        my $level = $_[0];
-        $tab{$level} //= '    ' x $level
-    }
-    sub Perlito5::Perl6::PrettyPrinter::render {
-        my($data, $level, $out) = @_;
-        if (ref($data)) {
-            $dispatch{$data->[0]}->($data, $level, $out)
-        }
-        else {
-            push(@{$out}, $data)
-        }
-    }
-    sub Perlito5::Perl6::PrettyPrinter::op_precedence {
-        my($data) = @_;
-        !ref($data) && return 0;
-        $data->[0] ne 'op' && return 0;
-        return $op{$data->[1]}->{'prec'} || 0
-    }
-    sub Perlito5::Perl6::PrettyPrinter::statement_need_semicolon {
-        my($data) = @_;
-        !ref($data) && return 1;
-        ($data->[0] eq 'block' || $data->[0] eq 'comment' || $data->[0] eq 'label') && return 0;
-        if ($data->[0] eq 'stmt') {
-            if (ref($data->[1])) {
-                my $dd = $data->[1];
-                if ($dd->[0] eq 'keyword') {
-                    ref($data->[-1]) && $data->[-1]->[0] eq 'block' && return 0
+            package Perlito5::AST::Lookup;
+            {
+                sub Perlito5::AST::Lookup::emit_java {
+                    my($self, $level, $wantarray, $autovivification_type) = @_;
+                    my $method = $autovivification_type || 'hget';
+                    $autovivification_type eq 'scalar' && ($method = 'hget_scalarref');
+                    $autovivification_type eq 'array' && ($method = 'hget_arrayref');
+                    $autovivification_type eq 'hash' && ($method = 'hget_hashref');
+                    $autovivification_type eq 'lvalue' && ($method = 'hget_lvalue');
+                    $autovivification_type eq 'local' && ($method = 'hget_lvalue_local');
+                    if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
+                        my $v;
+                        if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
+                            $v = $self->{'obj'}
+                        }
+                        $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
+                        return $v->emit_java($level, 'list') . '.' . $method . '(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
+                    }
+                    if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '%')) {
+                        my $v;
+                        if ($self->{'obj'}->isa('Perlito5::AST::Var')) {
+                            $v = $self->{'obj'}
+                        }
+                        $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
+                        return 'p5hash_lookup_slice(' . $v->emit_java($level, 'list') . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
+                    }
+                    return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ')'
                 }
             }
         }
@@ -17446,6 +17283,7 @@ use feature 'say';
                         $autovivification_type eq 'scalar' && ($method = 'aget_scalarref');
                         $autovivification_type eq 'array' && ($method = 'aget_arrayref');
                         $autovivification_type eq 'hash' && ($method = 'aget_hashref');
+                        $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
                         return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.' . $method . '(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
                     }
                     if ($meth eq 'postcircumfix:<{ }>') {
@@ -17453,6 +17291,7 @@ use feature 'say';
                         $autovivification_type eq 'scalar' && ($method = 'hget_scalarref');
                         $autovivification_type eq 'array' && ($method = 'hget_arrayref');
                         $autovivification_type eq 'hash' && ($method = 'hget_hashref');
+                        $autovivification_type eq 'lvalue' && ($method = 'hget_lvalue');
                         return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
                     }
                     if ($meth eq 'postcircumfix:<( )>') {
@@ -17611,6 +17450,14 @@ use feature 'say';
                 }, 'index' => sub {
                     my($self, $level, $wantarray) = @_;
                     'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().indexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                }, 'rindex' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    if ($self->{'arguments'}->[2]) {
+                        'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString(), ' . $self->{'arguments'}->[2]->emit_java($level, 'scalar') . '.to_int()))'
+                    }
+                    else {
+                        'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                    }
                 }, 'ord' => sub {
                     my($self, $level, $wantarray) = @_;
                     'PerlOp.ord(' . Perlito5::Java::to_str($self->{'arguments'}->[0], $level) . ')'
@@ -17852,19 +17699,19 @@ use feature 'say';
                 }, 'postfix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.post_incr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
                 }, 'postfix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.post_decr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
                 }, 'prefix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.pre_incr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
                 }, 'prefix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.pre_decr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'
                 }, 'infix:<x>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
