@@ -28,8 +28,12 @@ if ($x != 10) {
 }
 say 'ok 4 - wanted 10, got ', $x;
 
+{
+no warnings; # Illegal hexadecimal digit 'h' ignored at t/hex_op.t line 31.
 $x = hex "hello";
 if ($x != 0) {
     print 'not ';
 }
 say 'ok 5 - wanted 0, got ', $x;
+}
+
