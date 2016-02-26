@@ -2461,6 +2461,12 @@ EOT
             sort keys %native_to_perl ))
 
     . <<'EOT'
+    public PlObject exists(PlObject a) {
+        return this.o.exists(a);
+    }
+    public PlObject delete(PlObject a) {
+        return this.o.delete(a);
+    }
     public String toString() {
         return this.o.toString();
     }
@@ -3437,9 +3443,8 @@ class PlHash extends PlObject {
         }
         return aa.pop();
     }
-
     public PlObject exists(PlObject i) {
-        return this.h.containsKey(i) ? PlCx.TRUE : PlCx.FALSE;
+        return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
     }
     public PlObject delete(PlObject i) {
         PlObject r = this.h.remove(i.toString());
