@@ -964,16 +964,21 @@ class PlCORE {
 	    }
 	    return new PlInt(0);
     }
-    public static final PlObject hex(int want, PlObject List__) {
-        String s = List__.toString();
-        if(s.startsWith("0x") || s.startsWith("0X")) {
-            s = s.substring(2);
+    public static final PlObject crypt(int want, PlArray List__) {
+        if(List__.to_int() < 2) {
+            die("Not enough arguments for crypt");
         }
-        try {
-            return new PlInt(Long.parseLong(s, 16));
-        } catch (java.lang.NumberFormatException e) {
-            return new PlInt(0);
+        if(List__.to_int() > 2) {
+            die("Too many arguments for crypt");
         }
+        String plainText = List__.shift().toString();
+        String salt = List__.shift().toString();
+
+        while(salt.length() < 2) {
+            salt = salt.concat(".");
+        }
+        
+        return new PlString(PlCrypt.crypt(salt, plainText));
     }
     public static final PlObject join(int want, PlArray List__) {
         String s = List__.shift().toString();
