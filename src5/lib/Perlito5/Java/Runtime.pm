@@ -353,7 +353,7 @@ class PlCORE {
 	    	} else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
 	    		return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
 	    	} else {
-	    		return new PlInt(Long.parseLong(valueTobeCoverted));
+	    		return new PlInt(Long.parseLong(valueTobeCoverted, 8));
 	    	}
 	    } catch (NumberFormatException n) {
 	    	
