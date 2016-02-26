@@ -1264,6 +1264,7 @@ package Perlito5::AST::Index;
         $method = 'aget_scalarref' if $autovivification_type eq 'scalar';
         $method = 'aget_arrayref'  if $autovivification_type eq 'array';
         $method = 'aget_hashref'   if $autovivification_type eq 'hash';
+        $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
         $method = 'aget_lvalue_local' if $autovivification_type eq 'local';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
@@ -1449,6 +1450,7 @@ package Perlito5::AST::Lookup;
         $method = 'hget_scalarref' if $autovivification_type eq 'scalar';
         $method = 'hget_arrayref'  if $autovivification_type eq 'array';
         $method = 'hget_hashref'   if $autovivification_type eq 'hash';
+        $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
         $method = 'hget_lvalue_local' if $autovivification_type eq 'local';
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<@>'
@@ -1925,6 +1927,7 @@ package Perlito5::AST::Call;
             $method = 'aget_scalarref' if $autovivification_type eq 'scalar';
             $method = 'aget_arrayref'  if $autovivification_type eq 'array';
             $method = 'aget_hashref'   if $autovivification_type eq 'hash';
+            $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
                 . '.' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
                 . ')';
@@ -1934,6 +1937,7 @@ package Perlito5::AST::Call;
             $method = 'hget_scalarref' if $autovivification_type eq 'scalar';
             $method = 'hget_arrayref'  if $autovivification_type eq 'array';
             $method = 'hget_hashref'   if $autovivification_type eq 'hash';
+            $method = 'hget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
                 . '.' . $method . '(' . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list')
                 . ')';
