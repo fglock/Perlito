@@ -9,6 +9,10 @@
 -- oct() by Imran Mohammad
 -- delete & exists fixes for non hash context
 
+9.018 cpan:Perlito5  2016-02-26
+-Java:
+new socket based client server game using Perl
+
 9.017 cpan:Perlito5  2016-01-19
 - Tests:
 -- Travis-ci integration https://travis-ci.org/fglock/Perlito added by fredericorecsky
