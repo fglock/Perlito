@@ -861,6 +861,324 @@ use feature 'say';
                                                     return 0
                                                 }
                                             }
+                                            {
+                                                package Perlito5::AST::Sub;
+                                                # use strict
+                                                undef();
+                                                {
+                                                    {
+                                                        package main;
+                                                        package Perlito5::TreeGrammar;
+                                                        {
+                                                            {
+                                                                package main;
+                                                                package Data::Dumper;
+                                                                {
+                                                                    {
+                                                                        package main;
+                                                                        package Perlito5::Dumper;
+                                                                        sub Perlito5::Dumper::ast_dumper {
+                                                                            my $seen = {};
+                                                                            my $level = '';
+                                                                            my $pos = '[TODO - recursive structure in AST is not supported]';
+                                                                            return _dumper($_[0], $level, $seen, $pos)
+                                                                        }
+                                                                        sub Perlito5::Dumper::_dumper {
+                                                                            my($obj, $tab, $seen, $pos) = @_;
+                                                                            !defined($obj) && return 'undef';
+                                                                            my $ref = ref($obj);
+                                                                            !$ref && return escape_string($obj);
+                                                                            my $as_string = $obj;
+                                                                            $seen->{$as_string} && return $seen->{$as_string};
+                                                                            $seen->{$as_string} = $pos;
+                                                                            my $tab1 = $tab . '    ';
+                                                                            if ($ref eq 'ARRAY') {
+                                                                                @{$obj} || return '[]';
+                                                                                my @out;
+                                                                                for my $i (0 .. $#{$obj}) {
+                                                                                    my $here = $pos . '->[' . $i . ']';
+                                                                                    push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+                                                                                }
+                                                                                return join('', '[' . chr(10), @out, $tab, ']')
+                                                                            }
+                                                                            elsif ($ref eq 'HASH') {
+                                                                                keys(%{$obj}) || return '{}';
+                                                                                my @out;
+                                                                                for my $i (sort {
+                                                                                    $a cmp $b
+                                                                                } keys(%{$obj})) {
+                                                                                    my $here = $pos . '->{' . $i . '}';
+                                                                                    push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                                                                                }
+                                                                                return join('', '{' . chr(10), @out, $tab, '}')
+                                                                            }
+                                                                            elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+                                                                                return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
+                                                                            }
+                                                                            elsif ($ref eq 'CODE') {
+                                                                                return 'sub { "DUMMY" }'
+                                                                            }
+                                                                            my @out;
+                                                                            for my $i (sort {
+                                                                                $a cmp $b
+                                                                            } keys(%{$obj})) {
+                                                                                my $here = $pos . '->{' . $i . '}';
+                                                                                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                                                                            }
+                                                                            return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+                                                                        }
+                                                                        my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
+                                                                        sub Perlito5::Dumper::escape_string {
+                                                                            my $s = shift;
+                                                                            my @out;
+                                                                            my $tmp = '';
+                                                                            $s eq '' && return chr(39) . chr(39);
+                                                                            (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
+                                                                            for my $i (0 .. length($s) - 1) {
+                                                                                my $c = substr($s, $i, 1);
+                                                                                if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
+                                                                                    $tmp = $tmp . $c
+                                                                                }
+                                                                                else {
+                                                                                    $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
+                                                                                    push(@out, 'chr(' . ord($c) . ')');
+                                                                                    $tmp = ''
+                                                                                }
+                                                                            }
+                                                                            $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
+                                                                            return join(' . ', @out)
+                                                                        }
+                                                                        sub Perlito5::Dumper::_identity {
+                                                                            $_[0] eq $_[1]
+                                                                        }
+                                                                        1
+                                                                    }
+                                                                }
+                                                                sub Data::Dumper::import {
+                                                                    my $pkg = shift;
+                                                                    my $callpkg = caller(0);
+                                                                    *{$callpkg . '::Dumper'} = \&Dumper;
+                                                                    return 
+                                                                }
+                                                                sub Data::Dumper::Dumper {
+                                                                    my $seen = {};
+                                                                    my $level = '    ';
+                                                                    my @out;
+                                                                    for my $i (0 .. $#_) {
+                                                                        my $pos = '$VAR' . ($i + 1);
+                                                                        push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
+                                                                    }
+                                                                    return join('', @out)
+                                                                }
+                                                                1
+                                                            }
+                                                        }
+                                                        # use strict
+                                                        my %dispatch = ('Ref' => sub {
+                                                            Ref(@_)
+                                                        }, 'Lookup' => sub {
+                                                            Lookup(@_)
+                                                        }, 'Index' => sub {
+                                                            Index(@_)
+                                                        }, 'Value' => sub {
+                                                            Value(@_)
+                                                        }, 'And' => sub {
+                                                            And(@_)
+                                                        }, 'Or' => sub {
+                                                            Or(@_)
+                                                        }, 'Not' => sub {
+                                                            Not(@_)
+                                                        }, 'Action' => sub {
+                                                            Action(@_)
+                                                        }, 'Progn' => sub {
+                                                            Progn(@_)
+                                                        }, 'Star' => sub {
+                                                            Star(@_)
+                                                        });
+                                                        sub Perlito5::TreeGrammar::render {
+                                                            my($rule, $node) = @_;
+                                                            return $dispatch{$rule->[0]}->($rule, $node)
+                                                        }
+                                                        sub Perlito5::TreeGrammar::scan {
+                                                            my($rule, $node) = @_;
+                                                            $rule && render($rule, $node);
+                                                            if (ref($node) eq 'ARRAY') {
+                                                                scan($rule, $_)
+                                                                    for @{$node}
+                                                            }
+                                                            elsif (ref($node)) {
+                                                                scan($rule, $_)
+                                                                    for values(%{$node})
+                                                            }
+                                                            return 
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Action {
+                                                            my($rule, $node) = @_;
+                                                            $rule->[1]->($node);
+                                                            return 1
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Not {
+                                                            my($rule, $node) = @_;
+                                                            my $result;
+                                                            render($rule->[1], $node) && return ;
+                                                            return 1
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Star {
+                                                            my($rule, $node) = @_;
+                                                            my $result;
+                                                            while (1) {
+                                                                render($rule->[1], $node) || return 
+                                                            }
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Progn {
+                                                            my($rule, $node) = @_;
+                                                            my $result;
+                                                            for $_ (@{$rule}[1 .. $#{$rule}]) {
+                                                                $result = render($_, $node)
+                                                            }
+                                                            return $result
+                                                        }
+                                                        sub Perlito5::TreeGrammar::And {
+                                                            my($rule, $node) = @_;
+                                                            my $result;
+                                                            for $_ (@{$rule}[1 .. $#{$rule}]) {
+                                                                $result = render($_, $node) or return 
+                                                            }
+                                                            return $result
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Or {
+                                                            my($rule, $node) = @_;
+                                                            my $result;
+                                                            for $_ (@{$rule}[1 .. $#{$rule}]) {
+                                                                $result = render($_, $node) and return $result
+                                                            }
+                                                            return 
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Ref {
+                                                            my($rule, $node) = @_;
+                                                            ref($node) ne $rule->[1] && return ;
+                                                            !$rule->[2] && return 1;
+                                                            return render($rule->[2], $node)
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Lookup {
+                                                            my($rule, $node) = @_;
+                                                            (!ref($node) || ref($node) eq 'ARRAY' || !exists($node->{$rule->[1]})) && return ;
+                                                            !$rule->[2] && return 1;
+                                                            return render($rule->[2], $node->{$rule->[1]})
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Index {
+                                                            my($rule, $node) = @_;
+                                                            (!ref($node) || ref($node) ne 'ARRAY' || !exists($node->[$rule->[1]])) && return ;
+                                                            !$rule->[2] && return 1;
+                                                            return render($rule->[2], $node->[$rule->[1]])
+                                                        }
+                                                        sub Perlito5::TreeGrammar::Value {
+                                                            my($rule, $node) = @_;
+                                                            (ref($node) || $node ne $rule->[1]) && return ;
+                                                            !$rule->[2] && return 1;
+                                                            return render($rule->[2], $node)
+                                                        }
+                                                        1
+                                                    }
+                                                }
+                                                sub Perlito5::AST::Sub::maybe_rewrite_statevars {
+                                                    my($self) = @_;
+                                                    my $block = $self->{'block'} || return 0;
+                                                    my @init_flags;
+                                                    my @vars;
+                                                    my @base_rules = (['Lookup' => 'block'], ['Lookup' => 'stmts']);
+                                                    for my $idx (0 .. $#{$block->{'stmts'}}) {
+                                                        my $stmt = $block->{'stmts'}->[$idx];
+                                                        my($node, @rules) = find_state_expr($stmt, @base_rules, ['Index' => $idx]);
+                                                        if (defined($node)) {
+                                                            my($transformed, $var, $flagvar) = rewrite_state_expr($node);
+                                                            push(@vars, $var, $flagvar);
+                                                            my $last_rule = pop(@rules);
+                                                            push(@rules, ['Action' => sub {
+                                                                my($parent) = @_;
+                                                                if ($last_rule->[0] eq 'Lookup') {
+                                                                    $parent->{$last_rule->[1]} = $transformed
+                                                                }
+                                                                else {
+                                                                    $parent->[$last_rule->[1]] = $transformed
+                                                                }
+                                                            }]);
+                                                            my $rule = nest(\@rules);
+                                                            Perlito5::TreeGrammar::render($rule, $self)
+                                                        }
+                                                    }
+                                                    if (scalar(@vars)) {
+                                                        return Perlito5::AST::Apply::->new('code' => 'do', 'namespace' => $block->{'namespace'}, 'arguments' => [Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [myvar_declaration_stmt(@vars), $self])])
+                                                    }
+                                                    return 0
+                                                }
+                                                sub Perlito5::AST::Sub::myvar_declaration_stmt {
+                                                    (grep {
+                                                        ($_->{'decl'} // 'my') ne 'my'
+                                                    } @_) && die('Can only handle `my` variables');
+                                                    return Perlito5::AST::Apply::->new('code' => 'my', 'arguments' => [@_])
+                                                }
+                                                sub Perlito5::AST::Sub::rewrite_state_expr {
+                                                    my($target) = @_;
+                                                    my($decl, $rhs);
+                                                    if (ref($target) eq 'Perlito5::AST::Apply') {
+                                                        $decl = $target->{'arguments'}->[0];
+                                                        $rhs = $target->{'arguments'}->[1]
+                                                    }
+                                                    elsif (ref($target) eq 'Perlito5::AST::Decl') {
+                                                        $decl = $target
+                                                    }
+                                                    else {
+                                                        die('Invalid node type for state variable transformation: ' . (ref($target)))
+                                                    }
+                                                    my $state_var = $decl->{'var'};
+                                                    my $var = Perlito5::AST::Var::->new('namespace' => $state_var->{'namespace'}, 'sigil' => $state_var->{'sigil'}, 'name' => $state_var->{'name'}, 'decl' => 'my');
+                                                    my $label = Perlito5::get_label();
+                                                    my $flagvar = Perlito5::AST::Var::->new('name' => $var->{'name'} . '_inited_' . $label, 'sigil' => '$', 'namespace' => '', 'decl' => 'my');
+                                                    my $init_block = Perlito5::AST::Apply::->new('code' => 'do', 'namespace' => $decl->{'namespace'}, 'arguments' => [Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, Perlito5::AST::Int::->new('int' => 1)]), ((ref($target) eq 'Perlito5::AST::Apply') ? Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$var, $rhs]) : $var)])]);
+                                                    my $transformed = Perlito5::AST::Apply::->new('code' => 'ternary:<? :>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, $var, $init_block]);
+                                                    return ($transformed, $var, $flagvar)
+                                                }
+                                                sub Perlito5::AST::Sub::nest {
+                                                    my($xs) = @_;
+                                                    if (scalar(@{$xs} == 0)) {
+                                                        return 
+                                                    }
+                                                    return [flatten($xs->[0]), nest([@{$xs}[1 .. $#{$xs}]])]
+                                                }
+                                                sub Perlito5::AST::Sub::flatten {
+                                                    my($arg) = @_;
+                                                    if (ref($arg) eq 'ARRAY') {
+                                                        return (@{$arg})
+                                                    }
+                                                    return $arg
+                                                }
+                                                sub Perlito5::AST::Sub::find_state_expr {
+                                                    my($node, @rules) = @_;
+                                                    if (is_node_state_decl($node) || is_node_state_assignment($node)) {
+                                                        return ($node, @rules)
+                                                    }
+                                                    for my $branch ('stmts', 'arguments') {
+                                                        if (exists($node->{$branch})) {
+                                                            for $_ (0 .. $#{$node->{$branch}}) {
+                                                                my($retnode, @retrules) = find_state_expr($node->{$branch}->[$_], @rules, ['Lookup' => $branch], ['Index' => $_]);
+                                                                if ($retnode) {
+                                                                    return ($retnode, @retrules)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    return undef
+                                                }
+                                                sub Perlito5::AST::Sub::is_node_state_assignment {
+                                                    my($node) = @_;
+                                                    (ref($node) eq 'Perlito5::AST::Apply' && $node->{'code'} eq 'infix:<=>' && is_node_state_decl($node->{'arguments'}->[0]))
+                                                }
+                                                sub Perlito5::AST::Sub::is_node_state_decl {
+                                                    my($node) = @_;
+                                                    (ref($node) eq 'Perlito5::AST::Decl' && $node->{'decl'} eq 'state')
+                                                }
+                                            }
                                             sub Perlito5::Macro::while_file {
                                                 my $self = $_[0];
                                                 ref($self) ne 'Perlito5::AST::While' && return 0;
@@ -7529,6 +7847,9 @@ use feature 'say';
                             die('Perl v' . $version . ' required--this is only v' . ${']'})
                         }
                     }
+                    sub Perlito5::get_label {
+                        'tmp' . $Perlito5::ID++
+                    }
                     1
                 }
             }
@@ -9190,87 +9511,7 @@ use feature 'say';
             1
         }
     }
-    {
-        {
-            package main;
-            package Perlito5::Dumper;
-            sub Perlito5::Dumper::ast_dumper {
-                my $seen = {};
-                my $level = '';
-                my $pos = '[TODO - recursive structure in AST is not supported]';
-                return _dumper($_[0], $level, $seen, $pos)
-            }
-            sub Perlito5::Dumper::_dumper {
-                my($obj, $tab, $seen, $pos) = @_;
-                !defined($obj) && return 'undef';
-                my $ref = ref($obj);
-                !$ref && return escape_string($obj);
-                my $as_string = $obj;
-                $seen->{$as_string} && return $seen->{$as_string};
-                $seen->{$as_string} = $pos;
-                my $tab1 = $tab . '    ';
-                if ($ref eq 'ARRAY') {
-                    @{$obj} || return '[]';
-                    my @out;
-                    for my $i (0 .. $#{$obj}) {
-                        my $here = $pos . '->[' . $i . ']';
-                        push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
-                    }
-                    return join('', '[' . chr(10), @out, $tab, ']')
-                }
-                elsif ($ref eq 'HASH') {
-                    keys(%{$obj}) || return '{}';
-                    my @out;
-                    for my $i (sort {
-                        $a cmp $b
-                    } keys(%{$obj})) {
-                        my $here = $pos . '->{' . $i . '}';
-                        push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
-                    }
-                    return join('', '{' . chr(10), @out, $tab, '}')
-                }
-                elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-                    return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
-                }
-                elsif ($ref eq 'CODE') {
-                    return 'sub { "DUMMY" }'
-                }
-                my @out;
-                for my $i (sort {
-                    $a cmp $b
-                } keys(%{$obj})) {
-                    my $here = $pos . '->{' . $i . '}';
-                    push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
-                }
-                return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
-            }
-            my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
-            sub Perlito5::Dumper::escape_string {
-                my $s = shift;
-                my @out;
-                my $tmp = '';
-                $s eq '' && return chr(39) . chr(39);
-                (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
-                for my $i (0 .. length($s) - 1) {
-                    my $c = substr($s, $i, 1);
-                    if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
-                        $tmp = $tmp . $c
-                    }
-                    else {
-                        $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
-                        push(@out, 'chr(' . ord($c) . ')');
-                        $tmp = ''
-                    }
-                }
-                $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
-                return join(' . ', @out)
-            }
-            sub Perlito5::Dumper::_identity {
-                $_[0] eq $_[1]
-            }
-            1
-        }
-    }
+    undef();
     {
         {
             package main;
@@ -12829,7 +13070,8 @@ use feature 'say';
                             }
                         }
                         $code =~ m!<([^>]+)>!;
-                        return ['apply' => '{', ${1}, $arg->emit_perl5()]
+                        my $cap = ${1};
+                        return ['apply' => '{', $cap, $arg->emit_perl5()]
                     }
                     if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
                         return ['op' => 'prefix:<' . $code . '>', $self->{'arguments'}->[0]->emit_perl5()]
@@ -12969,6 +13211,11 @@ use feature 'say';
                     my $self = $_[0];
                     my @sig;
                     my @parts;
+                    if (1) {
+                        if (my $node = $self->maybe_rewrite_statevars()) {
+                            return $node->emit_perl5(@_[1 .. $#_])
+                        }
+                    }
                     defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
                     if (defined($self->{'block'})) {
                         push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
@@ -13300,144 +13547,9 @@ use feature 'say';
                 {
                     package main;
                     package Perlito5::Perl6::TreeGrammar;
-                    {
-                        {
-                            package main;
-                            package Data::Dumper;
-                            undef();
-                            sub Data::Dumper::import {
-                                my $pkg = shift;
-                                my $callpkg = caller(0);
-                                *{$callpkg . '::Dumper'} = \&Dumper;
-                                return 
-                            }
-                            sub Data::Dumper::Dumper {
-                                my $seen = {};
-                                my $level = '    ';
-                                my @out;
-                                for my $i (0 .. $#_) {
-                                    my $pos = '$VAR' . ($i + 1);
-                                    push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
-                                }
-                                return join('', @out)
-                            }
-                            1
-                        }
-                    }
+                    undef();
                     # use strict
-                    {
-                        {
-                            package main;
-                            package Perlito5::TreeGrammar;
-                            undef();
-                            # use strict
-                            my %dispatch = ('Ref' => sub {
-                                Ref(@_)
-                            }, 'Lookup' => sub {
-                                Lookup(@_)
-                            }, 'Index' => sub {
-                                Index(@_)
-                            }, 'Value' => sub {
-                                Value(@_)
-                            }, 'And' => sub {
-                                And(@_)
-                            }, 'Or' => sub {
-                                Or(@_)
-                            }, 'Not' => sub {
-                                Not(@_)
-                            }, 'Action' => sub {
-                                Action(@_)
-                            }, 'Progn' => sub {
-                                Progn(@_)
-                            }, 'Star' => sub {
-                                Star(@_)
-                            });
-                            sub Perlito5::TreeGrammar::render {
-                                my($rule, $node) = @_;
-                                return $dispatch{$rule->[0]}->($rule, $node)
-                            }
-                            sub Perlito5::TreeGrammar::scan {
-                                my($rule, $node) = @_;
-                                $rule && render($rule, $node);
-                                if (ref($node) eq 'ARRAY') {
-                                    scan($rule, $_)
-                                        for @{$node}
-                                }
-                                elsif (ref($node)) {
-                                    scan($rule, $_)
-                                        for values(%{$node})
-                                }
-                                return 
-                            }
-                            sub Perlito5::TreeGrammar::Action {
-                                my($rule, $node) = @_;
-                                $rule->[1]->($node);
-                                return 1
-                            }
-                            sub Perlito5::TreeGrammar::Not {
-                                my($rule, $node) = @_;
-                                my $result;
-                                render($rule->[1], $node) && return ;
-                                return 1
-                            }
-                            sub Perlito5::TreeGrammar::Star {
-                                my($rule, $node) = @_;
-                                my $result;
-                                while (1) {
-                                    render($rule->[1], $node) || return 
-                                }
-                            }
-                            sub Perlito5::TreeGrammar::Progn {
-                                my($rule, $node) = @_;
-                                my $result;
-                                for $_ (@{$rule}[1 .. $#{$rule}]) {
-                                    $result = render($_, $node)
-                                }
-                                return $result
-                            }
-                            sub Perlito5::TreeGrammar::And {
-                                my($rule, $node) = @_;
-                                my $result;
-                                for $_ (@{$rule}[1 .. $#{$rule}]) {
-                                    $result = render($_, $node) or return 
-                                }
-                                return $result
-                            }
-                            sub Perlito5::TreeGrammar::Or {
-                                my($rule, $node) = @_;
-                                my $result;
-                                for $_ (@{$rule}[1 .. $#{$rule}]) {
-                                    $result = render($_, $node) and return $result
-                                }
-                                return 
-                            }
-                            sub Perlito5::TreeGrammar::Ref {
-                                my($rule, $node) = @_;
-                                ref($node) ne $rule->[1] && return ;
-                                !$rule->[2] && return 1;
-                                return render($rule->[2], $node)
-                            }
-                            sub Perlito5::TreeGrammar::Lookup {
-                                my($rule, $node) = @_;
-                                (!ref($node) || ref($node) eq 'ARRAY' || !exists($node->{$rule->[1]})) && return ;
-                                !$rule->[2] && return 1;
-                                return render($rule->[2], $node->{$rule->[1]})
-                            }
-                            sub Perlito5::TreeGrammar::Index {
-                                my($rule, $node) = @_;
-                                (!ref($node) || ref($node) ne 'ARRAY' || !exists($node->[$rule->[1]])) && return ;
-                                !$rule->[2] && return 1;
-                                return render($rule->[2], $node->[$rule->[1]])
-                            }
-                            sub Perlito5::TreeGrammar::Value {
-                                my($rule, $node) = @_;
-                                (ref($node) || $node ne $rule->[1]) && return ;
-                                !$rule->[2] && return 1;
-                                return render($rule->[2], $node)
-                            }
-                            1
-                        }
-                    }
+                    undef();
                     sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
                         my($class, $in) = @_;
                         Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']], ['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Int'], ['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['Or' => ['And' => ['Ref' => 'Perlito5::AST::Int'], ['Action' => sub {
@@ -17184,6 +17296,9 @@ use feature 'say';
             {
                 sub Perlito5::AST::Sub::emit_java {
                     my($self, $level, $wantarray) = @_;
+                    if (my $node = $self->maybe_rewrite_statevars()) {
+                        return $node->emit_java($level, $wantarray)
+                    }
                     my $prototype = defined($self->{'sig'}) ? 'new PlString(' . Perlito5::Java::escape_string($self->{'sig'}) . ')' : 'PlCx.UNDEF';
                     my $sub_ref = Perlito5::Java::get_label();
                     local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
