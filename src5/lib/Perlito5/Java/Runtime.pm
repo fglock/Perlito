@@ -2607,6 +2607,9 @@ class PlArray extends PlObject {
                     aa.add(s.aget(i));
                 }
             }
+            else if (s.is_lvalue()) {
+                aa.add(s.get());
+            }
             else {
                 aa.add(s);
             }
