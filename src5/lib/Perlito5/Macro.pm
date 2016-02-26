@@ -93,6 +93,7 @@ sub op_auto {
 package Perlito5::AST::Sub;
 use strict;
 use feature 'say';
+use Perlito5::TreeGrammar;
 # Transformation for implementing state variables (perldoc -f state) by
 # enclosing the sub in a do block, which in turn contains lexical variables
 # that corresponding to the state variables in use in the sub. Returns a `do`
@@ -102,40 +103,58 @@ sub maybe_rewrite_statevars {
     my $block = $self->{block} || return 0;
     my @init_flags; # Holds the *names* of intialization flags for state vars.
     my @vars;
+    my @base_rules = ([Lookup => 'block'], [Lookup => 'stmts']); # $self->{block}{stmts}
     for my $idx (0..$#{ $block->{stmts} }) {
         my $stmt = $block->{stmts}[$idx];
-        # my ($expr, @path) = _find_state_expr($stmt, "{block}", "{stmts}", "[$idx]");
-        # next unless ($expr);
-        # my $strpath = join '->', @path;
-        # say "Found an expr at path $strpath";
-        # die 'hard';
-        # my ($transformed, $var, $flagvar) = rewrite_state_expr($expr);
-        # set_path_to($self, \@path, $transformed);
-        my $ptr_expr = get_state_expr_ptr(\$stmt);
-        if (defined $ptr_expr) {
-            my ($transformed, $var, $flagvar) = rewrite_state_expr($ptr_expr);
+        my ($node, @rules) = find_state_expr($stmt, @base_rules, [Index => $idx]);
+        if (defined $node) {
+            my ($transformed, $var, $flagvar) = rewrite_state_expr($node);
             # Everything in @vars will be added to a big `my` decl block. See below.
             push @vars, $var, $flagvar;
-            # Replace the state node in the tree with the transformed version.
-            $$ptr_expr = $transformed;
+            # Now we will replace $node in the tree with $transformed.
+            # To do that, we note that the last rule in @rules *must*
+            # be an Index or a Lookup. We pop this last rule into
+            # $last_rule, and then push an Action rule into
+            # @rules. This Action rule will be fired when the rules
+            # before it in @rules have all executed, resulting in the
+            # parent of $node being passed to the Action sub. At that
+            # point, we take this parent node (say, $parent), and
+            # depending on whether $last_rule->[0] is a Lookup or an Index,
+            # we do $parent->{$last_rule->[1]} = $transformed or
+            # $parent->[$last_rule->[1]] = $transformed.
+            my $last_rule = pop @rules;
+            push @rules, [Action => sub {
+                my ($parent) = @_; # This node will be the parent of $node.
+                if ($last_rule->[0] eq 'Lookup') {
+                    $parent->{$last_rule->[1]} = $transformed;
+                } else {
+                    $parent->[$last_rule->[1]] = $transformed;
+                }
+            }];
+            # This is the nested rule built from @rules, that correctly
+            # walks the AST till the parent of $node.
+            my $rule = nest(\@rules);
+            Perlito5::TreeGrammar::render($rule, $self);
         }
     }
-    # A final mutation we need to do is to find all usages of the state vars
-    # in the sub and change their `decl` to `my`.
-    # Now return a `do` node containing the transformed (mutated) $self and
-    # the flag variables and the state variables declared as plain `my` vars.
-    (scalar @vars) ? Perlito5::AST::Apply->new(
-                         code      => 'do',
-                         namespace => $block->{namespace},
-                         arguments => [Perlito5::AST::Block->new(
-                             sig   => undef,
-                             stmts => [
-    
-                                 $self,
-                             ]
-                         )],
-                     )
-                   : 0;
+    # If there are any state var expressions that we have rewritten,
+    # we shall return a `do` block containing a `my` declaraction of
+    # the transformed variables followed by the mutated Sub node for
+    # $self.
+    if (scalar @vars) {
+        return Perlito5::AST::Apply->new(
+            code      => 'do',
+            namespace => $block->{namespace},
+            arguments => [Perlito5::AST::Block->new(
+                sig   => undef,
+                stmts => [
+                    myvar_declaration_stmt(@vars),
+                    $self,
+                ]
+            )],
+        );
+    }
+    return 0;
 }
 
 # myvar_declaration_stmt($var_node1, $var_node2, ...)
@@ -156,84 +175,9 @@ sub myvar_declaration_stmt {
     );
 }
 
-# Given a path in the AST (see sub traverse_path() for an example path),
-# sets the resulting node to $value. This is equivalent to walking to the
-# parent of the target node (the node at the end of the path) and setting
-# the last fragment to $value. For example, the call,
-#   
-#   set_path_to($node, ["{arguments}", "[0]", "{block}", "{stmts}", "[1]"], #   $newnode)
-#
-# will essentially do this:
-#   
-#   $node->{arguments}[0]{block}{stmts}[1] = $newnode;
-# 
-# Why is this needed? In C++, for example, one could take a proper pointer
-# to the target node and then do
-#   
-#   *ptr_target = newnode;
-#
-# In Perl, references don't work that way, and we can't take a reference to
-# an inner node in an AST and set it by saying
-#   
-#   $$ptr_target = $newnode;
-#
-sub set_path_to {
-    my ($node, $path, $value) = @_;
-    my @path = @{ $path };
-    my $end = pop @path;
-    ($end) || die "Empty path";
-    $node = traverse_path($node, \@path);
-    my $acc;
-    if (defined ($acc = lookup_fragment($end))) {
-        $node->{$acc} = $value;
-    } elsif (defined ($acc = index_fragment($end))) {
-        $node->[$acc] = $value;
-    } else {
-        die "Cannot handle path fragment $_";
-    }
-}
-
-# Given a path fragments in the AST, walk the path and return the result node.
-# A path fragment is a string, and must be take one of the following forms:
-#
-#   "{key}"
-#   "[idx]"
-#
-# For example, a path of ["{arguments}", "[0]", "{block}", "{stmts}", "[1]"]
-# will essentially return 
-#   
-#   $node->{arguments}[0]{block}{stmts}[1]
-#
-# if possible. This does *not* check for the existence of keys or indices along
-# the way.
-#
-sub traverse_path {
-    my ($tree, $path) = @_;
-    my $node = $tree;
-    for (@{ $path }) {
-        my $acc;
-        if (defined ($acc = lookup_fragment($_))) {
-            $node = $node->{$acc};
-        } elsif (defined ($acc = index_fragment($_))) {
-            $node = $node->[$acc];
-        } else {
-            die "Cannot handle path fragment $_";
-        }
-    }
-    return $node;
-}
-
-sub lookup_fragment {
-    return ($_[0] =~ /\{(.+)\}/) ? $1 : undef;
-}
-
-sub index_fragment {
-    return ($_[0] =~ /\[(.+)\]/) ? $1 : undef;
-}
-
 # rewrite_state_expr($refnode)
 #
-# Given a reference to an AST node that is a state variable declaration/assignment,
+# Given an AST node that is a state variable declaration/assignment,
 # returns a list of three items:
 # 
 #    - $transformed  The transformed node. Specifically, a state declaration or assignment is
@@ -251,15 +195,15 @@ sub index_fragment {
 sub rewrite_state_expr {
     my ($target) = @_;
     my ($decl, $rhs);
-    if (ref $$target eq 'Perlito5::AST::Apply') {
-        $decl = \( ${$target}->{arguments}[0] );
-        $rhs = \( ${$target}->{arguments}[1] );
-    } elsif (ref $$target eq 'Perlito5::AST::Decl') {
+    if (ref $target eq 'Perlito5::AST::Apply') {
+        $decl = $target->{arguments}[0];
+        $rhs = $target->{arguments}[1];
+    } elsif (ref $target eq 'Perlito5::AST::Decl') {
         $decl = $target;
     } else {
-        die "Invalid node type for state variable transformation: " . (ref $$target);
+        die "Invalid node type for state variable transformation: " . (ref $target);
     }
-    my $state_var = ${$decl}->{var};
+    my $state_var = $decl->{var};
     # This is the lexical variable that we'll inject into the surrounding
     # do block
     my $var = Perlito5::AST::Var->new(
@@ -281,14 +225,14 @@ sub rewrite_state_expr {
     # the "state" variable (and of course sets the flag).
     my $init_block = Perlito5::AST::Apply->new(
         code      => 'do',
-        namespace => ${$decl}->{namespace},
+        namespace => $decl->{namespace},
         arguments => [Perlito5::AST::Block->new(
             sig   => undef,
             stmts => [
                 # First statement in the do block sets the init flag to 1.
                 Perlito5::AST::Apply->new(
                     code      => 'infix:<=>',
-                    namespace => ${$decl}->{namespace},
+                    namespace => $decl->{namespace},
                     arguments => [
                         $flagvar,
                         Perlito5::AST::Int->new(int => 1),
@@ -299,11 +243,11 @@ sub rewrite_state_expr {
                 # do block, it will also become the value of the block.
                 # If $target points to an Apply node, then we also construct
                 # an apply node, else we leave it as a my decl.
-                ((ref $$target eq 'Perlito5::AST::Apply') ?
+                ((ref $target eq 'Perlito5::AST::Apply') ?
                     Perlito5::AST::Apply->new(
                         code      => 'infix:<=>',
-                        namespace => ${$decl}->{namespace},
-                        arguments => [$var, $$rhs],
+                        namespace => $decl->{namespace},
+                        arguments => [$var, $rhs],
                     ) : $var),
             ],
         )],
@@ -313,82 +257,103 @@ sub rewrite_state_expr {
     # block if not.
     my $transformed = Perlito5::AST::Apply->new(
         code      => 'ternary:<? :>',
-        namespace => ${$decl}->{namespace},
+        namespace => $decl->{namespace},
         arguments => [$flagvar, $var, $init_block],
     );
     # Return our new code and all the variables that need to be in scope for
     # the block to work.
     return ($transformed, $var, $flagvar);
 }
-# Finds and returns a node with a state variable declaration. This can be one
-# of two types, a Perlito5::AST::Decl or a Perlito5::AST::Apply representing
-# assignment ('infix:<=>'). Returns undef if nothing is found.
+
+# nest(ARRAYREF)
+#
+# Given an arrayref of the form
+#
+#    [ [a1, a2, a3, ...], [b1, b2, b3, ...], [c1, c2, c3, ...] ]
+#
+# produces an arrayref of nested arrayrefs, with the first element of each
+# flattened to one level:
+# 
+#    [ a1, a2, a3, ..., [b1, b2, b3, ..., [c1, c2, c3, ... [...]]]]
+# 
+# As a concrete example,
+#    
+#    [[ Lookup => 'blah' ], [ Index => 0 ], [ Lookup => 'bar' ], [ Action => $sub ]]
+# 
+# becomes
+# 
+#    [ Lookup => 'blah', [ Index => 0, [ Lookup => 'bar', [ Action => $sub ]]]]
+#
+# Note the flattening is only upto one level, e.g., 
+#   
+#    [[a, [b, c]], [d, e]]
+#
+# becomes
+#
+#    [a, [b, c], [d, e]]
+# 
+# and not
+#
+#    [a, b, c, [d, e]]
+#
+sub nest {
+    my ($xs) = @_;
+    if (scalar @$xs == 0) {
+        return;
+    }
+    return [flatten($xs->[0]), nest([@{$xs}[1..$#$xs]])];
+}
+
+# flatten(ARRAYREF|SCALAR)
+#
+# If $x is an ARRAYREF, return @$x, otherwise returns $x.
+sub flatten {
+    my ($arg) = @_;
+    if (ref $arg eq 'ARRAY') {
+        return (@{$arg});
+    }
+    return $arg;
+}
+
+# find_state_expr($node, @rules)
+#
+# Find a state variable declaration in the AST subtree rooted at
+# $node.  @rules is a *list* of Perlito5::TreeGrammar rules (and not a
+# single monotlithic rule tree) required to reach $node.
+#
+# If a state variable declaration/initialization expression is found,
+# this function returns the state decl node and the rule list required
+# get to it.
+#
+# If @rules is empty, the returned list of rules will be the rules
+# required to get to the found state variable decl/init node *from*
+# $node.
+#
+# If no state variable declaration/initialization is found, undef is
+# returned.
 sub find_state_expr {
-    my ($stmt, $path) = @_;
-    $path //= [];
-    return ($stmt, $path) if (is_node_state_decl($stmt) ||
-                              is_node_state_assignment($stmt));
-    push @{ $path }, '{arguments}';
-    # If not, look for embedded state exprs.
-    my $idx = 0;
-    for (@{ $stmt->{arguments} }) {
-        push @{ $path }, $idx++;
-        my ($found, $path) = find_state_expr($_);
-        return ($found, $path) if ($found);
-        pop @{ $path };
+    my ($node, @rules) = @_;
+    if (is_node_state_decl($node) || is_node_state_assignment($node)) {
+        return ($node, @rules);
     }
-    return undef;
-}
-
-sub _find_state_expr {
-    my ($stmt, @path) = @_;
-    return ($stmt, @path) if (is_node_state_decl($stmt) ||
-                              is_node_state_assignment($stmt));
-    if (exists $stmt->{arguments}) {
-        for (0..$#{ $stmt->{arguments} }){
-            my $arg = $stmt->{arguments}[$_];
-            my ($found, @retpath) = _find_state_expr($arg, (@path, "{arguments}", "[$_]"));
-            $found && return ($found, @retpath);
+    # Recursively scan each node in $node->{stmts} or $node->{arguments},
+    # if we can.
+    for my $branch (qw(stmts arguments)) {
+        if (exists $node->{$branch}){
+            for (0..$#{$node->{$branch}}) {
+                my ($retnode, @retrules) = find_state_expr(
+                    $node->{$branch}[$_],
+                    # The rules are the rules to reach $node
+                    # plus the rules to reach $node->{$branch}{$_}
+                    # from $node.
+                    @rules, [Lookup => $branch], [Index => $_]
+                );
+                if ($retnode) {
+                    return ($retnode, @retrules);
+                }
+            }
         }
     }
-    if (exists $stmt->{stmts}) {
-        for (0..$#{ $stmt->{stmts} }){
-            my $child_stmt = $stmt->{stmts}[$_];
-            my ($found, @retpath) = _find_state_expr($child_stmt, (@path, "{stmts}", "[$_]"));
-            $found && return ($found, @retpath);
-        }
-    }
-    return undef;
-}
-
-
-# Given a ref to a statement node, return a ref to the first state variable expression
-# (searched depth first) in the tree rooted at the given node. Returns undef if no state
-# variable node can be found.
-sub get_state_expr_ptr {
-    my ($ptr_stmt) = @_;
-    return $ptr_stmt
-        if (is_node_state_decl($$ptr_stmt) ||
-            is_node_state_assignment($$ptr_stmt));
-
-    if (exists ${$ptr_stmt}->{arguments}) {
-        for (0..$#{ ${$ptr_stmt}->{arguments} }) {
-            my $ptr_arg = \(${$ptr_stmt}->{arguments}[$_]);
-            my $found = get_state_expr_ptr($ptr_arg);
-            return $found
-                if ($found);
-        }
-    }
-
-    if (exists ${$ptr_stmt}->{stmts}) {
-        for (0..$#{ ${$ptr_stmt}->{stmts} }) {
-            my $ptr_child_stmt = \${$ptr_stmt}->{stmts}[$_];
-            my $found = get_state_expr_ptr($ptr_child_stmt);
-            return $found
-                if ($found);
-        }
-    }
-
     return undef;
 }
 
