@@ -5,6 +5,8 @@
 -- regex character class fixup - avoid double escape
 -- hex() by Bas Appelo
 -- oct() by Imran Mohammad
+-- crypt() by Bas Appelo
+-- delete & exists fixes for non hash context
 
 9.017 cpan:Perlito5  2016-01-19
 - Tests:
