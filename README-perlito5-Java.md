@@ -15,6 +15,7 @@ Perlito5-Java platform differences
 
   - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
       - "import" also doesn't work when doing precompilation
+      - subroutines need to be declared before use
 
   - no eval-string (because not-yet-bootstrapped)
       - also no: "do FILE", "require" (because these depend on eval-string)
@@ -693,6 +694,10 @@ Variables
     delete local EXPR
 
     subroutine lookups could also be "our"-like (also method lookups)
+
+    subroutine parameter lists should be list-of-aliases
+
+      - create a special PlArray constructor that stores lvalues
 
 Symbolic references
 -------------------
