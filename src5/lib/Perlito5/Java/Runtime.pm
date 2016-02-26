@@ -3460,6 +3460,11 @@ class PlHash extends PlObject {
         }
         return aa.pop();
     }
+    public PlObject delete(int want, PlString a) {
+        PlArray aa = new PlArray();
+        aa.push(a);
+        return delete(want, aa);
+    }
     public PlObject values() {
         PlArray aa = new PlArray();
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
