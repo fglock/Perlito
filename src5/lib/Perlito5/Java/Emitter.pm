@@ -788,7 +788,6 @@ package Perlito5::Java::LexicalBlock;
 
             if    (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
-                  || $last_statement->isa( 'Perlito5::AST::If' )
                   || $last_statement->isa( 'Perlito5::AST::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
@@ -796,6 +795,10 @@ package Perlito5::Java::LexicalBlock;
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
                 push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+            }
+            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
+                push @str, $last_statement->emit_java($level, 'runtime') . '';
+                # push @str, 'return PlCx.UNDEF;';  # unreachable
             }
             else {
                 if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
