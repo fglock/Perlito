@@ -1,4 +1,8 @@
 
+- work in progress:
+	read/write argument list ($_[0])
+	state variables
+
 - Docs:
 -- new documentation file "README-howto-release.md"
 - Java:
@@ -9,10 +13,8 @@
 -- oct() by Imran Mohammad
 -- delete, exists fixes for non hash context
 -- chomp() and chop() converted from JS to Java
-
-9.018 cpan:Perlito5  2016-02-26
--Java:
-new socket based client server game using Perl
+-- Java example: new socket based client server game using Perl, by Imran Mohammad
+	misc/Java/GameClient.pl, misc/Java/GameServer.pl
 
 9.017 cpan:Perlito5  2016-01-19
 - Tests:
