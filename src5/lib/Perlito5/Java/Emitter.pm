@@ -2691,22 +2691,22 @@ package Perlito5::AST::Apply;
         'postfix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            $arg->emit_java($level, 'scalar') . '.post_incr()'
+            $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
         },
         'postfix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            $arg->emit_java($level, 'scalar') . '.post_decr()'
+            $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
         },
         'prefix:<++>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            $arg->emit_java($level, 'scalar') . '.pre_incr()'
+            $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
         },
         'prefix:<-->' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            $arg->emit_java($level, 'scalar') . '.pre_decr()'
+            $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'
         },
 
         'infix:<x>' => sub {

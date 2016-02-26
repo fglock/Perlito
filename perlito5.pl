@@ -15084,7 +15084,7 @@ use feature 'say';
                 our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
                 our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
                 our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
-                our %op_to_num = map(+($_ => 1), 'length', 'index', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
+                our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
                 my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
                 sub Perlito5::Java::escape_string {
                     my $s = shift;
@@ -15658,6 +15658,7 @@ use feature 'say';
                     $autovivification_type eq 'scalar' && ($method = 'aget_scalarref');
                     $autovivification_type eq 'array' && ($method = 'aget_arrayref');
                     $autovivification_type eq 'hash' && ($method = 'aget_hashref');
+                    $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
                     $autovivification_type eq 'local' && ($method = 'aget_lvalue_local');
                     if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@') || ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>')) {
                         return 'p5list_slice(' . $self->{'obj'}->emit_java($level, 'list') . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
@@ -15745,6 +15746,7 @@ use feature 'say';
                     $autovivification_type eq 'scalar' && ($method = 'hget_scalarref');
                     $autovivification_type eq 'array' && ($method = 'hget_arrayref');
                     $autovivification_type eq 'hash' && ($method = 'hget_hashref');
+                    $autovivification_type eq 'lvalue' && ($method = 'hget_lvalue');
                     $autovivification_type eq 'local' && ($method = 'hget_lvalue_local');
                     if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
                         my $v;
@@ -16078,6 +16080,7 @@ use feature 'say';
                         $autovivification_type eq 'scalar' && ($method = 'aget_scalarref');
                         $autovivification_type eq 'array' && ($method = 'aget_arrayref');
                         $autovivification_type eq 'hash' && ($method = 'aget_hashref');
+                        $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
                         return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.' . $method . '(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
                     }
                     if ($meth eq 'postcircumfix:<{ }>') {
@@ -16085,6 +16088,7 @@ use feature 'say';
                         $autovivification_type eq 'scalar' && ($method = 'hget_scalarref');
                         $autovivification_type eq 'array' && ($method = 'hget_arrayref');
                         $autovivification_type eq 'hash' && ($method = 'hget_hashref');
+                        $autovivification_type eq 'lvalue' && ($method = 'hget_lvalue');
                         return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
                     }
                     if ($meth eq 'postcircumfix:<( )>') {
@@ -16300,6 +16304,14 @@ use feature 'say';
                 }, 'index' => sub {
                     my($self, $level, $wantarray) = @_;
                     'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().indexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                }, 'rindex' => sub {
+                    my($self, $level, $wantarray) = @_;
+                    if ($self->{'arguments'}->[2]) {
+                        'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString(), ' . $self->{'arguments'}->[2]->emit_java($level, 'scalar') . '.to_int()))'
+                    }
+                    else {
+                        'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                    }
                 }, 'ord' => sub {
                     my($self, $level, $wantarray) = @_;
                     'PerlOp.ord(' . Perlito5::Java::to_str($self->{'arguments'}->[0], $level) . ')'
@@ -16541,19 +16553,19 @@ use feature 'say';
                 }, 'postfix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.post_incr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
                 }, 'postfix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.post_decr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
                 }, 'prefix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.pre_incr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
                 }, 'prefix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
-                    $arg->emit_java($level, 'scalar') . '.pre_decr()'
+                    $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'
                 }, 'infix:<x>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
