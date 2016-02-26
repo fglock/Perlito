@@ -242,6 +242,8 @@ https://github.com/eriwen/javascript-stacktrace
 https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 - Pugs Perl6 in javascript
 
+crypt implementation
+https://github.com/TimDumol/unix-crypt-td-js/blob/master/src/unix-crypt-td.js
 
 Regex
 --------------
