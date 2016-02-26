@@ -178,6 +178,7 @@ CORE.oct = function(List__) {
 
     var re = new RegExp('_', 'g');
     v = v.replace(re, "");
+    var result;
 
     if (b == "0b" || b == "0B") {
         for(var i = 2; i < v.length; i++) {
@@ -188,10 +189,9 @@ CORE.oct = function(List__) {
             }
         }
         if (v.length == 2) { return 0 }
-        return parseInt(v.substr(2), 2);
+        result = parseInt(v.substr(2), 2);
     }
-
-    if (b == "0x" || b == "0X") {
+    else if (b == "0x" || b == "0X") {
         for(var i = 2; i < v.length; i++) {
             var c = v.substr(i,1);
             if (c >= "0" && c <= "9" || c >= "A" && c <= "F" || c >= "a" && c <= "f") {}
@@ -200,10 +200,12 @@ CORE.oct = function(List__) {
             }
         }
         if (v.length == 2) { return 0 }
-        return parseInt(v.substr(2), 16);
+        result = parseInt(v.substr(2), 16);
     }
-
-    return parseInt(v, 8);
+    else {
+        result = parseInt(v, 8);
+    }
+    return isNaN(result) ? 0 : result;
 };
 
 CORE.abs   = function(List__) { return Math.abs(List__[0]) };
