@@ -699,6 +699,8 @@ Variables
 
       - create a special PlArray constructor that stores lvalues
 
+      - See: PlArray.construct_list_of_aliases()
+
 Symbolic references
 -------------------
 

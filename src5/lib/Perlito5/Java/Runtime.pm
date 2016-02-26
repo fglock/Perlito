@@ -1674,6 +1674,9 @@ EOT
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
+    public PlObject aget_lvalue(int pos) {
+        return PlCORE.die("Not an ARRAY reference");
+    }
     public PlObject aget_scalarref(PlObject i) {
         PlCORE.die("Not a SCALAR reference");
         return this;
@@ -2660,6 +2663,28 @@ class PlArray extends PlObject {
         this.each_iterator = 0;
         this.a = aa;
     }
+    public static PlArray construct_list_of_aliases(PlObject... args) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                // @x = ( @x, @y );
+                for (int i = 0; i < s.to_long(); i++) {
+                    aa.add(s.aget_lvalue(i));
+                }
+            }
+            else {
+                aa.add(s);  // store lvalue as-is
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        return result;
+    }
+
     public PlObject set(PlObject s) {
         this.a.clear();
         if (s.is_hash()) {
