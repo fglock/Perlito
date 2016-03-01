@@ -28,7 +28,11 @@ var CORE = p5pkg.CORE;
 
 var isNode = typeof require != "undefined";
 
+EOT
 
+# sleep()
+
+    . <<'EOT'
 if (isNode) {
     try {
         var sleep = require("sleep");
@@ -50,6 +54,40 @@ if (!CORE.sleep) {
     }
 }
 
+EOT
+
+# crypt()
+
+    . <<'EOT'
+if (isNode) {
+    try {
+        var crypt = require("crypt3");
+        CORE.crypt = function(List__) {
+            var text = p5str(List__[0]);
+            var salt = p5str(List__[1]);
+            while(salt.length() < 2) {
+                salt += "A";
+            }
+            return crypt(text, salt);
+        }
+    }
+    catch (err) {
+        CORE.crypt = function(List__) {
+            CORE.die("crypt() function failed. Maybe you need 'npm install crypt3'?\n" + err);
+        }
+    }
+}
+if (!CORE.crypt) {
+    CORE.crypt = function(List__) {
+        CORE.die("crypt() not supported for this platform");
+    }
+}
+
+EOT
+
+# time()
+
+    . <<'EOT'
 CORE.time = function(List__) {
     return CORE.int([Date.now() / 1000]);
 }
