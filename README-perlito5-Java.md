@@ -695,7 +695,7 @@ Variables
 
     subroutine lookups could also be "our"-like (also method lookups)
 
-    subroutine parameter lists should be list-of-aliases
+    (DONE) subroutine parameter lists should be list-of-aliases
 
       - create a special PlArray constructor that stores lvalues
 
@@ -762,7 +762,7 @@ Perl features
     subroutine signatures
     return (list)
     assignment to splice
-    rw @_ in subroutines
+    (DONE) rw @_ in subroutines
     rw $_ in loops
     sprintf
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
