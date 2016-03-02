@@ -763,7 +763,7 @@ Variables
 
     subroutine lookups could also be "our"-like (also method lookups)
 
-    subroutine parameter lists should be list-of-aliases
+    (DONE) subroutine parameter lists should be list-of-aliases
 
       - create a special PlArray constructor that stores lvalues
 
