@@ -3642,8 +3642,10 @@ package Perlito5::AST::Apply;
                 . ')';
         }
 
-        my $arg_list = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-        my $arg_code = Perlito5::Java::to_list($arg_list);
+        my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
+        my $arg_code = 'new PlArray('
+             .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
+             . ')';
 
         # TODO - autoload
         # if ( $may_need_autoload ) {
