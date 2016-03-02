@@ -18357,9 +18357,14 @@ use feature 'say';
                             push(@str, emit_return($has_local, $local_label, $wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement->{'arguments'}->[0]], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement->{'arguments'}->[0]], $level + 1) : $last_statement->{'arguments'}->[0]->emit_java($level, $wantarray)) . ';')
                         }
                     }
-                    elsif (!@{$last_statement->{'arguments'}}) {
-                        $Perlito5::THROW_RETURN = 1;
-                        push(@str, 'return PerlOp.ret(PerlOp.context(want));')
+                    my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
+                    my $arg_code = 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
+                    $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
+                }
+                sub Perlito5::AST::Apply::emit_java_set_list {
+                    my($self, $level, $list) = @_;
+                    if ($self->code() eq 'undef') {
+                        return $list . '.shift()'
                     }
                     else {
                         $Perlito5::THROW_RETURN = 1;
