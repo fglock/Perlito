@@ -32,6 +32,10 @@ Perlito5 Release
 
 * publish to pause.perl.org
 
+* commit and push the changes
+
+    example: "Perlito5 - CPAN - v9.017"
+
 Perlito6 Release
 ----------------
 
