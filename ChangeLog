@@ -1,6 +1,5 @@
 
 - work in progress:
-	read/write argument list ($_[0])
 	state variables
 
 - Docs:
@@ -15,6 +14,7 @@
 -- chomp() and chop() converted from JS to Java
 -- Java example: new socket based client server game using Perl, by Imran Mohammad
 	misc/Java/GameClient.pl, misc/Java/GameServer.pl
+-- read/write argument list - $_[0]++
 
 9.017 cpan:Perlito5  2016-01-19
 - Tests:
