@@ -3582,8 +3582,6 @@ package Perlito5::AST::Apply;
 
             # TODO - generate the right prototype
 
-            my $close = ']';
-
             my $optional = 0;
             while (length $sig) {
                 my $c = substr($sig, 0, 1);
@@ -3594,7 +3592,7 @@ package Perlito5::AST::Apply;
                     push @out, shift(@in)->emit_java( $level + 1, 'scalar' ) if @in || !$optional;
                 }
                 elsif ($c eq '@') {
-                    $close = '].concat(' . Perlito5::Java::to_list(\@in, $level + 1) . ')'
+                    push @out, Perlito5::Java::to_list(\@in, $level + 1)
                         if @in || !$optional;
                     @in = ();
                 }
@@ -3638,12 +3636,12 @@ package Perlito5::AST::Apply;
 
             return $code . '.apply('
                         . Perlito5::Java::to_context($wantarray)
-                        . ', [' . join(', ', @out) . $close
+                        . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')'
                 . ')';
         }
 
         my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-        my $arg_code = 'new PlArray('
+        my $arg_code = 'PlArray.construct_list_of_aliases('
              .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
              . ')';
 

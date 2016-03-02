@@ -17100,7 +17100,6 @@ use feature 'say';
                     if ($sig) {
                         my @out = ();
                         my @in = @{$self->{'arguments'} || []};
-                        my $close = ']';
                         my $optional = 0;
                         while (length($sig)) {
                             my $c = substr($sig, 0, 1);
@@ -17111,7 +17110,7 @@ use feature 'say';
                                 (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
                             }
                             elsif ($c eq '@') {
-                                (@in || !$optional) && ($close = '].concat(' . Perlito5::Java::to_list(\@in, $level + 1) . ')');
+                                (@in || !$optional) && push(@out, Perlito5::Java::to_list(\@in, $level + 1));
                                 @in = ()
                             }
                             elsif ($c eq '&') {
@@ -17148,10 +17147,10 @@ use feature 'say';
                             }
                             $sig = substr($sig, 1)
                         }
-                        return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', [' . join(', ', @out) . $close . ')'
+                        return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')' . ')'
                     }
                     my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-                    my $arg_code = 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
+                    my $arg_code = 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
                     $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
                 }
                 sub Perlito5::AST::Apply::emit_java_set_list {
