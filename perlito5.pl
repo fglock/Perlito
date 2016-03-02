@@ -18354,11 +18354,70 @@ use feature 'say';
                             push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                         }
                         else {
-                            push(@str, emit_return($has_local, $local_label, $wantarray eq 'runtime' ? Perlito5::Java::to_runtime_context([$last_statement->{'arguments'}->[0]], $level + 1) : $wantarray eq 'scalar' ? Perlito5::Java::to_scalar([$last_statement->{'arguments'}->[0]], $level + 1) : $last_statement->{'arguments'}->[0]->emit_java($level, $wantarray)) . ';')
+                            if ($self->{'bareword'}) {
+                                if ($Perlito5::STRICT) {
+                                    die('Bareword ' . Perlito5::Java::escape_string($name) . ' not allowed while "strict subs" in use')
+                                }
+                                return Perlito5::Java::escape_string(($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)
+                            }
+                            $may_need_autoload = 1
                         }
+                        (exists($self->{'proto'})) && ($sig = $self->{'proto'})
+                    }
+                    if ($sig) {
+                        my @out = ();
+                        my @in = @{$self->{'arguments'} || []};
+                        my $optional = 0;
+                        while (length($sig)) {
+                            my $c = substr($sig, 0, 1);
+                            if ($c eq ';') {
+                                $optional = 1
+                            }
+                            elsif ($c eq '$' || $c eq '_') {
+                                (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
+                            }
+                            elsif ($c eq '@') {
+                                (@in || !$optional) && push(@out, Perlito5::Java::to_list(\@in, $level + 1));
+                                @in = ()
+                            }
+                            elsif ($c eq '&') {
+                                push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
+                            }
+                            elsif ($c eq '*') {
+                                if (@in || !$optional) {
+                                    my $arg = shift(@in);
+                                    if ($arg->{'bareword'}) {
+                                        push(@out, Perlito5::Java::escape_string($arg->{'code'}))
+                                    }
+                                    else {
+                                        push(@out, $arg->emit_java($level + 1, 'scalar'))
+                                    }
+                                }
+                            }
+                            elsif ($c eq chr(92)) {
+                                if (substr($sig, 0, 2) eq chr(92) . '$') {
+                                    $sig = substr($sig, 1);
+                                    (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
+                                }
+                                elsif (substr($sig, 0, 2) eq chr(92) . '@' || substr($sig, 0, 2) eq chr(92) . '%') {
+                                    $sig = substr($sig, 1);
+                                    (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
+                                }
+                                elsif (substr($sig, 0, 5) eq chr(92) . '[@%]') {
+                                    $sig = substr($sig, 4);
+                                    (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
+                                }
+                                elsif (substr($sig, 0, 6) eq chr(92) . '[$@%]') {
+                                    $sig = substr($sig, 5);
+                                    (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
+                                }
+                            }
+                            $sig = substr($sig, 1)
+                        }
+                        return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')' . ')'
                     }
                     my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-                    my $arg_code = 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
+                    my $arg_code = 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
                     $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
                 }
                 sub Perlito5::AST::Apply::emit_java_set_list {

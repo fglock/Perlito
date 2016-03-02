@@ -4008,7 +4008,7 @@ package Perlito5::AST::Apply;
         }
 
         my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-        my $arg_code = 'new PlArray('
+        my $arg_code = 'PlArray.construct_list_of_aliases('
              .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
              . ')';
 
