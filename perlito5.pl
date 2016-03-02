@@ -17038,8 +17038,8 @@ use feature 'say';
                         }
                         return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', [' . join(', ', @out) . $close . ')'
                     }
-                    my $arg_list = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-                    my $arg_code = Perlito5::Java::to_list($arg_list);
+                    my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
+                    my $arg_code = 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
                     $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
                 }
                 sub Perlito5::AST::Apply::emit_java_set_list {
