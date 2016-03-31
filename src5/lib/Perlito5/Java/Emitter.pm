@@ -207,38 +207,7 @@ package Perlito5::Java;
         infix:<+>   +
         infix:<*>   *
         infix:</>   /
-        infix:<!=>  !=
-        infix:<==>  ==
-        infix:<<=>  <=
-        infix:<>=>  >=
-        infix:<>>   >
-        infix:<<>   <
     );
-    our %native_op_unary = qw(
-        postfix:<++>    1  
-        postfix:<-->    1
-        prefix:<++>     1
-        prefix:<-->     1 
-    ); 
-    # these operators will generate native Java code when possible; return "boolean"
-    our %native_op_to_bool = qw(
-        infix:<!=>  !=
-        infix:<==>  ==
-        infix:<<=>  <=
-        infix:<>=>  >=
-        infix:<>>   >
-        infix:<<>   <
-    );
-    our %valid_java_statement = qw(
-        print           1
-        say             1
-        printf          1
-        infix:<=>       1
-        postfix:<++>    1
-        postfix:<-->    1
-        prefix:<++>     1
-        prefix:<-->     1
-    ); 
 
     my %safe_char = (
         ' ' => 1,
@@ -392,8 +361,8 @@ package Perlito5::Java;
                 }
                 elsif ( $is_apply && exists $native_op{ $cond->code } ) {
                     # TODO - cast arguments to "number", "string" or "boolean" depending on operator
-                    push @out, '(' . to_native_num($cond->{arguments}[0], $level, $wantarray) .
-                        ' ' . $native_op{ $cond->code } . ' ' . to_native_num($cond->{arguments}[1], $level, $wantarray) . ')';
+                    push @out, '(' . to_native_args([$cond->{arguments}[0]], $level) .
+                        ' ' . $native_op{ $cond->code } . ' ' . to_native_args([$cond->{arguments}[1]], $level) . ')';
                 }
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .

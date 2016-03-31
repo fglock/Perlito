@@ -576,6 +576,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     $x++         # autoincrement
 
     $x = $x + 1  # assignment
+                 # TODO - cast arguments to "number", "string" or "boolean" depending on operator
 
     print $x     # print
 ~~~
