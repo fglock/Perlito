@@ -14841,7 +14841,8 @@ use feature 'say';
                 our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
                 our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
                 our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
-                our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/');
+                our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
+                our %native_op_to_bool = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
                 my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
                 sub Perlito5::Java::escape_string {
                     my $s = shift;
@@ -14890,6 +14891,17 @@ use feature 'say';
                     }
                     return 0
                 }
+                sub Perlito5::Java::is_native_bool {
+                    my $self = shift;
+                    if (is_native_args([$self])) {
+                        return 1
+                    }
+                    my $is_apply = $self->isa('Perlito5::AST::Apply') && $self->{'arguments'} && @{$self->{'arguments'}};
+                    if ($is_apply && exists($native_op_to_bool{$self->{'code'}}) && is_native_args($self->{'arguments'})) {
+                        return 1
+                    }
+                    return 0
+                }
                 sub Perlito5::Java::to_native_args {
                     my $args = shift;
                     my $level = shift;
@@ -14927,6 +14939,53 @@ use feature 'say';
                         }
                     }
                     return join(', ', @out)
+                }
+                sub Perlito5::Java::is_native_args {
+                    my $args = shift;
+                    my $wantarray = 'scalar';
+                    my $s = '';
+                    my @out;
+                    for my $cond (@{$args}) {
+                        my $is_apply = $cond->isa('Perlito5::AST::Apply') && $cond->{'arguments'} && @{$cond->{'arguments'}};
+                        if ($is_apply && $cond->code() eq 'circumfix:<( )>') {
+                            is_native_args($cond->{'arguments'}) || return 0
+                        }
+                        elsif ($is_apply && exists($native_op{$cond->code()})) {
+                            is_native_args($cond->{'arguments'}) || return 0
+                        }
+                        elsif ($cond->isa('Perlito5::AST::Int')) {}
+                        elsif ($cond->isa('Perlito5::AST::Num')) {}
+                        elsif (ref($cond) eq 'Perlito5::AST::Var' && $cond->{'_id'}) {
+                            my $id = $cond->{'_id'};
+                            my $Java_var = Perlito5::Java::get_java_var_info();
+                            my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                            if ($type eq 'PlLvalue') {
+                                return 0
+                            }
+                        }
+                        else {
+                            is_native($cond) || return 0
+                        }
+                    }
+                    @{$args} && return 1;
+                    return 0
+                }
+                sub Perlito5::Java::to_native_bool {
+                    my $cond = shift;
+                    my $level = shift;
+                    my $wantarray = shift;
+                    if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
+                        return to_native_bool($cond->{'arguments'}->[0], $level, $wantarray)
+                    }
+                    elsif ($cond->isa('Perlito5::AST::Int')) {
+                        return '(' . $cond->{'int'} . ' != 0)'
+                    }
+                    elsif ($cond->isa('Perlito5::AST::Num')) {
+                        return '(' . $cond->{'num'} . ' != 0.0)'
+                    }
+                    else {
+                        return to_native_args([$cond], $level)
+                    }
                 }
                 sub Perlito5::Java::to_native_num {
                     my $cond = shift;
@@ -19123,8 +19182,9 @@ use feature 'say';
                     if ($meth eq 'new') {
                         return 'new ' . $info->{'java_type'} . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                     }
-                    if ($self->{'_no_params'}) {
-                        return $info->{'java_type'} . '.' . $meth
+                    my $expression;
+                    if (Perlito5::Java::is_native_bool($cond)) {
+                        $expression = Perlito5::Java::to_native_bool($cond, $level + 1)
                     }
                     else {
                         return $info->{'java_type'} . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
