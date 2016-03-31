@@ -14902,7 +14902,7 @@ use feature 'say';
                             push(@out, to_native_args($cond->{'arguments'}->[0], $level))
                         }
                         elsif ($is_apply && exists($native_op{$cond->code()})) {
-                            push(@out, '(' . to_native_args([$cond->{'arguments'}->[0]], $level) . ' ' . $native_op{$cond->code()} . ' ' . to_native_args([$cond->{'arguments'}->[1]], $level) . ')')
+                            push(@out, '(' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . ' ' . $native_op{$cond->code()} . ' ' . to_native_num($cond->{'arguments'}->[1], $level, $wantarray) . ')')
                         }
                         elsif ($is_apply && exists($op_to_num{$cond->code()})) {
                             push(@out, '(' . $cond->emit_java($level, $wantarray) . ').' . ($cond->{'arguments'}->[0]->isa('Perlito5::AST::Num') || $cond->{'arguments'}->[1]->isa('Perlito5::AST::Num') ? 'to_double()' : 'to_long()'))
@@ -14927,6 +14927,23 @@ use feature 'say';
                         }
                     }
                     return join(', ', @out)
+                }
+                sub Perlito5::Java::to_native_num {
+                    my $cond = shift;
+                    my $level = shift;
+                    my $wantarray = shift;
+                    if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
+                        return to_native_num($cond->{'arguments'}->[0], $level, $wantarray)
+                    }
+                    elsif ($cond->isa('Perlito5::AST::Int')) {
+                        return $cond->{'int'}
+                    }
+                    elsif ($cond->isa('Perlito5::AST::Num')) {
+                        return $cond->{'num'}
+                    }
+                    else {
+                        return to_native_args([$cond], $level)
+                    }
                 }
                 sub Perlito5::Java::to_native_str {
                     my $cond = shift;

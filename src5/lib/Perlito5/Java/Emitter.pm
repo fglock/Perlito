@@ -361,8 +361,8 @@ package Perlito5::Java;
                 }
                 elsif ( $is_apply && exists $native_op{ $cond->code } ) {
                     # TODO - cast arguments to "number", "string" or "boolean" depending on operator
-                    push @out, '(' . to_native_args([$cond->{arguments}[0]], $level) .
-                        ' ' . $native_op{ $cond->code } . ' ' . to_native_args([$cond->{arguments}[1]], $level) . ')';
+                    push @out, '(' . to_native_num($cond->{arguments}[0], $level, $wantarray) .
+                        ' ' . $native_op{ $cond->code } . ' ' . to_native_num($cond->{arguments}[1], $level, $wantarray) . ')';
                 }
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
@@ -389,82 +389,6 @@ package Perlito5::Java;
                 }
             }
             return join(', ', @out);
-    }
-
-    sub is_native_args {
-            my $args = shift;
-            my $wantarray = 'scalar';
-            my $s = '';
-            my @out;
-
-            for my $cond (@$args) {
-                my $is_apply = $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{arguments} && @{$cond->{arguments}};
-
-                if ( $is_apply && $cond->code eq 'circumfix:<( )>') {
-                    return 0 unless is_native_args($cond->{arguments});
-                }
-                elsif ( $is_apply && exists $native_op{ $cond->code } ) {
-                    return 0 unless is_native_args($cond->{arguments});
-                }
-                elsif ( $is_apply && exists $native_op_unary{ $cond->code } ) {
-                    return 0 unless is_native_args($cond->{arguments});
-                }
-                # elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
-                #     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
-                #         (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
-                #             ? 'to_double()' : 'to_long()');
-                # }
-                # elsif ( $is_apply && exists $op_to_str{ $cond->code } ) {
-                #     push @out, '(' . $cond->emit_java($level, $wantarray) . ').toString()';
-                # }
-                # elsif ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'undef' ) {
-                #     push @out, 'null';
-                # }
-                # elsif ($cond->isa( 'Perlito5::AST::Buf' )) {
-                #     push @out, Perlito5::Java::escape_string( $cond->{buf} );
-                # }
-                elsif ($cond->isa( 'Perlito5::AST::Int' )) {
-                    ;
-                }
-                elsif ($cond->isa( 'Perlito5::AST::Num' )) {
-                    ;
-                }
-                elsif ( ref($cond) eq 'Perlito5::AST::Var' && $cond->{_id} ) {
-                    my $id = $cond->{_id};
-                    my $Java_var = Perlito5::Java::get_java_var_info();
-                    my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-                    if ($type eq 'PlLvalue') {
-                        return 0;
-                    }
-                }
-                else {
-                    return 0 unless is_native($cond);
-                }
-            }
-            return 1 if @$args;
-            return 0;
-    }
-
-    sub to_native_bool {
-            my $cond = shift;
-            my $level = shift;
-            my $wantarray = shift;
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{arguments} && @{$cond->{arguments}}
-               )
-            {
-                return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
-            }
-            elsif ($cond->isa( 'Perlito5::AST::Int' )) {
-                return '(' . $cond->{int} . ' != 0)';
-            }
-            elsif ($cond->isa( 'Perlito5::AST::Num' )) {
-                return '(' . $cond->{num} . ' != 0.0)';
-            }
-            else {
-                # TODO - ensure "bool"
-                return to_native_args([$cond], $level);
-            }
     }
 
     sub to_native_num {
