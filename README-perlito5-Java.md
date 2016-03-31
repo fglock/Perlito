@@ -502,6 +502,39 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
 
 
+-- native expressions TODO
+
+~~~perl
+    $x++         # autoincrement
+
+    $x = $x + 1  # assignment
+
+    print $x     # print
+~~~
+
+    test case:
+
+~~~perl
+    package Integer {}
+    my Integer $count;
+    my Integer $i = 0;
+    while ( $i < 400 ) {
+        my Integer $j = 0;
+        while ( $j < 400 ) {
+            my Integer $k = 0;
+            while ( $k < 400 ) {
+                $k = $k + 1;
+                $count = $count + 1;
+            }
+            $j = $j + 1;
+        }
+        $i = $i + 1;
+    }
+    my $c = $count;
+    print "done $c\n";
+~~~
+
+
 Value types
 ---------------
 
