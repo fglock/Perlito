@@ -331,8 +331,8 @@ package Perlito5::Java;
                 }
                 elsif ( $is_apply && exists $native_op{ $cond->code } ) {
                     # TODO - cast arguments to "number", "string" or "boolean" depending on operator
-                    push @out, '(' . to_native_args([$cond->{arguments}[0]], $level) .
-                        ' ' . $native_op{ $cond->code } . ' ' . to_native_args([$cond->{arguments}[1]], $level) . ')';
+                    push @out, '(' . to_native_num($cond->{arguments}[0], $level, $wantarray) .
+                        ' ' . $native_op{ $cond->code } . ' ' . to_native_num($cond->{arguments}[1], $level, $wantarray) . ')';
                 }
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
@@ -359,6 +359,28 @@ package Perlito5::Java;
                 }
             }
             return join(', ', @out);
+    }
+
+    sub to_native_num {
+            my $cond = shift;
+            my $level = shift;
+            my $wantarray = shift;
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+               && $cond->{arguments} && @{$cond->{arguments}}
+               )
+            {
+                return to_native_num( $cond->{arguments}[0], $level, $wantarray )
+            }
+            elsif ($cond->isa( 'Perlito5::AST::Int' )) {
+                return $cond->{int};
+            }
+            elsif ($cond->isa( 'Perlito5::AST::Num' )) {
+                return $cond->{num};
+            }
+            else {
+                # TODO - ensure "num"
+                return to_native_args([$cond], $level);
+            }
     }
 
     sub to_native_str {
