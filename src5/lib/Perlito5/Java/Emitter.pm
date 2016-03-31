@@ -200,6 +200,13 @@ package Perlito5::Java;
         infix:<|>
         infix:<&>
     );
+    # these operators will generate native Java code when possible
+    our %native_op = qw(
+        infix:<->   -
+        infix:<+>   +
+        infix:<*>   *
+        infix:</>   /
+    );
 
     my %safe_char = (
         ' ' => 1,
@@ -321,6 +328,11 @@ package Perlito5::Java;
 
                 if ( $is_apply && $cond->code eq 'circumfix:<( )>') {
                     push @out, to_native_args( $cond->{arguments}[0], $level );
+                }
+                elsif ( $is_apply && exists $native_op{ $cond->code } ) {
+                    # TODO - cast arguments to "number", "string" or "boolean" depending on operator
+                    push @out, '(' . to_native_args([$cond->{arguments}[0]], $level) .
+                        ' ' . $native_op{ $cond->code } . ' ' . to_native_args([$cond->{arguments}[1]], $level) . ')';
                 }
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
