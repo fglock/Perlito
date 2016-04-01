@@ -1020,7 +1020,7 @@ package Perlito5::Java::LexicalBlock;
                 '}';
             @str = ();
         }
-        elsif ( ($Perlito5::THROW || $self->{continue}) && !$self->{not_a_loop} ) {
+        elsif ( ($Perlito5::THROW || ($self->{continue} && @{$self->{continue}{stmts}} > 0)) && !$self->{not_a_loop} ) {
 
             # TODO - emit error message if catched a "next/redo/last LABEL" when expecting a "return" exception
 
