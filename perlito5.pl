@@ -15437,7 +15437,7 @@ use feature 'say';
                         push(@pre, 'try {', [@str], '}', 'catch(PlReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}');
                         @str = ()
                     }
-                    elsif (($Perlito5::THROW || $self->{'continue'}) && !$self->{'not_a_loop'}) {
+                    elsif (($Perlito5::THROW || ($self->{'continue'} && @{$self->{'continue'}->{'stmts'}} > 0)) && !$self->{'not_a_loop'}) {
                         my $redo_label = Perlito5::Java::get_label();
                         my $test_label = 'e.label_id != 0';
                         $block_label && ($test_label = 'e.label_id != ' . $block_label . ' && e.label_id != 0');
