@@ -227,6 +227,18 @@ use "make clean" to get rid of all those .class files
 Perlito5 Java backend TODO list
 ===============================
 
+Primitive data types
+------------
+
+implemented:
+
+~~~perl
+    package long      { }
+~~~
+
+other primitive types are missing.
+
+
 CPAN distribution
 -----------------
 

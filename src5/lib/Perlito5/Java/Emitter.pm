@@ -120,6 +120,12 @@ package Perlito5::Java;
             perl_to_java        => 'to_character',
             perl_package        => 'Character',
         };
+        $Java_class->{long} = {
+            java_type           => 'long',
+            java_native_to_perl => 'PlInt',
+            perl_to_java        => 'to_long',
+            perl_package        => 'long',
+        };
     }
 
     our %Java_loop_label;

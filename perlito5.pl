@@ -15069,7 +15069,8 @@ use feature 'say';
                     $Java_class->{'Byte'} = {'java_type' => 'Byte', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_byte', 'perl_package' => 'Byte'};
                     $Java_class->{'Short'} = {'java_type' => 'Short', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_short', 'perl_package' => 'Short'};
                     $Java_class->{'Float'} = {'java_type' => 'Float', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_float', 'perl_package' => 'Float'};
-                    $Java_class->{'Character'} = {'java_type' => 'Character', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'to_character', 'perl_package' => 'Character'}
+                    $Java_class->{'Character'} = {'java_type' => 'Character', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'to_character', 'perl_package' => 'Character'};
+                    $Java_class->{'long'} = {'java_type' => 'long', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'long'}
                 }
                 our %Java_loop_label;
                 sub Perlito5::Java::get_java_loop_label {
