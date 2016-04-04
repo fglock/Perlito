@@ -287,9 +287,6 @@ implemented:
 
 ~~~perl
     package long      { }
-    package int       { }
-    package short     { }
-    package byte      { }
 ~~~
 
 other primitive types are missing.
