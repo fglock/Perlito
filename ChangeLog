@@ -1,6 +1,10 @@
 
 - work in progress:
 	state variables
+- Java:
+-- pure-typed expressions, see: misc/benchmark/benchmark_typed.pl
+-- support for primitive data types, work in progress: "long",
+    see: misc/benchmark/benchmark_typed_primitive.pl
 
 9.018 cpan:Perlito5  2016-03-02
 - Docs:
