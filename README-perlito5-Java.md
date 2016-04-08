@@ -287,6 +287,7 @@ implemented:
 
 ~~~perl
     package long      { }
+    package int       { }
 ~~~
 
 other primitive types are missing.
