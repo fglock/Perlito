@@ -2,7 +2,7 @@ use feature 'say';
 use strict;
 use warnings;
 
-say '1..3';
+say '1..2';
 
 my $x = crypt "hello", "ab";
 if ($x ne "abl0JrMf6tlhw") {
@@ -16,11 +16,12 @@ if ($x ne "loQTxEbOR1T6U") {
 }
 say 'ok 2 - wanted loQTxEbOR1T6U, got ', $x;
 
-$x = crypt "", "";
-if ($x ne "..X8NBuQ4l6uQ") {
-    print 'not ';
-}
-say 'ok 3 - wanted ..X8NBuQ4l6uQ, got ', $x;
+# system-dependent - an invalid salt may return undef
+# $x = crypt "", "";
+# if ($x ne "..X8NBuQ4l6uQ") {
+#     print 'not ';
+# }
+# say 'ok 3 - wanted ..X8NBuQ4l6uQ, got ', $x;
 
 # TODO Perl does compile time, not possible yet
 # $ perl t5/unit/crypt.t 
