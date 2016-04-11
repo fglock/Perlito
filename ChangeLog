@@ -1,6 +1,8 @@
 
 - work in progress:
 	state variables
+- Java:
+-- support for primitive data types, work in progress: "byte", "short"
 
 9.019 cpan:Perlito5  2016-04-10
 - Java:
