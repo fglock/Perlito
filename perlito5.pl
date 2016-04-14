@@ -17531,11 +17531,12 @@ use feature 'say';
             sub Perlito5::Java::Runtime::emit_java_extends {
                 my($class, $java_classes) = @_;
                 my @out;
+                my $java_decl = $class->{'decl'} // [];
                 if ($class->{'extends'}) {
-                    push(@out, 'class ' . $class->{'java_type'} . ' extends ' . $class->{'extends_java_type'} . ' {')
+                    push(@out, join(${'"'}, @{$java_decl}) . ' class ' . $class->{'java_type'} . ' extends ' . $class->{'extends_java_type'} . ' {')
                 }
                 else {
-                    push(@out, 'class ' . $class->{'java_type'} . ' implements ' . $class->{'implements_java_type'} . ' {')
+                    push(@out, join(${'"'}, @{$java_decl}) . ' class ' . $class->{'java_type'} . ' implements ' . $class->{'implements_java_type'} . ' {')
                 }
                 $class->{'Java::inline'} && push(@out, $class->{'Java::inline'});
                 while (@{$class->{'variables'}}) {
