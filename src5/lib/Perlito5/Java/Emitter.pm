@@ -1197,7 +1197,12 @@ package Perlito5::AST::CompUnit;
                         or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
 
 
-                    if ($Java_class->{$class}->{import}) {
+                    if ($Java_class->{$class}->{java_path}) {
+                        # package header { java_path => 'org.perlito.udfs' }
+                        #  ==> $Java_class->{header}->{java_path} = 'org.perlito.udfs';
+                        $str .= "package $Java_class->{$class}->{java_path};\n";
+                    }
+                    elsif ($Java_class->{$class}->{import}) {
                         Perlito5::Java::set_java_class_defaults(
                             $class, $Java_class->{$class}->{import},
                         );
