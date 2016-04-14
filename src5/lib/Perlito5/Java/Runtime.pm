@@ -49,11 +49,12 @@ sub emit_java_extends {
     # ],
 
     my @out;
+    my $java_decl = $class->{decl} // [];
     if ($class->{extends}) { 
-        push @out, "class $class->{java_type} extends $class->{extends_java_type} {";
+        push @out, "@$java_decl class $class->{java_type} extends $class->{extends_java_type} {";
     }
     else {
-        push @out, "class $class->{java_type} implements $class->{implements_java_type} {";
+        push @out, "@$java_decl class $class->{java_type} implements $class->{implements_java_type} {";
     }
     push @out, $class->{'Java::inline'} if $class->{'Java::inline'};
     while ( @{ $class->{variables} } ) {
