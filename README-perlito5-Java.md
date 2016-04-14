@@ -125,6 +125,9 @@ Extending a Java class with Perl
 --------------------------------
 
 ~~~perl
+    # create a Java package
+    package header { java_path => 'org.perlito.udfs' };
+
     # import the original Java class
     package J::Date   { import => "java.util.Date" };
     

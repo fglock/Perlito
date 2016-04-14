@@ -15492,7 +15492,10 @@ use feature 'say';
                                 Perlito5::Perl5::PrettyPrinter::pretty_print([$args_ast->emit_perl5()], 0, $out);
                                 my $args_perl5 = join('', @{$out});
                                 $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
-                                if ($Java_class->{$class}->{'import'}) {
+                                if ($Java_class->{$class}->{'java_path'}) {
+                                    $str .= 'package ' . $Java_class->{$class}->{'java_path'} . ';' . chr(10)
+                                }
+                                elsif ($Java_class->{$class}->{'import'}) {
                                     Perlito5::Java::set_java_class_defaults($class, $Java_class->{$class}->{'import'})
                                 }
                                 elsif ($Java_class->{$class}->{'extends'}) {
