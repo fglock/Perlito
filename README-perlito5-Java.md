@@ -54,15 +54,17 @@ Perlito5-Java extensibility
 The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
 
-Java classes can be added to a Perl script using a "package" declaration:
+Java classes can be added to a Perl script using a special "package" declaration:
 
-  - an empty package works for importing builtin types ("String", "Long")
+  - an empty package works for importing builtin types or primitives ("String", "Long", "long")
 
   - an "import" specification works for importing Java classes
 
   - an "extends" specification works for adding methods to an existing class
 
   - an "implements" specification works for adding methods to an existing interface
+
+  - a "header" specification works for creating a Java package
 
 "Java::inline" can be used to add Java expressions to a Perl script
 
