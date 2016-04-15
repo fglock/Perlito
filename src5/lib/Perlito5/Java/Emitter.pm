@@ -309,47 +309,60 @@ package Perlito5::Java;
     sub is_native {
         my $self = shift;
 
-        # class method call in native 'Java' packages
-        #
-        #   package Sample { import => "misc.Java.Sample" };
-        #   Sample->new();  
-        #   new Sample();
-        #
-        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{sigil} eq '::' ) {
-            my $Java_class = Perlito5::Java::get_java_class_info();
-            if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
-                return 1;
-            }
-        }
+        if ( ref($self) eq 'Perlito5::AST::Call' ) {
 
-        # method call on a typed invocant
-        #   package Sample { import => "misc.Java.Sample" };
-        #   my Sample $s;  
-        #   $s->meth();
-        #
-        if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
-            my $id = $self->{invocant}->{_id};
-            my $Java_var = Perlito5::Java::get_java_var_info();
-            my $type = $Java_var->{ $id }{type} || 'PlLvalue';
-            if ($type ne 'PlLvalue') {
-                return 1;
-            }
-        }
-
-        # type coercion method call on an untyped invocant
-        #   package Sample { import => "misc.Java.Sample" };
-        #   my $x;  
-        #   $x->to_Sample();
-        #
-        my $meth = $self->{method}; 
-        if ( $meth =~ /^to/ ) {
-            # TODO - check for no-arguments
-            my $Java_class = Perlito5::Java::get_java_class_info();
-            for my $info ( values %{$Java_class} ) {
-                if ( $meth eq $info->{perl_to_java} ) {
+            # class method call in native 'Java' packages
+            #
+            #   package Sample { import => "misc.Java.Sample" };
+            #   Sample->new();  
+            #   new Sample();
+            #
+            if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{sigil} eq '::' ) {
+                my $Java_class = Perlito5::Java::get_java_class_info();
+                if ( exists $Java_class->{$self->{invocant}->{namespace}} ) {
                     return 1;
                 }
             }
+
+            # method call on a typed invocant
+            #   package Sample { import => "misc.Java.Sample" };
+            #   my Sample $s;  
+            #   $s->meth();
+            #
+            if ( ref($self->{invocant}) eq 'Perlito5::AST::Var' && $self->{invocant}->{_id} ) {
+                my $id = $self->{invocant}->{_id};
+                my $Java_var = Perlito5::Java::get_java_var_info();
+                my $type = $Java_var->{ $id }{type} || 'PlLvalue';
+                if ($type ne 'PlLvalue') {
+                    return 1;
+                }
+            }
+
+            # method call on a "is_native" invocant
+            #   package Sample { import => "misc.Java.Sample" };
+            #   my Sample $s;  
+            #   $s->meth()->meth();
+            #
+            if ( is_native($self->{invocant}) ) {
+                return 1;
+            }
+
+            # type coercion method call on an untyped invocant
+            #   package Sample { import => "misc.Java.Sample" };
+            #   my $x;  
+            #   $x->to_Sample();
+            #
+            my $meth = $self->{method}; 
+            if ( $meth =~ /^to/ ) {
+                # TODO - check for no-arguments
+                my $Java_class = Perlito5::Java::get_java_class_info();
+                for my $info ( values %{$Java_class} ) {
+                    if ( $meth eq $info->{perl_to_java} ) {
+                        return 1;
+                    }
+                }
+            }
+
         }
 
         return 0; # <- not native (plain Perl)
@@ -2185,6 +2198,21 @@ package Perlito5::AST::Call;
                 else {
                     return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
                 }
+            }
+        }
+
+        # method call on a "native" invocant
+        #   package Sample { import => "misc.Java.Sample" };
+        #   my Sample $s;  
+        #   $s->meth()->meth();
+        #
+        if ( Perlito5::Java::is_native($self->{invocant}) ) {
+            if ($self->{_no_params}) {
+                # $s->NAME
+                return "$invocant.${meth}";
+            }
+            else {
+                return "$invocant.${meth}(" . Perlito5::Java::to_native_args($self->{arguments}) . ")";
             }
         }
 
