@@ -14870,26 +14870,31 @@ use feature 'say';
                 }
                 sub Perlito5::Java::is_native {
                     my $self = shift;
-                    if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::') {
-                        my $Java_class = Perlito5::Java::get_java_class_info();
-                        if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
-                            return 1
-                        }
-                    }
-                    if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'_id'}) {
-                        my $id = $self->{'invocant'}->{'_id'};
-                        my $Java_var = Perlito5::Java::get_java_var_info();
-                        my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
-                        if ($type ne 'PlLvalue') {
-                            return 1
-                        }
-                    }
-                    my $meth = $self->{'method'};
-                    if ($meth =~ m!^to!) {
-                        my $Java_class = Perlito5::Java::get_java_class_info();
-                        for my $info (values(%{$Java_class})) {
-                            if ($meth eq $info->{'perl_to_java'}) {
+                    if (ref($self) eq 'Perlito5::AST::Call') {
+                        if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::') {
+                            my $Java_class = Perlito5::Java::get_java_class_info();
+                            if (exists($Java_class->{$self->{'invocant'}->{'namespace'}})) {
                                 return 1
+                            }
+                        }
+                        if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'_id'}) {
+                            my $id = $self->{'invocant'}->{'_id'};
+                            my $Java_var = Perlito5::Java::get_java_var_info();
+                            my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                            if ($type ne 'PlLvalue') {
+                                return 1
+                            }
+                        }
+                        if (is_native($self->{'invocant'})) {
+                            return 1
+                        }
+                        my $meth = $self->{'method'};
+                        if ($meth =~ m!^to!) {
+                            my $Java_class = Perlito5::Java::get_java_class_info();
+                            for my $info (values(%{$Java_class})) {
+                                if ($meth eq $info->{'perl_to_java'}) {
+                                    return 1
+                                }
                             }
                         }
                     }
@@ -17425,6 +17430,14 @@ use feature 'say';
                             else {
                                 return $invocant . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                             }
+                        }
+                    }
+                    if (Perlito5::Java::is_native($self->{'invocant'})) {
+                        if ($self->{'_no_params'}) {
+                            return $invocant . '.' . $meth
+                        }
+                        else {
+                            return $invocant . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                         }
                     }
                     if ($meth =~ m!^to!) {
