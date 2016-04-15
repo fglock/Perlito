@@ -54,15 +54,17 @@ Perlito5-Java extensibility
 The Perlito5 Java backend doesn't support Perl XS extensions.
 Instead of XS, it has an extension mechanism that connects Perl with Java.
 
-Java classes can be added to a Perl script using a "package" declaration:
+Java classes can be added to a Perl script using a special "package" declaration:
 
-  - an empty package works for importing builtin types ("String", "Long")
+  - an empty package works for importing builtin types or primitives ("String", "Long", "long")
 
   - an "import" specification works for importing Java classes
 
   - an "extends" specification works for adding methods to an existing class
 
   - an "implements" specification works for adding methods to an existing interface
+
+  - a "header" specification works for creating a Java package
 
 "Java::inline" can be used to add Java expressions to a Perl script
 
@@ -120,6 +122,43 @@ Java value types don't need to be imported, but there must exist a Perl package:
     my $v = Boolean->TRUE;
     print "$v\n";   # 1
 ~~~
+
+These primitive data type declarations are supported:
+
+~~~perl
+    package long      { }
+    package int       { }
+    package short     { }
+    package byte      { }
+~~~
+
+Using typed variables
+---------------------
+
+~~~perl
+    package long {}
+    my long $j;             # Java variable
+    my $var;                # Perl variable
+    $var = $j;              # store Java value in Perl variable
+    $j = $var->to_long();   # get Java value from Perl variable
+~~~
+
+Typed variables generate efficient, native Java. The catch is that there are a few restrictions:
+
+- Java variables are not captured by Perl closures. This means that a variable declared in a context
+will not be seen inside inner subroutine declarations (named or anonymous) and eval blocks. Loops and
+conditionals should work fine, because these are not usually implemented as closures.
+
+  - workaround: store the Java value in a Perl variable
+
+- Java variables are not accepted as Perl subroutine parameters.
+
+  - workaround: store the Java value in a Perl variable
+
+- Java methods with type "void" should not be in the last line of a Perl block.
+This is because Perl blocks return the last value, and "void" is not acceptable as a value.
+
+  - workaround: add a plain-perl line, such as "return", "undef", or "1".
 
 Extending a Java class with Perl
 --------------------------------
