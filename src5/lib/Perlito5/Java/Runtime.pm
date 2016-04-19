@@ -966,7 +966,6 @@ class PlCORE {
 	    return new PlInt(0);
     }
     public static final PlObject sprintf(int want, PlObject List__) {
-        // TODO - work in progress
         String format = List__.aget(0).toString();
         // "%3s"
         int length = format.length();
@@ -1020,8 +1019,6 @@ class PlCORE {
                                 break;
                         }
                     }
-                    int conversion = c;     // 's', 'd'
-                    PlCORE.say("conversion: " + conversion);
                     break;
                 default:
                     offset++;

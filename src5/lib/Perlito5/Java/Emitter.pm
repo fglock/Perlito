@@ -3408,8 +3408,8 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = 'PlCx.STDOUT';
             }
-            my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.printf(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
+            my $list = 'new PlArray(PlCORE.sprintf(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list(\@in) . '))';
+            'PlCORE.print(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . $list . ')';
         },
         'hex' => sub {
             my ($self, $level, $wantarray) = @_;
