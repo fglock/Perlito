@@ -221,6 +221,19 @@ Example: Java method override using Java::inline
     my $dateString_pObject = $dateJavaObject->toString();   # Hello
 ~~~
 
+Thread safety
+-------------
+
+Perl global variables are shared between threads.
+This includes for example: $_, $a, $b, $/, @INC.
+Perl variable @_ (the parameter list) is not shared.
+
+Perl lexical variables are not shared between threads.
+Variables captured in closures running in different threads
+are shared.
+
+Perl operators are not atomic.
+
 
 Perlito5 Java development tools
 ===============================
