@@ -971,6 +971,9 @@ class PlCORE {
         // "%3s"
         int length = format.length();
         int offset = 0;
+        int args_max = List__.to_int();
+        int args_index = 0;
+        Object args[] = new Object[args_max];
         for ( ; offset < length; ) {
             int c = format.codePointAt(offset);
             switch (c) {
@@ -981,12 +984,35 @@ class PlCORE {
                         c = format.codePointAt(offset);
                         switch (c) {
                             case '%':
+                                scanning = false;
+                                offset++;
+                                break;
                             case 'c': case 's': case 'd': case 'u': case 'o':
                             case 'x': case 'e': case 'f': case 'g':
                             case 'X': case 'E': case 'G': case 'b':
                             case 'B': case 'p': case 'n':
                             case 'i': case 'D': case 'U': case 'O': case 'F':
                                 scanning = false;
+                                switch (c) {
+                                    case 's':
+                                        args[args_index] = List__.aget(args_index+1).toString();
+                                        break;
+                                    case 'd': case 'o': case 'x': case 'X':
+                                    case 'u': case 'b': case 'B': case 'p':
+                                        args[args_index] = List__.aget(args_index+1).to_int();
+                                        break;
+                                    case 'f': case 'e': case 'g':
+                                    case 'E': case 'G':
+                                        args[args_index] = List__.aget(args_index+1).to_double();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                args_index++;
+                                if (args_index > args_max) {
+                                    // panic
+                                    offset = length;
+                                }
                                 offset++;
                                 break;
                             default:
@@ -1002,7 +1028,7 @@ class PlCORE {
                     break;
             }
         }
-        return List__;
+        return new PlString(String.format(format, args));
     }
     public static final PlObject crypt(int want, PlArray List__) {
         if(List__.to_int() < 2) {
