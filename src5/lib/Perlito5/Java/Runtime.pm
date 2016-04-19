@@ -965,6 +965,45 @@ class PlCORE {
 	    }
 	    return new PlInt(0);
     }
+    public static final PlObject sprintf(int want, PlObject List__) {
+        // TODO - work in progress
+        String format = List__.aget(0).toString();
+        // "%3s"
+        int length = format.length();
+        int offset = 0;
+        for ( ; offset < length; ) {
+            int c = format.codePointAt(offset);
+            switch (c) {
+                case '%':
+                    offset++;
+                    boolean scanning = true;
+                    for ( ; offset < length && scanning ; ) {
+                        c = format.codePointAt(offset);
+                        switch (c) {
+                            case '%':
+                            case 'c': case 's': case 'd': case 'u': case 'o':
+                            case 'x': case 'e': case 'f': case 'g':
+                            case 'X': case 'E': case 'G': case 'b':
+                            case 'B': case 'p': case 'n':
+                            case 'i': case 'D': case 'U': case 'O': case 'F':
+                                scanning = false;
+                                offset++;
+                                break;
+                            default:
+                                offset++;
+                                break;
+                        }
+                    }
+                    int conversion = c;     // 's', 'd'
+                    PlCORE.say("conversion: " + conversion);
+                    break;
+                default:
+                    offset++;
+                    break;
+            }
+        }
+        return List__;
+    }
     public static final PlObject crypt(int want, PlArray List__) {
         if(List__.to_int() < 2) {
             die("Not enough arguments for crypt");
