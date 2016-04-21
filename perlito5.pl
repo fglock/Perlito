@@ -14978,6 +14978,7 @@ use feature 'say';
                 our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
                 our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
                 our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
+                our %native_op_unary = ('postfix:<++>', 'postfix:<-->', 'prefix:<++>', 'prefix:<-->');
                 our %native_op_to_bool = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
                 my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
                 sub Perlito5::Java::escape_string {
@@ -15057,6 +15058,12 @@ use feature 'say';
                         elsif ($is_apply && exists($native_op{$cond->code()})) {
                             push(@out, '(' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . ' ' . $native_op{$cond->code()} . ' ' . to_native_num($cond->{'arguments'}->[1], $level, $wantarray) . ')')
                         }
+                        elsif ($is_apply && exists($native_op_unary{$cond->code()})) {
+                            $cond->code() eq 'postfix:<++>' && push(@out, to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . '++');
+                            $cond->code() eq 'postfix:<-->' && push(@out, to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . '--');
+                            $cond->code() eq 'prefix:<++>' && push(@out, '++' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray));
+                            $cond->code() eq 'prefix:<-->' && push(@out, '--' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray))
+                        }
                         elsif ($is_apply && exists($op_to_num{$cond->code()})) {
                             push(@out, '(' . $cond->emit_java($level, $wantarray) . ').' . ($cond->{'arguments'}->[0]->isa('Perlito5::AST::Num') || $cond->{'arguments'}->[1]->isa('Perlito5::AST::Num') ? 'to_double()' : 'to_long()'))
                         }
@@ -15092,6 +15099,9 @@ use feature 'say';
                             is_native_args($cond->{'arguments'}) || return 0
                         }
                         elsif ($is_apply && exists($native_op{$cond->code()})) {
+                            is_native_args($cond->{'arguments'}) || return 0
+                        }
+                        elsif ($is_apply && exists($native_op_unary{$cond->code()})) {
                             is_native_args($cond->{'arguments'}) || return 0
                         }
                         elsif ($cond->isa('Perlito5::AST::Int')) {}
