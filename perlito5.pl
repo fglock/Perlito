@@ -14978,8 +14978,9 @@ use feature 'say';
                 our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
                 our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
                 our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
-                our %native_op_unary = ('postfix:<++>', 'postfix:<-->', 'prefix:<++>', 'prefix:<-->');
+                our %native_op_unary = ('postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
                 our %native_op_to_bool = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
+                our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
                 my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
                 sub Perlito5::Java::escape_string {
                     my $s = shift;
@@ -15403,7 +15404,7 @@ use feature 'say';
                         }
                         if (!($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my' || $decl->decl() eq 'our'))) {
                             if (($decl->isa('Perlito5::AST::Int')) || ($decl->isa('Perlito5::AST::Num')) || ($decl->isa('Perlito5::AST::Buf'))) {}
-                            elsif ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($decl->{'code'} eq 'infix:<=>' || $decl->{'code'} eq 'print' || $decl->{'code'} eq 'say')) {
+                            elsif ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($Perlito5::Java::valid_java_statement{$decl->{'code'}})) {
                                 push(@str, 'PerlOp.statement(' . $decl->emit_java($level, 'void') . ');')
                             }
                             elsif ($decl->isa('Perlito5::AST::CompUnit') || $decl->isa('Perlito5::AST::For') || $decl->isa('Perlito5::AST::While') || $decl->isa('Perlito5::AST::If') || $decl->isa('Perlito5::AST::Block')) {
