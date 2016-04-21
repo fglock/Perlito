@@ -15171,12 +15171,6 @@ use feature 'say';
                         elsif ($is_apply && exists($native_op{$cond->code()})) {
                             push(@out, '(' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . ' ' . $native_op{$cond->code()} . ' ' . to_native_num($cond->{'arguments'}->[1], $level, $wantarray) . ')')
                         }
-                        elsif ($is_apply && exists($native_op_unary{$cond->code()})) {
-                            $cond->code() eq 'postfix:<++>' && push(@out, to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . '++');
-                            $cond->code() eq 'postfix:<-->' && push(@out, to_native_num($cond->{'arguments'}->[0], $level, $wantarray) . '--');
-                            $cond->code() eq 'prefix:<++>' && push(@out, '++' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray));
-                            $cond->code() eq 'prefix:<-->' && push(@out, '--' . to_native_num($cond->{'arguments'}->[0], $level, $wantarray))
-                        }
                         elsif ($is_apply && exists($op_to_num{$cond->code()})) {
                             push(@out, '(' . $cond->emit_java($level, $wantarray) . ').' . ($cond->{'arguments'}->[0]->isa('Perlito5::AST::Num') || $cond->{'arguments'}->[1]->isa('Perlito5::AST::Num') ? 'to_double()' : 'to_long()'))
                         }
@@ -16664,18 +16658,50 @@ use feature 'say';
                 }, 'postfix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
+                    if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'_id'}) {
+                        my $id = $arg->{'_id'};
+                        my $Java_var = Perlito5::Java::get_java_var_info();
+                        my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                        if ($type ne 'PlLvalue') {
+                            return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '++'
+                        }
+                    }
                     $arg->emit_java($level, 'scalar', 'lvalue') . '.post_incr()'
                 }, 'postfix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
+                    if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'_id'}) {
+                        my $id = $arg->{'_id'};
+                        my $Java_var = Perlito5::Java::get_java_var_info();
+                        my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                        if ($type ne 'PlLvalue') {
+                            return Perlito5::Java::to_native_num($arg, $level, $wantarray) . '--'
+                        }
+                    }
                     $arg->emit_java($level, 'scalar', 'lvalue') . '.post_decr()'
                 }, 'prefix:<++>' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
+                    if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'_id'}) {
+                        my $id = $arg->{'_id'};
+                        my $Java_var = Perlito5::Java::get_java_var_info();
+                        my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                        if ($type ne 'PlLvalue') {
+                            return '++' . Perlito5::Java::to_native_num($arg, $level, $wantarray)
+                        }
+                    }
                     $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_incr()'
                 }, 'prefix:<-->' => sub {
                     my($self, $level, $wantarray) = @_;
                     my $arg = $self->{'arguments'}->[0];
+                    if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'_id'}) {
+                        my $id = $arg->{'_id'};
+                        my $Java_var = Perlito5::Java::get_java_var_info();
+                        my $type = $Java_var->{$id}->{'type'} || 'PlLvalue';
+                        if ($type ne 'PlLvalue') {
+                            return '--' . Perlito5::Java::to_native_num($arg, $level, $wantarray)
+                        }
+                    }
                     $arg->emit_java($level, 'scalar', 'lvalue') . '.pre_decr()'
                 }, 'infix:<x>' => sub {
                     my($self, $level, $wantarray) = @_;
