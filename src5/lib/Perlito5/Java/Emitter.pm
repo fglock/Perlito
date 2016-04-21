@@ -238,6 +238,12 @@ package Perlito5::Java;
         infix:<>>   >
         infix:<<>   <
     );
+    our %native_op_unary = qw(
+        postfix:<++>
+        postfix:<-->
+        prefix:<++>
+        prefix:<-->
+    ); 
     # these operators will generate native Java code when possible; return "boolean"
     our %native_op_to_bool = qw(
         infix:<!=>  !=
@@ -403,6 +409,12 @@ package Perlito5::Java;
                     push @out, '(' . to_native_num($cond->{arguments}[0], $level, $wantarray) .
                         ' ' . $native_op{ $cond->code } . ' ' . to_native_num($cond->{arguments}[1], $level, $wantarray) . ')';
                 }
+                elsif ( $is_apply && exists $native_op_unary{ $cond->code } ) {
+                    push @out, to_native_num($cond->{arguments}[0], $level, $wantarray) . '++' if $cond->code eq 'postfix:<++>';
+                    push @out, to_native_num($cond->{arguments}[0], $level, $wantarray) . '--' if $cond->code eq 'postfix:<-->';
+                    push @out, '++' . to_native_num($cond->{arguments}[0], $level, $wantarray) if $cond->code eq 'prefix:<++>';
+                    push @out, '--' . to_native_num($cond->{arguments}[0], $level, $wantarray) if $cond->code eq 'prefix:<-->';
+                }
                 elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
                     push @out, '(' . $cond->emit_java($level, $wantarray) . ').' .
                         (${$cond->{arguments}}[0]->isa( 'Perlito5::AST::Num' ) || ${$cond->{arguments}}[1]->isa( 'Perlito5::AST::Num' )
@@ -443,6 +455,9 @@ package Perlito5::Java;
                     return 0 unless is_native_args($cond->{arguments});
                 }
                 elsif ( $is_apply && exists $native_op{ $cond->code } ) {
+                    return 0 unless is_native_args($cond->{arguments});
+                }
+                elsif ( $is_apply && exists $native_op_unary{ $cond->code } ) {
                     return 0 unless is_native_args($cond->{arguments});
                 }
                 # elsif ( $is_apply && exists $op_to_num{ $cond->code } ) {
