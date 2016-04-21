@@ -238,10 +238,10 @@ package Perlito5::Java;
         infix:<<>   <
     );
     our %native_op_unary = qw(
-        postfix:<++>
-        postfix:<-->
-        prefix:<++>
-        prefix:<-->
+        postfix:<++>    1  
+        postfix:<-->    1
+        prefix:<++>     1
+        prefix:<-->     1 
     ); 
     # these operators will generate native Java code when possible; return "boolean"
     our %native_op_to_bool = qw(
@@ -252,6 +252,16 @@ package Perlito5::Java;
         infix:<>>   >
         infix:<<>   <
     );
+    our %valid_java_statement = qw(
+        print           1
+        say             1
+        printf          1
+        infix:<=>       1
+        postfix:<++>    1
+        postfix:<-->    1
+        prefix:<++>     1
+        prefix:<-->     1
+    ); 
 
     my %safe_char = (
         ' ' => 1,
@@ -939,7 +949,7 @@ package Perlito5::Java::LexicalBlock;
                 }
                 elsif ( $decl->isa('Perlito5::AST::Apply')
                   && !( $decl->{namespace} eq 'Java' && $decl->{code} eq 'inline' ) 
-                  && !( $decl->{code} eq 'infix:<=>' || $decl->{code} eq 'print' || $decl->{code} eq 'say' ) 
+                  && !( $Perlito5::Java::valid_java_statement{ $decl->{code} } ) 
                   )
                 {
                     # workaround for "Error: not a statement"
