@@ -738,6 +738,8 @@ Features
 
 -- caller() in nodejs and Chrome:
 
+  - See: https://github.com/stacktracejs
+
     $ nodejs perlito5.js -Isrc5/lib -I. -e ' sub x { print JS::inline("new Error().stack") }; sub yy { x() }; my $f = sub { yy() }; $f->() '
 
   "Error
