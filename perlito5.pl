@@ -18020,7 +18020,7 @@ use feature 'say';
         else {
             eval {
                 %INC = ();
-                $bootstrapping && ($Perlito5::EXPAND_USE = 0);
+                ($bootstrapping || ($backend eq 'java')) && ($Perlito5::EXPAND_USE = 0);
                 # no strict
                 my $m;
                 my $ok;
