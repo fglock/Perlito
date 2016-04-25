@@ -698,7 +698,7 @@ package Perlito5::AST::CompUnit;
         my ($self, $level, $wantarray) = @_;
         return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 
             Perlito5::Javascript2::LexicalBlock->new( block => $self->{body} )->emit_javascript2( $level + 1, $wantarray )
-        );
+        ) . ';';
     }
     sub emit_javascript2_program {
         my ($comp_units, %options) = @_;

@@ -185,10 +185,9 @@ sub parse_time_eval {
     # and create a syntax tree
     # TODO: the module should run in a new scope
     #   without access to the current lexical variables
-    my $comp_units = [];
 
     if ( !$Perlito5::EXPAND_USE ) {
-        expand_use($comp_units, $ast);
+        expand_use($ast);
     }
 
     if ( $Perlito5::EXPAND_USE ) {
@@ -228,18 +227,11 @@ sub parse_time_eval {
         }
     }
 
-    if (@$comp_units) {
-        # TODO - move @comp_units to top-level of the AST
-        return Perlito5::AST::Block->new( stmts => $comp_units );
-    }
-    else {
-        # when seeing "use" a second time, no further code is generated
-        return Perlito5::AST::Apply->new(
-            code      => 'undef',
-            namespace => '',
-            arguments => []
-        );
-    }
+    return Perlito5::AST::Apply->new(
+        code      => 'undef',
+        namespace => '',
+        arguments => []
+    );
 }
 
 sub emit_time_eval {
@@ -282,7 +274,6 @@ sub filename_lookup {
 }
 
 sub expand_use {
-    my $comp_units = shift;
     my $stmt = shift;
 
     my $module_name = $stmt->mod;
@@ -324,7 +315,7 @@ sub expand_use {
 
     if ($ENV{PERLITO5DEV}) {
         # "new BEGIN"
-        push @$comp_units,
+        push @Perlito5::COMP_UNIT,
             Perlito5::AST::CompUnit->new(
                 name => 'main',
                 body => Perlito5::Match::flat($m),
@@ -334,7 +325,6 @@ sub expand_use {
 
     # "old BEGIN"
     add_comp_unit(
-        $comp_units,
         Perlito5::AST::CompUnit->new(
             name => 'main',
             body => Perlito5::Match::flat($m),
@@ -345,16 +335,15 @@ sub expand_use {
 
 sub add_comp_unit {
     # TODO - this subroutine is obsolete
-    my $comp_units = shift;
     my $comp_unit = shift;
 
     # warn "parsed comp_unit: '", $comp_unit->name, "'";
     for my $stmt (@{ $comp_unit->body }) {
         if ($stmt->isa('Perlito5::AST::Use')) {
-            expand_use($comp_units, $stmt);
+            expand_use($stmt);
         }
     }
-    push @$comp_units, $comp_unit;
+    push @Perlito5::COMP_UNIT, $comp_unit;
     # say "comp_unit done";
 }
 
