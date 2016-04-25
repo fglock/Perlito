@@ -329,6 +329,7 @@ sub expand_use {
 
     # "old BEGIN"
     add_comp_unit(
+        $comp_units,
         Perlito5::AST::CompUnit->new(
             name => 'main',
             body => Perlito5::Match::flat($m),
@@ -339,15 +340,16 @@ sub expand_use {
 
 sub add_comp_unit {
     # TODO - this subroutine is obsolete
+    my $comp_units = shift;
     my $comp_unit = shift;
 
     # warn "parsed comp_unit: '", $comp_unit->name, "'";
     for my $stmt (@{ $comp_unit->body }) {
         if ($stmt->isa('Perlito5::AST::Use')) {
-            expand_use($stmt);
+            expand_use($comp_units, $stmt);
         }
     }
-    push @Perlito5::COMP_UNIT, $comp_unit;
+    push @$comp_units, $comp_unit;
     # say "comp_unit done";
 }
 

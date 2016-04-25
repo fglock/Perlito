@@ -400,9 +400,10 @@ if ($backend) {
                 exit(255);
             }
             else {
+                my $comp_units = [];
                 if ($ENV{PERLITO5DEV}) {
                     # "new BEGIN"
-                    push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
+                    push @$comp_units, Perlito5::Match::flat($m);
                 }
                 else {
                     # "old BEGIN"
@@ -410,6 +411,7 @@ if ($backend) {
                         my $ok;
                         eval {
                             Perlito5::Grammar::Use::add_comp_unit(
+                                $comp_units,
                                 Perlito5::AST::CompUnit->new(
                                     name => 'main',
                                     body => Perlito5::Match::flat($m),
@@ -425,7 +427,7 @@ if ($backend) {
                         }
                     }
                     else {
-                        push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
+                        push @$comp_units, Perlito5::Match::flat($m);
                     }
                 }
 

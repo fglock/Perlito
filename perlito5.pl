@@ -5184,28 +5184,18 @@ use feature 'say';
                                     push(@{$comp_units}, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
                                     return 
                                 }
-                                push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m))])});
+                                add_comp_unit($comp_units, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
                                 return 
                             }
                             sub Perlito5::Grammar::Use::add_comp_unit {
-                                my $parse = shift;
-                                my $comp_units = [];
-                                for my $comp_unit (@{$parse}) {
-                                    if (defined($comp_unit)) {
-                                        if ($comp_unit->isa('Perlito5::AST::Use')) {
-                                            expand_use($comp_units, $comp_unit)
-                                        }
-                                        elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
-                                            for my $stmt (@{$comp_unit->body()}) {
-                                                if ($stmt->isa('Perlito5::AST::Use')) {
-                                                    expand_use($comp_units, $stmt)
-                                                }
-                                            }
-                                        }
-                                        push(@{$comp_units}, $comp_unit)
+                                my $comp_units = shift;
+                                my $comp_unit = shift;
+                                for my $stmt (@{$comp_unit->body()}) {
+                                    if ($stmt->isa('Perlito5::AST::Use')) {
+                                        expand_use($comp_units, $stmt)
                                     }
                                 }
-                                return $comp_units
+                                push(@{$comp_units}, $comp_unit)
                             }
                             sub Perlito5::Grammar::Use::require {
                                 my $filename = shift;
@@ -26674,13 +26664,14 @@ use feature 'say';
                     exit(255)
                 }
                 else {
+                    my $comp_units = [];
                     if ($ENV{'PERLITO5DEV'}) {
-                        push(@Perlito5::COMP_UNIT, Perlito5::Match::flat($m))
+                        push(@{$comp_units}, Perlito5::Match::flat($m))
                     }
                     elsif ($expand_use) {
                         my $ok;
                         eval {
-                            Perlito5::Grammar::Use::add_comp_unit(Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
+                            Perlito5::Grammar::Use::add_comp_unit($comp_units, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
                             $ok = 1
                         };
                         if (!$ok) {
@@ -26690,7 +26681,7 @@ use feature 'say';
                         }
                     }
                     else {
-                        push(@Perlito5::COMP_UNIT, Perlito5::Match::flat($m))
+                        push(@{$comp_units}, Perlito5::Match::flat($m))
                     }
                     {
                         local ${chr(7) . 'LOBAL_PHASE'};
