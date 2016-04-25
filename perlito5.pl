@@ -4078,7 +4078,7 @@ use feature 'say';
                             undef();
                             undef();
                             # use strict
-                            my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper');
+                            my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'MIME::Base64' => 'Perlito5X::MIME::Base64');
                             sub Perlito5::Grammar::Use::use_decl {
                                 my $str = $_[0];
                                 my $pos = $_[1];
@@ -15478,6 +15478,58 @@ use feature 'say';
                     my($self, $level, $wantarray) = @_;
                     return Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}, 'not_a_loop' => 1)->emit_java($level + 1, $wantarray)
                 }
+                sub Perlito5::AST::CompUnit::process_java_import_statement {
+                    my($unit_stmt) = @_;
+                    my $str = '';
+                    if (ref($unit_stmt) eq 'Perlito5::AST::Block') {
+                        my $stmt = $unit_stmt->{'stmts'} // [];
+                        @{$stmt} != 2 && return '';
+                        ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{'code'} eq 'package') || return '';
+                        ($stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && ($stmt->[1]->{'code'} eq 'infix:<=>>' || $stmt->[1]->{'code'} eq 'list:<,>')) || return '';
+                        my $Java_class = Perlito5::Java::get_java_class_info();
+                        my $class = $stmt->[0]->{'namespace'};
+                        my $args_ast = Perlito5::AST::Apply::->new('arguments' => [$stmt->[1]], 'code' => 'circumfix:<{ }>');
+                        my $out = [];
+                        Perlito5::Perl5::PrettyPrinter::pretty_print([$args_ast->emit_perl5()], 0, $out);
+                        my $args_perl5 = join('', @{$out});
+                        $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
+                        if ($Java_class->{$class}->{'java_path'}) {
+                            $str .= 'package ' . $Java_class->{$class}->{'java_path'} . ';' . chr(10)
+                        }
+                        elsif ($Java_class->{$class}->{'import'}) {
+                            Perlito5::Java::set_java_class_defaults($class, $Java_class->{$class}->{'import'})
+                        }
+                        elsif ($Java_class->{$class}->{'extends'}) {
+                            my $extended = $Java_class->{$Java_class->{$class}->{'extends'}};
+                            if ($extended) {
+                                $Java_class->{$class}->{'extends_java_type'} = $extended->{'java_type'}
+                            }
+                            else {
+                                die('cannot extend class ' . chr(39) . $Java_class->{$class}->{'extends'} . chr(39) . ' because it was not declared')
+                            }
+                            my $perl_to_java = $class;
+                            $perl_to_java =~ s!::!!g;
+                            Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
+                        }
+                        elsif ($Java_class->{$class}->{'implements'}) {
+                            my $implemented = $Java_class->{$Java_class->{$class}->{'implements'}};
+                            if ($implemented) {
+                                $Java_class->{$class}->{'implements_java_type'} = $implemented->{'java_type'}
+                            }
+                            else {
+                                die('cannot implement class ' . chr(39) . $Java_class->{$class}->{'implements'} . chr(39) . ' because it was not declared')
+                            }
+                            my $perl_to_java = $class;
+                            $perl_to_java =~ s!::!!g;
+                            Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
+                        }
+                        else {
+                            die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class')
+                        }
+                        $unit_stmt->{'stmts'} = []
+                    }
+                    return $str
+                }
                 sub Perlito5::AST::CompUnit::emit_java_program {
                     my($comp_units, %options) = @_;
                     $Perlito5::PKG_NAME = 'main';
@@ -15488,55 +15540,9 @@ use feature 'say';
                     my $str;
                     $str .= Perlito5::Compiler::do_not_edit('//');
                     Perlito5::Java::init_java_class();
-                    my $Java_class = Perlito5::Java::get_java_class_info();
                     for my $comp_unit (@{$comp_units}) {
                         for my $unit_stmt (@{$comp_unit->{'body'}}) {
-                            if (ref($unit_stmt) eq 'Perlito5::AST::Block') {
-                                my $stmt = $unit_stmt->{'stmts'} // [];
-                                @{$stmt} != 2 && next;
-                                ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{'code'} eq 'package') || next;
-                                ($stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && ($stmt->[1]->{'code'} eq 'infix:<=>>' || $stmt->[1]->{'code'} eq 'list:<,>')) || next;
-                                my $class = $stmt->[0]->{'namespace'};
-                                my $args_ast = Perlito5::AST::Apply::->new('arguments' => [$stmt->[1]], 'code' => 'circumfix:<{ }>');
-                                my $out = [];
-                                Perlito5::Perl5::PrettyPrinter::pretty_print([$args_ast->emit_perl5()], 0, $out);
-                                my $args_perl5 = join('', @{$out});
-                                $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
-                                if ($Java_class->{$class}->{'java_path'}) {
-                                    $str .= 'package ' . $Java_class->{$class}->{'java_path'} . ';' . chr(10)
-                                }
-                                elsif ($Java_class->{$class}->{'import'}) {
-                                    Perlito5::Java::set_java_class_defaults($class, $Java_class->{$class}->{'import'})
-                                }
-                                elsif ($Java_class->{$class}->{'extends'}) {
-                                    my $extended = $Java_class->{$Java_class->{$class}->{'extends'}};
-                                    if ($extended) {
-                                        $Java_class->{$class}->{'extends_java_type'} = $extended->{'java_type'}
-                                    }
-                                    else {
-                                        die('cannot extend class ' . chr(39) . $Java_class->{$class}->{'extends'} . chr(39) . ' because it was not declared')
-                                    }
-                                    my $perl_to_java = $class;
-                                    $perl_to_java =~ s!::!!g;
-                                    Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
-                                }
-                                elsif ($Java_class->{$class}->{'implements'}) {
-                                    my $implemented = $Java_class->{$Java_class->{$class}->{'implements'}};
-                                    if ($implemented) {
-                                        $Java_class->{$class}->{'implements_java_type'} = $implemented->{'java_type'}
-                                    }
-                                    else {
-                                        die('cannot implement class ' . chr(39) . $Java_class->{$class}->{'implements'} . chr(39) . ' because it was not declared')
-                                    }
-                                    my $perl_to_java = $class;
-                                    $perl_to_java =~ s!::!!g;
-                                    Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
-                                }
-                                else {
-                                    die('missing ' . chr(39) . 'import' . chr(39) . ' argument to generate Java class')
-                                }
-                                $unit_stmt->{'stmts'} = []
-                            }
+                            $str .= process_java_import_statement($unit_stmt)
                         }
                     }
                     my @main;
@@ -15544,6 +15550,7 @@ use feature 'say';
                         push(@main, $comp_unit->emit_java($level + 1, $wantarray))
                     }
                     if ($options{'expand_use'}) {
+                        my $Java_class = Perlito5::Java::get_java_class_info();
                         $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
                     }
                     $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"next' . chr(92) . '" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"last' . chr(92) . '" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"redo' . chr(92) . '" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . chr(10);
