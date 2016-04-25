@@ -333,40 +333,29 @@ sub expand_use {
     }
 
     # "old BEGIN"
-    push @$comp_units, @{ add_comp_unit(
-        [
-            Perlito5::AST::CompUnit->new(
-                name => 'main',
-                body => Perlito5::Match::flat($m),
-            )
-        ]
-    ) };
+    add_comp_unit(
+        $comp_units,
+        Perlito5::AST::CompUnit->new(
+            name => 'main',
+            body => Perlito5::Match::flat($m),
+        ),
+    );
     return;
 }
 
 sub add_comp_unit {
     # TODO - this subroutine is obsolete
-    my $parse = shift;
-    my $comp_units = [];
+    my $comp_units = shift;
+    my $comp_unit = shift;
 
-    for my $comp_unit (@$parse) {
-        if (defined $comp_unit) {
-            if ($comp_unit->isa('Perlito5::AST::Use')) {
-                expand_use($comp_units, $comp_unit);
-            }
-            elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
-                # warn "parsed comp_unit: '", $comp_unit->name, "'";
-                for my $stmt (@{ $comp_unit->body }) {
-                    if ($stmt->isa('Perlito5::AST::Use')) {
-                        expand_use($comp_units, $stmt);
-                    }
-                }
-            }
-            push @$comp_units, $comp_unit;
-            # say "comp_unit done";
+    # warn "parsed comp_unit: '", $comp_unit->name, "'";
+    for my $stmt (@{ $comp_unit->body }) {
+        if ($stmt->isa('Perlito5::AST::Use')) {
+            expand_use($comp_units, $stmt);
         }
     }
-    return $comp_units;
+    push @$comp_units, $comp_unit;
+    # say "comp_unit done";
 }
 
 sub require {

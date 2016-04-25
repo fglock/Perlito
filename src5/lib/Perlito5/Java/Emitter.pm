@@ -1304,6 +1304,11 @@ package Perlito5::AST::CompUnit;
         for my $comp_unit ( @$comp_units ) {
             for my $unit_stmt ( @{ $comp_unit->{body} } ) {
                 $str .= process_java_import_statement($unit_stmt);
+
+                # if ( ref($unit_stmt) eq 'Perlito5::AST::CompUnit') {
+                #     my $stmt = $unit_stmt->{stmts} // [];
+                # }
+
             }
         }
 
