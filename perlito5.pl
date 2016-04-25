@@ -26661,7 +26661,6 @@ use feature 'say';
             eval {
                 %INC = ();
                 ($bootstrapping || ($backend eq 'java')) && ($Perlito5::EXPAND_USE = 0);
-                @Perlito5::COMP_UNIT = ();
                 # no strict
                 my $m;
                 my $ok;

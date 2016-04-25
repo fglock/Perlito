@@ -378,8 +378,6 @@ if ($backend) {
                 if $bootstrapping
                 || ($backend eq 'java');
 
-            @Perlito5::COMP_UNIT = ();
-
             # start with no-strict
             no strict;
 
