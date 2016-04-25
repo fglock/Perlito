@@ -4042,7 +4042,7 @@ use feature 'say';
     undef();
     undef();
     # use strict
-    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper');
+    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'MIME::Base64' => 'Perlito5X::Java::MIME::Base64');
     sub Perlito5::Grammar::Use::use_decl {
         my $str = $_[0];
         my $pos = $_[1];
