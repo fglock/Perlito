@@ -365,9 +365,11 @@ if ($backend) {
             # we need to start with an empty %INC so that all modules are "used"
             %INC = ();
 
-            # partially disable "use"
+            # partially disable "use":
+            # force "use" code to be inlined instead of eval-ed
             $Perlito5::EXPAND_USE = 0
-                if $bootstrapping;
+                if $bootstrapping
+                || ($backend eq 'java');
 
             # start with no-strict
             no strict;
