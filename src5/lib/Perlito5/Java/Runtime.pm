@@ -2539,6 +2539,9 @@ class PlLvalue extends PlObject {
         if (o == null) {
             o = PlCx.UNDEF;
         }
+        if (o.is_lvalue()) {
+            o = o.get();
+        }
         this.o = o;
         return this;
     }
