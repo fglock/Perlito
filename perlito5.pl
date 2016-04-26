@@ -4042,7 +4042,11 @@ use feature 'say';
     undef();
     undef();
     # use strict
-    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'MIME::Base64' => 'Perlito5X::Java::MIME::Base64');
+    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper');
+    sub Perlito5::Grammar::Use::register_internal_module {
+        my($module, $real_name) = @_;
+        $Perlito_internal_module{$module} = $real_name
+    }
     sub Perlito5::Grammar::Use::use_decl {
         my $str = $_[0];
         my $pos = $_[1];
@@ -17608,8 +17612,19 @@ use feature 'say';
 }
 {
     package main;
+    package Perlito5::Java::Lib;
+    undef();
+    # use strict
+    sub Perlito5::Java::Lib::init {
+        Perlito5::Grammar::Use::register_internal_module('MIME::Base64' => 'Perlito5X::Java::MIME::Base64')
+    }
+    1
+}
+{
+    package main;
     undef();
     package Perlito5;
+    undef();
     undef();
     undef();
     undef();
@@ -17888,6 +17903,7 @@ use feature 'say';
                 %INC = ();
                 ($bootstrapping || ($backend eq 'java')) && ($Perlito5::EXPAND_USE = 0);
                 @Perlito5::COMP_UNIT = ();
+                $backend eq 'java' && Perlito5::Java::Lib::init();
                 # no strict
                 my $m;
                 my $ok;
