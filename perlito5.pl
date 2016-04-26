@@ -15751,7 +15751,10 @@ use feature 'say';
                 return 'PlV.get' . $local . '(' . $index . ')'
             }
             if ($sigil eq '*') {}
-            if ($sigil eq '&') {}
+            if ($sigil eq '&') {
+                my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
+                return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $str_name) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+            }
             if ($sigil eq '@') {
                 if ($self->{'sigil'} eq '$#') {
                     return 'PlV.array_get' . $local . '(' . $index . ').end_of_array_index()'

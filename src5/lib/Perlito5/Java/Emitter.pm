@@ -1871,7 +1871,9 @@ package Perlito5::AST::Var;
         if ( $sigil eq '*' ) {
         }
         if ( $sigil eq '&' ) {
-            # return $s . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
+            my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
+            return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $str_name ) . ')'
+                . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
         }
         if ($sigil eq '@') {
             if ($self->{sigil} eq '$#') {
