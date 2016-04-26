@@ -11268,7 +11268,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Javascript2::Lib;
-    undef();
     # use strict
     sub Perlito5::Javascript2::Lib::init {
         Perlito5::Grammar::Use::register_internal_module('MIME::Base64' => 'Perlito5X::Javascript::MIME::Base64')
@@ -16041,6 +16040,10 @@ use feature 'say';
                 return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
             }
             if ($meth eq 'postcircumfix:<( )>') {
+                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
+                    my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
+                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . ${$self}->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
+                }
                 my $invocant;
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>') {
                     my $arg = $self->{'invocant'}->{'arguments'}->[0];
