@@ -1,6 +1,9 @@
 package MIME::Base64;
 use strict;
 
+# Java 8 only
+# package Java::Base64 { import => "java.util.Base64" }
+
 package Java::DatatypeConverter { import => "javax.xml.bind.DatatypeConverter" }
 package String {};
 
@@ -45,31 +48,28 @@ sub decode_base64 {
     return $result;
 }
 
-1;
+# plain-Perl code from MIME::Base64
+## TODO - use original code with glob assignment:
+# *encode = \&encode_base64;
+# *decode = \&decode_base64;
 
-__END__
+sub encode { encode_base64(@_) }
+sub decode { decode_base64(@_) }
 
-package MIME::Base64;
-use strict;
-
-# Java 8 only
-package Java::Base64 { import => "java.util.Base64" }
-
-# encode_base64( $bytes )
-# encode_base64( $bytes, $eol );
-
-sub encode_base64 {
-    my $s = shift;
-    my $eol = shift // "\n";
-    my $result =
-      Java::Base64->getEncoder()->encodeToString( $s->toString()->getBytes() );
-    my @out;
-    while ($result) {
-        push @out, substr($result, 0, 76);
-        $result = substr($result, 76);
-    }
-    return join($eol, @out) . $eol;
-}
+## TODO - perlito-Java doesn't have tr() yet
+#sub encode_base64url {
+#    my $e = encode_base64(shift, "");
+#    $e =~ s/=+\z//;
+#    $e =~ tr[+/][-_];
+#    return $e;
+#}
+#
+#sub decode_base64url {
+#    my $s = shift;
+#    $s =~ tr[-_][+/];
+#    $s .= '=' while length($s) % 4;
+#    return decode_base64($s);
+#}
 
 1;
 
@@ -81,14 +81,4 @@ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use MIME::Base64; print MIME::Ba
 javac Main.java
 java Main
 
-Java docs:
-
-// encode with padding
-String encoded = Base64.getEncoder().encodeToString(someByteArray);
-
-// encode without padding
-String encoded = Base64.getEncoder().withoutPadding().encodeToString(someByteArray);
-
-// decode a String
-byte [] barr = Base64.getDecoder().decode(encoded);
 
