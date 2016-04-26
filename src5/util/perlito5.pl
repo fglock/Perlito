@@ -37,6 +37,7 @@ use Perlito5::XS::Emitter;      # experimental
 
 use Perlito5::Java::Emitter;  # experimental
 use Perlito5::Java::Runtime;
+use Perlito5::Java::Lib;
 
 ## use Perlito5::Python::Emitter;
 ## use Perlito5::Ruby::Emitter;
@@ -372,6 +373,9 @@ if ($backend) {
                 || ($backend eq 'java');
 
             @Perlito5::COMP_UNIT = ();
+
+            Perlito5::Java::Lib::init()
+                if $backend eq 'java';
 
             # start with no-strict
             no strict;
