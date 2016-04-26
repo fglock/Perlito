@@ -55,20 +55,19 @@ sub decode_base64 {
 sub encode { encode_base64(@_) }
 sub decode { decode_base64(@_) }
 
-## TODO - perlito-Java doesn't have tr() yet
-#sub encode_base64url {
-#    my $e = encode_base64(shift, "");
-#    $e =~ s/=+\z//;
-#    $e =~ tr[+/][-_];
-#    return $e;
-#}
-#
-#sub decode_base64url {
-#    my $s = shift;
-#    $s =~ tr[-_][+/];
-#    $s .= '=' while length($s) % 4;
-#    return decode_base64($s);
-#}
+sub encode_base64url {
+    my $e = encode_base64(shift, "");
+    $e =~ s/=+\z//;
+    $e =~ tr[+/][-_];
+    return $e;
+}
+
+sub decode_base64url {
+    my $s = shift;
+    $s =~ tr[-_][+/];
+    $s .= '=' while length($s) % 4;
+    return decode_base64($s);
+}
 
 1;
 
