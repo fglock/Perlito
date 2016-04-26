@@ -1652,6 +1652,16 @@ class PlV {
     public static final PlObject array_set_local(String name, PlObject v) {
         return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
+
+    public static final PlObject glob_set(String name, PlObject v) {
+        PlCORE.die("not implemented assign " + v.aget(0).ref() + " to glob");
+        return var.hget_arrayref(name).array_deref_set(v);
+    }
+    public static final PlObject glob_set_local(String name, PlObject v) {
+        PlCORE.die("not implemented assign " + v.aget(0).ref() + " to glob");
+        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
+    }
+
 }
 class PlEnv {
     public static final void init(String[] args) {

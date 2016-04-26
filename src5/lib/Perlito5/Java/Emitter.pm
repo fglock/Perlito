@@ -1940,7 +1940,7 @@ package Perlito5::AST::Var;
             return "PlV.hash_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '*' ) {
-            die "don't know how to assign to variable ", $sigil, $self->name;
+            return "PlV.glob_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '&' ) {
             # return 'PlV.get(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
