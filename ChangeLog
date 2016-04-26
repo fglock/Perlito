@@ -9,6 +9,7 @@
     lib/Perlito5/Java/Lib.pm and lib/Perlito5/Javascript/Lib.pm
 - Java:
 -- '&subr', '&subr()', '\&subr' idioms
+-- '*name = \&subr' idiom
 -- sprintf(), printf()
 -- increment/decrement operations on native types
 -- support for primitive data types, work in progress: "byte", "short"
