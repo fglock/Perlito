@@ -1577,6 +1577,35 @@ class PerlOp {
         return replace(s, new PlRegex(pat, 0), rep, want);
     }
 
+    // $v =~ tr/xyz/abc/i
+    // PerlOp.tr(v_v_100, new PlString("xyz"), new PlString("abc"), "", PlCx.VOID)
+    public static final PlObject tr(PlObject pstr, PlObject psearchChars, PlObject preplaceChars, String modifier, int want) {
+        String str          = pstr.toString();
+        String searchChars  = psearchChars.toString();
+        String replaceChars = preplaceChars.toString();
+        PlCORE.die("TODO - not implemented tr///");
+        boolean modified = false;
+        final int replaceCharsLength = replaceChars.length();
+        final int strLength = str.length();
+        final StringBuilder buf = new StringBuilder(strLength);
+        for (int i = 0; i < strLength; i++) {
+            final char ch = str.charAt(i);
+            final int index = searchChars.indexOf(ch);
+            if (index >= 0) {
+                modified = true;
+                if (index < replaceCharsLength) {
+                    buf.append(replaceChars.charAt(index));
+                }
+            } else {
+                buf.append(ch);
+            }
+        }
+        if (modified) {
+            return new PlString(buf.toString());
+        }
+        return pstr;
+    }
+
 }
 class PlV {
     // PlV implements namespaces and global variables
