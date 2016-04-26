@@ -1907,12 +1907,6 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.to_long()';
             }
-            if ( $wantarray eq 'runtime' ) {
-                return '(want'
-                    . ' ? ' . $s
-                    . ' : ' . $s . '.to_long()'
-                    . ')';
-            }
             # TODO - return in the right context
             # TODO - local()-ize if needed
             return $s . ".set(" . Perlito5::Java::to_list([$arguments], $level+1) . ')';
