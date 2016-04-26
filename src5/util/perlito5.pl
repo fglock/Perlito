@@ -15,6 +15,7 @@ use Perlito5::JSON;
 
 use Perlito5::Javascript2::Emitter;
 use Perlito5::Javascript2::Runtime;
+use Perlito5::Javascript2::Lib;
 use Perlito5::Javascript2::Array;
 use Perlito5::Javascript2::CORE;
 use Perlito5::Javascript2::IO;
@@ -335,6 +336,11 @@ if ($backend) {
     # our $BASE_SCOPE   = Perlito5::Grammar::Scope->new_base_scope();
     # our $SCOPE        = $BASE_SCOPE;    # information about the current block being compiled
 
+    Perlito5::Java::Lib::init()
+        if $backend eq 'java';
+    Perlito5::Javascript2::Lib::init()
+        if $backend eq 'js' || $^O eq 'node.js';
+
     if ( $execute ) { 
         $Perlito5::EXPAND_USE = 1;
         local $@;
@@ -373,9 +379,6 @@ if ($backend) {
                 || ($backend eq 'java');
 
             @Perlito5::COMP_UNIT = ();
-
-            Perlito5::Java::Lib::init()
-                if $backend eq 'java';
 
             # start with no-strict
             no strict;

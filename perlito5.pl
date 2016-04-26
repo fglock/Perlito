@@ -11261,6 +11261,16 @@ use feature 'say';
 }
 {
     package main;
+    package Perlito5::Javascript2::Lib;
+    undef();
+    # use strict
+    sub Perlito5::Javascript2::Lib::init {
+        Perlito5::Grammar::Use::register_internal_module('MIME::Base64' => 'Perlito5X::Javascript::MIME::Base64')
+    }
+    1
+}
+{
+    package main;
     undef();
     package Perlito5::Javascript2::Array;
     sub Perlito5::Javascript2::Array::emit_javascript2 {
@@ -17603,6 +17613,7 @@ use feature 'say';
     undef();
     undef();
     undef();
+    undef();
     # use strict
     my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name;
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
@@ -17832,6 +17843,8 @@ use feature 'say';
         if ($wrapper_begin) {
             $source = ' ' . $wrapper_begin . ';' . chr(10) . '                    ' . $source . ';' . chr(10) . '                    ' . $wrapper_end . chr(10) . '                  '
         }
+        $backend eq 'java' && Perlito5::Java::Lib::init();
+        ($backend eq 'js' || ${chr(15)} eq 'node.js') && Perlito5::Javascript2::Lib::init();
         if ($execute) {
             $Perlito5::EXPAND_USE = 1;
             local ${'@'};
@@ -17851,7 +17864,6 @@ use feature 'say';
                 %INC = ();
                 ($bootstrapping || ($backend eq 'java')) && ($Perlito5::EXPAND_USE = 0);
                 @Perlito5::COMP_UNIT = ();
-                $backend eq 'java' && Perlito5::Java::Lib::init();
                 # no strict
                 my $m;
                 my $ok;
