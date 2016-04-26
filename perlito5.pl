@@ -16042,7 +16042,7 @@ use feature 'say';
             if ($meth eq 'postcircumfix:<( )>') {
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
                     my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
-                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . ${$self}->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
+                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
                 }
                 my $invocant;
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>') {
