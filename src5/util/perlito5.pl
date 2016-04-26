@@ -380,9 +380,6 @@ if ($backend) {
 
             @Perlito5::COMP_UNIT = ();
 
-            Perlito5::Java::Lib::init()
-                if $backend eq 'java';
-
             # start with no-strict
             no strict;
 

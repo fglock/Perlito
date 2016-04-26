@@ -48,22 +48,27 @@ sub decode_base64 {
 }
 
 # plain-Perl code from MIME::Base64
-*encode = \&encode_base64;
-*decode = \&decode_base64;
+## TODO - use original code with glob assignment:
+# *encode = \&encode_base64;
+# *decode = \&decode_base64;
 
-sub encode_base64url {
-    my $e = encode_base64(shift, "");
-    $e =~ s/=+\z//;
-    $e =~ tr[+/][-_];
-    return $e;
-}
+sub encode { encode_base64(@_) }
+sub decode { decode_base64(@_) }
 
-sub decode_base64url {
-    my $s = shift;
-    $s =~ tr[-_][+/];
-    $s .= '=' while length($s) % 4;
-    return decode_base64($s);
-}
+## TODO - perlito-Java doesn't have tr() yet
+#sub encode_base64url {
+#    my $e = encode_base64(shift, "");
+#    $e =~ s/=+\z//;
+#    $e =~ tr[+/][-_];
+#    return $e;
+#}
+#
+#sub decode_base64url {
+#    my $s = shift;
+#    $s =~ tr[-_][+/];
+#    $s .= '=' while length($s) % 4;
+#    return decode_base64($s);
+#}
 
 1;
 
