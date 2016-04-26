@@ -1674,12 +1674,24 @@ class PlV {
     }
 
     public static final PlObject glob_set(String name, PlObject v) {
-        PlCORE.die("not implemented assign " + v.aget(0).ref() + " to glob");
-        return var.hget_arrayref(name).array_deref_set(v);
+        PlObject value = v.aget(0);
+        if (value.is_coderef()) {
+            PlV.set(name, value);
+        }
+        else {
+            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+        }
+        return value;
     }
     public static final PlObject glob_set_local(String name, PlObject v) {
-        PlCORE.die("not implemented assign " + v.aget(0).ref() + " to glob");
-        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
+        PlObject value = v.aget(0);
+        if (value.is_coderef()) {
+            PlV.set_local(name, value);
+        }
+        else {
+            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+        }
+        return value;
     }
 
 }
