@@ -1329,6 +1329,7 @@ package Perlito5::AST::CompUnit;
                [ "public static void main(String[] args) {",
                    [ "PlEnv.init(args);",
                      "int want = PlCx.VOID;",
+                     "PlArray List__ = new PlArray();",
                      "try {",
                        [ @Perlito5::Java::Java_init,
                          @main,
@@ -1906,13 +1907,16 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'scalar' ) {
                 return $s . '.to_long()';
             }
-            if ( $wantarray eq 'runtime' ) {
-                return '(want'
-                    . ' ? ' . $s
-                    . ' : ' . $s . '.to_long()'
-                    . ')';
-            }
-            return $s;
+            # TODO - return in the right context
+            # TODO - local()-ize if needed
+            return $s . ".set(" . Perlito5::Java::to_list([$arguments], $level+1) . ')';
+            # if ( $wantarray eq 'runtime' ) {
+            #     return '(want'
+            #         . ' ? ' . $s
+            #         . ' : ' . $s . '.to_long()'
+            #         . ')';
+            # }
+            # return $s;
         }
 
         if ($sigil eq '$' && $self->{name} > 0) {
