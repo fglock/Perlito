@@ -16461,12 +16461,8 @@ use feature 'say';
                     return '(new PlGlobRef(' . $arg->emit_java($level) . '))'
                 }
                 if ($arg->sigil() eq '&') {
-                    if ($arg->{'namespace'}) {
-                        return 'p5pkg[' . Perlito5::Java::escape_string($arg->{'namespace'}) . '].' . $arg->{'name'}
-                    }
-                    else {
-                        return Perlito5::Java::pkg() . '.' . $arg->{'name'}
-                    }
+                    my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
+                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{'name'}) . ')'
                 }
             }
             return '(new PlLvalueRef(' . $arg->emit_java($level) . '))'
