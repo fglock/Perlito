@@ -2168,7 +2168,7 @@ package Perlito5::AST::Call;
             {
                 # &x()
                 my $namespace = $self->{invocant}{namespace} || $Perlito5::PKG_NAME;
-                return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $$self->{invocant}{name} ) . ')'
+                return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')'
                     . '.apply('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list($self->{arguments})
