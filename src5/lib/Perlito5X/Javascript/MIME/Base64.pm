@@ -48,12 +48,8 @@ sub decode_base64 {
 }
 
 # plain-Perl code from MIME::Base64
-## TODO - use original code with glob assignment:
-# *encode = \&encode_base64;
-# *decode = \&decode_base64;
-
-sub encode { encode_base64(@_) }
-sub decode { decode_base64(@_) }
+*encode = \&encode_base64;
+*decode = \&decode_base64;
 
 sub encode_base64url {
     my $e = encode_base64(shift, "");
