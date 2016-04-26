@@ -15,11 +15,14 @@ my %Perlito_internal_module = (
     Carp           => 'Perlito5X::Carp',
     Exporter       => 'Perlito5X::Exporter',
     'Data::Dumper' => 'Perlito5X::Dumper',
-    'MIME::Base64' => 'Perlito5X::Java::MIME::Base64',
     # vars     => 'Perlito5::vars',         # this is "hardcoded" in stmt_use()
     # constant => 'Perlito5::constant',
 );
 
+sub register_internal_module {
+    my ($module, $real_name) = @_;
+    $Perlito_internal_module{$module} = $real_name;
+}
 
 token use_decl { 'use' | 'no' };
 
