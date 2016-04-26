@@ -2,10 +2,19 @@ package MIME::Base64;
 use strict;
 
 package Java::DatatypeConverter { import => "javax.xml.bind.DatatypeConverter" }
+package String {};
 
 # encode_base64( $bytes )
 # encode_base64( $bytes, $eol );
-
+#    Encode data by calling the encode_base64() function.  The first argument is the byte string to encode.
+#    The second argument is the line-ending sequence to use.  It is optional and defaults to "\n".  The
+#    returned encoded string is broken into lines of no more than 76 characters each and it will end with
+#    $eol unless it is empty.  Pass an empty string as second argument if you do not want the encoded string
+#    to be broken into lines.
+#   
+#    The function will croak with "Wide character in subroutine entry" if $bytes contains characters with
+#    code above 255.  The base64 encoding is only defined for single-byte characters.  Use the Encode module
+#    to select the byte encoding you want.
 sub encode_base64 {
     my $s = shift;
     my $eol = shift // "\n";
@@ -17,6 +26,23 @@ sub encode_base64 {
         $result = substr($result, 76);
     }
     return join($eol, @out) . $eol;
+}
+
+# decode_base64( $str )
+#    Decode a base64 string by calling the decode_base64() function.  This function takes a single argument
+#    which is the string to decode and returns the decoded data.
+#
+#    Any character not part of the 65-character base64 subset is silently ignored.  Characters occurring
+#    after a '=' padding character are never decoded.
+sub decode_base64 {
+    my $s = shift;
+    my $end = index($s, "=");
+    if ($end >= 0) {
+        $s = substr($s, 0, $end);
+    }
+    my $result =
+      String->new( Java::DatatypeConverter->parseBase64Binary( $s->toString() ) );
+    return $result;
 }
 
 1;
