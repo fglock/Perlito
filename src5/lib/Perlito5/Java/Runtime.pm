@@ -1583,8 +1583,7 @@ class PerlOp {
         String str          = pstr.toString();
         String searchChars  = psearchChars.toString();
         String replaceChars = preplaceChars.toString();
-        PlCORE.die("TODO - not implemented tr///");
-        boolean modified = false;
+        int modified = 0;
         final int replaceCharsLength = replaceChars.length();
         final int strLength = str.length();
         final StringBuilder buf = new StringBuilder(strLength);
@@ -1592,7 +1591,7 @@ class PerlOp {
             final char ch = str.charAt(i);
             final int index = searchChars.indexOf(ch);
             if (index >= 0) {
-                modified = true;
+                modified++;
                 if (index < replaceCharsLength) {
                     buf.append(replaceChars.charAt(index));
                 }
@@ -1600,10 +1599,10 @@ class PerlOp {
                 buf.append(ch);
             }
         }
-        if (modified) {
-            return new PlString(buf.toString());
+        if (modified > 0) {
+            pstr.set(new PlString(buf.toString()));
         }
-        return pstr;
+        return new PlInt(modified);
     }
 
 }
