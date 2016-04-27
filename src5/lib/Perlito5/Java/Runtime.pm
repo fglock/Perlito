@@ -1509,6 +1509,18 @@ class PerlOp {
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
 
+    public static PlObject prototype(PlObject arg, String packageName) {
+        if (arg.is_coderef()) {
+            if (arg.is_lvalue()) {
+                return ((PlClosure)arg.get()).prototype();
+            }
+            return ((PlClosure)arg).prototype();
+        }
+        String s = arg.toString();
+        // TODO
+        return new PlString("");
+    }
+
     private static String double_escape(String s) {
         // add double escapes: \\w instead of \w
         return s.replace("\\", "\\\\");
@@ -2250,6 +2262,9 @@ class PlClosure extends PlReference implements Runnable {
 	}
     public boolean is_coderef() {
         return true;
+    }
+    public PlObject prototype() {
+        return this.prototype;
     }
 }
 class PlLvalueRef extends PlReference {
