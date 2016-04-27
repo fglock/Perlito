@@ -1523,9 +1523,19 @@ class PerlOp {
             }
             return ((PlClosure)arg).prototype();
         }
-        String s = arg.toString();
-        // TODO
-        return new PlString("");
+        String method = arg.toString();
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.get(packageName + "::" + method);
+        }
+        else {
+            // fully qualified name
+            methodCode = PlV.get(method);
+        }
+        if (methodCode.is_coderef()) {
+            return prototype(methodCode, packageName); 
+        }
+        return PlCx.UNDEF;
     }
 
     private static String double_escape(String s) {
