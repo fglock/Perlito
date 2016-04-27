@@ -2232,6 +2232,11 @@ class PlReference extends PlObject {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
 }
+class PlFileHandle extends PlReference {
+    public static final PlString REF = new PlString("GLOB");
+    public PrintStream outputStream;    // System.out, System.err
+    public InputStream inputStream;     // System.in
+}
 class PlRegex extends PlReference {
     public Pattern p;
     public String  original_string;
