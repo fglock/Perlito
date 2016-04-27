@@ -1230,7 +1230,14 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        PlObject methodCode = PlV.get(invocant + "::" + method);
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.get(invocant + "::" + method);
+        }
+        else {
+            // fully qualified method name
+            methodCode = PlV.get(method);
+        }
 
         if (methodCode.is_undef()) {
             PlCORE.die( "Can't locate object method \"" + method
