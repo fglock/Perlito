@@ -3740,7 +3740,7 @@ package Perlito5::AST::Apply;
         'prototype' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg = $self->{arguments}->[0];
-            return 'p5sub_prototype(' . $arg->emit_java() . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')';
+            return 'PerlOp.prototype(' . $arg->emit_java() . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')';
         },
         'split' => sub {
             my ($self, $level, $wantarray) = @_;
