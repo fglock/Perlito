@@ -9840,24 +9840,6 @@ use feature 'say';
                 if (!($decl->isa('Perlito5::AST::Decl') && $decl->decl() eq 'my')) {
                     push(@str, $decl->emit_javascript2($level, 'void') . ';')
                 }
-                return $str
-            }
-            elsif ($self->{'decl'} eq 'our') {
-                my $str_name = $self->{'var'}->{'name'};
-                $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-                $str_name eq '"' && ($str_name = chr(92) . '"');
-                return 'p5global("' . $self->{'var'}->{'sigil'} . '", ' . '"' . ($self->{'var'}->{'namespace'} || $Perlito5::PKG_NAME) . '", ' . '"' . $str_name . '")'
-            }
-            elsif ($self->{'decl'} eq 'local') {
-                my $decl_namespace = $self->{'var'}->{'_namespace'};
-                my $ns = 'p5pkg["' . ($self->{'var'}->{'namespace'} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
-                return 'p5set_local(' . $ns . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript3::escape_string($self->{'var'}->{'sigil'}) . '); '
-            }
-            elsif ($self->{'decl'} eq 'state') {
-                return '// state ' . $self->{'var'}->emit_javascript3()
-            }
-            else {
-                die('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39))
             }
             if ($last_statement) {
                 my @var_decl = $last_statement->emit_javascript2_get_decl();
