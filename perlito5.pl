@@ -9319,6 +9319,7 @@ use feature 'say';
             my $level = shift;
             chr(9) x $level
         }
+        our $is_inside_subroutine;
         our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size', 'prefix:<-p>' => 'p5is_pipe');
         our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
         our %op_infix_js_num = ('infix:<==>' => ' == ', 'infix:<!=>' => ' != ', 'infix:<+>' => ' + ', 'infix:<->' => ' - ', 'infix:<*>' => ' * ', 'infix:</>' => ' / ', 'infix:<>>' => ' > ', 'infix:<<>' => ' < ', 'infix:<>=>' => ' >= ', 'infix:<<=>' => ' <= ', 'infix:<&>' => ' & ', 'infix:<|>' => ' | ', 'infix:<^>' => ' ^ ', 'infix:<>>>' => ' >>> ');
@@ -10599,13 +10600,19 @@ use feature 'say';
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
                 return $self->{'arguments'}->[0]->emit_javascript2($level) . '.shift()'
             }
-            return 'List__.shift()'
+            if ($Perlito5::Javascript2::is_inside_subroutine) {
+                return 'List__.shift()'
+            }
+            return 'p5pkg.main.List_ARGV.shift()'
         }, 'pop' => sub {
             my($self, $level, $wantarray) = @_;
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
                 return $self->{'arguments'}->[0]->emit_javascript2($level) . '.pop()'
             }
-            return 'List__.pop()'
+            if ($Perlito5::Javascript2::is_inside_subroutine) {
+                return 'List__.pop()'
+            }
+            return 'p5pkg.main.List_ARGV.pop()'
         }, 'unshift' => sub {
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -11196,6 +11203,7 @@ use feature 'say';
             my $prototype = defined($self->{'sig'}) ? Perlito5::Javascript2::escape_string($self->{'sig'}) : 'null';
             my $sub_ref = Perlito5::Javascript2::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
+            local $Perlito5::Javascript2::is_inside_subroutine = 1;
             my $js_block = Perlito5::Javascript2::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'})->emit_javascript2_subroutine_body($level + 2, 'runtime');
             my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
             if ($self->{'name'}) {
@@ -14871,6 +14879,7 @@ use feature 'say';
         our %Java_var_name;
         my %Java_var;
         our @Java_init;
+        our $is_inside_subroutine;
         sub Perlito5::Java::pkg {
             Perlito5::Java::escape_string($Perlito5::PKG_NAME)
         }
@@ -16747,13 +16756,19 @@ use feature 'say';
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
                 return $self->{'arguments'}->[0]->emit_java($level) . '.shift()'
             }
-            return 'List__.shift()'
+            if ($Perlito5::Java::is_inside_subroutine) {
+                return 'List__.shift()'
+            }
+            return 'PlV.array_get("main::List_ARGV").shift()'
         }, 'pop' => sub {
             my($self, $level, $wantarray) = @_;
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
                 return $self->{'arguments'}->[0]->emit_java($level) . '.pop()'
             }
-            return 'List__.pop()'
+            if ($Perlito5::Java::is_inside_subroutine) {
+                return 'List__.pop()'
+            }
+            return 'PlV.array_get("main::List_ARGV").pop()'
         }, 'unshift' => sub {
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -17357,6 +17372,7 @@ use feature 'say';
             my $prototype = defined($self->{'sig'}) ? 'new PlString(' . Perlito5::Java::escape_string($self->{'sig'}) . ')' : 'PlCx.UNDEF';
             my $sub_ref = Perlito5::Java::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
+            local $Perlito5::Java::is_inside_subroutine = 1;
             my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'});
             my @captured;
             for my $stmt (@{$self->{'block'}->{'stmts'}}) {
