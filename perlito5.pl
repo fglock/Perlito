@@ -16695,8 +16695,8 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
             if ($arg->isa('Perlito5::AST::Block')) {
-                my $ast = Perlito5::AST::Call::->new('method' => 'postcircumfix:<( )>', 'invocant' => Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => [], '_do_block' => 1), 'arguments' => []);
-                return $ast->emit_java($level + 1, $wantarray)
+                my $ast = Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => [], '_do_block' => 1);
+                return $ast->emit_java($level + 1, $wantarray) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
             }
             my $tmp_strict = $Perlito5::STRICT;
             $Perlito5::STRICT = 0;
