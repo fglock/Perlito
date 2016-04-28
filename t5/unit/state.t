@@ -89,6 +89,21 @@ sub convoluted_counter {
     $ctr->();
 }
 
+# This function uses a state variable that starts out as undef and calls
+# post-increment on it, returning the value of the expression. When this
+# function is called, the value returned from the first call is 0 and not undef.
+sub uninitialized_state {
+    state $x;
+    $x++;
+}
+
+my @result;
+push @result, uninitialized_state for (1..3);
+my @expected = (0, 1, 2);
+for my $i (0..$#expected) {
+    $t->($result[$_] == $expected[$_], 'Uninitialized state variable with post increment operator');
+}
+
 my $convoluted_counter_test = 'state variable in a do block that returns a sub closing over the state variable';
 $t->(convoluted_counter(0) == 1, $convoluted_counter_test);
 $t->(convoluted_counter(100) == 2, $convoluted_counter_test);
