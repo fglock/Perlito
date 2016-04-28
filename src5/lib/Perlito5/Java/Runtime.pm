@@ -1069,6 +1069,9 @@ class PlCORE {
         }
         return new PlString(sb.reverse().toString());
     }
+    public static final PlObject fc(int want,  PlObject Object__) {
+        return new PlString(Object__.toString().toLowerCase());
+    }
     public static final PlObject time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }
