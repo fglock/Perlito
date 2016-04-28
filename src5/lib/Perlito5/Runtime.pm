@@ -294,6 +294,7 @@ our $CORE_PROTO = {
           'CORE::getservbyname' => '$$',
           'CORE::setpriority' => '$$$',
           'CORE::lc' => '_',
+          'CORE::fc' => '_',
           'CORE::fcntl' => '*$$',
           'CORE::chroot' => '_',
           'CORE::recv' => '*\\$$$',
