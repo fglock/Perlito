@@ -18,6 +18,8 @@ package Perlito5::Javascript2;
         "\t" x $level
     }
 
+    our $is_inside_subroutine;  # 'shift @_' vs. 'shift @ARGV'
+
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
         'prefix:<-A>' => 'p5atime',
@@ -2332,14 +2334,20 @@ package Perlito5::AST::Apply;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
                 return $self->{arguments}[0]->emit_javascript2( $level ) . '.shift()'
             }
-            return 'List__.shift()'
+            if ($Perlito5::Javascript2::is_inside_subroutine) {
+                return 'List__.shift()';                          # shift @_
+            }
+            return 'p5pkg.main.List_ARGV.shift()';                # shift @ARGV
         },
         'pop' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
                 return $self->{arguments}[0]->emit_javascript2( $level ) . '.pop()'
             }
-            return 'List__.pop()'
+            if ($Perlito5::Javascript2::is_inside_subroutine) {
+                return 'List__.pop()';                          # pop @_
+            }
+            return 'p5pkg.main.List_ARGV.pop()';                # pop @ARGV
         },
         'unshift' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -3316,6 +3324,7 @@ package Perlito5::AST::Sub;
 
         my $sub_ref = Perlito5::Javascript2::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
+        local $Perlito5::Javascript2::is_inside_subroutine = 1;
         my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}{stmts} )->emit_javascript2_subroutine_body( $level + 2, 'runtime' );
 
         my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
