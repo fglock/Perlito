@@ -3200,16 +3200,13 @@ package Perlito5::AST::Apply;
             if ($arg->isa( "Perlito5::AST::Block" )) {
                 # do BLOCK
                 # rewrite to:   sub {...}->()
-                my $ast = Perlito5::AST::Call->new(
-                    'method' => 'postcircumfix:<( )>',
-                    'invocant' => Perlito5::AST::Sub->new(
-                        'block' => $arg,
-                        'attributes' => [],
-                        _do_block => 1,
-                    ),
-                    'arguments' => [],
+                my $ast = Perlito5::AST::Sub->new(
+                    'block' => $arg,
+                    'attributes' => [],
+                    _do_block => 1,
                 );
-                return $ast->emit_java( $level + 1, $wantarray );
+                return $ast->emit_java( $level + 1, $wantarray )
+                    . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';
             }
 
             # do EXPR
