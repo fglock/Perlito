@@ -1731,6 +1731,9 @@ class PlEnv {
         PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
         PlV.set("main::v_/", new PlString("\n"));                  // $/ = "\n"
+        PlCx.STDIN.inputStream   = System.in;
+        PlCx.STDOUT.outputStream = System.out;
+        PlCx.STDERR.outputStream = System.err;
     }
 }
 class PlObject {
