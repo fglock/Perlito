@@ -3183,7 +3183,11 @@ package Perlito5::AST::Apply;
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            die "TODO - goto() not implemented";
+            return 'PerlOp.gotoOp('
+                            . Perlito5::Java::to_context($wantarray) . ', '
+                            . $self->{arguments}->[0]->emit_java($level) . ', '
+                            . 'List__'
+                        . ')'
         },
         'caller' => sub {
             my ($self, $level, $wantarray) = @_;
