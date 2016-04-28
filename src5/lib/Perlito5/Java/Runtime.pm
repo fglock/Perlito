@@ -2764,6 +2764,9 @@ EOT
     public PlObject post_incr() {
         // $x++
         PlObject res = this.o;
+        if (res.is_undef()) {
+            res = PlCx.INT0;
+        }
         this.o = this.o._incr();
         return res;
     }
