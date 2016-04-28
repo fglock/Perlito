@@ -985,7 +985,6 @@ package Perlito5::Java::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
-                  || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';

@@ -1336,6 +1336,13 @@ class PerlOp {
         throw new PlReturnException(ret);
     }
 
+    public static final PlObject gotoOp(int ctx, PlObject s, PlArray List__) {
+        if (s.is_coderef()) {
+            // goto &subr;
+            return s.apply(ctx, List__);
+        }
+        return PlCORE.die("goto() not implemented");
+    }
     public static final PlObject caller(int ctx, PlObject s) {
         int item = s.to_int();
         PlCORE.die("caller() not implemented");
