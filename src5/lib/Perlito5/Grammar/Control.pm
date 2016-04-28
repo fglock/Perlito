@@ -81,6 +81,59 @@ token when {
     { Perlito5::Grammar::Scope::end_compile_time_scope() }
 };
 
+sub transform_in_c_style_for_loop {
+    my $exp_term = shift;
+    my $converted_exp_term;
+
+    # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
+    # All the other type of for(exp1 .. exp2) can be converted
+    if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
+            and ( not( is_bareword($exp_term->arguments->[0]) ) or not( is_bareword($exp_term->arguments->[1]) ) ) ) {
+        my $temp_loop_variable = Perlito5::AST::Var->new(
+            namespace => '',
+            name      => '_',
+            sigil     => '$',
+        );
+
+        $converted_exp_term = [
+            Perlito5::AST::Apply->new(
+                code => 'infix:<=>',
+                namespace => $exp_term->namespace,
+                arguments => [
+                    $temp_loop_variable,
+                    $exp_term->arguments->[0],
+                ],
+            ),
+            Perlito5::AST::Apply->new(
+                code => 'infix:<<=>',
+                namespace => $exp_term->namespace,
+                arguments => [
+                    $temp_loop_variable,
+                    $exp_term->arguments->[1],
+                ],
+            ),
+            Perlito5::AST::Apply->new(
+                code => 'postfix:<++>',
+                namespace => $exp_term->namespace,
+                arguments => [
+                    $temp_loop_variable,
+                ],
+            ),
+        ];
+    } else {
+        # No translation is possible. Just return the same exp_term
+        $converted_exp_term = $exp_term;
+    }
+
+    $converted_exp_term;
+}
+
+sub is_bareword {
+    my $term = shift;
+
+    $term->isa('Perlito5::AST::Apply') and $term->{bareword};
+}
+
 token for {
     'for' 'each'?
     { Perlito5::Grammar::Scope::create_new_compile_time_scope() }
@@ -93,8 +146,9 @@ token for {
         <.Perlito5::Grammar::Space::opt_ws> 
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
             {   my $body = Perlito5::Match::flat($MATCH->{block});
+                my $header = transform_in_c_style_for_loop( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}) );
                 $MATCH->{capture} = Perlito5::AST::For->new( 
-                        cond  => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}), 
+                        cond  => $header,
                         body  => $body,
                         continue => $MATCH->{opt_continue_block}{capture},
                         topic => $MATCH->{_tmp},
@@ -121,7 +175,7 @@ token for {
                           || <.Perlito5::Grammar::Space::opt_ws>
                           ]
                       ';' [ <Perlito5::Grammar::exp2> || <.Perlito5::Grammar::Space::opt_ws> ]
-                    | ''
+                    | ''  { $MATCH->{transform_in_c_style_for} = 1 }
                     ]
             ')' <block> <opt_continue_block>
         {
@@ -137,11 +191,13 @@ token for {
             }
             else {
                 $header = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture};
+                $header = transform_in_c_style_for_loop($header) if $MATCH->{transform_in_c_style_for};
+
                 $topic  = Perlito5::AST::Var->new(
-                                        namespace => '',
-                                        name      => '_',
-                                        sigil     => '$'
-                                    );
+                    namespace => '',
+                    name      => '_',
+                    sigil     => '$',
+                );
             }
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
