@@ -3181,10 +3181,21 @@ package Perlito5::AST::Apply;
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::THROW = 1;
+            my $s;
+            my $arg = $self->{arguments}[0];
+            if (  ref( $arg ) eq 'Perlito5::AST::Var' 
+               && $arg->{sigil} eq '&'
+               )
+            {
+                my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
+                $s = 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $arg->name ) . ')';
+            }
+            else {
+                $s = $arg->emit_java($level);
+            }
             return 'PerlOp.gotoOp('
                             . Perlito5::Java::to_context($wantarray) . ', '
-                            . $self->{arguments}->[0]->emit_java($level) . ', '
+                            . $s . ', '
                             . 'List__'
                         . ')'
         },

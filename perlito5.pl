@@ -16636,8 +16636,16 @@ use feature 'say';
             'PerlOp.ret(' . Perlito5::Java::to_runtime_context($self->{'arguments'}, $level + 1) . ')'
         }, 'goto' => sub {
             my($self, $level, $wantarray) = @_;
-            $Perlito5::THROW = 1;
-            return 'PerlOp.gotoOp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . 'List__' . ')'
+            my $s;
+            my $arg = $self->{'arguments'}->[0];
+            if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '&') {
+                my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
+                $s = 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $arg->name()) . ')'
+            }
+            else {
+                $s = $arg->emit_java($level)
+            }
+            return 'PerlOp.gotoOp(' . Perlito5::Java::to_context($wantarray) . ', ' . $s . ', ' . 'List__' . ')'
         }, 'caller' => sub {
             my($self, $level, $wantarray) = @_;
             return 'PerlOp.caller(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'

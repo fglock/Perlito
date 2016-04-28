@@ -10,6 +10,7 @@
 - Java:
 -- '&subr', '&subr()', '\&subr' idioms
 -- '*name = \&subr' idiom
+-- 'goto &subr' idiom
 -- sprintf(), printf(), fc()
 -- increment/decrement operations on native types
 -- support for primitive data types, work in progress: "byte", "short"
