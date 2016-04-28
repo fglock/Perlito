@@ -249,9 +249,9 @@ class PlCx {
     public static final PlUndef  UNDEF  = new PlUndef();
     public static final PlBool   TRUE   = new PlBool(true);
     public static final PlBool   FALSE  = new PlBool(false);
-    public static final PlString STDOUT = new PlString("STDOUT");
-    public static final PlString STDERR = new PlString("STDERR");
-    public static final PlString STDIN  = new PlString("STDIN");
+    public static final PlFileHandle STDIN  = new PlFileHandle();
+    public static final PlFileHandle STDOUT = new PlFileHandle();
+    public static final PlFileHandle STDERR = new PlFileHandle();
     public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
     public static final String  ARGV   = "main::List_ARGV";
@@ -830,16 +830,16 @@ class PlCORE {
     public static final PlObject print(int want, PlObject filehandle, PlArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
-            System.out.print(List__.aget(i).toString());
+            ((PlFileHandle)filehandle).outputStream.print(List__.aget(i).toString());
         }
         return PlCx.INT1;
     }
     public static final PlObject say(int want, PlObject filehandle, PlArray List__) {
         // TODO - write to filehandle
         for (int i = 0; i < List__.to_int(); i++) {
-            System.out.print(List__.aget(i).toString());
+            ((PlFileHandle)filehandle).outputStream.print(List__.aget(i).toString());
         }
-        System.out.println("");
+        ((PlFileHandle)filehandle).outputStream.println("");
         return PlCx.INT1;
     }
     public static final PlObject say(String s) {
@@ -853,9 +853,9 @@ class PlCORE {
     }
     public static final PlObject warn(int want, PlArray List__) {
         for (int i = 0; i < List__.to_int(); i++) {
-            System.err.print(List__.aget(i).toString());
+            PlCx.STDERR.outputStream.print(List__.aget(i).toString());
         }
-        System.err.println("");
+        PlCx.STDERR.outputStream.println("");
         return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
@@ -1125,7 +1125,7 @@ class PlCORE {
             String s = null;
             Process p = Runtime.getRuntime().exec(args);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            System.out.println("STDOUT\n");
+            // System.out.println("STDOUT\n");
             while ((s = stdInput.readLine()) != null) {
                 // System.out.println("  " + s);
                 res.push(s + "\n");
@@ -1724,6 +1724,9 @@ class PlEnv {
         PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
         PlV.set("main::v_/", new PlString("\n"));                  // $/ = "\n"
+        PlCx.STDIN.inputStream   = System.in;
+        PlCx.STDOUT.outputStream = System.out;
+        PlCx.STDERR.outputStream = System.err;
     }
 }
 class PlObject {
