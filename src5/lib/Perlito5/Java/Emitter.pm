@@ -990,7 +990,7 @@ package Perlito5::Java::LexicalBlock;
                 push @str, $last_statement->emit_java($level, 'void') . ';';
                 push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
             }
-            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
+            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) || $last_statement->isa('Perlito5::AST::Sub') ) {
                 push @str, $last_statement->emit_java($level, 'runtime') . '';
                 # push @str, 'return PlCx.UNDEF;';  # unreachable
             }
