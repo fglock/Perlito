@@ -998,6 +998,7 @@ class PlCORE {
                                         break;
                                     case 'd': case 'o': case 'x': case 'X':
                                     case 'u': case 'b': case 'B': case 'p':
+                                    case 'c':
                                         args[args_index] = List__.aget(args_index+1).to_int();
                                         break;
                                     case 'f': case 'e': case 'g':
