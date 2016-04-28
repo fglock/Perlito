@@ -21,6 +21,7 @@ package Perlito5::Java;
     our %Java_var_name; # 101 => 'this.env.[0]'
     my %Java_var;       # 101 => { id => 101, type => 'Byte' }
     our @Java_init;
+    our $is_inside_subroutine;  # 'shift @_' vs. 'shift @ARGV'
 
     sub pkg {
         Perlito5::Java::escape_string($Perlito5::PKG_NAME )
@@ -3357,14 +3358,20 @@ package Perlito5::AST::Apply;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
                 return $self->{arguments}[0]->emit_java( $level ) . '.shift()'
             }
-            return 'List__.shift()'
+            if ($Perlito5::Java::is_inside_subroutine) {
+                return 'List__.shift()';                        # shift @_
+            }
+            return 'PlV.array_get("main::List_ARGV").shift()';  # shift @ARGV
         },
         'pop' => sub {
             my ($self, $level, $wantarray) = @_;
             if ( $self->{arguments} && @{$self->{arguments}} ) {
                 return $self->{arguments}[0]->emit_java( $level ) . '.pop()'
             }
-            return 'List__.pop()'
+            if ($Perlito5::Java::is_inside_subroutine) {
+                return 'List__.pop()';                          # pop @_
+            }
+            return 'PlV.array_get("main::List_ARGV").pop()';    # pop @ARGV
         },
         'unshift' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -4281,6 +4288,7 @@ package Perlito5::AST::Sub;
 
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
+        local $Perlito5::Java::is_inside_subroutine = 1;
         my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} );
 
         # get list of captured variables, including inner blocks
