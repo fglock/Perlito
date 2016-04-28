@@ -1339,7 +1339,7 @@ class PerlOp {
     public static final PlObject gotoOp(int ctx, PlObject s, PlArray List__) {
         if (s.is_coderef()) {
             // goto &subr;
-            return s.apply(ctx, List__);
+            throw new PlReturnException(s.apply(ctx, List__));
         }
         return PlCORE.die("goto() not implemented");
     }

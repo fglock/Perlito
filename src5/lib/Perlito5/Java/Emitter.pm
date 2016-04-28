@@ -3181,6 +3181,7 @@ package Perlito5::AST::Apply;
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
+            $Perlito5::THROW_RETURN = 1;
             my $s;
             my $arg = $self->{arguments}[0];
             if (  ref( $arg ) eq 'Perlito5::AST::Var' 
@@ -3193,11 +3194,13 @@ package Perlito5::AST::Apply;
             else {
                 $s = $arg->emit_java($level);
             }
-            return 'PerlOp.gotoOp('
-                            . Perlito5::Java::to_context($wantarray) . ', '
-                            . $s . ', '
-                            . 'List__'
-                        . ')'
+
+            'PerlOp.gotoOp('
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . $s . ', '
+                    . 'List__'
+            . ')'
+
         },
         'caller' => sub {
             my ($self, $level, $wantarray) = @_;
