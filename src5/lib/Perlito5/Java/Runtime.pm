@@ -1377,6 +1377,7 @@ class PerlOp {
 
     public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
         if (ctx == PlCx.LIST) {
+            // TODO - range when first argument is string
             long start = _start.to_long(),
                  end   = _end.to_long();
             int size = Math.max(0, (int)(end - start + 1));
@@ -1387,6 +1388,9 @@ class PerlOp {
             return ret;
         }
         PlCORE.die("Range not implemented for context " + ctx);
+        // TODO - range in boolean (scalar) context
+        // http://perldoc.perl.org/perlop.html#Range-Operators
+        // In scalar context, ".." returns a boolean value.
         return null;
     }
 
