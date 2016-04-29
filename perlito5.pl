@@ -1120,7 +1120,7 @@ use feature 'say';
                 return ($node, @rules)
             }
             for my $branch ('stmts', 'arguments') {
-                if (exists($node->{$branch})) {
+                if (exists($node->{$branch}) && ref($node->{$branch}) eq 'ARRAY') {
                     for $_ (0 .. $#{$node->{$branch}}) {
                         my($retnode, @retrules) = find_state_expr($node->{$branch}->[$_], @rules, ['Lookup' => $branch], ['Index' => $_]);
                         if ($retnode) {
@@ -13170,10 +13170,8 @@ use feature 'say';
             my $self = $_[0];
             my @sig;
             my @parts;
-            if (0) {
-                if (my $node = $self->maybe_rewrite_statevars()) {
-                    return $node->emit_perl5(@_[1 .. $#_])
-                }
+            if (my $node = $self->maybe_rewrite_statevars()) {
+                return $node->emit_perl5(@_[1 .. $#_])
             }
             defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
             if (defined($self->{'block'})) {
