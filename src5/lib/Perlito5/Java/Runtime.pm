@@ -1073,6 +1073,361 @@ class PlCORE {
     public static final PlObject fc(int want,  PlObject Object__) {
         return new PlString(Object__.toString().toLowerCase());
     }
+    public static final PlObject pack(int want, PlArray List__) {
+        String template = List__.aget(0).toString();
+        StringBuilder result = new StringBuilder();
+        int index = 1;
+        for(int i = 0; i < template.length(); ++i) {
+            switch(template.charAt(i)) {
+            case 'a':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_a(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'A':
+            {    
+                int size = pack_size(template, i);
+                result.append(pack_A(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'Z':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_Z(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'b':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_b(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'B':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_B(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'h':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_h(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case 'H':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_H(List__.aget(index).toString(), size));
+                ++index;
+                break;        
+            }
+            case 'c':
+            {
+                result.append(pack_c(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 'C':
+            {
+                result.append(pack_C(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 'W':
+            {
+                result.append(pack_W(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 's':
+            {
+                result.append(pack_s(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 'L':
+            {
+                result.append(pack_L(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 'I':
+            {
+                result.append(pack_I(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case 'f':
+            {
+                result.append(pack_f(List__.aget(index).to_double()));
+                ++index;
+                break;        
+            }
+            case 'd':
+            case 'F':
+            {
+                result.append(pack_d(List__.aget(index).to_double()));
+                ++index;
+                break;        
+            }
+            case 'u':
+            {
+                result.append(pack_u(List__.aget(index).toString()));
+                ++index;
+                break;
+            }
+            default:
+            }
+        }
+
+        return new PlString(result.toString());
+    }
+    private static final int pack_size(String s, int pos) {
+        int howMany = 0;
+        while(s.length() > (pos + 1 + howMany) && java.lang.Character.isDigit(s.charAt(pos + 1 + howMany))) {
+            ++howMany;
+        }
+        if(howMany != 0) {
+            return java.lang.Integer.parseInt(s.substring(pos + 1, pos + 1 + howMany));
+        }
+        return 1;
+    }
+    private static final String pack_a(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        String padding = new String(new char[size - s.length()]);
+        return s + padding;    
+    }
+    private static final String pack_A(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        String padding = new String(new char[size - s.length()]).replace('\0', ' ');
+        return s + padding;    
+    }
+    private static final String pack_Z(String s, int size) {
+        s = s.substring(0, java.lang.Math.min(size - 1, s.length()));
+        return s +  new String(new char[size - s.length()]);
+    }
+    private static final String pack_b(String s, int size) {
+        s = s.substring(0, Math.min(size, s.length()));
+        int wanted8strings = (size + 7) / 8;
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace('\0', '0');
+        StringBuilder input = new StringBuilder();
+        for(int i = 0; i < s.length(); ++i) {
+            if(s.codePointAt(i) % 2 == 1) {
+                input.append("1");
+            }
+            else {
+                input.append("0");
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        s = input.toString();
+        for(int i = 0; i < wanted8strings; ++i) {
+            String part = s.substring(i * 8, i * 8 + 8);
+            int first = java.lang.Integer.parseInt(new StringBuilder(part.substring(0,4)).reverse().toString(), 2);
+            int second = java.lang.Integer.parseInt(new StringBuilder(part.substring(4,8)).reverse().toString(), 2);
+            result.append(Character.toString((char)(first + second * 16)));
+        }
+        return result.toString();
+    }
+    private static final String pack_B(String s, int size) {
+        s = s.substring(0, Math.min(size, s.length()));
+        int wanted8strings = (size + 7) / 8;
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace('\0', '0');
+        StringBuilder input = new StringBuilder();
+        for(int i = 0; i < s.length(); ++i) {
+            if(s.codePointAt(i) % 2 == 1) {
+                input.append("1");
+            }
+            else {
+                input.append("0");
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        s = input.toString();
+        for(int i = 0; i < wanted8strings; ++i) {
+            String part = s.substring(i * 8, i * 8 + 8);
+            int ascii = java.lang.Integer.parseInt(part, 2);
+            result.append(Character.toString((char)ascii));
+        }
+        return result.toString();
+    }
+    private static final String pack_h(String s, int size) {
+        int index  = 0;
+        if(s.length() < size * 2) {
+            s += new String(new char[size * 2 - s.length()]).replace('\0', '0');
+        }
+        StringBuilder result = new StringBuilder();
+        while(index < size) {
+            String part = s.substring(index + 1, index + 2) + s.substring(index, index + 1);
+            int ascii = java.lang.Integer.parseInt(part, 16);
+            result.append(Character.toString((char)ascii));
+            index += 2;
+        }
+        return result.toString();
+    }
+    private static final String pack_H(String s, int size) {
+        int index  = 0;
+        if(s.length() < size * 2) {
+            s += new String(new char[size * 2 - s.length()]).replace('\0', '0');
+        }
+        StringBuilder result = new StringBuilder();
+        while(index < size) {
+            String part = s.substring(index, index + 2);
+            int ascii = java.lang.Integer.parseInt(part, 16);
+            result.append(Character.toString((char)ascii));
+            index += 2;
+        }
+        return result.toString();
+    }
+    private static String pack_c(String s) {
+        try {
+            int ascii = java.lang.Integer.parseInt(s) % 128;
+            return Character.toString((char)ascii);
+        } catch(Exception e) {
+            return "";
+        }
+    }
+    private static String pack_C(String s) {
+        try {
+            int ascii = (java.lang.Integer.parseInt(s) + 256) % 256;
+            return Character.toString((char)ascii);
+        } catch(Exception e) {
+            return "";
+        }
+    }
+    private static String pack_W(String s) {
+        for(int i = 0; i < s.length(); ++i) {
+            if(!java.lang.Character.isDigit(s.charAt(i))) {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        int value = java.lang.Integer.parseInt(s);
+        StringBuilder sb = new StringBuilder();
+        sb.appendCodePoint(value);
+        return sb.toString();
+    }
+    private static String pack_s(String s) {
+        for(int i = 0; i < s.length(); ++i) {
+            if(!java.lang.Character.isDigit(s.charAt(i))) {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        short value = java.lang.Short.parseShort(s);
+        char high = (char)(value / 256);
+        char low = (char)(value % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(Character.toString(high));
+        result.append(Character.toString(low));
+        return result.toString();        
+    }
+    public static final String pack_L(String s) {
+        for(int i = 0; i < s.length(); ++i) {
+            if(!java.lang.Character.isDigit(s.charAt(i))) {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        long value = java.lang.Long.parseLong(s);
+        char one = (char)(value / (int)Math.pow(2, 24));
+        char two = (char)((value / (int)Math.pow(2, 16)) % 256);
+        char three = (char)((value / (int)Math.pow(2, 8)) % 256);
+        char four = (char)(value % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(Character.toString(one));
+        result.append(Character.toString(two));
+        result.append(Character.toString(three));
+        result.append(Character.toString(four));
+        return result.toString();        
+    }
+    public static final String pack_I(String s) {
+        return pack_L(s);
+    }
+    public static final String pack_f(double d) {
+        float f = (float)d;
+        int intBits = java.lang.Float.floatToRawIntBits(f); 
+        char one = (char)(intBits / (int)Math.pow(2, 24));
+        char two = (char)((intBits / (int)Math.pow(2, 16)) % 256);
+        char three = (char)((intBits / (int)Math.pow(2, 8)) % 256);
+        char four = (char)(intBits % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(Character.toString(four));
+        result.append(Character.toString(three));
+        result.append(Character.toString(two));
+        result.append(Character.toString(one));
+        return result.toString();        
+    }
+    public static final String pack_d(double d) {
+        long intBits = java.lang.Double.doubleToRawLongBits(d);
+        char one =  (char)(intBits / (long)Math.pow(2, 56));
+        char two = (char)((intBits / (long)Math.pow(2, 48)) % 256);
+        char three = (char)((intBits / (long)Math.pow(2, 40)) % 256);
+        char four = (char)((intBits / (long)Math.pow(2, 32)) % 256);
+        char five = (char)((intBits / (long)Math.pow(2, 24)) % 256);
+        char six = (char)((intBits / (long)Math.pow(2, 16)) % 256);
+        char seven = (char)((intBits / (long)Math.pow(2, 8)) % 256);
+        char eight = (char)(intBits % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(eight);
+        result.append(seven);
+        result.append(six);
+        result.append(five);
+        result.append(four);
+        result.append(three);
+        result.append(two);
+        result.append(one);
+        return result.toString();        
+    }
+    public static final String pack_u(String s) {
+        int index = 0;
+        StringBuilder result = new StringBuilder();
+        StringBuilder line = new StringBuilder();
+        int tooMany = 0;
+        while(s.length() > index * 3) {
+            String cur = s.substring(index * 3, Math.min(index * 3 + 3, s.length()));
+            while(cur.length() < 3) {
+                ++tooMany;
+                cur += '\0';
+            }
+            byte[] bytes = cur.getBytes();
+            char value1 = (char)((bytes[0] >> 2) + 32);
+            char value2 = (char)(((bytes[0] & 3) << 4) + (bytes[1] >> 4) + 32);
+            char value3 = (char)(((bytes[1] & 15) << 2) + (bytes[2] >> 6) + 32);
+            char value4 = (char)((bytes[2] & 63) + 32);
+
+            line.append(value1);
+            line.append(value2);
+            line.append(value3);
+            line.append(value4);
+            
+            if(line.length() == 60 && index != 0) {
+                line.insert(0, (char)(32 + (45 - tooMany)));
+                line.append("\n");
+                result.append(line.toString());
+                line = new StringBuilder();
+            }
+            ++index;
+        }
+        if(line.length() > 0) {
+            line.insert(0, (char)(32 + ((index * 3 - tooMany) % 45)));
+            line.append("\n");
+            result.append(line);
+        }
+
+        return result.toString();
+    }
     public static final PlObject time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
     }

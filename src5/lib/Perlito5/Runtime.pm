@@ -295,6 +295,7 @@ our $CORE_PROTO = {
           'CORE::setpriority' => '$$$',
           'CORE::lc' => '_',
           'CORE::fc' => '_',
+          'CORE::pack' => '$@',
           'CORE::fcntl' => '*$$',
           'CORE::chroot' => '_',
           'CORE::recv' => '*\\$$$',

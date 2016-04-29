@@ -3534,6 +3534,10 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.fc(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
         },
+        'pack' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.pack(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
         'values' => sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.values(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
