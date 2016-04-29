@@ -82,6 +82,8 @@ token when {
 };
 
 sub transform_in_c_style_for_loop {
+    return $_[0];
+
     my $exp_term = shift;
     my $converted_exp_term;
 
