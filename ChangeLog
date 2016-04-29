@@ -1,8 +1,6 @@
 
 - work in progress:
-	state variables (Parser)
-
-	pack() unpack() (Java)
+	pack() unpack() (Java) by Bas Appelo
 
 	module-level compilation for perlito5.pl (Perl5)
 
@@ -11,6 +9,7 @@
 	files (Java)
 
 - Parser:
+-- state variables by Yati Sagade
 -- "->@*" support
 -- optimize "for (0..1000000)" by Luca Falsina
 -- new namespaces for modules that require backend-specific implementations:
