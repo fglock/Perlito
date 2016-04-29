@@ -22,6 +22,7 @@ Perlito5-in-JavaScript - what works
 
 - Most control structures.
   "next", "last", "redo", "continue" and labels.
+  "goto &subr".
 
 - Most string, numeric, array, hash operators.
 
@@ -40,7 +41,8 @@ Perlito5-in-JavaScript differences from "perl"
 
 - "~~" smartmatch is not implemented
 
-- "sleep" is not implemented
+- "sleep" is not implemented in the browser.
+  Perlito5 in node.js implements "sleep" using an npm module.
 
 - "state" declaration is not implemented yet.
 
@@ -54,15 +56,17 @@ Perlito5-in-JavaScript differences from "perl"
 - Overload is not implemented yet.
 
 - XS is not supported.
+  Use "JS::inline" instead.
 
 - Variable aliasing is not implemented yet;
   modifying $_ or $_[0] doesn't change the original variable.
 
 - Variable redeclaration is not implemented yet.
 
-- Unicode is not implemented yet.
+- utf8 is not implemented yet.
 
-- Regex is missing some features, such as /e and /x modifiers.
+- Regex is missing some features, such as /x modifier.
+  "/e" modifier is supported.
 
 - Control structures are partially implemented;
   "goto LABEL" is not supported.
@@ -82,9 +86,15 @@ Perlito5-in-JavaScript differences from "perl"
 - String increment partially implemented - array and hash lookups; not in scalars.
 
 
-Perlito5 compiler globals
+Internals
+=========
+
+
+Perlito5 JavaScript Data model Overview
 --------------
 
+
+Perlito5 compiler globals
 
 - context: system-wide; shared by all modules
 
@@ -123,11 +133,6 @@ Perlito5 compiler globals
 ~~~
 
     - arrayref-of-hashes with variable-short-names to (declaration type, namespace) mappings
-
-
-
-Perlito5 JavaScript Data model Overview
---------------
 
 
 method call
