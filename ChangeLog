@@ -2,8 +2,6 @@
 - work in progress:
 	state variables (Parser)
 
-	optimize "for (0..1000000)" (Parser)
-
 	pack() unpack() (Java)
 
 	module-level compilation for perlito5.pl (Perl5)
@@ -13,6 +11,7 @@
 	"->@*" support (Parser)
 
 - Parser:
+-- optimize "for (0..1000000)" by Luca Falsina
 -- new namespaces for modules that require backend-specific implementations:
     lib/Perlito5X/Java/ and lib/Perlito5X/Javascript/
     and configuration modules:
