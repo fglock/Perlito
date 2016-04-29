@@ -1,6 +1,16 @@
 
 - work in progress:
-	state variables
+	state variables (Parser)
+
+	optimize "for (0..1000000)" (Parser)
+
+	pack() unpack() (Java)
+
+	module-level compilation for perlito5.pl (Perl5)
+
+	utf8 support (Java)
+
+	"->@*" support (Parser)
 
 - Parser:
 -- new namespaces for modules that require backend-specific implementations:
