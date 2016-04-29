@@ -3,28 +3,19 @@ package org.perlito.perlitosample;
 // start Perl-Java runtime
 // this is generated code - see: lib/Perlito5/Java/Runtime.pm
 
-import android.os.Bundle;
+import java.lang.Math;
+import java.lang.System;
+import java.util.*;
+import java.io.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
         static {
@@ -1228,6 +1219,7 @@ class PerlOp {
 
     public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
         if (ctx == PlCx.LIST) {
+            // TODO - range when first argument is string
             long start = _start.to_long(),
                  end   = _end.to_long();
             int size = Math.max(0, (int)(end - start + 1));
@@ -1238,6 +1230,9 @@ class PerlOp {
             return ret;
         }
         PlCORE.die("Range not implemented for context " + ctx);
+        // TODO - range in boolean (scalar) context
+        // http://perldoc.perl.org/perlop.html#Range-Operators
+        // In scalar context, ".." returns a boolean value.
         return null;
     }
 
@@ -4962,11 +4957,24 @@ class Main {
             PerlOp.statement();
             PlV.set("main::doit", new PlClosure(PlCx.UNDEF, new PlObject[]{  } ) {
                 public PlObject apply(int want, PlArray List__) {
-                    PlLvalue v_this_100 = new PlLvalue();
-                    v_this_100.set((List__.shift()));
-                    PlLvalue v_x_101 = new PlLvalue();
-                    v_x_101.set((List__.shift()));
-                    return new PlString("" + PlCx.INT2.mul(v_x_101).toString());
+                    try {
+                        PlLvalue v_this_100 = new PlLvalue();
+                        v_this_100.set((List__.shift()));
+                        PlLvalue v_x_101 = new PlLvalue();
+                        v_x_101.set((List__.shift()));
+                        if (v_x_101.str_eq(new PlString("die")).to_bool()) {
+                            PerlOp.statement(PlCORE.die(PlCx.VOID, new PlArray(new PlString("Death to you"))));
+                        }
+                        if (PlCx.INT0.add(v_x_101).str_eq(v_x_101).to_bool()) {
+                                return PerlOp.ret(new PlString("The result (calculated in Perl) is " + PlCx.INT2.mul(v_x_101).toString()));
+                            }
+                            else {
+                                return PerlOp.ret(new PlString("The result (calculated in Perl) is " + PerlOp.string_replicate(new PlString(v_x_101.toString()),PlCx.INT2).toString()));
+                            }
+                    }
+                    catch(PlReturnException e) {
+                        return e.ret;
+                    }
                 }
             });
         }

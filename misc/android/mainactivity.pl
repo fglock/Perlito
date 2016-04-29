@@ -57,5 +57,14 @@ sub doit {
     # my ($this, $bundle) = @_;
     my $this = shift;
     my $x = shift;
-    return "". (2 * $x);
+    if ($x eq 'die') { die "Death to you"; }
+    if (0+$x eq $x) {
+        return "The result (calculated in Perl) is ". (2 * $x);
+    }
+    else {
+        return "The result (calculated in Perl) is ". ($x x 2);
+    }
 }
+
+
+
