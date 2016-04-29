@@ -3181,10 +3181,20 @@ package Perlito5::AST::Apply;
         },
         'goto' => sub {
             my ($self, $level, $wantarray) = @_;
-            $Perlito5::THROW = 1;
+            $Perlito5::THROW_RETURN = 1;
+
+            my $arg = $self->{arguments}->[0];
+            if (  ref($arg) eq 'Perlito5::AST::Var'
+               && $arg->{sigil} eq '&'
+               )
+            {
+                # &subr is a subroutine call
+                return 'PerlOp.ret(' . $arg->emit_java($level) . ')';
+            }
+
             return 'PerlOp.gotoOp('
                             . Perlito5::Java::to_context($wantarray) . ', '
-                            . $self->{arguments}->[0]->emit_java($level) . ', '
+                            . $arg->emit_java($level) . ', '
                             . 'List__'
                         . ')'
         },
