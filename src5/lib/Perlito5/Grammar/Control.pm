@@ -88,7 +88,8 @@ sub transform_in_c_style_for_loop {
     # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
     # All the other type of for(exp1 .. exp2) can be converted
     if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
-            and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') ) {
+            and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') 
+            and $exp_term->arguments->[1]->isa('Perlito5::AST::Int') ) {
 
         $converted_exp_term = [
             Perlito5::AST::Apply->new(

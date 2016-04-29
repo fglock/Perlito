@@ -810,7 +810,7 @@ use feature 'say';
         if ($ref eq 'ARRAY') {
             @{$obj} || return '[]';
             my @out;
-            for (my $i = 0; $i <= $#{$obj}; $i++) {
+            for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '->[' . $i . ']';
                 push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
             }
@@ -849,7 +849,7 @@ use feature 'say';
         my $tmp = '';
         $s eq '' && return chr(39) . chr(39);
         (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
-        for (my $i = 0; $i <= length($s) - 1; $i++) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
@@ -882,7 +882,7 @@ use feature 'say';
         my $seen = {};
         my $level = '    ';
         my @out;
-        for (my $i = 0; $i <= $#_; $i++) {
+        for my $i (0 .. $#_) {
             my $pos = '$VAR' . ($i + 1);
             push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
         }
@@ -1048,7 +1048,7 @@ use feature 'say';
             my @init_flags;
             my @vars;
             my @base_rules = (['Lookup' => 'block'], ['Lookup' => 'stmts']);
-            for (my $idx = 0; $idx <= $#{$block->{'stmts'}}; $idx++) {
+            for my $idx (0 .. $#{$block->{'stmts'}}) {
                 my $stmt = $block->{'stmts'}->[$idx];
                 my($node, @rules) = find_state_expr($stmt, @base_rules, ['Index' => $idx]);
                 if (defined($node)) {
@@ -1121,7 +1121,7 @@ use feature 'say';
             }
             for my $branch ('stmts', 'arguments') {
                 if (exists($node->{$branch}) && ref($node->{$branch}) eq 'ARRAY') {
-                    for ($_ = 0; $_ <= $#{$node->{$branch}}; $_++) {
+                    for $_ (0 .. $#{$node->{$branch}}) {
                         my($retnode, @retrules) = find_state_expr($node->{$branch}->[$_], @rules, ['Lookup' => $branch], ['Index' => $_]);
                         if ($retnode) {
                             return ($retnode, @retrules)
@@ -2669,7 +2669,7 @@ use feature 'say';
     sub Perlito5::Grammar::transform_in_c_style_for_loop {
         my($exp_term, $current_topic) = @_;
         my $converted_exp_term;
-        if (($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code() eq 'infix:<..>' and $exp_term->arguments()->[0]->isa('Perlito5::AST::Int'))) {
+        if (($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code() eq 'infix:<..>' and $exp_term->arguments()->[0]->isa('Perlito5::AST::Int') and $exp_term->arguments()->[1]->isa('Perlito5::AST::Int'))) {
             $converted_exp_term = [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic, $exp_term->arguments()->[0]]), Perlito5::AST::Apply::->new('code' => 'infix:<<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic, $exp_term->arguments()->[1]]), Perlito5::AST::Apply::->new('code' => 'postfix:<++>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic])];
             [($converted_exp_term, undef)]
         }
@@ -8460,7 +8460,7 @@ use feature 'say';
         if ($ref eq 'ARRAY') {
             @{$obj} || return '[]';
             my @out;
-            for (my $i = 0; $i <= $#{$obj}; $i++) {
+            for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '->[' . $i . ']';
                 push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
             }
@@ -9507,7 +9507,7 @@ use feature 'say';
         if ($ref eq 'ARRAY') {
             @{$obj} || return '[]';
             my @out;
-            for (my $i = 0; $i <= $#{$obj}; $i++) {
+            for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '[' . $i . ']';
                 push(@out, $tab1 . _dumper($obj->[$i], $tab1, $seen, $here))
             }
@@ -9535,7 +9535,7 @@ use feature 'say';
         my @out;
         $s eq '' && return '""';
         (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
-        for (my $i = 0; $i <= length($s) - 1; $i++) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if ($c eq chr(92) || $c eq '"') {
                 push(@out, chr(92) . $c)
@@ -9598,7 +9598,7 @@ use feature 'say';
             my @out;
             my $tmp = '';
             $s eq '' && return chr(39) . chr(39);
-            for (my $i = 0; $i <= length($s) - 1; $i++) {
+            for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                     $tmp = $tmp . $c
@@ -11618,7 +11618,7 @@ use feature 'say';
             my @out;
             my $tmp = '';
             $s eq '' && return chr(39) . chr(39);
-            for (my $i = 0; $i <= length($s) - 1; $i++) {
+            for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                     $tmp = $tmp . $c
@@ -13343,21 +13343,21 @@ use feature 'say';
         }
         elsif ($spec->{'fix'} eq 'circumfix') {
             push(@{$out}, $spec->{'str'});
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 op_render($data->[$line], $level, $out, $spec);
                 $line != $#{$data} && push(@{$out}, ', ')
             }
             push(@{$out}, $pair{$spec->{'str'}})
         }
         elsif ($spec->{'fix'} eq 'list') {
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 op_render($data->[$line], $level, $out, $spec);
                 $line != $#{$data} && push(@{$out}, $spec->{'str'})
             }
         }
         elsif ($spec->{'fix'} eq 'parsed') {
             push(@{$out}, $spec->{'str'});
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 my $d = $data->[$line];
                 push(@{$out}, ' ');
                 render($d, $level, $out)
@@ -13410,7 +13410,7 @@ use feature 'say';
     sub Perlito5::Perl5::PrettyPrinter::paren_semicolon {
         my($data, $level, $out) = @_;
         push(@{$out}, $data->[1]);
-        for (my $line = 2; $line <= $#{$data}; $line++) {
+        for my $line (2 .. $#{$data}) {
             @{$data->[$line]} && render($data->[$line], $level, $out);
             if ($line != $#{$data}) {
                 if (@{$data->[$line + 1]}) {
@@ -13450,7 +13450,7 @@ use feature 'say';
     }
     sub Perlito5::Perl5::PrettyPrinter::statement {
         my($data, $level, $out) = @_;
-        for (my $line = 1; $line <= $#{$data}; $line++) {
+        for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             render($d, $level, $out);
             $line != $#{$data} && push(@{$out}, ' ')
@@ -13470,7 +13470,7 @@ use feature 'say';
         }
         push(@{$out}, '{', chr(10));
         $level++;
-        for (my $line = 1; $line <= $#{$data}; $line++) {
+        for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
@@ -13482,7 +13482,7 @@ use feature 'say';
     }
     sub Perlito5::Perl5::PrettyPrinter::pretty_print {
         my($data, $level, $out) = @_;
-        for (my $line = 0; $line <= $#{$data}; $line++) {
+        for my $line (0 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
@@ -13594,7 +13594,7 @@ use feature 'say';
             my @out;
             my $tmp = '';
             $s eq '' && return chr(39) . chr(39);
-            for (my $i = 0; $i <= length($s) - 1; $i++) {
+            for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                     $tmp = $tmp . $c
@@ -14214,21 +14214,21 @@ use feature 'say';
         }
         elsif ($spec->{'fix'} eq 'circumfix') {
             push(@{$out}, $spec->{'str'});
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 op_render($data->[$line], $level, $out, $spec);
                 $line != $#{$data} && push(@{$out}, ', ')
             }
             push(@{$out}, $pair{$spec->{'str'}})
         }
         elsif ($spec->{'fix'} eq 'list') {
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 op_render($data->[$line], $level, $out, $spec);
                 $line != $#{$data} && push(@{$out}, $spec->{'str'})
             }
         }
         elsif ($spec->{'fix'} eq 'parsed') {
             push(@{$out}, $spec->{'str'});
-            for (my $line = 2; $line <= $#{$data}; $line++) {
+            for my $line (2 .. $#{$data}) {
                 my $d = $data->[$line];
                 push(@{$out}, ' ');
                 render($d, $level, $out)
@@ -14284,7 +14284,7 @@ use feature 'say';
     sub Perlito5::Perl6::PrettyPrinter::paren_semicolon {
         my($data, $level, $out) = @_;
         push(@{$out}, $data->[1]);
-        for (my $line = 2; $line <= $#{$data}; $line++) {
+        for my $line (2 .. $#{$data}) {
             @{$data->[$line]} && render($data->[$line], $level, $out);
             if ($line != $#{$data}) {
                 if (@{$data->[$line + 1]}) {
@@ -14329,7 +14329,7 @@ use feature 'say';
     }
     sub Perlito5::Perl6::PrettyPrinter::statement {
         my($data, $level, $out) = @_;
-        for (my $line = 1; $line <= $#{$data}; $line++) {
+        for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             render($d, $level, $out);
             $line != $#{$data} && push(@{$out}, ' ')
@@ -14349,7 +14349,7 @@ use feature 'say';
         }
         push(@{$out}, '{', chr(10));
         $level++;
-        for (my $line = 1; $line <= $#{$data}; $line++) {
+        for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
@@ -14361,7 +14361,7 @@ use feature 'say';
     }
     sub Perlito5::Perl6::PrettyPrinter::pretty_print {
         my($data, $level, $out) = @_;
-        for (my $line = 0; $line <= $#{$data}; $line++) {
+        for my $line (0 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
@@ -14386,7 +14386,7 @@ use feature 'say';
             my $s = shift;
             my $tmp = '';
             $s eq '' && return '""';
-            for (my $i = 0; $i <= length($s) - 1; $i++) {
+            for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                     $tmp = $tmp . $c
@@ -15052,7 +15052,7 @@ use feature 'say';
             my @out;
             my $tmp = '';
             $s eq '' && return '""';
-            for (my $i = 0; $i <= length($s) - 1; $i++) {
+            for my $i (0 .. length($s) - 1) {
                 my $c = substr($s, $i, 1);
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                     $tmp = $tmp . $c
