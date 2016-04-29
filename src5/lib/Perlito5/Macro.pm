@@ -339,7 +339,7 @@ sub find_state_expr {
     # Recursively scan each node in $node->{stmts} or $node->{arguments},
     # if we can.
     for my $branch (qw(stmts arguments)) {
-        if (exists $node->{$branch}){
+        if (exists $node->{$branch} && ref $node->{$branch} eq 'ARRAY'){
             for (0..$#{$node->{$branch}}) {
                 my ($retnode, @retrules) = find_state_expr(
                     $node->{$branch}[$_],
