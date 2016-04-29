@@ -118,6 +118,13 @@ sub reduce_postfix {
     my $value = shift;
     my $v = $op;
     if ($v->[1] eq 'methcall_no_params') {
+        if ($v->[2] eq '@*') {
+            return 
+                Perlito5::AST::Apply->new(
+                    'code' => 'prefix:<@>',
+                    'arguments' => [ $value ],
+                );
+        }
         $v = Perlito5::AST::Call->new(
             invocant  => $value,
             method    => $v->[2],
@@ -347,6 +354,15 @@ token term_arrow {
                       ]
               }
             ]
+
+        | '@*'
+            # TODO - more variants
+            # http://www.effectiveperlprogramming.com/2014/09/use-postfix-dereferencing/
+            { $MATCH->{capture} = [ 'postfix_or_term',
+                      'methcall_no_params',
+                      '@*'
+                    ]
+            }
         ]
 };
 
