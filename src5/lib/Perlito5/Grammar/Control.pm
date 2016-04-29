@@ -83,13 +83,12 @@ token when {
 
 sub transform_in_c_style_for_loop {
     my ($exp_term, $current_topic) = @_;
-    return ($exp_term, $current_topic);
     my $converted_exp_term;
 
     # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
     # All the other type of for(exp1 .. exp2) can be converted
     if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
-            and ( not( is_bareword($exp_term->arguments->[0]) ) or not( is_bareword($exp_term->arguments->[1]) ) ) ) {
+            and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') ) {
 
         $converted_exp_term = [
             Perlito5::AST::Apply->new(
@@ -118,10 +117,10 @@ sub transform_in_c_style_for_loop {
         ];
 
         # Return the c-style for loop and an undefined topic
-        ($converted_exp_term, undef);
+        [ ($converted_exp_term, undef) ];
     } else {
         # No translation is possible. Just return the same exp_term and topic
-        ($exp_term, $current_topic);
+        [ ($exp_term, $current_topic) ];
     }
 }
 
@@ -146,13 +145,13 @@ token for {
                 
                 my $header = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
                 my $topic = $MATCH->{_tmp};
-                ($header, $topic) = transform_in_c_style_for_loop( $header, $topic );
+                my $transform_array_ref = transform_in_c_style_for_loop( $header, $topic );
                 
                 $MATCH->{capture} = Perlito5::AST::For->new( 
-                        cond  => $header,
+                        cond  => $transform_array_ref->[0],
                         body  => $body,
                         continue => $MATCH->{opt_continue_block}{capture},
-                        topic => $topic,
+                        topic => $transform_array_ref->[1],
                      );
             }
     |
@@ -198,7 +197,9 @@ token for {
                     sigil     => '$',
                 );
 
-                ($header, $topic) = transform_in_c_style_for_loop($header, $topic) if $MATCH->{transform_in_c_style_for};
+                my $transform_array_ref = transform_in_c_style_for_loop($header, $topic) if $MATCH->{transform_in_c_style_for};
+                $header = $transform_array_ref->[0];
+                $topic = $transform_array_ref->[1];
             }
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
