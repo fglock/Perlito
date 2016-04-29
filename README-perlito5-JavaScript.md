@@ -769,6 +769,16 @@ Features
     replaces the value in $@; i.e., as if "$@ = eval {
     $@->PROPAGATE(__FILE__, __LINE__) };" were called.
 
+-- BUG: '&&' and list-assignment in void context
+
+    $ perl perlito5.pl -Isrc5/lib -Cjs -e '  $z && ( (my $a,$b) = 123 )  '
+
+    p5and(p5make_package('main')['v_z'], function () {
+        return p5context([var tmp101 = [123];   // <==== multiple statements inside array
+        v_a = tmp101.shift();
+        p5make_package('main')['v_b'] = tmp101.shift()], 0)
+    });
+
 
 Implemented but missing more tests
 ----------------------------------
