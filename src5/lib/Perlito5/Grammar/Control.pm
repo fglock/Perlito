@@ -82,27 +82,21 @@ token when {
 };
 
 sub transform_in_c_style_for_loop {
-    return $_[0];
-
-    my $exp_term = shift;
+    my ($exp_term, $current_topic) = @_;
+    return ($exp_term, $current_topic);
     my $converted_exp_term;
 
     # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
     # All the other type of for(exp1 .. exp2) can be converted
     if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
             and ( not( is_bareword($exp_term->arguments->[0]) ) or not( is_bareword($exp_term->arguments->[1]) ) ) ) {
-        my $temp_loop_variable = Perlito5::AST::Var->new(
-            namespace => '',
-            name      => '_',
-            sigil     => '$',
-        );
 
         $converted_exp_term = [
             Perlito5::AST::Apply->new(
                 code => 'infix:<=>',
                 namespace => $exp_term->namespace,
                 arguments => [
-                    $temp_loop_variable,
+                    $current_topic,
                     $exp_term->arguments->[0],
                 ],
             ),
@@ -110,7 +104,7 @@ sub transform_in_c_style_for_loop {
                 code => 'infix:<<=>',
                 namespace => $exp_term->namespace,
                 arguments => [
-                    $temp_loop_variable,
+                    $current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var : $current_topic,
                     $exp_term->arguments->[1],
                 ],
             ),
@@ -118,16 +112,17 @@ sub transform_in_c_style_for_loop {
                 code => 'postfix:<++>',
                 namespace => $exp_term->namespace,
                 arguments => [
-                    $temp_loop_variable,
+                    $current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var : $current_topic,
                 ],
             ),
         ];
-    } else {
-        # No translation is possible. Just return the same exp_term
-        $converted_exp_term = $exp_term;
-    }
 
-    $converted_exp_term;
+        # Return the c-style for loop and an undefined topic
+        ($converted_exp_term, undef);
+    } else {
+        # No translation is possible. Just return the same exp_term and topic
+        ($exp_term, $current_topic);
+    }
 }
 
 sub is_bareword {
@@ -148,12 +143,16 @@ token for {
         <.Perlito5::Grammar::Space::opt_ws> 
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
             {   my $body = Perlito5::Match::flat($MATCH->{block});
-                my $header = transform_in_c_style_for_loop( Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"}) );
+                
+                my $header = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
+                my $topic = $MATCH->{_tmp};
+                ($header, $topic) = transform_in_c_style_for_loop( $header, $topic );
+                
                 $MATCH->{capture} = Perlito5::AST::For->new( 
                         cond  => $header,
                         body  => $body,
                         continue => $MATCH->{opt_continue_block}{capture},
-                        topic => $MATCH->{_tmp},
+                        topic => $topic,
                      );
             }
     |
@@ -193,13 +192,13 @@ token for {
             }
             else {
                 $header = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture};
-                $header = transform_in_c_style_for_loop($header) if $MATCH->{transform_in_c_style_for};
-
                 $topic  = Perlito5::AST::Var->new(
                     namespace => '',
                     name      => '_',
                     sigil     => '$',
                 );
+
+                ($header, $topic) = transform_in_c_style_for_loop($header, $topic) if $MATCH->{transform_in_c_style_for};
             }
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
