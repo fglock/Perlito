@@ -769,7 +769,7 @@ Features
     replaces the value in $@; i.e., as if "$@ = eval {
     $@->PROPAGATE(__FILE__, __LINE__) };" were called.
 
--- BUG: '&&' and list-assignment in void context
+-- BUG: '&&' in void context
 
     $ perl perlito5.pl -Isrc5/lib -Cjs -e '  $z && ( (my $a,$b) = 123 )  '
 
@@ -779,6 +779,19 @@ Features
         p5make_package('main')['v_b'] = tmp101.shift()], 0)
     });
 
+    Another example:
+
+    sub main::foo {
+        for ($i = 1; $i <= 5; $i++) {
+            $_[0] == $i && return $i
+        }
+    }
+    print(foo(1) == 1 ? 'ok' : 'not ok', ' 8' . chr(10));
+    print(foo(2) == 2 ? 'ok' : 'not ok', ' 9' . chr(10));
+    print(foo(5) == 5 ? 'ok' : 'not ok', ' 10' . chr(10))
+    # ok 8
+    # not ok 9
+    # not ok 10
 
 Implemented but missing more tests
 ----------------------------------
