@@ -3233,7 +3233,7 @@ package Perlito5::AST::For;
                       [ '_redo = false;',
                         'try {',
                           [
-                            Perlito5::Javascript2::LexicalBlock->new( block => $body )->emit_javascript2($level + 4, $wantarray),
+                            Perlito5::Javascript2::LexicalBlock->new( block => $body )->emit_javascript2($level + 4, 'void'),
                           ],
                         '}',
                         'catch(err) {',
