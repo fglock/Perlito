@@ -2416,7 +2416,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = '"STDOUT"';
             }
-            my $list = Perlito5::Javascript2::to_list(\@in);
+            my $list = Perlito5::Javascript2::to_list(\@in, $level);
             'p5pkg["Perlito5::IO"].print(' . $fun . ', ' . $list . ')';
         },
         'say' => sub {
@@ -2429,7 +2429,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = '"STDOUT"';
             }
-            my $list = Perlito5::Javascript2::to_list(\@in);
+            my $list = Perlito5::Javascript2::to_list(\@in, $level);
             'p5pkg["Perlito5::IO"].say(' . $fun . ', ' . $list . ')';
         },
         'printf' => sub {
@@ -2442,7 +2442,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = '"STDOUT"';
             }
-            my $list = Perlito5::Javascript2::to_list(\@in);
+            my $list = Perlito5::Javascript2::to_list(\@in, $level);
             'p5pkg["Perlito5::IO"].printf(' . $fun . ', ' . $list . ')';
         },
         'close' => sub {
@@ -2530,7 +2530,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = shift @in;
             }
-            my $list = Perlito5::Javascript2::to_list(\@in);
+            my $list = Perlito5::Javascript2::to_list(\@in, $level);
 
             if (ref($fun) eq 'Perlito5::AST::Block') {
                 $fun = $fun->{stmts}
@@ -2559,7 +2559,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun  = shift @in;
             }
-            my $list = Perlito5::Javascript2::to_list(\@in);
+            my $list = Perlito5::Javascript2::to_list(\@in, $level);
 
             if (ref($fun) eq 'Perlito5::AST::Block') {
                 $fun = $fun->{stmts}
@@ -2604,7 +2604,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun = 'null';
             }
-            $list = Perlito5::Javascript2::to_list(\@in);
+            $list = Perlito5::Javascript2::to_list(\@in, $level);
 
             'p5sort(' . Perlito5::Javascript2::pkg() . ', '
                     .   $fun . ', '
@@ -2898,7 +2898,7 @@ package Perlito5::AST::Apply;
             ?   '['
               .   join(', ', map( $_->emit_javascript2($level), @$arg_list ))
               . ']'
-            : Perlito5::Javascript2::to_list($arg_list);
+            : Perlito5::Javascript2::to_list($arg_list, $level);
 
 
         if ( $may_need_autoload ) {
