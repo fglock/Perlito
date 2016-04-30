@@ -1479,15 +1479,18 @@ package Perlito5::AST::Apply;
             # local ($x, $y) = ...
             # ($x, $y) = ...
 
-            if ( $wantarray eq 'void' ) {
-                my $tmp  = Perlito5::Javascript2::get_label();
-                return join( ";\n" . Perlito5::Javascript2::tab($level),
-                    'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
-                    ( map $_->emit_javascript2_set_list($level, $tmp),
-                        @{ $parameters->arguments }
-                    ),
-                );
-            }
+            # Note - disabled optimization, because:
+            #   "ARG1 && ARG2" in void context, ARG2 is called in void context
+            #   but it needs wrapping
+            # if ( $wantarray eq 'void' ) {
+            #     my $tmp  = Perlito5::Javascript2::get_label();
+            #     return join( ";\n" . Perlito5::Javascript2::tab($level),
+            #         'var ' . $tmp  . ' = ' . Perlito5::Javascript2::to_list([$arguments], $level+1),
+            #         ( map $_->emit_javascript2_set_list($level, $tmp),
+            #             @{ $parameters->arguments }
+            #         ),
+            #     );
+            # }
 
             my $tmp  = Perlito5::Javascript2::get_label();
             my $tmp2 = Perlito5::Javascript2::get_label();
