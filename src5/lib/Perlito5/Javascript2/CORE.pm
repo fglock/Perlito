@@ -274,6 +274,7 @@ CORE.rand = function(List__) {
 
 CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
 CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
+CORE.fc      = function(List__) { return p5str(List__[0]).toUpperCase() };
 
 CORE.lcfirst = function(List__) {
     var s = p5str(List__[0]);
