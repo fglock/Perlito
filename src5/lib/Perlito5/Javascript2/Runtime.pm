@@ -1145,13 +1145,41 @@ var p5tr = function(s, search, replace, modifier, want) {
 };
 
 var p5chop = function(s) {
-    // TODO - array, hash
+    // TODO - hash
+
+    if (s instanceof Array) {
+        // perl5 array
+        var count = 0;
+        var res;
+        for (var j = 0; j < s.length; j++) {
+            res = p5chop(p5str(s[j]));
+            count = res[0];
+            s[j] = res[1];
+        }
+        return [count, s];
+    }
+
+    s = p5str(s);
     return [s.substr(-1,1), s.substr(0,s.length-1)]
 };
 
 var p5chomp = function(s) {
-    // TODO - array, hash
+    // TODO - hash
     // TODO - special cases of $/ - empty string, reference
+
+    if (s instanceof Array) {
+        // perl5 array
+        var count = 0;
+        var res;
+        for (var j = 0; j < s.length; j++) {
+            res = p5chomp(p5str(s[j]));
+            count = count + res[0];
+            s[j] = res[1];
+        }
+        return [count, s];
+    }
+
+    s = p5str(s);
     var sep = p5pkg["main"]["v_/"];  // $/
     var c = s.substr(-sep.length);
     if (c == sep) {
