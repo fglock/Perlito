@@ -939,6 +939,11 @@ Threads
     Examples:
     misc/Java/TestConcurrent.pl
     misc/Java/TestThread.pl
+    misc/Java/TestThread2.pl    # atomic
+
+
+- pass the threadid as a parameter to all closures;
+    closure can use that thread id to get/set the value from globals hash.
 
 Optimizations
 -------------
