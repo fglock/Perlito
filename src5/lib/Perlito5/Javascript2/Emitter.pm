@@ -3330,7 +3330,7 @@ package Perlito5::AST::Sub;
         local $Perlito5::Javascript2::is_inside_subroutine = 1;
         my $js_block = Perlito5::Javascript2::LexicalBlock->new( block => $self->{block}{stmts} )->emit_javascript2_subroutine_body( $level + 2, 'runtime' );
 
-        my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 
+        my @s = (
             "var $sub_ref;",
             "$sub_ref = function (List__, p5want) {",
                 [ $js_block ],
@@ -3340,9 +3340,16 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ', ' . Perlito5::Javascript2::escape_string($self->{name} ) . ', ' . $s . ')'
+            # make sure this executes only once
+            my $idx  = Perlito5::Javascript2::get_label();
+            my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
+            return
+                  "if (!p5pkg.main['init_$idx']++) {"
+                .   'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{namespace} ) . ', ' . Perlito5::Javascript2::escape_string($self->{name} ) . ', ' . $s . ')'
+                . "}";
         }
         else {
+            my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
             return $s;
         }
     }

@@ -11466,11 +11466,14 @@ use feature 'say';
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
             local $Perlito5::Javascript2::is_inside_subroutine = 1;
             my $js_block = Perlito5::Javascript2::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'})->emit_javascript2_subroutine_body($level + 2, 'runtime');
-            my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', 'var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
+            my @s = ('var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
             if ($self->{'name'}) {
-                return 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . $s . ')'
+                my $idx = Perlito5::Javascript2::get_label();
+                my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
+                return 'if (!p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . ']++) {' . 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . $s . ')' . '}'
             }
             else {
+                my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
                 return $s
             }
         }
