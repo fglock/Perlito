@@ -1210,7 +1210,7 @@ package Perlito5::AST::Var;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $str_name = $self->{name};
         my $decl_type = $self->{_decl} || 'global';
-        if ( $decl_type ne 'my' ) {
+        if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
             return $self->emit_javascript2_global($level, $wantarray);
         }
         if ( $sigil eq '@' ) {
@@ -1314,7 +1314,7 @@ package Perlito5::AST::Decl;
                                  ) . ';',
                 ) . ';';
         }
-        if ($self->{decl} eq 'my') {
+        if ($self->{decl} eq 'my' || $self->{decl} eq 'state') {
             my $str = 'var ' . $self->{var}->emit_javascript2();
             if ($self->{var}->sigil eq '%') {
                 $str = $str . ' = {};';
@@ -1341,10 +1341,6 @@ package Perlito5::AST::Decl;
             return 'if (typeof ' . $self->{var}->emit_javascript2() . ' == "undefined" ) { '
                     . $str
                     . '}';
-        }
-        elsif ($self->{decl} eq 'state') {
-            # TODO
-            return '// state ' . $self->{var}->emit_javascript2();
         }
         else {
             die "not implemented: Perlito5::AST::Decl '" . $self->{decl} . "'";
@@ -2076,6 +2072,11 @@ package Perlito5::AST::Apply;
         'my' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of my($x,$y)
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+        },
+        'state' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # this is a side-effect of state($x,$y)
             'p5context(' . '[' . join( ', ', map( $_->emit_javascript2( $level, $wantarray ), @{ $self->{arguments} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
         },
         'our' => sub {
@@ -3321,6 +3322,9 @@ package Perlito5::AST::Sub;
 {
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
+        if (my $node = $self->maybe_rewrite_statevars()) {
+            return $node->emit_javascript2(@_[1..$#_]);
+        }
         my $prototype = defined($self->{sig}) 
                         ? Perlito5::Javascript2::escape_string($self->{sig}) 
                         : 'null';

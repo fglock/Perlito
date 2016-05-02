@@ -1093,9 +1093,9 @@ use feature 'say';
                 die('Invalid node type for state variable transformation: ' . (ref($target)))
             }
             my $state_var = $decl->{'var'};
-            my $var = Perlito5::AST::Var::->new('namespace' => $state_var->{'namespace'}, 'sigil' => $state_var->{'sigil'}, 'name' => $state_var->{'name'}, 'decl' => 'my');
+            my $var = Perlito5::AST::Var::->new('namespace' => $state_var->{'namespace'}, 'sigil' => $state_var->{'sigil'}, 'name' => $state_var->{'name'}, '_id' => $state_var->{'_id'}, '_decl' => 'my');
             my $label = Perlito5::get_label();
-            my $flagvar = Perlito5::AST::Var::->new('name' => $var->{'name'} . '_inited_' . $label, 'sigil' => '$', 'namespace' => '', 'decl' => 'my');
+            my $flagvar = Perlito5::AST::Var::->new('name' => $var->{'name'} . '_inited_' . $label, 'sigil' => '$', 'namespace' => '', '_decl' => 'my');
             my $init_block = Perlito5::AST::Apply::->new('code' => 'do', 'namespace' => $decl->{'namespace'}, 'arguments' => [Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, Perlito5::AST::Int::->new('int' => 1)]), ((ref($target) eq 'Perlito5::AST::Apply') ? Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$var, $rhs]) : $var)])]);
             my $transformed = Perlito5::AST::Apply::->new('code' => 'ternary:<? :>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, $var, $init_block]);
             return ($transformed, $var, $flagvar)
@@ -10207,7 +10207,7 @@ use feature 'say';
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $str_name = $self->{'name'};
             my $decl_type = $self->{'_decl'} || 'global';
-            if ($decl_type ne 'my') {
+            if ($decl_type ne 'my' && $decl_type ne 'state') {
                 return $self->emit_javascript2_global($level, $wantarray)
             }
             if ($sigil eq '@') {
@@ -10289,7 +10289,7 @@ use feature 'say';
                 }
                 return Perlito5::Javascript2::emit_wrap_javascript2($level, $wantarray, 'var v_' . $tmp_name . ' = ' . $var->emit_javascript2() . ';', 'p5LOCAL.push(function(){ ' . $var_set . ' });', 'return ' . $var->emit_javascript2_set(Perlito5::AST::Apply::->new('code' => 'undef', 'arguments' => [], 'namespace' => ''), $level + 1) . ';') . ';'
             }
-            if ($self->{'decl'} eq 'my') {
+            if ($self->{'decl'} eq 'my' || $self->{'decl'} eq 'state') {
                 my $str = 'var ' . $self->{'var'}->emit_javascript2();
                 if ($self->{'var'}->sigil() eq '%') {
                     $str = $str . ' = {};'
@@ -10314,9 +10314,6 @@ use feature 'say';
                     return '// our ' . $str
                 }
                 return 'if (typeof ' . $self->{'var'}->emit_javascript2() . ' == "undefined" ) { ' . $str . '}'
-            }
-            elsif ($self->{'decl'} eq 'state') {
-                return '// state ' . $self->{'var'}->emit_javascript2()
             }
             else {
                 die('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39))
@@ -10746,6 +10743,9 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             '( ' . Perlito5::Javascript2::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript2($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_javascript2($level, $wantarray) . ')'
         }, 'my' => sub {
+            my($self, $level, $wantarray) = @_;
+            'p5context(' . '[' . join(', ', map($_->emit_javascript2($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
+        }, 'state' => sub {
             my($self, $level, $wantarray) = @_;
             'p5context(' . '[' . join(', ', map($_->emit_javascript2($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0) . ')'
         }, 'our' => sub {
@@ -11461,6 +11461,9 @@ use feature 'say';
     {
         sub Perlito5::AST::Sub::emit_javascript2 {
             my($self, $level, $wantarray) = @_;
+            if (my $node = $self->maybe_rewrite_statevars()) {
+                return $node->emit_javascript2(@_[1 .. $#_])
+            }
             my $prototype = defined($self->{'sig'}) ? Perlito5::Javascript2::escape_string($self->{'sig'}) : 'null';
             my $sub_ref = Perlito5::Javascript2::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;

@@ -210,7 +210,8 @@ sub rewrite_state_expr {
         namespace => $state_var->{namespace},
         sigil     => $state_var->{sigil},
         name      => $state_var->{name},
-        decl      => 'my',
+        _id       => $state_var->{_id},
+        _decl     => 'my',
     );
     # A label to ensure hygienic names for the initialization flag.
     my $label = Perlito5::get_label();
@@ -219,7 +220,7 @@ sub rewrite_state_expr {
         name      => $var->{name} . "_inited_" . $label, # e.g., x_initied_tmp404
         sigil     => '$',
         namespace => '',
-        decl      => 'my',
+        _decl     => 'my',
     );
     # The `do` block that actually checks for the init flag and initializes
     # the "state" variable (and of course sets the flag).
