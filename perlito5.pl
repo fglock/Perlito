@@ -11473,7 +11473,7 @@ use feature 'say';
             if ($self->{'name'}) {
                 my $idx = Perlito5::Javascript2::get_label();
                 my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
-                return 'if (!p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . ']++) {' . 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . $s . ')' . '}'
+                return 'if (!p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . ']) {' . 'p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . '] = 1;' . 'p5typeglob_set(' . Perlito5::Javascript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::Javascript2::escape_string($self->{'name'}) . ', ' . $s . ')' . '}'
             }
             else {
                 my $s = Perlito5::Javascript2::emit_wrap_javascript2($level, 'scalar', @s);
