@@ -2,6 +2,8 @@ use feature 'say';
 use feature 'state';
 use Data::Dumper;
 
+print "1..26\n";
+
 sub reporter {
     my $testname = shift || '<unnamed-test>';
     my $testnum = 1;
