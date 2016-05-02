@@ -82,14 +82,16 @@ token when {
 };
 
 sub transform_in_c_style_for_loop {
-    my ($exp_term, $current_topic) = @_;
+    my ($exp_term, $current_topic, $continue_block) = @_;
     my $converted_exp_term;
 
     # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
+    # no continue-block -- because c-style for doesn't have a continue block in Perl
     # All the other type of for(exp1 .. exp2) can be converted
     if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
             and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') 
-            and $exp_term->arguments->[1]->isa('Perlito5::AST::Int') ) {
+            and $exp_term->arguments->[1]->isa('Perlito5::AST::Int')
+            and !( $continue_block && @{ $continue_block->{stmts} } ) ) {
 
         $converted_exp_term = [
             Perlito5::AST::Apply->new(
@@ -146,12 +148,13 @@ token for {
                 
                 my $header = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
                 my $topic = $MATCH->{_tmp};
-                my $transform_array_ref = transform_in_c_style_for_loop( $header, $topic );
+                my $continue_block = $MATCH->{opt_continue_block}{capture};
+                my $transform_array_ref = transform_in_c_style_for_loop( $header, $topic, $continue_block );
                 
                 $MATCH->{capture} = Perlito5::AST::For->new( 
                         cond  => $transform_array_ref->[0],
                         body  => $body,
-                        continue => $MATCH->{opt_continue_block}{capture},
+                        continue => $continue_block,
                         topic => $transform_array_ref->[1],
                      );
             }
@@ -176,13 +179,14 @@ token for {
                           || <.Perlito5::Grammar::Space::opt_ws>
                           ]
                       ';' [ <Perlito5::Grammar::exp2> || <.Perlito5::Grammar::Space::opt_ws> ]
-                    | ''  { $MATCH->{transform_in_c_style_for} = 1 }
+                    | ''
                     ]
             ')' <block> <opt_continue_block>
         {
             my $header;
             my $body = Perlito5::Match::flat($MATCH->{block});
             my $topic;
+            my $continue_block = $MATCH->{opt_continue_block}{capture};
             if ($MATCH->{c_style_for}) {
                 $header = [
                     $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture},
@@ -198,7 +202,7 @@ token for {
                     sigil     => '$',
                 );
 
-                my $transform_array_ref = transform_in_c_style_for_loop($header, $topic) if $MATCH->{transform_in_c_style_for};
+                my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
                 $header = $transform_array_ref->[0];
                 $topic = $transform_array_ref->[1];
             }
@@ -206,7 +210,7 @@ token for {
             $MATCH->{capture} = Perlito5::AST::For->new( 
                     cond  => $header, 
                     body  => $body,
-                    continue => $MATCH->{opt_continue_block}{capture},
+                    continue => $continue_block,
                     topic => $topic,
                  )
         }
