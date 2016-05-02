@@ -8,10 +8,12 @@
 
 	files (Java)
 
-	optimize "for (0..1000000)"
+	optimize "for (0..1000000)" by Luca Falsina
 
+    state variables by Yati Sagade
+
+9.020 cpan:Perlito5  2016-05-02
 - Parser:
--- state variables by Yati Sagade
 -- "->@*" support
 -- new namespaces for modules that require backend-specific implementations:
     lib/Perlito5X/Java/ and lib/Perlito5X/Javascript/

@@ -29,7 +29,9 @@ package Perlito5::AST::CompUnit;
         my $comp_units = $_[0];
         return  
             [ comment => Perlito5::Compiler::do_not_edit("#") ],
-            map { $_->emit_perl5() } @$comp_units;
+            map { $_->emit_perl5() }
+              map { ref($_) eq 'ARRAY' ? @$_ : $_ }
+                @$comp_units;
     }
 }
 
