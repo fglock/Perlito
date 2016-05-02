@@ -2669,7 +2669,7 @@ use feature 'say';
     sub Perlito5::Grammar::transform_in_c_style_for_loop {
         my($exp_term, $current_topic, $continue_block) = @_;
         my $converted_exp_term;
-        if (($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code() eq 'infix:<..>' and $exp_term->arguments()->[0]->isa('Perlito5::AST::Int') and $exp_term->arguments()->[1]->isa('Perlito5::AST::Int') and !($continue_block && @{$continue_block->{'stmts'}}))) {
+        if ((0 and $exp_term->isa('Perlito5::AST::Apply') and $exp_term->code() eq 'infix:<..>' and $exp_term->arguments()->[0]->isa('Perlito5::AST::Int') and $exp_term->arguments()->[1]->isa('Perlito5::AST::Int') and !($continue_block && @{$continue_block->{'stmts'}}))) {
             $converted_exp_term = [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic, $exp_term->arguments()->[0]]), Perlito5::AST::Apply::->new('code' => 'infix:<<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic, $exp_term->arguments()->[1]]), Perlito5::AST::Apply::->new('code' => 'postfix:<++>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic])];
             [($converted_exp_term, undef)]
         }

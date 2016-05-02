@@ -88,7 +88,12 @@ sub transform_in_c_style_for_loop {
     # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
     # no continue-block -- because c-style for doesn't have a continue block in Perl
     # All the other type of for(exp1 .. exp2) can be converted
-    if ($exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
+    # XXX - disabled for all cases,
+    #   see t5/unit/redo.t
+    #   we need to use a temp variable to track the loop count
+    #   otherwise, changing the "topic" or "last value" will alter the loop
+    if (0
+            and $exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
             and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') 
             and $exp_term->arguments->[1]->isa('Perlito5::AST::Int')
             and !( $continue_block && @{ $continue_block->{stmts} } ) ) {
