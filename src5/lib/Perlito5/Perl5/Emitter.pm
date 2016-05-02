@@ -485,9 +485,10 @@ package Perlito5::AST::Sub;
         my $self = $_[0];
         my @sig;
         my @parts;
-        if (my $node = $self->maybe_rewrite_statevars()) {
-            return $node->emit_perl5(@_[1..$#_]);
-        }
+        # Note: enable this to perform state() vars macro substitution
+        # if (my $node = $self->maybe_rewrite_statevars()) {
+        #     return $node->emit_perl5(@_[1..$#_]);
+        # }
         push @sig, [ paren => '(', [ bareword => $self->{sig} ] ]
             if defined $self->{sig};
 

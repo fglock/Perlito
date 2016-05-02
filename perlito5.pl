@@ -13184,9 +13184,6 @@ use feature 'say';
             my $self = $_[0];
             my @sig;
             my @parts;
-            if (my $node = $self->maybe_rewrite_statevars()) {
-                return $node->emit_perl5(@_[1 .. $#_])
-            }
             defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
             if (defined($self->{'block'})) {
                 push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
