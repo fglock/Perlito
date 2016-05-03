@@ -220,6 +220,7 @@ sub rewrite_state_expr {
         name      => $var->{name} . "_inited_" . $label, # e.g., x_initied_tmp404
         sigil     => '$',
         namespace => '',
+        _id       => $Perlito5::ID++,
         _decl     => 'my',
     );
     # The `do` block that actually checks for the init flag and initializes

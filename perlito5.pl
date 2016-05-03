@@ -1095,7 +1095,7 @@ use feature 'say';
             my $state_var = $decl->{'var'};
             my $var = Perlito5::AST::Var::->new('namespace' => $state_var->{'namespace'}, 'sigil' => $state_var->{'sigil'}, 'name' => $state_var->{'name'}, '_id' => $state_var->{'_id'}, '_decl' => 'my');
             my $label = Perlito5::get_label();
-            my $flagvar = Perlito5::AST::Var::->new('name' => $var->{'name'} . '_inited_' . $label, 'sigil' => '$', 'namespace' => '', '_decl' => 'my');
+            my $flagvar = Perlito5::AST::Var::->new('name' => $var->{'name'} . '_inited_' . $label, 'sigil' => '$', 'namespace' => '', '_id' => $Perlito5::ID++, '_decl' => 'my');
             my $init_block = Perlito5::AST::Apply::->new('code' => 'do', 'namespace' => $decl->{'namespace'}, 'arguments' => [Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, Perlito5::AST::Int::->new('int' => 1)]), ((ref($target) eq 'Perlito5::AST::Apply') ? Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$var, $rhs]) : $var)])]);
             my $transformed = Perlito5::AST::Apply::->new('code' => 'ternary:<? :>', 'namespace' => $decl->{'namespace'}, 'arguments' => [$flagvar, $var, $init_block]);
             return ($transformed, $var, $flagvar)
