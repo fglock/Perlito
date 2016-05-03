@@ -1961,7 +1961,7 @@ package Perlito5::AST::Var;
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $decl_type = $self->{_decl} || 'global';
-        if ( $decl_type ne 'my' && $decl_type ne 'our' ) {
+        if ( $decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our' ) {
             return $self->emit_java_global($level, $wantarray);
         }
         my $str_name = $table->{$sigil} . $self->{name} . "_" . $self->{_id};
@@ -1989,7 +1989,7 @@ package Perlito5::AST::Var;
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
         my $decl_type = $self->{_decl} || 'global';
-        if ( $decl_type ne 'my' && $decl_type ne 'our' ) {
+        if ( $decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our' ) {
             return $self->emit_java_global_set($arguments, $level, $wantarray);
         }
         my $open  = $wantarray eq 'void' ? '' : '(';
@@ -2083,7 +2083,7 @@ package Perlito5::AST::Decl;
         if ($self->{decl} eq 'local') {
             return '';
         }
-        if ($self->{decl} eq 'my') {
+        if ($self->{decl} eq 'my' || $self->{decl} eq 'state') {
             if ($self->{var}->sigil eq '%') {
                 return 'PlHash ' . $self->{var}->emit_java() . ' = new PlHash();';
             }
@@ -2111,10 +2111,6 @@ package Perlito5::AST::Decl;
             else {
                 return 'PlLvalue ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
-        }
-        elsif ($self->{decl} eq 'state') {
-            # TODO
-            return '// state ' . $self->{var}->emit_java();
         }
         else {
             die "not implemented: Perlito5::AST::Decl '" . $self->{decl} . "'";
@@ -3096,6 +3092,11 @@ package Perlito5::AST::Apply;
             # this is a side-effect of my($x,$y)
             'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
         },
+        'state' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # this is a side-effect of state($x,$y)
+            'PerlOp.context(' . join( ', ', Perlito5::Java::to_context($wantarray), map( $_->emit_java( $level, $wantarray ), @{ $self->{arguments} } ) ) . ')';
+        },
         'our' => sub {
             my ($self, $level, $wantarray) = @_;
             # this is a side-effect of our($x,$y)
@@ -3116,7 +3117,7 @@ package Perlito5::AST::Apply;
             my $arguments  = $self->{arguments}->[1];
 
             if (   $parameters->isa( 'Perlito5::AST::Apply' )
-               &&  ( $parameters->code eq 'my' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
+               &&  ( $parameters->code eq 'my' || $parameters->code eq 'state' || $parameters->code eq 'local' || $parameters->code eq 'circumfix:<( )>' )
                )
             {
                 # my ($x, $y) = ...
