@@ -657,7 +657,7 @@ package Perlito5::Java;
             $_[0]->isa( 'Perlito5::AST::Int' )
          || $_[0]->isa( 'Perlito5::AST::Num' )
          || $_[0]->isa( 'Perlito5::AST::Buf' )
-         || $_[0]->isa( 'Perlito5::AST::Sub' )
+         || Perlito5::AST::Sub::is_anon_sub($_[0])
          || ($_[0]->isa( 'Perlito5::AST::Var' ) && $_[0]->{sigil} eq '$')
          || ($_[0]->isa( 'Perlito5::AST::Apply' ) 
             && (  exists($op_to_str{ $_[0]->{code} })
@@ -985,14 +985,19 @@ package Perlito5::Java::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
+                  # || Perlito5::AST::Sub::is_named_sub($last_statement)
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
                 push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
             }
-            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) || $last_statement->isa('Perlito5::AST::Sub') ) {
+            elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
+                # "if" returns a value
                 push @str, $last_statement->emit_java($level, 'runtime') . '';
-                # push @str, 'return PlCx.UNDEF;';  # unreachable
+            }
+            elsif ( Perlito5::AST::Sub::is_named_sub($last_statement) ) {
+                push @str, $last_statement->emit_java($level, 'runtime') . ';';
+                push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
             }
             else {
                 if ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
