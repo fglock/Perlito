@@ -4340,7 +4340,7 @@ package Perlito5::AST::Sub;
         my @js_block;
         if ($self->{_do_block}) {
             # do-block
-            @js_block = $block->emit_java( $level + 3, $wantarray );
+            @js_block = $block->emit_java( $level + 3, 'runtime' );
         }
         elsif ($self->{_eval_block}) {
             # eval-block
