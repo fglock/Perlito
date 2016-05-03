@@ -4524,8 +4524,7 @@ class PlString extends PlObject {
         return this.s;
     }
     public boolean to_bool() {
-        return this.s != ""
-            && this.s != "0";
+        return !( this.s.equals("") || this.s.equals("0") );
     }
     public boolean is_string() {
         return true;
