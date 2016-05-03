@@ -2591,6 +2591,9 @@ class PlReference extends PlObject {
 		}
 	}
 
+    public boolean to_bool() {
+        return true;
+    }
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
     }
@@ -2728,6 +2731,9 @@ class PlArrayRef extends PlArray {
     public boolean is_arrayref() {
         return true;
     }
+    public boolean to_bool() {
+        return true;
+    }
     public PlObject scalar() {
         return this;
     }
@@ -2793,6 +2799,9 @@ class PlHashRef extends PlHash {
     }
     public PlObject scalar() {
         return this;
+    }
+    public boolean to_bool() {
+        return true;
     }
     public PlHashRef bless(PlString className) {
         this.bless = new PlClass(className);
@@ -4143,7 +4152,10 @@ EOT
         return 0.0 + this.to_long();
     }
     public boolean to_bool() {
-        return true;
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            return true;
+        }
+        return false;
     }
     public boolean is_int() {
         return false;
