@@ -17533,7 +17533,8 @@ use feature 'say';
             }
             my $s = Perlito5::Java::emit_wrap_java($level, 'new PlClosure(' . $prototype . ', new PlObject[]{ ' . join(', ', @captures_java) . ' } ) {', ['public PlObject apply(int want, PlArray List__) {', \@js_block, '}'], '}');
             if ($self->{'name'}) {
-                return 'PlV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . $s . ')'
+                my $idx = Perlito5::Javascript2::get_label();
+                return 'if (!PlV.get("main::init_' . $idx . '").to_bool()) {' . 'PlV.set("main::init_' . $idx . '", (PlCx.INT1));' . 'PlV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . $s . ');' . '}'
             }
             else {
                 return $s

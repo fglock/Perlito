@@ -4375,7 +4375,15 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            return 'PlV.set(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", " . $s . ')'
+            my $idx  = Perlito5::Javascript2::get_label();
+            return
+                   'if (!PlV.get("main::init_' . $idx . '").to_bool()) {'
+                .       'PlV.set("main::init_' . $idx . '", (PlCx.INT1));'
+                .       'PlV.set('
+                .           Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", "
+                .           $s
+                .       ');'
+                . '}';
         }
         else {
             return $s;
