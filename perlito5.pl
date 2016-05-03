@@ -8103,6 +8103,14 @@ use feature 'say';
     sub Perlito5::AST::Sub::attributes {
         $_[0]->{'attributes'}
     }
+    sub Perlito5::AST::Sub::is_named_sub {
+        my $self = shift;
+        $self->isa('Perlito5::AST::Sub') && $self->{'name'}
+    }
+    sub Perlito5::AST::Sub::is_anon_sub {
+        my $self = shift;
+        $self->isa('Perlito5::AST::Sub') && !$self->{'name'}
+    }
     package Perlito5::AST::Use;
     sub Perlito5::AST::Use::new {
         my $class = shift;
@@ -15285,7 +15293,7 @@ use feature 'say';
             }
         }
         sub Perlito5::Java::is_scalar {
-            $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || $_[0]->isa('Perlito5::AST::Sub') || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}})))
+            $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || Perlito5::AST::Sub::is_anon_sub($_[0]) || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}})))
         }
         sub Perlito5::Java::to_list {
             my $items = to_list_preprocess($_[0]);
@@ -15483,8 +15491,12 @@ use feature 'say';
                     push(@str, $last_statement->emit_java($level, 'void') . ';');
                     push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                 }
-                elsif ($last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Sub')) {
+                elsif ($last_statement->isa('Perlito5::AST::If')) {
                     push(@str, $last_statement->emit_java($level, 'runtime') . '')
+                }
+                elsif (Perlito5::AST::Sub::is_named_sub($last_statement)) {
+                    push(@str, $last_statement->emit_java($level, 'runtime') . ';');
+                    push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                 }
                 elsif ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
                     if ($self->{'top_level'}) {
@@ -15967,7 +15979,7 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $decl_type = $self->{'_decl'} || 'global';
-            if ($decl_type ne 'my' && $decl_type ne 'our') {
+            if ($decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our') {
                 return $self->emit_java_global($level, $wantarray)
             }
             my $str_name = $table->{$sigil} . $self->{'name'} . '_' . $self->{'_id'};
@@ -15988,7 +16000,7 @@ use feature 'say';
         sub Perlito5::AST::Var::emit_java_set {
             my($self, $arguments, $level, $wantarray) = @_;
             my $decl_type = $self->{'_decl'} || 'global';
-            if ($decl_type ne 'my' && $decl_type ne 'our') {
+            if ($decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our') {
                 return $self->emit_java_global_set($arguments, $level, $wantarray)
             }
             my $open = $wantarray eq 'void' ? '' : '(';
@@ -16066,7 +16078,7 @@ use feature 'say';
             if ($self->{'decl'} eq 'local') {
                 return ''
             }
-            if ($self->{'decl'} eq 'my') {
+            if ($self->{'decl'} eq 'my' || $self->{'decl'} eq 'state') {
                 if ($self->{'var'}->sigil() eq '%') {
                     return 'PlHash ' . $self->{'var'}->emit_java() . ' = new PlHash();'
                 }
@@ -16095,9 +16107,6 @@ use feature 'say';
                 else {
                     return 'PlLvalue ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ';'
                 }
-            }
-            elsif ($self->{'decl'} eq 'state') {
-                return '// state ' . $self->{'var'}->emit_java()
             }
             else {
                 die('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{'decl'} . chr(39))
@@ -16722,6 +16731,9 @@ use feature 'say';
         }, 'my' => sub {
             my($self, $level, $wantarray) = @_;
             'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
+        }, 'state' => sub {
+            my($self, $level, $wantarray) = @_;
+            'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
         }, 'our' => sub {
             my($self, $level, $wantarray) = @_;
             'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
@@ -16735,7 +16747,7 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my $parameters = $self->{'arguments'}->[0];
             my $arguments = $self->{'arguments'}->[1];
-            if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
+            if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'state' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
                 if ($wantarray eq 'void') {
                     my $tmp = Perlito5::Java::get_label();
                     return join(';' . chr(10) . Perlito5::Java::tab($level), 'PlArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
@@ -17283,7 +17295,6 @@ use feature 'say';
             my $self = shift;
             my $code = $self->{'code'};
             if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
-                $self->{'code'} = 'circumfix:<( )>';
                 return (map {
                     ref($_) eq 'Perlito5::AST::Var' ? Perlito5::AST::Decl::->new('decl' => $code, 'type' => '', 'var' => $_) : ()
                 } @{$self->{'arguments'}})
@@ -17504,7 +17515,7 @@ use feature 'say';
             }
             my @js_block;
             if ($self->{'_do_block'}) {
-                @js_block = $block->emit_java($level + 3, $wantarray)
+                @js_block = $block->emit_java($level + 3, 'runtime')
             }
             elsif ($self->{'_eval_block'}) {
                 $block->{'top_level'} = 1;
