@@ -199,6 +199,14 @@ sub sig { $_[0]->{sig} }
 sub block { $_[0]->{block} }
 sub attributes { $_[0]->{attributes} }
 
+sub is_named_sub {
+    my $self = shift;
+    $self->isa('Perlito5::AST::Sub') && $self->{name}
+}
+sub is_anon_sub {
+    my $self = shift;
+    $self->isa('Perlito5::AST::Sub') && !$self->{name}
+}
 
 
 package Perlito5::AST::Use;
