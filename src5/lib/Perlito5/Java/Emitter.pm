@@ -3208,7 +3208,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             return 'PerlOp.caller('
                             . Perlito5::Java::to_context($wantarray) . ', '
-                            . $self->{arguments}->[0]->emit_java($level)
+                            . Perlito5::Java::to_list($self->{arguments})
                         . ')'
         },
 
