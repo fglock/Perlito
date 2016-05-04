@@ -405,6 +405,8 @@ sub while_file {
     return 0;
 }
 
+1;
+
 =begin
 
 =head1 NAME
