@@ -4321,20 +4321,16 @@ class PlDouble extends PlObject {
             || v < -1E14
             || v >  1E14 )
         {
-            // scientific notation
+            // use scientific notation
             s = String.format("%20.20e", v);
-            // PlCORE.say( " str1e: " + s );
-            s = s.replaceAll("0*e", "e");
-            s = s.replaceAll("\\.e", "e");
+            s = s.replaceAll("\\.?0*e", "e");
             if (s.equals("0e+00")) {
                 s = "0";
             }
         }
         else {
             s = String.format("%20.20f", v);
-            // PlCORE.say( " str1f: " + s );
-            s = s.replaceAll("0*$", "");
-            s = s.replaceAll("\\.$", "");
+            s = s.replaceAll("\\.?0*$", "");
         }
         return s;
     }
