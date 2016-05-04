@@ -65,7 +65,7 @@ if (isNode) {
         CORE.crypt = function(List__) {
             var text = p5str(List__[0]);
             var salt = p5str(List__[1]);
-            while(salt.length() < 2) {
+            while(salt.length < 2) {
                 salt += "A";
             }
             return crypt(text, salt);
