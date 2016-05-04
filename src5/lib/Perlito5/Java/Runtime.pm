@@ -877,6 +877,12 @@ class PlCORE {
         // die() shortcut
         return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
     }
+    public static final PlObject readline(int want, PlObject filehandle, PlArray List__) {
+        // TODO - read from filehandle
+        die("readline not yet implemented");
+        // ((PlFileHandle)filehandle).inputStream.readline();
+        // return PlCx.INT1;
+    }
     public static final PlString ref(int want, PlArray List__) {
         return List__.aget(0).ref();
     }

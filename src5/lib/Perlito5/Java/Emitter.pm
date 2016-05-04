@@ -3611,7 +3611,8 @@ package Perlito5::AST::Apply;
                        'code' => 'ARGV',
                        'namespace' => '',
                    }, 'Perlito5::AST::Apply');
-            return 'CORE.readline([' . $fun->emit_java( $level ) . '])';
+            my $list = Perlito5::Java::to_list(\@in);
+            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java( $level ) . ', ' . $list . ')';
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
