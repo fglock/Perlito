@@ -2782,9 +2782,9 @@ package Perlito5::AST::Apply;
                 # this subroutine was never declared
                 if ($self->{bareword}) {
                     # TODO: allow barewords where a glob is expected: open FILE, ...
-                    if ( $Perlito5::STRICT ) {
-                        die 'Bareword ' . Perlito5::Javascript2::escape_string($name ) . ' not allowed while "strict subs" in use';
-                    }
+                    # if ( $Perlito5::STRICT ) {
+                    #     die 'Bareword ' . Perlito5::Javascript2::escape_string($name ) . ' not allowed while "strict subs" in use';
+                    # }
 
                     # bareword doesn't call AUTOLOAD
                     return Perlito5::Javascript2::escape_string( 

@@ -11170,9 +11170,6 @@ use feature 'say';
                 }
                 else {
                     if ($self->{'bareword'}) {
-                        if ($Perlito5::STRICT) {
-                            die('Bareword ' . Perlito5::Javascript2::escape_string($name) . ' not allowed while "strict subs" in use')
-                        }
                         return Perlito5::Javascript2::escape_string(($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)
                     }
                     $may_need_autoload = 1
@@ -17216,9 +17213,6 @@ use feature 'say';
                 }
                 else {
                     if ($self->{'bareword'}) {
-                        if ($Perlito5::STRICT) {
-                            die('Bareword ' . Perlito5::Java::escape_string($name) . ' not allowed while "strict subs" in use')
-                        }
                         return Perlito5::Java::escape_string(($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)
                     }
                     $may_need_autoload = 1
