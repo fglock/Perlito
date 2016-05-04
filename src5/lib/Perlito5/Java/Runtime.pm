@@ -4315,18 +4315,28 @@ class PlDouble extends PlObject {
         return this.i;
     }
     public String toString() {
-        String s = "" + this.i;
-        final int length = s.length();
-        final int dot = s.indexOf('.');
-        if (dot == -1) {
-            return s;
-        }
-        for (int i = dot + 1; i < length; ++i) {
-            if (s.charAt(i) != '0') {
-                return s;
+        double v = this.i;
+        String s;
+        if (   v < 0.0001 && v > -0.0001
+            || v < -1E14
+            || v >  1E14 )
+        {
+            // scientific notation
+            s = String.format("%20.20e", v);
+            // PlCORE.say( " str1e: " + s );
+            s = s.replaceAll("0*e", "e");
+            s = s.replaceAll("\\.e", "e");
+            if (s.equals("0e+00")) {
+                s = "0";
             }
         }
-        return s.substring(0, dot);
+        else {
+            s = String.format("%20.20f", v);
+            // PlCORE.say( " str1f: " + s );
+            s = s.replaceAll("0*$", "");
+            s = s.replaceAll("\\.$", "");
+        }
+        return s;
     }
     public boolean to_bool() {
         return this.i != 0.0;
