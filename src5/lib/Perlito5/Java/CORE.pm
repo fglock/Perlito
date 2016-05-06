@@ -36,11 +36,36 @@ EOT
         int pos = slurp ? -1 : buf.indexOf(sep);
         if (pos < 0 && !fh.eof) {
             // read more
-            int len = 3;
-            byte[] b = new byte[len];
+            // int len = 3;
+            // byte[] b = new byte[len];
+            // char[] c = new char[len];
             int num_bytes = 0;
             try {
-                num_bytes = fh.inputStream.read(b, 0, len);
+                // ORIGINAL
+                //    num_bytes = fh.inputStream.read(b, 0, len);
+                //    if (num_bytes > 0) {
+                //        String s = new String(b, 0, num_bytes);
+                //        buf.append(s);
+                //    }
+
+                // V2
+                String s = fh.reader.readLine();
+                if (s == null) {
+                    num_bytes = -1;
+                }
+                else {
+                    buf.append(s);
+                    // PlCORE.say("len " + s.length());
+                    buf.append("\n");
+                    num_bytes = s.length();
+                }
+
+                // V3
+                // num_bytes = fh.reader.read(c, 0, len);
+                // if (num_bytes > 0) {
+                //     String s = new String(c, 0, num_bytes);
+                //     buf.append(s);
+                // }
             }
             catch(IOException e) {
                 PlV.set("main::v_!", new PlString(e.getMessage()));
@@ -48,8 +73,6 @@ EOT
             }
             // TODO - use: new String(bytes,"UTF-8")
             if (num_bytes > 0) {
-                String s = new String(b, 0, num_bytes);
-                buf.append(s);
                 if (!slurp) {
                     pos = buf.indexOf(sep);
                 }
