@@ -15763,7 +15763,13 @@ use feature 'say';
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . $list . ')'
+            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . $list . ')'
+        }, 'sysread' => sub {
+            my($self, $level, $wantarray) = @_;
+            my @in = @{$self->{'arguments'}};
+            my $fun = shift(@in);
+            my $list = Perlito5::Java::to_list(\@in);
+            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
         }, 'readline' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -17573,7 +17579,7 @@ use feature 'say';
     undef();
     package Perlito5::Java::CORE;
     # use strict
-    my %FileFunc = ('print' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        return PlCx.INT1;' . chr(10), 'say' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        fh.outputStream.println("");' . chr(10) . '        return PlCx.INT1;' . chr(10), 'readline' => '        // TODO - read from filehandle' . chr(10) . '        PlCORE.die("readline not yet implemented");' . chr(10) . '        // fh.inputStream.readline();' . chr(10) . '        return PlCx.INT1;' . chr(10), 'read' => '        // TODO - read from filehandle' . chr(10) . '        PlCORE.die("read not yet implemented");' . chr(10) . '        // fh.inputStream.readline();' . chr(10) . '        return PlCx.INT1;' . chr(10), 'sysread' => '        // TODO - read from filehandle' . chr(10) . '        PlCORE.die("sysread not yet implemented");' . chr(10) . '        // fh.inputStream.readline();' . chr(10) . '        return PlCx.INT1;' . chr(10));
+    my %FileFunc = ('print' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        return PlCx.INT1;' . chr(10), 'say' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        fh.outputStream.println("");' . chr(10) . '        return PlCx.INT1;' . chr(10), 'readline' => '        // TODO - read from filehandle' . chr(10) . '        PlCORE.die("readline not yet implemented");' . chr(10) . '        // fh.inputStream.readline();' . chr(10) . '        return PlCx.INT1;' . chr(10), 'read' => '        // TODO - read from filehandle' . chr(10) . '        PlCORE.die("read not yet implemented");' . chr(10) . '        // fh.inputStream.readline();' . chr(10) . '        return PlCx.INT1;' . chr(10), 'sysread' => '        int len = List__.aget(1).to_int();' . chr(10) . '        int ofs = List__.aget(2).to_int();' . chr(10) . '        byte[] b = new byte[len];' . chr(10) . '        int num_bytes = 0;' . chr(10) . '        try {' . chr(10) . '            num_bytes = fh.inputStream.read(b, 0, len);' . chr(10) . '        }' . chr(10) . '        catch(IOException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '        }' . chr(10) . '        // TODO - use OFFSET' . chr(10) . '        // TODO - throws IOException' . chr(10) . '        // TODO - use: String fileString = new String(_bytes,"UTF-8")' . chr(10) . '        if (num_bytes > 0) {' . chr(10) . '            List__.aset(0, new String(b, 0, num_bytes));' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            num_bytes = 0;' . chr(10) . '        }' . chr(10) . '        return new PlInt(num_bytes);' . chr(10));
     sub Perlito5::Java::CORE::emit_java {
         return chr(10) . 'class PlCORE {' . chr(10) . join('', map {
             '    public static final PlObject ' . $_ . '(int want, PlObject filehandle, PlArray List__) {' . chr(10) . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);' . chr(10) . $FileFunc{$_} . '    }' . chr(10) . '    public static final PlObject ' . $_ . '(int want, String filehandle, PlArray List__) {' . chr(10) . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);' . chr(10) . $FileFunc{$_} . '    }' . chr(10)

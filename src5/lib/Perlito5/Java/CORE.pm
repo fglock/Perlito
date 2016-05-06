@@ -30,11 +30,32 @@ EOT
         // fh.inputStream.readline();
         return PlCx.INT1;
 EOT
+    # sysread FILEHANDLE,SCALAR,LENGTH,OFFSET?
+    #   result is stored in $_[0]
+    #   result may be utf8 or not
+    #   returns number of bytes read
+    #   set $! on error
     sysread => <<'EOT',
-        // TODO - read from filehandle
-        PlCORE.die("sysread not yet implemented");
-        // fh.inputStream.readline();
-        return PlCx.INT1;
+        int len = List__.aget(1).to_int();
+        int ofs = List__.aget(2).to_int();
+        byte[] b = new byte[len];
+        int num_bytes = 0;
+        try {
+            num_bytes = fh.inputStream.read(b, 0, len);
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+        }
+        // TODO - use OFFSET
+        // TODO - throws IOException
+        // TODO - use: String fileString = new String(_bytes,"UTF-8")
+        if (num_bytes > 0) {
+            List__.aset(0, new String(b, 0, num_bytes));
+        }
+        else {
+            num_bytes = 0;
+        }
+        return new PlInt(num_bytes);
 EOT
 );
 
