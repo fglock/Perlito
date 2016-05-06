@@ -23,8 +23,9 @@ EOT
             // TODO - read all lines
         }
         PlObject plsep = PlV.get("main::v_/");
+        boolean slurp = false;
         if (plsep.is_undef()) {
-            // TODO - slurp file
+            slurp = true;
         }
         if (fh.eof) {
             return PlCx.UNDEF;
@@ -32,10 +33,10 @@ EOT
         String sep = plsep.toString();
         StringBuilder buf = fh.readlineBuffer;
         // read from filehandle until "sep" or eof()
-        int pos = buf.indexOf(sep);
+        int pos = slurp ? -1 : buf.indexOf(sep);
         if (pos < 0 && !fh.eof) {
             // read more
-            int len = 1000;
+            int len = 3;
             byte[] b = new byte[len];
             int num_bytes = 0;
             try {
@@ -49,7 +50,9 @@ EOT
             if (num_bytes > 0) {
                 String s = new String(b, 0, num_bytes);
                 buf.append(s);
-                pos = buf.indexOf(sep);
+                if (!slurp) {
+                    pos = buf.indexOf(sep);
+                }
             }
             else {
                 // eof
@@ -60,6 +63,7 @@ EOT
         if (fh.eof || pos < 0) {
             s = buf.toString();
             fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
         }
         else {
             pos += sep.length();
