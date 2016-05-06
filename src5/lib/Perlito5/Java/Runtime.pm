@@ -885,6 +885,7 @@ class PlEnv {
         PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
         PlV.set("main::v_/", new PlString("\n"));                  // $/ = "\n"
         PlCx.STDIN.inputStream   = System.in;
+        PlCx.STDIN.eof           = false;
         PlCx.STDOUT.outputStream = System.out;
         PlCx.STDERR.outputStream = System.err;
         PlV.set("STDIN",  PlCx.STDIN);                             // "GLOB"
@@ -1402,6 +1403,14 @@ class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
+    public StringBuilder readlineBuffer;
+    public boolean eof;
+
+    public PlFileHandle() {
+        this.readlineBuffer = new StringBuilder();
+        this.eof = true;
+    }
+
     public boolean is_filehandle() {
         return true;
     }

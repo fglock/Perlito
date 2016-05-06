@@ -19,10 +19,54 @@ EOT
         return PlCx.INT1;
 EOT
     readline => <<'EOT',
-        // TODO - read from filehandle
-        PlCORE.die("readline not yet implemented");
-        // fh.inputStream.readline();
-        return PlCx.INT1;
+        if (want == PlCx.LIST) {
+            // TODO - read all lines
+        }
+        PlObject plsep = PlV.get("main::v_/");
+        if (plsep.is_undef()) {
+            // TODO - slurp file
+        }
+        if (fh.eof) {
+            return PlCx.UNDEF;
+        }
+        String sep = plsep.toString();
+        StringBuilder buf = fh.readlineBuffer;
+        // read from filehandle until "sep" or eof()
+        int pos = buf.indexOf(sep);
+        if (pos < 0 && !fh.eof) {
+            // read more
+            int len = 1000;
+            byte[] b = new byte[len];
+            int num_bytes = 0;
+            try {
+                num_bytes = fh.inputStream.read(b, 0, len);
+            }
+            catch(IOException e) {
+                PlV.set("main::v_!", new PlString(e.getMessage()));
+                return PlCx.UNDEF;
+            }
+            // TODO - use: new String(bytes,"UTF-8")
+            if (num_bytes > 0) {
+                String s = new String(b, 0, num_bytes);
+                buf.append(s);
+                pos = buf.indexOf(sep);
+            }
+            else {
+                // eof
+                fh.eof = true;
+            }
+        }
+        String s;
+        if (fh.eof) {
+            s = buf.toString();
+            fh.readlineBuffer = new StringBuilder();
+        }
+        else {
+            pos += sep.length();
+            s = buf.substring(0, pos);
+            fh.readlineBuffer = new StringBuilder(buf.substring(pos));
+        }
+        return new PlString(s);
 EOT
     # read FILEHANDLE,SCALAR,LENGTH,OFFSET?
     read => <<'EOT',
