@@ -3,27 +3,61 @@ use v5;
 package Perlito5::Java::CORE;
 use strict;
 
+
+my %FileFunc = (
+    print => <<'EOT',
+        for (int i = 0; i < List__.to_int(); i++) {
+            fh.outputStream.print(List__.aget(i).toString());
+        }
+        return PlCx.INT1;
+EOT
+    say => <<'EOT',
+        for (int i = 0; i < List__.to_int(); i++) {
+            fh.outputStream.print(List__.aget(i).toString());
+        }
+        fh.outputStream.println("");
+        return PlCx.INT1;
+EOT
+    readline => <<'EOT',
+        // TODO - read from filehandle
+        PlCORE.die("readline not yet implemented");
+        // fh.inputStream.readline();
+        return PlCx.INT1;
+EOT
+    read => <<'EOT',
+        // TODO - read from filehandle
+        PlCORE.die("read not yet implemented");
+        // fh.inputStream.readline();
+        return PlCx.INT1;
+EOT
+    sysread => <<'EOT',
+        // TODO - read from filehandle
+        PlCORE.die("sysread not yet implemented");
+        // fh.inputStream.readline();
+        return PlCx.INT1;
+EOT
+);
+
+
 sub emit_java {
     return <<'EOT'
 
 class PlCORE {
-    public static final PlObject print(int want, PlObject filehandle, PlArray List__) {
-        // TODO - write to filehandle
-        for (int i = 0; i < List__.to_int(); i++) {
-            ((PlFileHandle)filehandle).outputStream.print(List__.aget(i).toString());
-        }
-        return PlCx.INT1;
-    }
-    public static final PlObject say(int want, PlObject filehandle, PlArray List__) {
-        // TODO - write to filehandle
-        for (int i = 0; i < List__.to_int(); i++) {
-            ((PlFileHandle)filehandle).outputStream.print(List__.aget(i).toString());
-        }
-        ((PlFileHandle)filehandle).outputStream.println("");
-        return PlCx.INT1;
-    }
+EOT
+    # emit all file-related functions
+    . join("", map {
+          "    public static final PlObject $_(int want, PlObject filehandle, PlArray List__) {\n"
+        . "        PlFileHandle fh = PerlOp.get_filehandle(filehandle);\n"
+        .       $FileFunc{$_}
+        . "    }\n"
+        . "    public static final PlObject $_(int want, String filehandle, PlArray List__) {\n"
+        . "        PlFileHandle fh = PerlOp.get_filehandle(filehandle);\n"
+        .       $FileFunc{$_}
+        . "    }\n"
+        } sort keys %FileFunc
+    ) . <<'EOT'
     public static final PlObject say(String s) {
-        // say() shortcut
+        // say() shortcut for internal use
         return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));
     }
     public static final PlObject exit(int want, PlArray List__) {
@@ -56,12 +90,6 @@ class PlCORE {
     public static final PlObject die(String s) {
         // die() shortcut
         return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
-    }
-    public static final PlObject readline(int want, PlObject filehandle, PlArray List__) {
-        // TODO - read from filehandle
-        PlCORE.die("readline not yet implemented");
-        // ((PlFileHandle)filehandle).inputStream.readline();
-        return PlCx.INT1;
     }
     public static final PlString ref(int want, PlArray List__) {
         return List__.aget(0).ref();

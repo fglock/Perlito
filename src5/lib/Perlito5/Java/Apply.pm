@@ -1247,13 +1247,8 @@ package Perlito5::AST::Apply;
             # read FILEHANDLE,SCALAR,LENGTH,OFFSET
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            my $scalar = shift(@in);
-            my $length = shift(@in);
-            return Perlito5::Java::emit_wrap_java($level,
-                'var r = p5pkg["Perlito5::IO"].read(' . $fun->emit_java( $level ) . ', [' . $length->emit_java( $level ) . ']);',
-                $scalar->emit_java( $level ) . ' = r[1];',
-                'return r[0]',
-            );
+            my $list = Perlito5::Java::to_list(\@in);
+            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java( $level ) . ', ' . $list . ')';
         },
         'readline' => sub {
             my ($self, $level, $wantarray) = @_;

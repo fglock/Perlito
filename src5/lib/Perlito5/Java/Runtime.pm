@@ -306,6 +306,24 @@ class PerlOp {
     private static PlArray local_stack = new PlArray();
     private static Random random = new Random();
 
+    // filehandles
+    public static final PlFileHandle get_filehandle(PlObject fh) {
+        // TODO - autovivification
+        if (fh.is_lvalue()) {
+            fh = fh.get();
+        }
+        if (fh.is_filehandle()) {
+            return (PlFileHandle)fh;
+        }
+        fh = PlV.get(fh.toString());    // "GLOB" by name
+        return (PlFileHandle)(fh.get());
+    }
+    public static final PlFileHandle get_filehandle(String s) {
+        // TODO - autovivification
+        PlObject fh = PlV.get(s);    // "GLOB" by name
+        return (PlFileHandle)(fh.get());
+    }
+
     // objects
     // coderef methods can be called on ANY invocant
     //  $m = sub {...};
@@ -869,6 +887,9 @@ class PlEnv {
         PlCx.STDIN.inputStream   = System.in;
         PlCx.STDOUT.outputStream = System.out;
         PlCx.STDERR.outputStream = System.err;
+        PlV.set("STDIN",  PlCx.STDIN);                             // "GLOB"
+        PlV.set("STDOUT", PlCx.STDOUT);
+        PlV.set("STDERR", PlCx.STDERR);
     }
 }
 class PlObject {
@@ -1161,6 +1182,9 @@ EOT
     public boolean is_coderef() {
         return false;
     }
+    public boolean is_filehandle() {
+        return false;
+    }
     public PlString ref() {
 		return REF;
     }
@@ -1378,6 +1402,9 @@ class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
+    public boolean is_filehandle() {
+        return true;
+    }
 }
 class PlRegex extends PlReference {
     public Pattern p;
@@ -1887,6 +1914,9 @@ EOT
     }
     public boolean is_coderef() {
         return this.o.is_coderef();
+    }
+    public boolean is_filehandle() {
+        return this.o.is_filehandle();
     }
 
     public PlObject pre_decr() {
