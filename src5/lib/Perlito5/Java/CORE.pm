@@ -24,11 +24,9 @@ EOT
         // fh.inputStream.readline();
         return PlCx.INT1;
 EOT
+    # read FILEHANDLE,SCALAR,LENGTH,OFFSET?
     read => <<'EOT',
-        // TODO - read from filehandle
-        PlCORE.die("read not yet implemented");
-        // fh.inputStream.readline();
-        return PlCx.INT1;
+        return PlCORE.sysread(want, fh, List__);
 EOT
     # sysread FILEHANDLE,SCALAR,LENGTH,OFFSET?
     #   result is stored in $_[0]

@@ -1247,15 +1247,19 @@ package Perlito5::AST::Apply;
             # read FILEHANDLE,SCALAR,LENGTH,OFFSET
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java( $level ) . ', ' . $list . ')';
+            'PlCORE.read('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      $fun->emit_java( $level ) . ', '
+             .      'PlArray.construct_list_of_aliases('
+             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
+             .      ')'
+             . ')';
         },
         'sysread' => sub {
             my ($self, $level, $wantarray) = @_;
             # sysread FILEHANDLE,SCALAR,LENGTH,OFFSET
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            my $list = Perlito5::Java::to_list(\@in);
             'PlCORE.sysread('
              .      Perlito5::Java::to_context($wantarray) . ', '
              .      $fun->emit_java( $level ) . ', '
