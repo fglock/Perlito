@@ -2346,7 +2346,13 @@ EOT
             this.a.add(v.scalar());
             return v;
         }
-        this.a.set(pos, v.scalar());
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.scalar());
+        }
+        else {
+            this.a.set(pos, v.scalar());
+        }
         return v;
     }
     public PlObject aset(int i, PlObject v) {
@@ -2363,7 +2369,13 @@ EOT
             this.a.add(v.scalar());
             return v;
         }
-        this.a.set(pos, v.scalar());
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.scalar());
+        }
+        else {
+            this.a.set(pos, v.scalar());
+        }
         return v;
     }
     public PlObject aset(PlObject i, PlLvalue v) {
@@ -2380,7 +2392,13 @@ EOT
             this.a.add(v.scalar());
             return v;
         }
-        this.a.set(pos, v.get());
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.get());
+        }
+        else {
+            this.a.set(pos, v.get());
+        }
         return v;
     }
     public PlObject aset(int i, PlLvalue v) {
@@ -2397,7 +2415,13 @@ EOT
             this.a.add(v.scalar());
             return v;
         }
-        this.a.set(pos, v.get());
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.get());
+        }
+        else {
+            this.a.set(pos, v.get());
+        }
         return v;
     }
 EOT
