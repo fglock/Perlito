@@ -20,7 +20,13 @@ EOT
 EOT
     readline => <<'EOT',
         if (want == PlCx.LIST) {
-            // TODO - read all lines
+            // read all lines
+            PlArray res = new PlArray();
+            PlObject s;
+            while (!(s = PlCORE.readline(PlCx.SCALAR, fh, List__)).is_undef()) {
+                res.push(s);
+            }
+            return res;
         }
         PlObject plsep = PlV.get("main::v_/");
         boolean slurp = false;
@@ -34,45 +40,24 @@ EOT
         StringBuilder buf = fh.readlineBuffer;
         // read from filehandle until "sep" or eof()
         int pos = slurp ? -1 : buf.indexOf(sep);
-        if (pos < 0 && !fh.eof) {
+        while (pos < 0 && !fh.eof) {
             // read more
-            // int len = 3;
-            // byte[] b = new byte[len];
-            // char[] c = new char[len];
-            int num_bytes = 0;
+            int len = 1000;
+            char[] c = new char[len];
+            int num_chars = 0;
             try {
-                // ORIGINAL
-                //    num_bytes = fh.inputStream.read(b, 0, len);
-                //    if (num_bytes > 0) {
-                //        String s = new String(b, 0, num_bytes);
-                //        buf.append(s);
-                //    }
-
-                // V2
-                String s = fh.reader.readLine();
-                if (s == null) {
-                    num_bytes = -1;
-                }
-                else {
+                num_chars = fh.reader.read(c, 0, len);
+                if (num_chars > 0) {
+                    // TODO - use: new String(bytes,"UTF-8")
+                    String s = new String(c, 0, num_chars);
                     buf.append(s);
-                    // PlCORE.say("len " + s.length());
-                    buf.append("\n");
-                    num_bytes = s.length();
                 }
-
-                // V3
-                // num_bytes = fh.reader.read(c, 0, len);
-                // if (num_bytes > 0) {
-                //     String s = new String(c, 0, num_bytes);
-                //     buf.append(s);
-                // }
             }
             catch(IOException e) {
                 PlV.set("main::v_!", new PlString(e.getMessage()));
                 return PlCx.UNDEF;
             }
-            // TODO - use: new String(bytes,"UTF-8")
-            if (num_bytes > 0) {
+            if (num_chars > 0) {
                 if (!slurp) {
                     pos = buf.indexOf(sep);
                 }
@@ -87,6 +72,9 @@ EOT
             s = buf.toString();
             fh.readlineBuffer = new StringBuilder();
             fh.eof = true;
+            if (s.length() == 0) {
+                return PlCx.UNDEF;
+            }
         }
         else {
             pos += sep.length();
@@ -105,31 +93,62 @@ EOT
     #   returns number of bytes read
     #   set $! on error
     sysread => <<'EOT',
-        int len = List__.aget(1).to_int();
+        int leng = List__.aget(1).to_int();
         int ofs = List__.aget(2).to_int();
-        byte[] b = new byte[len];
-        int num_bytes = 0;
-        try {
-            num_bytes = fh.inputStream.read(b, 0, len);
-        }
-        catch(IOException e) {
-            PlV.set("main::v_!", new PlString(e.getMessage()));
+
+        if (fh.eof) {
             return PlCx.UNDEF;
         }
-        // TODO - use: new String(bytes,"UTF-8")
-        if (num_bytes > 0) {
-            String s = new String(b, 0, num_bytes);
-            if (ofs == 0) {
-                List__.aset(0, s);
+        StringBuilder buf = fh.readlineBuffer;
+        // read from filehandle until "len"
+        int pos = buf.length();
+        while (pos < leng && !fh.eof) {
+            // read more
+            int len = 1000;
+            char[] c = new char[len];
+            int num_chars = 0;
+            try {
+                num_chars = fh.reader.read(c, 0, len);
+                if (num_chars > 0) {
+                    // TODO - use: new String(bytes,"UTF-8")
+                    String s = new String(c, 0, num_chars);
+                    buf.append(s);
+                }
+            }
+            catch(IOException e) {
+                PlV.set("main::v_!", new PlString(e.getMessage()));
+                return PlCx.UNDEF;
+            }
+            if (num_chars > 0) {
+                pos = buf.length();
             }
             else {
-                die("TODO: sysread with OFFSET");
+                // eof
+                fh.eof = true;
+            }
+        }
+        String s;
+        if (fh.eof || pos < leng) {
+            s = buf.toString();
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            if (s.length() == 0) {
+                return PlCx.UNDEF;
             }
         }
         else {
-            num_bytes = 0;
+            s = buf.substring(0, leng);
+            fh.readlineBuffer = new StringBuilder(buf.substring(leng));
         }
-        return new PlInt(num_bytes);
+
+        leng = s.length();
+        if (ofs == 0) {
+            List__.aset(0, s);
+        }
+        else {
+            die("TODO: sysread with OFFSET");
+        }
+        return new PlInt(leng);
 EOT
 );
 
