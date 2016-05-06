@@ -57,7 +57,7 @@ EOT
             }
         }
         String s;
-        if (fh.eof) {
+        if (fh.eof || pos < 0) {
             s = buf.toString();
             fh.readlineBuffer = new StringBuilder();
         }
