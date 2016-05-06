@@ -45,12 +45,17 @@ EOT
         }
         catch(IOException e) {
             PlV.set("main::v_!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
         }
-        // TODO - use OFFSET
-        // TODO - throws IOException
-        // TODO - use: String fileString = new String(_bytes,"UTF-8")
+        // TODO - use: new String(bytes,"UTF-8")
         if (num_bytes > 0) {
-            List__.aset(0, new String(b, 0, num_bytes));
+            String s = new String(b, 0, num_bytes);
+            if (ofs == 0) {
+                List__.aset(0, s);
+            }
+            else {
+                die("TODO: sysread with OFFSET");
+            }
         }
         else {
             num_bytes = 0;
