@@ -1,6 +1,6 @@
-// lib/Perlito6/Javascript/Runtime.js
+// lib/Perlito6/JavaScript/Runtime.js
 //
-// Runtime for "Perlito6" Perl6-in-Javascript
+// Runtime for "Perlito6" Perl6-in-JavaScript
 //
 // AUTHORS
 //

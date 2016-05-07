@@ -1,4 +1,4 @@
-package Perlito5::Javascript2::PrettyPrinter;
+package Perlito5::JavaScript2::PrettyPrinter;
 use strict;
 use warnings;
 
@@ -388,6 +388,6 @@ __END__
         [ stmt => [ keyword => 'for' ], [ paren_semicolon => '(', ['op', 'infix:<=>', 'i', 0], [], [] ], ['block'] ],
     ];
     my $out = [];
-    Perlito5::Javascript2::PrettyPrinter::block( $data, 0, $out );
+    Perlito5::JavaScript2::PrettyPrinter::block( $data, 0, $out );
     print join( '', @$out ), "\n";
 

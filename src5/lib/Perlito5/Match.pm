@@ -15,7 +15,7 @@ sub flat {
 
 =head1 NAME
 
-Perlito5::Match - Runtime for Perlito Perl5-in-Javascript grammars
+Perlito5::Match - Runtime for Perlito Perl5-in-JavaScript grammars
 
 =head1 AUTHORS
 

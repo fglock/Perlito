@@ -1,14 +1,14 @@
 use v5;
 
-package Perlito5::Javascript3::Runtime;
+package Perlito5::JavaScript3::Runtime;
 
 sub emit_javascript3 {
 
     return <<'EOT';
 //
-// lib/Perlito5/Javascript3/Runtime.js
+// lib/Perlito5/JavaScript3/Runtime.js
 //
-// Runtime for "Perlito" Perl5-in-Javascript3
+// Runtime for "Perlito" Perl5-in-JavaScript3
 //
 // AUTHORS
 //

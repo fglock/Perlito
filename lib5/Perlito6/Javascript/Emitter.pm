@@ -15,8 +15,8 @@ package GLOBAL;
 ;
     use Perlito6::AST;
     {
-    package Perlito6::Javascript;
-        sub new { shift; bless { @_ }, "Perlito6::Javascript" }
+    package Perlito6::JavaScript;
+        sub new { shift; bless { @_ }, "Perlito6::JavaScript" }
         sub tab {
             my $level = $_[0];
             (('    ') x $level)
@@ -82,8 +82,8 @@ package GLOBAL;
 
 ;
     {
-    package Perlito6::Javascript::LexicalBlock;
-        sub new { shift; bless { @_ }, "Perlito6::Javascript::LexicalBlock" }
+    package Perlito6::JavaScript::LexicalBlock;
+        sub new { shift; bless { @_ }, "Perlito6::JavaScript::LexicalBlock" }
         sub block { $_[0]->{block} };
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
@@ -95,8 +95,8 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             if ($self->{top_level}) {
-                ((my  $block) = Perlito6::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
-                return scalar ((Perlito6::Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito6::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito6::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito6::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito6::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito6::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito6::Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Perlito6::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125)))
+                ((my  $block) = Perlito6::JavaScript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
+                return scalar ((Perlito6::JavaScript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . (chr(10)) . Perlito6::JavaScript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito6::JavaScript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito6::JavaScript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito6::JavaScript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito6::JavaScript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito6::JavaScript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Perlito6::JavaScript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125)))
             };
             (my  $List_block = bless [], 'ARRAY');
             for ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
@@ -105,17 +105,17 @@ package GLOBAL;
                 }
             };
             if (!($List_block)) {
-                return scalar ((Perlito6::Javascript::tab($level) . 'null' . chr(59)))
+                return scalar ((Perlito6::JavaScript::tab($level) . 'null' . chr(59)))
             };
             (my  $List_str = bless [], 'ARRAY');
             for my $decl ( @{$List_block} ) {
                 if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) {
-                    push( @{$List_str}, (Perlito6::Javascript::tab($level) . $decl->emit_javascript_init()) )
+                    push( @{$List_str}, (Perlito6::JavaScript::tab($level) . $decl->emit_javascript_init()) )
                 };
                 if ((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>'))) {
                     ((my  $var) = $decl->arguments()->[0]);
                     if ((Main::isa($var, 'Decl') && ($var->decl() eq 'my'))) {
-                        push( @{$List_str}, (Perlito6::Javascript::tab($level) . $var->emit_javascript_init()) )
+                        push( @{$List_str}, (Perlito6::JavaScript::tab($level) . $var->emit_javascript_init()) )
                     }
                 }
             };
@@ -141,11 +141,11 @@ package GLOBAL;
     $List_a
 })))
                     };
-                    ($body = Perlito6::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                    push( @{$List_str}, (Perlito6::Javascript::tab($level) . 'if ( ' . Perlito6::Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
+                    ($body = Perlito6::JavaScript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
+                    push( @{$List_str}, (Perlito6::JavaScript::tab($level) . 'if ( ' . Perlito6::JavaScript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
                     if ($otherwise) {
-                        ($otherwise = Perlito6::Javascript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
-                        push( @{$List_str}, (Perlito6::Javascript::tab($level) . 'else ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) )
+                        ($otherwise = Perlito6::JavaScript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
+                        push( @{$List_str}, (Perlito6::JavaScript::tab($level) . 'else ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) )
                     }
                 }
                 else {
@@ -153,7 +153,7 @@ package GLOBAL;
                         push( @{$List_str}, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
-                        push( @{$List_str}, (Perlito6::Javascript::tab($level) . 'return(' . $last_statement->emit_javascript() . ')') )
+                        push( @{$List_str}, (Perlito6::JavaScript::tab($level) . 'return(' . $last_statement->emit_javascript() . ')') )
                     }
                 }
             };
@@ -175,7 +175,7 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             ((my  $class_name) = Main::to_javascript_namespace($self->{name}));
-            ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function('perl') . ' ' . chr(61) . ' function () ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new(' . chr(39) . ' + Main._dump(this) + ' . chr(39) . ')' . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
+            ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function('perl') . ' ' . chr(61) . ' function () ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new(' . chr(39) . ' + Main._dump(this) + ' . chr(39) . ')' . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
             for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ($str = ($str . '  ' . $decl->emit_javascript_init()))
@@ -189,20 +189,20 @@ package GLOBAL;
             };
             for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
                 if (Main::isa($decl, 'Method')) {
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
                     ((my  $invocant) = $sig->invocant());
-                    ((my  $block) = Perlito6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' method ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . '    var ' . $invocant->emit_javascript() . ' ' . chr(61) . ' this' . chr(59) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
+                    ((my  $block) = Perlito6::JavaScript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' method ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . '    var ' . $invocant->emit_javascript() . ' ' . chr(61) . ' this' . chr(59) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
                 };
                 if (Main::isa($decl, 'Sub')) {
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
-                    ((my  $block) = Perlito6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
+                    ((my  $block) = Perlito6::JavaScript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Perlito6::JavaScript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
                 }
             };
             for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
@@ -233,7 +233,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . $self->{int})
+            (Perlito6::JavaScript::tab($level) . $self->{int})
         }
     }
 
@@ -248,7 +248,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . (($self->{bit} ? 'true' : 'false')))
+            (Perlito6::JavaScript::tab($level) . (($self->{bit} ? 'true' : 'false')))
         }
     }
 
@@ -263,7 +263,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . $self->{num})
+            (Perlito6::JavaScript::tab($level) . $self->{num})
         }
     }
 
@@ -278,7 +278,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . Perlito6::Javascript::escape_string($self->{buf}))
+            (Perlito6::JavaScript::tab($level) . Perlito6::JavaScript::escape_string($self->{buf}))
         }
     }
 
@@ -297,7 +297,7 @@ package GLOBAL;
             if ($self->{sig}) {
                 ($sig = $self->{sig}->emit_javascript_indented(($level + 1)))
             };
-            return scalar ((Perlito6::Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito6::Javascript::LexicalBlock->new(('block' => (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')'))
+            return scalar ((Perlito6::JavaScript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito6::JavaScript::LexicalBlock->new(('block' => (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')'))
         }
     }
 
@@ -344,7 +344,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']')
+            (Perlito6::JavaScript::tab($level) . $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']')
         }
     }
 
@@ -374,7 +374,7 @@ package GLOBAL;
             ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
             ((my  $index_js) = $self->{index_exp}->emit_javascript());
             ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ')' . chr(59) . ' '));
-            return scalar ((Perlito6::Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+            return scalar ((Perlito6::JavaScript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
         }
     }
 
@@ -423,7 +423,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . Main::to_javascript_namespace($self->{name}))
+            (Perlito6::JavaScript::tab($level) . Main::to_javascript_namespace($self->{name}))
         }
     }
 
@@ -484,21 +484,21 @@ package GLOBAL;
             };
             if (exists($Hash_method_js->{$self->{method}})) {
                 if (($self->{hyper})) {
-                    return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( ' . Perlito6::Javascript::escape_function($self->{method}) . '(a_[i]) ) ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
+                    return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( ' . Perlito6::JavaScript::escape_function($self->{method}) . '(a_[i]) ) ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
                 };
-                return scalar ((Perlito6::Javascript::escape_function($self->{method}) . '(' . $invocant . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')) : '')) . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function($self->{method}) . '(' . $invocant . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')) : '')) . ')'))
             };
             if (exists($Hash_method_native_js->{$self->{method}})) {
                 return scalar (($invocant . '.' . $self->{method} . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             ((my  $meth) = $self->{method});
             if (($self->{hyper})) {
-                return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Perlito6::Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
+                return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Perlito6::JavaScript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
             };
             if (($meth eq 'postcircumfix:<( )>')) {
                 return scalar (('(' . $invocant . ')(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
-            return scalar ((Perlito6::Javascript::tab($level) . $invocant . '.' . Perlito6::Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+            return scalar ((Perlito6::JavaScript::tab($level) . $invocant . '.' . Perlito6::JavaScript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
         }
     }
 
@@ -554,28 +554,28 @@ package GLOBAL;
 
             }
             else {
-                return scalar ((Perlito6::Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return scalar ((Perlito6::JavaScript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (exists($Hash_op_infix_js->{$code})) {
-                return scalar ((Perlito6::Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))
+                return scalar ((Perlito6::JavaScript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))
             };
             if (($code eq 'self')) {
-                return scalar ((Perlito6::Javascript::tab($level) . 'v_self'))
+                return scalar ((Perlito6::JavaScript::tab($level) . 'v_self'))
             };
             if (($code eq 'Mu')) {
-                return scalar ((Perlito6::Javascript::tab($level) . 'null'))
+                return scalar ((Perlito6::JavaScript::tab($level) . 'null'))
             };
             if (($code eq 'make')) {
-                return scalar ((Perlito6::Javascript::tab($level) . '(v_MATCH.v_capture ' . chr(61) . ' ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return scalar ((Perlito6::JavaScript::tab($level) . '(v_MATCH.v_capture ' . chr(61) . ' ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'defined')) {
-                return scalar ((Perlito6::Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ' ' . chr(33) . chr(61) . ' null)'))
+                return scalar ((Perlito6::JavaScript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ' ' . chr(33) . chr(61) . ' null)'))
             };
             if (($code eq 'substr')) {
                 return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ((defined((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2]) ? (', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript()) : '')) . ')'))
             };
             if (($code eq 'chr')) {
-                return scalar (('String.fromCharCode(' . Perlito6::Javascript::escape_function('num') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . '))'))
+                return scalar (('String.fromCharCode(' . Perlito6::JavaScript::escape_function('num') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . '))'))
             };
             if (($code eq 'ord')) {
                 return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ').charCodeAt(0)'))
@@ -587,22 +587,22 @@ package GLOBAL;
                 return scalar (('parseFloat(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
             };
             if (($code eq 'prefix:<' . chr(126) . '>')) {
-                return scalar ((Perlito6::Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if (($code eq 'prefix:<' . chr(33) . '>')) {
-                return scalar (('( ' . Perlito6::Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' false : true)'))
+                return scalar (('( ' . Perlito6::JavaScript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' false : true)'))
             };
             if (($code eq 'prefix:<' . chr(63) . '>')) {
-                return scalar (('( ' . Perlito6::Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' true : false)'))
+                return scalar (('( ' . Perlito6::JavaScript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' true : false)'))
             };
             if (($code eq 'prefix:<' . chr(36) . '>')) {
-                return scalar ((Perlito6::Javascript::escape_function('scalar') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('scalar') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if (($code eq 'prefix:<' . chr(64) . '>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if (($code eq 'prefix:<' . chr(37) . '>')) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ').' . Perlito6::Javascript::escape_function('hash') . '()'))
+                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ').' . Perlito6::JavaScript::escape_function('hash') . '()'))
             };
             if (($code eq 'postfix:<++>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))
@@ -620,25 +620,25 @@ package GLOBAL;
                 return scalar (('str_replicate(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'list:<' . chr(126) . '>')) {
-                return scalar (('(' . Perlito6::Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Perlito6::Javascript::escape_function('string') . '(')) . '))'))
+                return scalar (('(' . Perlito6::JavaScript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Perlito6::JavaScript::escape_function('string') . '(')) . '))'))
             };
             if (($code eq 'infix:<+>')) {
-                return scalar ((Perlito6::Javascript::escape_function('add') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('add') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'infix:<..>')) {
                 return scalar (('(function (a) ' . chr(123) . ' ' . 'for (var i' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', l' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . 'i<' . chr(61) . 'l' . chr(59) . ' ++i)' . chr(123) . ' ' . 'a.push(i) ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . ')([])'))
             };
             if ((($code eq 'infix:<' . chr(38) . chr(38) . '>') || ($code eq 'infix:<and>'))) {
-                return scalar ((Perlito6::Javascript::escape_function('and') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('and') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if ((($code eq 'infix:<' . chr(124) . chr(124) . '>') || ($code eq 'infix:<or>'))) {
-                return scalar ((Perlito6::Javascript::escape_function('or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if (($code eq 'infix:<' . chr(47) . chr(47) . '>')) {
-                return scalar ((Perlito6::Javascript::escape_function('defined_or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return scalar ((Perlito6::JavaScript::escape_function('defined_or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if (($code eq 'infix:<' . chr(61) . chr(61) . chr(61) . '>')) {
-                return scalar (('(' . Perlito6::Javascript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ') ' . chr(61) . chr(61) . ' ' . Perlito6::Javascript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . '))'))
+                return scalar (('(' . Perlito6::JavaScript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ') ' . chr(61) . chr(61) . ' ' . Perlito6::JavaScript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . '))'))
             };
             if (($code eq 'exists')) {
                 ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
@@ -647,7 +647,7 @@ package GLOBAL;
                 }
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
-                return scalar (('( ' . Perlito6::Javascript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
+                return scalar (('( ' . Perlito6::JavaScript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
             };
             if (($code eq 'circumfix:<( )>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
@@ -656,20 +656,20 @@ package GLOBAL;
                 return scalar (emit_javascript_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]))
             };
             if (($code eq 'return')) {
-                return scalar ((Perlito6::Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
+                return scalar ((Perlito6::JavaScript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
             };
             if ($self->{namespace}) {
-                ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Perlito6::Javascript::escape_function($code)))
+                ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Perlito6::JavaScript::escape_function($code)))
             }
             else {
                 if (!(exists($Hash_op_global_js->{$code}))) {
-                    ($code = ('v__NAMESPACE.' . Perlito6::Javascript::escape_function($code)))
+                    ($code = ('v__NAMESPACE.' . Perlito6::JavaScript::escape_function($code)))
                 }
                 else {
-                    ($code = Perlito6::Javascript::escape_function($self->{code}))
+                    ($code = Perlito6::JavaScript::escape_function($self->{code}))
                 }
             };
-            (Perlito6::Javascript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
+            (Perlito6::JavaScript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
         };
         sub emit_javascript_bind {
             my $parameters = $_[0];
@@ -755,11 +755,11 @@ package GLOBAL;
     $List_a
 })))
             };
-            ((my  $body) = Perlito6::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
-            ((my  $s) = (Perlito6::Javascript::tab($level) . 'if ( ' . Perlito6::Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
+            ((my  $body) = Perlito6::JavaScript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
+            ((my  $s) = (Perlito6::JavaScript::tab($level) . 'if ( ' . Perlito6::JavaScript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
             if ($self->{otherwise}) {
-                ((my  $otherwise) = Perlito6::Javascript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0)));
-                ($s = ($s . (chr(10)) . Perlito6::Javascript::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
+                ((my  $otherwise) = Perlito6::JavaScript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0)));
+                ($s = ($s . (chr(10)) . Perlito6::JavaScript::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
             };
             return scalar ($s)
         }
@@ -776,8 +776,8 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $body) = Perlito6::Javascript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
-            return scalar ((Perlito6::Javascript::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{cond} ? (Perlito6::Javascript::escape_function('bool') . '(' . $self->{cond}->emit_javascript() . ')' . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
+            ((my  $body) = Perlito6::JavaScript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
+            return scalar ((Perlito6::JavaScript::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{cond} ? (Perlito6::JavaScript::escape_function('bool') . '(' . $self->{cond}->emit_javascript() . ')' . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
         }
     }
 
@@ -801,12 +801,12 @@ package GLOBAL;
     $List_a
 })))
             };
-            ((my  $body) = Perlito6::Javascript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
+            ((my  $body) = Perlito6::JavaScript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
             ((my  $sig) = 'v__');
             if ($self->{body}->sig()) {
                 ($sig = $self->{body}->sig()->emit_javascript_indented(($level + 1)))
             };
-            (Perlito6::Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . ' ') . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond->emit_javascript() . ')')
+            (Perlito6::JavaScript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . ' ') . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond->emit_javascript() . ')')
         }
     }
 
@@ -821,7 +821,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . $self->{var}->emit_javascript())
+            (Perlito6::JavaScript::tab($level) . $self->{var}->emit_javascript())
         };
         sub emit_javascript_init {
             my $self = $_[0];
@@ -862,7 +862,7 @@ package GLOBAL;
             ((my  $invocant) = $sig->invocant());
             ((my  $pos) = $sig->positional());
             ((my  $str) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            (Perlito6::Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito6::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125))
+            (Perlito6::JavaScript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito6::JavaScript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125))
         }
     }
 
@@ -880,7 +880,7 @@ package GLOBAL;
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
             ((my  $str) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            (Perlito6::Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito6::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125))
+            (Perlito6::JavaScript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito6::JavaScript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125))
         }
     }
 
@@ -896,7 +896,7 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             ((my  $block) = $self->simplify()->block());
-            return scalar ((Perlito6::Javascript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito6::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::Javascript::tab($level) . chr(125) . ')()'))
+            return scalar ((Perlito6::JavaScript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito6::JavaScript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito6::JavaScript::tab($level) . chr(125) . ')()'))
         }
     }
 
@@ -911,7 +911,7 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Perlito6::Javascript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{mod} . (chr(10)))
+            (Perlito6::JavaScript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{mod} . (chr(10)))
         }
     }
 

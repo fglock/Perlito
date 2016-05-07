@@ -1,7 +1,7 @@
 class Perlito {
-    # use Perlito6::Javascript::Runtime; 
-    # use Perlito6::Javascript::Prelude; 
-    use Perlito6::Javascript::Emitter; 
+    # use Perlito6::JavaScript::Runtime; 
+    # use Perlito6::JavaScript::Prelude; 
+    use Perlito6::JavaScript::Emitter; 
     use Perlito6::Grammar;         
     use Perlito6::Grammar::Control; 
     use Perlito6::Grammar::Regex;   

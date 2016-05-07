@@ -18,7 +18,7 @@ perl perlito6.pl -Cruby src6/lib/Perlito6/Grammar/Regex.pm   > librb/Perlito6__G
 perl perlito6.pl -Cruby src6/lib/Perlito6/Emitter/Token.pm   > librb/Perlito6__Emitter__Token.rb
 perl perlito6.pl -Cruby src6/lib/Perlito6/Eval.pm            > librb/Perlito6__Eval.rb
 
-perl perlito6.pl -Cruby src6/lib/Perlito6/Javascript/Emitter.pm > librb/Perlito6__Javascript__Emitter.rb
+perl perlito6.pl -Cruby src6/lib/Perlito6/JavaScript/Emitter.pm > librb/Perlito6__JavaScript__Emitter.rb
 perl perlito6.pl -Cruby src6/lib/Perlito6/Lisp/Emitter.pm    > librb/Perlito6__Lisp__Emitter.rb
 perl perlito6.pl -Cruby src6/lib/Perlito6/Perl5/Emitter.pm   > librb/Perlito6__Perl5__Emitter.rb
 perl perlito6.pl -Cruby src6/lib/Perlito6/Go/Emitter.pm      > librb/Perlito6__Go__Emitter.rb

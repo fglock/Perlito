@@ -34,8 +34,8 @@ Perlito5::Compiler - Perl 5 compiler for Perlito5
 =head1 SYNOPSIS
 
     use Perlito5::Compiler;
-    use Perlito5::Javascript2::Emitter;
-    use Perlito5::Javascript2::Runtime;
+    use Perlito5::JavaScript2::Emitter;
+    use Perlito5::JavaScript2::Runtime;
 
     my $perl5_source = ' print "hello, World!\n" ';
     $Perlito5::PKG_NAME = 'main';

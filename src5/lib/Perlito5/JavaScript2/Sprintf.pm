@@ -1,6 +1,6 @@
 use v5;
 
-package Perlito5::Javascript2::Sprintf;
+package Perlito5::JavaScript2::Sprintf;
 
 sub emit_javascript2 {
 

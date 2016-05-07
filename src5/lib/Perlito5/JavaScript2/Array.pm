@@ -1,14 +1,14 @@
 use v5;
 
-package Perlito5::Javascript2::Array;
+package Perlito5::JavaScript2::Array;
 
 sub emit_javascript2 {
 
     return <<'EOT';
 //
-// lib/Perlito5/Javascript2/Runtime.js
+// lib/Perlito5/JavaScript2/Runtime.js
 //
-// Runtime for "Perlito" Perl5-in-Javascript2
+// Runtime for "Perlito" Perl5-in-JavaScript2
 //
 // AUTHORS
 //

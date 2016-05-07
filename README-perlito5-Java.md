@@ -325,7 +325,7 @@ Java-specific command line options
 Add 'eval string' support
 -------------------------
 
-  - JS-eval-string: embedding a Javascript-in-Java interpreter:
+  - JS-eval-string: embedding a JavaScript-in-Java interpreter:
         https://github.com/fglock/Perlito/blob/master/misc/Java/TestJS.pl
 
   - Java-eval-string: using the native compiler API:

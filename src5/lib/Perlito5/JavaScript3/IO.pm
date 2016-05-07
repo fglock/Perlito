@@ -1,15 +1,15 @@
 use v5;
 
-package Perlito5::Javascript3::IO;
+package Perlito5::JavaScript3::IO;
 
 sub emit_javascript3 {
 
     return <<'EOT';
 //
 //
-// lib/Perlito5/Javascript3/IO.js
+// lib/Perlito5/JavaScript3/IO.js
 //
-// I/O functions for "Perlito" Perl5-in-Javascript3
+// I/O functions for "Perlito" Perl5-in-JavaScript3
 //
 // AUTHORS
 //

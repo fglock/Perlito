@@ -300,7 +300,7 @@ class PerlOp {
     //
     // note: '+' add() and '-' sub() are PlObject methods, not implemented here.
     //
-    // TODO - see Perlito5/Javascript2/Runtime.pm for more operator implementations
+    // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
     // TODO - 'boolean_stack' should be reset when an exception happens
 
     private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();

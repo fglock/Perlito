@@ -13,19 +13,19 @@ use Perlito5::Emitter::Token;
 use Perlito5::Dumper;
 use Perlito5::JSON;
 
-use Perlito5::Javascript2::Emitter;
-use Perlito5::Javascript2::Runtime;
-use Perlito5::Javascript2::Lib;
-use Perlito5::Javascript2::Array;
-use Perlito5::Javascript2::CORE;
-use Perlito5::Javascript2::IO;
-use Perlito5::Javascript2::Sprintf;
+use Perlito5::JavaScript2::Emitter;
+use Perlito5::JavaScript2::Runtime;
+use Perlito5::JavaScript2::Lib;
+use Perlito5::JavaScript2::Array;
+use Perlito5::JavaScript2::CORE;
+use Perlito5::JavaScript2::IO;
+use Perlito5::JavaScript2::Sprintf;
 
-use Perlito5::Javascript3::Emitter;
-use Perlito5::Javascript3::Runtime;
-use Perlito5::Javascript3::CORE;
-use Perlito5::Javascript3::IO;
-use Perlito5::Javascript3::Sprintf;
+use Perlito5::JavaScript3::Emitter;
+use Perlito5::JavaScript3::Runtime;
+use Perlito5::JavaScript3::CORE;
+use Perlito5::JavaScript3::IO;
+use Perlito5::JavaScript3::Sprintf;
 
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl5::PrettyPrinter;
@@ -338,7 +338,7 @@ if ($backend) {
 
     Perlito5::Java::Lib::init()
         if $backend eq 'java';
-    Perlito5::Javascript2::Lib::init()
+    Perlito5::JavaScript2::Lib::init()
         if $backend eq 'js' || $^O eq 'node.js';
 
     if ( $execute ) { 

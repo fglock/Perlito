@@ -9,7 +9,7 @@ Backends
     Perlito6 can compile Perl 6 programs into one of the 'backend' 
     languages:
 
-        Perl 5, Javascript, Python 2.6
+        Perl 5, JavaScript, Python 2.6
 
     Previous versions of Perlito6 also compile to: Go, Common Lisp, and Ruby 1.9
 
@@ -31,7 +31,7 @@ Source code
 USING PERLITO6
 ==============
 
-Using the Javascript backend in the browser
+Using the JavaScript backend in the browser
 -------------------------------------------
 
 Open the file 'html/perlito6.html' in a browser (Firefox, Chrome, Safari).
@@ -40,7 +40,7 @@ Alternately, browse to:
 
 [http://fglock.github.io/Perlito/perlito/perlito6.html](http://fglock.github.io/Perlito/perlito/perlito6.html)
 
-Using the Javascript backend in the command line
+Using the JavaScript backend in the command line
 ------------------------------------------------
 
     export PERL5LIB=lib5
@@ -49,7 +49,7 @@ Using the Javascript backend in the command line
 
 Creating a bootstrapped compiler:
 
-    # compile src6/util/perlito6.pl to Javascript, using perlito6.pl:
+    # compile src6/util/perlito6.pl to JavaScript, using perlito6.pl:
     export PERL5LIB=lib5
     perl perlito6.pl -Cjs src6/util/perlito6.pl > perlito6.js
 
@@ -109,7 +109,7 @@ RUNNING TESTS
 
     find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito6.pl -Cperl5 $_ | perl ` '
 
-    Javascript:
+    JavaScript:
 
     find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 perlito6.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
 
@@ -178,7 +178,7 @@ Command line compiler (src6/util/perlito6.pl)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
-- option to build binaries (Lisp, Java, Go) or modules (Perl, Lisp, Javascript)
+- option to build binaries (Lisp, Java, Go) or modules (Perl, Lisp, JavaScript)
 
 - add "make" capabilities (test file dates, etc)
 
@@ -187,7 +187,7 @@ Command line compiler (src6/util/perlito6.pl)
 - add '-B' option (execute)
 
 
-Perlito6 in Javascript
+Perlito6 in JavaScript
 --------------
 
 - reuse the good parts of Perlito5 data model

@@ -5,8 +5,8 @@ use warnings;
 use Perlito5::Compiler;
 use Perlito5::Perl6::Emitter;
 use Perlito5::Perl6::PrettyPrinter;
-use Perlito5::Javascript2::Emitter;
-use Perlito5::Javascript2::Runtime;
+use Perlito5::JavaScript2::Emitter;
+use Perlito5::JavaScript2::Runtime;
 
 sub compile_p5_to_p6 {
     my $s = shift;

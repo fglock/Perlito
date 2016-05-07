@@ -821,7 +821,7 @@ This module generates "x64 native machine code" for the Perlito compiler.
 
 =head1 REFERENCES
 
-The API follows approximately the V8 Javascript compiler assembler:
+The API follows approximately the V8 JavaScript compiler assembler:
 
     src/x64/assembler-x64.cc
 

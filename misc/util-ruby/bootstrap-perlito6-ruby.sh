@@ -18,7 +18,7 @@ ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Grammar/Regex.pm   > librb-new/Perl
 ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Emitter/Token.pm   > librb-new/Perlito6__Emitter__Token.rb
 ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Eval.pm            > librb-new/Perlito6__Eval.rb
 
-ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Javascript/Emitter.pm > librb-new/Perlito6__Javascript__Emitter.rb
+ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/JavaScript/Emitter.pm > librb-new/Perlito6__JavaScript__Emitter.rb
 ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Lisp/Emitter.pm    > librb-new/Perlito6__Lisp__Emitter.rb
 ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Perl5/Emitter.pm   > librb-new/Perlito6__Perl5__Emitter.rb
 ruby1.9 perlito6.rb -Cruby src6/lib/Perlito6/Go/Emitter.pm      > librb-new/Perlito6__Go__Emitter.rb

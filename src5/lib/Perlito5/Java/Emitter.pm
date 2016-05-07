@@ -2698,7 +2698,7 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            my $idx  = Perlito5::Javascript2::get_label();
+            my $idx  = Perlito5::JavaScript2::get_label();
             return
                    'if (!PlV.get("main::init_' . $idx . '").to_bool()) {'
                 .       'PlV.set("main::init_' . $idx . '", (PlCx.INT1));'

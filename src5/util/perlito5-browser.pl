@@ -3,8 +3,8 @@ use strict;
 use warnings;
 
 use Perlito5::Compiler;
-use Perlito5::Javascript2::Emitter;
-use Perlito5::Javascript2::Runtime;
+use Perlito5::JavaScript2::Emitter;
+use Perlito5::JavaScript2::Runtime;
 
 sub compile_p5_to_js {
     my $s = shift;

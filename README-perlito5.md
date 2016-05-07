@@ -31,7 +31,7 @@ Running the tests using "node.js"
     prove -r -e 'node perlito5.js -I./src5/lib' t5
 
 
-Compile the compiler to Javascript into perlito5.js
+Compile the compiler to JavaScript into perlito5.js
 ---------------------------------------------------
 
 -- using perl and perlito5.pl:

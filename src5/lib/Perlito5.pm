@@ -13,8 +13,8 @@ Perlito5 - a Perl5 compiler
 =head1 SYNOPSIS
 
     use Perlito5::Compiler;
-    use Perlito5::Javascript2::Emitter;
-    use Perlito5::Javascript2::Runtime;
+    use Perlito5::JavaScript2::Emitter;
+    use Perlito5::JavaScript2::Runtime;
 
     my $perl5_source = ' print "hello, World!\n" ';
     $Perlito5::PKG_NAME = 'main';
@@ -43,9 +43,9 @@ The compiler options are available with the command:
 
 =head1 COOKBOOK
 
-=head2 Obtaining a "perlito5.js" script that executes in the "node.js" Javascript compiler
+=head2 Obtaining a "perlito5.js" script that executes in the "node.js" JavaScript compiler
 
-    # Step 1: use perlito5 to compile perlito5 to Javascript.
+    # Step 1: use perlito5 to compile perlito5 to JavaScript.
     perlito5 --bootstrapping -Cjs `which perlito5` > perlito5.js
 
     # Step 2: ensure that PERL5LIB points to the directory where Perlito5.pm is installed.
@@ -69,14 +69,14 @@ The compiler options are available with the command:
     #         Save this to "perlito5-browser.pl":
 
     use Perlito5::Compiler;
-    use Perlito5::Javascript2::Emitter;
-    use Perlito5::Javascript2::Runtime;
+    use Perlito5::JavaScript2::Emitter;
+    use Perlito5::JavaScript2::Runtime;
     sub eval_perl5 {
         eval "$_[0]; 1"
         or warn "Perl error: $@";
     }
 
-    # Step 2: use perlito5 to compile your "perlito5-browser.pl" script to Javascript.
+    # Step 2: use perlito5 to compile your "perlito5-browser.pl" script to JavaScript.
 
     perlito5 --bootstrapping -Cjs perlito5-browser.pl > perlito5-browser.js
 

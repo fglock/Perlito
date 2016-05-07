@@ -1,15 +1,15 @@
 use v5;
 
-package Perlito5::Javascript2::CORE;
+package Perlito5::JavaScript2::CORE;
 
 sub emit_javascript2 {
 
     return <<'EOT'
 //
 //
-// lib/Perlito5/Javascript2/CORE.js
+// lib/Perlito5/JavaScript2/CORE.js
 //
-// CORE functions for "Perlito" Perl5-in-Javascript2
+// CORE functions for "Perlito" Perl5-in-JavaScript2
 //
 // AUTHORS
 //
