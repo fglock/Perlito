@@ -765,7 +765,13 @@ class PerlOp {
         Matcher matcher = pat.p.matcher(s.toString());
         while (matcher.find()) {
             for (int i = 1; i <= matcher.groupCount(); i++) {
-                ret.push(matcher.group(i));
+                String cap = matcher.group(i);
+                if (cap == null) {
+                    ret.push(PlCx.UNDEF);
+                }
+                else {
+                    ret.push(cap);
+                }
             }
         }
         return ret;
