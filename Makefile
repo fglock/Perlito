@@ -89,6 +89,7 @@ build-6to5 ::
 
 	# clean up
 
+	mkdir lib5-old
 	rm -rf lib5-old/Perlito6
 	mv lib5/Perlito6 lib5-old/Perlito6
 	mv lib5-new/Perlito6 lib5/Perlito6
