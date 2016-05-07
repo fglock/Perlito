@@ -6,15 +6,13 @@
 
 	utf8 support (Java)
 
-	files (Java)
-
 	optimize "for (0..1000000)" by Luca Falsina
 
 - JavaScript:
 -- state variables by Yati Sagade
 - Java:
 -- state variables by Yati Sagade
--- readline(), read(), sysread()
+-- open(), close(), readline(), read(), sysread()
 
 9.020 cpan:Perlito5  2016-05-02
 - Parser:

@@ -1216,23 +1216,26 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            'p5pkg["Perlito5::IO"].close(' . $fun->emit_java( $level ) . ', [])';
+            'PlCORE.close('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      $fun->emit_java( $level ) . ', '
+             .      'PlArray.construct_list_of_aliases('
+             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
+             .      ')'
+             . ')';
         },
         'open' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
-            if (ref($fun) ne 'Perlito5::AST::Apply') {
-                # doesn't look like STDERR or FILE; initialize the variable with a GLOB
-                return Perlito5::Java::emit_wrap_java($level,
-                    $fun->emit_java( $level ) . ' = CORE.bless([ {file_handle : {id : null}}, "GLOB" ]);',
-                    'return CORE.open(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')'
-                );
-            }
-            else {
-                $Perlito5::STRICT = 0;  # allow FILE bareword
-                return 'CORE.open(' . Perlito5::Java::to_list( $self->{arguments}, $level ) . ')'
-            }
+            $Perlito5::STRICT = 0;  # allow FILE bareword
+            'PlCORE.open('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      $fun->emit_java( $level ) . ', '
+             .      'PlArray.construct_list_of_aliases('
+             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
+             .      ')'
+             . ')';
         },
         'chomp' => sub {
             my ($self, $level, $wantarray) = @_;

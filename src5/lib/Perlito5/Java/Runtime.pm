@@ -178,6 +178,7 @@ import java.lang.Math;
 import java.lang.System;
 import java.util.*;
 import java.io.*;
+import java.nio.file.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -308,13 +309,17 @@ class PerlOp {
 
     // filehandles
     public static final PlFileHandle get_filehandle(PlObject fh) {
-        // TODO - autovivification
         if (fh.is_lvalue()) {
+            if (fh.is_undef()) {
+                // $fh autovivification to filehandle
+                fh.set(new PlFileHandle());
+            }
             fh = fh.get();
         }
         if (fh.is_filehandle()) {
             return (PlFileHandle)fh;
         }
+        // TODO - GLOB autovivification
         fh = PlV.get(fh.toString());    // "GLOB" by name
         return (PlFileHandle)(fh.get());
     }

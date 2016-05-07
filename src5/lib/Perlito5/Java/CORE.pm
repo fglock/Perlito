@@ -5,6 +5,81 @@ use strict;
 
 
 my %FileFunc = (
+    # open FILEHANDLE,EXPR
+    # open FILEHANDLE,MODE,EXPR
+    # open FILEHANDLE,MODE,EXPR,LIST
+    # open FILEHANDLE,MODE,REFERENCE
+    # open FILEHANDLE
+    open => <<'EOT',
+        int argCount = List__.to_int();
+        Path path = null; 
+        String mode = "";
+        try {
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = false;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+            if (argCount == 0) {
+                PlCORE.die("TODO - not implemented: single argument open()");
+            }
+            if (argCount == 1) {
+                // EXPR
+                String s = List__.aget(0).toString();
+                path = Paths.get(s);
+                PlCORE.die("TODO - not implemented: 2-argument open()");
+            }
+            if (argCount > 1) {
+                // MODE,EXPR,LIST?
+                mode = List__.aget(0).toString();
+                String s = List__.aget(1).toString();
+                path = Paths.get(s);
+            }
+            if (mode.equals("<")) {
+                // TODO: charset
+                fh.reader = Files.newBufferedReader(path);
+                fh.outputStream = null;
+            }
+            else if (mode.equals(">")) {
+                // TODO: charset
+                fh.reader = null;
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
+            }
+            else if (mode.equals(">>")) {
+                // TODO: charset
+                fh.reader = null;
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
+            }
+            else {
+                PlCORE.die("TODO - not implemented: open() mode '" + mode + "'");
+            }
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
+EOT
+    close => <<'EOT',
+        try {
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
+EOT
     print => <<'EOT',
         for (int i = 0; i < List__.to_int(); i++) {
             fh.outputStream.print(List__.aget(i).toString());
