@@ -109,7 +109,26 @@ EOT
             slurp = true;
         }
         if (fh.eof) {
-            return PlCx.UNDEF;
+            if (fh.is_argv) {
+                // "ARGV" is special
+                PlArray argv = PlV.array_get("main::List_ARGV");
+                PlFileHandle in = new PlFileHandle();
+                if (argv.to_int() > 0) {
+                    // arg list contains file name
+                    PlCORE.open(PlCx.VOID, in, new PlArray(new PlString("<"), argv.shift()));
+                }
+                else {
+                    // read from STDIN
+                    in  = PlCx.STDIN;
+                }
+                fh.readlineBuffer   = in.readlineBuffer;
+                fh.eof              = in.eof;
+                fh.outputStream     = in.outputStream;
+                fh.reader           = in.reader;
+            }
+            if (fh.eof) {
+                return PlCx.UNDEF;
+            }
         }
         String sep = plsep.toString();
         StringBuilder buf = fh.readlineBuffer;

@@ -325,7 +325,11 @@ class PerlOp {
         PlObject fh = PlV.get(s);    // get "GLOB" by name
         if (fh.is_undef()) {
             // autovivification to filehandle
-            fh.set(new PlFileHandle());
+            PlFileHandle f = new PlFileHandle();
+            if (s.equals("ARGV")) {
+                f.is_argv = true;
+            }
+            fh.set(f);
         }
         return (PlFileHandle)(fh.get());
     }
@@ -1414,10 +1418,12 @@ class PlFileHandle extends PlReference {
     public BufferedReader reader;       // Console.reader
     public StringBuilder readlineBuffer;
     public boolean eof;
+    public boolean is_argv;
 
     public PlFileHandle() {
         this.readlineBuffer = new StringBuilder();
         this.eof = true;
+        this.is_argv = false;
     }
 
     public boolean is_filehandle() {
