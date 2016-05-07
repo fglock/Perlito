@@ -4180,14 +4180,18 @@ use feature 'say';
         my $delimiter = $_[2];
         my $interpolate = $_[3];
         my $c = substr($str, $pos, 1);
-        if ($c eq '$' && substr($str, $pos + 1, 1) eq '{') {
+        my $c2 = substr($str, $pos + 1, 1);
+        if ($c eq '$' && $c2 eq ')') {
+            return 0
+        }
+        elsif ($c eq '$' && $c2 eq '{') {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
             $m || return $m;
             my $var = Perlito5::Match::flat($m)->[1];
             $m->{'capture'} = $var;
             return $m
         }
-        elsif ($c eq '$' && substr($str, $pos + 1, 1) eq '$' && !Perlito5::Grammar::word($str, $pos + 2)) {
+        elsif ($c eq '$' && $c2 eq '$' && !Perlito5::Grammar::word($str, $pos + 2)) {
             return {'str' => $str, 'capture' => Perlito5::AST::Var::->new('name' => '$', 'sigil' => '$', 'namespace' => ''), 'from' => $pos, 'to' => $pos + 2}
         }
         elsif ($c eq '$' && substr($str, $pos + 1, length($delimiter)) ne $delimiter) {

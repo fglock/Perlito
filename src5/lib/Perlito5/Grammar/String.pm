@@ -1000,9 +1000,12 @@ sub double_quoted_var {
     my $interpolate = $_[3];  # 0 - single-quote; 1 - double-quote; 2 - regex
 
     my $c = substr($str, $pos, 1);
+    my $c2 = substr($str, $pos+1, 1);
 
-    if ($c eq '$' && substr($str, $pos+1, 1) eq '{')
-    {
+    if ($c eq '$' && $c2 eq ')') {
+        return 0;
+    }
+    elsif ($c eq '$' && $c2 eq '{') {
         my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
         return $m unless $m;
         my $var = Perlito5::Match::flat($m)->[1];
@@ -1010,7 +1013,7 @@ sub double_quoted_var {
         return $m;
     }
     elsif ($c eq '$'
-          && substr($str, $pos+1, 1) eq '$'
+          && $c2 eq '$'
           && !Perlito5::Grammar::word($str, $pos+2)
           )
     {
