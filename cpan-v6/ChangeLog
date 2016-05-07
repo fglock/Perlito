@@ -1,5 +1,8 @@
 - changed namespace from Perlito to Perlito6
 
+0.046  2016-05-07
+- hide "Javascript" class from CPAN
+
 0.045  2011-10-28
 - fixed Makefile.PL
 
