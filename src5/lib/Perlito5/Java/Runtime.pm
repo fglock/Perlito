@@ -319,13 +319,14 @@ class PerlOp {
         if (fh.is_filehandle()) {
             return (PlFileHandle)fh;
         }
-        // TODO - GLOB autovivification
-        fh = PlV.get(fh.toString());    // "GLOB" by name
-        return (PlFileHandle)(fh.get());
+        return get_filehandle(fh.toString());    // get "GLOB" by name
     }
     public static final PlFileHandle get_filehandle(String s) {
-        // TODO - autovivification
-        PlObject fh = PlV.get(s);    // "GLOB" by name
+        PlObject fh = PlV.get(s);    // get "GLOB" by name
+        if (fh.is_undef()) {
+            // autovivification to filehandle
+            fh.set(new PlFileHandle());
+        }
         return (PlFileHandle)(fh.get());
     }
 
