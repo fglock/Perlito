@@ -3244,7 +3244,6 @@ EOT
 class PlString extends PlObject {
     private java.lang.String s;
     private PlObject numericValue;
-    private boolean hasValue;
 
     public PlString(String s) {
         this.s = s;
@@ -3253,8 +3252,7 @@ class PlString extends PlObject {
         this.s = "" + s;
     }
     public PlObject parse() {
-        if (!hasValue) {
-            hasValue = true;
+        if (numericValue == null) {
             numericValue = this._parse();
         }
         return numericValue;
