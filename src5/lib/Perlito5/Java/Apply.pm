@@ -1245,6 +1245,25 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             'PlCORE.chop(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{arguments}[0]->emit_java($level) . ')';
         },
+        'getc' => sub {
+            my ($self, $level, $wantarray) = @_;
+            # getc FILEHANDLE
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            if ( $fun ) {
+                $fun  = $fun->emit_java( $level );
+            }
+            else {
+                $fun  = 'PlCx.STDIN';
+            }
+            'PlCORE.getc('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      $fun . ', '
+             .      'PlArray.construct_list_of_aliases('
+             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
+             .      ')'
+             . ')';
+        },
         'read' => sub {
             my ($self, $level, $wantarray) = @_;
             # read FILEHANDLE,SCALAR,LENGTH,OFFSET

@@ -12,7 +12,7 @@
 -- state variables by Yati Sagade
 - Java:
 -- state variables by Yati Sagade
--- open(), close(), readline(), read(), sysread()
+-- open(), close(), readline(), read(), sysread(), getc()
 
 9.020 cpan:Perlito5  2016-05-02
 - Parser:

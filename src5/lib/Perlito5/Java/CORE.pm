@@ -177,6 +177,12 @@ EOT
         }
         return new PlString(s);
 EOT
+    # getc FILEHANDLE
+    getc => <<'EOT',
+        PlLvalue buf = new PlLvalue();
+        PlCORE.sysread(want, fh, PlArray.construct_list_of_aliases(buf, PlCx.INT1));
+        return buf;
+EOT
     # read FILEHANDLE,SCALAR,LENGTH,OFFSET?
     read => <<'EOT',
         return PlCORE.sysread(want, fh, List__);
