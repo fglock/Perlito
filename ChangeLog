@@ -13,7 +13,7 @@
 - Java:
 -- state variables by Yati Sagade
 -- open(), close(), readline(), read(), sysread(), getc()
--- regex variables $1, $2
+-- regex variables $1, $2, pos()
 
 9.020 cpan:Perlito5  2016-05-02
 - Parser:

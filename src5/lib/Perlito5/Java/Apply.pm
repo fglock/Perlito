@@ -1057,6 +1057,15 @@ package Perlito5::AST::Apply;
             my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
             return $v->emit_java( $level ) . '.push(' . Perlito5::Java::to_list(\@arguments) . ')';
         },
+        'pos' => sub {
+            my ($self, $level, $wantarray) = @_;
+            'PlCORE.pos('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      'PlArray.construct_list_of_aliases('
+             .        join(', ', map( $_->emit_java($level, 'list'), @{$self->{arguments}} ))
+             .      ')'
+             . ')';
+        },
         'time' => sub {
             my ($self, $level, $wantarray) = @_;
             'PlCORE.time(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';

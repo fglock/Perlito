@@ -3,6 +3,12 @@ Perlito5 Java backend
 =====================
 
 
+Requirements
+------------
+
+Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 1.7.
+
+
 Perlito5-Java platform differences
 -------------------------------------------
 

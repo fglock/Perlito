@@ -308,6 +308,15 @@ EOT
     public static final PlString ref(int want, PlArray List__) {
         return List__.aget(0).ref();
     }
+    public static final PlObject pos(int want, PlArray List__) {
+        // TODO - pos($v) belongs to a specific PlLvalue
+        // TODO - lvalue pos()
+        Matcher matcher = PlV.matcher;
+        if (matcher == null) {
+            return PlCx.UNDEF;
+        }
+        return new PlInt(matcher.end());
+    }
     public static final PlObject values(int want, PlObject List__) {
         return want == PlCx.LIST ? List__.values() : List__.values().scalar();
     }
