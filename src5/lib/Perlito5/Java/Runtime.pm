@@ -764,6 +764,9 @@ class PerlOp {
     public static final PlRegexResult get_match() {
         return (PlRegexResult)PlV.get("__match__").get();
     }
+    public static final void local_match() {
+        PlV.get_local("__match__");
+    }
     public static final void set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
         match.matcher = m;

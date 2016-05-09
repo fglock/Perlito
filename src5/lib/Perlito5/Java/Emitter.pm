@@ -902,12 +902,8 @@ package Perlito5::Java::LexicalBlock;
 
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
-
             if ($has_regex) {
-                # TODO
-                # push @pre, ( 'var regex_tmp = p5_regex_capture;',
-                #               'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
-                #            );
+                push @pre, 'PerlOp.local_match();'
             }
         }
 
