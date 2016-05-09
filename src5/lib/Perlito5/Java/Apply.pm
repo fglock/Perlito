@@ -1059,10 +1059,19 @@ package Perlito5::AST::Apply;
         },
         'pos' => sub {
             my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            if (!@arguments) {
+                push @arguments,
+                    Perlito5::AST::Var->new(
+                        'name' => '_',
+                        'namespace' => 'main',
+                        'sigil' => '$',
+                    );
+            }
             'PlCORE.pos('
              .      Perlito5::Java::to_context($wantarray) . ', '
              .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @{$self->{arguments}} ))
+             .        join(', ', map( $_->emit_java($level, 'list'), @arguments ))
              .      ')'
              . ')';
         },

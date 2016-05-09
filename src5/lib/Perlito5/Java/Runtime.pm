@@ -782,16 +782,27 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    public static final PlObject match(PlObject s, PlRegex pat, int want) {
-        String str = s.toString();
+    public static final PlObject match(PlObject input, PlRegex pat, int want) {
+        String str = input.toString();
         Matcher matcher = pat.p.matcher(str);
         PlV.matcher = matcher;
         PlV.regex_string = str;
         if (want != PlCx.LIST) {
-            return matcher.find() ? PlCx.TRUE : PlCx.FALSE;
+            PlBool ret;
+            if (matcher.find()) {
+                PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+                ret = PlCx.TRUE;
+            }
+            else {
+                PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                ret = PlCx.FALSE;
+            }
+            return ret;
         }
         PlArray ret = new PlArray();
+        int pos = -1;
         while (matcher.find()) {
+            pos = matcher.end();
             for (int i = 1; i <= matcher.groupCount(); i++) {
                 String cap = matcher.group(i);
                 if (cap == null) {
@@ -801,6 +812,12 @@ class PerlOp {
                     ret.push(cap);
                 }
             }
+        }
+        if (pos >= 0) {
+            PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(pos));
+        }
+        else {
+            PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
         }
         return ret;
     }
@@ -861,6 +878,8 @@ class PlV {
 
     public static Matcher matcher;      // regex captures
     public static String  regex_string; // last string used in a regex
+    // TODO - regex_pos is never cleaned up - this is a memory leak
+    public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
 
     public static final PlHash var = new PlHash();
 
