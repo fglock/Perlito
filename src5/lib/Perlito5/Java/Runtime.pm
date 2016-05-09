@@ -426,7 +426,7 @@ class PerlOp {
         local_stack.a.add(new PlInt(index));
         PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.aget_lvalue(index));
-        container.aset(index, empty);
+        container.a.set(index, empty);
         return empty;
     }
     public static final int local_length() {
