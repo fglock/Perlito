@@ -788,7 +788,6 @@ class PerlOp {
         PlV.regex_string = str;
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
-            PlV.matcher = matcher;
             if (global) {
                 // scalar context, global match
                 PlObject pos = PlV.regex_pos.hget(Integer.toString(input.hashCode()));
@@ -800,10 +799,12 @@ class PerlOp {
                     find = matcher.find(pos.to_int());
                 }
                 if (find) {
+                    PlV.matcher = matcher;
                     PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
                     return PlCx.TRUE;
                 }
                 else {
+                    PlV.matcher = null;
                     PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
                     return PlCx.FALSE;
                 }
@@ -811,9 +812,11 @@ class PerlOp {
             else {
                 // scalar context, non-global match
                 if (matcher.find()) {
+                    PlV.matcher = matcher;
                     return PlCx.TRUE;
                 }
                 else {
+                    PlV.matcher = null;
                     return PlCx.FALSE;
                 }
             }
@@ -824,7 +827,9 @@ class PerlOp {
         PlArray ret = new PlArray();
         if (global) {
             // list context, global match
+            boolean found = false;
             while (matcher.find()) {
+                found = 1;
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {
@@ -835,12 +840,19 @@ class PerlOp {
                     }
                 }
             }
+            if (found) {
+                PlV.matcher = matcher;
+            }
+            else {
+                PlV.matcher = null;
+            }
             PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
             return ret;
         }
         else {
             // list context, non-global match
             if (matcher.find()) {
+                PlV.matcher = matcher;
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {
@@ -850,6 +862,9 @@ class PerlOp {
                         ret.push(cap);
                     }
                 }
+            }
+            else {
+                PlV.matcher = null;
             }
             return ret;
         }
