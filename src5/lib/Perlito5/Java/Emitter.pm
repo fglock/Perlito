@@ -1863,9 +1863,15 @@ package Perlito5::AST::Var;
             return $s;
         }
 
-        if ($sigil eq '$' && $self->{name} > 0) {
-            # regex captures
-            return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
+        if ($sigil eq '$') {
+            if ($self->{name} > 0) {
+                # regex captures
+                return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
+            }
+            if ($self->{name} eq '&') {
+                # regex match $&
+                return 'PerlOp.regex_var(' . $self->{name} . ')'
+            }
         }
         if ( $sigil eq '::' ) {
             return Perlito5::Java::escape_string( $namespace );

@@ -768,10 +768,25 @@ class PerlOp {
         }
         return new PlString(cap);
     }
+    public static final PlObject regex_var(String var_name) {
+        Matcher matcher = PlV.matcher;
+        String str = PlV.regex_string;
+        if (matcher == null || str == null) {
+            return PlCx.UNDEF;
+        }
+        if (var_name.equals("&")) {
+            // TODO - $&
+            // String cap = str.substr(matcher.start(), matcher.end());
+            // return new PlString(cap);
+        }
+        return PlCx.UNDEF;
+    }
 
     public static final PlObject match(PlObject s, PlRegex pat, int want) {
-        Matcher matcher = pat.p.matcher(s.toString());
+        String str = s.toString();
+        Matcher matcher = pat.p.matcher(str);
         PlV.matcher = matcher;
+        PlV.regex_string = str;
         if (want != PlCx.LIST) {
             return matcher.find() ? PlCx.TRUE : PlCx.FALSE;
         }
@@ -844,7 +859,8 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static Matcher matcher;    // regex captures
+    public static Matcher matcher;      // regex captures
+    public static String  regex_string; // last string used in a regex
 
     public static final PlHash var = new PlHash();
 
