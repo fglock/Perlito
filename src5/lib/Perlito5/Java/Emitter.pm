@@ -893,7 +893,7 @@ package Perlito5::Java::LexicalBlock;
         my $has_regex = 0;
         if (grep {$_->emit_java_has_regex()} @block) {
             # regex variables like '$1' are implicitly 'local'
-            # $has_local = 1;
+            $has_local = 1;
             $has_regex = 1;
         }
 
@@ -903,15 +903,12 @@ package Perlito5::Java::LexicalBlock;
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
 
-            # TODO
-            # push @pre, (
-            #         ( $has_regex
-            #           ? ( 'var regex_tmp = p5_regex_capture;',
-            #               'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
-            #           )
-            #           : ()
-            #         )
-            #     );
+            if ($has_regex) {
+                # TODO
+                # push @pre, ( 'var regex_tmp = p5_regex_capture;',
+                #               'p5LOCAL.push(function(){ p5_regex_capture = regex_tmp });',
+                #            );
+            }
         }
 
         my $create_context = $self->{create_context} && $self->has_decl("my");

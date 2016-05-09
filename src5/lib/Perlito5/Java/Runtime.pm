@@ -757,8 +757,26 @@ class PerlOp {
         return sb.toString();
     }
 
+    // class PlRegexResult extends PlObject {
+    //     public static Matcher matcher;      // regex captures
+    //     public static String  regex_string; // last string used in a regex
+
+    public static final PlRegexResult get_match() {
+        return (PlRegexResult)PlV.get("__match__").get();
+    }
+    public static final void set_match(Matcher m, String s) {
+        PlRegexResult match = new PlRegexResult();
+        match.matcher = m;
+        match.regex_string = s;
+        PlV.set("__match__", match);
+    }
+    public static final void reset_match() {
+        PlRegexResult match = new PlRegexResult();
+        PlV.set("__match__", match);
+    }
+
     public static final PlObject regex_var(int var_number) {
-        Matcher matcher = PlV.matcher;
+        Matcher matcher = get_match().matcher;
         if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
             return PlCx.UNDEF;
         }
@@ -769,8 +787,9 @@ class PerlOp {
         return new PlString(cap);
     }
     public static final PlObject regex_var(String var_name) {
-        Matcher matcher = PlV.matcher;
-        String str = PlV.regex_string;
+        PlRegexResult match = get_match();
+        Matcher matcher = match.matcher;
+        String str = match.regex_string;
         if (matcher == null || str == null) {
             return PlCx.UNDEF;
         }
@@ -783,9 +802,7 @@ class PerlOp {
     }
 
     public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
-        // TODO - use "global" flag
         String str = input.toString();
-        PlV.regex_string = str;
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
             if (global) {
@@ -799,12 +816,12 @@ class PerlOp {
                     find = matcher.find(pos.to_int());
                 }
                 if (find) {
-                    PlV.matcher = matcher;
+                    set_match(matcher, str);
                     PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
                     return PlCx.TRUE;
                 }
                 else {
-                    PlV.matcher = null;
+                    reset_match();
                     PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
                     return PlCx.FALSE;
                 }
@@ -812,18 +829,17 @@ class PerlOp {
             else {
                 // scalar context, non-global match
                 if (matcher.find()) {
-                    PlV.matcher = matcher;
+                    set_match(matcher, str);
                     return PlCx.TRUE;
                 }
                 else {
-                    PlV.matcher = null;
+                    reset_match();
                     return PlCx.FALSE;
                 }
             }
         }
         // list context
         Matcher matcher = pat.p.matcher(str);
-        PlV.matcher = matcher;
         PlArray ret = new PlArray();
         if (global) {
             // list context, global match
@@ -841,10 +857,10 @@ class PerlOp {
                 }
             }
             if (found) {
-                PlV.matcher = matcher;
+                set_match(matcher, str);
             }
             else {
-                PlV.matcher = null;
+                reset_match();
             }
             PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
             return ret;
@@ -852,7 +868,7 @@ class PerlOp {
         else {
             // list context, non-global match
             if (matcher.find()) {
-                PlV.matcher = matcher;
+                set_match(matcher, str);
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {
@@ -864,7 +880,7 @@ class PerlOp {
                 }
             }
             else {
-                PlV.matcher = null;
+                reset_match();
             }
             return ret;
         }
@@ -925,8 +941,6 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static Matcher matcher;      // regex captures
-    public static String  regex_string; // last string used in a regex
     // TODO - regex_pos is never cleaned up - this is a memory leak
     public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
 
@@ -1553,6 +1567,10 @@ class PlRegex extends PlReference {
         // TODO - show flags
         return this.original_string;
     }
+}
+class PlRegexResult extends PlObject {
+    public static Matcher matcher;      // regex captures
+    public static String  regex_string; // last string used in a regex
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
