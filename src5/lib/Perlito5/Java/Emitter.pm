@@ -1870,7 +1870,7 @@ package Perlito5::AST::Var;
             }
             if ($self->{name} eq '&') {
                 # regex match $&
-                return 'PerlOp.regex_var(' . $self->{name} . ')'
+                return 'PerlOp.regex_var(' . Perlito5::Java::escape_string($self->{name}) . ')'
             }
         }
         if ( $sigil eq '::' ) {

@@ -775,9 +775,9 @@ class PerlOp {
             return PlCx.UNDEF;
         }
         if (var_name.equals("&")) {
-            // TODO - $&
-            // String cap = str.substr(matcher.start(), matcher.end());
-            // return new PlString(cap);
+            // $&
+            String cap = str.substring(matcher.start(), matcher.end());
+            return new PlString(cap);
         }
         return PlCx.UNDEF;
     }
