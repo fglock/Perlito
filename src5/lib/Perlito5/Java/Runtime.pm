@@ -785,48 +785,74 @@ class PerlOp {
     public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
         // TODO - use "global" flag
         String str = input.toString();
-        Matcher matcher = pat.p.matcher(str);
-        PlV.matcher = matcher;
         PlV.regex_string = str;
         if (want != PlCx.LIST) {
-            PlBool ret;
-            if (matcher.find()) {
-                if (global) {
-                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+            Matcher matcher = pat.p.matcher(str);
+            PlV.matcher = matcher;
+            if (global) {
+                // scalar context, global match
+                PlObject pos = PlV.regex_pos.hget(Integer.toString(input.hashCode()));
+                boolean find;
+                if (pos.is_undef()) {
+                    find = matcher.find();
                 }
-                ret = PlCx.TRUE;
+                else {
+                    find = matcher.find(pos.to_int());
+                }
+                if (find) {
+                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+                    return PlCx.TRUE;
+                }
+                else {
+                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                    return PlCx.FALSE;
+                }
             }
             else {
-                if (global) {
-                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                // scalar context, non-global match
+                if (matcher.find()) {
+                    return PlCx.TRUE;
                 }
-                ret = PlCx.FALSE;
+                else {
+                    return PlCx.FALSE;
+                }
+            }
+        }
+        // list context
+        Matcher matcher = pat.p.matcher(str);
+        PlV.matcher = matcher;
+        PlArray ret = new PlArray();
+        if (global) {
+            // list context, global match
+            while (matcher.find()) {
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    String cap = matcher.group(i);
+                    if (cap == null) {
+                        ret.push(PlCx.UNDEF);
+                    }
+                    else {
+                        ret.push(cap);
+                    }
+                }
+            }
+            PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+            return ret;
+        }
+        else {
+            // list context, non-global match
+            if (matcher.find()) {
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    String cap = matcher.group(i);
+                    if (cap == null) {
+                        ret.push(PlCx.UNDEF);
+                    }
+                    else {
+                        ret.push(cap);
+                    }
+                }
             }
             return ret;
         }
-        PlArray ret = new PlArray();
-        int pos = -1;
-        while (matcher.find()) {
-            pos = matcher.end();
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                String cap = matcher.group(i);
-                if (cap == null) {
-                    ret.push(PlCx.UNDEF);
-                }
-                else {
-                    ret.push(cap);
-                }
-            }
-        }
-        if (global) {
-            if (pos >= 0) {
-                PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(pos));
-            }
-            else {
-                PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
-            }
-        }
-        return ret;
     }
     public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global) {
         return match(s, pat.get(), want, global);
