@@ -6,7 +6,7 @@ package X; # XXX javascript bug - we don't autovivify packages yet
 
 package main;
 
-say '1..10';
+say '1..12';
 
 $X::v = 10;
 
@@ -56,5 +56,20 @@ my @x = ( 3, 6, 8, 4, 7 );
 
 my $res = "@x";
 print "not " if $res ne "3 6 8 4 7";
-say "ok 10 # $res"
+say "ok 10 # $res";
+
+# local in subroutine
+
+$X::v = 10;
+
+sub t1 {
+    local $X::v = 3;
+    print "not " if $X::v != 3;
+    say "ok 11 # $X::v";
+}
+
+t1();
+print "not " if $X::v != 10;
+say "ok 12 # $X::v";
+
 
