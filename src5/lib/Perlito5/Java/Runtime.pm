@@ -829,7 +829,7 @@ class PerlOp {
             // list context, global match
             boolean found = false;
             while (matcher.find()) {
-                found = 1;
+                found = true;
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String cap = matcher.group(i);
                     if (cap == null) {

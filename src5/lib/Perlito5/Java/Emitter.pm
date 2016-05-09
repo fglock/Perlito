@@ -893,7 +893,7 @@ package Perlito5::Java::LexicalBlock;
         my $has_regex = 0;
         if (grep {$_->emit_java_has_regex()} @block) {
             # regex variables like '$1' are implicitly 'local'
-            # $has_local = 1; # TODO: fix, temporarily turn it off
+            # $has_local = 1;
             $has_regex = 1;
         }
 
