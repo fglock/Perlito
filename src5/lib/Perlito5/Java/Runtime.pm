@@ -791,11 +791,15 @@ class PerlOp {
         if (want != PlCx.LIST) {
             PlBool ret;
             if (matcher.find()) {
-                PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+                if (global) {
+                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+                }
                 ret = PlCx.TRUE;
             }
             else {
-                PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                if (global) {
+                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                }
                 ret = PlCx.FALSE;
             }
             return ret;
@@ -814,11 +818,13 @@ class PerlOp {
                 }
             }
         }
-        if (pos >= 0) {
-            PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(pos));
-        }
-        else {
-            PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+        if (global) {
+            if (pos >= 0) {
+                PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(pos));
+            }
+            else {
+                PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+            }
         }
         return ret;
     }
