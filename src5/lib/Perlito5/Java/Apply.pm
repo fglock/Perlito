@@ -2,11 +2,11 @@ package Perlito5::AST::Apply;
 {
     sub emit_qr_java {
         my ($regex, $modifier, $level) = @_;
-        if ( $modifier->{buf} eq '' && ref( $regex ) eq "Perlito5::AST::Var" && $regex->{sigil} eq '$' ) {
+        if ( $modifier eq '' && ref( $regex ) eq "Perlito5::AST::Var" && $regex->{sigil} eq '$' ) {
             # return as-is because var may contain a qr//
             return $regex->emit_java($level);
         }
-        my %flags = map { $_ => 1 } split //, $modifier->{buf};
+        my %flags = map { $_ => 1 } split //, $modifier;
         # warn Data::Dumper::Dumper(\%flags);
         my $flag_string = join( " | ", 
             ( $flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : () ),
@@ -40,6 +40,7 @@ package Perlito5::AST::Apply;
         my $str;
         my $code = $regex->{code};
         my $regex_args = $regex->{arguments};
+        my $modifier_global = 'false';
         if ($code eq 'p5:s') {
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{buf};
@@ -50,18 +51,29 @@ package Perlito5::AST::Apply;
                         );
                 $modifier =~ s/e//g;
             }
+            if ($modifier =~ /g/) {
+                $modifier_global = 'true';
+                $modifier =~ s/g//g;
+            }
             $str = 'PerlOp.replace('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . $replace->emit_java() . ', '
-                    . Perlito5::Java::to_context($wantarray)
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . $modifier_global
                   . ")";
         }
         elsif ($code eq 'p5:m') {
+            my $modifier = $regex_args->[1]->{buf};
+            if ($modifier =~ /g/) {
+                $modifier_global = 'true';
+                $modifier =~ s/g//g;
+            }
             $str = 'PerlOp.match('
                     . $var->emit_java() . ', '
-                    . emit_qr_java( $regex_args->[0], $regex_args->[1], $level ) . ', '
-                    . Perlito5::Java::to_context($wantarray)
+                    . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . $modifier_global
                   . ")";
         }
         elsif ($code eq 'p5:tr') {
@@ -141,7 +153,7 @@ package Perlito5::AST::Apply;
         },
         'p5:qr' => sub {
             my ($self, $level, $wantarray) = @_;
-            return emit_qr_java($self->{arguments}[0], $self->{arguments}[1], $level);
+            return emit_qr_java($self->{arguments}[0], $self->{arguments}[1]{buf}, $level);
         },
         '__PACKAGE__' => sub {
             my ($self, $level, $wantarray) = @_;

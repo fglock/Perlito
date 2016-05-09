@@ -782,7 +782,8 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    public static final PlObject match(PlObject input, PlRegex pat, int want) {
+    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
+        // TODO - use "global" flag
         String str = input.toString();
         Matcher matcher = pat.p.matcher(str);
         PlV.matcher = matcher;
@@ -821,24 +822,25 @@ class PerlOp {
         }
         return ret;
     }
-    public static final PlObject match(PlObject s, PlLvalue pat, int want) {
-        return match(s, pat.get(), want);
+    public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global) {
+        return match(s, pat.get(), want, global);
     }
-    public static final PlObject match(PlObject s, PlObject pat, int want) {
+    public static final PlObject match(PlObject s, PlObject pat, int want, boolean global) {
         // TODO - cache the compiled pattern
-        return match(s, new PlRegex(pat, 0), want);
+        return match(s, new PlRegex(pat, 0), want, global);
     }
 
-    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want) {
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
+        // TODO - use "global" flag
         if (want != PlCx.LIST) {
             return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
         }
         PlCORE.die("not implemented string replace in list context");
         return s;
     }
-    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want) {
+    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
         // TODO - cache the compiled pattern
-        return replace(s, new PlRegex(pat, 0), rep, want);
+        return replace(s, new PlRegex(pat, 0), rep, want, global);
     }
 
     // $v =~ tr/xyz/abc/i
