@@ -973,20 +973,10 @@ package Perlito5::Java::LexicalBlock;
                 push @str, $arg->emit_java_init($level, $wantarray);
             }
 
-            # if  (  $last_statement->isa( 'Perlito5::AST::Apply' ) 
-            #     && $last_statement->code eq 'return'
-            #     && $self->{top_level}
-            #     && @{ $last_statement->{arguments} }
-            #     ) 
-            # {
-            #     $last_statement = $last_statement->{arguments}[0];
-            # }
-
             if    (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
-                  # || Perlito5::AST::Sub::is_named_sub($last_statement)
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
