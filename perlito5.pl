@@ -16625,7 +16625,7 @@ use feature 'say';
                 push(@pre, 'boolean ' . $redo_label . ';', 'do {', [$redo_label . ' = false;', 'try {', [@str], '}', 'catch(PlNextException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}'], '}', 'catch(PlRedoException e) {', ['if (' . $test_label . ') {', ['throw e;'], '}', $redo_label . ' = true;'], '}', @continue], '} while (' . $redo_label . ');');
                 @str = ()
             }
-            elsif ($has_local) {
+            elsif ($has_local && !$last_statement) {
                 push(@str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);')
             }
             $Perlito5::PKG_NAME = $outer_pkg;

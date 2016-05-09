@@ -1139,7 +1139,7 @@ package Perlito5::Java::LexicalBlock;
             @str = ();
         }
         else {
-            if ($has_local) {
+            if ($has_local && !$last_statement) {
                 push @str, 'PerlOp.cleanup_local(' . $local_label . ', PlCx.UNDEF);';
             }
         }
