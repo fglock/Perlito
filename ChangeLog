@@ -19,9 +19,9 @@
 - Parser:
 -- "->@*" support
 -- new namespaces for modules that require backend-specific implementations:
-    lib/Perlito5X/Java/ and lib/Perlito5X/Javascript/
+    lib/Perlito5X/Java/ and lib/Perlito5X/JavaScript/
     and configuration modules:
-    lib/Perlito5/Java/Lib.pm and lib/Perlito5/Javascript/Lib.pm
+    lib/Perlito5/Java/Lib.pm and lib/Perlito5/JavaScript/Lib.pm
 - Java:
 -- '&subr', '&subr()', '\&subr' idioms
 -- '*name = \&subr' idiom
@@ -72,7 +72,7 @@
 - Parser:
 -- error message for: "Identifier too long" (Perl limit is 251 characters)
 -- new error handler Perlito5::Compiler::error()
-- Javascript:
+- JavaScript:
 -- implemented 1-argument bless() - github bug #35
 -- fix autovivification in exists()
 - Java:
@@ -86,7 +86,7 @@
 - Parser:
 -- error messages for: Scalar/Array/Number/String found where operator expected
 -- improved error message for missing comma
-- Javascript:
+- JavaScript:
 -- console.log() is the default "print"
 -- reverse() bugfix, add tests
 - Command line "perlito5"
@@ -104,7 +104,7 @@
 -- ${...} and @{...} are "do-block"-ish
 -- $x->{s} doesn't try to parse "s///"
 -- set ${^GLOBAL_PHASE}
-- Javascript:
+- JavaScript:
 -- implement '-p' operator in nodejs
 - Command line "perlito5"
 -- read source code from STDIN or pipe if there is no -e or filename
@@ -131,13 +131,13 @@
    which breaks tests
 - Parser:
 -- update CORE prototypes to Perl v5.22 - use (+) instead of (\\[@%])
-- Perl5-to-Javascript compiler:
+- Perl5-to-JavaScript compiler:
 -- implement (+) prototype
 
 9.008 cpan:Perlito5   2015-11-04
 - Makefile - add bin/perlito5 to EXE_FILES section
 - add LICENSE.md
-- Perl5-to-Javascript compiler:
+- Perl5-to-JavaScript compiler:
 -- default "print" function tries harder to find a native print
 -- fixed context in readline() - that is, "$x = <$fh>" vs. "@x = <$fh>"
 
@@ -195,7 +195,7 @@ dev  2015-08-17
 -- use a faster calling convention in grammar
 -- shorter AST node names
 
-- Perl5-to-Javascript compiler:
+- Perl5-to-JavaScript compiler:
 -- file operators (nodejs)
 -- create regex variables $1, $2, ...
 -- implement regex /e and /ee modifier
@@ -330,16 +330,16 @@ dev  2012-04-12
 
 * Perlito Perl 5:
 - command line "perlito5.pl"
-- supported backends: Perl 5, Javascript
+- supported backends: Perl 5, JavaScript
 - source code in src5/ directory
 
 * Perlito Perl 6:
 - command line renamed to "perlito6.pl"
-- supported backends: Perl 5, Python 2.6, Javascript
+- supported backends: Perl 5, Python 2.6, JavaScript
 - new experimental backend: Java
 - fixed META.yml for "v6.pm" CPAN distribution (thanks Aevar)
 - fixed unicode IO, added unicode tests
-- add some formatting to Perl5 and Javascript output
+- add some formatting to Perl5 and JavaScript output
 - methods: map, grep
 - operators: x
 - source code moved to src6/ directory
@@ -352,7 +352,7 @@ dev  2012-04-12
 
 
 7.0  2011-04-20
-- supported backends: Perl 5, Python 2.6, Javascript
+- supported backends: Perl 5, Python 2.6, JavaScript
 
 - added "perlito" command-line compiler and shell
 - new distribution "v6.pm" (Perlito in Perl 5)
@@ -395,7 +395,7 @@ dev  2012-04-12
   This should add some debugging capabilities later on.
 - New test suite. See README on how to use 'prove' for each backend.
 - New compiler options to create binary executables
-- Currently the stable backends are: Perl5, Javascript, JVM, Lisp, Go.
+- Currently the stable backends are: Perl5, JavaScript, JVM, Lisp, Go.
   See README for bootstrapping instructions for all backends.
 - Removed support for features that are not standard Perl6.
 
@@ -407,7 +407,7 @@ dev  2012-04-12
 - new web page at http://www.perlito.org created by nferraz (Nelson Ferraz)
 
 2.0  2009-10-09
-- Javascript (Firefox, V8) bootstrap
+- JavaScript (Firefox, V8) bootstrap
 - simplified 'make' inside tokens
 
 1.0  2009-08-28

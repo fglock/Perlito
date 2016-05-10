@@ -10,9 +10,9 @@ lib/Perlito6/Go/Runtime.go
 lib/Perlito6/Grammar.pm
 lib/Perlito6/Grammar/Control.pm
 lib/Perlito6/Grammar/Regex.pm
-lib/Perlito6/Javascript/Emitter.pm
-lib/Perlito6/Javascript/Prelude.pm
-lib/Perlito6/Javascript/Runtime.js
+lib/Perlito6/JavaScript/Emitter.pm
+lib/Perlito6/JavaScript/Prelude.pm
+lib/Perlito6/JavaScript/Runtime.js
 lib/Perlito6/Lisp/Emitter.pm
 lib/Perlito6/Lisp/Prelude.pm
 lib/Perlito6/Lisp/Runtime.lisp
