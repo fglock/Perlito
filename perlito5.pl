@@ -14,7 +14,7 @@ use feature 'say';
 {
     package main;
     package Perlito5;
-    $VERSION = '9.020';
+    $VERSION = 9.021;
     1
 }
 {

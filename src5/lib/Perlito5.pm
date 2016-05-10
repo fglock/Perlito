@@ -1,6 +1,6 @@
 package Perlito5;
 
-$VERSION = '9.020';
+$VERSION = '9.021';
 
 1;
 
@@ -32,6 +32,8 @@ Perlito5 - a Perl5 compiler
     perlito5 --help
 
     perlito5 -Cjs program.pl
+
+    perlito5 -Cjava program.pl
 
 =head1 DESCRIPTION
 

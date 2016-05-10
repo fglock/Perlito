@@ -8,12 +8,13 @@
 
 	optimize "for (0..1000000)" by Luca Falsina
 
+9.021 cpan:Perlito5  2016-05-10
 - JavaScript:
 -- state variables by Yati Sagade
 - Java:
 -- state variables by Yati Sagade
 -- open(), close(), readline(), read(), sysread(), getc()
--- regex variables $1, $2, pos()
+-- regex variables $1, $2, $&, pos()
 
 9.020 cpan:Perlito5  2016-05-02
 - Parser:
