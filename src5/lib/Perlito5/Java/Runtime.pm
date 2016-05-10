@@ -779,22 +779,23 @@ class PerlOp {
     // class PlRegexResult extends PlObject {
     //     public static Matcher matcher;      // regex captures
     //     public static String  regex_string; // last string used in a regex
+    public static final PlHash regex_var = new PlHash();
 
     public static final PlRegexResult get_match() {
-        return (PlRegexResult)PlV.get("__match__").get();
+        return (PlRegexResult)regex_var.hget_lvalue("__match__").get();
     }
     public static final void local_match() {
-        PlV.get_local("__match__");
+        regex_var.hget_lvalue_local("__match__");
     }
     public static final void set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
         match.matcher = m;
         match.regex_string = s;
-        PlV.set("__match__", match);
+        regex_var.hset("__match__", match);
     }
     public static final void reset_match() {
         PlRegexResult match = new PlRegexResult();
-        PlV.set("__match__", match);
+        regex_var.hset("__match__", match);
     }
     public static final PlObject regex_var(int var_number) {
         Matcher matcher = get_match().matcher;
