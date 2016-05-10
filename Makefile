@@ -33,7 +33,7 @@ build-6to5 ::
 	mkdir lib5-new/Perlito6/Go
 	mkdir lib5-new/Perlito6/Grammar
 	mkdir lib5-new/Perlito6/Java
-	mkdir lib5-new/Perlito6/Javascript
+	mkdir lib5-new/Perlito6/JavaScript
 	mkdir lib5-new/Perlito6/Lisp
 	mkdir lib5-new/Perlito6/Parrot
 	mkdir lib5-new/Perlito6/Perl5
@@ -57,7 +57,7 @@ build-6to5 ::
 	
 	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Go/Emitter.pm	  > lib5-new/Perlito6/Go/Emitter.pm
 	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Java/Emitter.pm	  > lib5-new/Perlito6/Java/Emitter.pm
-	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Emitter.pm > lib5-new/Perlito6/Javascript/Emitter.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/JavaScript/Emitter.pm > lib5-new/Perlito6/JavaScript/Emitter.pm
 	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Lisp/Emitter.pm	  > lib5-new/Perlito6/Lisp/Emitter.pm
 	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Parrot/Emitter.pm  > lib5-new/Perlito6/Parrot/Emitter.pm
 	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Python/Emitter.pm  > lib5-new/Perlito6/Python/Emitter.pm
@@ -71,10 +71,10 @@ build-6to5 ::
 	
 	# other files we use for cross-compilation
 	
-	cp src6/lib/Perlito6/Javascript/Runtime.js lib5-new/Perlito6/Javascript/Runtime.js
+	cp src6/lib/Perlito6/JavaScript/Runtime.js lib5-new/Perlito6/JavaScript/Runtime.js
 	cp src6/lib/Perlito6/Python/Runtime.py	   lib5-new/Perlito6/Python/Runtime.py
 	
-	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/Javascript/Prelude.pm   > lib5-new/Perlito6/Javascript/Prelude.pm
+	perl ${PERL5_INC} perlito6.pl -Cperl5 src6/lib/Perlito6/JavaScript/Prelude.pm   > lib5-new/Perlito6/JavaScript/Prelude.pm
 	
 	# older backends we want to keep around for now
 	
@@ -120,7 +120,7 @@ build-6py ::
 	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Eval.pm			> libpy/Perlito6__Eval.py
 	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Runtime.pm		 > libpy/Perlito6__Runtime.py
    
-	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Javascript/Emitter.pm > libpy/Perlito6__Javascript__Emitter.py
+	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/JavaScript/Emitter.pm > libpy/Perlito6__JavaScript__Emitter.py
 	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Lisp/Emitter.pm	> libpy/Perlito6__Lisp__Emitter.py
 	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Perl5/Emitter.pm   > libpy/Perlito6__Perl5__Emitter.py
 	perl ${PERL5_INC} perlito6.pl -Cpython src6/lib/Perlito6/Go/Emitter.pm	  > libpy/Perlito6__Go__Emitter.py
