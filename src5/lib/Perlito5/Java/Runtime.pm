@@ -757,6 +757,25 @@ class PerlOp {
         return sb.toString();
     }
 
+    // ****** pos()
+    // TODO - regex_pos is never cleaned up - this is a memory leak
+    public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
+
+    public static final PlObject pos(PlObject var) {
+        // TODO - check that var is lvalue
+        return regex_pos.hget(Integer.toString(var.hashCode()));
+    }
+    public static final PlObject set_pos(PlObject var, PlObject value) {
+        // TODO - check that var is lvalue
+        if (!value.is_undef()) {
+            int pos = value.to_int();
+            // TODO - test that pos < string length
+            value = new PlInt(pos);
+        }
+        return regex_pos.hset(Integer.toString(var.hashCode()), value);
+    }
+
+    // ****** regex variables
     // class PlRegexResult extends PlObject {
     //     public static Matcher matcher;      // regex captures
     //     public static String  regex_string; // last string used in a regex
@@ -777,7 +796,6 @@ class PerlOp {
         PlRegexResult match = new PlRegexResult();
         PlV.set("__match__", match);
     }
-
     public static final PlObject regex_var(int var_number) {
         Matcher matcher = get_match().matcher;
         if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
@@ -804,13 +822,15 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
+    // ****** end regex variables
+
     public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
         String str = input.toString();
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
             if (global) {
                 // scalar context, global match
-                PlObject pos = PlV.regex_pos.hget(Integer.toString(input.hashCode()));
+                PlObject pos = pos(input);
                 boolean find;
                 if (pos.is_undef()) {
                     find = matcher.find();
@@ -820,12 +840,12 @@ class PerlOp {
                 }
                 if (find) {
                     set_match(matcher, str);
-                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), new PlInt(matcher.end()));
+                    set_pos(input, new PlInt(matcher.end()));
                     return PlCx.TRUE;
                 }
                 else {
                     reset_match();
-                    PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+                    set_pos(input, PlCx.UNDEF);
                     return PlCx.FALSE;
                 }
             }
@@ -865,7 +885,7 @@ class PerlOp {
             else {
                 reset_match();
             }
-            PlV.regex_pos.hset(Integer.toString(input.hashCode()), PlCx.UNDEF);
+            set_pos(input, PlCx.UNDEF);
             return ret;
         }
         else {
@@ -943,9 +963,6 @@ class PlV {
     //
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
-
-    // TODO - regex_pos is never cleaned up - this is a memory leak
-    public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
 
     public static final PlHash var = new PlHash();
 

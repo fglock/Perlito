@@ -101,6 +101,21 @@ package Perlito5::AST::Apply;
     sub emit_java_set {
         my ($self, $arguments, $level, $wantarray) = @_;
         my $code = $self->{code};
+        if ($code eq 'pos') {
+            my @lvalue = @{$self->{arguments}};
+            if (!@lvalue) {
+                push @lvalue,
+                    Perlito5::AST::Var->new(
+                        'name' => '_',
+                        'namespace' => 'main',
+                        'sigil' => '$',
+                    );
+            }
+            return 'PerlOp.set_pos('
+             .      $lvalue[0]->emit_java($level, 'scalar') . ', '
+             .      $arguments->emit_java($level, 'scalar')
+             . ')';
+        }
         if ($code eq 'prefix:<$>') {
             return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.scalar_deref_set('
                 . Perlito5::Java::to_scalar([$arguments], $level+1)  
@@ -1080,11 +1095,8 @@ package Perlito5::AST::Apply;
                         'sigil' => '$',
                     );
             }
-            'PlCORE.pos('
-             .      Perlito5::Java::to_context($wantarray) . ', '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @arguments ))
-             .      ')'
+            'PerlOp.pos('
+             .      $arguments[0]->emit_java($level, 'scalar')
              . ')';
         },
         'time' => sub {

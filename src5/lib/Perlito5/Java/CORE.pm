@@ -308,10 +308,6 @@ EOT
     public static final PlString ref(int want, PlArray List__) {
         return List__.aget(0).ref();
     }
-    public static final PlObject pos(int want, PlArray List__) {
-        // TODO - lvalue pos()
-        return PlV.regex_pos.hget(Integer.toString(List__.aget(0).hashCode()));
-    }
     public static final PlObject values(int want, PlObject List__) {
         return want == PlCx.LIST ? List__.values() : List__.values().scalar();
     }
