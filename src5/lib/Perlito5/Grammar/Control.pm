@@ -19,6 +19,16 @@ token unless {
             )
         }
     |
+        <.Perlito5::Grammar::Space::opt_ws>
+        'els' <if_>
+        {
+            $MATCH->{capture} = Perlito5::AST::If->new(
+                cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],
+                body      => Perlito5::AST::Block->new( stmts => [ Perlito5::Match::flat($MATCH->{if_}) ] ),
+                otherwise => Perlito5::Match::flat($MATCH->{block}),
+            )
+        }
+    |
         {
             $MATCH->{capture} = Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_paren"})->[2],

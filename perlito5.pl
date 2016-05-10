@@ -2493,6 +2493,31 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
+                ((do {
+                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && ('els' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                    my $m2 = if_($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        $MATCH->{'if_'} = $m2;
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && (do {
+                    $MATCH->{'capture'} = Perlito5::AST::If::->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::term_paren'})->[2], 'body' => Perlito5::AST::Block::->new('stmts' => [Perlito5::Match::flat($MATCH->{'if_'})]), 'otherwise' => Perlito5::Match::flat($MATCH->{'block'}));
+                    1
+                }))
+            }) || (do {
+                $MATCH->{'to'} = $pos1;
                 (do {
                     $MATCH->{'capture'} = Perlito5::AST::If::->new('cond' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::term_paren'})->[2], 'body' => Perlito5::AST::Block::->new('stmts' => []), 'otherwise' => Perlito5::Match::flat($MATCH->{'block'}));
                     1
