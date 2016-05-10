@@ -304,6 +304,7 @@ sub expand_use {
 
     # compile; push AST into comp_units
     # warn $source;
+    local $Perlito5::STRICT = 0;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     Perlito5::Compiler::error "Syntax Error near ", $m->{to}
         if $m->{to} != length($source);

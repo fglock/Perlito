@@ -4806,6 +4806,7 @@ use feature 'say';
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
+        local $Perlito5::STRICT = 0;
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         $m->{'to'} != length($source) && Perlito5::Compiler::error('Syntax Error near ', $m->{'to'});
         if ($m->{'to'} != length($source)) {
