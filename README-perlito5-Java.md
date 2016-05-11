@@ -234,6 +234,8 @@ Perl global variables are shared between threads.
 This includes for example: $_, $a, $b, $/, @INC.
 Perl variable @_ (the parameter list) is not shared.
 
+"local" stack is shared.
+
 Perl lexical variables are not shared between threads.
 Variables captured in closures running in different threads
 are shared.
@@ -576,7 +578,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package my::Sample { import => "misc.Java.Sample" }; my $x = my::Sample->new(); $x->to_mySample(); say "ref: ", ref($x), " x ", $x; my @arr = (1,2,5); say ref(\@arr); $x = \@arr; say ref($x); my my::Sample $z = my::Sample->new(); $x = $z; 
 ~~~
 
-    maybe TODO: everything at the right side of ...->to_JavaThing()->... is native-call
+    everything at the right side of ...->to_JavaThing()->... is native-call
 
 
 -- native expressions TODO
@@ -800,7 +802,7 @@ Slices
 Variables
 ---------
 
-    'state'
+    (DONE) 'state'
 
     delete local EXPR
 
@@ -880,8 +882,8 @@ Perl features
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
     pack
     unpack
-    file operations
-    pos()
+    (DONE) file operations
+    (DONE) pos()
     typeglob operations
 
 -- Add tests
@@ -900,6 +902,8 @@ regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Patter
 Regex variables: $1, $2 and named captures
 
 Modifiers:
+
+    /g (DONE in match, TODO in substitution)
 
     /x (DONE)
 
@@ -949,7 +953,10 @@ Threads
 
 
 - pass the threadid as a parameter to all closures;
+
     closure can use that thread id to get/set the value from globals hash.
+
+    per-thread "local" stack
 
 Optimizations
 -------------
