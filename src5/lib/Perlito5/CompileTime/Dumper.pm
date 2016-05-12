@@ -277,7 +277,7 @@ sub emit_globals {
             _dump_global($item, $seen, $dumper_seen, $vars, $tab);
         }
         else {
-            $item->{value} = eval($name);
+            $item->{value} = eval("\\" . $name);
             push @$vars, "$name = " . _dumper( $item, "  ", $dumper_seen, $name . "->{value}" ) . ";\n";
         }
     }
