@@ -1007,10 +1007,32 @@ class PlV {
         return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
 
+    public static final String glob_name_fixup(String name, String prefix) {
+        String[] part = name.split("::");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < part.length - 1; i++) {
+            sb.append(part[i]);
+            sb.append("::");
+        }
+        sb.append(prefix);
+        sb.append(part[part.length - 1]);
+        String internalName = sb.toString();
+        // PlCORE.say("internalName " + internalName);
+        return internalName;
+    }
     public static final PlObject glob_set(String name, PlObject v) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
             PlV.set(name, value);
+        }
+        else if (value.is_hashref()) {
+            PlV.set(glob_name_fixup(name, "Hash_"), value);
+        }
+        else if (value.is_arrayref()) {
+            PlV.set(glob_name_fixup(name, "List_"), value);
+        }
+        else if (value.is_scalarref()) {
+            PlV.set(glob_name_fixup(name, "v_"), value);
         }
         else {
             PlCORE.die("not implemented assign " + value.ref() + " to glob");
@@ -1021,6 +1043,15 @@ class PlV {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
             PlV.set_local(name, value);
+        }
+        else if (value.is_hashref()) {
+            PlV.set_local(glob_name_fixup(name, "Hash_"), value);
+        }
+        else if (value.is_arrayref()) {
+            PlV.set_local(glob_name_fixup(name, "List_"), value);
+        }
+        else if (value.is_scalarref()) {
+            PlV.set_local(glob_name_fixup(name, "v_"), value);
         }
         else {
             PlCORE.die("not implemented assign " + value.ref() + " to glob");
