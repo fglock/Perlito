@@ -8638,6 +8638,10 @@ use feature 'say';
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
+            if ($name =~ m!^.main::.$!) {
+                push(@{$vars}, '# don' . chr(39) . 't know how to emit variable ' . $name);
+                next
+            }
             my $item = $scope->{$name};
             if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
@@ -10012,7 +10016,7 @@ use feature 'say';
             }
             $str .= 'var p5want;' . chr(10) . 'var List__ = [];' . chr(10);
             for my $comp_unit (@{$comp_units}) {
-                $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . chr(10)
+                $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . ';' . chr(10)
             }
             return $str
         }
@@ -18221,7 +18225,7 @@ use feature 'say';
                     }
                     if (!$bootstrapping) {
                         my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                        my $m = Perlito5::Grammar::exp_stmts('{ ' . $s . ' }', 0);
+                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
                         unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];

@@ -294,6 +294,11 @@ sub emit_globals_after_BEGIN {
     my $tab = "";
 
     for my $name (sort keys %$scope) {
+        if ($name =~ /^.main::.$/) {
+            # TODO - encode special variable names like $"
+            push @$vars, "# don't know how to emit variable $name";
+            next;
+        }
         my $item = $scope->{$name};
         if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
             # TODO
