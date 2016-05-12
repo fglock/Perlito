@@ -18221,7 +18221,7 @@ use feature 'say';
                     }
                     if (!$bootstrapping) {
                         my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                        my $m = Perlito5::Grammar::exp_stmts('{ ' . $s . ' }', 0);
                         unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];

@@ -719,7 +719,7 @@ package Perlito5::AST::CompUnit;
         $str .= "var p5want;\n"
              .  "var List__ = [];\n";
         for my $comp_unit ( @$comp_units ) {
-            $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . "\n";
+            $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . ";\n";
         }
         return $str;
     }
