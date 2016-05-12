@@ -437,6 +437,13 @@ if ($backend) {
                     $_->() for @Perlito5::CHECK_BLOCK;
                 }
 
+                if (!$bootstrapping) {
+                    # emit BEGIN-block side-effects
+                    my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
+                    my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                    unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
+                }
+
                 my $comp_units = [ @Perlito5::COMP_UNIT ];
 
                 if ($compile_only) {
