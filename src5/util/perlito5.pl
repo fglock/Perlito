@@ -504,7 +504,7 @@ if ($backend) {
                 }
                 elsif ($backend eq '_globals') {
                     # say Perlito5::CompileTime::Dumper::emit_globals_scope($Perlito5::SCOPE);
-                    say Perlito5::CompileTime::Dumper::emit_globals($Perlito5::GLOBAL);
+                    say Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
                 }
                 elsif ($backend eq '_compile_time') {
                     say Perlito5::Dumper::ast_dumper( Perlito5::AST::CompUnit::emit_compile_time_program( $comp_units ) );

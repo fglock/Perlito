@@ -128,7 +128,7 @@ sub check_variable_declarations {
                 $var->{_namespace} = $Perlito5::PKG_NAME;
             }
 
-            if ($ENV{PERLITO5DEV}) {
+            if (1 || $ENV{PERLITO5DEV}) {
                 my $compiletime_name =
                       ($var->{_real_sigil} || $var->{sigil})
                     . ($var->{namespace} || $var->{_namespace} || "C_")

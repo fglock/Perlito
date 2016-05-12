@@ -4959,7 +4959,7 @@ use feature 'say';
                     $var->{'_decl'} = 'global';
                     $var->{'_namespace'} = $Perlito5::PKG_NAME
                 }
-                if ($ENV{'PERLITO5DEV'}) {
+                if (1 || $ENV{'PERLITO5DEV'}) {
                     my $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . ($var->{'namespace'} || $var->{'_namespace'} || 'C_') . '::' . $var->{'name'} . ($var->{'_decl'} eq 'global' ? '' : '_' . $var->{'_id'});
                     $Perlito5::GLOBAL->{$compiletime_name} = {'value' => undef, 'ast' => $var}
                 }
@@ -8628,6 +8628,39 @@ use feature 'say';
             }
         }
         return join('', @{$vars})
+    }
+    sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
+        my $scope = shift() // $Perlito5::GLOBAL;
+        my $vars = [];
+        my $seen = {};
+        my $dumper_seen = {};
+        my $tab = '';
+        for my $name (sort {
+            $a cmp $b
+        } keys(%{$scope})) {
+            my $item = $scope->{$name};
+            if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
+                push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
+                next
+            }
+            my $ast = $item->{'ast'};
+            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'sigil'} eq '$') {
+                my $value = eval($name);
+                my $dump = _dumper($value, '  ', $dumper_seen, $name);
+                $dump eq 'undef' && next;
+                push(@{$vars}, $name . ' = ' . $dump . ';')
+            }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($ast->{'sigil'} eq '@' || $ast->{'sigil'} eq '%')) {
+                my $value = eval(chr(92) . $name);
+                my $dump = _dumper($value, '  ', $dumper_seen, chr(92) . $name);
+                my $bareword = substr($name, 1);
+                push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+            }
+            else {
+                push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)
+            }
+        }
+        return join(chr(10), @{$vars})
     }
     1
 }
@@ -18243,7 +18276,7 @@ use feature 'say';
                         say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
                     }
                     elsif ($backend eq '_globals') {
-                        say(Perlito5::CompileTime::Dumper::emit_globals($Perlito5::GLOBAL))
+                        say(Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL))
                     }
                     elsif ($backend eq '_compile_time') {
                         say(Perlito5::Dumper::ast_dumper(Perlito5::AST::CompUnit::emit_compile_time_program($comp_units)))

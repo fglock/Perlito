@@ -284,5 +284,41 @@ sub emit_globals {
     return join("", @$vars);
 }
 
+sub emit_globals_after_BEGIN {
+    # return a structure with the global variable declarations
+    # this is used to initialize the ahead-of-time program
+    my $scope = shift() // $Perlito5::GLOBAL;
+    my $vars = [];
+    my $seen = {};
+    my $dumper_seen = {};
+    my $tab = "";
+
+    for my $name (sort keys %$scope) {
+        my $item = $scope->{$name};
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
+            # TODO
+            # _dump_global($item, $seen, $dumper_seen, $vars, $tab);
+            push @$vars, "# don't know how to initialize subroutine $name";
+            next;
+        }
+        my $ast = $item->{ast};
+        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{sigil} eq '$') {
+            my $value = eval($name);
+            my $dump = _dumper( $value, "  ", $dumper_seen, $name );
+            next if $dump eq 'undef';
+            push @$vars, "$name = " . $dump . ";";
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($ast->{sigil} eq '@' || $ast->{sigil} eq '%')) {
+            my $value = eval("\\" . $name);
+            my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
+            my $bareword = substr($name, 1);
+            push @$vars, "*$bareword = " . $dump . ";";
+        }
+        else {
+            push @$vars, "# don't know how to initialize variable $name";
+        }
+    }
+    return join("\n", @$vars);
+}
 1;
 
