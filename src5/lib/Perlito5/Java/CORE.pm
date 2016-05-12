@@ -119,6 +119,7 @@ EOT
                 }
                 else {
                     // read from STDIN
+                    fh.is_argv = false;     // clear the magic bit
                     in  = PlCx.STDIN;
                 }
                 fh.readlineBuffer   = in.readlineBuffer;
