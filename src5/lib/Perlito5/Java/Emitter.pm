@@ -1303,7 +1303,9 @@ package Perlito5::AST::CompUnit;
 
         my @main;
         for my $comp_unit ( @$comp_units ) {
-            push @main, $comp_unit->emit_java($level + 1, $wantarray);
+            my @str = $comp_unit->emit_java($level + 1, $wantarray);
+            $str[-1] .= ";\n" if @str;
+            push @main, @str;
         }
         if ($options{'expand_use'}) {
             my $Java_class = Perlito5::Java::get_java_class_info();

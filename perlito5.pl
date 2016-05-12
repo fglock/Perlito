@@ -16784,7 +16784,9 @@ use feature 'say';
             }
             my @main;
             for my $comp_unit (@{$comp_units}) {
-                push(@main, $comp_unit->emit_java($level + 1, $wantarray))
+                my @str = $comp_unit->emit_java($level + 1, $wantarray);
+                @str && ($str[-1] .= ';' . chr(10));
+                push(@main, @str)
             }
             if ($options{'expand_use'}) {
                 my $Java_class = Perlito5::Java::get_java_class_info();
