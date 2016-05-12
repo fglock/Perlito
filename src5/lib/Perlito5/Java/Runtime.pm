@@ -759,6 +759,7 @@ class PerlOp {
 
     // ****** pos()
     // TODO - regex_pos is never cleaned up - this is a memory leak
+    // See: ReferenceQueue, WeakReference
     public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
 
     public static final PlObject pos(PlObject var) {
