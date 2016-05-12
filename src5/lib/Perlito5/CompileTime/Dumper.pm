@@ -302,6 +302,11 @@ sub emit_globals_after_BEGIN {
             push @$vars, "# don't know how to initialize subroutine $name";
             next;
         }
+
+        # TODO - emit lexicals
+        next
+            if substr($name, 1, 2) eq "C_";
+
         if (substr($name, 7, 1) lt 'A') {
             # encode special variable names like $main::" to ${'main::"'}
             $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'

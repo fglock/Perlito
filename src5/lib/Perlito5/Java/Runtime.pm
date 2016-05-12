@@ -1008,6 +1008,7 @@ class PlV {
     }
 
     public static final String glob_name_fixup(String name, String prefix) {
+        // TODO - append namespace if needed
         String[] part = name.split("::");
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < part.length - 1; i++) {
@@ -1174,6 +1175,10 @@ EOT
         return this;
     }
     public PlObject hget_scalarref(String i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject scalar_deref() {
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
@@ -1680,6 +1685,9 @@ class PlLvalueRef extends PlReference {
     public PlLvalueRef(PlObject o) {
         this.o = o;
     }
+    public PlObject scalar_deref() {
+        return this.o.get();
+    }
     public PlObject scalar_deref_set(PlObject v) {
         return this.o.set(v);
     }
@@ -1963,10 +1971,18 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject scalar_deref() {
-        return this.get_scalarref().get();
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
+        }
+        return this.o.scalar_deref();
     }
     public PlObject scalar_deref_set(PlObject v) {
-        return this.get_scalarref().scalar_deref_set(v);
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
+        }
+        return this.o.scalar_deref_set(v);
     }
 
     public PlObject array_deref() {
@@ -3421,6 +3437,31 @@ class PlString extends PlObject {
     public PlString(char s) {
         this.s = "" + s;
     }
+    public PlObject scalar_deref() {
+        String internalName = PlV.glob_name_fixup(s, "v_");
+        return PlV.get(internalName);
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "v_");
+        return PlV.set(internalName, v);
+    }
+    public PlObject array_deref() {
+        String internalName = PlV.glob_name_fixup(s, "List_");
+        return PlV.get(internalName);
+    }
+    public PlObject array_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "List_");
+        return PlV.set(internalName, v);
+    }
+    public PlObject hash_deref() {
+        String internalName = PlV.glob_name_fixup(s, "Hash_");
+        return PlV.get(internalName);
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "Hash_");
+        return PlV.set(internalName, v);
+    }
+
     public PlObject parse() {
         if (numericValue == null) {
             numericValue = this._parse();

@@ -133,7 +133,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'prefix:<*>') {
-            return 'p5typeglob_deref_set(' 
+            return 'PlV.glob_deref_set(' 
                 . Perlito5::Java::to_scalar($self->{arguments}, $level+1) . ', '
                 . Perlito5::Java::to_scalar([$arguments], $level+1)       . ', '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
