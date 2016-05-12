@@ -294,11 +294,7 @@ sub emit_globals_after_BEGIN {
     my $tab = "";
 
     for my $name (sort keys %$scope) {
-        if ($name =~ /^.main::.$/) {
-            # TODO - encode special variable names like $"
-            push @$vars, "# don't know how to emit variable $name";
-            next;
-        }
+        my $sigil = substr($name, 0, 1);
         my $item = $scope->{$name};
         if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
             # TODO
@@ -306,14 +302,18 @@ sub emit_globals_after_BEGIN {
             push @$vars, "# don't know how to initialize subroutine $name";
             next;
         }
+        if (substr($name, 7, 1) lt 'A') {
+            # encode special variable names like $main::" to ${'main::"'}
+            $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'
+        }
         my $ast = $item->{ast};
-        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{sigil} eq '$') {
+        if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = eval($name);
             my $dump = _dumper( $value, "  ", $dumper_seen, $name );
             next if $dump eq 'undef';
             push @$vars, "$name = " . $dump . ";";
         }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($ast->{sigil} eq '@' || $ast->{sigil} eq '%')) {
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
             my $value = eval("\\" . $name);
             my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
             my $bareword = substr($name, 1);

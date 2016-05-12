@@ -8638,23 +8638,23 @@ use feature 'say';
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
-            if ($name =~ m!^.main::.$!) {
-                push(@{$vars}, '# don' . chr(39) . 't know how to emit variable ' . $name);
-                next
-            }
+            my $sigil = substr($name, 0, 1);
             my $item = $scope->{$name};
             if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
                 next
             }
+            if (substr($name, 7, 1) lt 'A') {
+                $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
+            }
             my $ast = $item->{'ast'};
-            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'sigil'} eq '$') {
+            if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
                 my $value = eval($name);
                 my $dump = _dumper($value, '  ', $dumper_seen, $name);
                 $dump eq 'undef' && next;
                 push(@{$vars}, $name . ' = ' . $dump . ';')
             }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($ast->{'sigil'} eq '@' || $ast->{'sigil'} eq '%')) {
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
                 my $value = eval(chr(92) . $name);
                 my $dump = _dumper($value, '  ', $dumper_seen, chr(92) . $name);
                 my $bareword = substr($name, 1);
