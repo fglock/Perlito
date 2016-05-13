@@ -8649,6 +8649,9 @@ use feature 'say';
                 $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
             }
             my $ast = $item->{'ast'};
+            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
+                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+            }
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
                 my $value = eval($name);
                 my $dump = _dumper($value, '  ', $dumper_seen, $name);
