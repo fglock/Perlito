@@ -91,7 +91,9 @@ token stmt_use {
             }
             else {
                 my $m = $MATCH->{"Perlito5::Grammar::Expression::list_parse"};
-                my $list_code = substr( $str, $m->{from}, $m->{to} - $m->{from} );
+                my $list_code =
+                      'package ' . $Perlito5::PKG_NAME . ";\n"
+                    . substr( $str, $m->{from}, $m->{to} - $m->{from} );
 
                 # TODO - set the lexical context for eval
 

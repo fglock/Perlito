@@ -4667,7 +4667,7 @@ use feature 'say';
                     }
                     else {
                         my $m = $MATCH->{'Perlito5::Grammar::Expression::list_parse'};
-                        my $list_code = substr($str, $m->{'from'}, $m->{'to'} - $m->{'from'});
+                        my $list_code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . substr($str, $m->{'from'}, $m->{'to'} - $m->{'from'});
                         my @list = eval($list_code);
                         $list = \@list
                     }
