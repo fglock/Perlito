@@ -468,6 +468,13 @@ class PerlOp {
         return args[args.length-1].scalar();
     }
 
+    // process id
+    public static PlObject getPID() {
+      String processName =
+        java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+      return new PlString(processName.split("@")[0]);
+    }
+
     // statement()
     //      - workaround for "Error: not a statement"
     //      - this is the compile-time version of context(null, arg)

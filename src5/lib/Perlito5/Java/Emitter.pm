@@ -1857,6 +1857,10 @@ package Perlito5::AST::Var;
                 # regex match $&
                 return 'PerlOp.regex_var(' . Perlito5::Java::escape_string($self->{name}) . ')'
             }
+            if ($self->{name} eq '$') {
+                # PID $$
+                return 'PerlOp.getPID()'
+            }
         }
         if ( $sigil eq '::' ) {
             return Perlito5::Java::escape_string( $namespace );

@@ -8,6 +8,9 @@
 
 	optimize "for (0..1000000)" by Luca Falsina
 
+- Java:
+-- "$$" variable (process id)
+
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:
 -- state variables by Yati Sagade
