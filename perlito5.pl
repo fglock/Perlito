@@ -5037,6 +5037,9 @@ use feature 'say';
         my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
         local ${chr(7) . 'LOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
+
+        print STDERR "[[ " . Perlito5::CompileTime::Dumper::generate_eval_string($code)   . " ]]\n";
+
         eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
     }
     sub Perlito5::Grammar::Block::opt_continue_block {
