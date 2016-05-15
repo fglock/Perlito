@@ -53,3 +53,20 @@ $main::x = [34, do {
 }
 ;1
 
+---
+
+
+$ perl perlito5.pl -I src5/lib -Cperl5 -e ' 
+BEGIN { 
+    my $m = "abc";
+    # $m is a shared lexical
+    $x = [ 34, sub { $m + 123 }, sub { $m + 2 } ];
+    for ( 3 .. 5 ) {
+        # a different $mm is captured by each iteration
+        my $mm = $_;
+        $x[$_] = sub {
+            $mm + $_[0];
+          }
+    }
+} '
+
