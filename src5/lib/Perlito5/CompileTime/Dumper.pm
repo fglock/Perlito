@@ -79,14 +79,21 @@ sub _dumper {
         my $captures = $obj->($closure_flag) // {};
 
         my @vars;
+        my $source;
         for my $var (sort keys %$captures) {
-            push @vars, 
-                'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+            if ($var eq '__SUB__') {
+                $source = $captures->{$var};
+            }
+            else {
+                push @vars, 
+                    'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+            }
         }
+        # say "_dumper: source [[ $source ]]";
         return join('',
             'do { ',
                 @vars,
-                'sub { "DUMMY" } ',
+                $source,
             '}'
         );
     }

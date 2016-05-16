@@ -523,6 +523,24 @@ package Perlito5::AST::Sub;
                 # 
                 #   @_ && ref($_[0]) eq "Perlito5::dump" && return "do { my \$x = $x; sub { \$_[0] + \$x;  } }" }
                 #   @_ && ref($_[0]) eq "Perlito5::dump" && return { '$x' => \$x }
+
+
+
+                # retrieve the source code for this sub
+                my $code;
+                {
+                    local $Perlito5::PHASE = '';
+                    my @data = [ op => 'prefix:<sub>', @sig, @parts ];
+                    my $out = [];
+                    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+                    $code = "package $Perlito5::PKG_NAME;\n"
+                             . join( '', @$out );
+                    # say "BEGIN block: [[ $code ]]";
+                    $code = Perlito5::Perl5::escape_string($code);
+                    # say "BEGIN block: [[ $code ]]";
+                }
+
+
                 push @extra,
                   [
                     'op', 'infix:<&&>',
@@ -538,6 +556,7 @@ package Perlito5::AST::Sub;
                             'apply', '(', 'return',
                             [
                                 'op', 'circumfix:<{ }>',
+                                [ 'op', 'infix:<=>>', "'__SUB__'", $code ],
                                 map { [ 'op', 'infix:<=>>', "'$_'", [ 'op', 'prefix:<\\>', $_ ] ], }
                                   @captures_perl
                             ],

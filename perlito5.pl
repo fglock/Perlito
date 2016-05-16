@@ -8522,12 +8522,18 @@ use feature 'say';
             my $closure_flag = bless({}, 'Perlito5::dump');
             my $captures = $obj->($closure_flag) // {};
             my @vars;
+            my $source;
             for my $var (sort {
                 $a cmp $b
             } keys(%{$captures})) {
-                push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
+                if ($var eq '__SUB__') {
+                    $source = $captures->{$var}
+                }
+                else {
+                    push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
+                }
             }
-            return join('', 'do { ', @vars, 'sub { "DUMMY" } ', '}')
+            return join('', 'do { ', @vars, $source, '}')
         }
         my @out;
         for my $i (sort {
@@ -13319,7 +13325,16 @@ use feature 'say';
                         ($_->{'_real_sigil'} || $_->{'sigil'}) . $_->{'name'}
                     } @captures_ast;
                     my @extra;
-                    push(@extra, ['op', 'infix:<&&>', '@_', ['op', 'infix:<&&>', ['op', 'infix:<eq>', ['apply', '(', 'ref', ['apply', '[', '$_', ['number', 0]]], '"Perlito5::dump"'], ['apply', '(', 'return', ['op', 'circumfix:<{ }>', map {
+                    my $code;
+                    {
+                        local $Perlito5::PHASE = '';
+                        my @data = ['op' => 'prefix:<sub>', @sig, @parts];
+                        my $out = [];
+                        Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
+                        $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out});
+                        $code = Perlito5::Perl5::escape_string($code)
+                    }
+                    push(@extra, ['op', 'infix:<&&>', '@_', ['op', 'infix:<&&>', ['op', 'infix:<eq>', ['apply', '(', 'ref', ['apply', '[', '$_', ['number', 0]]], '"Perlito5::dump"'], ['apply', '(', 'return', ['op', 'circumfix:<{ }>', ['op', 'infix:<=>>', chr(39) . '__SUB__' . chr(39), $code], map {
                         ['op', 'infix:<=>>', chr(39) . $_ . chr(39), ['op', 'prefix:<' . chr(92) . '>', $_]]
                     } @captures_perl]]]]);
                     my $bl = shift(@{$parts[0]});
@@ -17684,7 +17699,15 @@ use feature 'say';
             local %Perlito5::Java::Java_var_name;
             my $i = 0;
             for $_ (@captures_ast) {
-                $Perlito5::Java::Java_var_name{$_->{'_id'}} = 'this.env[' . $i . ']';
+                my $capture_name = 'this.env[' . $i . ']';
+                my $sigil = $_->{'_real_sigil'} || $_->{'sigil'};
+                if ($sigil eq '@') {
+                    $capture_name = '((PlArray)' . $capture_name . ')'
+                }
+                elsif ($sigil eq '%') {
+                    $capture_name = '((PlHash)' . $capture_name . ')'
+                }
+                $Perlito5::Java::Java_var_name{$_->{'_id'}} = $capture_name;
                 $i++
             }
             my @js_block;

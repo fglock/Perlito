@@ -78,7 +78,7 @@ sub eval_begin_block {
     Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
     my $code = "package $Perlito5::PKG_NAME;\n"
              . join( '', @$out ) . "; 1\n";
-    # say "BEGIN block: $code";
+    # say "BEGIN Block::eval_begin_block: $code";
 
     local ${^GLOBAL_PHASE};
     Perlito5::set_global_phase("BEGIN");

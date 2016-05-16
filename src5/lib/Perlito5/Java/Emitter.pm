@@ -2657,7 +2657,15 @@ package Perlito5::AST::Sub;
         local %Perlito5::Java::Java_var_name;
         my $i = 0;
         for (@captures_ast) {
-            $Perlito5::Java::Java_var_name{ $_->{_id} } = 'this.env[' . $i . ']';
+            my $capture_name = 'this.env[' . $i . ']';
+            my $sigil = $_->{_real_sigil} || $_->{sigil};
+            if ($sigil eq '@') {
+                $capture_name = "((PlArray)$capture_name)";
+            }
+            elsif ($sigil eq '%') {
+                $capture_name = "((PlHash)$capture_name)";
+            }
+            $Perlito5::Java::Java_var_name{ $_->{_id} } = $capture_name;
             $i++;
         }
 
