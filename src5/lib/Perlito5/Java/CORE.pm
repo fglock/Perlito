@@ -277,12 +277,12 @@ EOT
     }
     public static final PlObject mkdir(int want, PlArray List__) {
         try {
-            Path file = Paths.get(List__.aget(0).toString());        //  " // $_   "
-            int mask = List__.aget(1).to_int();                      //  " // 0777 "
-            // TODO - decode mask
-            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-x---");
+            Path file = Paths.get(List__.aget(0).toString());
+            int mask = List__.aget(1).to_int();
+            Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
             Files.createDirectory(file, attr);
+            return PlCx.INT1;
         }
         catch(IOException e) {
             PlV.set("main::v_!", new PlString(e.getMessage()));

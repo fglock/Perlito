@@ -337,9 +337,10 @@ class PerlOp {
     }
     public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
         final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();
-        if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
-        if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
-        if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
+        // TODO - provide a workaround
+        // if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
+        // if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
+        // if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
         if ((mask & 00400)==0) perm.add(OWNER_READ);
         if ((mask & 00200)==0) perm.add(OWNER_WRITE);
         if ((mask & 00100)==0) perm.add(OWNER_EXECUTE);

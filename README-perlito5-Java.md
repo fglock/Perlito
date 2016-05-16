@@ -883,6 +883,17 @@ Perl features
     pack
     unpack
     (DONE) file operations
+        TODO - some permissions not implemented:
+
+~~~java
+        public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
+            final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();
+            // TODO - provide a workaround
+            // if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
+            // if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
+            // if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
+~~~
+
     (DONE) pos()
     typeglob operations
 
