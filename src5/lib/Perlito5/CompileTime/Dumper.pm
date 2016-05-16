@@ -384,6 +384,17 @@ sub emit_globals_after_BEGIN {
             my $bareword = substr($name, 1);
             push @$vars, "*$bareword = " . $dump . ";";
         }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+            # *mysub = sub {...}
+            my $bareword = substr($name, 1);
+
+            if (exists &{$bareword}) {
+                my $sub = \&{$bareword};
+                my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);
+                push @$vars, "*$bareword = " . $dump . ';';
+            }
+
+        }
         else {
             push @$vars, "# don't know how to initialize variable $name";
         }

@@ -8709,6 +8709,14 @@ use feature 'say';
                 my $bareword = substr($name, 1);
                 push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
             }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+                my $bareword = substr($name, 1);
+                if (exists(&{$bareword})) {
+                    my $sub = \&{$bareword};
+                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword);
+                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+                }
+            }
             else {
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)
             }
