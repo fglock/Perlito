@@ -79,9 +79,9 @@ sub _dumper {
         my $captures = $obj->($closure_flag) // {};
 
         my @vars;
-        for my $var (keys %$captures) {
+        for my $var (sort keys %$captures) {
             push @vars, 
-                'my ' . $var . ' = ' . _dumper($captures->{$var}, $tab1, $seen, $pos) . '; ';
+                'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
         }
         return join('',
             'do { ',
@@ -108,6 +108,52 @@ sub _dumper {
     
     # assume it's a blessed HASH
     
+    my @out;
+    for my $i ( sort keys %$obj ) {
+        my $here = $pos . '->{' . $i . '}';
+        push @out, 
+            $tab1,
+            "'$i' => ",
+            _dumper($obj->{$i}, $tab1, $seen, $here), 
+            ",\n";
+    }
+    return join('', "bless({\n", @out, $tab, "}, '$ref')");
+}
+
+sub _dumper_deref {
+    my ($obj, $tab, $seen, $pos) = @_;
+    my $ref = ref($obj);
+    return _dumper(@_) if !$ref;
+    my $tab1 = $tab . '    ';
+    if ($ref eq 'ARRAY') {
+        return '()' unless @$obj;
+        my @out;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = $pos . '->[' . $i . ']';
+            push @out, 
+                $tab1,
+                _dumper($obj->[$i], $tab1, $seen, $here), 
+                ",\n";
+        }
+        return join('', "(\n", @out, $tab, ')');
+    }
+    elsif ($ref eq 'HASH') {
+        return '()' unless keys %$obj;
+        my @out;
+        for my $i ( sort keys %$obj ) {
+            my $here = $pos . '->{' . $i . '}';
+            push @out, 
+                $tab1,
+                "'$i' => ",
+                _dumper($obj->{$i}, $tab1, $seen, $here), 
+                ",\n";
+        }
+        return join('', "(\n", @out, $tab, ')');
+    }
+    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+        return _dumper($$obj, $tab1, $seen, $pos);
+    }
+
     my @out;
     for my $i ( sort keys %$obj ) {
         my $here = $pos . '->{' . $i . '}';

@@ -8522,10 +8522,49 @@ use feature 'say';
             my $closure_flag = bless({}, 'Perlito5::dump');
             my $captures = $obj->($closure_flag) // {};
             my @vars;
-            for my $var (keys(%{$captures})) {
-                push(@vars, 'my ' . $var . ' = ' . _dumper($captures->{$var}, $tab1, $seen, $pos) . '; ')
+            for my $var (sort {
+                $a cmp $b
+            } keys(%{$captures})) {
+                push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
             }
             return join('', 'do { ', @vars, 'sub { "DUMMY" } ', '}')
+        }
+        my @out;
+        for my $i (sort {
+            $a cmp $b
+        } keys(%{$obj})) {
+            my $here = $pos . '->{' . $i . '}';
+            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+        }
+        return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+    }
+    sub Perlito5::CompileTime::Dumper::_dumper_deref {
+        my($obj, $tab, $seen, $pos) = @_;
+        my $ref = ref($obj);
+        !$ref && return _dumper(@_);
+        my $tab1 = $tab . '    ';
+        if ($ref eq 'ARRAY') {
+            @{$obj} || return '()';
+            my @out;
+            for my $i (0 .. $#{$obj}) {
+                my $here = $pos . '->[' . $i . ']';
+                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+            }
+            return join('', '(' . chr(10), @out, $tab, ')')
+        }
+        elsif ($ref eq 'HASH') {
+            keys(%{$obj}) || return '()';
+            my @out;
+            for my $i (sort {
+                $a cmp $b
+            } keys(%{$obj})) {
+                my $here = $pos . '->{' . $i . '}';
+                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            }
+            return join('', '(' . chr(10), @out, $tab, ')')
+        }
+        elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+            return _dumper(${$obj}, $tab1, $seen, $pos)
         }
         my @out;
         for my $i (sort {
