@@ -13308,7 +13308,23 @@ use feature 'say';
             my @parts;
             defined($self->{'sig'}) && push(@sig, ['paren' => '(', ['bareword' => $self->{'sig'}]]);
             if (defined($self->{'block'})) {
-                push(@parts, Perlito5::Perl5::emit_perl5_block($self->{'block'}->{'stmts'}));
+                my @stmts = @{$self->{'block'}->{'stmts'}};
+                if (@stmts) {
+                    my $stmt = $stmts[0];
+                    if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
+                        $stmt = $stmt->{'arguments'}->[1];
+                        if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
+                            $stmt = $stmt->{'arguments'}->[0];
+                            if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<eq>') {
+                                $stmt = $stmt->{'arguments'}->[1];
+                                if (ref($stmt) eq 'Perlito5::AST::Buf' && $stmt->{'buf'} eq 'Perlito5::dump') {
+                                    shift(@stmts)
+                                }
+                            }
+                        }
+                    }
+                }
+                push(@parts, Perlito5::Perl5::emit_perl5_block(\@stmts));
                 if ($Perlito5::PHASE eq 'BEGIN') {
                     my @captured;
                     for my $stmt (@{$self->{'block'}->{'stmts'}}) {

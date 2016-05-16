@@ -494,11 +494,33 @@ package Perlito5::AST::Sub;
 
         if (defined $self->{block}) {
             # this is not a pre-declaration
-            push @parts, Perlito5::Perl5::emit_perl5_block($self->{block}{stmts});
+
+            my @stmts = @{$self->{block}{stmts}};
+
+            # remove the extra instrumentation code:
+            #   @_ && ref($_[0]) eq 'Perlito5::dump' && return ...
+            if (@stmts) {
+                my $stmt = $stmts[0];
+                if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
+                    $stmt = $stmt->{arguments}[1];
+                    if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
+                        $stmt = $stmt->{arguments}[0];
+                        if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<eq>') {
+                            $stmt = $stmt->{arguments}[1];
+                            if (ref($stmt) eq 'Perlito5::AST::Buf' && $stmt->{'buf'} eq 'Perlito5::dump') {
+                                shift @stmts;
+                            }
+                        }
+                    }
+                }
+            }
+
+            push @parts, Perlito5::Perl5::emit_perl5_block(\@stmts);
 
             if ($Perlito5::PHASE eq 'BEGIN') {
                 # at compile-time only:
                 #   we are compiling - maybe inside a BEGIN block
+                #   add extra instrumentation code
                 #   provide a way to dump this closure
 
                 # get list of captured variables, including inner blocks
