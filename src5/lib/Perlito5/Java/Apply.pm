@@ -1272,6 +1272,19 @@ package Perlito5::AST::Apply;
             }
             'PlCORE.mkdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },
+        'rmdir' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            if (@arguments < 1) {
+                push @arguments,
+                    Perlito5::AST::Var->new(
+                        'name' => '_',
+                        'namespace' => 'main',
+                        'sigil' => '$',
+                    );
+            }
+            'PlCORE.rmdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
+        },
         'close' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};

@@ -10,7 +10,7 @@
 
 - Java:
 -- "$$" variable (process id)
--- mkdir()
+-- mkdir(), rmdir()
 
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:
