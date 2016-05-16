@@ -275,6 +275,20 @@ EOT
         // say() shortcut for internal use
         return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));
     }
+    public static final PlObject mkdir(int want, PlArray List__) {
+        try {
+            Path file = Paths.get(List__.aget(0).toString());        //  " // $_   "
+            int mask = List__.aget(1).to_int();                      //  " // 0777 "
+            // TODO - decode mask
+            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-x---");
+            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+            Files.createDirectory(file, attr);
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
     public static final PlObject exit(int want, PlArray List__) {
         int arg = List__.aget(0).to_int();
         System.exit(arg);
