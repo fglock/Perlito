@@ -180,6 +180,7 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
+import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.concurrent.TimeUnit;
@@ -333,6 +334,22 @@ class PerlOp {
             fh.set(f);
         }
         return (PlFileHandle)(fh.get());
+    }
+    public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
+        final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();
+        if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
+        if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
+        if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
+        if ((mask & 00400)==0) perm.add(OWNER_READ);
+        if ((mask & 00200)==0) perm.add(OWNER_WRITE);
+        if ((mask & 00100)==0) perm.add(OWNER_EXECUTE);
+        if ((mask & 00040)==0) perm.add(GROUP_READ);
+        if ((mask & 00020)==0) perm.add(GROUP_WRITE);
+        if ((mask & 00010)==0) perm.add(GROUP_EXECUTE);
+        if ((mask & 00004)==0) perm.add(OTHERS_READ);
+        if ((mask & 00002)==0) perm.add(OTHERS_WRITE);
+        if ((mask & 00001)==0) perm.add(OTHERS_EXECUTE);
+        return perm;
     }
 
     // objects
