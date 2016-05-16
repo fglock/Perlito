@@ -2182,7 +2182,7 @@ package Perlito5::AST::Call;
                )
             {
                 my $arg   = $self->{invocant}{arguments}->[0];
-                $invocant = 'p5code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
+                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
             }
             elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '&'

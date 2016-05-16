@@ -1033,6 +1033,14 @@ class PlV {
         return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
 
+    public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
+        String s = name.toString();
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
+        return var.hget(s);
+    }
+
     public static final String glob_name_fixup(String name, String prefix) {
         // TODO - append namespace if needed
         String[] part = name.split("::");
@@ -1046,6 +1054,13 @@ class PlV {
         String internalName = sb.toString();
         // PlCORE.say("internalName " + internalName);
         return internalName;
+    }
+    public static final PlObject glob_set(PlObject name, PlObject v, String nameSpace) {
+        String s = name.toString();
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
+        return glob_set(s, v);
     }
     public static final PlObject glob_set(String name, PlObject v) {
         PlObject value = v.aget(0);

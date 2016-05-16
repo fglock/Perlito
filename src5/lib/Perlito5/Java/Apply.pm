@@ -133,7 +133,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'prefix:<*>') {
-            return 'PlV.glob_deref_set(' 
+            return 'PlV.glob_set(' 
                 . Perlito5::Java::to_scalar($self->{arguments}, $level+1) . ', '
                 . Perlito5::Java::to_scalar([$arguments], $level+1)       . ', '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
@@ -563,7 +563,7 @@ package Perlito5::AST::Apply;
         'prefix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            'p5code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')([])';
+            'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')([])';
         },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -592,7 +592,7 @@ package Perlito5::AST::Apply;
                     return 'p5_list_of_refs(' . Perlito5::Java::to_list( $arg->{arguments} ) . ')';
                 }
                 if ( $arg->{code} eq 'prefix:<&>' ) {
-                    return 'p5code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->{arguments}->[0]->emit_java($level) . ')';
+                    return 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->{arguments}->[0]->emit_java($level) . ')';
                 }
             }
             if ( $arg->isa('Perlito5::AST::Var') ) {
@@ -1036,7 +1036,7 @@ package Perlito5::AST::Apply;
                )
             {
                 my $arg2   = $arg->{arguments}->[0];
-                $invocant = 'p5code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')';
+                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')';
             }
             elsif (  ref( $arg ) eq 'Perlito5::AST::Var' 
                && $arg->{sigil} eq '&'
