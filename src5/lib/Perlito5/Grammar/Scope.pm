@@ -40,8 +40,14 @@ sub end_compile_time_scope {
 sub compile_time_glob_set {
     # set a GLOB at compile-time
     my ($glob, $value, $namespace) = @_;
-    if ( !ref($glob) && $glob !~ /::/ ) {
-        $glob = $namespace . '::' . $glob;
+    if ( !ref($glob) ) {
+        if ( $glob !~ /::/ ) {
+            $glob = $namespace . '::' . $glob;
+        }
+        # mark the variable as "seen"
+        my @parts = split "::", $glob;
+        my $name = pop @parts;
+        Perlito5::AST::Var->new( name => $name, namespace => join("::", @parts), sigil => "*", _decl => "global" );
     }
     *{$glob} = $value;
 }

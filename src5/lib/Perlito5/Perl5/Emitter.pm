@@ -244,6 +244,10 @@ package Perlito5::AST::Apply;
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5(),
                      $self->{arguments}[1]->emit_perl5() ]
         }
+
+        # TODO - uncomment this to allow this code to generate subs:
+        # $ perl perlito5.pl -Isrc5/lib -Cperl5 -e ' BEGIN { for my $v ("a" .. "c") { *{$v} = sub { *{$v} = \123; return shift() . $v } } } '
+        #
         # if ($self->{code} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
         #     # print STDERR "# assign in BEGIN block\n";
         #     my $arg = $self->{arguments}->[0];
