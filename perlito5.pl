@@ -13172,12 +13172,6 @@ use feature 'say';
             if ($self->{'code'} eq 'infix:<=>>') {
                 return ['op' => $self->{'code'}, Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_perl5(), $self->{'arguments'}->[1]->emit_perl5()]
             }
-            if ($self->{'code'} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
-                my $arg = $self->{'arguments'}->[0];
-                if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'prefix:<*>') {
-                    return ['apply' => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set', $arg->{'arguments'}->[0]->emit_perl5(), $self->{'arguments'}->[1]->emit_perl5(), chr(39) . $Perlito5::PKG_NAME . chr(39)]
-                }
-            }
             my $ns = '';
             if ($self->{'namespace'}) {
                 $ns = $self->{'namespace'} . '::'
