@@ -37,6 +37,15 @@ sub end_compile_time_scope {
     }
 }
 
+sub compile_time_glob_set {
+    # set a GLOB at compile-time
+    my ($glob, $value, $namespace) = @_;
+    if ( !ref($glob) && $glob !~ /::/ ) {
+        $glob = $namespace . '::' . $glob;
+    }
+    *{$glob} = $value;
+}
+
 sub lookup_variable {
     # search for a variable declaration in the compile-time scope
     my $var = shift;

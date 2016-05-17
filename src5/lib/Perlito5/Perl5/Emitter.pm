@@ -244,6 +244,18 @@ package Perlito5::AST::Apply;
                      Perlito5::AST::Lookup->autoquote($self->{arguments}[0])->emit_perl5(),
                      $self->{arguments}[1]->emit_perl5() ]
         }
+        # if ($self->{code} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
+        #     # print STDERR "# assign in BEGIN block\n";
+        #     my $arg = $self->{arguments}->[0];
+        #     if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<*>') {
+        #         # print STDERR "# set GLOB in BEGIN block\n";
+        #         return [ apply => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set',
+        #                         $arg->{arguments}->[0]->emit_perl5(),
+        #                         $self->{arguments}[1]->emit_perl5(),
+        #                         "'$Perlito5::PKG_NAME'" 
+        #                ];
+        #     }
+        # }
 
         my $ns = '';
         if ($self->{namespace}) {

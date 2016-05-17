@@ -84,7 +84,9 @@ sub eval_begin_block {
     Perlito5::set_global_phase("BEGIN");
     # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
-    eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
+    my $instrumented_code = Perlito5::CompileTime::Dumper::generate_eval_string( $code );
+    # say "BEGIN Block::eval_begin_block: [[ $instrumented_code ]]";
+    eval $instrumented_code
     # eval "{ $code }; 1"
     or Perlito5::Compiler::error "Error in BEGIN block: " . $@;
 }

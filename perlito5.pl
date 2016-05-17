@@ -4898,6 +4898,13 @@ use feature 'say';
             $Perlito5::SCOPE = $Perlito5::SCOPE->{'block'}->[-1]
         }
     }
+    sub Perlito5::Grammar::Scope::compile_time_glob_set {
+        my($glob, $value, $namespace) = @_;
+        if (!ref($glob) && $glob !~ m!::!) {
+            $glob = $namespace . '::' . $glob
+        }
+        *{$glob} = $value
+    }
     sub Perlito5::Grammar::Scope::lookup_variable {
         my $var = shift;
         my $scope = shift() // $Perlito5::BASE_SCOPE;
@@ -5037,7 +5044,8 @@ use feature 'say';
         my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . join('', @{$out}) . '; 1' . chr(10);
         local ${chr(7) . 'LOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
-        eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
+        my $instrumented_code = Perlito5::CompileTime::Dumper::generate_eval_string($code);
+        eval($instrumented_code) or Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
     }
     sub Perlito5::Grammar::Block::opt_continue_block {
         my $str = $_[0];
