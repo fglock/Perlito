@@ -6,7 +6,6 @@ package Perlito5;
 use feature 'say';
 use Perlito5;
 use Perlito5::Compiler;
-use Perlito5::CompileTime::Emitter;
 use Perlito5::CompileTime::Dumper;
 use Perlito5::Grammar::Regex6;
 use Perlito5::Emitter::Token;
@@ -512,9 +511,6 @@ if ($backend) {
                 elsif ($backend eq '_globals') {
                     # say Perlito5::CompileTime::Dumper::emit_globals_scope($Perlito5::SCOPE);
                     say Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                }
-                elsif ($backend eq '_compile_time') {
-                    say Perlito5::Dumper::ast_dumper( Perlito5::AST::CompUnit::emit_compile_time_program( $comp_units ) );
                 }
                 else {
                     die "don't know what to do with backend '$backend'";
