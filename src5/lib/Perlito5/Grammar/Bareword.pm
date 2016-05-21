@@ -46,6 +46,10 @@ sub term_bareword {
     }
 
     my $name = Perlito5::Match::flat($m_name);
+    if ($name eq '__PACKAGE__' && $namespace eq '') {
+        $m_name->{capture} = [ 'term', Perlito5::AST::Apply->new( code => $name, namespace => '', arguments => [], bareword => 1 ) ];
+        return $m_name;
+    }
     $p = $m_name->{to};
 
     if ( substr( $str, $p, 2) eq '::' ) {
