@@ -125,6 +125,40 @@ sub plain_name {
     return $self->name
 }
 
+sub SCALAR_ARG {
+    Perlito5::AST::Var->new(
+        sigil     => '$',
+        namespace => '',
+        name      => '_',
+        '_decl'   => 'global',
+        '_namespace' => 'main',
+    );
+}
+
+sub LIST_ARG {
+    Perlito5::AST::Var->new(
+        sigil     => '@',
+        namespace => '',
+        name      => '_',
+        '_decl'   => 'global',
+        '_namespace' => 'main',
+    );
+}
+
+sub LIST_ARG_INDEX {
+    my $index = shift;
+    Perlito5::AST::Index->new(
+        'index_exp' => Perlito5::AST::Int->new( int => $index ),
+        'obj'       => Perlito5::AST::Var->new(
+            sigil        => '$',
+            _real_sigil  => '@',
+            namespace    => '',
+            name         => '_',
+            '_decl'      => 'global',
+            '_namespace' => 'main',
+        )
+    );
+}
 
 package Perlito5::AST::Call;
 sub new { my $class = shift; bless {@_}, $class }
