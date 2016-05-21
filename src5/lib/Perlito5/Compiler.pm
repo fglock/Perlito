@@ -20,7 +20,7 @@ sub do_not_edit {
 }
 
 sub error {
-    die join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER;
+    die join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER . "\n";
 }
 
 1;

@@ -234,6 +234,15 @@ package Perlito5::AST::Apply;
         return () if !$self->{arguments};
         return map { $_->emit_perl5() } @{$self->{arguments}};
     }
+    sub emit_perl5_choose_regex_quote {
+        if (! grep { $_ =~ /!/ } @_) {
+            return "!";
+        }
+        if (! grep { $_ =~ /%/ } @_) {
+            return "%";
+        }
+        return "_";
+    }
     sub emit_perl5 {
         my $self = $_[0];   
         if (ref $self->{code}) {
@@ -323,9 +332,14 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{code} eq 'p5:s') {
-            return 's!' . $self->{arguments}->[0]->{buf}   # emit_perl5() 
-                 .  '!' . $self->{arguments}->[1]->{buf}   # emit_perl5()
-                 .  '!' . $self->{arguments}->[2]->{buf};
+            my $q = emit_perl5_choose_regex_quote(
+                        $self->{arguments}->[0]->{buf}, 
+                        $self->{arguments}->[1]->{buf}, 
+                        $self->{arguments}->[2]->{buf}, 
+                    );
+            return 's' . $q . $self->{arguments}->[0]->{buf}   # emit_perl5() 
+                 .       $q . $self->{arguments}->[1]->{buf}   # emit_perl5()
+                 .       $q . $self->{arguments}->[2]->{buf};
 
         }
         if ($self->{code} eq 'p5:m') {
@@ -344,12 +358,20 @@ package Perlito5::AST::Apply;
                 }
             }
 
-            return 'm!' . $s . '!' . $self->{arguments}->[1]->{buf};
+            my $q = emit_perl5_choose_regex_quote(
+                        $s,
+                        $self->{arguments}->[1]->{buf}, 
+                    );
+            return 'm' . $q . $s . $q . $self->{arguments}->[1]->{buf};
         }
         if ($self->{code} eq 'p5:tr') {
-            return 'tr!' . $self->{arguments}->[0]->{buf}   # emit_perl5() 
-                 .   '!' . $self->{arguments}->[1]->{buf}   # emit_perl5()
-                 .   '!';
+            my $q = emit_perl5_choose_regex_quote(
+                        $self->{arguments}->[0]->{buf}, 
+                        $self->{arguments}->[1]->{buf}, 
+                    );
+            return 'tr' . $q . $self->{arguments}->[0]->{buf}   # emit_perl5() 
+                 .        $q . $self->{arguments}->[1]->{buf}   # emit_perl5()
+                 .        $q;
         }
 
         if ($self->{code} eq 'package')    { return [ stmt => 'package', [ bareword => $self->{namespace} ] ] }
