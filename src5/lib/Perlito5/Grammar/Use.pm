@@ -205,7 +205,10 @@ sub parse_time_eval {
         # "require" the module
         my $filename = modulename_to_filename($module_name);
         # warn "# require $filename\n";
-        require $filename;
+        # require $filename;
+        #   use the compiler "require" instead of native Perl
+        #   because we need to add BEGIN-block instrumentation
+        Perlito5::Grammar::Use::require($filename);
 
         if (!$skip_import) {
             # call import/unimport
@@ -357,7 +360,19 @@ sub require {
     my $filename = shift;
     return 
         if filename_lookup($filename) eq "done";
-    my $result = do $filename;
+
+    #   use the compiler "do FILE" instead of native Perl
+    #   because we need to add BEGIN-block instrumentation
+    # my $result = do $filename;
+    my $source = do_file($filename);
+    # print STDERR "require $filename [[ $source ]]\n";
+    my $m = Perlito5::Grammar::exp_stmts($source, 0);
+    my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
+    # use Data::Dumper;
+    # print STDERR Dumper $ast;
+    my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
+    # print STDERR "result from require: ", Dumper $result;
+
     if ($@) {
         $INC{$filename} = undef;
         Perlito5::Compiler::error $@;

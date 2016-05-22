@@ -72,23 +72,26 @@ sub eval_begin_block {
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
     my $block = shift;
-    local $@;
-    my @data = $block->emit_perl5();
-    my $out = [];
-    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-    my $code = "package $Perlito5::PKG_NAME;\n"
-             . join( '', @$out ) . "; 1\n";
-    # say "BEGIN Block::eval_begin_block: $code";
-
     local ${^GLOBAL_PHASE};
     Perlito5::set_global_phase("BEGIN");
+    $block = $block->emit_compile_time();
+
+    local $@;
+    # my @data = $block->emit_perl5();
+    # my $out = [];
+    # Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+    # my $code = "package $Perlito5::PKG_NAME;\n"
+    #          . join( '', @$out ) . "; 1\n";
+    # say STDERR "BEGIN Block::eval_begin_block: $code";
+
     # eval-string inside BEGIN block
     # we add some extra information to the data, to make things more "dumpable"
-    my $instrumented_code = Perlito5::CompileTime::Dumper::generate_eval_string( $code );
+    # my $instrumented_code = Perlito5::CompileTime::Dumper::generate_eval_string( $code );
     # say "BEGIN Block::eval_begin_block: [[ $instrumented_code ]]";
-    eval $instrumented_code
+    # eval $instrumented_code
     # eval "{ $code }; 1"
-    or Perlito5::Compiler::error "Error in BEGIN block: " . $@;
+    Perlito5::eval_ast($block)
+        or Perlito5::Compiler::error "Error in BEGIN block: " . $@;
 }
 
 token opt_continue_block {

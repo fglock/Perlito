@@ -9,6 +9,7 @@ use Perlito5::Grammar::Precedence;
 use Perlito5::Grammar::Expression;
 use Perlito5::Macro;
 use Perlito5::Runtime;
+use Perlito5::AST::CompileTime;
 
 sub compiler_name {
     "Perlito5"

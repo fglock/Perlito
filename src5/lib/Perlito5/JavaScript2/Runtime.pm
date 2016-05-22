@@ -48,6 +48,18 @@ sub perl5_to_js {
     return $js_code;
 }
 
+sub eval_ast {
+    my ($ast) = @_;
+    my $want = 0;
+
+    my $js_code = $ast->emit_javascript2(0, $want);
+    # say STDERR "js-source: [" . $js_code . "]";
+    Perlito5::set_global_phase("UNITCHECK");
+    $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
+    # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
+    return JS::inline('eval("(function(){" + v_js_code + "})()")');
+}
+
 sub emit_javascript2 {
 
     return <<'EOT';

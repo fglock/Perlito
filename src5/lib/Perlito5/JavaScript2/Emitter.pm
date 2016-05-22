@@ -2740,16 +2740,20 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{namespace}) {
-            if (  $self->{namespace} eq 'JS' 
-               && $code eq 'inline'
-               ) 
-            {
-                if ( $self->{arguments}->[0]->isa('Perlito5::AST::Buf') ) {
-                    # JS::inline('var x = 123')
-                    return $self->{arguments}[0]{buf};
+            if ($self->{namespace} eq 'JS') {
+                if ($code eq 'inline') {
+                    if ( $self->{arguments}->[0]->isa('Perlito5::AST::Buf') ) {
+                        # JS::inline('var x = 123')
+                        return $self->{arguments}[0]{buf};
+                    }
+                    else {
+                        die "JS::inline needs a string constant";
+                    }
                 }
-                else {
-                    die "JS::inline needs a string constant";
+            }
+            if ($self->{namespace} eq 'Perlito5') {
+                if ($code eq 'eval_ast') {
+                    $self->{namespace} = 'Perlito5::JavaScript2::Runtime';
                 }
             }
             $code = 'p5pkg[' . Perlito5::JavaScript2::escape_string($self->{namespace} ) . '].' . $code;

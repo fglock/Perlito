@@ -254,6 +254,12 @@ package Perlito5::AST::Apply;
                      $self->{arguments}[1]->emit_perl5() ]
         }
 
+        if ($self->{namespace} eq 'Perlito5') {
+            if ($self->{code} eq 'eval_ast') {
+                $self->{namespace} = 'Perlito5::Perl5::Runtime';
+            }
+        }
+
         # TODO - uncomment this to allow this code to generate subs:
         # $ perl perlito5.pl -Isrc5/lib -Cperl5 -e ' BEGIN { for my $v ("a" .. "c") { *{$v} = sub { *{$v} = \123; return shift() . $v } } } '
         #
@@ -553,102 +559,10 @@ package Perlito5::AST::Sub;
             if defined $self->{sig};
 
         if (defined $self->{block}) {
-            # this is not a pre-declaration
-
-            my @stmts = @{$self->{block}{stmts}};
-
-            # remove the extra instrumentation code:
-            #   @_ && ref($_[0]) eq 'Perlito5::dump' && return ...
-            if (@stmts) {
-                my $stmt = $stmts[0];
-                if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                    $stmt = $stmt->{arguments}[1];
-                    if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                        $stmt = $stmt->{arguments}[0];
-                        if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<eq>') {
-                            $stmt = $stmt->{arguments}[1];
-                            if (ref($stmt) eq 'Perlito5::AST::Buf' && $stmt->{'buf'} eq 'Perlito5::dump') {
-                                shift @stmts;
-                            }
-                        }
-                    }
-                }
-            }
-
-            push @parts, Perlito5::Perl5::emit_perl5_block(\@stmts);
-
-            if ($Perlito5::PHASE eq 'BEGIN') {
-                # at compile-time only:
-                #   we are compiling - maybe inside a BEGIN block
-                #   add extra instrumentation code
-                #   provide a way to dump this closure
-
-                # get list of captured variables, including inner blocks
-                my @captured;
-                for my $stmt (@{$self->{block}{stmts}}) {
-                    push @captured, $stmt->get_captures();
-                }
-                my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
-                my %capture = map { $_->{dont} ? ()
-                                  : $dont_capture{ $_->{_id} } ? ()
-                                  : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
-                                  : ( $_->{_id} => $_ )
-                                  } @captured;
-                my @captures_ast  = values %capture;
-                my @captures_perl = map {
-                        ($_->{_real_sigil} || $_->{sigil}) . $_->{name}
-                    } @captures_ast;
-
-                my @extra;
-                # return a hash with { "variable name" => \"variable value" }
-                # with all captured variables
-                # 
-                #   @_ && ref($_[0]) eq "Perlito5::dump" && return "do { my \$x = $x; sub { \$_[0] + \$x;  } }" }
-                #   @_ && ref($_[0]) eq "Perlito5::dump" && return { '$x' => \$x }
-
-
-
-                # retrieve the source code for this sub
-                my $code;
-                {
-                    local $Perlito5::PHASE = '';
-                    my @data = [ op => 'prefix:<sub>', @sig, @parts ];
-                    my $out = [];
-                    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-                    $code = "package $Perlito5::PKG_NAME;\n"
-                             . join( '', @$out );
-                    # say "BEGIN block: [[ $code ]]";
-                    $code = Perlito5::Perl5::escape_string($code);
-                    # say "BEGIN block: [[ $code ]]";
-                }
-
-
-                push @extra,
-                  [
-                    'op', 'infix:<&&>',
-                    '@_',
-                    [
-                        'op', 'infix:<&&>',
-                        [
-                            'op', 'infix:<eq>',
-                            [ 'apply', '(', 'ref', [ 'apply', '[', '$_', [ 'number', 0, ], ], ],
-                            '"Perlito5::dump"',
-                        ],
-                        [
-                            'apply', '(', 'return',
-                            [
-                                'op', 'circumfix:<{ }>',
-                                [ 'op', 'infix:<=>>', "'__SUB__'", $code ],
-                                map { [ 'op', 'infix:<=>>', "'$_'", [ 'op', 'prefix:<\\>', $_ ] ], }
-                                  @captures_perl
-                            ],
-                        ]
-                    ]
-                  ];
-
-                my $bl = shift @{$parts[0]};
-                unshift @{$parts[0]}, $bl, @extra;
-            }
+            # if ($Perlito5::PHASE eq 'BEGIN') {
+            #    $self = $self->emit_compile_time();
+            # }
+            push @parts, Perlito5::Perl5::emit_perl5_block( $self->{'block'}{stmts} );
         }
 
         return [ op => 'prefix:<sub>', @sig, @parts ] if !$self->{name};

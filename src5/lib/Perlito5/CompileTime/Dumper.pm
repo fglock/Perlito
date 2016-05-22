@@ -79,10 +79,17 @@ sub _dumper {
         my $captures = $obj->($closure_flag) // {};
 
         my @vars;
+        my $ast;
         my $source;
         for my $var (sort keys %$captures) {
             if ($var eq '__SUB__') {
-                $source = $captures->{$var};
+                my $sub_id = $captures->{$var};
+                $ast = $Perlito5::BEGIN_SUBS{$sub_id};
+
+                my @data = $ast->emit_perl5();
+                my $out = [];
+                Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+                $source = join( '', @$out );
             }
             else {
                 push @vars, 
