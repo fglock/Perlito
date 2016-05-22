@@ -15537,6 +15537,9 @@ use feature 'say';
             }
         }, 'scalar' => sub {
             my($self, $level, $wantarray) = @_;
+            if (@{$self->{'arguments'}} > 1) {
+                return 'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
+            }
             Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1)
         }, 'ternary:<? :>' => sub {
             my($self, $level, $wantarray) = @_;
@@ -17088,7 +17091,7 @@ use feature 'say';
                     return $s . '.length_of_array()'
                 }
                 if ($wantarray eq 'runtime') {
-                    return '(want == PlCx.LIST' . ' ? ' . $s . ' : ' . $s . '.to_long()' . ')'
+                    return '(want == PlCx.LIST' . ' ? ' . $s . ' : ' . $s . '.length_of_array()' . ')'
                 }
                 return $s
             }

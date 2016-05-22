@@ -1842,7 +1842,7 @@ package Perlito5::AST::Var;
             if ( $wantarray eq 'runtime' ) {
                 return '(want == PlCx.LIST'
                     . ' ? ' . $s
-                    . ' : ' . $s . '.to_long()'
+                    . ' : ' . $s . '.length_of_array()'
                     . ')';
             }
             return $s;
