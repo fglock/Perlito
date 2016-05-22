@@ -1543,7 +1543,7 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = [];',
+                    'var a = new PlArray();',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var src=' . Perlito5::Java::to_list([$arguments], $level) . ";",
                     'var out=' . Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . ";",
@@ -1590,7 +1590,7 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = [];',
+                    'var a = new PlArray();',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . ";",
                     'var tmp' . ";",
@@ -1764,7 +1764,7 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
             return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = [];',
+                    'var a = new PlArray();',
                     'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
                     'var out=' . $v->emit_java($level) . ";",
                     'var tmp' . ";",
@@ -2034,13 +2034,13 @@ package Perlito5::AST::Var;
         if ( $sigil eq '@' ) {
             return join( ";\n" . Perlito5::Java::tab($level),
                 $self->emit_java() . ' = ' . $list,
-                $list . ' = []'
+                $list . ' = new PlArray()'
             );
         }
         if ( $sigil eq '%' ) {
             return join( ";\n" . Perlito5::Java::tab($level),
                 $self->emit_java() . ' = new PlHash(' . $list  . ')',
-                $list . ' = []'
+                $list . ' = new PlArray()'
             );
         }
         die "don't know how to assign to variable ", $sigil, $self->name;
