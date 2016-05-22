@@ -211,11 +211,7 @@ token for {
             }
             else {
                 $header = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture};
-                $topic  = Perlito5::AST::Var->new(
-                    namespace => '',
-                    name      => '_',
-                    sigil     => '$',
-                );
+                $topic  = Perlito5::AST::Var::SCALAR_ARG();
 
                 my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
                 $header = $transform_array_ref->[0];

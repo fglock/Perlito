@@ -1149,7 +1149,7 @@ use feature 'say';
         ref($self) ne 'Perlito5::AST::While' && return 0;
         my $cond = $self->{'cond'};
         if ($cond->isa('Perlito5::AST::Apply') && ($cond->{'code'} eq 'readline')) {
-            $self->{'cond'} = bless({'arguments' => [bless({'arguments' => [Perlito5::AST::Var::->new('name' => '_', 'namespace' => '', 'sigil' => '$'), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply');
+            $self->{'cond'} = bless({'arguments' => [bless({'arguments' => [Perlito5::AST::Var::SCALAR_ARG(), $cond], 'code' => 'infix:<=>', 'namespace' => ''}, 'Perlito5::AST::Apply')], 'bareword' => '', 'code' => 'defined', 'namespace' => ''}, 'Perlito5::AST::Apply');
             return $self
         }
         return 0
@@ -1364,7 +1364,7 @@ use feature 'say';
             return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => $stmt}
         }
         if ($modifier eq 'for' || $modifier eq 'foreach') {
-            return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For::->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression, 'topic' => Perlito5::AST::Var::->new('namespace' => '', 'name' => '_', 'sigil' => '$'))}
+            return {'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{'to'}, 'capture' => Perlito5::AST::For::->new('cond' => Perlito5::Match::flat($modifier_exp), 'body' => $expression, 'topic' => Perlito5::AST::Var::SCALAR_ARG())}
         }
         Perlito5::Compiler::error('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
     }
@@ -2987,7 +2987,7 @@ use feature 'say';
                     }
                     else {
                         $header = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'}->{'capture'};
-                        $topic = Perlito5::AST::Var::->new('namespace' => '', 'name' => '_', 'sigil' => '$');
+                        $topic = Perlito5::AST::Var::SCALAR_ARG();
                         my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
                         $header = $transform_array_ref->[0];
                         $topic = $transform_array_ref->[1]
@@ -3639,7 +3639,7 @@ use feature 'say';
             $modifiers = Perlito5::Match::flat($m);
             $part1->{'to'} = $m->{'to'}
         }
-        $part1->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:m', 'arguments' => [$str_regex, Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
+        $part1->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:m', 'arguments' => [$str_regex, Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::SCALAR_ARG()], 'namespace' => '');
         return $part1
     }
     sub Perlito5::Grammar::String::s_quote_parse {
@@ -3697,7 +3697,7 @@ use feature 'say';
         if ($m) {
             $part2->{'to'} = $m->{'to'}
         }
-        $part2->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:s', 'arguments' => [$str_regex, $replace, Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
+        $part2->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:s', 'arguments' => [$str_regex, $replace, Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::SCALAR_ARG()], 'namespace' => '');
         return $part2
     }
     sub Perlito5::Grammar::String::qr_quote_parse {
@@ -3803,7 +3803,7 @@ use feature 'say';
             $modifiers = Perlito5::Match::flat($m);
             $part2->{'to'} = $m->{'to'}
         }
-        $part2->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_')], 'namespace' => '');
+        $part2->{'capture'} = Perlito5::AST::Apply::->new('code' => 'p5:tr', 'arguments' => [$str_regex, Perlito5::Match::flat($part2), Perlito5::AST::Buf::->new('buf' => $modifiers), Perlito5::AST::Var::SCALAR_ARG()], 'namespace' => '');
         return $part2
     }
     sub Perlito5::Grammar::String::apply_quote_flags {
@@ -11401,7 +11401,7 @@ use feature 'say';
                     push(@str, $arg->emit_javascript2_init($level, $wantarray))
                 }
             }
-            $cond = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'), $cond], 'code' => 'infix:<~~>', 'namespace' => '');
+            $cond = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::SCALAR_ARG(), $cond], 'code' => 'infix:<~~>', 'namespace' => '');
             my $next = Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'next', 'namespace' => '');
             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? Perlito5::JavaScript2::LexicalBlock::->new('block' => [$self->{'body'}]) : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'body'}->stmts()) : Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1);
             push(@{$body->{'block'}}, $next);
@@ -15128,7 +15128,7 @@ use feature 'say';
             if ($code eq 'pos') {
                 my @lvalue = @{$self->{'arguments'}};
                 if (!@lvalue) {
-                    push(@lvalue, Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'))
+                    push(@lvalue, Perlito5::AST::Var::SCALAR_ARG())
                 }
                 return 'PerlOp.set_pos(' . $lvalue[0]->emit_java($level, 'scalar') . ', ' . $arguments->emit_java($level, 'scalar') . ')'
             }
@@ -15705,7 +15705,7 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
             if (!@arguments) {
-                push(@arguments, Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'))
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PerlOp.pos(' . $arguments[0]->emit_java($level, 'scalar') . ')'
         }, 'time' => sub {
@@ -15841,7 +15841,7 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
             if (@arguments < 1) {
-                push(@arguments, Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'))
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             if (@arguments < 2) {
                 push(@arguments, Perlito5::AST::Int::->new('int' => 511))
@@ -15851,7 +15851,7 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
             if (@arguments < 1) {
-                push(@arguments, Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'))
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             'PlCORE.rmdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
         }, 'close' => sub {
@@ -17507,7 +17507,7 @@ use feature 'say';
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
             }
-            $cond = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::->new('name' => '_', 'namespace' => 'main', 'sigil' => '$'), $cond], 'code' => 'infix:<~~>', 'namespace' => '');
+            $cond = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::SCALAR_ARG(), $cond], 'code' => 'infix:<~~>', 'namespace' => '');
             my $next = Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'next', 'namespace' => '');
             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? Perlito5::Java::LexicalBlock::->new('block' => [$self->{'body'}], 'not_a_loop' => 1) : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'not_a_loop' => 1) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1, 'not_a_loop' => 1);
             push(@{$body->{'block'}}, $next);

@@ -104,12 +104,7 @@ package Perlito5::AST::Apply;
         if ($code eq 'pos') {
             my @lvalue = @{$self->{arguments}};
             if (!@lvalue) {
-                push @lvalue,
-                    Perlito5::AST::Var->new(
-                        'name' => '_',
-                        'namespace' => 'main',
-                        'sigil' => '$',
-                    );
+                push @lvalue, Perlito5::AST::Var::SCALAR_ARG();
             }
             return 'PerlOp.set_pos('
              .      $lvalue[0]->emit_java($level, 'scalar') . ', '
@@ -1087,12 +1082,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             if (!@arguments) {
-                push @arguments,
-                    Perlito5::AST::Var->new(
-                        'name' => '_',
-                        'namespace' => 'main',
-                        'sigil' => '$',
-                    );
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
             }
             'PerlOp.pos('
              .      $arguments[0]->emit_java($level, 'scalar')
@@ -1257,12 +1247,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             if (@arguments < 1) {
-                push @arguments,
-                    Perlito5::AST::Var->new(
-                        'name' => '_',
-                        'namespace' => 'main',
-                        'sigil' => '$',
-                    );
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
             }
             if (@arguments < 2) {
                 push @arguments,
@@ -1276,12 +1261,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             if (@arguments < 1) {
-                push @arguments,
-                    Perlito5::AST::Var->new(
-                        'name' => '_',
-                        'namespace' => 'main',
-                        'sigil' => '$',
-                    );
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
             }
             'PlCORE.rmdir(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{arguments}) . ')';
         },

@@ -138,7 +138,7 @@ sub m_quote_parse {
         arguments => [
             $str_regex,
             Perlito5::AST::Buf->new( buf => $modifiers ),
-            Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+            Perlito5::AST::Var::SCALAR_ARG(),
         ],
         namespace => ''
     );
@@ -231,7 +231,7 @@ sub s_quote_parse {
             $str_regex,
             $replace,
             Perlito5::AST::Buf->new( buf => $modifiers ),
-            Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+            Perlito5::AST::Var::SCALAR_ARG(),
         ],
         namespace => ''
     );
@@ -440,7 +440,7 @@ sub tr_quote_parse {
             $str_regex,
             Perlito5::Match::flat($part2),
             Perlito5::AST::Buf->new( buf => $modifiers ),
-            Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
+            Perlito5::AST::Var::SCALAR_ARG(),
         ],
         namespace => ''
     );

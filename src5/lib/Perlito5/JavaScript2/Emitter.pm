@@ -3080,11 +3080,7 @@ package Perlito5::AST::When;
         }
         $cond = Perlito5::AST::Apply->new(
                 'arguments' => [
-                    Perlito5::AST::Var->new(
-                        'name' => '_',
-                        'namespace' => 'main',
-                        'sigil' => '$',
-                    ),
+                    Perlito5::AST::Var::SCALAR_ARG(),
                     $cond,
                 ],
                 'code' => 'infix:<~~>',

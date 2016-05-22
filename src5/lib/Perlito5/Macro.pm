@@ -385,11 +385,7 @@ sub while_file {
                 'arguments' => [
                     bless({
                         'arguments' => [
-                            Perlito5::AST::Var->new(
-                                'name' => '_',
-                                'namespace' => '',
-                                'sigil' => '$',
-                            ),
+                            Perlito5::AST::Var::SCALAR_ARG(),
                             $cond,
                         ],
                         'code' => 'infix:<=>',
