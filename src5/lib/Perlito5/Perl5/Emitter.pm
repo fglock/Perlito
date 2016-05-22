@@ -260,44 +260,6 @@ package Perlito5::AST::Apply;
             }
         }
 
-        # TODO - uncomment this to allow this code to generate subs:
-        # $ perl perlito5.pl -Isrc5/lib -Cperl5 -e ' BEGIN { for my $v ("a" .. "c") { *{$v} = sub { *{$v} = \123; return shift() . $v } } } '
-        #
-        # remove the extra instrumentation code:
-        #   Perlito5::Grammar::Scope::compile_time_glob_set()
-        # back to:
-        #   *name = sub {...}
-        if ($self->{namespace} && $self->{namespace} eq 'Perlito5::Grammar::Scope'
-            && $self->{code} eq 'compile_time_glob_set' )
-        {
-            $self = Perlito5::AST::Apply->new(
-                code => 'infix:<=>',
-                arguments => [
-                    Perlito5::AST::Apply->new(
-                        code => 'prefix:<*>',
-                        arguments => [ $self->{arguments}[0] ],
-                    ),
-                    $self->{arguments}[1],
-                ],
-            );
-        }
-        # add the extra instrumentation code:
-        #   *name = sub {...}
-        # to:
-        #   Perlito5::Grammar::Scope::compile_time_glob_set()
-        if ($self->{code} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
-            # print STDERR "# assign in BEGIN block\n";
-            my $arg = $self->{arguments}->[0];
-            if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<*>') {
-                # print STDERR "# set GLOB in BEGIN block\n";
-                return [ apply => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set',
-                                $arg->{arguments}->[0]->emit_perl5(),
-                                $self->{arguments}[1]->emit_perl5(),
-                                "'$Perlito5::PKG_NAME'" 
-                       ];
-            }
-        }
-
         my $ns = '';
         if ($self->{namespace}) {
             $ns = $self->{namespace} . '::';

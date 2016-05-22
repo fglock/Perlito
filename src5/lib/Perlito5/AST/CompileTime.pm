@@ -157,11 +157,15 @@ package Perlito5::AST::Apply;
             my $arg = $self->{arguments}->[0];
             if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<*>') {
                 # print STDERR "# set GLOB in BEGIN block\n";
-                return [ apply => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set',
-                                $arg->{arguments}->[0]->emit_compile_time(),
-                                $self->{arguments}[1]->emit_compile_time(),
-                                "'$Perlito5::PKG_NAME'" 
-                       ];
+                return Perlito5::AST::Apply->new(
+                    code => 'compile_time_glob_set',
+                    namespace => 'Perlito5::Grammar::Scope',
+                    arguments => [
+                        $arg->{arguments}->[0]->emit_compile_time(),
+                        $self->{arguments}[1]->emit_compile_time(),
+                        Perlito5::AST::Buf->new( buf => $Perlito5::PKG_NAME ),
+                    ]
+                );
             }
         }
 

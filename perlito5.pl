@@ -8276,7 +8276,7 @@ use feature 'say';
             if ($self->{'code'} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
                 my $arg = $self->{'arguments'}->[0];
                 if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'prefix:<*>') {
-                    return ['apply' => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set', $arg->{'arguments'}->[0]->emit_compile_time(), $self->{'arguments'}->[1]->emit_compile_time(), chr(39) . $Perlito5::PKG_NAME . chr(39)]
+                    return Perlito5::AST::Apply::->new('code' => 'compile_time_glob_set', 'namespace' => 'Perlito5::Grammar::Scope', 'arguments' => [$arg->{'arguments'}->[0]->emit_compile_time(), $self->{'arguments'}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME)])
                 }
             }
             return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
@@ -13133,15 +13133,6 @@ use feature 'say';
             if ($self->{'namespace'} eq 'Perlito5') {
                 if ($self->{'code'} eq 'eval_ast') {
                     $self->{'namespace'} = 'Perlito5::Perl5::Runtime'
-                }
-            }
-            if ($self->{'namespace'} && $self->{'namespace'} eq 'Perlito5::Grammar::Scope' && $self->{'code'} eq 'compile_time_glob_set') {
-                $self = Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'prefix:<*>', 'arguments' => [$self->{'arguments'}->[0]]), $self->{'arguments'}->[1]])
-            }
-            if ($self->{'code'} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
-                my $arg = $self->{'arguments'}->[0];
-                if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'prefix:<*>') {
-                    return ['apply' => '(', 'Perlito5::Grammar::Scope::compile_time_glob_set', $arg->{'arguments'}->[0]->emit_perl5(), $self->{'arguments'}->[1]->emit_perl5(), chr(39) . $Perlito5::PKG_NAME . chr(39)]
                 }
             }
             my $ns = '';
