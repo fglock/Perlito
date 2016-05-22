@@ -127,32 +127,14 @@ package Perlito5::AST::Apply;
             $arguments = $self->{arguments};
         }
 
-        # TODO - uncomment this to allow this code to generate subs:
+        # allow this code to generate subs:
         # $ perl perlito5.pl -Isrc5/lib -Ccompile_time -e ' BEGIN { for my $v ("a" .. "c") { *{$v} = sub { *{$v} = \123; return shift() . $v } } } '
         #
-        # remove the extra instrumentation code:
-        #   Perlito5::Grammar::Scope::compile_time_glob_set()
-        # back to:
-        #   *name = sub {...}
-        if ($self->{namespace} && $self->{namespace} eq 'Perlito5::Grammar::Scope'
-            && $self->{code} eq 'compile_time_glob_set' )
-        {
-            $self = Perlito5::AST::Apply->new(
-                code => 'infix:<=>',
-                arguments => [
-                    Perlito5::AST::Apply->new(
-                        code => 'prefix:<*>',
-                        arguments => [ $self->{arguments}[0] ],
-                    ),
-                    $self->{arguments}[1],
-                ],
-            );
-        }
         # add the extra instrumentation code:
         #   *name = sub {...}
         # to:
         #   Perlito5::Grammar::Scope::compile_time_glob_set()
-        if ($self->{code} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
+        if ($self->{code} eq 'infix:<=>') {
             # print STDERR "# assign in BEGIN block\n";
             my $arg = $self->{arguments}->[0];
             if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{code} eq 'prefix:<*>') {
@@ -162,6 +144,17 @@ package Perlito5::AST::Apply;
                     namespace => 'Perlito5::Grammar::Scope',
                     arguments => [
                         $arg->{arguments}->[0]->emit_compile_time(),
+                        $self->{arguments}[1]->emit_compile_time(),
+                        Perlito5::AST::Buf->new( buf => $Perlito5::PKG_NAME ),
+                    ]
+                );
+            }
+            elsif (ref($arg) eq 'Perlito5::AST::Var' && $arg->{sigil} eq '*') {
+                return Perlito5::AST::Apply->new(
+                    code => 'compile_time_glob_set',
+                    namespace => 'Perlito5::Grammar::Scope',
+                    arguments => [
+                        Perlito5::AST::Buf->new( buf => ($arg->{namespace} || $arg->{_namespace}) . '::' . $arg->{name} ),
                         $self->{arguments}[1]->emit_compile_time(),
                         Perlito5::AST::Buf->new( buf => $Perlito5::PKG_NAME ),
                     ]
@@ -258,28 +251,9 @@ package Perlito5::AST::Sub;
             # this is not a pre-declaration
 
             @stmts = @{$self->{block}{stmts}};
-
-            # remove the extra instrumentation code:
-            #   @_ && ref($_[0]) eq 'Perlito5::dump' && return ...
-            if (@stmts) {
-                my $stmt = $stmts[0];
-                if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                    $stmt = $stmt->{arguments}[1];
-                    if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                        $stmt = $stmt->{arguments}[0];
-                        if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<eq>') {
-                            $stmt = $stmt->{arguments}[1];
-                            if (ref($stmt) eq 'Perlito5::AST::Buf' && $stmt->{'buf'} eq 'Perlito5::dump') {
-                                shift @stmts;
-                            }
-                        }
-                    }
-                }
-            }
-
             @stmts = map { $_->emit_compile_time() } @stmts;
 
-            if ($Perlito5::PHASE eq 'BEGIN') {
+            {
                 # at compile-time only:
                 #   we are compiling - maybe inside a BEGIN block
                 #   add extra instrumentation code

@@ -8270,13 +8270,13 @@ use feature 'say';
             else {
                 $arguments = $self->{'arguments'}
             }
-            if ($self->{'namespace'} && $self->{'namespace'} eq 'Perlito5::Grammar::Scope' && $self->{'code'} eq 'compile_time_glob_set') {
-                $self = Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'prefix:<*>', 'arguments' => [$self->{'arguments'}->[0]]), $self->{'arguments'}->[1]])
-            }
-            if ($self->{'code'} eq 'infix:<=>' && $Perlito5::PHASE eq 'BEGIN') {
+            if ($self->{'code'} eq 'infix:<=>') {
                 my $arg = $self->{'arguments'}->[0];
                 if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'prefix:<*>') {
                     return Perlito5::AST::Apply::->new('code' => 'compile_time_glob_set', 'namespace' => 'Perlito5::Grammar::Scope', 'arguments' => [$arg->{'arguments'}->[0]->emit_compile_time(), $self->{'arguments'}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME)])
+                }
+                elsif (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '*') {
+                    return Perlito5::AST::Apply::->new('code' => 'compile_time_glob_set', 'namespace' => 'Perlito5::Grammar::Scope', 'arguments' => [Perlito5::AST::Buf::->new('buf' => ($arg->{'namespace'} || $arg->{'_namespace'}) . '::' . $arg->{'name'}), $self->{'arguments'}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME)])
                 }
             }
             return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
@@ -8333,25 +8333,10 @@ use feature 'say';
             my @stmts;
             if (defined($self->{'block'})) {
                 @stmts = @{$self->{'block'}->{'stmts'}};
-                if (@stmts) {
-                    my $stmt = $stmts[0];
-                    if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                        $stmt = $stmt->{'arguments'}->[1];
-                        if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<&&>') {
-                            $stmt = $stmt->{'arguments'}->[0];
-                            if (ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'code'} eq 'infix:<eq>') {
-                                $stmt = $stmt->{'arguments'}->[1];
-                                if (ref($stmt) eq 'Perlito5::AST::Buf' && $stmt->{'buf'} eq 'Perlito5::dump') {
-                                    shift(@stmts)
-                                }
-                            }
-                        }
-                    }
-                }
                 @stmts = map {
                     $_->emit_compile_time()
                 } @stmts;
-                if ($Perlito5::PHASE eq 'BEGIN') {
+                {
                     my @captured;
                     for my $stmt (@{$self->{'block'}->{'stmts'}}) {
                         push(@captured, $stmt->get_captures())
