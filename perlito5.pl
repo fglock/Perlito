@@ -18313,7 +18313,7 @@ use feature 'say';
                     elsif ($backend eq 'java') {
                         print(Perlito5::AST::CompUnit::emit_java_program($comp_units, 'expand_use' => $expand_use))
                     }
-                    elsif ($backend eq 'ast-perl5') {
+                    elsif ($backend eq 'ast-perl5' || $backend eq 'ast') {
                         say(Perlito5::Dumper::ast_dumper($comp_units))
                     }
                     elsif ($backend eq 'ast-json') {
