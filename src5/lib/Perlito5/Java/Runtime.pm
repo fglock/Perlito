@@ -1755,6 +1755,10 @@ class PlArrayRef extends PlArray {
         this.a = o.a;
         this.each_iterator = o.each_iterator;
     }
+    public PlArrayRef(PlObject o) {
+        this.a = ((PlArray)o).a;
+        this.each_iterator = ((PlArray)o).each_iterator;
+    }
     public PlObject set(PlArray o) {
         this.a = o.a;
         this.each_iterator = o.each_iterator;
@@ -1820,6 +1824,10 @@ class PlHashRef extends PlHash {
     public PlHashRef(PlHash o) {
         this.h = o.h;
         this.each_iterator = o.each_iterator;
+    }
+    public PlHashRef(PlObject o) {
+        this.h = ((PlHash)o).h;
+        this.each_iterator = ((PlHash)o).each_iterator;
     }
     public PlObject set(PlHash o) {
         this.h = o.h;
