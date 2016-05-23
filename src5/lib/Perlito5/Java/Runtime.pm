@@ -2295,6 +2295,17 @@ class PlArray extends PlObject {
         result.a = aa;
         return result;
     }
+    public PlObject list_set(int want, PlArray s) {
+        // @x[3,4] = ( @x, @y );
+        for (int i = 0; i < this.to_long(); i++) {
+            this.aset(i, s.aget(i));
+        }
+        this.each_iterator = 0;
+        if (want == PlCx.LIST) {
+            return this;
+        }
+        return this.pop();
+    }
 
     public PlObject set(PlObject s) {
         this.a.clear();

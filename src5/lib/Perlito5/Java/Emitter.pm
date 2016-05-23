@@ -1540,20 +1540,10 @@ package Perlito5::AST::Index;
         {
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
-            return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = new PlArray();',
-                    'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
-                    'var src=' . Perlito5::Java::to_list([$arguments], $level) . ";",
-                    'var out=' . Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . ";",
-                    'var tmp' . ";",
-                    'for (var i=0, l=v.length; i<l; ++i) {',
-                          [ 'tmp = src.aget(i);',
-                            'out.aset(v[i], tmp);',
-                            'a.push(tmp)',
-                          ],
-                    '}',
-                    'return a',
-            )
+            return '((PlArray)' . $self->emit_java($level, 'list'). ').list_set('
+                    . Perlito5::Java::to_context($wantarray) . ', '
+                    . Perlito5::Java::to_list([$arguments], $level)
+                . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
               && $self->{obj}->{code} eq 'prefix:<%>'
@@ -1734,15 +1724,9 @@ package Perlito5::AST::Lookup;
         {
             # @a{ 'x', 'y' }
             # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
-            my $v;
-            $v = Perlito5::AST::Var->new( %{$self->{obj}}, sigil => '%' )
-                if $self->{obj}->isa('Perlito5::AST::Var');
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
-                if $self->{obj}->isa('Perlito5::AST::Apply');
-            return $v->emit_java($level). '.hset('
+            return '((PlArray)' . $self->emit_java($level, 'list'). ').list_set('
                     . Perlito5::Java::to_context($wantarray) . ', '
-                    . Perlito5::Java::to_list([$arguments], $level) . ', '
-                    . Perlito5::Java::to_list([$self->{index_exp}], $level)
+                    . Perlito5::Java::to_list([$arguments], $level)
                 . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
