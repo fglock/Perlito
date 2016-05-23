@@ -1680,7 +1680,7 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
-            return $v->emit_java($level, 'scalar') . ".hget_list_of_aliases("
+            return '((PlHash)' . $v->emit_java($level, 'scalar') . ").hget_list_of_aliases("
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                     . ')'
