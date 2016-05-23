@@ -1555,6 +1555,20 @@ package Perlito5::AST::Index;
                     'return a',
             )
         }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a[10, 20]
+            # %$a[0, 2] ==> %{$a}[0,2]
+            # TODO - move this message to parser
+            die "Can't modify index/value array slice in list assignment";
+        }
         if ($localize) {
             return $self->emit_java_container($level) . '.aget_lvalue_local('
                     . Perlito5::Java::autoquote($self->{index_exp}, $level) . ').set('
@@ -1730,6 +1744,20 @@ package Perlito5::AST::Lookup;
                     . Perlito5::Java::to_list([$arguments], $level) . ', '
                     . Perlito5::Java::to_list([$self->{index_exp}], $level)
                 . ')'
+        }
+        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
+              && $self->{obj}->{code} eq 'prefix:<%>'
+              )
+           || (  $self->{obj}->isa('Perlito5::AST::Var')
+              && $self->{obj}->sigil eq '%'
+              )
+           )
+        {
+            # Perl5.20 hash slice
+            # %a{ 'x', 'y' }
+            # %$a{ 'x', 'y' }  ==> %{$a}{ 'x', 'y' }
+            # TODO - move this message to parser
+            die "Can't modify index/value array slice in list assignment";
         }
         if ($localize) {
             return $self->emit_java_container($level) . '.hget_lvalue_local('
