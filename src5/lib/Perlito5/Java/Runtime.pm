@@ -2278,11 +2278,11 @@ class PlArray extends PlObject {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (PlObject s : args) {
             if (s.is_hash()) {
-                // @x = %x;
-                s = s.to_array();
+                // ( %x );
+                s = ((PlHash)s).to_array_of_aliases();
             }
             if (s.is_array()) {
-                // @x = ( @x, @y );
+                // ( @x, @y );
                 for (int i = 0; i < s.to_long(); i++) {
                     aa.add(s.aget_lvalue(i));
                 }
@@ -2951,6 +2951,31 @@ class PlHash extends PlObject {
             aa.push(value);
         }
         return aa;
+    }
+
+    public PlArray to_array_of_aliases() {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            aa.add(new PlString(key));
+            PlObject value = entry.getValue();
+            if (value == null) {
+                PlLvalue a = new PlLvalue();
+                this.h.put(key, a);
+                aa.add(a);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue a = new PlLvalue(value);
+                this.h.put(key, a);
+                aa.add(a);
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        return result;
     }
 
     public PlObject hget(PlObject i) {

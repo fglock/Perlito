@@ -1724,11 +1724,11 @@ package Perlito5::AST::Lookup;
             # @a{ 'x', 'y' }
             # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
             my $v;
-            $v = $self->{obj}
+            $v = Perlito5::AST::Var->( %{$self->{obj}}, sigil => '%' )
                 if $self->{obj}->isa('Perlito5::AST::Var');
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
-            return $self->emit_java_container($level). '.hset('
+            return $v->emit_java($level). '.hset('
                     . Perlito5::Java::to_context($wantarray) . ', '
                     . Perlito5::Java::to_list([$arguments], $level) . ', '
                     . Perlito5::Java::to_list([$self->{index_exp}], $level)
