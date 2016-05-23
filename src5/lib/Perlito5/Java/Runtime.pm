@@ -2279,7 +2279,7 @@ class PlArray extends PlObject {
         for (PlObject s : args) {
             if (s.is_hash()) {
                 // ( %x );
-                s = ((PlHash)s).to_array_of_aliases();
+                s = ((PlHash)s).to_list_of_aliases();
             }
             if (s.is_array()) {
                 // ( @x, @y );
@@ -2483,6 +2483,32 @@ EOT
     }
     public PlObject aget_lvalue_local(int i) {
         return PerlOp.push_local(this, i);
+    }
+
+    public PlObject aget_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            aa.add( this.aget_lvalue(i) );
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
+    }
+    public PlObject aget_hash_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            aa.add( new PlInt(i) );
+            aa.add( this.aget_lvalue(i) );
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
     }
 
     public PlObject get_scalar(PlObject i) {
@@ -2953,7 +2979,7 @@ class PlHash extends PlObject {
         return aa;
     }
 
-    public PlArray to_array_of_aliases() {
+    public PlArray to_list_of_aliases() {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             String key = entry.getKey();
@@ -2992,17 +3018,58 @@ class PlHash extends PlObject {
         }
         return o;
     }
-    public PlObject hget(int want, PlArray a) {
-        PlArray aa = new PlArray();
-
+    public PlObject hget_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
-            PlObject r = this.hget(a.aget(i));
-            aa.push(r);
+            String key = a.aget(i).toString();
+            PlObject value = this.h.get(key);
+            if (value == null) {
+                PlLvalue v = new PlLvalue();
+                this.h.put(key, v);
+                aa.add(v);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue v = new PlLvalue(value);
+                this.h.put(key, v);
+                aa.add(v);
+            }
         }
+        PlArray result = new PlArray();
+        result.a = aa;
         if (want == PlCx.LIST) {
-            return aa;
+            return result;
         }
-        return aa.pop();
+        return result.pop();
+    }
+    public PlObject hget_hash_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            String key = a.aget(i).toString();
+            aa.add(new PlString(key));
+            PlObject value = this.h.get(key);
+            if (value == null) {
+                PlLvalue v = new PlLvalue();
+                this.h.put(key, v);
+                aa.add(v);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue v = new PlLvalue(value);
+                this.h.put(key, v);
+                aa.add(v);
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
     }
 
     public PlObject hget_lvalue(PlObject i) {

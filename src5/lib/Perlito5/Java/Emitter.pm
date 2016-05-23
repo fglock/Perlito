@@ -1489,10 +1489,9 @@ package Perlito5::AST::Index;
             # @a[10, 20]
             # @$a[0, 2] ==> @{$a}[0,2]
             # (4,5,6)[0,2]
-            return 'p5list_slice('
-                        . $self->{obj}->emit_java($level, 'list') . ', '
-                        . Perlito5::Java::to_list([$self->{index_exp}], $level) . ', '
-                        . Perlito5::Java::to_context($wantarray)
+            return $self->{obj}->emit_java($level) . '.aget_list_of_aliases('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')'
         }
         if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
@@ -1514,10 +1513,9 @@ package Perlito5::AST::Index;
             $obj->{code} = 'prefix:<@>'
                 if $obj->{code} eq 'prefix:<%>';
 
-            return 'p5hash_slice('
-                        . $self->{obj}->emit_java($level, 'list') . ', '
-                        . Perlito5::Java::to_list([$self->{index_exp}], $level) . ', '
-                        . Perlito5::Java::to_context($wantarray)
+            return $self->{obj}->emit_java($level) . '.aget_hash_list_of_aliases('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')';
         }
         my $arg = $self->{index_exp};
@@ -1678,7 +1676,7 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
-            return $v->emit_java($level, 'list') . ".$method("
+            return $v->emit_java($level, 'scalar') . ".hget_list_of_aliases("
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                     . ')'
@@ -1701,10 +1699,9 @@ package Perlito5::AST::Lookup;
             $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
                 if $self->{obj}->isa('Perlito5::AST::Apply');
 
-            return 'p5hash_lookup_slice('
-                        . $v->emit_java($level, 'list') . ', '
-                        . Perlito5::Java::to_list([$self->{index_exp}], $level) . ', '
-                        . Perlito5::Java::to_context($wantarray)
+            return $v->emit_java($level) . '.hget_hash_list_of_aliases('
+                        . Perlito5::Java::to_context($wantarray) . ', '
+                        . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')'
         }
         return $self->emit_java_container($level) . '.' . $method . '('
