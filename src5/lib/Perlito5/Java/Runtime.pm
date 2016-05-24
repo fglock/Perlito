@@ -1239,9 +1239,9 @@ EOT
         return this;
     }
 
-    public PlObject array_deref() {
+    public PlArray array_deref() {
         PlCORE.die("Not an ARRAY reference");
-        return this;
+        return (PlArray)this;
     }
     public PlObject array_deref_set(PlObject i) {
         PlCORE.die("Not an ARRAY reference");
@@ -1769,7 +1769,7 @@ class PlArrayRef extends PlArray {
         o.a = this.a;
         return o;
     }
-    public PlObject array_deref() {
+    public PlArray array_deref() {
         PlArray o = new PlArray();
         o.a = this.a;
         return o;
@@ -2034,15 +2034,15 @@ class PlLvalue extends PlObject {
         return this.o.scalar_deref_set(v);
     }
 
-    public PlObject array_deref() {
+    public PlArray array_deref() {
         // @$x doesn't autovivify
         if (this.o.is_undef()) {
             return new PlArray();
         }
         else if (this.o.is_arrayref()) {
-            return this.o.get();
+            return (PlArray)(this.o.get());
         }
-        return PlCORE.die("Not an ARRAY reference");
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
     }
     public PlObject array_deref_set(PlObject v) {
         // @$x = ...
@@ -3602,9 +3602,9 @@ class PlString extends PlObject {
         String internalName = PlV.glob_name_fixup(s, "v_");
         return PlV.set(internalName, v);
     }
-    public PlObject array_deref() {
+    public PlArray array_deref() {
         String internalName = PlV.glob_name_fixup(s, "List_");
-        return PlV.get(internalName);
+        return PlV.array_get(internalName);
     }
     public PlObject array_deref_set(PlObject v) {
         String internalName = PlV.glob_name_fixup(s, "List_");
