@@ -1227,6 +1227,12 @@ EOT
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
+    public PlObject aget_list_of_aliases(int want, PlArray a) {
+        if (this.is_array()) {
+            return ((PlArray)this).aget_list_of_aliases(want, a);
+        }
+        return PlCORE.die("Not an ARRAY");
+    }
     public PlObject aget_lvalue(int pos) {
         return PlCORE.die("Not an ARRAY reference");
     }
