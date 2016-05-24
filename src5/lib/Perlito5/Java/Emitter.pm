@@ -977,6 +977,7 @@ package Perlito5::Java::LexicalBlock;
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
                 # "if" returns a value
+                Perlito5::Macro::insert_return_in_if($last_statement);
                 push @str, $last_statement->emit_java($level, 'runtime') . '';
             }
             elsif ( Perlito5::AST::Sub::is_named_sub($last_statement) ) {

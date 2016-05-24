@@ -401,6 +401,45 @@ sub while_file {
     return 0;
 }
 
+sub _insert_return_in_block {
+    my ($self, $tag) = @_;
+    my $body = $self->{$tag};
+    if (!$body) {
+        $body = Perlito5::AST::Block->new(
+                    stmts => [
+                        Perlito5::AST::Apply->new(
+                            'arguments' => [],
+                            'code' => 'return',
+                            'namespace' => '',
+                        ),
+                    ],
+                );
+    }
+    elsif (ref($body) ne 'Perlito5::AST::Block') {
+        # TODO
+    }
+    elsif (@{$body->{stmts}} == 0) {
+        push @{$body->{stmts}},
+                        Perlito5::AST::Apply->new(
+                            'arguments' => [],
+                            'code' => 'return',
+                            'namespace' => '',
+                        );
+    }
+    else {
+        # TODO
+    }
+    $self->{$tag} = $body;
+}
+
+sub insert_return_in_if {
+    my $self = $_[0];
+    return 0
+        if ref($self) ne 'Perlito5::AST::If';
+    _insert_return_in_block($self, 'body');
+    _insert_return_in_block($self, 'otherwise');
+}
+
 1;
 
 =begin

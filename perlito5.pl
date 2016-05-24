@@ -1154,6 +1154,24 @@ use feature 'say';
         }
         return 0
     }
+    sub Perlito5::Macro::_insert_return_in_block {
+        my($self, $tag) = @_;
+        my $body = $self->{$tag};
+        if (!$body) {
+            $body = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => '')])
+        }
+        elsif (ref($body) ne 'Perlito5::AST::Block') {}
+        elsif (@{$body->{'stmts'}} == 0) {
+            push(@{$body->{'stmts'}}, Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => ''))
+        }
+        $self->{$tag} = $body
+    }
+    sub Perlito5::Macro::insert_return_in_if {
+        my $self = $_[0];
+        ref($self) ne 'Perlito5::AST::If' && return 0;
+        _insert_return_in_block($self, 'body');
+        _insert_return_in_block($self, 'otherwise')
+    }
     1
 }
 {
@@ -16682,6 +16700,7 @@ use feature 'say';
                     push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                 }
                 elsif ($last_statement->isa('Perlito5::AST::If')) {
+                    Perlito5::Macro::insert_return_in_if($last_statement);
                     push(@str, $last_statement->emit_java($level, 'runtime') . '')
                 }
                 elsif (Perlito5::AST::Sub::is_named_sub($last_statement)) {
