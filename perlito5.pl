@@ -17651,6 +17651,8 @@ use feature 'say';
             if (my $node = $self->maybe_rewrite_statevars()) {
                 return $node->emit_java($level, $wantarray)
             }
+            local $Perlito5::THROW;
+            local $Perlito5::THROW_RETURN;
             my $prototype = defined($self->{'sig'}) ? 'new PlString(' . Perlito5::Java::escape_string($self->{'sig'}) . ')' : 'PlCx.UNDEF';
             my $sub_ref = Perlito5::Java::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
