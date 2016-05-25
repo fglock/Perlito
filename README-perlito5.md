@@ -186,7 +186,10 @@ Parser
         instead of:
           *main::ccc2 = \$main::ccc;
 
-    TODO - lexicals and closures are not dumped
+    - lexicals and closures are not dumped
+
+    TODO - lexicals are not shared
+         - maybe save lexical variable AST. This will help identify shared lexicals
 
 -- parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
@@ -643,6 +646,10 @@ Oddities
 
     $ perl -lwe '*4 = sub { print "yes" }; 4->()'
     yes
+
+    $ perl -e ' sub x { print 123 } x->() '
+    Undefined subroutine &main::1 called at -e line 1.
+    123
 
 -- return value of continue-block
 

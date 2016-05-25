@@ -16,7 +16,7 @@ Perlito5-in-JavaScript - what works
 - Scalar vs. List context, wantarray().
 
 - Variables.
-  "my", "our", "local".
+  "my", "our", "local", "state".
   Most special variables.
   Most variable declarations.
 
@@ -43,8 +43,6 @@ Perlito5-in-JavaScript differences from "perl"
 
 - "sleep" is not implemented in the browser.
   Perlito5 in node.js implements "sleep" using an npm module.
-
-- "state" declaration is not implemented yet.
 
 - Perlito5 in the browser doesn't implement many of the perl I/O operators;
   Perlito5 in node.js should implement most of the I/O operators.
