@@ -643,6 +643,52 @@ EOT
                 ++index;
                 break;
             }
+            case 'w':
+            {
+                int size = pack_size(template, i);
+                String[] input = new String[size];
+                for(int j = 0; j < size; ++j) {
+                    input[j] = List__.aget(index + j).toString();
+                }
+                result.append(pack_w(input, size));
+                index += size;
+                break;        
+            }
+            case 'x':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_x(size));
+                ++index;                
+                break;        
+            }
+            case 'X':
+            {
+                int size = pack_size(template, i);
+                int length = result.length();
+                result.delete(Math.max(0,length - size), length);
+                ++index;                
+                break;        
+            }
+            case '@':
+            {
+                int size = pack_size(template, i);
+                int length = result.length();
+                if(size > length) {
+                    result.append(new char[size - length]);
+                }
+                ++index;                
+                break;        
+            }
+            case '.':
+            {
+               int size = List__.aget(index).to_int();
+                int length = result.length();
+                if(size > length) {
+                    result.append(new char[size - length]);
+                }
+                ++index;                
+                break;        
+            }
             default:
             }
         }
@@ -886,7 +932,28 @@ EOT
             result.append(line);
         }
 
+        return result.toString().replaceAll(" ", "`");
+    }
+    public static final String pack_w(String[] s, int size) {
+        java.math.BigInteger max_byte = new java.math.BigInteger("128");
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < size; ++i) {
+            java.math.BigInteger current = new java.math.BigInteger(s[i]);
+            if(current.signum() < 0) {
+                throw new PlDieException(new PlString("Cannot compress negative numbers in pack"));
+            }
+            while(current.compareTo(max_byte) > 0) {
+                int part = current.mod(max_byte).intValue();
+                result.append((char) (part + 128));
+                current = current.divide(max_byte);
+            }
+            result.append((char)current.intValue());
+        }
+
         return result.toString();
+    }
+    public static final String pack_x(int size) {
+        return new String(new char[size]);
     }
     public static final PlObject time(int want, PlArray List__) {
         return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));

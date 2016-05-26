@@ -11,6 +11,7 @@
 - Java:
 -- "$$" variable (process id)
 -- mkdir(), rmdir()
+-- pack (A..x with number working)
 
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:
