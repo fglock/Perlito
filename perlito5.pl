@@ -8351,6 +8351,7 @@ use feature 'say';
             my @stmts;
             if (defined($self->{'block'})) {
                 if ($self->{'name'}) {
+                    local $Perlito5::PKG_NAME = $self->{'namespace'};
                     return Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('sigil' => '*', '_decl' => 'global', 'namespace' => $self->{'namespace'}, 'name' => $self->{'name'}), Perlito5::AST::Sub::->new(%{$self}, 'namespace' => undef, 'name' => undef)->emit_compile_time()])
                 }
                 @stmts = @{$self->{'block'}->{'stmts'}};
@@ -8372,7 +8373,7 @@ use feature 'say';
                     my $code = __PACKAGE__->new(%{$self}, 'block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts]));
                     my $id = Perlito5::get_label();
                     $Perlito5::BEGIN_SUBS{$id} = $code;
-                    unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Var::LIST_ARG(), Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'infix:<eq>', 'arguments' => [Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::LIST_ARG_INDEX(0)], 'code' => 'ref'), Perlito5::AST::Buf::->new('buf' => 'Perlito5::dump')]), Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => '__SUB__'), Perlito5::AST::Buf::->new('buf' => $id), map {
+                    unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Var::LIST_ARG(), Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'infix:<eq>', 'arguments' => [Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::LIST_ARG_INDEX(0)], 'code' => 'ref'), Perlito5::AST::Buf::->new('buf' => 'Perlito5::dump')]), Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => '__SUB__'), Perlito5::AST::Buf::->new('buf' => $id), Perlito5::AST::Buf::->new('buf' => '__PKG__'), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME), map {
                         (Perlito5::AST::Buf::->new('buf' => ($_->{'_real_sigil'} || $_->{'sigil'}) . $_->{'name'}), Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [$_]))
                     } @captures_ast])])])]))
                 }
@@ -8468,9 +8469,12 @@ use feature 'say';
             my $ast;
             my $source;
             my $sub_name;
+            my $package = $captures->{'__PKG__'};
+            $package && push(@vars, 'package ' . $package . ';');
             for my $var (sort {
                 $a cmp $b
             } keys(%{$captures})) {
+                $var eq '__PKG__' && next;
                 if ($var eq '__SUB__') {
                     my $sub_id = $captures->{$var};
                     $ast = $Perlito5::BEGIN_SUBS{$sub_id};

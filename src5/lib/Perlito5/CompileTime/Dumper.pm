@@ -82,7 +82,11 @@ sub _dumper {
         my $ast;
         my $source;
         my $sub_name;
+        my $package = $captures->{__PKG__};
+        push @vars, "package $package;"
+            if $package;
         for my $var (sort keys %$captures) {
+            next if $var eq "__PKG__";
             if ($var eq '__SUB__') {
                 my $sub_id = $captures->{$var};
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};

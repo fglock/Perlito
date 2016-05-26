@@ -252,6 +252,7 @@ package Perlito5::AST::Sub;
 
             if ($self->{name}) {
                 # transform into anonymous sub
+                local $Perlito5::PKG_NAME = $self->{namespace};
                 return Perlito5::AST::Apply->new(
                     'code' => 'infix:<=>',
                     'namespace' => '',
@@ -338,6 +339,8 @@ package Perlito5::AST::Sub;
                                             arguments => [
                                                 Perlito5::AST::Buf->new(buf => '__SUB__'),
                                                 Perlito5::AST::Buf->new(buf => $id),
+                                                Perlito5::AST::Buf->new(buf => '__PKG__'),
+                                                Perlito5::AST::Buf->new(buf => $Perlito5::PKG_NAME),
                                                 map {(
                                                     Perlito5::AST::Buf->new(
                                                         buf => ($_->{_real_sigil} || $_->{sigil}) . $_->{name},
