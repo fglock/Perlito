@@ -1041,7 +1041,7 @@ sub double_quoted_var {
     }
     elsif ($c eq '@'
         && substr($str, $pos+1, length($delimiter)) ne $delimiter       # not end of string
-        && ($c2 le "0" || $c2 ge "9")                                   # not a digit
+        && ($c2 lt "0" || $c2 gt "9")                                   # not a digit
         )
     {
         my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
