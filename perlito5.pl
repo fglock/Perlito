@@ -4247,7 +4247,7 @@ use feature 'say';
             $m->{'capture'} = $m->{'capture'}->[1];
             return double_quoted_var_with_subscript($m, $interpolate)
         }
-        elsif ($c eq '@' && substr($str, $pos + 1, length($delimiter)) ne $delimiter) {
+        elsif ($c eq '@' && substr($str, $pos + 1, length($delimiter)) ne $delimiter && ($c2 le 0 || $c2 ge 9)) {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
             $m || return $m;
             $m->{'capture'} = $m->{'capture'}->[1];
