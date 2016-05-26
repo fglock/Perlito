@@ -77,6 +77,19 @@ sub term_bareword {
         $p = $m->{to};
     }
 
+    if ( substr( $str, $p, 2) eq '!=' || substr( $str, $p, 2) eq '!~' ) {
+        # "X::y != ..."  subroutine call
+        $m_name->{capture} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => [],
+                        bareword  => 1
+                    )
+                ];
+        return $m_name;
+    }
+
     # check for indirect-object
     my $invocant;
     my $is_subroutine_name;
