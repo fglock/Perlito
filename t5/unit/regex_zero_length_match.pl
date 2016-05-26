@@ -1,11 +1,28 @@
 
-    print "1..1\n";
+    print "1..4\n";
 
     $_ = 'bar';
-    s/\w??/<$&>/g;
-
-    if ($_ ne '<><b><><a><><r><>') {
+    $_ =~ m/\w??/g;
+    if (pos != 0) {
         print "not "
     }
-    print "ok 1  # $_ \n";
+    print "ok 1  # ",pos(),"\n";
+
+    $_ =~ m/\w??/g;
+    if (pos != 1) {
+        print "not "
+    }
+    print "ok 2  # ",pos(),"\n";
+
+    $_ =~ m/\w??/g;
+    if (pos != 1) {
+        print "not "
+    }
+    print "ok 3  # ",pos(),"\n";
+
+    $_ =~ m/\w??/g;
+    if (pos != 2) {
+        print "not "
+    }
+    print "ok 4  # ",pos(),"\n";
 
