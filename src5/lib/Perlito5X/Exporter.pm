@@ -47,6 +47,8 @@ sub export {
     my ( $type, $sym, $cache_is_current, $oops );
     my ( $exports, $export_cache ) = ( \@{"${pkg}::EXPORT"}, $Exporter::Cache{$pkg} ||= {} );
 
+    # print STDERR "exports (pkg => $pkg, callpkg => $callpkg) exports \@ ${pkg}::EXPORT ", Data::Dumper::Dumper($exports);
+
     if (@imports) {
         if ( !%$export_cache ) {
             _rebuild_cache( $pkg, $exports, $export_cache );

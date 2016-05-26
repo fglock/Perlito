@@ -7,7 +7,7 @@ sub eval_ast {
     my @data = $ast->emit_perl5(0, $want);
     my $out = [];
     Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-    my $code = join( '', @$out ), ";1\n";
+    my $code = "package $Perlito5::PKG_NAME; " . join( '', @$out ), ";1\n";
     # say STDERR "source: [" . $code . "]";
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;

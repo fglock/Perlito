@@ -4247,7 +4247,7 @@ use feature 'say';
             $m->{'capture'} = $m->{'capture'}->[1];
             return double_quoted_var_with_subscript($m, $interpolate)
         }
-        elsif ($c eq '@' && substr($str, $pos + 1, length($delimiter)) ne $delimiter && ($c2 le 0 || $c2 ge 9)) {
+        elsif ($c eq '@' && substr($str, $pos + 1, length($delimiter)) ne $delimiter && ($c2 lt 0 || $c2 gt 9)) {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
             $m || return $m;
             $m->{'capture'} = $m->{'capture'}->[1];
@@ -13601,7 +13601,7 @@ use feature 'say';
         my @data = $ast->emit_perl5(0, $want);
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $code = join('', @{$out}), ';1' . chr(10);
+        my $code = 'package ' . $Perlito5::PKG_NAME . '; ' . join('', @{$out}), ';1' . chr(10);
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
