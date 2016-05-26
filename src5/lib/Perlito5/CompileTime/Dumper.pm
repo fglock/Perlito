@@ -106,7 +106,7 @@ sub _dumper {
                 @vars,
                 $source,
                 ( $sub_name
-                  ? 'return \\&' . $sub_name    # return pointer to subroutine
+                  ? '\\&' . $sub_name    # return pointer to subroutine
                   : ''
                 ),
             '}'

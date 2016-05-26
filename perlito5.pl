@@ -8480,7 +8480,7 @@ use feature 'say';
                     push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
                 }
             }
-            return join('', 'do { ', @vars, $source, ($sub_name ? 'return ' . chr(92) . '&' . $sub_name : ''), '}')
+            return join('', 'do { ', @vars, $source, ($sub_name ? chr(92) . '&' . $sub_name : ''), '}')
         }
         my @out;
         for my $i (sort {
