@@ -250,6 +250,28 @@ package Perlito5::AST::Sub;
         if (defined $self->{block}) {
             # this is not a pre-declaration
 
+            if ($self->{name}) {
+                # transform into anonymous sub
+                return Perlito5::AST::Apply->new(
+                    'code' => 'infix:<=>',
+                    'namespace' => '',
+                    'arguments' => [
+                        Perlito5::AST::Var->new( 
+                            'sigil' => '*',
+                            '_decl' => 'global',
+                            'namespace' => $self->{namespace},
+                            'name' => $self->{name},
+                        ),
+                        Perlito5::AST::Sub->new(
+                            %$self,
+                            'namespace' => undef,
+                            'name' => undef,
+                        )->emit_compile_time(),
+                    ],
+                );
+            }
+
+
             @stmts = @{$self->{block}{stmts}};
             @stmts = map { $_->emit_compile_time() } @stmts;
 
@@ -345,26 +367,6 @@ package Perlito5::AST::Sub;
                             stmts => [ @stmts ],
                          ) )
                 : () ),
-            );
-        }
-
-        if ($self->{name}) {
-            return Perlito5::AST::Apply->new(
-                'code' => 'infix:<=>',
-                'namespace' => '',
-                'arguments' => [
-                    Perlito5::AST::Var->new( 
-                        'sigil' => '*',
-                        '_decl' => 'global',
-                        'namespace' => $self->{namespace},
-                        'name' => $self->{name},
-                    ),
-                    Perlito5::AST::Sub->new(
-                        %$self,
-                        'namespace' => undef,
-                        'name' => undef,
-                    ),
-                ],
             );
         }
 

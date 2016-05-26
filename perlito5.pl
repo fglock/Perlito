@@ -8350,6 +8350,9 @@ use feature 'say';
             my $self = $_[0];
             my @stmts;
             if (defined($self->{'block'})) {
+                if ($self->{'name'}) {
+                    return Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('sigil' => '*', '_decl' => 'global', 'namespace' => $self->{'namespace'}, 'name' => $self->{'name'}), Perlito5::AST::Sub::->new(%{$self}, 'namespace' => undef, 'name' => undef)->emit_compile_time()])
+                }
                 @stmts = @{$self->{'block'}->{'stmts'}};
                 @stmts = map {
                     $_->emit_compile_time()
@@ -8374,9 +8377,6 @@ use feature 'say';
                     } @captures_ast])])])]))
                 }
                 $self = __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
-            }
-            if ($self->{'name'}) {
-                return Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('sigil' => '*', '_decl' => 'global', 'namespace' => $self->{'namespace'}, 'name' => $self->{'name'}), Perlito5::AST::Sub::->new(%{$self}, 'namespace' => undef, 'name' => undef)])
             }
             return $self
         }
