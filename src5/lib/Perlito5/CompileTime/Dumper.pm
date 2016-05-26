@@ -81,15 +81,19 @@ sub _dumper {
         my @vars;
         my $ast;
         my $source;
+        my $sub_name;
         for my $var (sort keys %$captures) {
             if ($var eq '__SUB__') {
                 my $sub_id = $captures->{$var};
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};
 
+                $sub_name = $ast->{namespace} . "::" . $ast->{name}
+                    if $ast->{name};;
+
                 my @data = $ast->emit_perl5();
                 my $out = [];
                 Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-                $source = join( '', @$out );
+                $source = join( '', @$out ) . ";";
             }
             else {
                 push @vars, 
@@ -101,6 +105,10 @@ sub _dumper {
             'do { ',
                 @vars,
                 $source,
+                ( $sub_name
+                  ? 'return \\&' . $sub_name    # return pointer to subroutine
+                  : ''
+                ),
             '}'
         );
     }

@@ -8463,22 +8463,24 @@ use feature 'say';
             my @vars;
             my $ast;
             my $source;
+            my $sub_name;
             for my $var (sort {
                 $a cmp $b
             } keys(%{$captures})) {
                 if ($var eq '__SUB__') {
                     my $sub_id = $captures->{$var};
                     $ast = $Perlito5::BEGIN_SUBS{$sub_id};
+                    $ast->{'name'} && ($sub_name = $ast->{'namespace'} . '::' . $ast->{'name'});
                     my @data = $ast->emit_perl5();
                     my $out = [];
                     Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-                    $source = join('', @{$out})
+                    $source = join('', @{$out}) . ';'
                 }
                 else {
                     push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
                 }
             }
-            return join('', 'do { ', @vars, $source, '}')
+            return join('', 'do { ', @vars, $source, ($sub_name ? 'return ' . chr(92) . '&' . $sub_name : ''), '}')
         }
         my @out;
         for my $i (sort {
