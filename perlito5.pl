@@ -8373,8 +8373,12 @@ use feature 'say';
                         (Perlito5::AST::Buf::->new('buf' => ($_->{'_real_sigil'} || $_->{'sigil'}) . $_->{'name'}), Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [$_]))
                     } @captures_ast])])])]))
                 }
+                $self = __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
             }
-            return __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
+            if ($self->{'name'}) {
+                return Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('sigil' => '*', '_decl' => 'global', 'namespace' => $self->{'namespace'}, 'name' => $self->{'name'}), Perlito5::AST::Sub::->new(%{$self}, 'namespace' => undef, 'name' => undef)])
+            }
+            return $self
         }
     }
     package Perlito5::AST::Use;
