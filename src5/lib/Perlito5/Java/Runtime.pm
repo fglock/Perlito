@@ -787,6 +787,7 @@ class PerlOp {
     // TODO - regex_pos is never cleaned up - this is a memory leak
     // See: ReferenceQueue, WeakReference
     public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
+    public static final PlHash regex_zero_length_flag = new PlHash();    // matcher for "pos($v)"
 
     public static final PlObject pos(PlObject var) {
         // TODO - check that var is lvalue
@@ -794,12 +795,29 @@ class PerlOp {
     }
     public static final PlObject set_pos(PlObject var, PlObject value) {
         // TODO - check that var is lvalue
+        String hashCode = Integer.toString(var.hashCode());
         if (!value.is_undef()) {
             int pos = value.to_int();
+
+            // check for zero-length match
+            int old_pos = regex_pos.hget(hashCode).to_int();
+
+            if (old_pos == pos) {
+                // PlCORE.say("zero length match");
+                boolean old_flag = regex_zero_length_flag.hget(hashCode).to_bool();
+                if (old_flag) {
+                    pos++;
+                    regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
+                }
+                else {
+                    regex_zero_length_flag.hset(hashCode, PlCx.TRUE);
+                }
+            }
+
             // TODO - test that pos < string length
             value = new PlInt(pos);
         }
-        return regex_pos.hset(Integer.toString(var.hashCode()), value);
+        return regex_pos.hset(hashCode, value);
     }
 
     // ****** regex variables
