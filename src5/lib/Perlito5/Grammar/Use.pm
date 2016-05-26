@@ -106,21 +106,19 @@ token stmt_use {
 
             my $use_decl = Perlito5::Match::flat($MATCH->{use_decl});
 
+            if ($full_ident eq 'strict') {
+                # special case:
+                #   "strict::import()" doesn\'t work
+                #   because the effect of "strict" is localized by the compiler
+                $Perlito5::STRICT = ($use_decl eq 'no' ? 0 : 1);
+            }
+
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
                 my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
                 Perlito5::Compiler::error "not a valid variable name: @$list"
                     if !$m;
                 $MATCH->{capture} = $m->{capture};
-            }
-            elsif ($full_ident eq 'strict') {
-                $Perlito5::STRICT = ( $use_decl eq 'no' ? 0 : 1 );      # TODO - options
-                my $ast = Perlito5::AST::Use->new(
-                        code      => $use_decl,
-                        mod       => $full_ident,
-                        arguments => $list
-                    );
-                $MATCH->{capture} = $ast;
             }
             elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
                 my @ast;
