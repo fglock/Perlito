@@ -793,7 +793,7 @@ class PerlOp {
         // TODO - check that var is lvalue
         return regex_pos.hget(Integer.toString(var.hashCode()));
     }
-    public static final PlObject set_pos(PlObject var, PlObject value) {
+    public static final PlObject set_pos(PlObject var, PlObject value, Matcher matcher, String str) {
         // TODO - check that var is lvalue
         String hashCode = Integer.toString(var.hashCode());
         if (!value.is_undef()) {
@@ -806,8 +806,23 @@ class PerlOp {
                 // PlCORE.say("zero length match");
                 boolean old_flag = regex_zero_length_flag.hget(hashCode).to_bool();
                 if (old_flag) {
-                    pos++;
-                    regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
+                    boolean find = matcher.find();
+                    if (find) {
+                        set_match(matcher, str);
+                        pos = matcher.end();
+
+                        // TODO - $&
+                        // String cap1 = str.substring(old_pos, pos);
+                        // String cap = str.substring(matcher.start(), matcher.end());
+                        // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
+
+                        regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
+                    }
+                    else {
+                        reset_match();
+                        regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
+                        return regex_pos.hset(hashCode, PlCx.UNDEF);
+                    }
                 }
                 else {
                     regex_zero_length_flag.hset(hashCode, PlCx.TRUE);
@@ -886,12 +901,12 @@ class PerlOp {
                 }
                 if (find) {
                     set_match(matcher, str);
-                    set_pos(input, new PlInt(matcher.end()));
+                    set_pos(input, new PlInt(matcher.end()), matcher, str);
                     return PlCx.TRUE;
                 }
                 else {
                     reset_match();
-                    set_pos(input, PlCx.UNDEF);
+                    set_pos(input, PlCx.UNDEF, null, null);
                     return PlCx.FALSE;
                 }
             }
@@ -931,7 +946,7 @@ class PerlOp {
             else {
                 reset_match();
             }
-            set_pos(input, PlCx.UNDEF);
+            set_pos(input, PlCx.UNDEF, null, null);
             return ret;
         }
         else {
