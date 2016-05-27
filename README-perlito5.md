@@ -561,6 +561,39 @@ Compile-time execution environment
 
 -- work in progress
 
+-- current implementation
+
+    disable Java special case:
+
+    re-add Java headers (see EXPAND_USE in Use.pm; Java headers in src5/lib/Perlito5/Java/Emitter.pm)
+
+~~~perl
+                 $Perlito5::EXPAND_USE = 0
+    -                if $bootstrapping
+    -                || ($backend eq 'java');
+    +                if $bootstrapping;
+    +                # || ($backend eq 'java');
+~~~
+
+    force adding @END blocks:
+
+~~~perl
+    sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
+        my $scope = shift() // $Perlito5::GLOBAL;
+        my $vars = [];
+        my $seen = {};
+        my $dumper_seen = {};
+        my $tab = '';
+        $scope->{'@Perlito5::END_BLOCK'} = {
+                                       'ast' => bless( {
+                                                         'namespace' => 'Perlito5',
+                                                         'name' => 'END_BLOCK',
+                                                         'sigil' => '@'
+                                                       }, 'Perlito5::AST::Var' ),
+                                       'value' => \@Perlito5::END_BLOCK,
+                                     };
+~~~
+
 -- special backend option "_comp" dumps the compile-time execution environment:
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
