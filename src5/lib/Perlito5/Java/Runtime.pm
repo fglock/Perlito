@@ -180,6 +180,7 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
+import java.nio.charset.*;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -262,6 +263,7 @@ class PlCx {
     public static final PlFileHandle STDIN  = new PlFileHandle();
     public static final PlFileHandle STDOUT = new PlFileHandle();
     public static final PlFileHandle STDERR = new PlFileHandle();
+    public static final Charset UTF8        = Charset.forName("UTF-8");
     public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
     public static final String  ARGV   = "main::List_ARGV";

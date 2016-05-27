@@ -40,7 +40,7 @@ my %FileFunc = (
             }
             if (mode.equals("<")) {
                 // TODO: charset
-                fh.reader = Files.newBufferedReader(path);
+                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals(">")) {
@@ -1190,6 +1190,7 @@ EOT
             PlArray res = new PlArray();
             String s = null;
             Process p = Runtime.getRuntime().exec(args);
+            // ??? set PlCx.UTF8
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             // System.out.println("STDOUT\n");
             while ((s = stdInput.readLine()) != null) {
