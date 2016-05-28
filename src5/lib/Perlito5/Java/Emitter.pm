@@ -76,7 +76,7 @@ package Perlito5::Java;
         $Java_class->{Integer} = {
             java_type           => 'Integer',
             java_native_to_perl => 'PlInt',
-            perl_to_java        => 'to_long',
+            perl_to_java        => 'to_int',
             perl_package        => 'Integer',
         };
         $Java_class->{Boolean} = {
@@ -131,7 +131,7 @@ package Perlito5::Java;
         $Java_class->{int} = {
             java_type           => 'int',
             java_native_to_perl => 'PlInt',
-            perl_to_java        => 'to_long',
+            perl_to_java        => 'to_int',
             perl_package        => 'int',
         };
         $Java_class->{short} = {
