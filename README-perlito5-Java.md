@@ -948,6 +948,18 @@ $ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
 (?^x:before (?^: (\w) ) after)
 ~~~
 
+See also:
+
+    "Replace Rhino regexp implementation with java.util.regex"
+    https://bugzilla.mozilla.org/show_bug.cgi?id=390659
+
+    DFA
+    http://www.brics.dk/automaton/index.html
+
+    Mini-language with fast regex, Artistic License
+    http://jint.sourceforge.net
+
+
 Threads
 -------
 
