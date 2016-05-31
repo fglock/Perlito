@@ -39,6 +39,9 @@ Perlito5-in-JavaScript - what works
 Perlito5-in-JavaScript differences from "perl"
 --------------
 
+- reference to scalar doesn't work properly.
+    The reference points to a copy of the value
+
 - "~~" smartmatch is not implemented
 
 - "sleep" is not implemented in the browser.
