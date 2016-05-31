@@ -8680,6 +8680,21 @@ use feature 'say';
                     my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword);
                     push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
                 }
+                if (defined(${$bareword})) {
+                    my $sub = \${$bareword};
+                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '$' . $bareword);
+                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+                }
+                if (@{$bareword}) {
+                    my $sub = \@{$bareword};
+                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '@' . $bareword);
+                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+                }
+                if (keys(%{$bareword})) {
+                    my $sub = \%{$bareword};
+                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '%' . $bareword);
+                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+                }
             }
             else {
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)

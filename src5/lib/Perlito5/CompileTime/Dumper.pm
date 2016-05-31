@@ -412,6 +412,21 @@ sub emit_globals_after_BEGIN {
                 my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);
                 push @$vars, "*$bareword = " . $dump . ';';
             }
+            if (defined ${$bareword}) {
+                my $sub = \${$bareword};
+                my $dump = _dumper($sub, '  ', $dumper_seen, '\\$' . $bareword);
+                push @$vars, "*$bareword = " . $dump . ';';
+            }
+            if (@{$bareword}) {
+                my $sub = \@{$bareword};
+                my $dump = _dumper($sub, '  ', $dumper_seen, '\\@' . $bareword);
+                push @$vars, "*$bareword = " . $dump . ';';
+            }
+            if (keys %{$bareword}) {
+                my $sub = \%{$bareword};
+                my $dump = _dumper($sub, '  ', $dumper_seen, '\\%' . $bareword);
+                push @$vars, "*$bareword = " . $dump . ';';
+            }
 
         }
         else {
