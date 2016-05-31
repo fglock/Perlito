@@ -5065,7 +5065,10 @@ use feature 'say';
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
         my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . join('', @{$out}) . chr(10);
-        eval(Perlito5::CompileTime::Dumper::generate_eval_string($code)) or Perlito5::Compiler::error('Error in ' . $phase . ' block: ' . ${'@'})
+        eval(Perlito5::CompileTime::Dumper::generate_eval_string($code));
+        if (${'@'}) {
+            Perlito5::Compiler::error('Error in ' . $phase . ' block: ' . ${'@'})
+        }
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
         my $block = shift;
@@ -5073,7 +5076,11 @@ use feature 'say';
         Perlito5::set_global_phase('BEGIN');
         $block = $block->emit_compile_time();
         local ${'@'};
-        Perlito5::Perl5::Runtime::eval_ast($block) or Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
+        my $result = Perlito5::Perl5::Runtime::eval_ast($block);
+        if (${'@'}) {
+            Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
+        }
+        return $result
     }
     sub Perlito5::Grammar::Block::opt_continue_block {
         my $str = $_[0];
@@ -13603,7 +13610,7 @@ use feature 'say';
         my @data = $ast->emit_perl5(0, $want);
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $code = 'package ' . $Perlito5::PKG_NAME . '; ' . join('', @{$out}), ';1' . chr(10);
+        my $code = 'package ' . $Perlito5::PKG_NAME . '; ' . join('', @{$out}) . chr(10);
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);

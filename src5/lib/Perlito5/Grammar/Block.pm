@@ -62,9 +62,11 @@ sub eval_end_block {
     # say "END block: $code";
 
     # we add some extra information to the data, to make things more "dumpable"
-    eval Perlito5::CompileTime::Dumper::generate_eval_string( $code )
+    eval Perlito5::CompileTime::Dumper::generate_eval_string( $code );
     # eval "{ $code }; 1"
-    or Perlito5::Compiler::error "Error in $phase block: " . $@;
+    if ($@) {
+        Perlito5::Compiler::error "Error in $phase block: " . $@;
+    }
 }
 
 sub eval_begin_block {
@@ -90,8 +92,12 @@ sub eval_begin_block {
     # say "BEGIN Block::eval_begin_block: [[ $instrumented_code ]]";
     # eval $instrumented_code
     # eval "{ $code }; 1"
-    Perlito5::eval_ast($block)
-        or Perlito5::Compiler::error "Error in BEGIN block: " . $@;
+    my $result = Perlito5::eval_ast($block);
+    if ($@) {
+        Perlito5::Compiler::error "Error in BEGIN block: " . $@;
+    }
+    # "use MODULE" wants a true return value
+    return $result;
 }
 
 token opt_continue_block {
