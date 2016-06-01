@@ -266,95 +266,59 @@ sub emit_compiletime_lexical {
     return $item->{sigil} . 'C_::' . $item->{name} . "_" . $item->{_id};
 }
 
-sub emit_globals_scope {
-    # return a structure with the global variable declarations
-    # this is used to initialize the ahead-of-time program
-    my $scope = shift() // $Perlito5::BASE_SCOPE;
-    my @vars;
-    my %seen;
-    my $dumper_seen = {};
-    my $tab = "";
-    _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
-    return join("", @vars);
-}
+# TODO
+#   - move global variables from SCOPE to GLOBAL
+#   - analyze the list of captures and resolve shared lexicals
+#       - when 2 closures share code, we need to decide if the captured
+#         variables are shared or not.
+#         Closures can have un-shared variables if the closure is created
+#         in a loop inside BEGIN
+#       - shared lexicals can be obtained from the data in $Perlito5::SCOPE
 
-sub emit_globals {
-    # return a structure with the global variable declarations
-    # this is used to initialize the ahead-of-time program
-    my $scope = shift() // $Perlito5::GLOBAL;
-    my $vars = [];
-    my $seen = {};
-    my $dumper_seen = {};
-    my $tab = "";
-
-    # TODO
-    #   - move global variables from SCOPE to GLOBAL
-    #   - analyze the list of captures and resolve shared lexicals
-    #       - when 2 closures share code, we need to decide if the captured
-    #         variables are shared or not.
-    #         Closures can have un-shared variables if the closure is created
-    #         in a loop inside BEGIN
-    #       - shared lexicals can be obtained from the data in $Perlito5::SCOPE
-
-    #   - this Perl warning should probably be fatal in Perlito5:
-    #       Variable "$z" will not stay shared
-    #     the "perl" behaviour is hard to replicate - see misc/compile-time.
-    #     Example:
-    #
-    #       use strict; use warnings;
-    #       sub z0 {
-    #           my $z = shift;
-    #           sub z1 { $z }
-    #       }
-    #
-    #     alternately:
-    #       sub z0 {
-    #           my $z = shift;
-    #           BEGIN { *z1 = sub { $z } }
-    #       }
-    #
-    #       sub z0 {
-    #           my $z = shift;
-    #           BEGIN { $z }
-    #       }
-    #
-    #     the variable '$z' will be shared only on the 'first' execution of 'z0';
-    #     subsequent executions of 'z0' will create a new pad.
-    #
-    #     BEGIN blocks inside loops have a similar problem, but don't
-    #     generate a warning in "perl".
+#   - this Perl warning should probably be fatal in Perlito5:
+#       Variable "$z" will not stay shared
+#     the "perl" behaviour is hard to replicate - see misc/compile-time.
+#     Example:
+#
+#       use strict; use warnings;
+#       sub z0 {
+#           my $z = shift;
+#           sub z1 { $z }
+#       }
+#
+#     alternately:
+#       sub z0 {
+#           my $z = shift;
+#           BEGIN { *z1 = sub { $z } }
+#       }
+#
+#       sub z0 {
+#           my $z = shift;
+#           BEGIN { $z }
+#       }
+#
+#     the variable '$z' will be shared only on the 'first' execution of 'z0';
+#     subsequent executions of 'z0' will create a new pad.
+#
+#     BEGIN blocks inside loops have a similar problem, but don't
+#     generate a warning in "perl".
 
 
-    # problems to look for:
-    #   - closures created in loops in BEGIN blocks share variable names,
-    #       but the variables belong to different "pads" / activation records"
-    #   - closures created after variable redefinition don't share variables
-    #   - lexical variables can be shared across closures
-    #   - our variables
-    #   - in order to conserve memory at compile-time,
-    #       create subroutine stubs that expand into instrumented code when called
-    #   - bootstrapping rewrites Perlito5::* subroutines and globals, probably breaking the compiler.
-    #       special-casing the Perlito5 namespace at compile-time should work around the problem.
+# problems to look for:
+#   - closures created in loops in BEGIN blocks share variable names,
+#       but the variables belong to different "pads" / activation records"
+#   - closures created after variable redefinition don't share variables
+#   - lexical variables can be shared across closures
+#   - our variables
+#   - in order to conserve memory at compile-time,
+#       create subroutine stubs that expand into instrumented code when called
+#   - bootstrapping rewrites Perlito5::* subroutines and globals, probably breaking the compiler.
+#       special-casing the Perlito5 namespace at compile-time should work around the problem.
 
-    # Note
-    #   - variables with 'undef' value don't need to be processed,
-    #     because the runtime will re-create them
+# Note
+#   - variables with 'undef' value don't need to be processed,
+#     because the runtime will re-create them
 
-    # example of how to enable this dump:
-    #   $ PERLITO5DEV=1 perl perlito5.pl -Isrc5/lib -I. -It -C_globals -e ' use X; xxx(); sub xyz { 123 } my $z; BEGIN { $a = 3; $z = 3 } '
-
-    for my $name (keys %$scope) {
-        my $item = $scope->{$name};
-        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
-            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-        }
-        else {
-            $item->{value} = eval("\\" . $name);
-            push @$vars, "$name = " . _dumper( $item, "  ", $dumper_seen, $name . "->{value}" ) . ";\n";
-        }
-    }
-    return join("", @$vars);
-}
 
 sub emit_globals_after_BEGIN {
     # return a structure with the global variable declarations

@@ -8611,33 +8611,6 @@ use feature 'say';
         my $item = shift;
         return $item->{'sigil'} . 'C_::' . $item->{'name'} . '_' . $item->{'_id'}
     }
-    sub Perlito5::CompileTime::Dumper::emit_globals_scope {
-        my $scope = shift() // $Perlito5::BASE_SCOPE;
-        my @vars;
-        my %seen;
-        my $dumper_seen = {};
-        my $tab = '';
-        _emit_globals($scope, \%seen, $dumper_seen, \@vars, $tab);
-        return join('', @vars)
-    }
-    sub Perlito5::CompileTime::Dumper::emit_globals {
-        my $scope = shift() // $Perlito5::GLOBAL;
-        my $vars = [];
-        my $seen = {};
-        my $dumper_seen = {};
-        my $tab = '';
-        for my $name (keys(%{$scope})) {
-            my $item = $scope->{$name};
-            if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
-                _dump_global($item, $seen, $dumper_seen, $vars, $tab)
-            }
-            else {
-                $item->{'value'} = eval(chr(92) . $name);
-                push(@{$vars}, $name . ' = ' . _dumper($item, '  ', $dumper_seen, $name . '->{value}') . ';' . chr(10))
-            }
-        }
-        return join('', @{$vars})
-    }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
