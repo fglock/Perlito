@@ -860,6 +860,9 @@ class PerlOp {
         regex_var.hset("__match__", match);
     }
     public static final PlObject regex_var(int var_number) {
+        if (var_number == 0) {
+            PlCORE.die("$0 not implemented");
+        }
         Matcher matcher = get_match().matcher;
         if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
             return PlCx.UNDEF;
@@ -3636,6 +3639,14 @@ class PlString extends PlObject {
         this.s = "" + s;
     }
     public PlObject scalar_deref() {
+        if (s.length() == 1) {
+            if (this._looks_like_non_negative_integer()) {
+                return PerlOp.regex_var(this.to_int());
+            }
+            if (s.equals("&")) {
+                return PerlOp.regex_var(s);
+            }
+        }
         String internalName = PlV.glob_name_fixup(s, "v_");
         return PlV.get(internalName);
     }
@@ -3665,6 +3676,20 @@ class PlString extends PlObject {
             numericValue = this._parse();
         }
         return numericValue;
+    }
+    private boolean _looks_like_non_negative_integer() {
+        final int length = s.length();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
     }
     private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
