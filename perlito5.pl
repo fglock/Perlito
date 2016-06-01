@@ -1313,7 +1313,9 @@ use feature 'say';
                         0
                     }
                 }) && (do {
-                    $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'package', 'arguments' => [], 'namespace' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'})), @{$MATCH->{'Perlito5::Grammar::block'}->{'capture'}->{'stmts'}}]);
+                    my $namespace = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
+                    my @statements = @{$MATCH->{'Perlito5::Grammar::block'}->{'capture'}->{'stmts'}};
+                    $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'package', 'arguments' => [], 'namespace' => $namespace), @statements]);
                     $Perlito5::PKG_NAME = $MATCH->{'_package'};
                     1
                 }))

@@ -80,15 +80,17 @@ token stmt_package {
         }
         <Perlito5::Grammar::block> 
         {
+            my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
+            my @statements = @{ $MATCH->{'Perlito5::Grammar::block'}{capture}{stmts} };
             $MATCH->{capture} = 
                 Perlito5::AST::Block->new(
                     stmts => [
                         Perlito5::AST::Apply->new(
                             code      => 'package',
                             arguments => [], 
-                            namespace => Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"}),
+                            namespace => $namespace,
                         ),
-                        @{ $MATCH->{'Perlito5::Grammar::block'}{capture}{stmts} }
+                        @statements,
                     ]
                 );
             $Perlito5::PKG_NAME = $MATCH->{_package};
