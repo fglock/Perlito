@@ -232,39 +232,6 @@ sub _dump_global {
     }
 }
 
-sub _emit_globals {
-    my ($scope, $seen, $dumper_seen, $vars, $tab) = @_;
-    my $block = $scope->{block};
-    for my $item (@$block) {
-        if (ref($item) eq 'Perlito5::AST::Var' && !$item->{_decl}) {
-            $item->{_decl} = 'global';
-        }
-        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'global') {
-            $item->{namespace} ||= $item->{_namespace};
-            next if $item->{name} eq '0' || $item->{name} > 0;  # skip regex and $0
-            _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-        }
-        if (ref($item) eq 'Perlito5::AST::Var' && $item->{_decl} eq 'my') {
-            my $id = $item->{_id};
-            if (!$seen->{$id}) {
-                push @$vars, $tab . emit_compiletime_lexical($item) . "  # my " . $item->{sigil} . $item->{name} . "\n";
-            }
-            $seen->{$id} = 1;
-        }
-        if ( ref($item) eq 'HASH' && $item->{block} ) {
-            # lookup in the inner scope
-            push @$vars, $tab . "{\n";
-            _emit_globals($item, $seen, $dumper_seen, $vars, $tab . "  ");
-            push @$vars, $tab . "}\n";
-        }
-    }
-}
-
-sub emit_compiletime_lexical {
-    my $item = shift;
-    # the internal compile-time namespace is "C_"
-    return $item->{sigil} . 'C_::' . $item->{name} . "_" . $item->{_id};
-}
 
 # TODO
 #   - move global variables from SCOPE to GLOBAL

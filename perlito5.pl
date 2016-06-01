@@ -8581,36 +8581,6 @@ use feature 'say';
             }
         }
     }
-    sub Perlito5::CompileTime::Dumper::_emit_globals {
-        my($scope, $seen, $dumper_seen, $vars, $tab) = @_;
-        my $block = $scope->{'block'};
-        for my $item (@{$block}) {
-            if (ref($item) eq 'Perlito5::AST::Var' && !$item->{'_decl'}) {
-                $item->{'_decl'} = 'global'
-            }
-            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'global') {
-                $item->{'namespace'} ||= $item->{'_namespace'};
-                ($item->{'name'} eq 0 || $item->{'name'} > 0) && next;
-                _dump_global($item, $seen, $dumper_seen, $vars, $tab)
-            }
-            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} eq 'my') {
-                my $id = $item->{'_id'};
-                if (!$seen->{$id}) {
-                    push(@{$vars}, $tab . emit_compiletime_lexical($item) . '  # my ' . $item->{'sigil'} . $item->{'name'} . chr(10))
-                }
-                $seen->{$id} = 1
-            }
-            if (ref($item) eq 'HASH' && $item->{'block'}) {
-                push(@{$vars}, $tab . '{' . chr(10));
-                _emit_globals($item, $seen, $dumper_seen, $vars, $tab . '  ');
-                push(@{$vars}, $tab . '}' . chr(10))
-            }
-        }
-    }
-    sub Perlito5::CompileTime::Dumper::emit_compiletime_lexical {
-        my $item = shift;
-        return $item->{'sigil'} . 'C_::' . $item->{'name'} . '_' . $item->{'_id'}
-    }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
