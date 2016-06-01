@@ -499,7 +499,7 @@ class PerlOp {
     // statement()
     //      - workaround for "Error: not a statement"
     //      - this is the compile-time version of context(null, arg)
-    public static final void statement(PlObject arg) { }
+    public static final void statement(PlObject... args) { }
     public static final void statement() { }
 
     // control-flow exceptions

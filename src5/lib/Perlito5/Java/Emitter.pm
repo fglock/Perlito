@@ -1153,7 +1153,7 @@ package Perlito5::AST::CompUnit;
             )->emit_java( $level + 1, $wantarray );
     }
     sub process_java_import_statement {
-        my ($unit_stmt) = @_;
+        my ($namespace, $annotation_ast) = @_;
 
         # Perl:
         #   package Put { import => 'java.Put' };
@@ -1185,98 +1185,83 @@ package Perlito5::AST::CompUnit;
         #   }, 'Perlito5::AST::Block'),
 
         my $str = '';
-        if ( ref($unit_stmt) eq 'Perlito5::AST::Block') {
 
-            my $stmt = $unit_stmt->{stmts} // [];
+        my $Java_class = Perlito5::Java::get_java_class_info();
+        my $class = $namespace;
+        # warn "Java class: $class\n";
+        # TODO - add more information about the class
 
-            return '' if @$stmt != 2;    # exactly 2 statements: "package" + "options"
-            return '' unless ($stmt->[0] && ref($stmt->[0]) eq 'Perlito5::AST::Apply' && $stmt->[0]->{code} eq 'package');
-            return '' unless ($stmt->[1] && ref($stmt->[1]) eq 'Perlito5::AST::Apply' && ( $stmt->[1]->{code} eq 'infix:<=>>' || $stmt->[1]->{code} eq 'list:<,>'));
+        # we need the parameter list as Perl data, so we need to evaluate the AST
+        # - wrap the "list AST into a "hashref" AST
+        my $args_ast = $annotation_ast;
+        # - transform the AST back into Perl code
+        my $out = [];
+        Perlito5::Perl5::PrettyPrinter::pretty_print( [$args_ast->emit_perl5()], 0, $out );
+        my $args_perl5 = join( '', @$out );
 
-            my $Java_class = Perlito5::Java::get_java_class_info();
-            my $class = $stmt->[0]->{namespace};
-            # warn "Java class: $class\n";
-            # TODO - add more information about the class
+        # - eval the Perl code and store the arguments to use later
+        $Java_class->{$class} = eval $args_perl5
+            or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
 
-            # we need the parameter list as Perl data, so we need to evaluate the AST
-            # - wrap the "list AST into a "hashref" AST
-            my $args_ast = Perlito5::AST::Apply->new(
-                arguments => [ $stmt->[1] ],
-                code => 'circumfix:<{ }>',
+
+        if ($Java_class->{$class}->{java_path}) {
+            # package header { java_path => 'org.perlito.udfs' }
+            #  ==> $Java_class->{header}->{java_path} = 'org.perlito.udfs';
+            $str .= "package $Java_class->{$class}->{java_path};\n";
+        }
+        elsif ($Java_class->{$class}->{import}) {
+            Perlito5::Java::set_java_class_defaults(
+                $class, $Java_class->{$class}->{import},
             );
-            # - transform the AST back into Perl code
-            my $out = [];
-            Perlito5::Perl5::PrettyPrinter::pretty_print( [$args_ast->emit_perl5()], 0, $out );
-            my $args_perl5 = join( '', @$out );
+        }
+        elsif ($Java_class->{$class}->{extends}) {
+            # extends => 'JavaObject',              # Perl package name (a class imported from Java)
+            # methods => [ ... ]
 
-            # - eval the Perl code and store the arguments to use later
-            $Java_class->{$class} = eval $args_perl5
-                or die "error in arguments to generate Java class:\n$@\n${args_perl5}";
+            my $extended = $Java_class->{ $Java_class->{$class}->{extends} };
+            if ($extended) {
+                $Java_class->{$class}->{extends_java_type} = $extended->{java_type};
 
-
-            if ($Java_class->{$class}->{java_path}) {
-                # package header { java_path => 'org.perlito.udfs' }
-                #  ==> $Java_class->{header}->{java_path} = 'org.perlito.udfs';
-                $str .= "package $Java_class->{$class}->{java_path};\n";
-            }
-            elsif ($Java_class->{$class}->{import}) {
-                Perlito5::Java::set_java_class_defaults(
-                    $class, $Java_class->{$class}->{import},
-                );
-            }
-            elsif ($Java_class->{$class}->{extends}) {
-                # extends => 'JavaObject',              # Perl package name (a class imported from Java)
-                # methods => [ ... ]
-
-                my $extended = $Java_class->{ $Java_class->{$class}->{extends} };
-                if ($extended) {
-                    $Java_class->{$class}->{extends_java_type} = $extended->{java_type};
-
-                }
-                else {
-                    die "cannot extend class '" . $Java_class->{$class}->{extends} . "' because it was not declared";
-                }
-
-                my $perl_to_java = $class;
-                $perl_to_java =~ s/:://g;
-                Perlito5::Java::set_java_class_defaults(
-                    $class, $perl_to_java,
-                );
-
-                # warn Data::Dumper::Dumper $Java_class->{$class};
-                # warn "'extends' not implemented";
-            }
-            elsif ($Java_class->{$class}->{implements}) {
-                # implements => 'JavaObject',              # Perl package name (a class imported from Java)
-                # methods => [ ... ]
-
-                my $implemented = $Java_class->{ $Java_class->{$class}->{implements} };
-                if ($implemented) {
-                    $Java_class->{$class}->{implements_java_type} = $implemented->{java_type};
-
-                }
-                else {
-                    die "cannot implement class '" . $Java_class->{$class}->{implements} . "' because it was not declared";
-                }
-
-                my $perl_to_java = $class;
-                $perl_to_java =~ s/:://g;
-                Perlito5::Java::set_java_class_defaults(
-                    $class, $perl_to_java,
-                );
-
-                # warn Data::Dumper::Dumper $Java_class->{$class};
-                # warn "'implements' not implemented";
             }
             else {
-                die "missing 'import' argument to generate Java class";
+                die "cannot extend class '" . $Java_class->{$class}->{extends} . "' because it was not declared";
             }
 
+            my $perl_to_java = $class;
+            $perl_to_java =~ s/:://g;
+            Perlito5::Java::set_java_class_defaults(
+                $class, $perl_to_java,
+            );
 
-            # throw away this block - generate no Perl code
-            $unit_stmt->{stmts} = [];
-
+            # warn Data::Dumper::Dumper $Java_class->{$class};
+            # warn "'extends' not implemented";
         }
+        elsif ($Java_class->{$class}->{implements}) {
+            # implements => 'JavaObject',              # Perl package name (a class imported from Java)
+            # methods => [ ... ]
+
+            my $implemented = $Java_class->{ $Java_class->{$class}->{implements} };
+            if ($implemented) {
+                $Java_class->{$class}->{implements_java_type} = $implemented->{java_type};
+
+            }
+            else {
+                die "cannot implement class '" . $Java_class->{$class}->{implements} . "' because it was not declared";
+            }
+
+            my $perl_to_java = $class;
+            $perl_to_java =~ s/:://g;
+            Perlito5::Java::set_java_class_defaults(
+                $class, $perl_to_java,
+            );
+
+            # warn Data::Dumper::Dumper $Java_class->{$class};
+            # warn "'implements' not implemented";
+        }
+        else {
+            die "missing 'import' argument to generate Java class";
+        }
+
         return $str;
     }
     sub emit_java_program {
@@ -1291,15 +1276,8 @@ package Perlito5::AST::CompUnit;
 
         # look for special 'Java' packages
         Perlito5::Java::init_java_class();
-        for my $comp_unit ( @$comp_units ) {
-            for my $unit_stmt ( @{ $comp_unit->{body} } ) {
-                $str .= process_java_import_statement($unit_stmt);
-
-                # if ( ref($unit_stmt) eq 'Perlito5::AST::CompUnit') {
-                #     my $stmt = $unit_stmt->{stmts} // [];
-                # }
-
-            }
+        for my $ann ( @Perlito::ANNOTATION ) {
+            $str .= process_java_import_statement(@$ann);
         }
 
         my @main;

@@ -41,6 +41,11 @@ our @CHECK_BLOCK     = ();    # CHECK block LIFO - array of subs
 our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
 our $PROTO           = {};
 
+# the Perl-to-Java compiler uses this syntax for "annotations":
+#   package Put { import => 'java.Put' };
+# annotations are stored as namespace + AST
+our @ANNOTATION;
+
 sub set_global_phase {
     my $phase = shift;
     local $@;

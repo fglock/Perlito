@@ -82,6 +82,23 @@ token stmt_package {
         {
             my $namespace = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             my @statements = @{ $MATCH->{'Perlito5::Grammar::block'}{capture}{stmts} };
+
+            if (@statements == 1) {
+                # the Perl-to-Java compiler uses this syntax for "annotations":
+                #   package Put { import => 'java.Put' };
+                my $stmt = $statements[0];
+                if ($stmt && ref($stmt) eq 'Perlito5::AST::Apply' && ( $stmt->{code} eq 'infix:<=>>' || $stmt->{code} eq 'list:<,>')) {
+                    # - wrap the "list AST into a "hashref" AST
+                    push @Perlito::ANNOTATION, [
+                        $namespace,
+                        Perlito5::AST::Apply->new(
+                            arguments => [ $stmt ],
+                            code => 'circumfix:<{ }>',
+                        ),
+                    ];
+                }
+            }
+
             $MATCH->{capture} = 
                 Perlito5::AST::Block->new(
                     stmts => [

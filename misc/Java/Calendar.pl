@@ -18,5 +18,5 @@ $calNewYork->setTimeZone(TimeZone->getTimeZone("America/New_York"));
 
 my $hour = $calNewYork->get(Calendar->HOUR_OF_DAY);
 my $min  = $calNewYork->get(Calendar->MINUTE);
-say "Time in New York: $hour:$min";
+printf "Time in New York: %02d:%02d\n", $hour, $min;
 
