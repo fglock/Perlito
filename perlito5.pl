@@ -13050,7 +13050,7 @@ use feature 'say';
                 }
             }
             my $c = substr($self->{'name'}, 0, 1);
-            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/')) {
+            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/' || $self->{'name'} eq '&') || ((0 + $self->{'name'}) eq $self->{'name'})) {
                 return $self->{'sigil'} . $ns . $self->{'name'}
             }
             return $self->{'sigil'} . '{' . Perlito5::Perl5::escape_string($ns . $str_name) . '}'
