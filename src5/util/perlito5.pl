@@ -374,8 +374,7 @@ if ($backend) {
             # partially disable "use":
             # force "use" code to be inlined instead of eval-ed
             $Perlito5::EXPAND_USE = 0
-                if $bootstrapping
-                || ($backend eq 'java');
+                if $bootstrapping;
 
             @Perlito5::COMP_UNIT = ();
 
