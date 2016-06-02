@@ -29,6 +29,8 @@ sub generate_eval_string {
     return $source_new;
 }
 
+# $ perl -Isrc5/lib -e ' use strict; use Perlito5::CompileTime::Dumper; use Perlito5::AST; use Data::Dumper; my $s = [ 1,2.1,{a=>4},undef,\6 ]; $s->[3]=$s->[2]; my $seen = {}; print Dumper Perlito5::CompileTime::Dumper::_dump_to_ast( $s, " ", $seen, "s" ); sub Perlito5::Dumper::escape_string { @_ }'
+
 sub _dump_to_ast {
     my ($obj, $tab, $seen, $pos) = @_;
 
@@ -50,7 +52,6 @@ sub _dump_to_ast {
     my $tab1 = $tab;
 
     if ($ref eq 'ARRAY') {
-        return '[]' unless @$obj;
         my @out;
         for my $i ( 0 .. $#$obj ) {
             my $here = $pos . '->[' . $i . ']';
@@ -112,15 +113,21 @@ sub _dump_to_ast {
             }
         }
         # say "_dump_to_ast: source [[ $source ]]";
-        return join('',
-            'do { ',
-                @vars,
-                $source,
-                ( $sub_name
-                  ? '\\&' . $sub_name    # return pointer to subroutine
-                  : ''
+        return Perlito5::AST::Apply->(
+            code => 'do',
+            arguments => [
+                Perlito5::AST::Block->new(
+                    stmts => [
+                        # TODO
+                        @vars,
+                        $source,
+                        ( $sub_name
+                          ? '\\&' . $sub_name    # return pointer to subroutine
+                          : ''
+                        ),
+                    ],
                 ),
-            '}'
+            ],
         );
     }
 
@@ -144,13 +151,21 @@ sub _dump_to_ast {
     my @out;
     for my $i ( sort keys %$obj ) {
         my $here = $pos . '->{' . $i . '}';
-        push @out, 
-            $tab1,
-            "'$i' => ",
-            _dump_to_ast($obj->{$i}, $tab1, $seen, $here), 
-            ",\n";
+        push @out, Perlito5::AST::Apply->new(
+            code => 'infix:<=>>',
+            arguments => [
+                Perlito5::AST::Buf->new(buf => $i),
+                _dump_to_ast($obj->{$i}, $tab1, $seen, $here),
+            ],
+        );
     }
-    return join('', "bless({\n", @out, $tab, "}, '$ref')");
+    return Perlito5::AST::Apply->new(
+        code => 'bless',
+        arguments => [
+            Perlito5::AST::Apply->new(code => 'circumfix:<{ }>', arguments => \@out),
+            Perlito5::AST::Buf->new(buf => $ref),
+        ],
+    );
 }
 
 
