@@ -507,7 +507,8 @@ token term_return {
                  Perlito5::AST::Apply->new(
                     code      => 'return',
                     arguments => $args eq '*undef*' ? [] : [$args],
-                    namespace => ''
+                    namespace => '',
+                    bareword  => $args eq '*undef*' ? 1 : 0,
                  )
                ]
         }

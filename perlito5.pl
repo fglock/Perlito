@@ -2272,7 +2272,7 @@ use feature 'say';
             }
         }) && (do {
             my $args = Perlito5::Match::flat($MATCH->{'list_parse'});
-            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => $args eq '*undef*' ? [] : [$args], 'namespace' => '')];
+            $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => $args eq '*undef*' ? [] : [$args], 'namespace' => '', 'bareword' => $args eq '*undef*' ? 1 : 0)];
             1
         })));
         $tmp ? $MATCH : 0
@@ -7413,8 +7413,8 @@ use feature 'say';
     }
     sub Perlito5::Grammar::ident {
         substr($_[0], $_[1], 256) !~ m!^([a-zA-Z_]\w*)! && return ;
-        length(${1}) > 251 && die('Identifier too long');
-        return {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + length(${1})}
+        length($1) > 251 && die('Identifier too long');
+        return {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + length($1)}
     }
     sub Perlito5::Grammar::caret_char {
         my $c = substr($_[0], $_[1], 1);
@@ -13138,7 +13138,7 @@ use feature 'say';
                     }
                 }
                 $code =~ m!<([^>]+)>!;
-                my $cap = ${1};
+                my $cap = $1;
                 return ['apply' => '{', $cap, $arg->emit_perl5()]
             }
             if (($code eq 'eval' || $code eq 'do') && ref($self->{'arguments'}->[0]) eq 'Perlito5::AST::Block') {
@@ -18199,7 +18199,7 @@ use feature 'say';
                 close(FILE)
             }
         }
-        ${0} = $Perlito5::FILE_NAME;
+        $0 = $Perlito5::FILE_NAME;
         if ($verbose) {
             warn('// backend: ', $backend);
             warn('now parsing')
