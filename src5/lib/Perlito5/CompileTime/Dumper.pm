@@ -29,6 +29,131 @@ sub generate_eval_string {
     return $source_new;
 }
 
+sub _dump_to_ast {
+    my ($obj, $tab, $seen, $pos) = @_;
+
+    return Perlito5::AST::Apply->new(code => 'undef', arguments => []) if !defined $obj;
+
+    my $ref = ref($obj);
+    if (!$ref) {
+        if ( 0+$obj eq $obj ) {
+            return Perlito5::AST::Int->new(int => $obj) if int($obj) == $obj;
+            return Perlito5::AST::Num->new(num => $obj);
+        }
+        return Perlito5::AST::Buf->new(buf => $obj);
+    }
+
+    my $as_string = "$obj";
+    return $seen->{$as_string} if $seen->{$as_string};
+    $seen->{$as_string} = $pos;
+        
+    my $tab1 = $tab;
+
+    if ($ref eq 'ARRAY') {
+        return '[]' unless @$obj;
+        my @out;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = $pos . '->[' . $i . ']';
+            push @out, _dump_to_ast($obj->[$i], $tab1, $seen, $here);
+        }
+        return Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out);
+    }
+    elsif ($ref eq 'HASH') {
+        my @out;
+        for my $i ( sort keys %$obj ) {
+            my $here = $pos . '->{' . $i . '}';
+            push @out, Perlito5::AST::Apply->new(
+                code => 'infix:<=>>',
+                arguments => [
+                    Perlito5::AST::Buf->new(buf => $i),
+                    _dump_to_ast($obj->{$i}, $tab1, $seen, $here),
+                ],
+            );
+        }
+        return Perlito5::AST::Apply->new(code => 'circumfix:<{ }>', arguments => \@out);
+    }
+    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+        return Perlito5::AST::Apply->new(
+            code => 'prefix:<\\>',
+            arguments => [_dump_to_ast($$obj, $tab1, $seen, $pos)]
+        );
+    }
+    elsif ($ref eq 'CODE') {
+        # TODO
+
+        # get the closed variables - see 'Sub' in Perl5 emitter
+        my $closure_flag = bless {}, "Perlito5::dump";
+        my $captures = $obj->($closure_flag) // {};
+
+        my @vars;
+        my $ast;
+        my $source;
+        my $sub_name;
+        my $package = $captures->{__PKG__};
+        push @vars, "package $package;"
+            if $package;
+        for my $var (sort keys %$captures) {
+            next if $var eq "__PKG__";
+            if ($var eq '__SUB__') {
+                my $sub_id = $captures->{$var};
+                $ast = $Perlito5::BEGIN_SUBS{$sub_id};
+
+                $sub_name = $ast->{namespace} . "::" . $ast->{name}
+                    if $ast->{name};;
+
+                my @data = $ast->emit_perl5();
+                my $out = [];
+                Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+                $source = join( '', @$out ) . ";";
+            }
+            else {
+                push @vars, 
+                    'my ' . $var . ' = ' . _dump_to_ast_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+            }
+        }
+        # say "_dump_to_ast: source [[ $source ]]";
+        return join('',
+            'do { ',
+                @vars,
+                $source,
+                ( $sub_name
+                  ? '\\&' . $sub_name    # return pointer to subroutine
+                  : ''
+                ),
+            '}'
+        );
+    }
+
+    # TODO find out what kind of reference this is (ARRAY, HASH, ...)
+    # local $@;
+    # eval {
+    #     my @data = @$obj;
+    #     say "is array";
+    #     return 'bless(' . "..." . ", '$ref')";
+    # }
+    # or eval {
+    #     $@ = '';
+    #     my %data = %$obj;
+    #     say "is hash";
+    #     return 'bless(' . "..." . ", '$ref')";
+    # };
+    # $@ = '';
+    
+    # assume it's a blessed HASH
+    
+    my @out;
+    for my $i ( sort keys %$obj ) {
+        my $here = $pos . '->{' . $i . '}';
+        push @out, 
+            $tab1,
+            "'$i' => ",
+            _dump_to_ast($obj->{$i}, $tab1, $seen, $here), 
+            ",\n";
+    }
+    return join('', "bless({\n", @out, $tab, "}, '$ref')");
+}
+
+
 sub _dumper {
     my ($obj, $tab, $seen, $pos) = @_;
 
