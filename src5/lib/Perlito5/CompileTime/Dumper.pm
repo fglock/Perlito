@@ -54,7 +54,12 @@ sub _dump_to_ast {
     if ($ref eq 'ARRAY') {
         my @out;
         for my $i ( 0 .. $#$obj ) {
-            my $here = $pos . '->[' . $i . ']';
+            my $here = # $pos . '->[' . $i . ']';
+                Perlito5::AST::Call->new(
+                    method => 'postcircumfix:<[ ]>',
+                    invocant => $pos,
+                    arguments => Perlito5::AST::Int->new(int => $i),
+                );
             push @out, _dump_to_ast($obj->[$i], $tab1, $seen, $here);
         }
         return Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out);
@@ -62,7 +67,12 @@ sub _dump_to_ast {
     elsif ($ref eq 'HASH') {
         my @out;
         for my $i ( sort keys %$obj ) {
-            my $here = $pos . '->{' . $i . '}';
+            my $here = # $pos . '->{' . $i . '}';
+                Perlito5::AST::Call->new(
+                    method => 'postcircumfix:<{ }>',
+                    invocant => $pos,
+                    arguments => Perlito5::AST::Buf->new(buf => $i),
+                );
             push @out, Perlito5::AST::Apply->new(
                 code => 'infix:<=>>',
                 arguments => [
