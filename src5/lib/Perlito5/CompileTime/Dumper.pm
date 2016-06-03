@@ -232,7 +232,7 @@ sub _collect_refs_inner {
     if ($seen->{$as_string}) {
         # push things that are shared between data structures
         # return if $main::SEEN_COUNT{$as_string};
-        push @main::REFS, $obj;
+        # push @main::REFS, $obj;
         # push @main::REFS, { assign => [ $pos, $seen->{$as_string} ] };
         # $main::SEEN_COUNT{$as_string}++;
         return;
@@ -244,6 +244,7 @@ sub _collect_refs_inner {
             my $here = $pos . '->[' . $i . ']';
             _collect_refs_inner($obj->[$i], $tab, $seen, $here);
         }
+        push @main::REFS, $obj;
         return;
     }
     elsif ($ref eq 'HASH') {
@@ -252,10 +253,12 @@ sub _collect_refs_inner {
             my $here = $pos . '->{' . $i . '}';
             _collect_refs_inner($obj->{$i}, $tab, $seen, $here);
         }
+        push @main::REFS, $obj;
         return;
     }
     elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
         _collect_refs_inner($$obj, $tab, $seen, $pos);
+        push @main::REFS, $obj;
         return;
     }
     elsif ($ref eq 'CODE') {
@@ -269,8 +272,10 @@ sub _collect_refs_inner {
             }
             else {
                 _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos);
+                push @main::REFS, $captures->{$var_id};
             }
         }
+        push @main::REFS, $obj;
         return;
     }
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
@@ -279,6 +284,7 @@ sub _collect_refs_inner {
         my $here = $pos . '->{' . $i . '}';
         _collect_refs_inner($obj->{$i}, $tab, $seen, $here);
     }
+    push @main::REFS, $obj;
     return;
 }
 

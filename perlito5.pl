@@ -8582,7 +8582,6 @@ use feature 'say';
         !$ref && return;
         my $as_string = $obj;
         if ($seen->{$as_string}) {
-            push(@main::REFS, $obj);
             return
         }
         $seen->{$as_string} = $pos;
@@ -8592,6 +8591,7 @@ use feature 'say';
                 my $here = $pos . '->[' . $i . ']';
                 _collect_refs_inner($obj->[$i], $tab, $seen, $here)
             }
+            push(@main::REFS, $obj);
             return
         }
         elsif ($ref eq 'HASH') {
@@ -8602,10 +8602,12 @@ use feature 'say';
                 my $here = $pos . '->{' . $i . '}';
                 _collect_refs_inner($obj->{$i}, $tab, $seen, $here)
             }
+            push(@main::REFS, $obj);
             return
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             _collect_refs_inner(${$obj}, $tab, $seen, $pos);
+            push(@main::REFS, $obj);
             return
         }
         elsif ($ref eq 'CODE') {
@@ -8618,9 +8620,11 @@ use feature 'say';
                 $var_id eq '__PKG__' && next;
                 if ($var_id eq '__SUB__') {}
                 else {
-                    _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos)
+                    _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos);
+                    push(@main::REFS, $captures->{$var_id})
                 }
             }
+            push(@main::REFS, $obj);
             return
         }
         for my $i (sort {
@@ -8629,6 +8633,7 @@ use feature 'say';
             my $here = $pos . '->{' . $i . '}';
             _collect_refs_inner($obj->{$i}, $tab, $seen, $here)
         }
+        push(@main::REFS, $obj);
         return
     }
     sub Perlito5::CompileTime::Dumper::collect_refs {
@@ -8916,7 +8921,7 @@ use feature 'say';
         }
     }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
-        if (0) {
+        if (1) {
             my $ast = dump_to_AST_after_BEGIN(@_);
             print(Data::Dumper::Dumper($ast));
             my @data = map {
