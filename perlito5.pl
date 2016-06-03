@@ -8578,7 +8578,7 @@ use feature 'say';
             my $sigil = substr($name, 0, 1);
             my $item = $scope->{$name};
             if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
-                push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
+                warn('# don' . chr(39) . 't know how to initialize subroutine ' . $name . ' in BEGIN');
                 next
             }
             substr($name, 1, 2) eq 'C_' && next;
@@ -8601,28 +8601,24 @@ use feature 'say';
             elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
                 my $bareword = substr($name, 1);
                 if (exists(&{$bareword})) {
-                    my $sub = \&{$bareword};
-                    my $dump = _dump_to_ast($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ', $dump)
+                    my $value = \&{$bareword};
+                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, '  ', $dumper_seen, chr(92) . '&' . $bareword)]))
                 }
                 if (defined(${$bareword})) {
-                    my $sub = \${$bareword};
-                    my $dump = _dump_to_ast($sub, '  ', $dumper_seen, chr(92) . '$' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ', $dump)
+                    my $value = \${$bareword};
+                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, '  ', $dumper_seen, chr(92) . '$' . $bareword)]))
                 }
                 if (@{$bareword}) {
-                    my $sub = \@{$bareword};
-                    my $dump = _dump_to_ast($sub, '  ', $dumper_seen, chr(92) . '@' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ', $dump)
+                    my $value = \@{$bareword};
+                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, '  ', $dumper_seen, chr(92) . '@' . $bareword)]))
                 }
                 if (keys(%{$bareword})) {
-                    my $sub = \%{$bareword};
-                    my $dump = _dump_to_ast($sub, '  ', $dumper_seen, chr(92) . '%' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ', $dump)
+                    my $value = \%{$bareword};
+                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, '  ', $dumper_seen, chr(92) . '%' . $bareword)]))
                 }
             }
             else {
-                push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)
+                warn('# don' . chr(39) . 't know how to initialize variable ' . $name . ' in BEGIN')
             }
         }
         return \@{$vars}

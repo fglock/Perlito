@@ -240,7 +240,7 @@ sub dump_to_AST_after_BEGIN {
         if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
             # TODO
             # _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-            push @$vars, "# don't know how to initialize subroutine $name";
+            warn "# don't know how to initialize subroutine $name in BEGIN";
             next;
         }
 
@@ -289,29 +289,53 @@ sub dump_to_AST_after_BEGIN {
             my $bareword = substr($name, 1);
 
             if (exists &{$bareword}) {
-                my $sub = \&{$bareword};
-                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\&' . $bareword);
-                push @$vars, "*$bareword = ", $dump;
+                my $value = \&{$bareword};
+                push @$vars, # "*$bareword = ", $dump;
+                        Perlito5::AST::Apply->new(
+                            code => 'infix:<=>',
+                            arguments => [
+                                Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                                _dump_to_ast( $value, "  ", $dumper_seen, '\\&' . $bareword ),
+                            ],
+                        );
             }
             if (defined ${$bareword}) {
-                my $sub = \${$bareword};
-                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\$' . $bareword);
-                push @$vars, "*$bareword = ", $dump;
+                my $value = \${$bareword};
+                push @$vars, # "*$bareword = ", $dump;
+                        Perlito5::AST::Apply->new(
+                            code => 'infix:<=>',
+                            arguments => [
+                                Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                                _dump_to_ast( $value, "  ", $dumper_seen, '\\$' . $bareword ),
+                            ],
+                        );
             }
             if (@{$bareword}) {
-                my $sub = \@{$bareword};
-                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\@' . $bareword);
-                push @$vars, "*$bareword = ", $dump;
+                my $value = \@{$bareword};
+                push @$vars, # "*$bareword = ", $dump;
+                        Perlito5::AST::Apply->new(
+                            code => 'infix:<=>',
+                            arguments => [
+                                Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                                _dump_to_ast( $value, "  ", $dumper_seen, '\\@' . $bareword ),
+                            ],
+                        );
             }
             if (keys %{$bareword}) {
-                my $sub = \%{$bareword};
-                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\%' . $bareword);
-                push @$vars, "*$bareword = ", $dump;
+                my $value = \%{$bareword};
+                push @$vars, # "*$bareword = ", $dump;
+                        Perlito5::AST::Apply->new(
+                            code => 'infix:<=>',
+                            arguments => [
+                                Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                                _dump_to_ast( $value, "  ", $dumper_seen, '\\%' . $bareword ),
+                            ],
+                        );
             }
 
         }
         else {
-            push @$vars, "# don't know how to initialize variable $name";
+            warn "# don't know how to initialize variable $name in BEGIN";
         }
     }
     return \@$vars;
