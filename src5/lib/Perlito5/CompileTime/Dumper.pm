@@ -231,8 +231,10 @@ sub _collect_refs_inner {
     my $as_string = "$obj";
     if ($seen->{$as_string}) {
         # push things that are shared between data structures
+        # return if $main::SEEN_COUNT{$as_string};
         push @main::REFS, $obj;
-        push @main::REFS, { assign => [ $pos, $seen->{$as_string} ] };
+        # push @main::REFS, { assign => [ $pos, $seen->{$as_string} ] };
+        # $main::SEEN_COUNT{$as_string}++;
         return;
     }
     $seen->{$as_string} = $pos;
@@ -260,6 +262,7 @@ sub _collect_refs_inner {
         # get the closed variables - see 'Sub' in Perl5 emitter
         my $closure_flag = bless {}, "Perlito5::dump";
         my $captures = $obj->($closure_flag) // {};
+        $pos = "SUB";
         for my $var_id (sort keys %$captures) {
             next if $var_id eq "__PKG__";
             if ($var_id eq '__SUB__') {
@@ -445,6 +448,46 @@ sub _dump_AST_from_scope {
 
 }
 
+sub push_AST_refs {
+    my ($vars, $array, $value) = @_;
+
+    if (ref($value) eq 'Perlito5::AST::Apply' && $value->{code} eq 'circumfix:<[ ]>') {
+        push @$vars, Perlito5::AST::Apply::PUSH(
+            $array,
+            Perlito5::AST::Apply->new( %$value, arguments => [] ),
+        );
+        my $deref = Perlito5::AST::Index::INDEX($array, Perlito5::AST::Int->new(int => -1));
+        for my $arg (@{$value->{arguments}}) {
+            push_AST_refs($vars, $deref, $arg);
+        }
+        return;
+    }
+
+    if (ref($value) eq 'Perlito5::AST::Apply' && $value->{code} eq 'circumfix:<{ }>') {
+        push @$vars, Perlito5::AST::Apply::PUSH(
+            $array,
+            Perlito5::AST::Apply->new( %$value, arguments => [] ),
+        );
+        for my $arg (@{$value->{arguments}}) {
+            my $hash = Perlito5::AST::Lookup::LOOKUP($array, $arg->{arguments}[0]);
+            push @$vars,
+                Perlito5::AST::Apply->new(
+                    code => 'infix:<=>',
+                    arguments => [
+                        $hash,
+                        $arg->{arguments}[1],
+                    ],
+                );
+        }
+        return;
+    }
+
+    push @$vars, Perlito5::AST::Apply::PUSH(
+        $array,
+        $value,
+    );
+}
+
 sub dump_to_AST_after_BEGIN {
     # return a structure with the global variable declarations
     # this is used to initialize the ahead-of-time program
@@ -457,8 +500,29 @@ sub dump_to_AST_after_BEGIN {
     @main::REFS = ();
     collect_refs($scope);
     use Data::Dumper;
-    print STDERR "REFS ", Data::Dumper::Dumper(\@main::REFS);
+    # print STDERR "REFS ", Data::Dumper::Dumper(\@main::REFS);
 
+    my $refs = [];
+    _dump_AST_from_scope(
+        '@main::REFS',
+        { ast => Perlito5::AST::Var->new(name => 'REFS', namespace => 'main', sigil => '@') },
+        $refs,
+        $dumper_seen
+    );
+    # print STDERR "refs ", Data::Dumper::Dumper($refs->[0]{arguments}[1]{arguments});
+    for my $ast ( @{ $refs->[0]{arguments}[1]{arguments} } ) {
+        push_AST_refs(
+            $vars,
+            Perlito5::AST::Var->new(
+                '_decl' => 'global',
+                '_namespace' => 'main',
+                'name' => 'REFS',
+                'namespace' => '',
+                'sigil' => '@',
+            ),
+            $ast,
+        );
+    }
     for my $name (sort keys %$scope) {
         my $item = $scope->{$name};
         _dump_AST_from_scope($name, $item, $vars, $dumper_seen);

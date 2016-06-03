@@ -192,6 +192,25 @@ sub special_arg { $_[0]->{special_arg} }    # STDOUT
 sub arguments   { $_[0]->{arguments}   }    # 1,2,3
 sub namespace   { $_[0]->{namespace}   }    # CORE
 
+sub PUSH {
+    my ($var, $value) = @_;
+    if (ref($var) eq 'Perlito5::AST::Var' && $var->{sigil} eq '@') {
+        return Perlito5::AST::Apply->new(
+            code => 'push',
+            arguments => [$var, $value],
+        );
+    }
+    return Perlito5::AST::Apply->new(
+        code => 'push',
+        arguments => [
+            Perlito5::AST::Apply->new(
+                code => 'prefix:<@>',
+                arguments => [$var],
+            ),
+            $value,
+        ],
+    );
+}
 
 
 package Perlito5::AST::If;

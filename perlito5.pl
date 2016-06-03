@@ -8082,6 +8082,13 @@ use feature 'say';
     sub Perlito5::AST::Apply::namespace {
         $_[0]->{'namespace'}
     }
+    sub Perlito5::AST::Apply::PUSH {
+        my($var, $value) = @_;
+        if (ref($var) eq 'Perlito5::AST::Var' && $var->{'sigil'} eq '@') {
+            return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [$var, $value])
+        }
+        return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'prefix:<@>', 'arguments' => [$var]), $value])
+    }
     package Perlito5::AST::If;
     sub Perlito5::AST::If::new {
         my $class = shift;
@@ -8576,7 +8583,6 @@ use feature 'say';
         my $as_string = $obj;
         if ($seen->{$as_string}) {
             push(@main::REFS, $obj);
-            push(@main::REFS, {'assign' => [$pos, $seen->{$as_string}]});
             return
         }
         $seen->{$as_string} = $pos;
@@ -8605,6 +8611,7 @@ use feature 'say';
         elsif ($ref eq 'CODE') {
             my $closure_flag = bless({}, 'Perlito5::dump');
             my $captures = $obj->($closure_flag) // {};
+            $pos = 'SUB';
             for my $var_id (sort {
                 $a cmp $b
             } keys(%{$captures})) {
@@ -8724,6 +8731,26 @@ use feature 'say';
             warn('# don' . chr(39) . 't know how to initialize variable ' . $name . ' in BEGIN')
         }
     }
+    sub Perlito5::CompileTime::Dumper::push_AST_refs {
+        my($vars, $array, $value) = @_;
+        if (ref($value) eq 'Perlito5::AST::Apply' && $value->{'code'} eq 'circumfix:<[ ]>') {
+            push(@{$vars}, Perlito5::AST::Apply::PUSH($array, Perlito5::AST::Apply::->new(%{$value}, 'arguments' => [])));
+            my $deref = Perlito5::AST::Index::INDEX($array, Perlito5::AST::Int::->new('int' => -1));
+            for my $arg (@{$value->{'arguments'}}) {
+                push_AST_refs($vars, $deref, $arg)
+            }
+            return
+        }
+        if (ref($value) eq 'Perlito5::AST::Apply' && $value->{'code'} eq 'circumfix:<{ }>') {
+            push(@{$vars}, Perlito5::AST::Apply::PUSH($array, Perlito5::AST::Apply::->new(%{$value}, 'arguments' => [])));
+            for my $arg (@{$value->{'arguments'}}) {
+                my $hash = Perlito5::AST::Lookup::LOOKUP($array, $arg->{'arguments'}->[0]);
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$hash, $arg->{'arguments'}->[1]]))
+            }
+            return
+        }
+        push(@{$vars}, Perlito5::AST::Apply::PUSH($array, $value))
+    }
     sub Perlito5::CompileTime::Dumper::dump_to_AST_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
@@ -8732,7 +8759,11 @@ use feature 'say';
         @main::REFS = ();
         collect_refs($scope);
         undef();
-        print('REFS ', Data::Dumper::Dumper(\@main::REFS));
+        my $refs = [];
+        _dump_AST_from_scope('@main::REFS', {'ast' => Perlito5::AST::Var::->new('name' => 'REFS', 'namespace' => 'main', 'sigil' => '@')}, $refs, $dumper_seen);
+        for my $ast (@{$refs->[0]->{'arguments'}->[1]->{'arguments'}}) {
+            push_AST_refs($vars, Perlito5::AST::Var::->new('_decl' => 'global', '_namespace' => 'main', 'name' => 'REFS', 'namespace' => '', 'sigil' => '@'), $ast)
+        }
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
