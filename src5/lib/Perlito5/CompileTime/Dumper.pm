@@ -223,6 +223,119 @@ sub _dump_to_ast_deref {
     return _dump_to_ast($obj, $seen, $pos);
 }
 
+sub _collect_refs_inner {
+    my ($obj, $tab, $seen, $pos) = @_;
+    return if !defined $obj;
+    my $ref = ref($obj);
+    return if !$ref;
+    my $as_string = "$obj";
+    if ($seen->{$as_string}) {
+        # push things that are shared between data structures
+        push @main::REFS, $obj;
+        push @main::REFS, { assign => [ $pos, $seen->{$as_string} ] };
+        return;
+    }
+    $seen->{$as_string} = $pos;
+    if ($ref eq 'ARRAY') {
+        return '[]' unless @$obj;
+        for my $i ( 0 .. $#$obj ) {
+            my $here = $pos . '->[' . $i . ']';
+            _collect_refs_inner($obj->[$i], $tab, $seen, $here);
+        }
+        return;
+    }
+    elsif ($ref eq 'HASH') {
+        return '{}' unless keys %$obj;
+        for my $i ( sort keys %$obj ) {
+            my $here = $pos . '->{' . $i . '}';
+            _collect_refs_inner($obj->{$i}, $tab, $seen, $here);
+        }
+        return;
+    }
+    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+        _collect_refs_inner($$obj, $tab, $seen, $pos);
+        return;
+    }
+    elsif ($ref eq 'CODE') {
+        # get the closed variables - see 'Sub' in Perl5 emitter
+        my $closure_flag = bless {}, "Perlito5::dump";
+        my $captures = $obj->($closure_flag) // {};
+        for my $var_id (sort keys %$captures) {
+            next if $var_id eq "__PKG__";
+            if ($var_id eq '__SUB__') {
+            }
+            else {
+                _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos);
+            }
+        }
+        return;
+    }
+    # TODO find out what kind of reference this is (ARRAY, HASH, ...)
+    # assume it's a blessed HASH
+    for my $i ( sort keys %$obj ) {
+        my $here = $pos . '->{' . $i . '}';
+        _collect_refs_inner($obj->{$i}, $tab, $seen, $here);
+    }
+    return;
+}
+
+sub collect_refs {
+    my $scope = shift() // $Perlito5::GLOBAL;
+    my $seen = {};
+    my $dumper_seen = {};
+    my $tab = "";
+    for my $name (sort keys %$scope) {
+        my $sigil = substr($name, 0, 1);
+        my $item = $scope->{$name};
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
+            next;
+        }
+        next
+            if substr($name, 1, 2) eq "C_";
+        if (substr($name, 7, 1) lt 'A') {
+            # encode special variable names like $main::" to ${'main::"'}
+            $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'
+        }
+        my $ast = $item->{ast};
+        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{_decl} eq "our") {
+            # "our" variables are lexical aliases; we want the original global variable name
+            $name =
+                  ($ast->{_real_sigil} || $ast->{sigil})
+                . ($ast->{namespace} || $ast->{_namespace} || "C_")
+                . "::" . $ast->{name};
+        }
+        if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
+            my $value = eval($name);
+            my $dump = _collect_refs_inner( $value, "  ", $dumper_seen, $name );
+            next if $dump eq 'undef';
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
+            my $value = eval("\\" . $name);
+            my $dump = _collect_refs_inner( $value, "  ", $dumper_seen, '\\' . $name );
+            my $bareword = substr($name, 1);
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+            # *mysub = sub {...}
+            my $bareword = substr($name, 1);
+            if (exists &{$bareword}) {
+                my $sub = \&{$bareword};
+                my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\&' . $bareword);
+            }
+            if (defined ${$bareword}) {
+                my $sub = \${$bareword};
+                my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\$' . $bareword);
+            }
+            if (@{$bareword}) {
+                my $sub = \@{$bareword};
+                my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\@' . $bareword);
+            }
+            if (keys %{$bareword}) {
+                my $sub = \%{$bareword};
+                my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\%' . $bareword);
+            }
+        }
+    }
+}
 
 sub dump_to_AST_after_BEGIN {
     # return a structure with the global variable declarations
@@ -232,6 +345,12 @@ sub dump_to_AST_after_BEGIN {
     my $seen = {};
     my $dumper_seen = {};
     my $tab = "";
+
+    # collect references for later
+    @main::REFS = ();
+    collect_refs($scope);
+    use Data::Dumper;
+    print STDERR "REFS ", Data::Dumper::Dumper(\@main::REFS);
 
     for my $name (sort keys %$scope) {
         my $sigil = substr($name, 0, 1);

@@ -8568,12 +8568,124 @@ use feature 'say';
         }
         return _dump_to_ast($obj, $seen, $pos)
     }
+    sub Perlito5::CompileTime::Dumper::_collect_refs_inner {
+        my($obj, $tab, $seen, $pos) = @_;
+        !defined($obj) && return;
+        my $ref = ref($obj);
+        !$ref && return;
+        my $as_string = $obj;
+        if ($seen->{$as_string}) {
+            push(@main::REFS, $obj);
+            push(@main::REFS, {'assign' => [$pos, $seen->{$as_string}]});
+            return
+        }
+        $seen->{$as_string} = $pos;
+        if ($ref eq 'ARRAY') {
+            @{$obj} || return '[]';
+            for my $i (0 .. $#{$obj}) {
+                my $here = $pos . '->[' . $i . ']';
+                _collect_refs_inner($obj->[$i], $tab, $seen, $here)
+            }
+            return
+        }
+        elsif ($ref eq 'HASH') {
+            keys(%{$obj}) || return '{}';
+            for my $i (sort {
+                $a cmp $b
+            } keys(%{$obj})) {
+                my $here = $pos . '->{' . $i . '}';
+                _collect_refs_inner($obj->{$i}, $tab, $seen, $here)
+            }
+            return
+        }
+        elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+            _collect_refs_inner(${$obj}, $tab, $seen, $pos);
+            return
+        }
+        elsif ($ref eq 'CODE') {
+            my $closure_flag = bless({}, 'Perlito5::dump');
+            my $captures = $obj->($closure_flag) // {};
+            for my $var_id (sort {
+                $a cmp $b
+            } keys(%{$captures})) {
+                $var_id eq '__PKG__' && next;
+                if ($var_id eq '__SUB__') {}
+                else {
+                    _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos)
+                }
+            }
+            return
+        }
+        for my $i (sort {
+            $a cmp $b
+        } keys(%{$obj})) {
+            my $here = $pos . '->{' . $i . '}';
+            _collect_refs_inner($obj->{$i}, $tab, $seen, $here)
+        }
+        return
+    }
+    sub Perlito5::CompileTime::Dumper::collect_refs {
+        my $scope = shift() // $Perlito5::GLOBAL;
+        my $seen = {};
+        my $dumper_seen = {};
+        my $tab = '';
+        for my $name (sort {
+            $a cmp $b
+        } keys(%{$scope})) {
+            my $sigil = substr($name, 0, 1);
+            my $item = $scope->{$name};
+            if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
+                next
+            }
+            substr($name, 1, 2) eq 'C_' && next;
+            if (substr($name, 7, 1) lt 'A') {
+                $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
+            }
+            my $ast = $item->{'ast'};
+            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
+                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+            }
+            if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
+                my $value = eval($name);
+                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, $name);
+                $dump eq 'undef' && next
+            }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
+                my $value = eval(chr(92) . $name);
+                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, chr(92) . $name);
+                my $bareword = substr($name, 1)
+            }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+                my $bareword = substr($name, 1);
+                if (exists(&{$bareword})) {
+                    my $sub = \&{$bareword};
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword)
+                }
+                if (defined(${$bareword})) {
+                    my $sub = \${$bareword};
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '$' . $bareword)
+                }
+                if (@{$bareword}) {
+                    my $sub = \@{$bareword};
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '@' . $bareword)
+                }
+                if (keys(%{$bareword})) {
+                    my $sub = \%{$bareword};
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '%' . $bareword)
+                }
+            }
+        }
+    }
     sub Perlito5::CompileTime::Dumper::dump_to_AST_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
         my $seen = {};
         my $dumper_seen = {};
         my $tab = '';
+        @main::REFS = ();
+        collect_refs($scope);
+        undef();
+        print('REFS ', Data::Dumper::Dumper(\@main::REFS));
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
