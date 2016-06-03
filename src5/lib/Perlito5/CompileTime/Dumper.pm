@@ -31,6 +31,8 @@ sub generate_eval_string {
 
 # $ perl -Isrc5/lib -e ' use strict; use Perlito5::CompileTime::Dumper; use Perlito5::AST; use Data::Dumper; my $s = [ 1,2.1,{a=>4},undef,\6 ]; $s->[3]=$s->[2]; my $seen = {}; print Dumper Perlito5::CompileTime::Dumper::_dump_to_ast( $s, " ", $seen, "s" ); sub Perlito5::Dumper::escape_string { @_ }'
 
+# $ perl perlito5.pl -Isrc5/lib -Cperl5 -e ' BEGIN { my @z = (45); my %v = (d=>"f"); *x = sub { %v + @z + 123 }; $z[1] = \%v; $v{'e'} = \@z; } '
+
 sub _dump_to_ast {
     my ($obj, $seen, $pos) = @_;
 
@@ -53,8 +55,7 @@ sub _dump_to_ast {
         my @out;
         for my $i ( 0 .. $#$obj ) {
             # TODO - move self-referencing outside the expression
-            my $here = # $pos . '->[' . $i . ']';
-                Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
+            my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
             push @out, _dump_to_ast($obj->[$i], $seen, $here);
         }
         return Perlito5::AST::Apply->new(code => 'circumfix:<[ ]>', arguments => \@out);
@@ -63,8 +64,7 @@ sub _dump_to_ast {
         my @out;
         for my $i ( sort keys %$obj ) {
             # TODO - move self-referencing outside the expression
-            my $here = # $pos . '->{' . $i . '}';
-                Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
+            my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
             push @out, Perlito5::AST::Apply->new(
                 code => 'infix:<=>>',
                 arguments => [
@@ -77,9 +77,10 @@ sub _dump_to_ast {
     }
     elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             # TODO - move self-referencing outside the expression if needed
+        my $here = Perlito5::AST::Apply->new(code => 'prefix:<$>', arguments => [$pos]);
         return Perlito5::AST::Apply->new(
             code => 'prefix:<\\>',
-            arguments => [_dump_to_ast($$obj, $seen, $pos)]
+            arguments => [_dump_to_ast($$obj, $seen, $here)]
         );
     }
     elsif ($ref eq 'CODE') {
@@ -127,7 +128,7 @@ sub _dump_to_ast {
                                 'type' => '',
                                 'var' => $var_ast,
                             ),
-                            _dump_to_ast_deref($captures->{$var_id}, $seen, $pos),
+                            _dump_to_ast_deref($captures->{$var_id}, $seen, $pos),  # TODO - $pos should be global
                         ],
                     );
             }
@@ -140,10 +141,10 @@ sub _dump_to_ast {
                     stmts => [
                         @vars,
                         $source,
-                        ( $sub_name
-                          ? '\\&' . $sub_name    # return pointer to subroutine ??? TODO - check this
-                          : ''
-                        ),
+                        # ( $sub_name
+                        #   ? '\\&' . $sub_name    # return pointer to subroutine ??? TODO - check this
+                        #   : ''
+                        # ),
                     ],
                 ),
             ],
@@ -169,8 +170,7 @@ sub _dump_to_ast {
     
     my @out;
     for my $i ( sort keys %$obj ) {
-        my $here = # $pos . '->{' . $i . '}';
-                Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
+        my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
         push @out, Perlito5::AST::Apply->new(
             code => 'infix:<=>>',
             arguments => [
@@ -196,8 +196,7 @@ sub _dump_to_ast_deref {
         return '()' unless @$obj;
         my @out;
         for my $i ( 0 .. $#$obj ) {
-            my $here = # $pos . '->[' . $i . ']';
-                Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) );
+            my $here = Perlito5::AST::Index::INDEX( $pos, Perlito5::AST::Int->new(int => $i) ); # TODO don't deref
             push @out, _dump_to_ast($obj->[$i], $seen, $here);
         }
         return Perlito5::AST::Apply->new(code => 'circumfix:<( )>', arguments => \@out);
@@ -206,8 +205,7 @@ sub _dump_to_ast_deref {
         return '()' unless keys %$obj;
         my @out;
         for my $i ( sort keys %$obj ) {
-            my $here = # $pos . '->{' . $i . '}';
-                Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) );
+            my $here = Perlito5::AST::Lookup::LOOKUP( $pos, Perlito5::AST::Buf->new(buf => $i) ); # TODO don't deref
             push @out, Perlito5::AST::Apply->new(
                 code => 'infix:<=>>',
                 arguments => [
@@ -219,7 +217,8 @@ sub _dump_to_ast_deref {
         return Perlito5::AST::Apply->new(code => 'circumfix:<( )>', arguments => \@out);
     }
     elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-        return _dump_to_ast($$obj, $seen, $pos);
+        my $here = Perlito5::AST::Apply->new(code => 'prefix:<$>', arguments => [$pos]);  # TODO don't deref
+        return _dump_to_ast($$obj, $seen, $here);
     }
     return _dump_to_ast($obj, $seen, $pos);
 }
@@ -268,7 +267,7 @@ sub dump_to_AST_after_BEGIN {
                         code => 'infix:<=>',
                         arguments => [
                             $ast,
-                            _dump_to_ast( $value, "  ", $dumper_seen, $name ),
+                            _dump_to_ast( $value, $dumper_seen, $ast ),  #'$name ),
                         ],
                     );
         }
@@ -280,7 +279,7 @@ sub dump_to_AST_after_BEGIN {
                         code => 'infix:<=>',
                         arguments => [
                             Perlito5::AST::Var->new( %$ast, sigil => '*' ),
-                            _dump_to_ast( $value, "  ", $dumper_seen, '\\' . $name ),
+                            _dump_to_ast( $value, $dumper_seen, $ast ),  #''\\' . $name ),
                         ],
                     );
         }
@@ -295,7 +294,7 @@ sub dump_to_AST_after_BEGIN {
                             code => 'infix:<=>',
                             arguments => [
                                 Perlito5::AST::Var->new( %$ast, sigil => '*' ),
-                                _dump_to_ast( $value, "  ", $dumper_seen, '\\&' . $bareword ),
+                                _dump_to_ast( $value, $dumper_seen, $ast ),  #''\\&' . $bareword ),
                             ],
                         );
             }
@@ -306,7 +305,7 @@ sub dump_to_AST_after_BEGIN {
                             code => 'infix:<=>',
                             arguments => [
                                 Perlito5::AST::Var->new( %$ast, sigil => '*' ),
-                                _dump_to_ast( $value, "  ", $dumper_seen, '\\$' . $bareword ),
+                                _dump_to_ast( $value, $dumper_seen, $ast ),  #''\\$' . $bareword ),
                             ],
                         );
             }
@@ -317,7 +316,7 @@ sub dump_to_AST_after_BEGIN {
                             code => 'infix:<=>',
                             arguments => [
                                 Perlito5::AST::Var->new( %$ast, sigil => '*' ),
-                                _dump_to_ast( $value, "  ", $dumper_seen, '\\@' . $bareword ),
+                                _dump_to_ast( $value, $dumper_seen, $ast ),  #''\\@' . $bareword ),
                             ],
                         );
             }
@@ -328,7 +327,7 @@ sub dump_to_AST_after_BEGIN {
                             code => 'infix:<=>',
                             arguments => [
                                 Perlito5::AST::Var->new( %$ast, sigil => '*' ),
-                                _dump_to_ast( $value, "  ", $dumper_seen, '\\%' . $bareword ),
+                                _dump_to_ast( $value, $dumper_seen, $ast ),  #'\\%' . $bareword ),
                             ],
                         );
             }
@@ -607,6 +606,12 @@ sub emit_globals_after_BEGIN {
     if (0) {
         my $ast = dump_to_AST_after_BEGIN(@_);
         print STDERR Data::Dumper::Dumper($ast);
+
+        my @data = map { $_->emit_perl5 } @$ast;
+        my $out = [];
+        Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+        my $source_new = join( '', @$out ), ";1\n";
+        print STDERR "[[[ $source_new ]]]\n";
     }
 
     my $scope = shift() // $Perlito5::GLOBAL;
