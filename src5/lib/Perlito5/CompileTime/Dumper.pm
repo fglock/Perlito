@@ -54,6 +54,7 @@ sub _dump_to_ast {
     if ($ref eq 'ARRAY') {
         my @out;
         for my $i ( 0 .. $#$obj ) {
+            # TODO - move self-referencing outside the expression
             my $here = # $pos . '->[' . $i . ']';
                 Perlito5::AST::Call->new(
                     method => 'postcircumfix:<[ ]>',
@@ -67,6 +68,7 @@ sub _dump_to_ast {
     elsif ($ref eq 'HASH') {
         my @out;
         for my $i ( sort keys %$obj ) {
+            # TODO - move self-referencing outside the expression
             my $here = # $pos . '->{' . $i . '}';
                 Perlito5::AST::Call->new(
                     method => 'postcircumfix:<{ }>',
@@ -84,6 +86,7 @@ sub _dump_to_ast {
         return Perlito5::AST::Apply->new(code => 'circumfix:<{ }>', arguments => \@out);
     }
     elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
+            # TODO - move self-referencing outside the expression if needed
         return Perlito5::AST::Apply->new(
             code => 'prefix:<\\>',
             arguments => [_dump_to_ast($$obj, $tab1, $seen, $pos)]
@@ -116,12 +119,12 @@ sub _dump_to_ast {
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};
 
                 $sub_name = $ast->{namespace} . "::" . $ast->{name}
-                    if $ast->{name};;
+                    if $ast->{name};
 
-                my @data = $ast->emit_perl5();
-                my $out = [];
-                Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-                $source = join( '', @$out ) . ";";
+                # my @data = $ast->emit_perl5();
+                # my $out = [];
+                # Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+                $source = $ast;
             }
             else {
                 push @vars, 
