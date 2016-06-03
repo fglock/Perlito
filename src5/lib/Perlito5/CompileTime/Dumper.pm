@@ -83,8 +83,6 @@ sub _dump_to_ast {
         );
     }
     elsif ($ref eq 'CODE') {
-        # TODO
-
         # get the closed variables - see 'Sub' in Perl5 emitter
         my $closure_flag = bless {}, "Perlito5::dump";
         my $captures = $obj->($closure_flag) // {};
@@ -102,10 +100,10 @@ sub _dump_to_ast {
                     'arguments' => [],
                 );
         }
-        for my $var (sort keys %$captures) {
-            next if $var eq "__PKG__";
-            if ($var eq '__SUB__') {
-                my $sub_id = $captures->{$var};
+        for my $var_id (sort keys %$captures) {
+            next if $var_id eq "__PKG__";
+            if ($var_id eq '__SUB__') {
+                my $sub_id = $captures->{$var_id};
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};
 
                 $sub_name = $ast->{namespace} . "::" . $ast->{name}
@@ -117,8 +115,9 @@ sub _dump_to_ast {
                 $source = $ast;
             }
             else {
+                my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
                 push @vars, 
-                    # 'my ' . $var . ' = ' . _dump_to_ast_deref($captures->{$var}, $seen, $pos) . '; ';
+                    # 'my ' . $var . ' = ' . _dump_to_ast_deref($captures->{$var_id}, $seen, $pos) . '; ';
                     Perlito5::AST::Apply->new(
                         code => 'infix:<=>',
                         arguments => [
@@ -126,9 +125,9 @@ sub _dump_to_ast {
                                 'attributes' => [],
                                 'decl' => 'my',
                                 'type' => '',
-                                'var' => $var,      # TODO
+                                'var' => $var_ast,
                             ),
-                            _dump_to_ast_deref($captures->{$var}, $seen, $pos),
+                            _dump_to_ast_deref($captures->{$var_id}, $seen, $pos),
                         ],
                     );
             }
@@ -139,11 +138,10 @@ sub _dump_to_ast {
             arguments => [
                 Perlito5::AST::Block->new(
                     stmts => [
-                        # TODO
                         @vars,
                         $source,
                         ( $sub_name
-                          ? '\\&' . $sub_name    # return pointer to subroutine
+                          ? '\\&' . $sub_name    # return pointer to subroutine ??? TODO - check this
                           : ''
                         ),
                     ],
@@ -375,10 +373,10 @@ sub _dumper {
         my $package = $captures->{__PKG__};
         push @vars, "package $package;"
             if $package;
-        for my $var (sort keys %$captures) {
-            next if $var eq "__PKG__";
-            if ($var eq '__SUB__') {
-                my $sub_id = $captures->{$var};
+        for my $var_id (sort keys %$captures) {
+            next if $var_id eq "__PKG__";
+            if ($var_id eq '__SUB__') {
+                my $sub_id = $captures->{$var_id};
                 $ast = $Perlito5::BEGIN_SUBS{$sub_id};
 
                 $sub_name = $ast->{namespace} . "::" . $ast->{name}
@@ -390,8 +388,9 @@ sub _dumper {
                 $source = join( '', @$out ) . ";";
             }
             else {
+                my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
                 push @vars, 
-                    'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+                    'my ' . $var_ast->{sigil} . $var_ast->{name} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ';
             }
         }
         # say "_dumper: source [[ $source ]]";

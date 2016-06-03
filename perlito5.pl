@@ -8401,13 +8401,16 @@ use feature 'say';
                     my %capture = map {
                         $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
                     } @captured;
-                    my @captures_ast = values(%capture);
                     my $code = __PACKAGE__->new(%{$self}, 'block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts]));
                     my $id = Perlito5::get_label();
                     $Perlito5::BEGIN_SUBS{$id} = $code;
+                    $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_}
+                        for keys(%capture);
                     unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Var::LIST_ARG(), Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'infix:<eq>', 'arguments' => [Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::LIST_ARG_INDEX(0)], 'code' => 'ref'), Perlito5::AST::Buf::->new('buf' => 'Perlito5::dump')]), Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => '__SUB__'), Perlito5::AST::Buf::->new('buf' => $id), Perlito5::AST::Buf::->new('buf' => '__PKG__'), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME), map {
-                        (Perlito5::AST::Buf::->new('buf' => ($_->{'_real_sigil'} || $_->{'sigil'}) . $_->{'name'}), Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [$_]))
-                    } @captures_ast])])])]))
+                        (Perlito5::AST::Buf::->new('buf' => $_), Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [$capture{$_}]))
+                    } sort {
+                        $a cmp $b
+                    } keys(%capture)])])])]))
                 }
                 $self = __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
             }
@@ -8508,18 +8511,19 @@ use feature 'say';
             if ($package) {
                 push(@vars, Perlito5::AST::Apply::->new('code' => 'package', 'namespace' => $package, 'arguments' => []))
             }
-            for my $var (sort {
+            for my $var_id (sort {
                 $a cmp $b
             } keys(%{$captures})) {
-                $var eq '__PKG__' && next;
-                if ($var eq '__SUB__') {
-                    my $sub_id = $captures->{$var};
+                $var_id eq '__PKG__' && next;
+                if ($var_id eq '__SUB__') {
+                    my $sub_id = $captures->{$var_id};
                     $ast = $Perlito5::BEGIN_SUBS{$sub_id};
                     $ast->{'name'} && ($sub_name = $ast->{'namespace'} . '::' . $ast->{'name'});
                     $source = $ast
                 }
                 else {
-                    push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => 'my', 'type' => '', 'var' => $var), _dump_to_ast_deref($captures->{$var}, $seen, $pos)]))
+                    my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
+                    push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => 'my', 'type' => '', 'var' => $var_ast), _dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
                 }
             }
             return Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => [@vars, $source, ($sub_name ? chr(92) . '&' . $sub_name : '')])])
@@ -8664,12 +8668,12 @@ use feature 'say';
             my $sub_name;
             my $package = $captures->{'__PKG__'};
             $package && push(@vars, 'package ' . $package . ';');
-            for my $var (sort {
+            for my $var_id (sort {
                 $a cmp $b
             } keys(%{$captures})) {
-                $var eq '__PKG__' && next;
-                if ($var eq '__SUB__') {
-                    my $sub_id = $captures->{$var};
+                $var_id eq '__PKG__' && next;
+                if ($var_id eq '__SUB__') {
+                    my $sub_id = $captures->{$var_id};
                     $ast = $Perlito5::BEGIN_SUBS{$sub_id};
                     $ast->{'name'} && ($sub_name = $ast->{'namespace'} . '::' . $ast->{'name'});
                     my @data = $ast->emit_perl5();
@@ -8678,7 +8682,8 @@ use feature 'say';
                     $source = join('', @{$out}) . ';'
                 }
                 else {
-                    push(@vars, 'my ' . $var . ' = ' . _dumper_deref($captures->{$var}, $tab1, $seen, $pos) . '; ')
+                    my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
+                    push(@vars, 'my ' . $var_ast->{'sigil'} . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
                 }
             }
             return join('', 'do { ', @vars, $source, ($sub_name ? chr(92) . '&' . $sub_name : ''), '}')
@@ -8766,7 +8771,7 @@ use feature 'say';
         }
     }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
-        if (0) {
+        if (1) {
             my $ast = dump_to_AST_after_BEGIN(@_);
             print(Data::Dumper::Dumper($ast))
         }

@@ -293,7 +293,6 @@ package Perlito5::AST::Sub;
                                   : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
                                   : ( $_->{_id} => $_ )
                                   } @captured;
-                my @captures_ast  = values %capture;
 
                 # return a hash with { "variable name" => \"variable value" }
                 # with all captured variables
@@ -310,6 +309,7 @@ package Perlito5::AST::Sub;
                 );
                 my $id = Perlito5::get_label();
                 $Perlito5::BEGIN_SUBS{$id} = $code;
+                $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_} for keys %capture;
 
                 unshift @stmts,
                   Perlito5::AST::Apply->new(
@@ -343,15 +343,15 @@ package Perlito5::AST::Sub;
                                                 Perlito5::AST::Buf->new(buf => $Perlito5::PKG_NAME),
                                                 map {(
                                                     Perlito5::AST::Buf->new(
-                                                        buf => ($_->{_real_sigil} || $_->{sigil}) . $_->{name},
+                                                        buf => $_,
                                                     ),
                                                     Perlito5::AST::Apply->new(
                                                         code => 'prefix:<\\>',
                                                         arguments => [
-                                                            $_,
+                                                            $capture{$_},
                                                         ], 
                                                     ),
-                                                )} @captures_ast
+                                                )} sort keys %capture
                                             ],
                                         ),
                                     ],
