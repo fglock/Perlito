@@ -321,7 +321,7 @@ sub flatten {
 #
 # Find a state variable declaration in the AST subtree rooted at
 # $node.  @rules is a *list* of Perlito5::TreeGrammar rules (and not a
-# single monotlithic rule tree) required to reach $node.
+# single monolithic rule tree) required to reach $node.
 #
 # If a state variable declaration/initialization expression is found,
 # this function returns the state decl node and the rule list required
