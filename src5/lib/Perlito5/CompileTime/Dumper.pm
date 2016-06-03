@@ -199,6 +199,97 @@ sub _dump_to_ast {
     );
 }
 
+sub dump_to_AST_after_BEGIN {
+    # return a structure with the global variable declarations
+    # this is used to initialize the ahead-of-time program
+    my $scope = shift() // $Perlito5::GLOBAL;
+    my $vars = [];
+    my $seen = {};
+    my $dumper_seen = {};
+    my $tab = "";
+
+    for my $name (sort keys %$scope) {
+        my $sigil = substr($name, 0, 1);
+        my $item = $scope->{$name};
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
+            # TODO
+            # _dump_global($item, $seen, $dumper_seen, $vars, $tab);
+            push @$vars, "# don't know how to initialize subroutine $name";
+            next;
+        }
+
+        # TODO - emit lexicals
+        next
+            if substr($name, 1, 2) eq "C_";
+
+        if (substr($name, 7, 1) lt 'A') {
+            # encode special variable names like $main::" to ${'main::"'}
+            $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'
+        }
+        my $ast = $item->{ast};
+        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{_decl} eq "our") {
+            # "our" variables are lexical aliases; we want the original global variable name
+            $name =
+                  ($ast->{_real_sigil} || $ast->{sigil})
+                . ($ast->{namespace} || $ast->{_namespace} || "C_")
+                . "::" . $ast->{name};
+        }
+        if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
+            my $value = eval($name);
+            next if !defined($value);
+            push @$vars, # "$name = ", $dump;
+                    Perlito5::AST::Apply->new(
+                        code => 'infix:<=>',
+                        arguments => [
+                            $ast,
+                            _dump_to_ast( $value, "  ", $dumper_seen, $name ),
+                        ],
+                    );
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
+            my $value = eval("\\" . $name);
+            # my $bareword = substr($name, 1);
+            push @$vars, # "*$bareword = ", $dump;
+                    Perlito5::AST::Apply->new(
+                        code => 'infix:<=>',
+                        arguments => [
+                            Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                            _dump_to_ast( $value, "  ", $dumper_seen, '\\' . $name ),
+                        ],
+                    );
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+            # *mysub = sub {...}
+            my $bareword = substr($name, 1);
+
+            if (exists &{$bareword}) {
+                my $sub = \&{$bareword};
+                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\&' . $bareword);
+                push @$vars, "*$bareword = ", $dump;
+            }
+            if (defined ${$bareword}) {
+                my $sub = \${$bareword};
+                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\$' . $bareword);
+                push @$vars, "*$bareword = ", $dump;
+            }
+            if (@{$bareword}) {
+                my $sub = \@{$bareword};
+                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\@' . $bareword);
+                push @$vars, "*$bareword = ", $dump;
+            }
+            if (keys %{$bareword}) {
+                my $sub = \%{$bareword};
+                my $dump = _dump_to_ast($sub, '  ', $dumper_seen, '\\%' . $bareword);
+                push @$vars, "*$bareword = ", $dump;
+            }
+
+        }
+        else {
+            push @$vars, "# don't know how to initialize variable $name";
+        }
+    }
+    return \@$vars;
+}
 
 sub _dumper {
     my ($obj, $tab, $seen, $pos) = @_;
@@ -461,6 +552,12 @@ sub _dump_global {
 sub emit_globals_after_BEGIN {
     # return a structure with the global variable declarations
     # this is used to initialize the ahead-of-time program
+
+    if (0) {
+        my $ast = dump_to_AST_after_BEGIN(@_);
+        print STDERR Data::Dumper::Dumper($ast);
+    }
+
     my $scope = shift() // $Perlito5::GLOBAL;
     my $vars = [];
     my $seen = {};
@@ -537,5 +634,6 @@ sub emit_globals_after_BEGIN {
     }
     return join("\n", @$vars);
 }
+
 1;
 
