@@ -38,6 +38,20 @@ sub new { my $class = shift; bless {@_}, $class }
 sub obj { $_[0]->{obj} }
 sub index_exp { $_[0]->{index_exp} }
 
+sub INDEX {
+    my ($term, $index) = @_;
+    if (ref($term) eq 'Perlito5::AST::Var' && $term->{sigil} eq '@') {
+        return Perlito5::AST::Index->new(
+            obj => Perlito5::AST::Var->new( %$term, _real_sigil => $term->{sigil}, sigil => '$' ),
+            index_exp => $index,
+        );
+    }
+    return Perlito5::AST::Call->new(
+        method => 'postcircumfix:<[ ]>',
+        invocant => $term,
+        arguments => $index,
+    );
+}
 
 
 package Perlito5::AST::Lookup;
@@ -104,7 +118,20 @@ sub autoquote {
     $index;
 }
 
-
+sub LOOKUP {
+    my ($term, $index) = @_;
+    if (ref($term) eq 'Perlito5::AST::Var' && $term->{sigil} eq '%') {
+        return Perlito5::AST::Lookup->new(
+            obj => Perlito5::AST::Var->new( %$term, _real_sigil => $term->{sigil}, sigil => '$' ),
+            index_exp => $index,
+        );
+    }
+    return Perlito5::AST::Call->new(
+        method => 'postcircumfix:<{ }>',
+        invocant => $term,
+        arguments => $index,
+    );
+}
 
 package Perlito5::AST::Var;
 sub new {
@@ -147,17 +174,7 @@ sub LIST_ARG {
 
 sub LIST_ARG_INDEX {
     my $index = shift;
-    Perlito5::AST::Index->new(
-        'index_exp' => Perlito5::AST::Int->new( int => $index ),
-        'obj'       => Perlito5::AST::Var->new(
-            sigil        => '$',
-            _real_sigil  => '@',
-            namespace    => '',
-            name         => '_',
-            '_decl'      => 'global',
-            '_namespace' => 'main',
-        )
-    );
+    Perlito5::AST::Index::INDEX( LIST_ARG(), Perlito5::AST::Int->new( int => $index ) );
 }
 
 package Perlito5::AST::Call;
