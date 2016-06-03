@@ -8676,10 +8676,57 @@ use feature 'say';
             }
         }
     }
+    sub Perlito5::CompileTime::Dumper::_dump_AST_from_scope {
+        my($name, $item, $vars, $dumper_seen) = @_;
+        @_ = ();
+        my $sigil = substr($name, 0, 1);
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
+            warn('# don' . chr(39) . 't know how to initialize subroutine ' . $name . ' in BEGIN');
+            return
+        }
+        substr($name, 1, 2) eq 'C_' && return;
+        if (substr($name, 7, 1) lt 'A') {
+            $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
+        }
+        my $ast = $item->{'ast'};
+        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
+            $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+        }
+        if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
+            my $value = eval($name);
+            !defined($value) && return;
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, _dump_to_ast($value, $dumper_seen, $ast)]))
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
+            my $value = eval(chr(92) . $name);
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+            my $bareword = substr($name, 1);
+            if (exists(&{$bareword})) {
+                my $value = \&{$bareword};
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            }
+            if (defined(${$bareword})) {
+                my $value = \${$bareword};
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            }
+            if (@{$bareword}) {
+                my $value = \@{$bareword};
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            }
+            if (keys(%{$bareword})) {
+                my $value = \%{$bareword};
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            }
+        }
+        else {
+            warn('# don' . chr(39) . 't know how to initialize variable ' . $name . ' in BEGIN')
+        }
+    }
     sub Perlito5::CompileTime::Dumper::dump_to_AST_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
-        my $seen = {};
         my $dumper_seen = {};
         my $tab = '';
         @main::REFS = ();
@@ -8689,51 +8736,8 @@ use feature 'say';
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
-            my $sigil = substr($name, 0, 1);
             my $item = $scope->{$name};
-            if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
-                warn('# don' . chr(39) . 't know how to initialize subroutine ' . $name . ' in BEGIN');
-                next
-            }
-            substr($name, 1, 2) eq 'C_' && next;
-            if (substr($name, 7, 1) lt 'A') {
-                $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
-            }
-            my $ast = $item->{'ast'};
-            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
-                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
-            }
-            if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-                my $value = eval($name);
-                !defined($value) && next;
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, _dump_to_ast($value, $dumper_seen, $ast)]))
-            }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-                my $value = eval(chr(92) . $name);
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
-            }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-                my $bareword = substr($name, 1);
-                if (exists(&{$bareword})) {
-                    my $value = \&{$bareword};
-                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
-                }
-                if (defined(${$bareword})) {
-                    my $value = \${$bareword};
-                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
-                }
-                if (@{$bareword}) {
-                    my $value = \@{$bareword};
-                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
-                }
-                if (keys(%{$bareword})) {
-                    my $value = \%{$bareword};
-                    push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
-                }
-            }
-            else {
-                warn('# don' . chr(39) . 't know how to initialize variable ' . $name . ' in BEGIN')
-            }
+            _dump_AST_from_scope($name, $item, $vars, $dumper_seen)
         }
         return \@{$vars}
     }
