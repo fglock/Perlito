@@ -101,8 +101,14 @@ sub _dump_to_ast {
         my $source;
         my $sub_name;
         my $package = $captures->{__PKG__};
-        push @vars, "package $package;"
-            if $package;
+        if ($package) {
+            push @vars, # "package $package;"
+                Perlito5::AST::Apply->new(
+                    'code'      => 'package',
+                    'namespace' => $package,
+                    'arguments' => [],
+                );
+        }
         for my $var (sort keys %$captures) {
             next if $var eq "__PKG__";
             if ($var eq '__SUB__') {
@@ -119,7 +125,19 @@ sub _dump_to_ast {
             }
             else {
                 push @vars, 
-                    'my ' . $var . ' = ' . _dump_to_ast_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+                    # 'my ' . $var . ' = ' . _dump_to_ast_deref($captures->{$var}, $tab1, $seen, $pos) . '; ';
+                    Perlito5::AST::Apply->new(
+                        code => 'infix:<=>',
+                        arguments => [
+                            Perlito5::AST::Decl->new(
+                                'attributes' => [],
+                                'decl' => 'my',
+                                'type' => '',
+                                'var' => $var,      # TODO
+                            ),
+                            _dump_to_ast_deref($captures->{$var}, $tab1, $seen, $pos),
+                        ],
+                    );
             }
         }
         # say "_dump_to_ast: source [[ $source ]]";
