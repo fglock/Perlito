@@ -8925,7 +8925,7 @@ use feature 'say';
         }
     }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
-        if (1) {
+        if (0) {
             my $ast = dump_to_AST_after_BEGIN(@_);
             print(Data::Dumper::Dumper($ast));
             my @data = map {
