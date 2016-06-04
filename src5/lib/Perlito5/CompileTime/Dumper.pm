@@ -266,6 +266,7 @@ sub _collect_refs_inner {
         my $closure_flag = bless {}, "Perlito5::dump";
         my $captures = $obj->($closure_flag) // {};
         $pos = "SUB";
+        my $subs = { id => $captures->{__SUB__}, var => [] };
         for my $var_id (sort keys %$captures) {
             next if $var_id eq "__PKG__";
             if ($var_id eq '__SUB__') {
@@ -273,9 +274,11 @@ sub _collect_refs_inner {
             else {
                 _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos);
                 push @main::REFS, $captures->{$var_id};
+                push @{ $subs->{var} }, $var_id;
             }
         }
         push @main::REFS, $obj;
+        push @main::SUBS, $subs;
         return;
     }
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
@@ -507,6 +510,7 @@ sub dump_to_AST_after_BEGIN {
     collect_refs($scope);
     use Data::Dumper;
     # print STDERR "REFS ", Data::Dumper::Dumper(\@main::REFS);
+    print STDERR "SUBS ", Data::Dumper::Dumper(\@main::SUBS);
 
     my $refs = [];
     _dump_AST_from_scope(

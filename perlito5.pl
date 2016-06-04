@@ -8614,6 +8614,7 @@ use feature 'say';
             my $closure_flag = bless({}, 'Perlito5::dump');
             my $captures = $obj->($closure_flag) // {};
             $pos = 'SUB';
+            my $subs = {'id' => $captures->{'__SUB__'}, 'var' => []};
             for my $var_id (sort {
                 $a cmp $b
             } keys(%{$captures})) {
@@ -8621,10 +8622,12 @@ use feature 'say';
                 if ($var_id eq '__SUB__') {}
                 else {
                     _collect_refs_inner($captures->{$var_id}, $tab, $seen, $pos);
-                    push(@main::REFS, $captures->{$var_id})
+                    push(@main::REFS, $captures->{$var_id});
+                    push(@{$subs->{'var'}}, $var_id)
                 }
             }
             push(@main::REFS, $obj);
+            push(@main::SUBS, $subs);
             return
         }
         for my $i (sort {
@@ -8764,6 +8767,7 @@ use feature 'say';
         @main::REFS = ();
         collect_refs($scope);
         undef();
+        print('SUBS ', Data::Dumper::Dumper(\@main::SUBS));
         my $refs = [];
         _dump_AST_from_scope('@main::REFS', {'ast' => Perlito5::AST::Var::->new('name' => 'REFS', 'namespace' => 'main', 'sigil' => '@')}, $refs, $dumper_seen);
         for my $ast (@{$refs->[0]->{'arguments'}->[1]->{'arguments'}}) {
@@ -8921,7 +8925,7 @@ use feature 'say';
         }
     }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
-        if (0) {
+        if (1) {
             my $ast = dump_to_AST_after_BEGIN(@_);
             print(Data::Dumper::Dumper($ast));
             my @data = map {
