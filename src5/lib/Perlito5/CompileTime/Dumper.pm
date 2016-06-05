@@ -266,7 +266,7 @@ sub _collect_refs_inner {
         my $closure_flag = bless {}, "Perlito5::dump";
         my $captures = $obj->($closure_flag) // {};
         $pos = "SUB";
-        my $subs = { id => $captures->{__SUB__}, var => [] };
+        my $subs = { sub => $captures->{__SUB__}, var => [] };
         for my $var_id (sort keys %$captures) {
             next if $var_id eq "__PKG__";
             if ($var_id eq '__SUB__') {

@@ -8614,7 +8614,7 @@ use feature 'say';
             my $closure_flag = bless({}, 'Perlito5::dump');
             my $captures = $obj->($closure_flag) // {};
             $pos = 'SUB';
-            my $subs = {'id' => $captures->{'__SUB__'}, 'var' => []};
+            my $subs = {'sub' => $captures->{'__SUB__'}, 'var' => []};
             for my $var_id (sort {
                 $a cmp $b
             } keys(%{$captures})) {
