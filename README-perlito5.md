@@ -1,8 +1,10 @@
-"Perlito6" Perl 5 compiler
+"Perlito5" Perl 5 compiler
 ==========================
 
     This is Perlito5, a compiler that implements a subset of Perl 5.
     
+    Perlito5 translates Perl to Java, and Perl to JavaScript.
+
 Build using make
 ----------------
 
