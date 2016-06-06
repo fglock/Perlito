@@ -16061,6 +16061,9 @@ use feature 'say';
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
             my $v = shift(@arguments);
+            if (@arguments == 1 && ref($arguments[0]) eq 'Perlito5::AST::Var' && $arguments[0]->{'sigil'} eq '$') {
+                return $v->emit_java($level) . '.push(' . $arguments[0]->emit_java() . ')'
+            }
             return $v->emit_java($level) . '.push(' . Perlito5::Java::to_list(\@arguments) . ')'
         }, 'pos' => sub {
             my($self, $level, $wantarray) = @_;
