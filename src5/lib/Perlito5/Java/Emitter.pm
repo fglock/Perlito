@@ -302,6 +302,7 @@ package Perlito5::Java;
         my $s = shift;
         my @out;
         my $tmp = '';
+        my $has_char = 0;
         return '""' if $s eq '';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
@@ -316,11 +317,12 @@ package Perlito5::Java;
             else {
                 push @out, "\"$tmp\"" if $tmp ne '';
                 push @out, "(char)" . ord($c) . "";
+                $has_char = 1;
                 $tmp = '';
             }
         }
         push @out, "\"$tmp\"" if $tmp ne '';
-        unshift @out, '""' if scalar(@out) > 1;
+        unshift @out, '""' if $has_char;
         return join(' + ', @out);
     }
 

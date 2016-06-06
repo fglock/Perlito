@@ -1000,6 +1000,19 @@ class PerlOp {
         return replace(s, new PlRegex(pat, 0), rep, want, global);
     }
 
+    public static final PlObject replace(PlLvalue s, PlRegex pat, String rep, int want, boolean global) {
+        // TODO - use "global" flag
+        if (want != PlCx.LIST) {
+            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep)));
+        }
+        PlCORE.die("not implemented string replace in list context");
+        return s;
+    }
+    public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
+        // TODO - cache the compiled pattern
+        return replace(s, new PlRegex(pat, 0), rep, want, global);
+    }
+
     // $v =~ tr/xyz/abc/i
     // PerlOp.tr(v_v_100, new PlString("xyz"), new PlString("abc"), "", PlCx.VOID)
     public static final PlObject tr(PlObject pstr, PlObject psearchChars, PlObject preplaceChars, String modifier, int want) {

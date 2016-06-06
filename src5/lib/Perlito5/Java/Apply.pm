@@ -44,12 +44,21 @@ package Perlito5::AST::Apply;
         if ($code eq 'p5:s') {
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{buf};
+            my $replace_java;
             if (ref($replace) eq 'Perlito5::AST::Block') {
-                $replace = Perlito5::AST::Apply->new(
+                $replace_java = Perlito5::AST::Apply->new(
                             code => 'do',
                             arguments => [$replace]
-                        );
+                        )->emit_java();
                 $modifier =~ s/e//g;
+            }
+            elsif (ref($replace) eq 'Perlito5::AST::Buf') {
+                $replace_java = $replace->{buf};
+                $replace_java =~ s{\\}{\\\\}g;
+                $replace_java = Perlito5::Java::escape_string($replace_java);
+            }
+            else {
+                $replace_java = $replace->emit_java();
             }
             if ($modifier =~ /g/) {
                 $modifier_global = 'true';
@@ -58,7 +67,7 @@ package Perlito5::AST::Apply;
             $str = 'PerlOp.replace('
                     . $var->emit_java() . ', '
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
-                    . $replace->emit_java() . ', '
+                    . $replace_java . ', '
                     . Perlito5::Java::to_context($wantarray) . ', '
                     . $modifier_global
                   . ")";
