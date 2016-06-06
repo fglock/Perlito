@@ -786,55 +786,60 @@ class PerlOp {
     }
 
     // ****** pos()
-    // TODO - regex_pos is never cleaned up - this is a memory leak
-    // See: ReferenceQueue, WeakReference
-    public static final PlHash regex_pos = new PlHash();    // matcher for "pos($v)"
-    public static final PlHash regex_zero_length_flag = new PlHash();    // matcher for "pos($v)"
+    // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
 
     public static final PlObject pos(PlObject var) {
         // TODO - check that var is lvalue
-        return regex_pos.hget(Integer.toString(var.hashCode()));
+        Integer pos = ((PlLvalue)var).pos;
+        if (pos == null) {
+            return PlCx.UNDEF;
+        }
+        return new PlInt(pos);
     }
-    public static final PlObject set_pos(PlObject var, PlObject value, Matcher matcher, String str) {
+    public static final PlObject set_pos(PlObject var, PlObject value, PlRegexResult matcher, String str) {
         // TODO - check that var is lvalue
         String hashCode = Integer.toString(var.hashCode());
         if (!value.is_undef()) {
             int pos = value.to_int();
 
             // check for zero-length match
-            int old_pos = regex_pos.hget(hashCode).to_int();
+            int old_pos = pos(var).to_int();
 
             if (old_pos == pos) {
                 // PlCORE.say("zero length match");
-                boolean old_flag = regex_zero_length_flag.hget(hashCode).to_bool();
+                boolean old_flag = matcher.regex_zero_length_flag;
                 if (old_flag) {
-                    boolean find = matcher.find();
+                    boolean find = matcher.matcher.find();
                     if (find) {
-                        set_match(matcher, str);
-                        pos = matcher.end();
+                        matcher.regex_string = str;
+                        pos = matcher.matcher.end();
 
                         // TODO - $&
                         // String cap1 = str.substring(old_pos, pos);
                         // String cap = str.substring(matcher.start(), matcher.end());
                         // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
 
-                        regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
+                        matcher.regex_zero_length_flag = false;
                     }
                     else {
                         reset_match();
-                        regex_zero_length_flag.hset(hashCode, PlCx.FALSE);
-                        return regex_pos.hset(hashCode, PlCx.UNDEF);
+                        ((PlLvalue)var).pos = null;
+                        return PlCx.UNDEF;
                     }
                 }
                 else {
-                    regex_zero_length_flag.hset(hashCode, PlCx.TRUE);
+                    matcher.regex_zero_length_flag = true;
                 }
             }
 
             // TODO - test that pos < string length
             value = new PlInt(pos);
+            ((PlLvalue)var).pos = pos;
         }
-        return regex_pos.hset(hashCode, value);
+        else {
+            ((PlLvalue)var).pos = null;
+        }
+        return value;
     }
 
     // ****** regex variables
@@ -849,14 +854,17 @@ class PerlOp {
     public static final void local_match() {
         regex_var.hget_lvalue_local("__match__");
     }
-    public static final void set_match(Matcher m, String s) {
+    public static final PlRegexResult set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
         match.matcher = m;
         match.regex_string = s;
+        match.regex_zero_length_flag = false;
         regex_var.hset("__match__", match);
+        return match;
     }
     public static final void reset_match() {
         PlRegexResult match = new PlRegexResult();
+        match.regex_zero_length_flag = false;
         regex_var.hset("__match__", match);
     }
     public static final PlObject regex_var(int var_number) {
@@ -905,8 +913,8 @@ class PerlOp {
                     find = matcher.find(pos.to_int());
                 }
                 if (find) {
-                    set_match(matcher, str);
-                    set_pos(input, new PlInt(matcher.end()), matcher, str);
+                    PlRegexResult match = set_match(matcher, str);
+                    set_pos(input, new PlInt(matcher.end()), match, str);
                     return PlCx.TRUE;
                 }
                 else {
@@ -1714,6 +1722,7 @@ class PlRegex extends PlReference {
 class PlRegexResult extends PlObject {
     public static Matcher matcher;      // regex captures
     public static String  regex_string; // last string used in a regex
+    public static boolean regex_zero_length_flag;
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
@@ -1942,6 +1951,7 @@ class PlClass {
 }
 class PlLvalue extends PlObject {
     private PlObject o;
+    public Integer pos;
 
     // Note: several versions of PlLvalue()
     public PlLvalue() {
