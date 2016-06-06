@@ -798,47 +798,44 @@ class PerlOp {
     }
     public static final PlObject set_pos(PlObject var, PlObject value, PlRegexResult matcher, String str) {
         // TODO - check that var is lvalue
-        String hashCode = Integer.toString(var.hashCode());
-        if (!value.is_undef()) {
-            int pos = value.to_int();
+        if (value.is_undef()) {
+            ((PlLvalue)var).pos = null;
+            return value;
+        }
 
-            // check for zero-length match
-            int old_pos = pos(var).to_int();
+        int pos = value.to_int();
 
-            if (old_pos == pos) {
-                // PlCORE.say("zero length match");
-                boolean old_flag = matcher.regex_zero_length_flag;
-                if (old_flag) {
-                    boolean find = matcher.matcher.find();
-                    if (find) {
-                        matcher.regex_string = str;
-                        pos = matcher.matcher.end();
+        // check for zero-length match
+        int old_pos = pos(var).to_int();
 
-                        // TODO - $&
-                        // String cap1 = str.substring(old_pos, pos);
-                        // String cap = str.substring(matcher.start(), matcher.end());
-                        // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
+        if (old_pos == pos) {
+            // PlCORE.say("zero length match");
+            if (matcher.regex_zero_length_flag) {
+                if (matcher.matcher.find()) {
+                    matcher.regex_string = str;
+                    pos = matcher.matcher.end();
 
-                        matcher.regex_zero_length_flag = false;
-                    }
-                    else {
-                        reset_match();
-                        ((PlLvalue)var).pos = null;
-                        return PlCx.UNDEF;
-                    }
+                    // TODO - $&
+                    // String cap1 = str.substring(old_pos, pos);
+                    // String cap = str.substring(matcher.start(), matcher.end());
+                    // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
+
+                    matcher.regex_zero_length_flag = false;
                 }
                 else {
-                    matcher.regex_zero_length_flag = true;
+                    reset_match();
+                    ((PlLvalue)var).pos = null;
+                    return PlCx.UNDEF;
                 }
             }
+            else {
+                matcher.regex_zero_length_flag = true;
+            }
+        }
 
-            // TODO - test that pos < string length
-            value = new PlInt(pos);
-            ((PlLvalue)var).pos = pos;
-        }
-        else {
-            ((PlLvalue)var).pos = null;
-        }
+        // TODO - test that pos < string length
+        value = new PlInt(pos);
+        ((PlLvalue)var).pos = pos;
         return value;
     }
 
