@@ -2146,7 +2146,7 @@ class PlLvalue extends PlObject {
     }
 
     // Note: several versions of set()
-    public PlObject set(PlObject o) {
+    public PlLvalue set(PlObject o) {
         if (o == null) {
             o = PlCx.UNDEF;
         }
@@ -2156,16 +2156,24 @@ class PlLvalue extends PlObject {
         this.o = o;
         return this;
     }
-    public PlObject set(PlLvalue o) {
+    public PlLvalue set(PlString o) {
+        this.o = o;
+        return this;
+    }
+    public PlLvalue set(PlInt o) {
+        this.o = o;
+        return this;
+    }
+    public PlLvalue set(PlLvalue o) {
         this.o = o.get();
         return this;
     }
-    public PlObject set(PlArray o) {
+    public PlLvalue set(PlArray o) {
         // $a = @x
         this.o = o.scalar();
         return this;
     }
-    public PlObject set(PlHash o) {
+    public PlLvalue set(PlHash o) {
         // $a = %x
         this.o = o.scalar();
         return this;
@@ -2175,7 +2183,7 @@ EOT
             my $native = $_;
             my $perl   = $native_to_perl{$native};
             $native && $perl ? 
-"    public PlObject set($native s) {
+"    public PlLvalue set($native s) {
         this.o = new $perl(s);
         return this;
     }
