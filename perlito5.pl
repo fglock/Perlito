@@ -16837,6 +16837,19 @@ use feature 'say';
             if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'infix:<||>' || $cond->code() eq 'infix:<or>')) {
                 return '(' . to_bool($cond->{'arguments'}->[0], $level) . ' || ' . to_bool($cond->{'arguments'}->[1], $level) . ')'
             }
+            if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'prefix:<!>' || $cond->code() eq 'prefix:<not>')) {
+                if (@{$cond->{'arguments'}} == 1) {
+                    return '!' . to_bool($cond->{'arguments'}->[0], $level)
+                }
+            }
+            if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'defined')) {
+                if (@{$cond->{'arguments'}} == 1) {
+                    my $arg = $cond->{'arguments'}->[0];
+                    if (ref($arg) eq 'Perlito5::AST::Var' && $arg->{'sigil'} eq '$') {
+                        return '!' . $arg->emit_java($level, 'scalar') . '.is_undef()'
+                    }
+                }
+            }
             if (($cond->isa('Perlito5::AST::Int')) || ($cond->isa('Perlito5::AST::Num')) || ($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))) {
                 return $cond->emit_java($level, $wantarray) . '.to_bool()'
             }
