@@ -2896,12 +2896,29 @@ EOT
         }
     }
     public PlObject exists(PlObject i) {
-        PlCORE.die("TODO - array exists");
-        return this;
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.FALSE;
+        }
+        return PlCx.TRUE;
     }
-    public PlObject delete(PlObject i) {
-        PlCORE.die("TODO - array delete");
-        return this;
+    public PlObject delete(int want, PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if ((pos+1) == this.a.size()) {
+            return this.pop();
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.FALSE;
+        }
+        PlObject res = this.aget(i);
+        this.aset(i, PlCx.UNDEF);
+        return res;
     }
     public PlObject values() {
         // return a copy

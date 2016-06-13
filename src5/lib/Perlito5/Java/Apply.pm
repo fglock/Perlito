@@ -721,10 +721,11 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
-                   && ($v->sigil eq '$' || $v->sigil eq '@')
+                   && $v->{_real_sigil} eq '%'
                    )
                 {
-                    return $v->emit_java($level, $wantarray) . '.delete('
+                    $v = Perlito5::AST::Var->new(%$v, sigil => '%');
+                    return $v->emit_java($level) . '.delete('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->autoquote($arg->{index_exp})->emit_java($level) . ')';
                 }
@@ -733,10 +734,11 @@ package Perlito5::AST::Apply;
             if ($arg->isa( 'Perlito5::AST::Index' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Perlito5::AST::Var')
-                   && ($v->sigil eq '$' || $v->sigil eq '@')
+                   && $v->{_real_sigil} eq '@'
                    )
                 {
-                    return $v->emit_java($level, $wantarray) . '.delete('
+                    $v = Perlito5::AST::Var->new(%$v, sigil => '@');
+                    return $v->emit_java($level) . '.delete('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . $arg->{index_exp}->emit_java($level) . ')';
                 }
