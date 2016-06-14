@@ -172,27 +172,6 @@ Parser
 -- create __DATA__
     %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
--- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
-    see README-perlito5-js near "Compile-time / Run-time interleaving"
-
-    my $v;
-    BEGIN { $v = "123" }
-    use Module $v;  # $v is not accessible at compile-time
-
--- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
-
-    $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
-
-    TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
-          $main::ccc2 = $main::ccc;
-        instead of:
-          *main::ccc2 = \$main::ccc;
-
-    - lexicals and closures are not dumped
-
-    TODO - lexicals are not shared
-         - maybe save lexical variable AST. This will help identify shared lexicals
-
 -- parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
     create an AST for regexes
@@ -562,6 +541,53 @@ Compile-time execution environment
 ----------------------------------
 
 -- work in progress
+
+-- test case:
+
+# captured lexical is not emitted:
+
+$ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
+Main.java:6307: error: cannot find symbol
+            PlV.glob_set("Perlito5::Dumper::escape_string", new PlArray(new PlClosure(PlCx.UNDEF, new PlObject[]{ Hash_safe_char_119 } ) {
+  symbol:   variable Hash_safe_char_119
+
+
+# captured lexical is not initialized:
+
+$ cat > X.pm
+my %safe = (a=>1); sub dump { $safe{a} }
+1;
+$ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
+*main::dump = do {
+    package main;
+    my $safe = undef;   # TODO - initialize captured lexical
+    sub {
+        $safe{'a'}
+    }
+};
+
+
+-- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
+    see README-perlito5-js near "Compile-time / Run-time interleaving"
+
+    my $v;
+    BEGIN { $v = "123" }
+    use Module $v;  # $v is not accessible at compile-time
+
+-- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
+
+    $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+
+    TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
+          $main::ccc2 = $main::ccc;
+        instead of:
+          *main::ccc2 = \$main::ccc;
+
+    - lexicals and closures are not dumped
+
+    TODO - lexicals are not shared
+         - maybe save lexical variable AST. This will help identify shared lexicals
+
 
 -- current implementation
 
