@@ -8837,7 +8837,8 @@ use feature 'say';
                 }
                 else {
                     my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    push(@vars, 'my ' . $var_ast->{'sigil'} . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
+                    my $sigil = ($var_ast->{'_real_sigil'} || $var_ast->{'sigil'});
+                    push(@vars, 'my ' . $sigil . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
                 }
             }
             return join('', 'do { ', @vars, $source, ($sub_name ? chr(92) . '&' . $sub_name : ''), '}')
