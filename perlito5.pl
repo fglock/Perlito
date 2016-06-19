@@ -4399,7 +4399,7 @@ use feature 'say';
             $m = Perlito5::Grammar::block($str, $p0);
             if ($m) {
                 my $ast = Perlito5::Match::flat($m);
-                if (@{$ast->{'stmts'}} == 1 && (ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Apply' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Call' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Var' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Index' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Lookup')) {
+                if (@{$ast->{'stmts'}} == 1 && (ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Apply' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Call' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Var' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Buf' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Index' || ref($ast->{'stmts'}->[0]) eq 'Perlito5::AST::Lookup')) {
                     $m->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'prefix:<' . $sigil . '>', 'namespace' => '', 'arguments' => [$ast->{'stmts'}->[0]])];
                     return $m
                 }

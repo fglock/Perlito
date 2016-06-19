@@ -281,6 +281,7 @@ sub term_sigil {
                && (  ref($ast->{stmts}[0]) eq 'Perlito5::AST::Apply'
                   || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Call' 
                   || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Var' 
+                  || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Buf' 
                   || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Index' 
                   || ref($ast->{stmts}[0]) eq 'Perlito5::AST::Lookup' )
             ) {
