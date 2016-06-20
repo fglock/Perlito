@@ -847,6 +847,7 @@ sub emit_globals_after_BEGIN {
                 . ($ast->{namespace} || $ast->{_namespace} || "C_")
                 . "::" . $ast->{name};
         }
+        next if $name eq '@main::ARGV';
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = eval($name);
             my $dump = _dumper( $value, "  ", $dumper_seen, $name );

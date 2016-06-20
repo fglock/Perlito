@@ -8959,6 +8959,7 @@ use feature 'say';
             if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
                 $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
             }
+            $name eq '@main::ARGV' && next;
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
                 my $value = eval($name);
                 my $dump = _dumper($value, '  ', $dumper_seen, $name);
