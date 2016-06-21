@@ -1481,6 +1481,10 @@ EOT
     public PlString ref() {
 		return REF;
     }
+    public PlString refaddr() {
+        // Scalar::Util::refaddr()
+		return PlCv.UNDEF;
+    }
     public PlObject _decr() {
         // --$x
         return PlCx.MIN1;
@@ -1689,6 +1693,10 @@ class PlReference extends PlObject {
     }
     public String toString() {
         return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+    }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+		return new PlInt(this.hashCode());
     }
 }
 class PlFileHandle extends PlReference {
