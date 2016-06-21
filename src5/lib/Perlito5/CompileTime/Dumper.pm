@@ -864,6 +864,9 @@ sub emit_globals_after_BEGIN {
             # *mysub = sub {...}
             my $bareword = substr($name, 1);
 
+            # *{'strict::import'}   ???
+            $bareword = substr($bareword, 2, -2) if substr($bareword,0,2) eq "{'";
+
             if (exists &{$bareword}) {
                 my $sub = \&{$bareword};
                 my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);

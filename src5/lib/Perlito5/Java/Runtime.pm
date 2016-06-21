@@ -1481,9 +1481,9 @@ EOT
     public PlString ref() {
 		return REF;
     }
-    public PlString refaddr() {
+    public PlObject refaddr() {
         // Scalar::Util::refaddr()
-		return PlCv.UNDEF;
+		return PlCx.UNDEF;
     }
     public PlObject _decr() {
         // --$x
@@ -1879,6 +1879,11 @@ class PlArrayRef extends PlArray {
 			return this.bless.className();
 		}
 	}
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.a);
+		return new PlInt(id);
+    }
 }
 class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
@@ -1949,6 +1954,11 @@ class PlHashRef extends PlHash {
 			return this.bless.className();
 		}
 	}
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.h);
+		return new PlInt(id);
+    }
 }
 class PlClass {
 	public static PlHash classes = new PlHash();
@@ -2306,6 +2316,10 @@ EOT
     }
     public PlString ref() {
         return this.o.ref();
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+		return this.o.refaddr();
     }
 EOT
         # add "unbox" accessors to Java classes
