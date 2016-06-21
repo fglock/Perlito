@@ -1485,6 +1485,10 @@ EOT
         // Scalar::Util::refaddr()
 		return PlCx.UNDEF;
     }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+		return PlCx.UNDEF;
+    }
     public PlObject _decr() {
         // --$x
         return PlCx.MIN1;
@@ -1698,6 +1702,10 @@ class PlReference extends PlObject {
         // Scalar::Util::refaddr()
 		return new PlInt(this.hashCode());
     }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+		return REF;
+    }
 }
 class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
@@ -1884,6 +1892,10 @@ class PlArrayRef extends PlArray {
         int id = System.identityHashCode(this.a);
 		return new PlInt(id);
     }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+		return REF;
+    }
 }
 class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
@@ -1958,6 +1970,10 @@ class PlHashRef extends PlHash {
         // Scalar::Util::refaddr()
         int id = System.identityHashCode(this.h);
 		return new PlInt(id);
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+		return REF;
     }
 }
 class PlClass {
@@ -2320,6 +2336,10 @@ EOT
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
 		return this.o.refaddr();
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+		return this.o.reftype();
     }
 EOT
         # add "unbox" accessors to Java classes

@@ -5,6 +5,10 @@ sub refaddr {
     Java::inline("List__.aget(0).refaddr()");
 }
 
+sub reftype {
+    Java::inline("List__.aget(0).reftype()");
+}
+
 1;
 
 __END__
