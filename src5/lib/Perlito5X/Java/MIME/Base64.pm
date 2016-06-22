@@ -1,6 +1,9 @@
 package MIME::Base64;
 use strict;
 
+use Exporter qw(import);
+our @EXPORT = qw(encode_base64 decode_base64);
+
 # Java 8 only
 # package Java::Base64 { import => "java.util.Base64" }
 

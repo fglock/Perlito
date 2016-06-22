@@ -1,6 +1,11 @@
 package Scalar::Util;
 use strict;
 
+use Exporter qw(import);
+our @EXPORT_OK = qw(
+  refaddr reftype
+);
+
 sub refaddr {
     Java::inline("List__.aget(0).refaddr()");
 }
