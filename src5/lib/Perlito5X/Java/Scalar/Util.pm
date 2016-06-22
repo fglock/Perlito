@@ -3,7 +3,7 @@ use strict;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(
-  refaddr reftype
+  blessed refaddr reftype
 );
 
 sub refaddr {
@@ -12,6 +12,10 @@ sub refaddr {
 
 sub reftype {
     Java::inline("List__.aget(0).reftype()");
+}
+
+sub blessed {
+    Java::inline("List__.aget(0).blessed()");
 }
 
 1;

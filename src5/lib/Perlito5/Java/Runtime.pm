@@ -395,7 +395,7 @@ class PerlOp {
             invocant = invocant.get();
         }
 
-        PlClass pClass = invocant.blessed();
+        PlClass pClass = invocant.blessed_class();
 
         if ( pClass == null ) {
             PlCORE.die( "Can't call method \"" + method
@@ -1489,6 +1489,10 @@ EOT
         // Scalar::Util::reftype()
 		return PlCx.UNDEF;
     }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+		return PlCx.UNDEF;
+    }
     public PlObject _decr() {
         // --$x
         return PlCx.MIN1;
@@ -1615,7 +1619,7 @@ EOT
 		PlCORE.die("Can't bless non-reference value");
 		return this;
     }
-    public PlClass blessed() {
+    public PlClass blessed_class() {
 		return null;
     }
     public PlObject scalar() {
@@ -1679,7 +1683,7 @@ class PlReference extends PlObject {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
+    public PlClass blessed_class() {
 		return this.bless;
     }
 
@@ -1701,6 +1705,15 @@ class PlReference extends PlObject {
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
 		return new PlInt(this.hashCode());
+    }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+		if ( this.bless == null ) {
+			return PlCx.UNDEF;
+		}
+		else {
+			return this.bless.className();
+		}
     }
     public PlObject reftype() {
         // Scalar::Util::reftype()
@@ -1876,11 +1889,11 @@ class PlArrayRef extends PlArray {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
+    public PlClass blessed_class() {
 		return this.bless;
     }
-	public PlString ref() {
-		if ( this.bless == null ) {
+    public PlString ref() {
+	    if ( this.bless == null ) {
 			return REF;
 		}
 		else {
@@ -1892,6 +1905,14 @@ class PlArrayRef extends PlArray {
         int id = System.identityHashCode(this.a);
 		return new PlInt(id);
     }
+    public PlObject blessed() {
+	    if ( this.bless == null ) {
+			return PlCx.UNDEF;
+		}
+		else {
+			return this.bless.className();
+		}
+	}
     public PlObject reftype() {
         // Scalar::Util::reftype()
 		return REF;
@@ -1955,7 +1976,7 @@ class PlHashRef extends PlHash {
         this.bless = new PlClass(className);
         return this;
     }
-    public PlClass blessed() {
+    public PlClass blessed_class() {
 		return this.bless;
     }
     public PlString ref() {
@@ -1971,6 +1992,14 @@ class PlHashRef extends PlHash {
         int id = System.identityHashCode(this.h);
 		return new PlInt(id);
     }
+    public PlObject blessed() {
+	    if ( this.bless == null ) {
+			return PlCx.UNDEF;
+		}
+		else {
+			return this.bless.className();
+		}
+	}
     public PlObject reftype() {
         // Scalar::Util::reftype()
 		return REF;
@@ -2327,7 +2356,10 @@ EOT
     public PlObject bless(PlString className) {
         return this.o.bless(className);
     }
-    public PlClass blessed() {
+    public PlClass blessed_class() {
+		return this.o.blessed_class();
+    }
+    public PlObject blessed() {
 		return this.o.blessed();
     }
     public PlString ref() {
