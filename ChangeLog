@@ -9,6 +9,8 @@
 	optimize "for (0..1000000)" by Luca Falsina
 
 - Java:
+-- "Scalar::Util", "List::Util" ports.
+-- BEGIN block fixes - "Exporter" works.
 -- "$$" variable (process id)
 -- mkdir(), rmdir()
 -- pack (a..X, @ and . with number working)
