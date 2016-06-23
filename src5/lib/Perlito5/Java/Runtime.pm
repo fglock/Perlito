@@ -1499,19 +1499,19 @@ EOT
         return false;
     }
     public PlString ref() {
-		return REF;
+        return REF;
     }
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
-		return PlCx.UNDEF;
+        return PlCx.UNDEF;
     }
     public PlObject reftype() {
         // Scalar::Util::reftype()
-		return PlCx.UNDEF;
+        return PlCx.UNDEF;
     }
     public PlObject blessed() {
         // Scalar::Util::blessed()
-		return PlCx.UNDEF;
+        return PlCx.UNDEF;
     }
     public PlObject _decr() {
         // --$x
@@ -1636,11 +1636,11 @@ EOT
         return this;
     }
     public PlObject bless(PlString className) {
-		PlCORE.die("Can't bless non-reference value");
-		return this;
+        PlCORE.die("Can't bless non-reference value");
+        return this;
     }
     public PlClass blessed_class() {
-		return null;
+        return null;
     }
     public PlObject scalar() {
         return this;
@@ -1694,7 +1694,7 @@ EOT
 }
 class PlReference extends PlObject {
     public static final PlString REF = new PlString("REF");
-	public PlClass bless;
+    public PlClass bless;
 
     public boolean is_ref() {
         return true;
@@ -1704,17 +1704,17 @@ class PlReference extends PlObject {
         return this;
     }
     public PlClass blessed_class() {
-		return this.bless;
+        return this.bless;
     }
 
-	public PlString ref() {
-		if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
 
     public boolean to_bool() {
         return true;
@@ -1724,20 +1724,20 @@ class PlReference extends PlObject {
     }
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
-		return new PlInt(this.hashCode());
+        return new PlInt(this.hashCode());
     }
     public PlObject blessed() {
         // Scalar::Util::blessed()
-		if ( this.bless == null ) {
-			return PlCx.UNDEF;
-		}
-		else {
-			return this.bless.className();
-		}
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
     }
     public PlObject reftype() {
         // Scalar::Util::reftype()
-		return REF;
+        return REF;
     }
 }
 class PlFileHandle extends PlReference {
@@ -1801,14 +1801,14 @@ class PlClosure extends PlReference implements Runnable {
         // run as a thread
         this.apply(PlCx.VOID, new PlArray());
     }
-	public PlString ref() {
-		if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public boolean is_coderef() {
         return true;
     }
@@ -1820,14 +1820,14 @@ class PlLvalueRef extends PlReference {
     private PlObject o;
     public static final PlString REF = new PlString("SCALAR");
 
-	public PlString ref() {
-		if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public String toString() {
         int id = System.identityHashCode(this.o);
         return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
@@ -1853,7 +1853,7 @@ class PlLvalueRef extends PlReference {
 }
 class PlArrayRef extends PlArray {
     public static final PlString REF = new PlString("ARRAY");
-	public PlClass bless;
+    public PlClass bless;
 
     public String toString() {
         int id = System.identityHashCode(this.a);
@@ -1910,37 +1910,37 @@ class PlArrayRef extends PlArray {
         return this;
     }
     public PlClass blessed_class() {
-		return this.bless;
+        return this.bless;
     }
     public PlString ref() {
-	    if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
         int id = System.identityHashCode(this.a);
-		return new PlInt(id);
+        return new PlInt(id);
     }
     public PlObject blessed() {
-	    if ( this.bless == null ) {
-			return PlCx.UNDEF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public PlObject reftype() {
         // Scalar::Util::reftype()
-		return REF;
+        return REF;
     }
 }
 class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
-	public PlClass bless;
+    public PlClass bless;
 
     public String toString() {
         int id = System.identityHashCode(this.h);
@@ -1997,47 +1997,47 @@ class PlHashRef extends PlHash {
         return this;
     }
     public PlClass blessed_class() {
-		return this.bless;
+        return this.bless;
     }
     public PlString ref() {
-		if ( this.bless == null ) {
-			return REF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
         int id = System.identityHashCode(this.h);
-		return new PlInt(id);
+        return new PlInt(id);
     }
     public PlObject blessed() {
-	    if ( this.bless == null ) {
-			return PlCx.UNDEF;
-		}
-		else {
-			return this.bless.className();
-		}
-	}
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
     public PlObject reftype() {
         // Scalar::Util::reftype()
-		return REF;
+        return REF;
     }
 }
 class PlClass {
-	public static PlHash classes = new PlHash();
-	public PlString className;
+    public static PlHash classes = new PlHash();
+    public PlString className;
 
-	public PlClass (PlString blessing) {
-		this.className = blessing;
-		if (classes.exists(className) == null) {
-			classes.hset(className, className);
-		}
-	}
-	public PlString className() {
-		return this.className;
-	}
+    public PlClass (PlString blessing) {
+        this.className = blessing;
+        if (classes.exists(className) == null) {
+            classes.hset(className, className);
+        }
+    }
+    public PlString className() {
+        return this.className;
+    }
     public boolean is_undef() {
         return this.className == null;
     }
@@ -2377,21 +2377,21 @@ EOT
         return this.o.bless(className);
     }
     public PlClass blessed_class() {
-		return this.o.blessed_class();
+        return this.o.blessed_class();
     }
     public PlObject blessed() {
-		return this.o.blessed();
+        return this.o.blessed();
     }
     public PlString ref() {
         return this.o.ref();
     }
     public PlObject refaddr() {
         // Scalar::Util::refaddr()
-		return this.o.refaddr();
+        return this.o.refaddr();
     }
     public PlObject reftype() {
         // Scalar::Util::reftype()
-		return this.o.reftype();
+        return this.o.reftype();
     }
 EOT
         # add "unbox" accessors to Java classes
@@ -4118,7 +4118,7 @@ EOT
         return this.stuff;
     }
     public PlString ref() {
-		return REF;
+        return REF;
     }
     public boolean is_undef() {
         return stuff == null;
