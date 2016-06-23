@@ -695,8 +695,9 @@ class PerlOp {
         v__ref.set(v__val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject sort(PlClosure c, PlArray a, int wantarray, String pkg) {
+    public static final PlObject sort(PlClosure c, PlArray a, int wantarray) {
         // TODO - pass @_ to the closure
+        String pkg = c.pkg_name;
         PlArray ret = new PlArray(a);
         PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
         PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
@@ -708,9 +709,10 @@ class PerlOp {
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject reduce(PlClosure c, PlArray a, int wantarray, String pkg) {
+    public static final PlObject reduce(PlClosure c, PlArray a, int wantarray) {
         // List::Util reduce()
         // TODO - pass @_ to the closure
+        String pkg = c.pkg_name;
         PlObject ret = PlCx.UNDEF;
         int size = a.to_int();
         PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");

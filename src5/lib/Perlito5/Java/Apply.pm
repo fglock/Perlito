@@ -1476,8 +1476,8 @@ package Perlito5::AST::Apply;
 
             'PerlOp.sort(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
-                . Perlito5::Java::to_context($wantarray) . ', '
-                . Perlito5::Java::pkg() . ')';
+                . Perlito5::Java::to_context($wantarray)
+            . ')';
         },
         'infix:<//>' => sub { 
             my ($self, $level, $wantarray) = @_;
