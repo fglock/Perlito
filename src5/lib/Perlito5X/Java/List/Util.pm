@@ -7,9 +7,8 @@ our @EXPORT_OK = qw(
 );
 
 sub reduce (&@) {
-# TODO - use:
-#   PlOp.reduce(PlClosure c, PlArray a);
-    ...
+    # PerlOp.reduce(PlArray(PlClosure c, PlArray a));
+    Java::inline("PerlOp.reduce(List__)");
 }
 
 1;

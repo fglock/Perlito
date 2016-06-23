@@ -499,7 +499,7 @@ sub term_bareword {
             return $m;
         }
 
-        if ( $sig eq ';@' ) {
+        if ( $sig eq ';@' || $sig eq '@' ) {
             if ( substr($str, $p, 1) eq '(' ) {
                 $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
                 $has_paren = 1;

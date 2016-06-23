@@ -709,19 +709,23 @@ class PerlOp {
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject reduce(PlClosure c, PlArray a) {
+    public static final PlObject reduce(PlArray List__) {
+        // PlClosure c, PlArray a
+        PlObject arg = List__.shift();
+        PlClosure c = (PlClosure)arg;
         // List::Util reduce()
         // TODO - pass @_ to the closure
+        // TODO - use '\@' signature for better performance
         String pkg = c.pkg_name;
         PlObject ret = PlCx.UNDEF;
-        int size = a.to_int();
+        int size = List__.to_int();
         PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
         PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
-        v_a_ref.set(a.aget(0));
+        v_a_ref.set(List__.aget(0));
         for (int i = 1; i < size; i++) {
-            v_b_ref.set(a.aget(i));
+            v_b_ref.set(List__.aget(i));
             v_a_ref.set(c.apply(PlCx.SCALAR, new PlArray()));
         }
         ret = v_a_ref.get();
