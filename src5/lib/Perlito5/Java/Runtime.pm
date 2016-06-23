@@ -695,11 +695,11 @@ class PerlOp {
         v__ref.set(v__val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject sort(PlClosure c, PlArray a, int wantarray, String pckg) {
+    public static final PlObject sort(PlClosure c, PlArray a, int wantarray, String pkg) {
         // TODO - pass @_ to the closure
         PlArray ret = new PlArray(a);
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pckg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pckg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
         PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
@@ -708,13 +708,13 @@ class PerlOp {
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject reduce(PlClosure c, PlArray a, int wantarray, String pckg) {
+    public static final PlObject reduce(PlClosure c, PlArray a, int wantarray, String pkg) {
         // List::Util reduce()
         // TODO - pass @_ to the closure
         PlObject ret = PlCx.UNDEF;
         int size = a.to_int();
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pckg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pckg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         v_a_ref.set(a.aget(0));
@@ -1785,12 +1785,14 @@ class PlRegexResult extends PlObject {
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
-    public PlObject prototype;    // '$$$'
+    public PlObject prototype;   // '$$$'
+    public String pkg_name;      // 'main'
     public static final PlString REF = new PlString("CODE");
 
-    public PlClosure(PlObject prototype, PlObject[] env) {
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
         this.prototype = prototype;
         this.env = env;
+        this.pkg_name = pkg_name;
     }
     // Note: apply() is inherited from PlObject
     public PlObject apply(int want, PlArray List__) {

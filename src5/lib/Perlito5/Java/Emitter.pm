@@ -2704,7 +2704,11 @@ package Perlito5::AST::Sub;
         }
 
         my $s = Perlito5::Java::emit_wrap_java($level,
-            "new PlClosure($prototype, new PlObject[]{ " . join(', ', @captures_java) . " } ) {",
+            "new PlClosure("
+                    . "$prototype, "
+                    . "new PlObject[]{ " . join(', ', @captures_java) . " }, "
+                    . Perlito5::Java::pkg
+            . ") {",
                 [ "public PlObject apply(int want, PlArray List__) {",
                     \@js_block,
                   "}",
