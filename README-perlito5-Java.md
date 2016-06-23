@@ -897,6 +897,14 @@ Perl features
     (DONE) pos()
     typeglob operations
 
+    caller
+
+        $ perl -e ' sub x { print "in " . __PACKAGE__ . "\n"; v() }  x(); { package X; *x = \&main::x; x() } sub v { $v = caller(); print "called from $v\n" } '
+        in main
+        called from main
+        in main
+        called from main
+
 -- Add tests
 
     NaN, Inf, -0
