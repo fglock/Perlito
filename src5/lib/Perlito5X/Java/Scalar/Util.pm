@@ -3,7 +3,9 @@ use strict;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(
-  blessed refaddr reftype
+    blessed refaddr reftype
+    weaken unweaken isweak
+    looks_like_number
 );
 
 sub refaddr {
@@ -16,6 +18,26 @@ sub reftype {
 
 sub blessed {
     Java::inline("List__.aget(0).blessed()");
+}
+
+sub weaken {
+    # not implemented, all references are weak already
+}
+
+sub unweaken {
+    # not implemented, can't make references "unweak"
+}
+
+sub isweak {
+    # all references are weak already
+    1;
+}
+
+sub looks_like_number {
+    # TODO - '123A' => false
+       (0 + $_[0])
+    || ($_[0] eq '0')
+    || ($_[0] eq '0E0')
 }
 
 1;
