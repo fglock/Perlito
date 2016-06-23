@@ -7,10 +7,11 @@ our @EXPORT_OK = qw(
     min max minstr maxstr
     concat product sum sum0
     none notall all any
+    shuffle
 );
 
 # TODO
-#    shuffle pairmap pairgrep pairfirst pairs pairkeys pairvalues
+#    pairmap pairgrep pairfirst pairs pairkeys pairvalues
 
 sub reduce (&@) {
     # PerlOp.reduce(PlArray(PlClosure c, PlArray a));
@@ -35,20 +36,25 @@ sub notall  (&@) { my $code = shift; reduce { $a || !$code->(local $_ = $b) } 0,
 sub first (&@) {
   my $code = shift;
   foreach (@_) {
-    return $_ if &{$code}();
+    return $_ if $code->();
   }
   undef;
 }
 
-# sub shuffle (@) {
-#   my @a=\(@_);
-#   my $n;
-#   my $i=@_;
-#   map {
-#     $n = rand($i--);
-#     (${$a[$n]}, $a[$n] = $a[$i])[0];
-#   } @_;
-# }
+# -- To shuffle an array a of n elements (indices 0..n-1):
+# for i from 0 to n−2 do
+#      j ← random integer such that i ≤ j < n
+#      exchange a[i] and a[j]
+
+sub shuffle {
+    my $n = @_;
+    my @out = @_;
+    for my $i (0 .. $n - 2) {
+        my $r = int rand($n);
+        ($out[$r], $out[$i]) = ($out[$i], $out[$r]);
+    }
+    @out;
+}
 
 1;
 
@@ -56,6 +62,16 @@ __END__
 
 
 # alternate implementation
+
+sub shuffle (@) {
+  my @a=\(@_);
+  my $n;
+  my $i=@_;
+  map {
+    $n = rand($i--);
+    (${$a[$n]}, $a[$n] = $a[$i])[0];
+  } @_;
+}
 
 sub first (&@) {
     my $code = shift;

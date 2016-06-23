@@ -2500,6 +2500,7 @@ class PlArray extends PlObject {
 
     public PlObject set(PlObject s) {
         this.a.clear();
+        PlObject tmp;
         if (s.is_hash()) {
             // @x = %x;
             s = s.to_array();
@@ -2507,7 +2508,13 @@ class PlArray extends PlObject {
         if (s.is_array()) {
             // @x = ( @x, @y );
             for (int i = 0; i < s.to_long(); i++) {
-                this.a.add(s.aget(i));
+                tmp = s.aget(i);
+                if (tmp.is_lvalue()) {
+                    this.a.add(tmp.get());
+                }
+                else {
+                    this.a.add(tmp);
+                }
             }
         }
         else {
