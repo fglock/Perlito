@@ -709,7 +709,7 @@ class PerlOp {
         v_b_ref.set(v_b_val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject reduce(PlClosure c, PlArray a, int wantarray) {
+    public static final PlObject reduce(PlClosure c, PlArray a) {
         // List::Util reduce()
         // TODO - pass @_ to the closure
         String pkg = c.pkg_name;

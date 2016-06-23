@@ -1,8 +1,14 @@
 package List::Util;
+use strict;
 
-sub reduce {
+use Exporter qw(import);
+our @EXPORT_OK = qw(
+    reduce
+);
+
+sub reduce (&@) {
 # TODO - use:
-#   public static final PlObject reduce(PlClosure c, PlArray a, int wantarray, String pckg) {
+#   PlOp.reduce(PlClosure c, PlArray a);
     ...
 }
 
