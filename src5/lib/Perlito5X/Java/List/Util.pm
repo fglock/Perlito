@@ -10,8 +10,7 @@ our @EXPORT_OK = qw(
     shuffle
 );
 
-# TODO
-#    pairmap pairgrep pairfirst pairs pairkeys pairvalues
+# TODO - pairmap pairgrep pairfirst pairs pairkeys pairvalues
 
 sub reduce (&@) {
     # PerlOp.reduce(PlArray(PlClosure c, PlArray a));

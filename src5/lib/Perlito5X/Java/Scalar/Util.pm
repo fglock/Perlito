@@ -8,6 +8,9 @@ our @EXPORT_OK = qw(
     looks_like_number
 );
 
+# TODO - dualvar isdual isvstring openhandle readonly set_prototype tainted
+# TODO - "looks_like_number" needs some work
+
 sub refaddr {
     Java::inline("List__.aget(0).refaddr()");
 }
@@ -21,11 +24,11 @@ sub blessed {
 }
 
 sub weaken {
-    # not implemented, all references are weak already
+    # all references are weak already
 }
 
 sub unweaken {
-    # not implemented, can't make references "unweak"
+    # can't make references "unweak"
 }
 
 sub isweak {
