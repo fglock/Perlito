@@ -719,6 +719,12 @@ class PerlOp {
         String pkg = c.pkg_name;
         PlObject ret = PlCx.UNDEF;
         int size = List__.to_int();
+        if (size == 0) {
+            return PlCx.UNDEF;
+        }
+        if (size == 1) {
+            return List__.aget(0);
+        }
         PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
         PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
         PlObject v_a_val = v_a_ref.get();
