@@ -50,4 +50,24 @@ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e 'use Scalar::Util "refaddr"; print
 javac Main.java
 java Main
 
+=head1 COPYRIGHT
+
+The original Scalar::Util module is
+
+Copyright (c) 1997-2007 Graham Barr <gbarr@pobox.com>. All rights reserved.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+Additionally L</weaken> and L</isweak> which are
+
+Copyright (c) 1999 Tuomas J. Lukka <lukka@iki.fi>. All rights reserved.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as perl itself.
+
+Copyright (C) 2004, 2008  Matthijs van Duin.  All rights reserved.
+Copyright (C) 2014 cPanel Inc.  All rights reserved.
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
 

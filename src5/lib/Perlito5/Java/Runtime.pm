@@ -1122,6 +1122,9 @@ class PlV {
     }
 
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
+        if (name.is_coderef()) {
+            return name;
+        }
         String s = name.toString();
         if (s.indexOf("::") == -1) {
             s = nameSpace + "::" + s;
