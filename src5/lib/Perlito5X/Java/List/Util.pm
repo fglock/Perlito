@@ -13,8 +13,39 @@ our @EXPORT_OK = qw(
 # TODO - pairmap pairgrep pairfirst pairs pairkeys pairvalues
 
 sub reduce (&@) {
-    # PerlOp.reduce(PlArray(PlClosure c, PlArray a));
-    Java::inline("PerlOp.reduce(List__)");
+    if (@_) {
+    Java::inline '
+        // PlClosure c, PlArray a
+        PlObject arg = List__.shift();
+        PlClosure c = (PlClosure)arg;
+        // List::Util reduce()
+        // TODO - pass @_ to the closure
+        // TODO - use "\@" signature for better performance
+        String pkg = c.pkg_name;
+        PlObject ret = PlCx.UNDEF;
+        int size = List__.to_int();
+        if (size == 0) {
+            return PlCx.UNDEF;
+        }
+        if (size == 1) {
+            return List__.aget(0);
+        }
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlObject v_a_val = v_a_ref.get();
+        PlObject v_b_val = v_b_ref.get();
+        v_a_ref.set(List__.aget(0));
+        for (int i = 1; i < size; i++) {
+            v_b_ref.set(List__.aget(i));
+            v_a_ref.set(c.apply(PlCx.SCALAR, new PlArray()));
+        }
+        ret = v_a_ref.get();
+        v_a_ref.set(v_a_val);
+        v_b_ref.set(v_b_val);
+        return ret
+    ';
+    }
+    return undef;
 }
 
 sub min     { reduce { $a < $b ? $a : $b }  @_ } 

@@ -1601,12 +1601,22 @@ package Perlito5::AST::Apply;
                && $code eq 'inline'
                ) 
             {
-                if ( $self->{arguments}->[0]->isa('Perlito5::AST::Buf') ) {
+                my @args = @{ $self->{arguments} };
+                if ( @args != 1 ) {
+                    die "Java::inline needs a single argument";
+                }
+                if ( $args[0]->isa('Perlito5::AST::Apply') && $args[0]{code} eq 'list:<.>') {
+                    @args = @{ $args[0]{arguments} };
+                    if ( @args != 1 ) {
+                        die "Java::inline needs a string constant, got:", Data::Dumper::Dumper(\@args);
+                    }
+                }
+                if ( $args[0]->isa('Perlito5::AST::Buf') ) {
                     # Java::inline('int x = 123')
-                    return $self->{arguments}[0]{buf};
+                    return $args[0]{buf};
                 }
                 else {
-                    die "Java::inline needs a string constant";
+                    die "Java::inline needs a string constant, got:", Data::Dumper::Dumper(\@args);
                 }
             }
             $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'

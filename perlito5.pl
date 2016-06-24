@@ -176,7 +176,7 @@ use feature 'say';
     $prec = $prec - 1;
     add_op('infix', ['**'], $prec, {'assoc' => 'right'});
     $prec = $prec - 1;
-    add_op('prefix', [chr(92), '+', '-', '~', '!'], $prec);
+    add_op('prefix', ['\\', '+', '-', '~', '!'], $prec);
     $prec = $prec - 1;
     add_op('infix', ['=~', '!~'], $prec);
     $prec = $prec - 1;
@@ -726,7 +726,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ((chr(92) eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                    my $res = (('\\' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
                         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -820,9 +820,11 @@ use feature 'say';
             my @out;
             for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '->[' . $i . ']';
-                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
+')
             }
-            return join('', '[' . chr(10), @out, $tab, ']')
+            return join('', '[
+', @out, $tab, ']')
         }
         elsif ($ref eq 'HASH') {
             keys(%{$obj}) || return '{}';
@@ -831,12 +833,14 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = $pos . '->{' . $i . '}';
-                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
             }
-            return join('', '{' . chr(10), @out, $tab, '}')
+            return join('', '{
+', @out, $tab, '}')
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-            return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
+            return '\\' . _dumper(${$obj}, $tab1, $seen, $pos)
         }
         elsif ($ref eq 'CODE') {
             return 'sub { "DUMMY" }'
@@ -846,11 +850,14 @@ use feature 'say';
             $a cmp $b
         } keys(%{$obj})) {
             my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
         }
-        return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+        return join('', 'bless({
+', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
     }
-    my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
+    my %safe_char = (' ' => 1, '!' => 1, '"' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1, '
+' => 1);
     sub Perlito5::Dumper::escape_string {
         my $s = shift;
         my @out;
@@ -859,7 +866,10 @@ use feature 'say';
         (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
-            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
+            if ($c eq '\\') {
+                $tmp = $tmp . '\\' . '\\'
+            }
+            elsif (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
             }
             else {
@@ -892,7 +902,8 @@ use feature 'say';
         my @out;
         for my $i (0 .. $#_) {
             my $pos = '$VAR' . ($i + 1);
-            push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';' . chr(10))
+            push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';
+')
         }
         return join('', @out)
     }
@@ -3869,7 +3880,7 @@ use feature 'say';
             my $c2 = substr($str, $p + 1, 1);
             my $m;
             my $more = '';
-            if ($balanced && $c eq chr(92) && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
+            if ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
                 $p++;
                 $c = $c2
             }
@@ -3898,7 +3909,7 @@ use feature 'say';
                 }
                 $m = $match
             }
-            elsif ($c eq chr(92)) {
+            elsif ($c eq '\\') {
                 if ($interpolate) {
                     if ($c2 eq 'E') {
                         my $flag_to_reset = $quote_flags->{'last_flag'};
@@ -3951,7 +3962,7 @@ use feature 'say';
                         $m = Perlito5::Grammar::String::double_quoted_unescape($str, $p)
                     }
                     else {
-                        $m = $c2 eq chr(92) ? {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => chr(92))} : $c2 eq chr(39) ? {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => chr(39))} : 0
+                        $m = $c2 eq '\\' ? {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => '\\')} : $c2 eq chr(39) ? {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => chr(39))} : 0
                     }
                 }
             }
@@ -4024,12 +4035,12 @@ use feature 'say';
                 }
             }
             else {
-                $quote eq chr(92) && ($p += 1);
+                $quote eq '\\' && ($p += 1);
                 my $m = Perlito5::Grammar::ident($str, $p);
                 if ($m) {
                     $p = $m->{'to'};
                     $delimiter = Perlito5::Match::flat($m);
-                    $type = $quote eq chr(92) ? 'single_quote' : 'double_quote'
+                    $type = $quote eq '\\' ? 'single_quote' : 'double_quote'
                 }
                 else {
                     $Perlito5::WARNINGS && warn('Use of bare << to mean <<"" is deprecated');
@@ -4052,7 +4063,8 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {
-                ((chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (('
+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m = $MATCH;
                     if (!(chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
                         $MATCH = $m
@@ -4063,7 +4075,8 @@ use feature 'say';
                 $MATCH->{'to'} = $pos1;
                 ((chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $m = $MATCH;
-                    if (!(chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
+                    if (!('
+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {
                         $MATCH = $m
                     }
                     1
@@ -4113,10 +4126,13 @@ use feature 'say';
                     return {'str' => $str, 'from' => $pos, 'to' => $p}
                 }
             }
-            $m = string_interpolation_parse($str, $pos, '', chr(10) . $delimiter . chr(10), 1);
+            $m = string_interpolation_parse($str, $pos, '', '
+' . $delimiter . '
+', 1);
             if ($m) {
                 push(@{$result}, Perlito5::Match::flat($m));
-                push(@{$result}, Perlito5::AST::Buf::->new('buf' => chr(10)));
+                push(@{$result}, Perlito5::AST::Buf::->new('buf' => '
+'));
                 $m->{'to'} = $m->{'to'} - 1;
                 return $m
             }
@@ -4166,7 +4182,7 @@ use feature 'say';
             $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($tmp))}
         }
         elsif ($c2 eq 'N') {
-            Perlito5::Compiler::error('TODO - ' . chr(92) . 'N{charname} not implemented; requires ' . chr(39) . 'use charnames' . chr(39))
+            Perlito5::Compiler::error('TODO - \\N{charname} not implemented; requires ' . chr(39) . 'use charnames' . chr(39))
         }
         else {
             $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => $c2)}
@@ -4292,7 +4308,7 @@ use feature 'say';
     undef();
     package Perlito5::Grammar::Sigil;
     undef();
-    my %special_var = ('$_' => '', '$&' => '', '$`' => '', '$' . chr(39) => '', '$+' => '', '@+' => '', '%+' => '', '$.' => '', '$/' => '', '$|' => '', '$,' => '', '$' . chr(92) => '', '$"' => '', '$;' => '', '$%' => '', '$=' => '', '$-' => '', '@-' => '', '%-' => '', '$~' => '', '$^' => '', '$:' => '', '$?' => '', '$!' => '', '%!' => '', '$@' => '', '$$' => '', '$<' => '', '$>' => '', '$(' => '', '$)' => '', '$[' => '', '$]' => '', '$}' => '', '@_' => '', '*_' => '', '*&' => '', '*`' => '', '*' . chr(39) => '', '*+' => '', '*.' => '', '*/' => '', '*|' => '', '*,' => '', '*' . chr(92) => '', '*"' => '', '*;' => '', '*%' => '', '*=' => '', '*-' => '', '*~' => '', '*^' => '', '*:' => '', '*?' => '', '*!' => '', '*@' => '', '*$' => '', '*<' => '', '*>' => '', '*(' => '', '*)' => '', '*[' => '', '*]' => '', '*_' => '', '**' => '', '*#' => '', '$#+' => '', '$#-' => '', '$#_' => '');
+    my %special_var = ('$_' => '', '$&' => '', '$`' => '', '$' . chr(39) => '', '$+' => '', '@+' => '', '%+' => '', '$.' => '', '$/' => '', '$|' => '', '$,' => '', '$\\' => '', '$"' => '', '$;' => '', '$%' => '', '$=' => '', '$-' => '', '@-' => '', '%-' => '', '$~' => '', '$^' => '', '$:' => '', '$?' => '', '$!' => '', '%!' => '', '$@' => '', '$$' => '', '$<' => '', '$>' => '', '$(' => '', '$)' => '', '$[' => '', '$]' => '', '$}' => '', '@_' => '', '*_' => '', '*&' => '', '*`' => '', '*' . chr(39) => '', '*+' => '', '*.' => '', '*/' => '', '*|' => '', '*,' => '', '*\\' => '', '*"' => '', '*;' => '', '*%' => '', '*=' => '', '*-' => '', '*~' => '', '*^' => '', '*:' => '', '*?' => '', '*!' => '', '*@' => '', '*$' => '', '*<' => '', '*>' => '', '*(' => '', '*)' => '', '*[' => '', '*]' => '', '*_' => '', '**' => '', '*#' => '', '$#+' => '', '$#-' => '', '$#_' => '');
     sub Perlito5::Grammar::Sigil::term_special_var {
         my $str = $_[0];
         my $pos = $_[1];
@@ -4701,7 +4717,8 @@ use feature 'say';
                     }
                     else {
                         my $m = $MATCH->{'Perlito5::Grammar::Expression::list_parse'};
-                        my $list_code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . substr($str, $m->{'from'}, $m->{'to'} - $m->{'from'});
+                        my $list_code = 'package ' . $Perlito5::PKG_NAME . ';
+' . substr($str, $m->{'from'}, $m->{'to'} - $m->{'from'});
                         my @list = eval($list_code);
                         $list = \@list
                     }
@@ -4779,14 +4796,16 @@ use feature 'say';
                 if ($use_or_not eq 'use') {
                     if (defined(&{$module_name . '::import'})) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                        eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->import(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
+                        eval('package ' . $current_module_name . ';
+' . '$module_name->import(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
                         shift(@{$Perlito5::CALLER})
                     }
                 }
                 elsif ($use_or_not eq 'no') {
                     if (defined(&{$module_name . '::unimport'})) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
-                        eval('package ' . $current_module_name . ';' . chr(10) . '$module_name->unimport(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
+                        eval('package ' . $current_module_name . ';
+' . '$module_name->unimport(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
                         shift(@{$Perlito5::CALLER})
                     }
                 }
@@ -4834,7 +4853,8 @@ use feature 'say';
         local $Perlito5::FILE_NAME = $filename;
         local $Perlito5::LINE_NUMBER = 1;
         my $realfilename = $INC{$filename};
-        open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
+        open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . '
+');
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
@@ -4844,8 +4864,10 @@ use feature 'say';
         if ($m->{'to'} != length($source)) {
             my $pos = $m->{'to'} - 10;
             $pos < 0 && ($pos = 0);
-            print('* near: ', substr($source, $pos, 20), chr(10));
-            print('* filename: ' . $realfilename . chr(10));
+            print('* near: ', substr($source, $pos, 20), '
+');
+            print('* filename: ' . $realfilename . '
+');
             Perlito5::Compiler::error('Syntax Error')
         }
         if ($ENV{'PERLITO5DEV'}) {
@@ -4896,7 +4918,8 @@ use feature 'say';
             return 'undef'
         };
         my $realfilename = $INC{$filename};
-        open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . chr(10));
+        open(FILE, '<', $realfilename) or Perlito5::Compiler::error('Cannot read ' . $realfilename . ': ' . ${'!'} . '
+');
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
@@ -5072,7 +5095,9 @@ use feature 'say';
         my @data = $block->emit_perl5();
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $code = 'package ' . $Perlito5::PKG_NAME . ';' . chr(10) . 'sub ' . join('', @{$out}) . chr(10);
+        my $code = 'package ' . $Perlito5::PKG_NAME . ';
+' . 'sub ' . join('', @{$out}) . '
+';
         eval(Perlito5::CompileTime::Dumper::generate_eval_string($code));
         if (${'@'}) {
             Perlito5::Compiler::error('Error in ' . $phase . ' block: ' . ${'@'})
@@ -5422,7 +5447,7 @@ use feature 'say';
                     (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    ('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
@@ -5724,7 +5749,8 @@ use feature 'say';
                 my $res = (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {
-                        (chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ('
+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
@@ -5758,7 +5784,8 @@ use feature 'say';
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {
-                        (chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ('
+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
@@ -5808,7 +5835,8 @@ use feature 'say';
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {
-                        (chr(10) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ('
+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
@@ -7879,9 +7907,9 @@ use feature 'say';
     our $PACKAGES = {'STDERR' => 1, 'STDOUT' => 1, 'STDIN' => 1, 'main' => 1, 'strict' => 1, 'warnings' => 1, 'utf8' => 1, 'bytes' => 1, 'encoding' => 1, 'UNIVERSAL' => 1, 'CORE' => 1, 'CORE::GLOBAL' => 1, 'Perlito5::IO' => 1};
     push(@INC, $_)
         for split(':', ($ENV{'PERL5LIB'} || ''));
-    our $SPECIAL_VAR = {'$_' => 'ARG', '$&' => '$MATCH', '$`' => '$PREMATCH', '$' . chr(39) => '$POSTMATCH', '$+' => '$LAST_PAREN_MATCH', '@+' => '@LAST_MATCH_END', '%+' => '%LAST_PAREN_MATCH', '@-' => '@LAST_MATCH_START', '$|' => 'autoflush', '$/' => '$RS', '@_' => '@ARG', '< $' => '$EUID', '$.' => '$NR', '< $< ' => '$UID', '$(' => '$GID', '$#' => undef, '$@' => '$EVAL_ERROR', '$=' => '$FORMAT_LINES_PER_PAGE', '$,' => '$OFS', '$?' => '$CHILD_ERROR', '$*' => undef, '$[' => undef, '$$' => '$PID', '%-' => undef, '$~' => '$FORMAT_NAME', '$-' => '$FORMAT_LINES_LEFT', '$&' => '$MATCH', '$%' => '$FORMAT_PAGE_NUMBER', '$)' => '$EGID', '$]' => undef, '$!' => '$ERRNO', '$;' => '$SUBSEP', '$' . chr(92) => '$ORS', '%!' => undef, '$"' => '$LIST_SEPARATOR', '$_' => '$ARG', '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'};
+    our $SPECIAL_VAR = {'$_' => 'ARG', '$&' => '$MATCH', '$`' => '$PREMATCH', '$' . chr(39) => '$POSTMATCH', '$+' => '$LAST_PAREN_MATCH', '@+' => '@LAST_MATCH_END', '%+' => '%LAST_PAREN_MATCH', '@-' => '@LAST_MATCH_START', '$|' => 'autoflush', '$/' => '$RS', '@_' => '@ARG', '< $' => '$EUID', '$.' => '$NR', '< $< ' => '$UID', '$(' => '$GID', '$#' => undef, '$@' => '$EVAL_ERROR', '$=' => '$FORMAT_LINES_PER_PAGE', '$,' => '$OFS', '$?' => '$CHILD_ERROR', '$*' => undef, '$[' => undef, '$$' => '$PID', '%-' => undef, '$~' => '$FORMAT_NAME', '$-' => '$FORMAT_LINES_LEFT', '$&' => '$MATCH', '$%' => '$FORMAT_PAGE_NUMBER', '$)' => '$EGID', '$]' => undef, '$!' => '$ERRNO', '$;' => '$SUBSEP', '$\\' => '$ORS', '%!' => undef, '$"' => '$LIST_SEPARATOR', '$_' => '$ARG', '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'};
     our $CORE_OVERRIDABLE = {'say' => 1, 'break' => 1, 'given' => 1, 'when' => 1, 'default' => 1, 'state' => 1, 'lock' => 1};
-    our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => '_', 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => chr(92) . '$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => '+', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => ';$', 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => chr(92) . '%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => chr(92) . '[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*' . chr(92) . '$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*' . chr(92) . '$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';+', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => '+;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => '+@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => '+@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fc' => '_', 'CORE::pack' => '$@', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*' . chr(92) . '$$$', 'CORE::dbmopen' => chr(92) . '%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => '+', 'CORE::chomp' => '_', 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => '+', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';+', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef, 'CORE::__FILE__' => '', 'CORE::__LINE__' => ''};
+    our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => '_', 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => '\\$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => '+', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => ';$', 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => '\\%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => '\\[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*\\$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*\\$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';+', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => '+;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => '+@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => '+@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fc' => '_', 'CORE::pack' => '$@', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*\\$$$', 'CORE::dbmopen' => '\\%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => '+', 'CORE::chomp' => '_', 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => '+', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';+', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef, 'CORE::__FILE__' => '', 'CORE::__LINE__' => ''};
     sub Perlito5::test_perl_version {
         my $version = shift;
         $version =~ s!^v!!;
@@ -8414,7 +8442,7 @@ use feature 'say';
                     $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_}
                         for keys(%capture);
                     unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Var::LIST_ARG(), Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'infix:<eq>', 'arguments' => [Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::LIST_ARG_INDEX(0)], 'code' => 'ref'), Perlito5::AST::Buf::->new('buf' => 'Perlito5::dump')]), Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => '__SUB__'), Perlito5::AST::Buf::->new('buf' => $id), Perlito5::AST::Buf::->new('buf' => '__PKG__'), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME), map {
-                        (Perlito5::AST::Buf::->new('buf' => $_), Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [$capture{$_}]))
+                        (Perlito5::AST::Buf::->new('buf' => $_), Perlito5::AST::Apply::->new('code' => 'prefix:<\\>', 'arguments' => [$capture{$_}]))
                     } sort {
                         $a cmp $b
                     } keys(%capture)])])])]))
@@ -8451,10 +8479,12 @@ use feature 'say';
     }
     sub Perlito5::Compiler::do_not_edit {
         my $prefix = shift;
-        return $prefix . ' Do not edit this file - Generated by ' . compiler_name() . ' ' . $Perlito5::VERSION . chr(10)
+        return $prefix . ' Do not edit this file - Generated by ' . compiler_name() . ' ' . $Perlito5::VERSION . '
+'
     }
     sub Perlito5::Compiler::error {
-        die(join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER . chr(10))
+        die(join('', @_) . ' at ' . $Perlito5::FILE_NAME . ' line ' . $Perlito5::LINE_NUMBER . '
+')
     }
     1
 }
@@ -8469,7 +8499,8 @@ use feature 'say';
         my @data = $block->emit_perl5();
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $source_new = join('', @{$out}), ';1' . chr(10);
+        my $source_new = join('', @{$out}), ';1
+';
         return $source_new
     }
     sub Perlito5::CompileTime::Dumper::_dump_to_ast {
@@ -8506,7 +8537,7 @@ use feature 'say';
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             my $here = Perlito5::AST::Apply::->new('code' => 'prefix:<$>', 'arguments' => [$pos]);
-            return Perlito5::AST::Apply::->new('code' => 'prefix:<' . chr(92) . '>', 'arguments' => [_dump_to_ast(${$obj}, $seen, $here)])
+            return Perlito5::AST::Apply::->new('code' => 'prefix:<\\>', 'arguments' => [_dump_to_ast(${$obj}, $seen, $here)])
         }
         elsif ($ref eq 'CODE') {
             my $closure_flag = bless({}, 'Perlito5::dump');
@@ -8666,27 +8697,27 @@ use feature 'say';
                 $dump eq 'undef' && next
             }
             elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-                my $value = eval(chr(92) . $name);
-                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, chr(92) . $name);
+                my $value = eval('\\' . $name);
+                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, '\\' . $name);
                 my $bareword = substr($name, 1)
             }
             elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
                 my $bareword = substr($name, 1);
                 if (exists(&{$bareword})) {
                     my $sub = \&{$bareword};
-                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword)
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\&' . $bareword)
                 }
                 if (defined(${$bareword})) {
                     my $sub = \${$bareword};
-                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '$' . $bareword)
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\$' . $bareword)
                 }
                 if (@{$bareword}) {
                     my $sub = \@{$bareword};
-                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '@' . $bareword)
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\@' . $bareword)
                 }
                 if (keys(%{$bareword})) {
                     my $sub = \%{$bareword};
-                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, chr(92) . '%' . $bareword)
+                    my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\%' . $bareword)
                 }
             }
         }
@@ -8713,7 +8744,7 @@ use feature 'say';
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, _dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-            my $value = eval(chr(92) . $name);
+            my $value = eval('\\' . $name);
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
@@ -8795,9 +8826,11 @@ use feature 'say';
             my @out;
             for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '->[' . $i . ']';
-                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
+')
             }
-            return join('', '[' . chr(10), @out, $tab, ']')
+            return join('', '[
+', @out, $tab, ']')
         }
         elsif ($ref eq 'HASH') {
             keys(%{$obj}) || return '{}';
@@ -8806,12 +8839,14 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = $pos . '->{' . $i . '}';
-                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
             }
-            return join('', '{' . chr(10), @out, $tab, '}')
+            return join('', '{
+', @out, $tab, '}')
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-            return chr(92) . _dumper(${$obj}, $tab1, $seen, $pos)
+            return '\\' . _dumper(${$obj}, $tab1, $seen, $pos)
         }
         elsif ($ref eq 'CODE') {
             my $closure_flag = bless({}, 'Perlito5::dump');
@@ -8841,16 +8876,18 @@ use feature 'say';
                     push(@vars, 'my ' . $sigil . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
                 }
             }
-            return join('', 'do { ', @vars, $source, ($sub_name ? chr(92) . '&' . $sub_name : ''), '}')
+            return join('', 'do { ', @vars, $source, ($sub_name ? '\\&' . $sub_name : ''), '}')
         }
         my @out;
         for my $i (sort {
             $a cmp $b
         } keys(%{$obj})) {
             my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
         }
-        return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+        return join('', 'bless({
+', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
     }
     sub Perlito5::CompileTime::Dumper::_dumper_deref {
         my($obj, $tab, $seen, $pos) = @_;
@@ -8862,9 +8899,11 @@ use feature 'say';
             my @out;
             for my $i (0 .. $#{$obj}) {
                 my $here = $pos . '->[' . $i . ']';
-                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
+')
             }
-            return join('', '(' . chr(10), @out, $tab, ')')
+            return join('', '(
+', @out, $tab, ')')
         }
         elsif ($ref eq 'HASH') {
             keys(%{$obj}) || return '()';
@@ -8873,9 +8912,11 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = $pos . '->{' . $i . '}';
-                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
             }
-            return join('', '(' . chr(10), @out, $tab, ')')
+            return join('', '(
+', @out, $tab, ')')
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             return _dumper(${$obj}, $tab1, $seen, $pos)
@@ -8885,16 +8926,19 @@ use feature 'say';
             $a cmp $b
         } keys(%{$obj})) {
             my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',' . chr(10))
+            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
+')
         }
-        return join('', 'bless({' . chr(10), @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
+        return join('', 'bless({
+', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
     }
     sub Perlito5::CompileTime::Dumper::_dump_global {
         my($item, $seen, $dumper_seen, $vars, $tab) = @_;
         if (ref($item) eq 'Perlito5::AST::Sub') {
             my $n = $item->{'namespace'} . '::' . $item->{'name'};
             if (!$seen->{$n}) {
-                push(@{$vars}, $tab . 'sub ' . $n . ' = ' . _dumper($item, '  ', $dumper_seen, $n) . ';' . chr(10));
+                push(@{$vars}, $tab . 'sub ' . $n . ' = ' . _dumper($item, '  ', $dumper_seen, $n) . ';
+');
                 $seen->{$n} = 1
             }
         }
@@ -8902,20 +8946,24 @@ use feature 'say';
             my $n = $item->{'sigil'} . $item->{'namespace'} . '::' . $item->{'name'};
             if (!$seen->{$n}) {
                 if ($item->{'sigil'} eq '$') {
-                    push(@{$vars}, $tab . $n . ' = ' . _dumper(eval($n), '  ', $dumper_seen, $n) . ';' . chr(10))
+                    push(@{$vars}, $tab . $n . ' = ' . _dumper(eval($n), '  ', $dumper_seen, $n) . ';
+')
                 }
                 elsif ($item->{'sigil'} eq '@' || $item->{'sigil'} eq '%') {
-                    my $ref = chr(92) . $n;
+                    my $ref = '\\' . $n;
                     my $d = _dumper(eval($ref), $tab . '  ', $dumper_seen, $ref);
                     if ($d eq '[]' || $d eq '{}') {
-                        push(@{$vars}, $tab . $n . ' = ();' . chr(10))
+                        push(@{$vars}, $tab . $n . ' = ();
+')
                     }
                     else {
-                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};' . chr(10))
+                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};
+')
                     }
                 }
                 elsif ($item->{'sigil'} eq '*') {
-                    push(@{$vars}, $tab . '# ' . $n . chr(10));
+                    push(@{$vars}, $tab . '# ' . $n . '
+');
                     for $_ ('$', '@', '%') {
                         local $item->{'sigil'} = $_;
                         _dump_global($item, $seen, $dumper_seen, $vars, $tab)
@@ -8934,8 +8982,10 @@ use feature 'say';
             } @{$ast};
             my $out = [];
             Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-            my $source_new = join('', @{$out}), ';1' . chr(10);
-            print('[[[ ' . $source_new . ' ]]]' . chr(10))
+            my $source_new = join('', @{$out}), ';1
+';
+            print('[[[ ' . $source_new . ' ]]]
+')
         }
         my $scope = shift() // $Perlito5::GLOBAL;
         my $vars = [];
@@ -8967,8 +9017,8 @@ use feature 'say';
                 push(@{$vars}, $name . ' = ' . $dump . ';')
             }
             elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-                my $value = eval(chr(92) . $name);
-                my $dump = _dumper($value, '  ', $dumper_seen, chr(92) . $name);
+                my $value = eval('\\' . $name);
+                my $dump = _dumper($value, '  ', $dumper_seen, '\\' . $name);
                 my $bareword = substr($name, 1);
                 push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
             }
@@ -8977,22 +9027,22 @@ use feature 'say';
                 substr($bareword, 0, 2) eq '{' . chr(39) && ($bareword = substr($bareword, 2, -2));
                 if (exists(&{$bareword})) {
                     my $sub = \&{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '&' . $bareword);
+                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);
                     push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
                 }
                 if (defined(${$bareword})) {
                     my $sub = \${$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '$' . $bareword);
+                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\$' . $bareword);
                     push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
                 }
                 if (@{$bareword}) {
                     my $sub = \@{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '@' . $bareword);
+                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\@' . $bareword);
                     push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
                 }
                 if (keys(%{$bareword})) {
                     my $sub = \%{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, chr(92) . '%' . $bareword);
+                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\%' . $bareword);
                     push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
                 }
             }
@@ -9000,7 +9050,8 @@ use feature 'say';
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)
             }
         }
-        return join(chr(10), @{$vars})
+        return join('
+', @{$vars})
     }
     1
 }
@@ -9077,7 +9128,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {
-                    ((chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ((do {
@@ -9148,7 +9199,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {
-                    ((chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
@@ -9345,7 +9396,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((chr(92) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {
                         (('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
@@ -9674,11 +9725,11 @@ use feature 'say';
     sub Perlito5::Rul::constant {
         my $str = shift;
         my $len = length($str);
-        if ($str eq chr(92)) {
-            $str = chr(92) . chr(92)
+        if ($str eq '\\') {
+            $str = '\\\\'
         }
         if ($str eq chr(39)) {
-            $str = chr(92) . chr(39)
+            $str = '\\' . chr(39)
         }
         if ($len) {
             '( ' . chr(39) . $str . chr(39) . ' eq substr( $str, $MATCH->{to}, ' . $len . ') ' . '&& ( $MATCH->{to} = ' . $len . ' + $MATCH->{to} )' . ')'
@@ -9922,7 +9973,10 @@ use feature 'say';
                 my $here = $pos . '[' . $i . ']';
                 push(@out, $tab1 . _dumper($obj->[$i], $tab1, $seen, $here))
             }
-            return '[' . chr(10) . join(',' . chr(10), @out) . chr(10) . $tab . ']'
+            return '[
+' . join(',
+', @out) . '
+' . $tab . ']'
         }
         elsif ($ref eq 'SCALAR') {
             return '{ "_type": "SCALAR", "value": ' . _dumper(${$obj}, $tab1, $seen, $pos) . ' }'
@@ -9939,7 +9993,9 @@ use feature 'say';
             my $here = $pos . '{' . $i . '}';
             push(@out, $tab1 . '"' . $i . '": ' . _dumper($obj->{$i}, $tab1, $seen, $here))
         }
-        return '{ ' . join(',' . chr(10), @out) . chr(10) . $tab . '}'
+        return '{ ' . join(',
+', @out) . '
+' . $tab . '}'
     }
     sub Perlito5::JSON::escape_string {
         my $s = shift;
@@ -9948,26 +10004,27 @@ use feature 'say';
         (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
-            if ($c eq chr(92) || $c eq '"') {
-                push(@out, chr(92) . $c)
+            if ($c eq '\\' || $c eq '"') {
+                push(@out, '\\' . $c)
             }
-            elsif ($c eq chr(10)) {
-                push(@out, chr(92) . 'n')
+            elsif ($c eq '
+') {
+                push(@out, '\\n')
             }
             elsif ($c eq chr(13)) {
-                push(@out, chr(92) . 'r')
+                push(@out, '\\r')
             }
             elsif ($c eq chr(9)) {
-                push(@out, chr(92) . 't')
+                push(@out, '\\t')
             }
             elsif ($c eq chr(8)) {
-                push(@out, chr(92) . 'b')
+                push(@out, '\\b')
             }
             elsif ($c eq chr(12)) {
-                push(@out, chr(92) . 'f')
+                push(@out, '\\f')
             }
             elsif ($c le chr(31)) {
-                push(@out, sprintf(chr(92) . 'u%04x', ord($c)))
+                push(@out, sprintf('\\u%04x', ord($c)))
             }
             else {
                 push(@out, $c)
@@ -10189,11 +10246,13 @@ use feature 'say';
         }
         sub Perlito5::JavaScript2::emit_func_javascript2 {
             my($level, $wantarray, @argument) = @_;
-            return join(chr(10), 'function () {', emit_javascript2_list_with_tabs($level, [\@argument, '}']))
+            return join('
+', 'function () {', emit_javascript2_list_with_tabs($level, [\@argument, '}']))
         }
         sub Perlito5::JavaScript2::emit_wrap_javascript2 {
             my($level, $wantarray, @argument) = @_;
-            return join(chr(10), '(function () {', emit_javascript2_list_with_tabs($level, [\@argument, '})()']))
+            return join('
+', '(function () {', emit_javascript2_list_with_tabs($level, [\@argument, '})()']))
         }
         sub Perlito5::JavaScript2::emit_function_javascript2 {
             my($level, $wantarray, $argument) = @_;
@@ -10310,17 +10369,30 @@ use feature 'say';
             my $out;
             if ($self->{'top_level'} && $Perlito5::THROW) {
                 $level = $original_level;
-                my $tab = chr(10) . Perlito5::JavaScript2::tab($level + 1);
-                $out = 'try {' . $tab . join($tab, @str) . chr(10) . Perlito5::JavaScript2::tab($level) . '}' . chr(10) . Perlito5::JavaScript2::tab($level) . 'catch(err) {' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::JavaScript2::tab($level + 2) . 'throw(err);' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . 'else {' . chr(10) . Perlito5::JavaScript2::tab($level + 2) . ($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)') . ';' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}' . chr(10) . Perlito5::JavaScript2::tab($level) . '}'
+                my $tab = '
+' . Perlito5::JavaScript2::tab($level + 1);
+                $out = 'try {' . $tab . join($tab, @str) . '
+' . Perlito5::JavaScript2::tab($level) . '}' . '
+' . Perlito5::JavaScript2::tab($level) . 'catch(err) {' . '
+' . Perlito5::JavaScript2::tab($level + 1) . 'if ( err instanceof Error ) {' . '
+' . Perlito5::JavaScript2::tab($level + 2) . 'throw(err);' . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}' . '
+' . Perlito5::JavaScript2::tab($level + 1) . 'else {' . '
+' . Perlito5::JavaScript2::tab($level + 2) . ($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)') . ';
+' . Perlito5::JavaScript2::tab($level + 1) . '}' . '
+' . Perlito5::JavaScript2::tab($level) . '}'
             }
             elsif ($create_context) {
                 $level = $original_level;
-                my $tab = chr(10) . Perlito5::JavaScript2::tab($level + 1);
-                $out = '(function () {' . $tab . join($tab, @str) . chr(10) . Perlito5::JavaScript2::tab($level) . '})();'
+                my $tab = '
+' . Perlito5::JavaScript2::tab($level + 1);
+                $out = '(function () {' . $tab . join($tab, @str) . '
+' . Perlito5::JavaScript2::tab($level) . '})();'
             }
             else {
                 $level = $original_level;
-                my $tab = chr(10) . Perlito5::JavaScript2::tab($level);
+                my $tab = '
+' . Perlito5::JavaScript2::tab($level);
                 $out = join($tab, @str)
             }
             $Perlito5::PKG_NAME = $outer_pkg;
@@ -10350,9 +10422,12 @@ use feature 'say';
                 $str .= Perlito5::JavaScript2::IO::->emit_javascript2();
                 $str .= Perlito5::JavaScript2::Sprintf::->emit_javascript2()
             }
-            $str .= 'var p5want;' . chr(10) . 'var List__ = [];' . chr(10);
+            $str .= 'var p5want;
+' . 'var List__ = [];
+';
             for my $comp_unit (@{$comp_units}) {
-                $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . ';' . chr(10)
+                $str = $str . $comp_unit->emit_javascript2($level, $wantarray) . ';
+'
             }
             return $str
         }
@@ -10416,9 +10491,13 @@ use feature 'say';
             my $init = '';
             if ($self->{'name'} eq 'INIT') {
                 my $tmp = 'p5pkg.main.' . Perlito5::JavaScript2::get_label();
-                $init = Perlito5::JavaScript2::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
+                $init = Perlito5::JavaScript2::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;
+'
             }
-            return ($wantarray ne 'void' ? 'return ' : '') . 'p5block(' . 'function (v) {}, ' . 'function () {' . chr(10) . $init . Perlito5::JavaScript2::tab($level + 2) . $body->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}, ' . '[0], ' . $self->emit_javascript2_continue($level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . chr(10) . Perlito5::JavaScript2::tab($level) . ')'
+            return ($wantarray ne 'void' ? 'return ' : '') . 'p5block(' . 'function (v) {}, ' . 'function () {
+' . $init . Perlito5::JavaScript2::tab($level + 2) . $body->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}, ' . '[0], ' . $self->emit_javascript2_continue($level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . '
+' . Perlito5::JavaScript2::tab($level) . ')'
         }
         sub Perlito5::AST::Block::emit_javascript2_continue {
             my $self = shift;
@@ -10427,7 +10506,9 @@ use feature 'say';
             if (!$self->{'continue'} || !@{$self->{'continue'}->{'stmts'}}) {
                 return 'false'
             }
-            return 'function () {' . chr(10) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'continue'}->stmts()))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}'
+            return 'function () {
+' . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'continue'}->stmts()))->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}'
         }
         sub Perlito5::AST::Block::emit_javascript2_get_decl {
             ()
@@ -10666,10 +10747,12 @@ use feature 'say';
                 return $self->emit_javascript2() . ' = ' . $list . '.shift()'
             }
             if ($sigil eq '@') {
-                return join(';' . chr(10) . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . ' = ' . $list, $list . ' = []')
+                return join(';
+' . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . ' = ' . $list, $list . ' = []')
             }
             if ($sigil eq '%') {
-                return join(';' . chr(10) . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . ' = p5a_to_h(' . $list . ')', $list . ' = []')
+                return join(';
+' . Perlito5::JavaScript2::tab($level), $self->emit_javascript2() . ' = p5a_to_h(' . $list . ')', $list . ' = []')
             }
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
         }
@@ -11017,7 +11100,7 @@ use feature 'say';
         }, 'circumfix:<{ }>' => sub {
             my($self, $level, $wantarray) = @_;
             '(new p5HashRef(' . Perlito5::JavaScript2::to_list($self->{'arguments'}, $level, 'hash') . '))'
-        }, 'prefix:<' . chr(92) . '>' => sub {
+        }, 'prefix:<\\>' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
             if ($arg->isa('Perlito5::AST::Apply')) {
@@ -11226,14 +11309,15 @@ use feature 'say';
                 my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
                 my $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
                 if (!$m || $m->{'to'} < length($scope_perl5)) {
-                    die('invalid internal scope in eval' . chr(10))
+                    die('invalid internal scope in eval
+')
                 }
                 $m = Perlito5::Grammar::Expression::expand_list(Perlito5::Match::flat($m)->[2]);
                 my $scope_js = '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list($m) . '))';
                 $eval = 'eval(p5pkg["Perlito5::JavaScript2::Runtime"].perl5_to_js([' . Perlito5::JavaScript2::to_str($arg) . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::JavaScript2::escape_string($wantarray) . ', ' . $scope_js . ']))'
             }
             my $context = Perlito5::JavaScript2::to_context($wantarray);
-            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.type == ' . chr(39) . 'last' . chr(39) . ' || err.type == ' . chr(39) . 'redo' . chr(39) . ' || err.type == ' . chr(39) . 'next' . chr(39) . ')) {', ['throw(err)'], '}', 'else if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
+            Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, ($context eq 'p5want' ? () : 'var p5want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if (err instanceof p5_error && (err.type == ' . chr(39) . 'last' . chr(39) . ' || err.type == ' . chr(39) . 'redo' . chr(39) . ' || err.type == ' . chr(39) . 'next' . chr(39) . ')) {', ['throw(err)'], '}', 'else if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
         }, 'substr' => sub {
             my($self, $level, $wantarray) = @_;
             my $length = $self->{'arguments'}->[2];
@@ -11421,7 +11505,9 @@ use feature 'say';
             else {
                 $fun = [$fun]
             }
-            'p5map(' . Perlito5::JavaScript2::pkg() . ', ' . 'function (p5want) {' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun))->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}, ' . $list . ')'
+            'p5map(' . Perlito5::JavaScript2::pkg() . ', ' . 'function (p5want) {' . '
+' . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun))->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}, ' . $list . ')'
         }, 'grep' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -11439,7 +11525,9 @@ use feature 'say';
             else {
                 $fun = [$fun]
             }
-            'p5grep(' . Perlito5::JavaScript2::pkg() . ', ' . 'function (p5want) {' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun))->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}, ' . $list . ')'
+            'p5grep(' . Perlito5::JavaScript2::pkg() . ', ' . 'function (p5want) {' . '
+' . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun))->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}, ' . $list . ')'
         }, 'sort' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -11452,7 +11540,9 @@ use feature 'say';
                 $fun = shift(@in)
             }
             if (ref($fun) eq 'Perlito5::AST::Block') {
-                $fun = 'function (p5want) {' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun->{'stmts'}))->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}'
+                $fun = 'function (p5want) {' . '
+' . Perlito5::JavaScript2::tab($level + 1) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $fun->{'stmts'}))->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}'
             }
             else {
                 $fun = 'null'
@@ -11629,20 +11719,20 @@ use feature 'say';
                             }
                         }
                     }
-                    elsif ($c eq chr(92)) {
-                        if (substr($sig, 0, 2) eq chr(92) . '$') {
+                    elsif ($c eq '\\') {
+                        if (substr($sig, 0, 2) eq '\\$') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'scalar'))
                         }
-                        elsif (substr($sig, 0, 2) eq chr(92) . '@' || substr($sig, 0, 2) eq chr(92) . '%') {
+                        elsif (substr($sig, 0, 2) eq '\\@' || substr($sig, 0, 2) eq '\\%') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                         }
-                        elsif (substr($sig, 0, 5) eq chr(92) . '[@%]') {
+                        elsif (substr($sig, 0, 5) eq '\\[@%]') {
                             $sig = substr($sig, 4);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                         }
-                        elsif (substr($sig, 0, 6) eq chr(92) . '[$@%]') {
+                        elsif (substr($sig, 0, 6) eq '\\[$@%]') {
                             $sig = substr($sig, 5);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript2($level + 1, 'list'))
                         }
@@ -11710,17 +11800,23 @@ use feature 'say';
             my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts()) : Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'create_context' => 1);
             my $s = 'if ( ' . Perlito5::JavaScript2::to_bool($cond, $level + 1) . ' ) {';
             if ($body) {
-                $s = $s . chr(10) . Perlito5::JavaScript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}'
+                $s = $s . '
+' . Perlito5::JavaScript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}'
             }
             else {
                 $s = $s . '}'
             }
             if ($otherwise) {
                 if (@{$otherwise->{'block'}} == 1 && ref($otherwise->{'block'}->[0]) eq 'Perlito5::AST::If') {
-                    $s = $s . chr(10) . Perlito5::JavaScript2::tab($level) . 'else ' . $otherwise->{'block'}->[0]->emit_javascript2($level, $wantarray)
+                    $s = $s . '
+' . Perlito5::JavaScript2::tab($level) . 'else ' . $otherwise->{'block'}->[0]->emit_javascript2($level, $wantarray)
                 }
                 else {
-                    $s = $s . chr(10) . Perlito5::JavaScript2::tab($level) . 'else {' . chr(10) . Perlito5::JavaScript2::tab($level + 1) . $otherwise->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}'
+                    $s = $s . '
+' . Perlito5::JavaScript2::tab($level) . 'else {' . '
+' . Perlito5::JavaScript2::tab($level + 1) . $otherwise->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}'
                 }
             }
             push(@str, $s);
@@ -11729,7 +11825,8 @@ use feature 'say';
                 return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, @str)
             }
             else {
-                return join(chr(10) . Perlito5::JavaScript2::tab($level), @str)
+                return join('
+' . Perlito5::JavaScript2::tab($level), @str)
             }
         }
         sub Perlito5::AST::If::emit_javascript2_get_decl {
@@ -11759,7 +11856,9 @@ use feature 'say';
             push(@{$body->{'block'}}, $next);
             my $s = 'if ( ' . Perlito5::JavaScript2::to_bool($cond, $level + 1) . ' ) {';
             if ($body) {
-                $s = $s . chr(10) . Perlito5::JavaScript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level) . '}'
+                $s = $s . '
+' . Perlito5::JavaScript2::tab($level + 1) . $body->emit_javascript2($level + 1, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level) . '}'
             }
             else {
                 $s = $s . '}'
@@ -11770,7 +11869,8 @@ use feature 'say';
                 return ($wantarray ne 'void' ? 'return ' : '') . Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, @str)
             }
             else {
-                return join(chr(10) . Perlito5::JavaScript2::tab($level), @str)
+                return join('
+' . Perlito5::JavaScript2::tab($level), @str)
             }
         }
         sub Perlito5::AST::When::emit_javascript2_get_decl {
@@ -11795,18 +11895,22 @@ use feature 'say';
                 }
             }
             if (ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do') {
-                push(@str, 'do {' . $self->{'body'}->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '} while (' . Perlito5::JavaScript2::to_bool($cond, $level + 2) . ')')
+                push(@str, 'do {' . $self->{'body'}->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '} while (' . Perlito5::JavaScript2::to_bool($cond, $level + 2) . ')')
             }
             else {
                 my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-                push(@str, 'p5while(' . 'function () {' . chr(10) . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}, ' . Perlito5::JavaScript2::emit_function_javascript2($level + 1, 'scalar', $cond) . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ', ' . 0 . ')')
+                push(@str, 'p5while(' . 'function () {
+' . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}, ' . Perlito5::JavaScript2::emit_function_javascript2($level + 1, 'scalar', $cond) . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ', ' . 0 . ')')
             }
             if (@str) {
                 $level = $old_level;
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, @str)
             }
             else {
-                return join(chr(10) . Perlito5::JavaScript2::tab($level), @str)
+                return join('
+' . Perlito5::JavaScript2::tab($level), @str)
             }
         }
         sub Perlito5::AST::While::emit_javascript2_get_decl {
@@ -11852,10 +11956,14 @@ use feature 'say';
                 my $s;
                 if ($decl eq 'my' || $decl eq 'state') {
                     my $sig = $v->emit_javascript2($level + 1);
-                    push(@str, '(function(){ ' . 'var ' . $sig . '; ' . 'p5for_lex(' . 'function (v) { ' . $sig . ' = v }, ' . 'function () {' . chr(10) . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ') ' . '})()')
+                    push(@str, '(function(){ ' . 'var ' . $sig . '; ' . 'p5for_lex(' . 'function (v) { ' . $sig . ' = v }, ' . 'function () {
+' . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ') ' . '})()')
                 }
                 else {
-                    push(@str, 'p5for(' . 'p5make_package(' . Perlito5::JavaScript2::escape_string($namespace) . '), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . chr(10) . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . chr(10) . Perlito5::JavaScript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ')')
+                    push(@str, 'p5for(' . 'p5make_package(' . Perlito5::JavaScript2::escape_string($namespace) . '), ' . '"v_' . $v->{'name'} . '", ' . 'function () {' . '
+' . Perlito5::JavaScript2::tab($level + 2) . (Perlito5::JavaScript2::LexicalBlock::->new('block' => $body))->emit_javascript2($level + 2, $wantarray) . '
+' . Perlito5::JavaScript2::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript2_continue($self, $level, $wantarray) . ', ' . Perlito5::JavaScript2::escape_string($self->{'label'} || '') . ')')
                 }
             }
             if (@str > 1) {
@@ -11863,7 +11971,8 @@ use feature 'say';
                 return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, @str)
             }
             else {
-                return join(chr(10) . Perlito5::JavaScript2::tab($level), @str)
+                return join('
+' . Perlito5::JavaScript2::tab($level), @str)
             }
         }
         sub Perlito5::AST::For::emit_javascript2_get_decl {
@@ -11912,7 +12021,8 @@ use feature 'say';
                 return 'p5context([], p5want)'
             }
             else {
-                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)
+                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
+'
             }
         }
         sub Perlito5::AST::Use::emit_javascript2_get_decl {
@@ -11961,7 +12071,1374 @@ use feature 'say';
         return JS::inline('eval("(function(){" + v_js_code + "})()")')
     }
     sub Perlito5::JavaScript2::Runtime::emit_javascript2 {
-        return '//' . chr(10) . '// lib/Perlito5/JavaScript2/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-JavaScript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . '"use strict";' . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    var p5pkg = {};' . chr(10) . '    var p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        return List__[0]._class_._ref_ == List__[1]' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = List__[1];' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref_, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    var p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = this.message = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . '        p5pkg[pkg_name]._is_package_ = 1;' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = [];' . chr(10) . '        p5pkg[pkg_name]["v_a"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_b"] = null;' . chr(10) . '        p5pkg[pkg_name]["v__"] = null;' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = null;' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can be a function already' . chr(10) . '    if (typeof sub_name === "function") {' . chr(10) . '        return sub_name;' . chr(10) . '    }' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    if (isa) {' . chr(10) . '        for (var i = 0; i < isa.length; i++) {' . chr(10) . '            if (!seen[isa[i]]) {' . chr(10) . '                var m = p5get_class_for_method(method, isa[i], seen);' . chr(10) . '                if (m) {' . chr(10) . '                    return m ' . chr(10) . '                }' . chr(10) . '                seen[isa[i]]++;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_not_found(method, class_name) {' . chr(10) . '    return "Can' . chr(39) . 't locate object method ' . chr(92) . '""' . chr(10) . '        + method + "' . chr(92) . '" via package ' . chr(92) . '"" + class_name + "' . chr(92) . '" (perhaps you forgot to load ' . chr(92) . '""' . chr(10) . '        + class_name + "' . chr(92) . '"?)";' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list, p5want) {' . chr(10) . '    var invocant_original = invocant;' . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '        invocant = p5make_package(invocant);' . chr(10) . '    }' . chr(10) . '    else if ( invocant.hasOwnProperty("_is_package_") ) {' . chr(10) . '        list.unshift(invocant._ref_);   // invocant is a "package" object' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        list.unshift(invocant);' . chr(10) . '    }' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list, p5want)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list, p5want)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list, p5want)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die([p5method_not_found(name, pkg_name)]);' . chr(10) . '        }' . chr(10) . chr(10) . '        if (method == "print" || method == "printf" || method == "say" || method == "close") {' . chr(10) . '            list.shift();' . chr(10) . '            return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '][method]( invocant_original, list, p5want);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);' . chr(10) . '        }' . chr(10) . '        p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);' . chr(10) . '    }' . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call_sub(namespace, name, list, p5want) {' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty(name)) {' . chr(10) . '        return p5pkg[namespace][name](list, p5want)' . chr(10) . '    }' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {' . chr(10) . '        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;' . chr(10) . '        return p5pkg[namespace]["AUTOLOAD"](list, p5want)' . chr(10) . '    }' . chr(10) . '    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5sub_exists(name, current_pkg_name) {' . chr(10) . '    var v = name;' . chr(10) . '    var pkg_name = v.split(/::/);' . chr(10) . '    if (pkg_name.length > 1) {' . chr(10) . '        v = pkg_name.pop();' . chr(10) . '        pkg_name = pkg_name.join("::");' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        pkg_name = current_pkg_name;' . chr(10) . '    }' . chr(10) . '    var c = v.charCodeAt(0);' . chr(10) . '    if (c < 27) {' . chr(10) . '        pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '    }' . chr(10) . '    return p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v) ' . chr(10) . '}' . chr(10) . chr(10) . 'function p5sub_prototype(name, current_pkg_name) {' . chr(10) . '    if (!name) {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    if (typeof name === "function") {' . chr(10) . '        return name._prototype_;' . chr(10) . '    }' . chr(10) . '    var v = name;' . chr(10) . '    var pkg_name = v.split(/::/);' . chr(10) . '    if (pkg_name.length > 1) {' . chr(10) . '        v = pkg_name.pop();' . chr(10) . '        pkg_name = pkg_name.join("::");' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        pkg_name = current_pkg_name;' . chr(10) . '    }' . chr(10) . '    var c = v.charCodeAt(0);' . chr(10) . '    if (c < 27) {' . chr(10) . '        pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v)) {' . chr(10) . '        return p5pkg[pkg_name][v]._prototype_' . chr(10) . '    }' . chr(10) . '    return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref(v, current_pkg_name, autoviv_type) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = current_pkg_name;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        var name = "v_"+v;' . chr(10) . '        if (!p5make_package(pkg_name)[name]) {' . chr(10) . '            if (autoviv_type == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '                p5pkg[pkg_name][name] = new p5ArrayRef([]);' . chr(10) . '            }' . chr(10) . '            else if (autoviv_type == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '                p5pkg[pkg_name][name] = new p5HashRef([]);' . chr(10) . '            }' . chr(10) . '            else if (autoviv_type == ' . chr(39) . 'scalar' . chr(39) . ') {' . chr(10) . '                p5pkg[pkg_name][name] = new p5ScalarRef([]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return p5pkg[pkg_name][name];' . chr(10) . '    }' . chr(10) . '    if (!v._scalar_) {' . chr(10) . '        if (autoviv_type == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '            v._scalar_ = new p5ArrayRef([]);' . chr(10) . '        }' . chr(10) . '        else if (autoviv_type == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '            v._scalar_ = new p5HashRef([]);' . chr(10) . '        }' . chr(10) . '        else if (autoviv_type == ' . chr(39) . 'scalar' . chr(39) . ') {' . chr(10) . '            v._scalar_ = new p5ScalarRef([]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref_set(v, n, current_pkg_name) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = current_pkg_name;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        var name = "v_"+v;' . chr(10) . '        p5make_package(pkg_name)[name] = n;' . chr(10) . '        return p5pkg[pkg_name][name];' . chr(10) . '    }' . chr(10) . '    v._scalar_ = n;' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5array_deref(v, current_pkg_name) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = current_pkg_name;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        var name = "List_"+v;' . chr(10) . '        if (!p5make_package(pkg_name)[name]) {' . chr(10) . '                p5pkg[pkg_name][name] = [];' . chr(10) . '        }' . chr(10) . '        return p5pkg[pkg_name][name];' . chr(10) . '    }' . chr(10) . '    return v._array_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5hash_deref(v, current_pkg_name) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = current_pkg_name;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        var name = "Hash_"+v;' . chr(10) . '        if (!p5make_package(pkg_name)[name]) {' . chr(10) . '                p5pkg[pkg_name][name] = [];' . chr(10) . '        }' . chr(10) . '        return p5pkg[pkg_name][name];' . chr(10) . '    }' . chr(10) . '    return v._hash_;' . chr(10) . '}' . chr(10) . chr(10) . '// regex globals' . chr(10) . 'p5make_package("Regex");' . chr(10) . 'var p5_last_regex = new RegExp("", "");' . chr(10) . 'var p5_regex_capture = [];' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5pkg["Perlito5"].v_PKG_NAME = "main";' . chr(10) . 'p5make_package("main::STDIN").file_handle = { id : 0, readline_buffer : ' . chr(39) . chr(39) . ' };' . chr(10) . 'p5make_package("main::STDOUT").file_handle = { id : 1 };' . chr(10) . 'p5make_package("main::STDERR").file_handle = { id : 2 };' . chr(10) . 'p5make_package("main::STDIN")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];' . chr(10) . '// p5make_package("main::STDOUT")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];' . chr(10) . '// p5make_package("main::STDERR")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];' . chr(10) . 'p5make_package("ARGV").file_handle = { id : null };' . chr(10) . 'p5make_package("main")["STDOUT"] = p5pkg["main::STDOUT"];' . chr(10) . 'p5make_package("main")["STDERR"] = p5pkg["main::STDERR"];' . chr(10) . 'p5make_package("main")["STDIN"] = p5pkg["main::STDIN"];' . chr(10) . 'p5pkg["STDOUT"] = p5pkg["main::STDOUT"];' . chr(10) . 'p5pkg["STDERR"] = p5pkg["main::STDERR"];' . chr(10) . 'p5pkg["STDIN"] = p5pkg["main::STDIN"];' . chr(10) . 'p5pkg["Perlito5"].v_SELECT = "main::STDOUT";' . chr(10) . 'p5pkg["main"]["v_@"] = [];      // $@' . chr(10) . 'p5pkg["main"]["v_|"] = 0;       // $|' . chr(10) . 'p5pkg["main"]["v_/"] = "' . chr(92) . 'n";    // $/' . chr(10) . 'p5pkg["main"][' . chr(39) . 'v_"' . chr(39) . '] = " ";     // $"' . chr(10) . 'p5pkg["main"]["List_#"] = [];   // @#' . chr(10) . 'p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O' . chr(10) . 'p5pkg["main"]["List_INC"] = [];' . chr(10) . 'p5pkg["main"]["Hash_INC"] = {};' . chr(10) . 'p5pkg["main"]["List_ARGV"] = [];' . chr(10) . 'p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . 'p5pkg["main"]["Hash_SIG"] = {};' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);' . chr(10) . chr(10) . '    p5pkg["main"]["Hash_ENV"] = {};' . chr(10) . '    for (var e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];' . chr(10) . chr(10) . '    p5pkg["main"]["v_$"] = process.pid;   // $$' . chr(10) . '    p5scalar_deref_set(String.fromCharCode(24), process.argv[0]);  // $^X' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = arguments;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ', ' . chr(39) . '&' . chr(39) . ' : ' . chr(39) . chr(39) . ' };' . chr(10) . chr(10) . 'function p5typeglob_set(namespace, name, obj) {' . chr(10) . '    p5make_package(namespace);' . chr(10) . '    if ( obj.hasOwnProperty("_ref_") ) {' . chr(10) . '        if ( obj._ref_ == "HASH" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '%' . chr(39) . '] + name] = obj._hash_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "ARRAY" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '@' . chr(39) . '] + name] = obj._array_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "SCALAR" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '$' . chr(39) . '] + name] = obj._scalar_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "CODE" ) {' . chr(10) . '            p5pkg[namespace][sigils[' . chr(39) . '&' . chr(39) . '] + name] = obj._code_;' . chr(10) . '        }' . chr(10) . '        else if ( obj._ref_ == "GLOB" ) {' . chr(10) . '            // TODO' . chr(10) . '            p5pkg[namespace][name] = obj;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        p5pkg[namespace][name] = obj;   // native CODE' . chr(10) . '        // TODO - non-reference' . chr(10) . '    }' . chr(10) . '    return p5pkg[namespace][name];  // TODO - return GLOB' . chr(10) . '}' . chr(10) . chr(10) . 'function p5typeglob_deref_set(v, obj, current_pkg_name) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = current_pkg_name;' . chr(10) . '        }' . chr(10) . '        return p5typeglob_set(pkg_name, v, obj);' . chr(10) . '    }' . chr(10) . '    CORE.die(["TODO: can' . chr(39) . 't p5typeglob_deref_set()"]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        var l = p5LOCAL.pop();' . chr(10) . '        l();' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Reference' . chr(10) . chr(10) . 'var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5CodeRef(o) {' . chr(10) . '    this._code_ = o;' . chr(10) . '    this._ref_ = "CODE";' . chr(10) . '    this.bool = function() { return 1 };' . chr(10) . '}' . chr(10) . chr(10) . '//-------- Hash ' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) { return this[i] }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hset", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i, v) { this[i] = v; return this[i] }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5incr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postincr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5decr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5postdecr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_array", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5ArrayRef([]) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Object.prototype, "p5hget_hash", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (this[i] == null) { this[i] = new p5HashRef({}) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . '//-------' . chr(10) . chr(10) . chr(10) . 'var p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a(List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    if (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    if (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'var p5list_to_a = function(args) {' . chr(10) . '    var res = [];' . chr(10) . '    for (var i = 0; i < args.length; i++) {' . chr(10) . '        var o = args[i];' . chr(10) . '        if  (  o == null' . chr(10) . '            || o._class_    // perl5 blessed reference' . chr(10) . '            || o._ref_      // perl5 un-blessed reference' . chr(10) . '            )' . chr(10) . '        {' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '        else if (o instanceof Array) {' . chr(10) . '            // perl5 array' . chr(10) . '            for (var j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else if (typeof o === "object") {' . chr(10) . '            // perl5 hash' . chr(10) . '            for(var j in o) {' . chr(10) . '                if (o.hasOwnProperty(j)) {' . chr(10) . '                    res.push(j);' . chr(10) . '                    res.push(o[j]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-ref' . chr(10) . '            res.push(o);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5_list_of_refs = function(a) {' . chr(10) . '    // implements ' . chr(92) . '( @a )' . chr(10) . '    var res = [];' . chr(10) . '    for (var i = 0; i < a.length; i++) {' . chr(10) . '        res.push(new p5ScalarRef(a[i]));' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (var i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5idx = function(a, i) {' . chr(10) . '    return i >= 0 ? i : a.length + i' . chr(10) . '};' . chr(10) . chr(10) . 'var p5smrt_scalar = function(a1, a2) {' . chr(10) . '    if (a2 == null) {' . chr(10) . '        return a1 == null;' . chr(10) . '    }' . chr(10) . '    if (typeof a2 == "string") {' . chr(10) . '        return p5str(a1) == a2;' . chr(10) . '    }' . chr(10) . '    if (typeof a2 == "number") {' . chr(10) . '        return p5num(a1) == a2;' . chr(10) . '    }' . chr(10) . '    CORE.die("Not implemented: smartmatch operator with argument type ' . chr(39) . '", (typeof a2), "' . chr(39) . '");' . chr(10) . '};' . chr(10) . chr(10) . 'var p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object") {' . chr(10) . '        if (o instanceof Array) {' . chr(10) . '            return CORE.join([""].concat(o));' . chr(10) . '        }' . chr(10) . '        if ( o.hasOwnProperty("_ref_") ) {' . chr(10) . '            var class_name = ' . chr(39) . chr(39) . ';' . chr(10) . '            if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '                // blessed reference' . chr(10) . '                // test for overload' . chr(10) . '                var meth = p5method_lookup(' . chr(39) . '(""' . chr(39) . ', o._class_._ref_, {});' . chr(10) . '                if (meth) {' . chr(10) . '                    return p5str(meth([o], 0));' . chr(10) . '                }' . chr(10) . '                // TODO - test the "fallback" flag' . chr(10) . '                meth = p5method_lookup(' . chr(39) . '(0+' . chr(39) . ', o._class_._ref_, {});' . chr(10) . '                if (meth) {' . chr(10) . '                    return p5str(meth([o], 0));' . chr(10) . '                }' . chr(10) . '                // no overload, strigify the reference instead' . chr(10) . '                class_name = o._class_._ref_ + ' . chr(39) . '=' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            if (!o._id_) { o._id_ = p5id++ }' . chr(10) . '            return [class_name, o._ref_, ' . chr(39) . '(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        var class_name = ' . chr(39) . chr(39) . ';' . chr(10) . '        if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '            // blessed reference' . chr(10) . '            class_name = o._class_._ref_ + ' . chr(39) . '=' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        if (!o._id_) { o._id_ = p5id++ }' . chr(10) . '        return [class_name, ' . chr(39) . 'CODE(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');' . chr(10) . '    }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object") {' . chr(10) . '        if (o instanceof Array) {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if ( o.hasOwnProperty("_ref_") ) {' . chr(10) . '            if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '                // blessed reference' . chr(10) . '                // test for overload' . chr(10) . '                var meth = p5method_lookup(' . chr(39) . '(0+' . chr(39) . ', o._class_._ref_, {});' . chr(10) . '                if (meth) {' . chr(10) . '                    return p5num(meth([o], 0));' . chr(10) . '                }' . chr(10) . '                // TODO - test the "fallback" flag' . chr(10) . '                meth = p5method_lookup(' . chr(39) . '(""' . chr(39) . ', o._class_._ref_, {});' . chr(10) . '                if (meth) {' . chr(10) . '                    return p5num(meth([o], 0));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o).trim();' . chr(10) . '        var s1 = s.substr(0, 3).toUpperCase();' . chr(10) . '        if ( s1 == "NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "INF" ) { return Infinity };' . chr(10) . '        s1 = s.substr(0, 4).toUpperCase();' . chr(10) . '        if ( s1 == "-NAN" ) { return NaN };' . chr(10) . '        if ( s1 == "-INF" ) { return -Infinity };' . chr(10) . '        s1 = parseFloat(s);' . chr(10) . '        if ( isNaN(s1) ) { return 0 };' . chr(10) . '        return s1;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5incr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o + 1;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(p5str(o));' . chr(10) . '};' . chr(10) . chr(10) . 'var p5decr_ = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o - 1;' . chr(10) . '    }' . chr(10) . '    return p5num(o) - 1;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5modulo = function(o, k) {' . chr(10) . '    var m = o % k;' . chr(10) . '    if ( k < 0 && m > 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    else if ( k > 0 && m < 0 ) {' . chr(10) . '        m = m + k;' . chr(10) . '    }' . chr(10) . '    return m;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5shift_left = function(o, k) {' . chr(10) . '    return k < 31 ? o << k : o * Math.pow(2, k);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'var p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5xor = function(a, fb) {' . chr(10) . '    return p5bool(a) ? !p5bool(fb()) : fb()' . chr(10) . '};' . chr(10) . chr(10) . 'var p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'var p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'var p5str_replicate = function(o, n) {' . chr(10) . '    n = Math.floor(n);' . chr(10) . '    return n > 0 ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'var p5list_replicate = function(o, n, want) {' . chr(10) . '    o = p5list_to_a([o]);' . chr(10) . '    n = p5num(n);' . chr(10) . chr(10) . '    if (!want) {' . chr(10) . '        return p5str_replicate(o.pop(), n);   // scalar context' . chr(10) . '    }' . chr(10) . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < n; i++) {' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return (want ? out : out.length)' . chr(10) . '};' . chr(10) . chr(10) . 'var p5list_slice = function(o, ix, want) {' . chr(10) . '    var out = [];' . chr(10) . '    for (var i=0, l=ix.length; i<l; ++i) {' . chr(10) . '        if (ix[i] < o.length) {' . chr(10) . '            out[i] = o[ix[i]];' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    if (want) { return out }' . chr(10) . '    return out.length ? out[out.length-1] : null;' . chr(10) . '}' . chr(10) . chr(10) . 'var p5hash_slice = function(o, ix, want) {' . chr(10) . '    var out = [];' . chr(10) . '    for (var i=0, l=ix.length; i<l; ++i) {' . chr(10) . '        out.push(ix[i]);' . chr(10) . '        out.push(o[ix[i]]);' . chr(10) . '    }' . chr(10) . '    if (want) { return out }' . chr(10) . '    return out.length ? out[out.length-1] : null;' . chr(10) . '}' . chr(10) . chr(10) . 'var p5list_lookup_slice = function(o, ix, want) {' . chr(10) . '    var out = [];' . chr(10) . '    for (var i=0, l=ix.length; i<l; ++i) {' . chr(10) . '        out[i] = o[ix[i]];' . chr(10) . '    }' . chr(10) . '    if (want) { return out }' . chr(10) . '    return out.length ? out[out.length-1] : null;' . chr(10) . '}' . chr(10) . chr(10) . 'var p5hash_lookup_slice = function(o, ix, want) {' . chr(10) . '    var out = [];' . chr(10) . '    for (var i=0, l=ix.length; i<l; ++i) {' . chr(10) . '        out.push(ix[i]);' . chr(10) . '        out.push(o[ix[i]]);' . chr(10) . '    }' . chr(10) . '    if (want) { return out }' . chr(10) . '    return out.length ? out[out.length-1] : null;' . chr(10) . '}' . chr(10) . chr(10) . 'var p5str_inc = function(s) {' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if ((s >= "0" && s <= "8") || (s >= "A" && s <= "Y") || (s >= "a" && s <= "y")) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c0 = s.substr(0, 1);' . chr(10) . '    if (c0 >= "0" && c0 <= "9") {' . chr(10) . '        return p5str(p5num(s)+1);' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5range_state = {};' . chr(10) . 'var p5range = function(a, b, p5want, id, three_dots) {' . chr(10) . '    if (p5want) {' . chr(10) . '        // list context' . chr(10) . '        var tmp = [];' . chr(10) . '        if (typeof a === "number" || typeof b === "number") {' . chr(10) . '            a = p5num(a);' . chr(10) . '            b = p5num(b);' . chr(10) . '            while (a <= b) {' . chr(10) . '                tmp.push(a);' . chr(10) . '                a++;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            a = p5str(a);' . chr(10) . '            b = p5str(b);' . chr(10) . '            var c = a.substr(0, 1);' . chr(10) . '            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {' . chr(10) . '                if (a == "+") {' . chr(10) . '                    return [a]' . chr(10) . '                }' . chr(10) . '                a = a.substr(1)' . chr(10) . '            }' . chr(10) . '            else if ( c == ' . chr(39) . '-' . chr(39) . ' ) {' . chr(10) . '                if (a == "-") {' . chr(10) . '                    return [a]' . chr(10) . '                }' . chr(10) . '                return p5range(p5num(a), b, p5want, id, three_dots)' . chr(10) . '            }' . chr(10) . '            c = b.substr(0, 1);' . chr(10) . '            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {' . chr(10) . '                b = b.substr(1)' . chr(10) . '            }' . chr(10) . '            while (  (a.length < b.length)' . chr(10) . '                  || (a.length == b.length && a <= b) ) {' . chr(10) . '                tmp.push(a);' . chr(10) . '                a = p5incr_(a);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return tmp;' . chr(10) . '    }' . chr(10) . '    // flip-flop operator' . chr(10) . '    var v;' . chr(10) . '    if (p5range_state[id]) {' . chr(10) . '        v = ++p5range_state[id];' . chr(10) . '        if (p5bool(b)) {' . chr(10) . '            p5range_state[id] = 0;' . chr(10) . '            v = v + "E0";' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        p5range_state[id] = 0;' . chr(10) . '        if (p5bool(a)) {' . chr(10) . '            p5range_state[id]++;' . chr(10) . '            v = p5range_state[id];' . chr(10) . '        }' . chr(10) . '        if (v && !three_dots && p5bool(b)) {' . chr(10) . '            p5range_state[id] = 0;' . chr(10) . '            v = v + "E0";' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'var p5negative = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return -(o.length);' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        var s = p5str(o);' . chr(10) . '        var c = s.substr(0, 1);' . chr(10) . '        if ( c == ' . chr(39) . '+' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '-' . chr(39) . ' + s }' . chr(10) . '        if ( c == ' . chr(39) . '-' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '+' . chr(39) . ' + s }' . chr(10) . '        var s1 = parseFloat(s.trim());' . chr(10) . '        if ( isNaN(s1) ) {' . chr(10) . '            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {' . chr(10) . '                if ( s.trim().substr(0,1) == "-" ) { return 0 };' . chr(10) . '                return ' . chr(39) . '-0' . chr(39) . ';' . chr(10) . '            };' . chr(10) . '            return ' . chr(39) . '-' . chr(39) . ' + s' . chr(10) . '        };' . chr(10) . '        return -s1;' . chr(10) . '    }' . chr(10) . '    return -o;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5qr = function(search, modifier) {' . chr(10) . '    // TODO - "Regex" stringification' . chr(10) . '    var re = new RegExp(search, modifier);' . chr(10) . '    return CORE.bless([(new p5ScalarRef(re)), ' . chr(39) . 'Regex' . chr(39) . ']);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5m = function(s, search, modifier, want) {' . chr(10) . '    // TODO - captures' . chr(10) . '    var re;' . chr(10) . '    if (search.hasOwnProperty(' . chr(39) . '_scalar_' . chr(39) . ')) {' . chr(10) . '        // search is a Regex object' . chr(10) . '        re = search._scalar_;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        re = new RegExp(search, modifier);' . chr(10) . '    }' . chr(10) . chr(10) . '    p5_regex_capture = [];' . chr(10) . '    var res = [];' . chr(10) . '    var myArray;' . chr(10) . '    while ((myArray = re.exec(s)) !== null) {' . chr(10) . '        var m = myArray.shift();' . chr(10) . '        if (myArray.length) {' . chr(10) . '            res = res.concat(myArray);' . chr(10) . '            p5_regex_capture = p5_regex_capture.concat(myArray);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            res.push(m);' . chr(10) . '        }' . chr(10) . '        if (re.lastIndex == 0) {' . chr(10) . '            return (want ? res : res.length)' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return (want ? res : res.length)' . chr(10) . '};' . chr(10) . chr(10) . 'var p5s = function(s, search, fun_replace, modifier, want) {' . chr(10) . '    // TODO - captures' . chr(10) . '    var count = null;' . chr(10) . '    var re;' . chr(10) . '    if (search.hasOwnProperty(' . chr(39) . '_scalar_' . chr(39) . ')) {' . chr(10) . '        // search is a Regex object' . chr(10) . '        re = search._scalar_;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        re = new RegExp(search, modifier);' . chr(10) . '    }' . chr(10) . chr(10) . '    p5_regex_capture = [];' . chr(10) . '    var res = [];' . chr(10) . '    var myArray;' . chr(10) . '    var last_index = 0;' . chr(10) . '    while ((myArray = re.exec(s)) !== null) {' . chr(10) . '        var m = myArray.shift();' . chr(10) . '        p5_regex_capture = [].concat(myArray);' . chr(10) . '        if (myArray.index > last_index) {' . chr(10) . '            res.push(s.substr(last_index, myArray.index - last_index));' . chr(10) . '        }' . chr(10) . '        res.push(fun_replace());' . chr(10) . '        last_index = re.lastIndex;' . chr(10) . '        if (last_index == 0) {' . chr(10) . '            count = 1;' . chr(10) . '            last_index = myArray.index + m.length;' . chr(10) . '            if (s.length > last_index) {' . chr(10) . '                res.push(s.substr(last_index, s.length - last_index));' . chr(10) . '            }' . chr(10) . '            return [res.join(' . chr(39) . chr(39) . '), count]' . chr(10) . '        }' . chr(10) . '        count++;' . chr(10) . '    }' . chr(10) . '    if (s.length > last_index) {' . chr(10) . '        res.push(s.substr(last_index, s.length - last_index));' . chr(10) . '    }' . chr(10) . '    return [res.join(' . chr(39) . chr(39) . '), count]' . chr(10) . '};' . chr(10) . chr(10) . 'var p5tr = function(s, search, replace, modifier, want) {' . chr(10) . '    var count = 0;' . chr(10) . '    // TODO - expand character lists in spec' . chr(10) . '    // TODO - modifiers' . chr(10) . '    search = search.split("");' . chr(10) . '    replace = replace.split("");' . chr(10) . '    while (search.length > replace.length) {' . chr(10) . '        replace.push(replace[replace.length-1]);' . chr(10) . '    }' . chr(10) . '    var tr = {};' . chr(10) . '    for(var i = 0; i < search.length; i++) {' . chr(10) . '        tr[search[i]] = replace[i];' . chr(10) . '    }' . chr(10) . '    var res = s.split("");' . chr(10) . '    for(var i = 0; i < res.length; i++) {' . chr(10) . '        if (tr.hasOwnProperty(res[i])) {' . chr(10) . '            res[i] = tr[res[i]];' . chr(10) . '            count++;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return [res.join(' . chr(39) . chr(39) . '), count]' . chr(10) . '};' . chr(10) . chr(10) . 'var p5chop = function(s) {' . chr(10) . '    // TODO - hash' . chr(10) . chr(10) . '    if (s instanceof Array) {' . chr(10) . '        // perl5 array' . chr(10) . '        var count = 0;' . chr(10) . '        var res;' . chr(10) . '        for (var j = 0; j < s.length; j++) {' . chr(10) . '            res = p5chop(p5str(s[j]));' . chr(10) . '            count = res[0];' . chr(10) . '            s[j] = res[1];' . chr(10) . '        }' . chr(10) . '        return [count, s];' . chr(10) . '    }' . chr(10) . chr(10) . '    s = p5str(s);' . chr(10) . '    return [s.substr(-1,1), s.substr(0,s.length-1)]' . chr(10) . '};' . chr(10) . chr(10) . 'var p5chomp = function(s) {' . chr(10) . '    // TODO - hash' . chr(10) . '    // TODO - special cases of $/ - empty string, reference' . chr(10) . chr(10) . '    if (s instanceof Array) {' . chr(10) . '        // perl5 array' . chr(10) . '        var count = 0;' . chr(10) . '        var res;' . chr(10) . '        for (var j = 0; j < s.length; j++) {' . chr(10) . '            res = p5chomp(p5str(s[j]));' . chr(10) . '            count = count + res[0];' . chr(10) . '            s[j] = res[1];' . chr(10) . '        }' . chr(10) . '        return [count, s];' . chr(10) . '    }' . chr(10) . chr(10) . '    s = p5str(s);' . chr(10) . '    var sep = p5pkg["main"]["v_/"];  // $/' . chr(10) . '    var c = s.substr(-sep.length);' . chr(10) . '    if (c == sep) {' . chr(10) . '        return [c.length, s.substr(0,s.length-sep.length)]' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        return [0, s]' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'var p5for = function(namespace, var_name, func, args, cont, label) {' . chr(10) . '    var local_idx = p5LOCAL.length;' . chr(10) . '    var v_old = namespace[var_name];' . chr(10) . '    var _redo;' . chr(10) . '    p5LOCAL.push(function(){ namespace[var_name] = v_old });' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace[var_name] = args[i];' . chr(10) . '        do {' . chr(10) . '            _redo = false;' . chr(10) . '            try {' . chr(10) . '                func()' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                        p5cleanup_local(local_idx, null);' . chr(10) . '                        return' . chr(10) . '                    }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            if (cont) {' . chr(10) . '                try {' . chr(10) . '                    if (!_redo) { cont() }' . chr(10) . '                }' . chr(10) . '                catch(err) {' . chr(10) . '                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                            p5cleanup_local(local_idx, null);' . chr(10) . '                            return' . chr(10) . '                        }' . chr(10) . '                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                    }            ' . chr(10) . '                    else {' . chr(10) . '                        throw(err)' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        } while (_redo);' . chr(10) . '    }' . chr(10) . '    p5cleanup_local(local_idx, null);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5for_lex = function(set_var, func, args, cont, label) {' . chr(10) . '    var local_idx = p5LOCAL.length;' . chr(10) . '    var _redo;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        set_var(args[i]);' . chr(10) . '        do {' . chr(10) . '            _redo = false;' . chr(10) . '            try {' . chr(10) . '                func()' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                        p5cleanup_local(local_idx, null);' . chr(10) . '                        return' . chr(10) . '                    }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            if (cont) {' . chr(10) . '                try {' . chr(10) . '                    if (!_redo) { cont() }' . chr(10) . '                }' . chr(10) . '                catch(err) {' . chr(10) . '                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                            p5cleanup_local(local_idx, null);' . chr(10) . '                            return' . chr(10) . '                        }' . chr(10) . '                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                    }            ' . chr(10) . '                    else {' . chr(10) . '                        throw(err)' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        } while (_redo);' . chr(10) . '    }' . chr(10) . '    p5cleanup_local(local_idx, null);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5block = function(set_var, func, args, cont, label) {' . chr(10) . '    var local_idx = p5LOCAL.length;' . chr(10) . '    var _redo;' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        set_var(args[i]);' . chr(10) . '        do {' . chr(10) . '            _redo = false;' . chr(10) . '            try {' . chr(10) . '                return func()' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                        p5cleanup_local(local_idx, null);' . chr(10) . '                        return' . chr(10) . '                    }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            if (cont) {' . chr(10) . '                try {' . chr(10) . '                    if (!_redo) { cont() }' . chr(10) . '                }' . chr(10) . '                catch(err) {' . chr(10) . '                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                            p5cleanup_local(local_idx, null);' . chr(10) . '                            return' . chr(10) . '                        }' . chr(10) . '                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                    }            ' . chr(10) . '                    else {' . chr(10) . '                        throw(err)' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        } while (_redo);' . chr(10) . '    }' . chr(10) . '    p5cleanup_local(local_idx, null);' . chr(10) . '};' . chr(10) . chr(10) . chr(10) . 'var p5while = function(func, cond, cont, label, redo) {' . chr(10) . '    var local_idx = p5LOCAL.length;' . chr(10) . '    while (redo || p5bool(cond())) {' . chr(10) . '        redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                    p5cleanup_local(local_idx, null);' . chr(10) . '                    return' . chr(10) . '                }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {' . chr(10) . '                        p5cleanup_local(local_idx, null);' . chr(10) . '                        return' . chr(10) . '                    }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    p5cleanup_local(local_idx, null);' . chr(10) . '};' . chr(10) . chr(10) . 'var p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = p5pkg["main"]["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        p5pkg["main"]["v__"] = args[i];' . chr(10) . '        var o = p5list_to_a([func(1)]);' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    p5pkg["main"]["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = p5pkg["main"]["v__"];' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        p5pkg["main"]["v__"] = args[i];' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    p5pkg["main"]["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"] = a;' . chr(10) . '                namespace["v_b"] = b;' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10)
+        return '//
+// lib/Perlito5/JavaScript2/Runtime.js
+//
+// Runtime for "Perlito" Perl5-in-JavaScript2
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+"use strict";
+var isNode = typeof require != "undefined";
+
+if (typeof p5pkg !== "object") {
+    var p5pkg = {};
+    var p5LOCAL = [];
+
+    var universal = function () {};
+    p5pkg.UNIVERSAL = new universal();
+    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";
+    p5pkg.UNIVERSAL.isa = function (List__) {
+        // TODO - use @ISA
+        return List__[0]._class_._ref_ == List__[1]
+    };
+    p5pkg.UNIVERSAL.can = function (List__) {
+        var o = List__[0];
+        var s = List__[1];
+        if ( s.indexOf("::") == -1 ) {
+            return p5method_lookup(s, o._class_._ref_, {})
+        }
+        var c = s.split("::");
+        s = c.pop(); 
+        return p5method_lookup(s, c.join("::"), {});
+    };
+    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;
+
+    var core = function () {};
+    p5pkg["CORE"] = new core();
+    p5pkg["CORE"]._ref_ = "CORE";
+
+    var core_global = function () {};
+    core_global.prototype = p5pkg.CORE;
+    p5pkg["CORE::GLOBAL"] = new core_global();
+    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
+
+    var p5_error = function (type, v) {
+        this.type = type;
+        this.v = this.message = v;
+        this.toString = function(){
+            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {
+                return ' . chr(39) . 'Can\\' . chr(39) . 't "break" outside a given block' . chr(39) . '
+            }
+            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {
+                if (this.v == "") { return ' . chr(39) . 'Can\\' . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }
+                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';
+            }
+            return this.v;
+        };
+    };
+    p5_error.prototype = Error.prototype;
+}
+
+function p5make_package(pkg_name) {
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
+        var tmp = function () {};
+        tmp.prototype = p5pkg["CORE::GLOBAL"];
+        p5pkg[pkg_name] = new tmp();
+        p5pkg[pkg_name]._ref_ = pkg_name;
+        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak
+        p5pkg[pkg_name]._is_package_ = 1;
+
+        // TODO - add the other package global variables
+        p5pkg[pkg_name]["List_ISA"] = [];
+        p5pkg[pkg_name]["v_a"] = null;
+        p5pkg[pkg_name]["v_b"] = null;
+        p5pkg[pkg_name]["v__"] = null;
+        p5pkg[pkg_name]["v_AUTOLOAD"] = null;
+    }
+    return p5pkg[pkg_name];
+}
+
+function p5code_lookup_by_name(package_name, sub_name) {
+    // sub_name can be a function already
+    if (typeof sub_name === "function") {
+        return sub_name;
+    }
+    // sub_name can have an optional namespace
+    var parts = sub_name.split(/::/);
+    if (parts.length > 1) {
+        sub_name = parts.pop();
+        package_name = parts.join("::");
+    }
+    if (p5pkg.hasOwnProperty(package_name)) {
+        var c = p5pkg[package_name];
+        if ( c.hasOwnProperty(sub_name) ) {
+            return c[sub_name]
+        }
+    }
+    return null;
+}
+
+function p5get_class_for_method(method, class_name, seen) {
+    // default mro
+    // TODO - cache the methods that were already looked up
+    if ( p5pkg[class_name].hasOwnProperty(method) ) {
+        return class_name
+    }
+    var isa = p5pkg[class_name].List_ISA;
+    if (isa) {
+        for (var i = 0; i < isa.length; i++) {
+            if (!seen[isa[i]]) {
+                var m = p5get_class_for_method(method, isa[i], seen);
+                if (m) {
+                    return m 
+                }
+                seen[isa[i]]++;
+            }
+        }
+    }
+}
+
+function p5method_lookup(method, class_name, seen) {
+    var c = p5get_class_for_method(method, class_name, seen);
+    if (c) {
+        return p5pkg[c][method]
+    }
+    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {
+        return p5pkg.UNIVERSAL[method]
+    }
+}
+
+function p5method_not_found(method, class_name) {
+    return "Can' . chr(39) . 't locate object method \\""
+        + method + "\\" via package \\"" + class_name + "\\" (perhaps you forgot to load \\""
+        + class_name + "\\"?)";
+}
+
+function p5call(invocant, method, list, p5want) {
+    var invocant_original = invocant;
+    if (typeof invocant === "string") {
+        list.unshift(invocant);
+        invocant = p5make_package(invocant);
+    }
+    else if ( invocant.hasOwnProperty("_is_package_") ) {
+        list.unshift(invocant._ref_);   // invocant is a "package" object
+    }
+    else {
+        list.unshift(invocant);
+    }
+
+    if ( invocant.hasOwnProperty("_class_") ) {
+
+        if ( invocant._class_.hasOwnProperty(method) ) {
+            return invocant._class_[method](list, p5want)
+        }
+        var m = p5method_lookup(method, invocant._class_._ref_, {});
+        if (m) {
+            return m(list, p5want)
+        }
+
+        // method can have an optional namespace
+        var pkg_name = method.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            m = p5method_lookup(name, pkg_name, {});
+            if (m) {
+                return m(list, p5want)
+            }
+            p5pkg.CORE.die([p5method_not_found(name, pkg_name)]);
+        }
+
+        if (method == "print" || method == "printf" || method == "say" || method == "close") {
+            list.shift();
+            return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '][method]( invocant_original, list, p5want);
+        }
+
+        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});
+        if (pkg_name) {
+            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
+            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
+        }
+        p5pkg.CORE.die([p5method_not_found(method, invocant._class_._ref_)]);
+    }
+    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);
+}
+
+function p5call_sub(namespace, name, list, p5want) {
+    if(p5pkg[namespace].hasOwnProperty(name)) {
+        return p5pkg[namespace][name](list, p5want)
+    }
+    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
+        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;
+        return p5pkg[namespace]["AUTOLOAD"](list, p5want)
+    }
+    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
+}
+
+function p5sub_exists(name, current_pkg_name) {
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+    }
+    return p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v) 
+}
+
+function p5sub_prototype(name, current_pkg_name) {
+    if (!name) {
+        return null;
+    }
+    if (typeof name === "function") {
+        return name._prototype_;
+    }
+    var v = name;
+    var pkg_name = v.split(/::/);
+    if (pkg_name.length > 1) {
+        v = pkg_name.pop();
+        pkg_name = pkg_name.join("::");
+    }
+    else {
+        pkg_name = current_pkg_name;
+    }
+    var c = v.charCodeAt(0);
+    if (c < 27) {
+        pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+    }
+    if (p5pkg.hasOwnProperty(pkg_name) && p5pkg[pkg_name].hasOwnProperty(v)) {
+        return p5pkg[pkg_name][v]._prototype_
+    }
+    return p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
+}
+
+function p5scalar_deref(v, current_pkg_name, autoviv_type) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        var name = "v_"+v;
+        if (!p5make_package(pkg_name)[name]) {
+            if (autoviv_type == ' . chr(39) . 'array' . chr(39) . ') {
+                p5pkg[pkg_name][name] = new p5ArrayRef([]);
+            }
+            else if (autoviv_type == ' . chr(39) . 'hash' . chr(39) . ') {
+                p5pkg[pkg_name][name] = new p5HashRef([]);
+            }
+            else if (autoviv_type == ' . chr(39) . 'scalar' . chr(39) . ') {
+                p5pkg[pkg_name][name] = new p5ScalarRef([]);
+            }
+        }
+        return p5pkg[pkg_name][name];
+    }
+    if (!v._scalar_) {
+        if (autoviv_type == ' . chr(39) . 'array' . chr(39) . ') {
+            v._scalar_ = new p5ArrayRef([]);
+        }
+        else if (autoviv_type == ' . chr(39) . 'hash' . chr(39) . ') {
+            v._scalar_ = new p5HashRef([]);
+        }
+        else if (autoviv_type == ' . chr(39) . 'scalar' . chr(39) . ') {
+            v._scalar_ = new p5ScalarRef([]);
+        }
+    }
+    return v._scalar_;
+}
+
+function p5scalar_deref_set(v, n, current_pkg_name) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        var name = "v_"+v;
+        p5make_package(pkg_name)[name] = n;
+        return p5pkg[pkg_name][name];
+    }
+    v._scalar_ = n;
+    return v._scalar_;
+}
+
+function p5array_deref(v, current_pkg_name) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        var name = "List_"+v;
+        if (!p5make_package(pkg_name)[name]) {
+                p5pkg[pkg_name][name] = [];
+        }
+        return p5pkg[pkg_name][name];
+    }
+    return v._array_;
+}
+
+function p5hash_deref(v, current_pkg_name) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        var name = "Hash_"+v;
+        if (!p5make_package(pkg_name)[name]) {
+                p5pkg[pkg_name][name] = [];
+        }
+        return p5pkg[pkg_name][name];
+    }
+    return v._hash_;
+}
+
+// regex globals
+p5make_package("Regex");
+var p5_last_regex = new RegExp("", "");
+var p5_regex_capture = [];
+
+p5make_package("main");
+p5make_package("Perlito5");
+p5pkg["Perlito5"].v_PKG_NAME = "main";
+p5make_package("main::STDIN").file_handle = { id : 0, readline_buffer : ' . chr(39) . chr(39) . ' };
+p5make_package("main::STDOUT").file_handle = { id : 1 };
+p5make_package("main::STDERR").file_handle = { id : 2 };
+p5make_package("main::STDIN")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];
+// p5make_package("main::STDOUT")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];
+// p5make_package("main::STDERR")[' . chr(39) . 'List_ISA' . chr(39) . '] = [' . chr(39) . 'Perlito5::IO' . chr(39) . '];
+p5make_package("ARGV").file_handle = { id : null };
+p5make_package("main")["STDOUT"] = p5pkg["main::STDOUT"];
+p5make_package("main")["STDERR"] = p5pkg["main::STDERR"];
+p5make_package("main")["STDIN"] = p5pkg["main::STDIN"];
+p5pkg["STDOUT"] = p5pkg["main::STDOUT"];
+p5pkg["STDERR"] = p5pkg["main::STDERR"];
+p5pkg["STDIN"] = p5pkg["main::STDIN"];
+p5pkg["Perlito5"].v_SELECT = "main::STDOUT";
+p5pkg["main"]["v_@"] = [];      // $@
+p5pkg["main"]["v_|"] = 0;       // $|
+p5pkg["main"]["v_/"] = "\\n";    // $/
+p5pkg["main"][' . chr(39) . 'v_"' . chr(39) . '] = " ";     // $"
+p5pkg["main"]["List_#"] = [];   // @#
+p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
+p5pkg["main"]["List_INC"] = [];
+p5pkg["main"]["Hash_INC"] = {};
+p5pkg["main"]["List_ARGV"] = [];
+p5pkg["main"]["Hash_ENV"] = {};
+p5pkg["main"]["Hash_SIG"] = {};
+if (isNode) {
+    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
+
+    p5pkg["main"]["Hash_ENV"] = {};
+    for (var e in process.env) p5pkg["main"]["Hash_ENV"][e] = process.env[e];
+
+    p5pkg["main"]["v_$"] = process.pid;   // $$
+    p5scalar_deref_set(String.fromCharCode(24), process.argv[0]);  // $^X
+} else if (typeof arguments === "object") {
+    p5pkg["main"]["List_ARGV"] = arguments;
+}
+
+p5make_package("Perlito5::IO");
+p5make_package("Perlito5::Runtime");
+p5make_package("Perlito5::Grammar");
+
+var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ', ' . chr(39) . '&' . chr(39) . ' : ' . chr(39) . chr(39) . ' };
+
+function p5typeglob_set(namespace, name, obj) {
+    p5make_package(namespace);
+    if ( obj.hasOwnProperty("_ref_") ) {
+        if ( obj._ref_ == "HASH" ) {
+            p5pkg[namespace][sigils[' . chr(39) . '%' . chr(39) . '] + name] = obj._hash_;
+        }
+        else if ( obj._ref_ == "ARRAY" ) {
+            p5pkg[namespace][sigils[' . chr(39) . '@' . chr(39) . '] + name] = obj._array_;
+        }
+        else if ( obj._ref_ == "SCALAR" ) {
+            p5pkg[namespace][sigils[' . chr(39) . '$' . chr(39) . '] + name] = obj._scalar_;
+        }
+        else if ( obj._ref_ == "CODE" ) {
+            p5pkg[namespace][sigils[' . chr(39) . '&' . chr(39) . '] + name] = obj._code_;
+        }
+        else if ( obj._ref_ == "GLOB" ) {
+            // TODO
+            p5pkg[namespace][name] = obj;
+        }
+    }
+    else {
+        p5pkg[namespace][name] = obj;   // native CODE
+        // TODO - non-reference
+    }
+    return p5pkg[namespace][name];  // TODO - return GLOB
+}
+
+function p5typeglob_deref_set(v, obj, current_pkg_name) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = current_pkg_name;
+        }
+        return p5typeglob_set(pkg_name, v, obj);
+    }
+    CORE.die(["TODO: can' . chr(39) . 't p5typeglob_deref_set()"]);
+}
+
+function p5cleanup_local(idx, value) {
+    while (p5LOCAL.length > idx) {
+        var l = p5LOCAL.pop();
+        l();
+    }
+    return value;
+}
+
+//-------- Reference
+
+var p5id = Math.floor(Math.random() * 1000000000) + 1000000000;
+
+function p5HashRef(o) {
+    this._hash_ = o;
+    this._ref_ = "HASH";
+    this.bool = function() { return 1 };
+}
+
+function p5ArrayRef(o) {
+    this._array_ = o;
+    this._ref_ = "ARRAY";
+    this.bool = function() { return 1 };
+}
+
+function p5ScalarRef(o) {
+    this._scalar_ = o;
+    this._ref_ = "SCALAR";
+    this.bool = function() { return 1 };
+}
+
+function p5GlobRef(o) {
+    this._scalar_ = o;
+    this._ref_ = "GLOB";
+    this.bool = function() { return 1 };
+}
+
+function p5CodeRef(o) {
+    this._code_ = o;
+    this._ref_ = "CODE";
+    this.bool = function() { return 1 };
+}
+
+//-------- Hash 
+
+Object.defineProperty( Object.prototype, "p5hget", {
+    enumerable : false,
+    value : function (i) { return this[i] }
+});
+Object.defineProperty( Object.prototype, "p5hset", {
+    enumerable : false,
+    value : function (i, v) { this[i] = v; return this[i] }
+});
+
+Object.defineProperty( Object.prototype, "p5incr", {
+    enumerable : false,
+    value : function (i) {
+        this[i] = p5incr_(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Object.prototype, "p5postincr", {
+    enumerable : false,
+    value : function (i) {
+        var v = this[i];
+        this[i] = p5incr_(this[i]);
+        return v;
+    }
+});
+Object.defineProperty( Object.prototype, "p5decr", {
+    enumerable : false,
+    value : function (i) {
+        this[i] = p5decr_(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Object.prototype, "p5postdecr", {
+    enumerable : false,
+    value : function (i) {
+        var v = this[i];
+        this[i] = p5decr_(this[i]);
+        return v;
+    }
+});
+
+Object.defineProperty( Object.prototype, "p5hget_array", {
+    enumerable : false,
+    value : function (i) {
+        if (this[i] == null) { this[i] = new p5ArrayRef([]) }
+        return this[i]
+    }
+});
+Object.defineProperty( Object.prototype, "p5hget_hash", {
+    enumerable : false,
+    value : function (i) {
+        if (this[i] == null) { this[i] = new p5HashRef({}) }
+        return this[i]
+    }
+});
+
+//-------
+
+
+var p5context = function(List__, p5want) {
+    if (p5want) {
+        return p5list_to_a(List__);
+    }
+    // scalar: return the last value
+    var o = List__;
+    if (o instanceof Array) {
+        o =   o.length
+            ? o[o.length-1]
+            : null;
+    }
+    if (o instanceof Array) {
+        o =   o.length
+    }
+    return o;
+}
+
+var p5list_to_a = function(args) {
+    var res = [];
+    for (var i = 0; i < args.length; i++) {
+        var o = args[i];
+        if  (  o == null
+            || o._class_    // perl5 blessed reference
+            || o._ref_      // perl5 un-blessed reference
+            )
+        {
+            res.push(o);
+        }
+        else if (o instanceof Array) {
+            // perl5 array
+            for (var j = 0; j < o.length; j++) {
+                res.push(o[j]);
+            }
+        }
+        else if (typeof o === "object") {
+            // perl5 hash
+            for(var j in o) {
+                if (o.hasOwnProperty(j)) {
+                    res.push(j);
+                    res.push(o[j]);
+                }
+            }
+        }
+        else {
+            // non-ref
+            res.push(o);
+        }
+    }
+    return res;
+};
+
+var p5_list_of_refs = function(a) {
+    // implements \\( @a )
+    var res = [];
+    for (var i = 0; i < a.length; i++) {
+        res.push(new p5ScalarRef(a[i]));
+    }
+    return res;
+};
+
+var p5a_to_h = function(a) {
+    var res = {};
+    for (var i = 0; i < a.length; i+=2) {
+        res[p5str(a[i])] = a[i+1];
+    }
+    return res;
+};
+
+var p5idx = function(a, i) {
+    return i >= 0 ? i : a.length + i
+};
+
+var p5smrt_scalar = function(a1, a2) {
+    if (a2 == null) {
+        return a1 == null;
+    }
+    if (typeof a2 == "string") {
+        return p5str(a1) == a2;
+    }
+    if (typeof a2 == "number") {
+        return p5num(a1) == a2;
+    }
+    CORE.die("Not implemented: smartmatch operator with argument type ' . chr(39) . '", (typeof a2), "' . chr(39) . '");
+};
+
+var p5str = function(o) {
+    if (o == null) {
+        return "";
+    }
+    if (typeof o === "object") {
+        if (o instanceof Array) {
+            return CORE.join([""].concat(o));
+        }
+        if ( o.hasOwnProperty("_ref_") ) {
+            var class_name = ' . chr(39) . chr(39) . ';
+            if (o._class_ && typeof o._class_._ref_ === "string") {
+                // blessed reference
+                // test for overload
+                var meth = p5method_lookup(' . chr(39) . '(""' . chr(39) . ', o._class_._ref_, {});
+                if (meth) {
+                    return p5str(meth([o], 0));
+                }
+                // TODO - test the "fallback" flag
+                meth = p5method_lookup(' . chr(39) . '(0+' . chr(39) . ', o._class_._ref_, {});
+                if (meth) {
+                    return p5str(meth([o], 0));
+                }
+                // no overload, strigify the reference instead
+                class_name = o._class_._ref_ + ' . chr(39) . '=' . chr(39) . ';
+            }
+            if (!o._id_) { o._id_ = p5id++ }
+            return [class_name, o._ref_, ' . chr(39) . '(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');
+        }
+    }
+    if (typeof o === "function") {
+        var class_name = ' . chr(39) . chr(39) . ';
+        if (o._class_ && typeof o._class_._ref_ === "string") {
+            // blessed reference
+            class_name = o._class_._ref_ + ' . chr(39) . '=' . chr(39) . ';
+        }
+        if (!o._id_) { o._id_ = p5id++ }
+        return [class_name, ' . chr(39) . 'CODE(0x' . chr(39) . ', o._id_.toString( 16 ), ' . chr(39) . ')' . chr(39) . '].join(' . chr(39) . chr(39) . ');
+    }
+    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
+        return o.toExponential().replace(/e-(\\d)$/,"e-0$1");
+    }
+    if (typeof o === "boolean") {
+        return o ? "1" : "";
+    }
+    if (typeof o !== "string") {
+        return "" + o;
+    }
+    return o;
+};
+
+var p5num = function(o) {
+    if (o == null) {
+        return 0;
+    }
+    if (typeof o === "object") {
+        if (o instanceof Array) {
+            return o.length;
+        }
+        if ( o.hasOwnProperty("_ref_") ) {
+            if (o._class_ && typeof o._class_._ref_ === "string") {
+                // blessed reference
+                // test for overload
+                var meth = p5method_lookup(' . chr(39) . '(0+' . chr(39) . ', o._class_._ref_, {});
+                if (meth) {
+                    return p5num(meth([o], 0));
+                }
+                // TODO - test the "fallback" flag
+                meth = p5method_lookup(' . chr(39) . '(""' . chr(39) . ', o._class_._ref_, {});
+                if (meth) {
+                    return p5num(meth([o], 0));
+                }
+            }
+        }
+    }
+    if (typeof o !== "number") {
+        var s = p5str(o).trim();
+        var s1 = s.substr(0, 3).toUpperCase();
+        if ( s1 == "NAN" ) { return NaN };
+        if ( s1 == "INF" ) { return Infinity };
+        s1 = s.substr(0, 4).toUpperCase();
+        if ( s1 == "-NAN" ) { return NaN };
+        if ( s1 == "-INF" ) { return -Infinity };
+        s1 = parseFloat(s);
+        if ( isNaN(s1) ) { return 0 };
+        return s1;
+    }
+    return o;
+};
+
+var p5bool = function(o) {
+    if (o) {
+        if (typeof o === "boolean") {
+            return o;
+        }
+        if (typeof o === "number") {
+            return o;
+        }
+        if (typeof o === "string") {
+            return o != "" && o != "0";
+        }
+        if (typeof o.length === "number") {
+            return o.length;
+        }
+        if (o instanceof Error) {
+            return true;
+        }
+        for (var i in o) {
+            return true;
+        }
+    }
+    return false;
+};
+
+var p5incr_ = function(o) {
+    if (typeof o === "number") {
+        return o + 1;
+    }
+    return p5str_inc(p5str(o));
+};
+
+var p5decr_ = function(o) {
+    if (typeof o === "number") {
+        return o - 1;
+    }
+    return p5num(o) - 1;
+};
+
+var p5modulo = function(o, k) {
+    var m = o % k;
+    if ( k < 0 && m > 0 ) {
+        m = m + k;
+    }
+    else if ( k > 0 && m < 0 ) {
+        m = m + k;
+    }
+    return m;
+};
+
+var p5shift_left = function(o, k) {
+    return k < 31 ? o << k : o * Math.pow(2, k);
+};
+
+var p5and = function(a, fb) {
+    if (p5bool(a)) {
+        return fb();
+    }
+    return a;
+};
+
+var p5or = function(a, fb) {
+    if (p5bool(a)) {
+        return a;
+    }
+    return fb();
+};
+
+var p5defined_or = function(a, fb) {
+    if (a == null) {
+        return fb();
+    }
+    return a;
+};
+
+var p5xor = function(a, fb) {
+    return p5bool(a) ? !p5bool(fb()) : fb()
+};
+
+var p5cmp = function(a, b) {
+    return a > b ? 1 : a < b ? -1 : 0 
+};
+
+var p5complement = function(a) {
+    return a < 0 ? ~a : 4294967295 - a
+    // return a < 0 ? ~a : 18446744073709551615 - a
+};
+
+var p5str_replicate = function(o, n) {
+    n = Math.floor(n);
+    return n > 0 ? Array(n + 1).join(o) : "";
+};
+
+var p5list_replicate = function(o, n, want) {
+    o = p5list_to_a([o]);
+    n = p5num(n);
+
+    if (!want) {
+        return p5str_replicate(o.pop(), n);   // scalar context
+    }
+
+    var out = [];
+    for(var i = 0; i < n; i++) {
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
+    }
+    return (want ? out : out.length)
+};
+
+var p5list_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        if (ix[i] < o.length) {
+            out[i] = o[ix[i]];
+        }
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5hash_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out.push(ix[i]);
+        out.push(o[ix[i]]);
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5list_lookup_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out[i] = o[ix[i]];
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5hash_lookup_slice = function(o, ix, want) {
+    var out = [];
+    for (var i=0, l=ix.length; i<l; ++i) {
+        out.push(ix[i]);
+        out.push(o[ix[i]]);
+    }
+    if (want) { return out }
+    return out.length ? out[out.length-1] : null;
+}
+
+var p5str_inc = function(s) {
+    if (s.length < 2) {
+        if ((s >= "0" && s <= "8") || (s >= "A" && s <= "Y") || (s >= "a" && s <= "y")) {
+            return String.fromCharCode(s.charCodeAt(0) + 1);
+        }
+        if (s == "9") {
+            return "10";
+        }
+        if (s == "Z") {
+            return "AA";
+        }
+        if (s == "z") {
+            return "aa";
+        }
+        return "1";
+    }
+    var c0 = s.substr(0, 1);
+    if (c0 >= "0" && c0 <= "9") {
+        return p5str(p5num(s)+1);
+    }
+    var c = p5str_inc(s.substr(s.length-1, 1));
+    if (c.length == 1) {
+        return s.substr(0, s.length-1) + c;
+    }
+    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+};
+
+var p5range_state = {};
+var p5range = function(a, b, p5want, id, three_dots) {
+    if (p5want) {
+        // list context
+        var tmp = [];
+        if (typeof a === "number" || typeof b === "number") {
+            a = p5num(a);
+            b = p5num(b);
+            while (a <= b) {
+                tmp.push(a);
+                a++;
+            }
+        }
+        else {
+            a = p5str(a);
+            b = p5str(b);
+            var c = a.substr(0, 1);
+            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {
+                if (a == "+") {
+                    return [a]
+                }
+                a = a.substr(1)
+            }
+            else if ( c == ' . chr(39) . '-' . chr(39) . ' ) {
+                if (a == "-") {
+                    return [a]
+                }
+                return p5range(p5num(a), b, p5want, id, three_dots)
+            }
+            c = b.substr(0, 1);
+            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {
+                b = b.substr(1)
+            }
+            while (  (a.length < b.length)
+                  || (a.length == b.length && a <= b) ) {
+                tmp.push(a);
+                a = p5incr_(a);
+            }
+        }
+        return tmp;
+    }
+    // flip-flop operator
+    var v;
+    if (p5range_state[id]) {
+        v = ++p5range_state[id];
+        if (p5bool(b)) {
+            p5range_state[id] = 0;
+            v = v + "E0";
+        }
+        return v;
+    }
+    else {
+        p5range_state[id] = 0;
+        if (p5bool(a)) {
+            p5range_state[id]++;
+            v = p5range_state[id];
+        }
+        if (v && !three_dots && p5bool(b)) {
+            p5range_state[id] = 0;
+            v = v + "E0";
+        }
+        return v;
+    }
+};
+
+var p5negative = function(o) {
+    if (o == null) {
+        return ' . chr(39) . '-0' . chr(39) . ';
+    }
+    if (typeof o === "object" && (o instanceof Array)) {
+        return -(o.length);
+    }
+    if (typeof o !== "number") {
+        var s = p5str(o);
+        var c = s.substr(0, 1);
+        if ( c == ' . chr(39) . '+' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '-' . chr(39) . ' + s }
+        if ( c == ' . chr(39) . '-' . chr(39) . ' ) { s = s.substr(1); return ' . chr(39) . '+' . chr(39) . ' + s }
+        var s1 = parseFloat(s.trim());
+        if ( isNaN(s1) ) {
+            if ( c.length && !c.match(/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/) ) {
+                if ( s.trim().substr(0,1) == "-" ) { return 0 };
+                return ' . chr(39) . '-0' . chr(39) . ';
+            };
+            return ' . chr(39) . '-' . chr(39) . ' + s
+        };
+        return -s1;
+    }
+    return -o;
+};
+
+var p5qr = function(search, modifier) {
+    // TODO - "Regex" stringification
+    var re = new RegExp(search, modifier);
+    return CORE.bless([(new p5ScalarRef(re)), ' . chr(39) . 'Regex' . chr(39) . ']);
+};
+
+var p5m = function(s, search, modifier, want) {
+    // TODO - captures
+    var re;
+    if (search.hasOwnProperty(' . chr(39) . '_scalar_' . chr(39) . ')) {
+        // search is a Regex object
+        re = search._scalar_;
+    }
+    else {
+        re = new RegExp(search, modifier);
+    }
+
+    p5_regex_capture = [];
+    var res = [];
+    var myArray;
+    while ((myArray = re.exec(s)) !== null) {
+        var m = myArray.shift();
+        if (myArray.length) {
+            res = res.concat(myArray);
+            p5_regex_capture = p5_regex_capture.concat(myArray);
+        }
+        else {
+            res.push(m);
+        }
+        if (re.lastIndex == 0) {
+            return (want ? res : res.length)
+        }
+    }
+    return (want ? res : res.length)
+};
+
+var p5s = function(s, search, fun_replace, modifier, want) {
+    // TODO - captures
+    var count = null;
+    var re;
+    if (search.hasOwnProperty(' . chr(39) . '_scalar_' . chr(39) . ')) {
+        // search is a Regex object
+        re = search._scalar_;
+    }
+    else {
+        re = new RegExp(search, modifier);
+    }
+
+    p5_regex_capture = [];
+    var res = [];
+    var myArray;
+    var last_index = 0;
+    while ((myArray = re.exec(s)) !== null) {
+        var m = myArray.shift();
+        p5_regex_capture = [].concat(myArray);
+        if (myArray.index > last_index) {
+            res.push(s.substr(last_index, myArray.index - last_index));
+        }
+        res.push(fun_replace());
+        last_index = re.lastIndex;
+        if (last_index == 0) {
+            count = 1;
+            last_index = myArray.index + m.length;
+            if (s.length > last_index) {
+                res.push(s.substr(last_index, s.length - last_index));
+            }
+            return [res.join(' . chr(39) . chr(39) . '), count]
+        }
+        count++;
+    }
+    if (s.length > last_index) {
+        res.push(s.substr(last_index, s.length - last_index));
+    }
+    return [res.join(' . chr(39) . chr(39) . '), count]
+};
+
+var p5tr = function(s, search, replace, modifier, want) {
+    var count = 0;
+    // TODO - expand character lists in spec
+    // TODO - modifiers
+    search = search.split("");
+    replace = replace.split("");
+    while (search.length > replace.length) {
+        replace.push(replace[replace.length-1]);
+    }
+    var tr = {};
+    for(var i = 0; i < search.length; i++) {
+        tr[search[i]] = replace[i];
+    }
+    var res = s.split("");
+    for(var i = 0; i < res.length; i++) {
+        if (tr.hasOwnProperty(res[i])) {
+            res[i] = tr[res[i]];
+            count++;
+        }
+    }
+    return [res.join(' . chr(39) . chr(39) . '), count]
+};
+
+var p5chop = function(s) {
+    // TODO - hash
+
+    if (s instanceof Array) {
+        // perl5 array
+        var count = 0;
+        var res;
+        for (var j = 0; j < s.length; j++) {
+            res = p5chop(p5str(s[j]));
+            count = res[0];
+            s[j] = res[1];
+        }
+        return [count, s];
+    }
+
+    s = p5str(s);
+    return [s.substr(-1,1), s.substr(0,s.length-1)]
+};
+
+var p5chomp = function(s) {
+    // TODO - hash
+    // TODO - special cases of $/ - empty string, reference
+
+    if (s instanceof Array) {
+        // perl5 array
+        var count = 0;
+        var res;
+        for (var j = 0; j < s.length; j++) {
+            res = p5chomp(p5str(s[j]));
+            count = count + res[0];
+            s[j] = res[1];
+        }
+        return [count, s];
+    }
+
+    s = p5str(s);
+    var sep = p5pkg["main"]["v_/"];  // $/
+    var c = s.substr(-sep.length);
+    if (c == sep) {
+        return [c.length, s.substr(0,s.length-sep.length)]
+    }
+    else {
+        return [0, s]
+    }
+};
+
+var p5for = function(namespace, var_name, func, args, cont, label) {
+    var local_idx = p5LOCAL.length;
+    var v_old = namespace[var_name];
+    var _redo;
+    p5LOCAL.push(function(){ namespace[var_name] = v_old });
+    for(var i = 0; i < args.length; i++) {
+        namespace[var_name] = args[i];
+        do {
+            _redo = false;
+            try {
+                func()
+            }
+            catch(err) {
+                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }
+                else {
+                    throw(err)
+                }
+            }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
+    }
+    p5cleanup_local(local_idx, null);
+};
+
+var p5for_lex = function(set_var, func, args, cont, label) {
+    var local_idx = p5LOCAL.length;
+    var _redo;
+    for(var i = 0; i < args.length; i++) {
+        set_var(args[i]);
+        do {
+            _redo = false;
+            try {
+                func()
+            }
+            catch(err) {
+                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
+    }
+    p5cleanup_local(local_idx, null);
+};
+
+var p5block = function(set_var, func, args, cont, label) {
+    var local_idx = p5LOCAL.length;
+    var _redo;
+    for(var i = 0; i < args.length; i++) {
+        set_var(args[i]);
+        do {
+            _redo = false;
+            try {
+                return func()
+            }
+            catch(err) {
+                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+            if (cont) {
+                try {
+                    if (!_redo) { cont() }
+                }
+                catch(err) {
+                    if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                        if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                            p5cleanup_local(local_idx, null);
+                            return
+                        }
+                        else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                        else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                    }            
+                    else {
+                        throw(err)
+                    }
+                }
+            }
+        } while (_redo);
+    }
+    p5cleanup_local(local_idx, null);
+};
+
+
+var p5while = function(func, cond, cont, label, redo) {
+    var local_idx = p5LOCAL.length;
+    while (redo || p5bool(cond())) {
+        redo = false;
+        try {
+            func()
+        }
+        catch(err) {
+            if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                    p5cleanup_local(local_idx, null);
+                    return
+                }
+                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { redo = true }
+                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+            }            
+            else {
+                throw(err)
+            }
+        }
+        if (cont) {
+            try {
+                if (!redo) { cont() }
+            }
+            catch(err) {
+                if (err instanceof p5_error && (err.v == label || err.v == ' . chr(39) . chr(39) . ')) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') {
+                        p5cleanup_local(local_idx, null);
+                        return
+                    }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+        }
+    }
+    p5cleanup_local(local_idx, null);
+};
+
+var p5map = function(namespace, func, args) {
+    var v_old = p5pkg["main"]["v__"];
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        p5pkg["main"]["v__"] = args[i];
+        var o = p5list_to_a([func(1)]);
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
+    }
+    p5pkg["main"]["v__"] = v_old;
+    return out;
+};
+
+var p5grep = function(namespace, func, args) {
+    var v_old = p5pkg["main"]["v__"];
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        p5pkg["main"]["v__"] = args[i];
+        if (p5bool(func(0))) {
+            out.push(args[i])
+        }
+    }
+    p5pkg["main"]["v__"] = v_old;
+    return out;
+};
+
+var p5sort = function(namespace, func, args) {
+    var a_old = namespace["v_a"];
+    var b_old = namespace["v_b"];
+    var out = 
+        func == null
+        ? args.sort()
+        : args.sort(
+            function(a, b) {
+                namespace["v_a"] = a;
+                namespace["v_b"] = b;
+                return func(0);
+            }
+        );
+    namespace["v_a"] = a_old;
+    namespace["v_b"] = b_old;
+    return out;
+};
+
+'
     }
     1
 }
@@ -11979,7 +13456,360 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript2::Array;
     sub Perlito5::JavaScript2::Array::emit_javascript2 {
-        return '//' . chr(10) . '// lib/Perlito5/JavaScript2/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-JavaScript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . '//-------- Array ' . chr(10) . chr(10) . 'Object.defineProperty( Array.prototype, "p5aget", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        return this[i] ' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5aset", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i, v) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this[i] = v;' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Array.prototype, "p5incr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5postincr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5incr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5decr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return this[i];' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5postdecr", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        var v = this[i];' . chr(10) . '        this[i] = p5decr_(this[i]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'Object.defineProperty( Array.prototype, "p5aget_array", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        if (this[i] == null) { this[i] = new p5ArrayRef([]) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5aget_hash", {' . chr(10) . '    enumerable : false,' . chr(10) . '    value : function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        if (this[i] == null) { this[i] = new p5HashRef({}) }' . chr(10) . '        return this[i]' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5unshift", {' . chr(10) . '    enumerable : false,' . chr(10) . '    configurable : true,' . chr(10) . '    value : function (args) { ' . chr(10) . '        for(var i = args.length-1; i >= 0; i--) {' . chr(10) . '            this.unshift(args[i]);' . chr(10) . '        }' . chr(10) . '        return this.length; ' . chr(10) . '    }' . chr(10) . '});' . chr(10) . 'Object.defineProperty( Array.prototype, "p5push", {' . chr(10) . '    enumerable : false,' . chr(10) . '    configurable : true,' . chr(10) . '    value : function (args) { ' . chr(10) . '        for(var i = 0; i < args.length; i++) {' . chr(10) . '            this.push(args[i]);' . chr(10) . '        }' . chr(10) . '        return this.length; ' . chr(10) . '    }' . chr(10) . '});' . chr(10) . chr(10) . 'var p5tie_array = function(v, List__) {' . chr(10) . '    var pkg_name = p5str(List__.shift());' . chr(10) . chr(10) . '    var res = p5call(pkg_name, ' . chr(39) . 'TIEARRAY' . chr(39) . ', List__, null);' . chr(10) . '    ' . chr(10) . '    // TODO' . chr(10) . '    ' . chr(10) . '    //  A class implementing an ordinary array should have the following methods:' . chr(10) . '    //      TIEARRAY pkg_name, LIST' . chr(10) . '    //      FETCH this, key' . chr(10) . '    //      STORE this, key, value' . chr(10) . '    //      FETCHSIZE this' . chr(10) . '    //      STORESIZE this, count' . chr(10) . '    //      CLEAR this' . chr(10) . '    //      PUSH this, LIST' . chr(10) . '    //      POP this' . chr(10) . '    //      SHIFT this' . chr(10) . '    //      UNSHIFT this, LIST' . chr(10) . '    //      SPLICE this, offset, length, LIST' . chr(10) . '    //      EXTEND this, count' . chr(10) . '    //      DESTROY this' . chr(10) . '    //      UNTIE this' . chr(10) . '    ' . chr(10) . '    Object.defineProperty( v, "p5aget", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            return p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5aset", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i, value) {' . chr(10) . '            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5incr", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5incr_(p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]));' . chr(10) . '            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5postincr", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);' . chr(10) . '            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, p5incr_(value)]);' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5decr", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5decr_(p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]));' . chr(10) . '            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5postdecr", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);' . chr(10) . '            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, p5decr_(value)]);' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    ' . chr(10) . '    Object.defineProperty( v, "p5aget_array", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);' . chr(10) . '            if (value == null) {' . chr(10) . '                value = new p5ArrayRef([]);' . chr(10) . '                p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);' . chr(10) . '            }' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5aget_hash", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) {' . chr(10) . '            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);' . chr(10) . '            if (value == null) {' . chr(10) . '                value = new p5HashRef({});' . chr(10) . '                p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);' . chr(10) . '            }' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5untie", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (i) { return p5call(res, ' . chr(39) . 'UNTIE' . chr(39) . ', []) }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "shift", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function () { return p5call(res, ' . chr(39) . 'SHIFT' . chr(39) . ', []) }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "pop", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function () { return p5call(res, ' . chr(39) . 'POP' . chr(39) . ', []) }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5unshift", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (args) { ' . chr(10) . '            for(var i = args.length-1; i >= 0; i--) {' . chr(10) . '                p5call(res, ' . chr(39) . 'UNSHIFT' . chr(39) . ', [args[i]]);' . chr(10) . '            }' . chr(10) . '            return p5call(res, ' . chr(39) . 'FETCHSIZE' . chr(39) . ', []); ' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . '    Object.defineProperty( v, "p5push", {' . chr(10) . '        enumerable : false,' . chr(10) . '        configurable : true,' . chr(10) . '        value : function (args) { ' . chr(10) . '            for(var i = 0; i < args.length; i++) {' . chr(10) . '                p5call(res, ' . chr(39) . 'PUSH' . chr(39) . ', [args[i]]);' . chr(10) . '            }' . chr(10) . '            return p5call(res, ' . chr(39) . 'FETCHSIZE' . chr(39) . ', []); ' . chr(10) . '        }' . chr(10) . '    });' . chr(10) . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'var p5untie_array = function(v) {' . chr(10) . '    if (v.hasOwnProperty(' . chr(39) . 'p5untie' . chr(39) . ')) {' . chr(10) . '        var res = v.p5untie();  // call UNTIE' . chr(10) . '        delete v.p5aget;' . chr(10) . '        delete v.p5aset;' . chr(10) . '        delete v.p5incr;' . chr(10) . '        delete v.p5postincr;' . chr(10) . '        delete v.p5decr;' . chr(10) . '        delete v.p5postdecr;' . chr(10) . '        delete v.p5aget_array;' . chr(10) . '        delete v.p5aget_hash;' . chr(10) . '        delete v.p5untie;' . chr(10) . '        delete v.shift;' . chr(10) . '        delete v.pop;' . chr(10) . '        delete v.p5unshift;' . chr(10) . '        delete v.p5push;' . chr(10) . '        return res;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . chr(10) . 'function p5ArrayOfAlias(o) {' . chr(10) . chr(10) . '    // this is the structure that represents @_' . chr(10) . '    // _array = [ ref, index,' . chr(10) . '    //            ref, index,' . chr(10) . '    //            ...' . chr(10) . '    //          ]' . chr(10) . chr(10) . '    // TODO - autovivify array cells' . chr(10) . chr(10) . '    this._array_ = o;' . chr(10) . chr(10) . '    this.p5aget = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]]; ' . chr(10) . '    }' . chr(10) . '    this.p5aset = function (i, v) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this._array_[i+i][this._array_[i+i+1]] = v;' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]]' . chr(10) . '    }' . chr(10) . '    this.p5incr = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]];' . chr(10) . '    }' . chr(10) . '    this.p5postincr = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        var v = this._array_[i+i][this._array_[i+i+1]];' . chr(10) . '        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    this.p5decr = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]];' . chr(10) . '    }' . chr(10) . '    this.p5postdecr = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        var v = this._array_[i+i][this._array_[i+i+1]];' . chr(10) . '        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    this.p5aget_array = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        if (this._array_[i+i][this._array_[i+i+1]] == null) {' . chr(10) . '            this._array_[i+i][this._array_[i+i+1]] = new p5ArrayRef([])' . chr(10) . '        }' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]]' . chr(10) . '    }' . chr(10) . '    this.p5aget_hash = function (i) {' . chr(10) . '        if (i < 0) { i =  this.length + i };' . chr(10) . '        if (this._array_[i+i][this._array_[i+i+1]] == null) {' . chr(10) . '            this._array_[i+i][this._array_[i+i+1]] = new p5HashRef({})' . chr(10) . '        }' . chr(10) . '        return this._array_[i+i][this._array_[i+i+1]]' . chr(10) . '    }' . chr(10) . '    this.p5unshift = function (args) { ' . chr(10) . '        for(var i = args.length-1; i >= 0; i--) {' . chr(10) . '            this.unshift(0);' . chr(10) . '            this.unshift([args[i]]);' . chr(10) . '        }' . chr(10) . '        return this._array_.length / 2; ' . chr(10) . '    }' . chr(10) . '    this.p5push = function (args) { ' . chr(10) . '        for(var i = 0; i < args.length; i++) {' . chr(10) . '            this.push([args[i]]);' . chr(10) . '            this.push(0);' . chr(10) . '        }' . chr(10) . '        return this._array_.length / 2; ' . chr(10) . '    }' . chr(10) . '    this.shift = function () { ' . chr(10) . '        var v0 = this._array_.shift();' . chr(10) . '        return v0[this._array_.shift()];' . chr(10) . '    }' . chr(10) . '    this.pop = function () { ' . chr(10) . '        var v1 = this._array_.pop();' . chr(10) . '        var v0 = this._array_.pop();' . chr(10) . '        return v0[v1];' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . chr(10)
+        return '//
+// lib/Perlito5/JavaScript2/Runtime.js
+//
+// Runtime for "Perlito" Perl5-in-JavaScript2
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+//-------- Array 
+
+Object.defineProperty( Array.prototype, "p5aget", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        return this[i] 
+    }
+});
+Object.defineProperty( Array.prototype, "p5aset", {
+    enumerable : false,
+    value : function (i, v) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = v;
+        return this[i]
+    }
+});
+
+Object.defineProperty( Array.prototype, "p5incr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = p5incr_(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Array.prototype, "p5postincr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this[i];
+        this[i] = p5incr_(this[i]);
+        return v;
+    }
+});
+Object.defineProperty( Array.prototype, "p5decr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        this[i] = p5decr_(this[i]);
+        return this[i];
+    }
+});
+Object.defineProperty( Array.prototype, "p5postdecr", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this[i];
+        this[i] = p5decr_(this[i]);
+        return v;
+    }
+});
+
+Object.defineProperty( Array.prototype, "p5aget_array", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this[i] == null) { this[i] = new p5ArrayRef([]) }
+        return this[i]
+    }
+});
+Object.defineProperty( Array.prototype, "p5aget_hash", {
+    enumerable : false,
+    value : function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this[i] == null) { this[i] = new p5HashRef({}) }
+        return this[i]
+    }
+});
+Object.defineProperty( Array.prototype, "p5unshift", {
+    enumerable : false,
+    configurable : true,
+    value : function (args) { 
+        for(var i = args.length-1; i >= 0; i--) {
+            this.unshift(args[i]);
+        }
+        return this.length; 
+    }
+});
+Object.defineProperty( Array.prototype, "p5push", {
+    enumerable : false,
+    configurable : true,
+    value : function (args) { 
+        for(var i = 0; i < args.length; i++) {
+            this.push(args[i]);
+        }
+        return this.length; 
+    }
+});
+
+var p5tie_array = function(v, List__) {
+    var pkg_name = p5str(List__.shift());
+
+    var res = p5call(pkg_name, ' . chr(39) . 'TIEARRAY' . chr(39) . ', List__, null);
+    
+    // TODO
+    
+    //  A class implementing an ordinary array should have the following methods:
+    //      TIEARRAY pkg_name, LIST
+    //      FETCH this, key
+    //      STORE this, key, value
+    //      FETCHSIZE this
+    //      STORESIZE this, count
+    //      CLEAR this
+    //      PUSH this, LIST
+    //      POP this
+    //      SHIFT this
+    //      UNSHIFT this, LIST
+    //      SPLICE this, offset, length, LIST
+    //      EXTEND this, count
+    //      DESTROY this
+    //      UNTIE this
+    
+    Object.defineProperty( v, "p5aget", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            return p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);
+        }
+    });
+    Object.defineProperty( v, "p5aset", {
+        enumerable : false,
+        configurable : true,
+        value : function (i, value) {
+            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5incr", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5incr_(p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]));
+            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5postincr", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);
+            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, p5incr_(value)]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5decr", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5decr_(p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]));
+            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5postdecr", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);
+            p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, p5decr_(value)]);
+            return value;
+        }
+    });
+    
+    Object.defineProperty( v, "p5aget_array", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);
+            if (value == null) {
+                value = new p5ArrayRef([]);
+                p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);
+            }
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5aget_hash", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) {
+            var value = p5call(res, ' . chr(39) . 'FETCH' . chr(39) . ', [i]);
+            if (value == null) {
+                value = new p5HashRef({});
+                p5call(res, ' . chr(39) . 'STORE' . chr(39) . ', [i, value]);
+            }
+            return value;
+        }
+    });
+    Object.defineProperty( v, "p5untie", {
+        enumerable : false,
+        configurable : true,
+        value : function (i) { return p5call(res, ' . chr(39) . 'UNTIE' . chr(39) . ', []) }
+    });
+    Object.defineProperty( v, "shift", {
+        enumerable : false,
+        configurable : true,
+        value : function () { return p5call(res, ' . chr(39) . 'SHIFT' . chr(39) . ', []) }
+    });
+    Object.defineProperty( v, "pop", {
+        enumerable : false,
+        configurable : true,
+        value : function () { return p5call(res, ' . chr(39) . 'POP' . chr(39) . ', []) }
+    });
+    Object.defineProperty( v, "p5unshift", {
+        enumerable : false,
+        configurable : true,
+        value : function (args) { 
+            for(var i = args.length-1; i >= 0; i--) {
+                p5call(res, ' . chr(39) . 'UNSHIFT' . chr(39) . ', [args[i]]);
+            }
+            return p5call(res, ' . chr(39) . 'FETCHSIZE' . chr(39) . ', []); 
+        }
+    });
+    Object.defineProperty( v, "p5push", {
+        enumerable : false,
+        configurable : true,
+        value : function (args) { 
+            for(var i = 0; i < args.length; i++) {
+                p5call(res, ' . chr(39) . 'PUSH' . chr(39) . ', [args[i]]);
+            }
+            return p5call(res, ' . chr(39) . 'FETCHSIZE' . chr(39) . ', []); 
+        }
+    });
+
+    return res;
+};
+
+var p5untie_array = function(v) {
+    if (v.hasOwnProperty(' . chr(39) . 'p5untie' . chr(39) . ')) {
+        var res = v.p5untie();  // call UNTIE
+        delete v.p5aget;
+        delete v.p5aset;
+        delete v.p5incr;
+        delete v.p5postincr;
+        delete v.p5decr;
+        delete v.p5postdecr;
+        delete v.p5aget_array;
+        delete v.p5aget_hash;
+        delete v.p5untie;
+        delete v.shift;
+        delete v.pop;
+        delete v.p5unshift;
+        delete v.p5push;
+        return res;
+    }
+    else {
+        return null;
+    }
+};
+
+
+function p5ArrayOfAlias(o) {
+
+    // this is the structure that represents @_
+    // _array = [ ref, index,
+    //            ref, index,
+    //            ...
+    //          ]
+
+    // TODO - autovivify array cells
+
+    this._array_ = o;
+
+    this.p5aget = function (i) {
+        if (i < 0) { i =  this.length + i };
+        return this._array_[i+i][this._array_[i+i+1]]; 
+    }
+    this.p5aset = function (i, v) {
+        if (i < 0) { i =  this.length + i };
+        this._array_[i+i][this._array_[i+i+1]] = v;
+        return this._array_[i+i][this._array_[i+i+1]]
+    }
+    this.p5incr = function (i) {
+        if (i < 0) { i =  this.length + i };
+        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);
+        return this._array_[i+i][this._array_[i+i+1]];
+    }
+    this.p5postincr = function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this._array_[i+i][this._array_[i+i+1]];
+        this._array_[i+i][this._array_[i+i+1]] = p5incr_(this._array_[i+i][this._array_[i+i+1]]);
+        return v;
+    }
+    this.p5decr = function (i) {
+        if (i < 0) { i =  this.length + i };
+        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);
+        return this._array_[i+i][this._array_[i+i+1]];
+    }
+    this.p5postdecr = function (i) {
+        if (i < 0) { i =  this.length + i };
+        var v = this._array_[i+i][this._array_[i+i+1]];
+        this._array_[i+i][this._array_[i+i+1]] = p5decr_(this._array_[i+i][this._array_[i+i+1]]);
+        return v;
+    }
+    this.p5aget_array = function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this._array_[i+i][this._array_[i+i+1]] == null) {
+            this._array_[i+i][this._array_[i+i+1]] = new p5ArrayRef([])
+        }
+        return this._array_[i+i][this._array_[i+i+1]]
+    }
+    this.p5aget_hash = function (i) {
+        if (i < 0) { i =  this.length + i };
+        if (this._array_[i+i][this._array_[i+i+1]] == null) {
+            this._array_[i+i][this._array_[i+i+1]] = new p5HashRef({})
+        }
+        return this._array_[i+i][this._array_[i+i+1]]
+    }
+    this.p5unshift = function (args) { 
+        for(var i = args.length-1; i >= 0; i--) {
+            this.unshift(0);
+            this.unshift([args[i]]);
+        }
+        return this._array_.length / 2; 
+    }
+    this.p5push = function (args) { 
+        for(var i = 0; i < args.length; i++) {
+            this.push([args[i]]);
+            this.push(0);
+        }
+        return this._array_.length / 2; 
+    }
+    this.shift = function () { 
+        var v0 = this._array_.shift();
+        return v0[this._array_.shift()];
+    }
+    this.pop = function () { 
+        var v1 = this._array_.pop();
+        var v0 = this._array_.pop();
+        return v0[v1];
+    }
+}
+
+
+'
     }
     1
 }
@@ -11988,7 +13818,523 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript2::CORE;
     sub Perlito5::JavaScript2::CORE::emit_javascript2 {
-        return '//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/JavaScript2/CORE.js' . chr(10) . '//' . chr(10) . '// CORE functions for "Perlito" Perl5-in-JavaScript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var CORE = p5pkg.CORE;' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (isNode) {' . chr(10) . '    try {' . chr(10) . '        var sleep = require("sleep");' . chr(10) . '        CORE.sleep = function(List__) {' . chr(10) . '            var n = p5num(List__[0]) || 1;' . chr(10) . '            sleep.usleep(n * 1000000);  // sleep for n seconds (1 second is 1000000 microseconds)' . chr(10) . '            return n;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    catch (err) {' . chr(10) . '        CORE.sleep = function(List__) {' . chr(10) . '            CORE.die("sleep() function failed. Maybe you need ' . chr(39) . 'npm install sleep' . chr(39) . '?' . chr(92) . 'n" + err);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'if (!CORE.sleep) {' . chr(10) . '    CORE.sleep = function(List__) {' . chr(10) . '        CORE.die("sleep() not supported for this platform");' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'if (isNode) {' . chr(10) . '    try {' . chr(10) . '        var crypt = require("crypt3");' . chr(10) . '        CORE.crypt = function(List__) {' . chr(10) . '            var text = p5str(List__[0]);' . chr(10) . '            var salt = p5str(List__[1]);' . chr(10) . '            while(salt.length < 2) {' . chr(10) . '                salt += "A";' . chr(10) . '            }' . chr(10) . '            return crypt(text, salt);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    catch (err) {' . chr(10) . '        CORE.crypt = function(List__) {' . chr(10) . '            CORE.die("crypt() function failed. Maybe you need ' . chr(39) . 'npm install crypt3' . chr(39) . '?' . chr(92) . 'n" + err);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'if (!CORE.crypt) {' . chr(10) . '    CORE.crypt = function(List__) {' . chr(10) . '        CORE.die("crypt() not supported for this platform");' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'CORE.time = function(List__) {' . chr(10) . '    return CORE.int([Date.now() / 1000]);' . chr(10) . '}' . chr(10) . 'var _fmt_date = function(date) {' . chr(10) . '    return [' . chr(39) . 'Sun' . chr(39) . ',' . chr(39) . 'Mon' . chr(39) . ',' . chr(39) . 'Tue' . chr(39) . ',' . chr(39) . 'Wed' . chr(39) . ',' . chr(39) . 'Thu' . chr(39) . ',' . chr(39) . 'Fri' . chr(39) . ',' . chr(39) . 'Sat' . chr(39) . '][date.getDay()] + ' . chr(39) . ' ' . chr(39) . ' +' . chr(10) . '        [' . chr(39) . 'Jan' . chr(39) . ',' . chr(39) . 'Feb' . chr(39) . ',' . chr(39) . 'Mar' . chr(39) . ',' . chr(39) . 'Apr' . chr(39) . ',' . chr(39) . 'May' . chr(39) . ',' . chr(39) . 'Jun' . chr(39) . ',' . chr(39) . 'Jul' . chr(39) . ',' . chr(39) . 'Aug' . chr(39) . ',' . chr(39) . 'Sep' . chr(39) . ',' . chr(39) . 'Oct' . chr(39) . ',' . chr(39) . 'Nov' . chr(39) . ',' . chr(39) . 'Dec' . chr(39) . '][date.getMonth()] + ' . chr(39) . ' ' . chr(39) . ' +' . chr(10) . '        date.getDate() + ' . chr(39) . ' ' . chr(39) . ' + ' . chr(10) . '        CORE.sprintf([ "%02d:%02d:%02d ", date.getHours(), date.getMinutes(), date.getSeconds() ]) +' . chr(10) . '        date.getFullYear();' . chr(10) . '}' . chr(10) . 'var _list_date = function(date) {' . chr(10) . '    var year_start = new Date(date);' . chr(10) . '    year_start.setMonth(0, 1);' . chr(10) . '    var year_day = Math.round((date-year_start)/8.64e7);' . chr(10) . chr(10) . '    var isdst = 0;  // not implemented' . chr(10) . chr(10) . '    return [date.getSeconds(),date.getMinutes(),date.getHours(),date.getDate(),' . chr(10) . '        date.getMonth(),date.getFullYear()-1900,date.getDay(),' . chr(10) . '        year_day,' . chr(10) . '        isdst' . chr(10) . '    ];' . chr(10) . '}' . chr(10) . 'CORE.localtime = function(List__, want) {' . chr(10) . '    var n = List__.length ? p5num(List__[0]) : CORE.time() ;' . chr(10) . '    var date = new Date(n*1000);' . chr(10) . '    if (!want) {' . chr(10) . '        return _fmt_date(date);' . chr(10) . '    }' . chr(10) . '    return _list_date(date);' . chr(10) . '}' . chr(10) . 'CORE.gmtime = function(List__, want) {' . chr(10) . '    var n = List__.length ? p5num(List__[0]) : CORE.time() ;' . chr(10) . '    var ofs = new Date().getTimezoneOffset() * 60;' . chr(10) . '    var date = new Date((n + ofs)*1000);' . chr(10) . '    if (!want) {' . chr(10) . '        return _fmt_date(date);' . chr(10) . '    }' . chr(10) . '    return _list_date(date);' . chr(10) . '}' . chr(10) . chr(10) . 'CORE.bless = function(List__) {' . chr(10) . '    var o        = List__[0];' . chr(10) . '    var pkg_name = List__[1];' . chr(10) . '    if (typeof pkg_name === "object") {' . chr(10) . '        // bless {}, Class' . chr(10) . '        o._class_ = pkg_name;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        p5make_package(pkg_name);' . chr(10) . '    }' . chr(10) . '    o._class_ = p5pkg[pkg_name];' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.caller = function(List__, want) {' . chr(10) . '    if (p5pkg["Perlito5"].v_CALLER && p5pkg["Perlito5"].v_CALLER._array_ && p5pkg["Perlito5"].v_CALLER._array_.p5aget(0) ) {' . chr(10) . '        // TODO' . chr(10) . '        return p5pkg["Perlito5"].v_CALLER._array_.p5aget(0)._array_' . chr(10) . '    }' . chr(10) . '    return p5context([], want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.chr = function(List__) {' . chr(10) . '    var v = p5num(List__[0]);' . chr(10) . '    return String.fromCharCode(v >= 0 ? v : 65533);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ord = function(List__) {' . chr(10) . '    return p5str(List__[0]).charCodeAt(0);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.hex = function(List__) {' . chr(10) . '    var v = List__[0];' . chr(10) . chr(10) . '    for(var i = 0; i < v.length; i++) {' . chr(10) . '        if (v.charCodeAt(i) > 255) {' . chr(10) . '            CORE.die(["Wide character in hex"]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . chr(10) . '    var b1 = v.substr(0,1);' . chr(10) . '    var b2 = v.substr(0,2);' . chr(10) . '    if (b1 == "x" || b1 == "X" || b2 == "0x" || b2 == "0X") {' . chr(10) . '        return CORE.oct(List__);' . chr(10) . '    }' . chr(10) . '    v = "0x" + v;' . chr(10) . '    return CORE.oct([v]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.oct = function(List__) {' . chr(10) . '    var v = List__[0];' . chr(10) . '    v = v.trim();' . chr(10) . chr(10) . '    for(var i = 0; i < v.length; i++) {' . chr(10) . '        if (v.charCodeAt(i) > 255) {' . chr(10) . '            CORE.die(["Wide character in oct"]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . chr(10) . '    var b = v.substr(0,1);' . chr(10) . '    if (b == "b" || b == "B" || b == "x" || b == "X") {' . chr(10) . '        v = "0" + v;' . chr(10) . '    }' . chr(10) . '    b = v.substr(0,2);' . chr(10) . chr(10) . '    for(var i = 2; i < v.length; i++) {' . chr(10) . '        if (v.substr(i,2) == "__") {' . chr(10) . '            v = v.substr(0, i);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . chr(10) . '    var re = new RegExp(' . chr(39) . '_' . chr(39) . ', ' . chr(39) . 'g' . chr(39) . ');' . chr(10) . '    v = v.replace(re, "");' . chr(10) . '    var result;' . chr(10) . chr(10) . '    if (b == "0b" || b == "0B") {' . chr(10) . '        for(var i = 2; i < v.length; i++) {' . chr(10) . '            var c = v.substr(i,1);' . chr(10) . '            if (c >= "0" && c <= "1") {}' . chr(10) . '            else {' . chr(10) . '                v = v.substr(0, i);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (v.length == 2) { return 0 }' . chr(10) . '        result = parseInt(v.substr(2), 2);' . chr(10) . '    }' . chr(10) . '    else if (b == "0x" || b == "0X") {' . chr(10) . '        for(var i = 2; i < v.length; i++) {' . chr(10) . '            var c = v.substr(i,1);' . chr(10) . '            if (c >= "0" && c <= "9" || c >= "A" && c <= "F" || c >= "a" && c <= "f") {}' . chr(10) . '            else {' . chr(10) . '                v = v.substr(0, i);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (v.length == 2) { return 0 }' . chr(10) . '        result = parseInt(v.substr(2), 16);' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        result = parseInt(v, 8);' . chr(10) . '    }' . chr(10) . '    return isNaN(result) ? 0 : result;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.abs   = function(List__) { return Math.abs(List__[0]) };' . chr(10) . 'CORE.exp   = function(List__) { return Math.exp(List__[0]) };' . chr(10) . 'CORE.log   = function(List__) { return Math.log(List__[0]) };' . chr(10) . 'CORE.cos   = function(List__) { return Math.cos(List__[0]) };' . chr(10) . 'CORE.sin   = function(List__) { return Math.sin(List__[0]) };' . chr(10) . 'CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };' . chr(10) . 'CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };' . chr(10) . 'CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };' . chr(10) . chr(10) . 'var p5rand = function(v) { return Math.random() * v };' . chr(10) . 'CORE.srand = function(List__) {' . chr(10) . '    if (List__.length > 0) {' . chr(10) . '        var v = p5num(List__[0]) || 1;' . chr(10) . '        p5rand = function() {' . chr(10) . '            v = Math.sin(v) * 10000;' . chr(10) . '            return v - Math.floor(v);' . chr(10) . '        };' . chr(10) . '        return List__[0];' . chr(10) . '    }' . chr(10) . '    return CORE.int(CORE.rand(100000));' . chr(10) . '};' . chr(10) . 'CORE.rand = function(List__) {' . chr(10) . '    var v = p5num(List__[0]) || 1;' . chr(10) . '    return p5rand(v);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };' . chr(10) . 'CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };' . chr(10) . 'CORE.fc      = function(List__) { return p5str(List__[0]).toUpperCase() };' . chr(10) . chr(10) . 'CORE.lcfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ucfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.quotemeta = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < s.length; i++) {' . chr(10) . '        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {' . chr(10) . '            out.push(String.fromCharCode(92));' . chr(10) . '        }' . chr(10) . '        out.push(s.substr(i, 1));' . chr(10) . '    }' . chr(10) . '    return out.join("");       ' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.substr = function(List__) {' . chr(10) . '    var expr        = List__[0];' . chr(10) . '    var offset      = List__[1];' . chr(10) . '    var length      = List__[2];' . chr(10) . '    var replacement = List__[3];' . chr(10) . '    if (length < 0) {' . chr(10) . '        var s = p5str(expr);' . chr(10) . '        length = s.length - offset + length;' . chr(10) . '    } ' . chr(10) . '    return p5str(expr).substr(offset, length);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.values = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return [];' . chr(10) . '        };' . chr(10) . '        if (typeof o.values === "function") {' . chr(10) . '            return o.values();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(o[i]);' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '    return CORE.keys(List__, p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.keys = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return [];' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return o.keys();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(i);' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        if (o == null) {' . chr(10) . '            return 0;' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return p5num(o.keys());' . chr(10) . '        }' . chr(10) . '        var out = 0;' . chr(10) . '        for (var i in o) {' . chr(10) . '            out++;' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.each = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.hasOwnProperty("_each_")) {' . chr(10) . '        return o._each_(p5want)' . chr(10) . '    }' . chr(10) . '    var keys = CORE.keys([o], 1);' . chr(10) . '    var i = 0;' . chr(10) . '    o._each_ = function () {' . chr(10) . '        if (i < keys.length) {' . chr(10) . '            i++;' . chr(10) . '            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];' . chr(10) . '        }' . chr(10) . '        i = 0;' . chr(10) . '        return p5want ? [] : null;' . chr(10) . '    };' . chr(10) . '    return o._each_(p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.reverse = function(List__, p5want) {' . chr(10) . '    var o = List__;' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return [];' . chr(10) . '        }' . chr(10) . '        return List__.reverse();' . chr(10) . '    }' . chr(10) . '    o = p5str(o);' . chr(10) . '    return o.split("").reverse().join("")' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.splice = function(List__, p5want) {' . chr(10) . '    var array  = List__.shift();' . chr(10) . '    // CORE.say([ array ]);' . chr(10) . '    var offset = p5num(List__.shift());' . chr(10) . '    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);' . chr(10) . chr(10) . '    if (limit < 0) {' . chr(10) . '        limit = array.length + limit - 1;' . chr(10) . '    }' . chr(10) . chr(10) . '    var list = [offset, limit];' . chr(10) . '    for(var i = 0; i < List__.length; i++) {' . chr(10) . '        list = p5list_to_a([ list, List__[i] ]);' . chr(10) . '    }' . chr(10) . chr(10) . '    var out = array.splice.apply(array, list);' . chr(10) . '    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);' . chr(10) . '    return p5want ? out : out.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.join = function(List__) {' . chr(10) . '    var s = List__.shift();' . chr(10) . '    var o = [];' . chr(10) . '    for (var i = 0; i < List__.length; i++) {' . chr(10) . '        o.push(p5str(List__[i]));' . chr(10) . '    }' . chr(10) . '    return o.join(s);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.index = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        return o.indexOf(s, p5num(List__[2]));' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . 'CORE.rindex = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        if (List__.length > 2) {' . chr(10) . '            var i = p5num(List__[2]);' . chr(10) . '            if (i < 0) {' . chr(10) . '                if (s.length == 0) {' . chr(10) . '                    return 0;' . chr(10) . '                }' . chr(10) . '                return -1;' . chr(10) . '            }' . chr(10) . '            return o.lastIndexOf(s, i);' . chr(10) . '        }' . chr(10) . '        return o.lastIndexOf(s);' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.length = function(List__) {' . chr(10) . '    return p5str(List__[0]).length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };' . chr(10) . 'CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };' . chr(10) . chr(10) . 'CORE.ref = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '        // blessed reference' . chr(10) . '        return o._class_._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o._ref_ === "string") {' . chr(10) . '        // un-blessed reference' . chr(10) . '        return o._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return "CODE";' . chr(10) . '    }' . chr(10) . '    return "";' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.split = function(List__, want) {' . chr(10) . '    var pattern = List__[0];' . chr(10) . '    var s       = p5str(List__[1]);' . chr(10) . '    var limit   = p5num(List__[2]);' . chr(10) . '    if (!want) {' . chr(10) . '        // scalar context' . chr(10) . '        return p5num(CORE.split(List__, 1));' . chr(10) . '    }' . chr(10) . '    if (limit == 0) {' . chr(10) . '        // strip trailing empty strings and undef' . chr(10) . '        var res = CORE.split([pattern, s, -1], 1);' . chr(10) . '        while (res.length && (res[res.length - 1] == ' . chr(39) . chr(39) . ' || typeof res[res.length - 1] == "undefined") ) {' . chr(10) . '            res.pop()' . chr(10) . '        }' . chr(10) . '        return res;' . chr(10) . '    }' . chr(10) . '    if (s == ' . chr(39) . chr(39) . ') {' . chr(10) . '        return []' . chr(10) . '    }' . chr(10) . '    // make sure pattern is a RegExp' . chr(10) . '    if (typeof pattern === "object" && (pattern instanceof RegExp)) {' . chr(10) . '        pattern = pattern.source;' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        pattern = p5str(pattern);' . chr(10) . '        if (pattern == " ") {' . chr(10) . '            // single space string is special' . chr(10) . '            pattern = "(?: |' . chr(92) . 't|' . chr(92) . 'n)+";' . chr(10) . '            s = s.replace(/^(?: |' . chr(92) . 't|' . chr(92) . 'n)+/, "");' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    // add "g", "m" modifiers' . chr(10) . '    var flags = "g";' . chr(10) . '    if (pattern.substr(0, 1) == "^" || pattern.substr(-1,1) == "$") {' . chr(10) . '        flags = flags + "m";' . chr(10) . '    }' . chr(10) . '    pattern = new RegExp(pattern, flags);' . chr(10) . '    var res = [];' . chr(10) . '    var pos = 0;' . chr(10) . '    var count = 0;' . chr(10) . '    while (1) {' . chr(10) . '        if (limit > 0 && limit <= (count + 1)) {' . chr(10) . '            res.push(s.substr(pos));' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        var m = pattern.exec(s);' . chr(10) . '        if (m === null) {' . chr(10) . '            // no match' . chr(10) . '            res.push(s.substr(pos));' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        if (m[0].length == 0 && m.index == pos) {' . chr(10) . '            // pointer didn' . chr(39) . 't move' . chr(10) . '            pattern.lastIndex = pattern.lastIndex + 1;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            var part = s.substr(pos, m.index - pos);' . chr(10) . '            res.push(part);' . chr(10) . '            count++;' . chr(10) . '            pos = m.index + m[0].length;' . chr(10) . '            pattern.lastIndex = pos;' . chr(10) . '        }' . chr(10) . '        for (var i = 1; i < m.length ; i++) {' . chr(10) . '            res.push(m[i]);     // captured substrings; don' . chr(39) . 't increment count' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . chr(10)
+        return '//
+//
+// lib/Perlito5/JavaScript2/CORE.js
+//
+// CORE functions for "Perlito" Perl5-in-JavaScript2
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var CORE = p5pkg.CORE;
+
+var isNode = typeof require != "undefined";
+
+' . 'if (isNode) {
+    try {
+        var sleep = require("sleep");
+        CORE.sleep = function(List__) {
+            var n = p5num(List__[0]) || 1;
+            sleep.usleep(n * 1000000);  // sleep for n seconds (1 second is 1000000 microseconds)
+            return n;
+        }
+    }
+    catch (err) {
+        CORE.sleep = function(List__) {
+            CORE.die("sleep() function failed. Maybe you need ' . chr(39) . 'npm install sleep' . chr(39) . '?\\n" + err);
+        }
+    }
+}
+if (!CORE.sleep) {
+    CORE.sleep = function(List__) {
+        CORE.die("sleep() not supported for this platform");
+    }
+}
+
+' . 'if (isNode) {
+    try {
+        var crypt = require("crypt3");
+        CORE.crypt = function(List__) {
+            var text = p5str(List__[0]);
+            var salt = p5str(List__[1]);
+            while(salt.length < 2) {
+                salt += "A";
+            }
+            return crypt(text, salt);
+        }
+    }
+    catch (err) {
+        CORE.crypt = function(List__) {
+            CORE.die("crypt() function failed. Maybe you need ' . chr(39) . 'npm install crypt3' . chr(39) . '?\\n" + err);
+        }
+    }
+}
+if (!CORE.crypt) {
+    CORE.crypt = function(List__) {
+        CORE.die("crypt() not supported for this platform");
+    }
+}
+
+' . 'CORE.time = function(List__) {
+    return CORE.int([Date.now() / 1000]);
+}
+' . 'var _fmt_date = function(date) {
+    return [' . chr(39) . 'Sun' . chr(39) . ',' . chr(39) . 'Mon' . chr(39) . ',' . chr(39) . 'Tue' . chr(39) . ',' . chr(39) . 'Wed' . chr(39) . ',' . chr(39) . 'Thu' . chr(39) . ',' . chr(39) . 'Fri' . chr(39) . ',' . chr(39) . 'Sat' . chr(39) . '][date.getDay()] + ' . chr(39) . ' ' . chr(39) . ' +
+        [' . chr(39) . 'Jan' . chr(39) . ',' . chr(39) . 'Feb' . chr(39) . ',' . chr(39) . 'Mar' . chr(39) . ',' . chr(39) . 'Apr' . chr(39) . ',' . chr(39) . 'May' . chr(39) . ',' . chr(39) . 'Jun' . chr(39) . ',' . chr(39) . 'Jul' . chr(39) . ',' . chr(39) . 'Aug' . chr(39) . ',' . chr(39) . 'Sep' . chr(39) . ',' . chr(39) . 'Oct' . chr(39) . ',' . chr(39) . 'Nov' . chr(39) . ',' . chr(39) . 'Dec' . chr(39) . '][date.getMonth()] + ' . chr(39) . ' ' . chr(39) . ' +
+        date.getDate() + ' . chr(39) . ' ' . chr(39) . ' + 
+        CORE.sprintf([ "%02d:%02d:%02d ", date.getHours(), date.getMinutes(), date.getSeconds() ]) +
+        date.getFullYear();
+}
+var _list_date = function(date) {
+    var year_start = new Date(date);
+    year_start.setMonth(0, 1);
+    var year_day = Math.round((date-year_start)/8.64e7);
+
+    var isdst = 0;  // not implemented
+
+    return [date.getSeconds(),date.getMinutes(),date.getHours(),date.getDate(),
+        date.getMonth(),date.getFullYear()-1900,date.getDay(),
+        year_day,
+        isdst
+    ];
+}
+CORE.localtime = function(List__, want) {
+    var n = List__.length ? p5num(List__[0]) : CORE.time() ;
+    var date = new Date(n*1000);
+    if (!want) {
+        return _fmt_date(date);
+    }
+    return _list_date(date);
+}
+CORE.gmtime = function(List__, want) {
+    var n = List__.length ? p5num(List__[0]) : CORE.time() ;
+    var ofs = new Date().getTimezoneOffset() * 60;
+    var date = new Date((n + ofs)*1000);
+    if (!want) {
+        return _fmt_date(date);
+    }
+    return _list_date(date);
+}
+
+CORE.bless = function(List__) {
+    var o        = List__[0];
+    var pkg_name = List__[1];
+    if (typeof pkg_name === "object") {
+        // bless {}, Class
+        o._class_ = pkg_name;
+        return o;
+    }
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
+        p5make_package(pkg_name);
+    }
+    o._class_ = p5pkg[pkg_name];
+    return o;
+};
+
+CORE.caller = function(List__, want) {
+    if (p5pkg["Perlito5"].v_CALLER && p5pkg["Perlito5"].v_CALLER._array_ && p5pkg["Perlito5"].v_CALLER._array_.p5aget(0) ) {
+        // TODO
+        return p5pkg["Perlito5"].v_CALLER._array_.p5aget(0)._array_
+    }
+    return p5context([], want);
+};
+
+CORE.chr = function(List__) {
+    var v = p5num(List__[0]);
+    return String.fromCharCode(v >= 0 ? v : 65533);
+};
+
+CORE.ord = function(List__) {
+    return p5str(List__[0]).charCodeAt(0);
+};
+
+CORE.hex = function(List__) {
+    var v = List__[0];
+
+    for(var i = 0; i < v.length; i++) {
+        if (v.charCodeAt(i) > 255) {
+            CORE.die(["Wide character in hex"]);
+        }
+    }
+
+    var b1 = v.substr(0,1);
+    var b2 = v.substr(0,2);
+    if (b1 == "x" || b1 == "X" || b2 == "0x" || b2 == "0X") {
+        return CORE.oct(List__);
+    }
+    v = "0x" + v;
+    return CORE.oct([v]);
+};
+
+CORE.oct = function(List__) {
+    var v = List__[0];
+    v = v.trim();
+
+    for(var i = 0; i < v.length; i++) {
+        if (v.charCodeAt(i) > 255) {
+            CORE.die(["Wide character in oct"]);
+        }
+    }
+
+    var b = v.substr(0,1);
+    if (b == "b" || b == "B" || b == "x" || b == "X") {
+        v = "0" + v;
+    }
+    b = v.substr(0,2);
+
+    for(var i = 2; i < v.length; i++) {
+        if (v.substr(i,2) == "__") {
+            v = v.substr(0, i);
+        }
+    }
+
+    var re = new RegExp(' . chr(39) . '_' . chr(39) . ', ' . chr(39) . 'g' . chr(39) . ');
+    v = v.replace(re, "");
+    var result;
+
+    if (b == "0b" || b == "0B") {
+        for(var i = 2; i < v.length; i++) {
+            var c = v.substr(i,1);
+            if (c >= "0" && c <= "1") {}
+            else {
+                v = v.substr(0, i);
+            }
+        }
+        if (v.length == 2) { return 0 }
+        result = parseInt(v.substr(2), 2);
+    }
+    else if (b == "0x" || b == "0X") {
+        for(var i = 2; i < v.length; i++) {
+            var c = v.substr(i,1);
+            if (c >= "0" && c <= "9" || c >= "A" && c <= "F" || c >= "a" && c <= "f") {}
+            else {
+                v = v.substr(0, i);
+            }
+        }
+        if (v.length == 2) { return 0 }
+        result = parseInt(v.substr(2), 16);
+    }
+    else {
+        result = parseInt(v, 8);
+    }
+    return isNaN(result) ? 0 : result;
+};
+
+CORE.abs   = function(List__) { return Math.abs(List__[0]) };
+CORE.exp   = function(List__) { return Math.exp(List__[0]) };
+CORE.log   = function(List__) { return Math.log(List__[0]) };
+CORE.cos   = function(List__) { return Math.cos(List__[0]) };
+CORE.sin   = function(List__) { return Math.sin(List__[0]) };
+CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
+CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
+CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
+
+var p5rand = function(v) { return Math.random() * v };
+CORE.srand = function(List__) {
+    if (List__.length > 0) {
+        var v = p5num(List__[0]) || 1;
+        p5rand = function() {
+            v = Math.sin(v) * 10000;
+            return v - Math.floor(v);
+        };
+        return List__[0];
+    }
+    return CORE.int(CORE.rand(100000));
+};
+CORE.rand = function(List__) {
+    var v = p5num(List__[0]) || 1;
+    return p5rand(v);
+};
+
+CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
+CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
+CORE.fc      = function(List__) { return p5str(List__[0]).toUpperCase() };
+
+CORE.lcfirst = function(List__) {
+    var s = p5str(List__[0]);
+    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";
+    s = s.length > 1 ? s.substr(1) : "";
+    return c + s
+};
+
+CORE.ucfirst = function(List__) {
+    var s = p5str(List__[0]);
+    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";
+    s = s.length > 1 ? s.substr(1) : "";
+    return c + s
+};
+
+CORE.quotemeta = function(List__) {
+    var s = p5str(List__[0]);
+    var out = [];
+    for(var i = 0; i < s.length; i++) {
+        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {
+            out.push(String.fromCharCode(92));
+        }
+        out.push(s.substr(i, 1));
+    }
+    return out.join("");       
+};
+
+CORE.substr = function(List__) {
+    var expr        = List__[0];
+    var offset      = List__[1];
+    var length      = List__[2];
+    var replacement = List__[3];
+    if (length < 0) {
+        var s = p5str(expr);
+        length = s.length - offset + length;
+    } 
+    return p5str(expr).substr(offset, length);
+};
+
+CORE.values = function(List__, p5want) {
+    var o = List__[0];
+    delete o["_each_"];
+    if (p5want) {
+        if (o == null) {
+            return [];
+        };
+        if (typeof o.values === "function") {
+            return o.values();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(o[i]);
+        }
+        return out;
+    }
+    return CORE.keys(List__, p5want);
+};
+
+CORE.keys = function(List__, p5want) {
+    var o = List__[0];
+    delete o["_each_"];
+    if (p5want) {
+        if (o == null) {
+            return [];
+        }
+        if (typeof o.keys === "function") {
+            return o.keys();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(i);
+        }
+        return out;
+    }
+    else {
+        if (o == null) {
+            return 0;
+        }
+        if (typeof o.keys === "function") {
+            return p5num(o.keys());
+        }
+        var out = 0;
+        for (var i in o) {
+            out++;
+        }
+        return out;
+    }
+};
+
+CORE.each = function(List__, p5want) {
+    var o = List__[0];
+    if (o.hasOwnProperty("_each_")) {
+        return o._each_(p5want)
+    }
+    var keys = CORE.keys([o], 1);
+    var i = 0;
+    o._each_ = function () {
+        if (i < keys.length) {
+            i++;
+            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];
+        }
+        i = 0;
+        return p5want ? [] : null;
+    };
+    return o._each_(p5want);
+};
+
+CORE.reverse = function(List__, p5want) {
+    var o = List__;
+    if (p5want) {
+        if (o == null) {
+            return [];
+        }
+        return List__.reverse();
+    }
+    o = p5str(o);
+    return o.split("").reverse().join("")
+};
+
+CORE.splice = function(List__, p5want) {
+    var array  = List__.shift();
+    // CORE.say([ array ]);
+    var offset = p5num(List__.shift());
+    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);
+
+    if (limit < 0) {
+        limit = array.length + limit - 1;
+    }
+
+    var list = [offset, limit];
+    for(var i = 0; i < List__.length; i++) {
+        list = p5list_to_a([ list, List__[i] ]);
+    }
+
+    var out = array.splice.apply(array, list);
+    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
+    return p5want ? out : out.pop();
+};
+
+CORE.join = function(List__) {
+    var s = List__.shift();
+    var o = [];
+    for (var i = 0; i < List__.length; i++) {
+        o.push(p5str(List__[i]));
+    }
+    return o.join(s);
+};
+
+CORE.index = function(List__) {
+    var o = List__[0];
+    var s = List__[1];
+    try {
+        return o.indexOf(s, p5num(List__[2]));
+    }
+    catch(err) {
+        return -1;
+    }
+};
+CORE.rindex = function(List__) {
+    var o = List__[0];
+    var s = List__[1];
+    try {
+        if (List__.length > 2) {
+            var i = p5num(List__[2]);
+            if (i < 0) {
+                if (s.length == 0) {
+                    return 0;
+                }
+                return -1;
+            }
+            return o.lastIndexOf(s, i);
+        }
+        return o.lastIndexOf(s);
+    }
+    catch(err) {
+        return -1;
+    }
+};
+
+CORE.length = function(List__) {
+    return p5str(List__[0]).length;
+};
+
+CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
+CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };
+
+CORE.ref = function(List__) {
+    var o = List__[0];
+    if (o == null) {
+        return "";
+    }
+    if (o._class_ && typeof o._class_._ref_ === "string") {
+        // blessed reference
+        return o._class_._ref_;
+    }
+    if (typeof o._ref_ === "string") {
+        // un-blessed reference
+        return o._ref_;
+    }
+    if (typeof o === "function") {
+        return "CODE";
+    }
+    return "";
+};
+
+CORE.split = function(List__, want) {
+    var pattern = List__[0];
+    var s       = p5str(List__[1]);
+    var limit   = p5num(List__[2]);
+    if (!want) {
+        // scalar context
+        return p5num(CORE.split(List__, 1));
+    }
+    if (limit == 0) {
+        // strip trailing empty strings and undef
+        var res = CORE.split([pattern, s, -1], 1);
+        while (res.length && (res[res.length - 1] == ' . chr(39) . chr(39) . ' || typeof res[res.length - 1] == "undefined") ) {
+            res.pop()
+        }
+        return res;
+    }
+    if (s == ' . chr(39) . chr(39) . ') {
+        return []
+    }
+    // make sure pattern is a RegExp
+    if (typeof pattern === "object" && (pattern instanceof RegExp)) {
+        pattern = pattern.source;
+    }
+    else {
+        pattern = p5str(pattern);
+        if (pattern == " ") {
+            // single space string is special
+            pattern = "(?: |\\t|\\n)+";
+            s = s.replace(/^(?: |\\t|\\n)+/, "");
+        }
+    }
+    // add "g", "m" modifiers
+    var flags = "g";
+    if (pattern.substr(0, 1) == "^" || pattern.substr(-1,1) == "$") {
+        flags = flags + "m";
+    }
+    pattern = new RegExp(pattern, flags);
+    var res = [];
+    var pos = 0;
+    var count = 0;
+    while (1) {
+        if (limit > 0 && limit <= (count + 1)) {
+            res.push(s.substr(pos));
+            return res;
+        }
+        var m = pattern.exec(s);
+        if (m === null) {
+            // no match
+            res.push(s.substr(pos));
+            return res;
+        }
+        if (m[0].length == 0 && m.index == pos) {
+            // pointer didn' . chr(39) . 't move
+            pattern.lastIndex = pattern.lastIndex + 1;
+        }
+        else {
+            var part = s.substr(pos, m.index - pos);
+            res.push(part);
+            count++;
+            pos = m.index + m[0].length;
+            pattern.lastIndex = pos;
+        }
+        for (var i = 1; i < m.length ; i++) {
+            res.push(m[i]);     // captured substrings; don' . chr(39) . 't increment count
+        }
+    }
+};
+
+
+'
     }
     1
 }
@@ -11997,7 +14343,619 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript2::IO;
     sub Perlito5::JavaScript2::IO::emit_javascript2 {
-        return '//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/JavaScript2/IO.js' . chr(10) . '//' . chr(10) . '// I/O functions for "Perlito" Perl5-in-JavaScript2' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . chr(10) . '    var fs = require("fs");' . chr(10) . chr(10) . '    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {' . chr(10) . '        try {' . chr(10) . '            var v = filehandle;' . chr(10) . '            var pkg;' . chr(10) . '            if (CORE.ref([v])) {' . chr(10) . '                // looks like a filehandle' . chr(10) . '                pkg = v;' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // looks like a package name' . chr(10) . '                pkg = p5make_package(v);' . chr(10) . '            }' . chr(10) . '            if (!pkg.file_handle) {' . chr(10) . '                pkg.file_handle = {};' . chr(10) . '            }' . chr(10) . '            var handle_id = pkg.file_handle.id;' . chr(10) . '            if (handle_id == 1) {' . chr(10) . '                for (var i = 0; i < List__.length; i++) {' . chr(10) . '                    process.stdout.write(p5str(List__[i]));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (handle_id == 2) {' . chr(10) . '                for (var i = 0; i < List__.length; i++) {' . chr(10) . '                    process.stderr.write(p5str(List__[i]));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                for (var i = 0; i < List__.length; i++) {' . chr(10) . '                    fs.writeSync(handle_id, p5str(List__[i]));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    } );' . chr(10) . chr(10) . '    var p5_extra_buffer_size = 100;' . chr(10) . '    p5typeglob_set("Perlito5::IO", "read", function (filehandle, List__, p5want) {' . chr(10) . '        try {' . chr(10) . '            var v = filehandle;' . chr(10) . '            var length = List__.shift();' . chr(10) . '            var pkg;' . chr(10) . '            if (CORE.ref([v])) {' . chr(10) . '                // looks like a filehandle' . chr(10) . '                pkg = v;' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // looks like a package name' . chr(10) . '                pkg = p5make_package(v);' . chr(10) . '            }' . chr(10) . '            if (!pkg.file_handle) {' . chr(10) . '                pkg.file_handle = {};' . chr(10) . '            }' . chr(10) . '            var handle_id = pkg.file_handle.id;' . chr(10) . chr(10) . '            if (!pkg.file_handle.buffer) {' . chr(10) . '                // we don' . chr(39) . 't have any data yet' . chr(10) . '                var length_wanted = length + 2 * p5_extra_buffer_size;' . chr(10) . '                var buffer = new Buffer(length_wanted);' . chr(10) . '                var bytes_read = fs.readSync(handle_id, buffer, 0, length_wanted, null);' . chr(10) . '                if (bytes_read < length_wanted) {' . chr(10) . '                    pkg.file_handle.buffer_eof = 1;' . chr(10) . '                }' . chr(10) . '                pkg.file_handle.buffer = buffer;' . chr(10) . '                pkg.file_handle.buffer_start = 0;' . chr(10) . '                pkg.file_handle.buffer_end = bytes_read;' . chr(10) . '                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;' . chr(10) . '            }' . chr(10) . '            else if (pkg.file_handle.buffer_length > (length + p5_extra_buffer_size)) {' . chr(10) . '                // we have enough data' . chr(10) . '            }' . chr(10) . '            else if (!pkg.file_handle.buffer_eof) {' . chr(10) . '                // we have some data; append more data to the internal buffer' . chr(10) . '                var length_wanted = length + 2 * p5_extra_buffer_size;' . chr(10) . '                var buffer = new Buffer(pkg.file_handle.buffer_length + length_wanted);' . chr(10) . '                pkg.file_handle.buffer.copy(buffer, 0, pkg.file_handle.buffer_start, pkg.file_handle.buffer_end);' . chr(10) . '                var bytes_read = fs.readSync(handle_id, buffer, pkg.file_handle.buffer_length, length_wanted, null);' . chr(10) . '                if (bytes_read < length_wanted) {' . chr(10) . '                    pkg.file_handle.buffer_eof = 1;' . chr(10) . '                }' . chr(10) . '                pkg.file_handle.buffer = buffer;' . chr(10) . '                pkg.file_handle.buffer_start = 0;' . chr(10) . '                pkg.file_handle.buffer_end = pkg.file_handle.buffer_length + bytes_read;' . chr(10) . '                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;' . chr(10) . '            }' . chr(10) . chr(10) . '            var s = pkg.file_handle.buffer.toString(' . chr(39) . 'utf-8' . chr(39) . ', pkg.file_handle.buffer_start, pkg.file_handle.buffer_end).substr(0, length);' . chr(10) . chr(10) . '            // how many bytes we actually used' . chr(10) . '            var buffer_used = Buffer.byteLength(s, ' . chr(39) . 'utf-8' . chr(39) . ');' . chr(10) . chr(10) . '            pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;' . chr(10) . '            pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;' . chr(10) . chr(10) . '            if ( handle_id == 0) {' . chr(10) . '                // STDIN' . chr(10) . '                pkg.file_handle.buffer_eof = (s.length ? 0 : 1);' . chr(10) . '                pkg.file_handle.eof = (s.length ? 0 : 1);' . chr(10) . '            }' . chr(10) . '            else if ( pkg.file_handle.buffer_eof && pkg.file_handle.buffer_length <= 0 ) {' . chr(10) . '                pkg.file_handle.eof = 1;' . chr(10) . '            }' . chr(10) . chr(10) . '            return [s.length, s];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return [];' . chr(10) . '        }' . chr(10) . '    } );' . chr(10) . chr(10) . '    var p5ARGV = 0;' . chr(10) . '    (function (f) {' . chr(10) . '        p5typeglob_set("Perlito5::IO", "readline", f);' . chr(10) . '        p5typeglob_set("Perlito5::IO", "getline", f);' . chr(10) . '    })(function (List__, p5want) {' . chr(10) . '        var filehandle = List__.shift();' . chr(10) . chr(10) . '        if (p5want) {' . chr(10) . '            var out = [];' . chr(10) . '            while (1) {' . chr(10) . '                var s = p5pkg["Perlito5::IO"].readline([filehandle], 0);' . chr(10) . '                if (s == null) {' . chr(10) . '                    return out;' . chr(10) . '                }' . chr(10) . '                out.push(s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        var v = filehandle;' . chr(10) . '        var pkg;' . chr(10) . '        if (CORE.ref([v])) {' . chr(10) . '            // looks like a filehandle' . chr(10) . '            pkg = v;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // looks like a package name' . chr(10) . '            pkg = p5make_package(v);' . chr(10) . '            if (v == "ARGV") {' . chr(10) . '                // ARGV is magical' . chr(10) . '                if (pkg.file_handle.id == null) {' . chr(10) . '                    if (!p5ARGV) {' . chr(10) . '                        if (p5pkg["main"]["List_ARGV"].length == 0) {' . chr(10) . '                            p5pkg["main"]["List_ARGV"].push(' . chr(39) . '-' . chr(39) . ');' . chr(10) . '                        }' . chr(10) . '                    }' . chr(10) . '                    p5ARGV = 1;' . chr(10) . '                    // TODO - open $ARGV[1], ...' . chr(10) . '                    var filename = p5pkg["main"]["List_ARGV"].shift();' . chr(10) . '                    CORE.open([ "ARGV", "<", filename ]) || CORE.die([ p5pkg["main"]["v_!"] ]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (!pkg.file_handle) {' . chr(10) . '            pkg.file_handle = {};' . chr(10) . '        }' . chr(10) . chr(10) . '        if (CORE.eof([v])) {' . chr(10) . '            return null;' . chr(10) . '        }' . chr(10) . chr(10) . '        var separator = p5pkg["main"]["v_/"];  // input record separator' . chr(10) . '        var buf = pkg.file_handle.readline_buffer;' . chr(10) . '        var pos;' . chr(10) . chr(10) . '        if (separator) {' . chr(10) . '            pos = buf.indexOf(separator);' . chr(10) . '            while ( pos < 0 && !pkg.file_handle.eof ) {' . chr(10) . '                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);' . chr(10) . '                buf = buf + r[1];' . chr(10) . '                pos = buf.indexOf(separator);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // no separator' . chr(10) . '            pos = -1;' . chr(10) . '            while ( !pkg.file_handle.eof ) {' . chr(10) . '                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);' . chr(10) . '                buf = buf + r[1];' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        if (pos < 0) {' . chr(10) . '            pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';' . chr(10) . '            if (!buf.length) {' . chr(10) . '                pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';' . chr(10) . '                pkg.file_handle.eof = 1;' . chr(10) . '                return null' . chr(10) . '            }' . chr(10) . '            return buf;' . chr(10) . '        }' . chr(10) . '        var s = buf.substr(0, pos + separator.length);' . chr(10) . '        pkg.file_handle.readline_buffer = buf.substr(pos + separator.length);' . chr(10) . '        if (!s.length) {' . chr(10) . '            pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';' . chr(10) . '            pkg.file_handle.eof = 1;' . chr(10) . '            return null' . chr(10) . '        }' . chr(10) . '        return s;' . chr(10) . '    });' . chr(10) . chr(10) . '    p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {' . chr(10) . '        try {' . chr(10) . '            var v = filehandle;' . chr(10) . '            var pkg;' . chr(10) . '            if (CORE.ref([v])) {' . chr(10) . '                // looks like a filehandle' . chr(10) . '                pkg = v;' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // looks like a package name' . chr(10) . '                pkg = p5make_package(v);' . chr(10) . '            }' . chr(10) . '            if (!pkg.file_handle) {' . chr(10) . '                pkg.file_handle = {};' . chr(10) . '            }' . chr(10) . '            var handle_id = pkg.file_handle.id;' . chr(10) . '            if (handle_id == 1) {' . chr(10) . '                process.stdout.close();' . chr(10) . '            }' . chr(10) . '            else if (handle_id == 2) {' . chr(10) . '                process.stderr.close();' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                fs.closeSync(handle_id);' . chr(10) . '            }' . chr(10) . '            pkg.file_handle.id = null;' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    } );' . chr(10) . chr(10) . '    CORE.eof = function(List__) {' . chr(10) . '        try {' . chr(10) . '            var filehandle = List__.shift();' . chr(10) . '            var v = filehandle;' . chr(10) . '            var pkg;' . chr(10) . '            if (CORE.ref([v])) {' . chr(10) . '                // looks like a filehandle' . chr(10) . '                pkg = v;' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // looks like a package name' . chr(10) . '                pkg = p5make_package(v);' . chr(10) . '            }' . chr(10) . '            if (!pkg.file_handle) {' . chr(10) . '                pkg.file_handle = {};' . chr(10) . '            }' . chr(10) . '            var handle_id = pkg.file_handle.id;' . chr(10) . '            if (handle_id == null) {' . chr(10) . '                return 1;  // file is not open' . chr(10) . '            }' . chr(10) . '            return pkg.file_handle.eof && pkg.file_handle.readline_buffer.length == 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.open = function(List__) {' . chr(10) . '        try {' . chr(10) . '            var filehandle = List__.shift();' . chr(10) . '            var flags = List__.shift();' . chr(10) . '            var path;' . chr(10) . '            if (List__.length) {' . chr(10) . '                path = List__.shift();' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // 2-argument open' . chr(10) . '                var re = new RegExp("^([<>+|]*)(.*)$", "");' . chr(10) . '                var capture = re.exec(flags);' . chr(10) . '                flags = capture[1];' . chr(10) . '                path = capture[2];' . chr(10) . '            }' . chr(10) . '            var v = filehandle;' . chr(10) . '            var pkg;' . chr(10) . '            if (CORE.ref([v])) {' . chr(10) . '                // looks like a filehandle' . chr(10) . '                pkg = v;' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // looks like a package name' . chr(10) . '                pkg = p5make_package(v);' . chr(10) . '                if (path == "-") {' . chr(10) . '                    if (flags == ' . chr(39) . '>' . chr(39) . ' || flags == ' . chr(39) . '>>' . chr(39) . ' || flags == ' . chr(39) . '+>' . chr(39) . ' || flags == ' . chr(39) . '+>>' . chr(39) . ') {' . chr(10) . '                        pkg.file_handle = p5pkg["STDOUT"].file_handle;' . chr(10) . '                    }' . chr(10) . '                    else {' . chr(10) . '                        pkg.file_handle = p5pkg["STDIN"].file_handle;' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            if (!pkg.file_handle) {' . chr(10) . '                pkg.file_handle = {};' . chr(10) . '            }' . chr(10) . '            var handle_id = pkg.file_handle.id;' . chr(10) . '            if (handle_id != null) {' . chr(10) . '                if (handle_id < 2) {' . chr(10) . '                    return 1;   // STDIN, STDOUT, STDERR' . chr(10) . '                }' . chr(10) . '                p5pkg["Perlito5::IO"].close(filehandle, []);' . chr(10) . '            }' . chr(10) . '            if (flags == ' . chr(39) . '>' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'w' . chr(39) . chr(10) . '            }' . chr(10) . '            else if (flags == ' . chr(39) . '>>' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'a' . chr(39) . chr(10) . '            }' . chr(10) . '            else if (flags == ' . chr(39) . '<' . chr(39) . ' || flags == ' . chr(39) . chr(39) . ' || flags == ' . chr(39) . '<:encoding(UTF-8)' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'r' . chr(39) . chr(10) . '            }' . chr(10) . '            else if (flags == ' . chr(39) . '+>' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'w+' . chr(39) . chr(10) . '            }' . chr(10) . '            else if (flags == ' . chr(39) . '+>>' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'a+' . chr(39) . chr(10) . '            }' . chr(10) . '            else if (flags == ' . chr(39) . '+<' . chr(39) . ') {' . chr(10) . '                flags = ' . chr(39) . 'r+' . chr(39) . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                CORE.die([ "don' . chr(39) . 't know what to do with MODE ' . chr(39) . '", flags, "' . chr(39) . '" ]);' . chr(10) . '            }' . chr(10) . '            var id = fs.openSync(path, flags);' . chr(10) . '            pkg.file_handle = { id : id, readline_buffer : ' . chr(39) . chr(39) . ' };' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    var p5atime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["atime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5mtime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["mtime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5ctime = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["ctime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5size = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["size"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5is_file = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5is_directory = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    var p5file_exists = function(s) {' . chr(10) . '        return p5is_file(s) || p5is_directory(s);' . chr(10) . '    };' . chr(10) . '    var p5is_pipe = function(s) {' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s);' . chr(10) . '            return stat.isFIFO() ? 1 : "";' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            try {' . chr(10) . '                var filehandle = s;' . chr(10) . '                var v = filehandle;' . chr(10) . '                var pkg;' . chr(10) . '                if (CORE.ref([v])) {' . chr(10) . '                    // looks like a filehandle' . chr(10) . '                    pkg = v;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    // looks like a package name' . chr(10) . '                    pkg = p5make_package(v);' . chr(10) . '                }' . chr(10) . '                if (!pkg.file_handle) {' . chr(10) . '                    pkg.file_handle = {};' . chr(10) . '                }' . chr(10) . '                var handle_id = pkg.file_handle.id;' . chr(10) . '                if (handle_id == 0) {' . chr(10) . '                    return process.stdin.isTTY ? "" : 1;' . chr(10) . '                }' . chr(10) . '                else if (handle_id == 1) {' . chr(10) . '                    return process.stdout.isTTY ? "" : 1;' . chr(10) . '                }' . chr(10) . '                else if (handle_id == 2) {' . chr(10) . '                    return process.stderr.isTTY ? "" : 1;' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return ' . chr(39) . chr(39) . ';' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.binmode = function(List__) {' . chr(10) . '        try {' . chr(10) . '            // TODO' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.rmdir = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.rmdir(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.chdir = function(List__) {' . chr(10) . '        try {' . chr(10) . '            process.chdir(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.exit = function(List__) {' . chr(10) . '        process.exit(List__[0]);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.rename = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.renameSync(p5str(List__[0]), p5str(List__[1]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.unlink = function(List__) {' . chr(10) . '        var count = 0;' . chr(10) . '        try {' . chr(10) . '            for(var i = 0; i < List__.length; i++) {' . chr(10) . '                fs.unlinkSync(p5str(List__[i]));' . chr(10) . '                count++;' . chr(10) . '            }' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '} else {' . chr(10) . '    // not running in node.js' . chr(10) . '    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {' . chr(10) . '        var s = "";' . chr(10) . '        for (var i = 0; i < List__.length; i++) {' . chr(10) . '            s = s + p5str(List__[i]);' . chr(10) . '        }' . chr(10) . '        if (console && typeof console.log === ' . chr(39) . 'function' . chr(39) . ') {' . chr(10) . '            console.log(s);' . chr(10) . '        }' . chr(10) . '        else if (typeof write === ' . chr(39) . 'function' . chr(39) . ') {' . chr(10) . '            // d8 shell uses "write"' . chr(10) . '            write(s);' . chr(10) . '        }' . chr(10) . '        else if (typeof print === ' . chr(39) . 'function' . chr(39) . ') {' . chr(10) . '            // Rhino uses "print"' . chr(10) . '            print(s);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            alert(s);' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    });' . chr(10) . '}' . chr(10) . chr(10) . 'p5typeglob_set("Perlito5::IO", "say", function (filehandle, List__, p5want) {' . chr(10) . '    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( filehandle, List__);' . chr(10) . '    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( filehandle, ["' . chr(92) . 'n"]);' . chr(10) . '    return 1;' . chr(10) . '} );' . chr(10) . 'p5typeglob_set("Perlito5::IO", "printf", function (filehandle, List__, p5want) {' . chr(10) . '    p5pkg["Perlito5::IO"].print( filehandle, CORE.sprintf(List__));' . chr(10) . '    return 1;' . chr(10) . '} );' . chr(10) . chr(10) . 'CORE.select = function(List__) {' . chr(10) . '    if (List__.length == 1) {' . chr(10) . '        var v = List__[0];' . chr(10) . '        p5pkg["Perlito5"].v_SELECT = v;' . chr(10) . '    }' . chr(10) . '    return p5pkg["Perlito5"].v_SELECT;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.die = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (var i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    if (s.substr(-1, 1) != "' . chr(92) . 'n") {' . chr(10) . '        try {' . chr(10) . '            if (s == "") {' . chr(10) . '                s = "Died";' . chr(10) . '            }' . chr(10) . '            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;' . chr(10) . '            s = s + "' . chr(92) . 'n" + new Error().stack + "' . chr(92) . 'n";' . chr(10) . '        }' . chr(10) . '        catch(err) { }' . chr(10) . '    }' . chr(10) . '    p5pkg["main"]["v_@"] = s;' . chr(10) . '    throw(new p5_error("die", s));' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.say = function(List__) {' . chr(10) . '    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].say( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);' . chr(10) . '};' . chr(10) . 'CORE.print = function(List__) {' . chr(10) . '    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);' . chr(10) . '};' . chr(10) . 'CORE.printf = function(List__) {' . chr(10) . '    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].printf( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);' . chr(10) . '};' . chr(10) . 'CORE.readline = function(List__, p5want) {' . chr(10) . '    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].readline(List__, p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.warn = function(List__) {' . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (var i = 0; i < List__.length; i++) {' . chr(10) . '        s = s + p5str(List__[i]);' . chr(10) . '    }' . chr(10) . '    if (s.substr(-1, 1) != "' . chr(92) . 'n") {' . chr(10) . '        try {' . chr(10) . '            if (s == "") {' . chr(10) . '                s = "Warning: something' . chr(39) . 's wrong";' . chr(10) . '            }' . chr(10) . '            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;' . chr(10) . '            s = s + "' . chr(92) . 'n" + new Error().stack + "' . chr(92) . 'n";' . chr(10) . '        }' . chr(10) . '        catch(err) { }' . chr(10) . '    }' . chr(10) . '    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( ' . chr(39) . 'STDERR' . chr(39) . ', [s]);' . chr(10) . '};' . chr(10) . chr(10) . chr(10)
+        return '//
+//
+// lib/Perlito5/JavaScript2/IO.js
+//
+// I/O functions for "Perlito" Perl5-in-JavaScript2
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var isNode = typeof require != "undefined";
+if (isNode) {
+
+    var fs = require("fs");
+
+    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
+        try {
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            if (handle_id == 1) {
+                for (var i = 0; i < List__.length; i++) {
+                    process.stdout.write(p5str(List__[i]));
+                }
+            }
+            else if (handle_id == 2) {
+                for (var i = 0; i < List__.length; i++) {
+                    process.stderr.write(p5str(List__[i]));
+                }
+            }
+            else {
+                for (var i = 0; i < List__.length; i++) {
+                    fs.writeSync(handle_id, p5str(List__[i]));
+                }
+            }
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    } );
+
+    var p5_extra_buffer_size = 100;
+    p5typeglob_set("Perlito5::IO", "read", function (filehandle, List__, p5want) {
+        try {
+            var v = filehandle;
+            var length = List__.shift();
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+
+            if (!pkg.file_handle.buffer) {
+                // we don' . chr(39) . 't have any data yet
+                var length_wanted = length + 2 * p5_extra_buffer_size;
+                var buffer = new Buffer(length_wanted);
+                var bytes_read = fs.readSync(handle_id, buffer, 0, length_wanted, null);
+                if (bytes_read < length_wanted) {
+                    pkg.file_handle.buffer_eof = 1;
+                }
+                pkg.file_handle.buffer = buffer;
+                pkg.file_handle.buffer_start = 0;
+                pkg.file_handle.buffer_end = bytes_read;
+                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;
+            }
+            else if (pkg.file_handle.buffer_length > (length + p5_extra_buffer_size)) {
+                // we have enough data
+            }
+            else if (!pkg.file_handle.buffer_eof) {
+                // we have some data; append more data to the internal buffer
+                var length_wanted = length + 2 * p5_extra_buffer_size;
+                var buffer = new Buffer(pkg.file_handle.buffer_length + length_wanted);
+                pkg.file_handle.buffer.copy(buffer, 0, pkg.file_handle.buffer_start, pkg.file_handle.buffer_end);
+                var bytes_read = fs.readSync(handle_id, buffer, pkg.file_handle.buffer_length, length_wanted, null);
+                if (bytes_read < length_wanted) {
+                    pkg.file_handle.buffer_eof = 1;
+                }
+                pkg.file_handle.buffer = buffer;
+                pkg.file_handle.buffer_start = 0;
+                pkg.file_handle.buffer_end = pkg.file_handle.buffer_length + bytes_read;
+                pkg.file_handle.buffer_length = pkg.file_handle.buffer_end;
+            }
+
+            var s = pkg.file_handle.buffer.toString(' . chr(39) . 'utf-8' . chr(39) . ', pkg.file_handle.buffer_start, pkg.file_handle.buffer_end).substr(0, length);
+
+            // how many bytes we actually used
+            var buffer_used = Buffer.byteLength(s, ' . chr(39) . 'utf-8' . chr(39) . ');
+
+            pkg.file_handle.buffer_start = pkg.file_handle.buffer_start + buffer_used;
+            pkg.file_handle.buffer_length = pkg.file_handle.buffer_length - buffer_used;
+
+            if ( handle_id == 0) {
+                // STDIN
+                pkg.file_handle.buffer_eof = (s.length ? 0 : 1);
+                pkg.file_handle.eof = (s.length ? 0 : 1);
+            }
+            else if ( pkg.file_handle.buffer_eof && pkg.file_handle.buffer_length <= 0 ) {
+                pkg.file_handle.eof = 1;
+            }
+
+            return [s.length, s];
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return [];
+        }
+    } );
+
+    var p5ARGV = 0;
+    (function (f) {
+        p5typeglob_set("Perlito5::IO", "readline", f);
+        p5typeglob_set("Perlito5::IO", "getline", f);
+    })(function (List__, p5want) {
+        var filehandle = List__.shift();
+
+        if (p5want) {
+            var out = [];
+            while (1) {
+                var s = p5pkg["Perlito5::IO"].readline([filehandle], 0);
+                if (s == null) {
+                    return out;
+                }
+                out.push(s);
+            }
+        }
+
+        var v = filehandle;
+        var pkg;
+        if (CORE.ref([v])) {
+            // looks like a filehandle
+            pkg = v;
+        }
+        else {
+            // looks like a package name
+            pkg = p5make_package(v);
+            if (v == "ARGV") {
+                // ARGV is magical
+                if (pkg.file_handle.id == null) {
+                    if (!p5ARGV) {
+                        if (p5pkg["main"]["List_ARGV"].length == 0) {
+                            p5pkg["main"]["List_ARGV"].push(' . chr(39) . '-' . chr(39) . ');
+                        }
+                    }
+                    p5ARGV = 1;
+                    // TODO - open $ARGV[1], ...
+                    var filename = p5pkg["main"]["List_ARGV"].shift();
+                    CORE.open([ "ARGV", "<", filename ]) || CORE.die([ p5pkg["main"]["v_!"] ]);
+                }
+            }
+        }
+        if (!pkg.file_handle) {
+            pkg.file_handle = {};
+        }
+
+        if (CORE.eof([v])) {
+            return null;
+        }
+
+        var separator = p5pkg["main"]["v_/"];  // input record separator
+        var buf = pkg.file_handle.readline_buffer;
+        var pos;
+
+        if (separator) {
+            pos = buf.indexOf(separator);
+            while ( pos < 0 && !pkg.file_handle.eof ) {
+                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
+                buf = buf + r[1];
+                pos = buf.indexOf(separator);
+            }
+        }
+        else {
+            // no separator
+            pos = -1;
+            while ( !pkg.file_handle.eof ) {
+                var r = p5pkg["Perlito5::IO"].read(filehandle, [100]);
+                buf = buf + r[1];
+            }
+        }
+
+        if (pos < 0) {
+            pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';
+            if (!buf.length) {
+                pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';
+                pkg.file_handle.eof = 1;
+                return null
+            }
+            return buf;
+        }
+        var s = buf.substr(0, pos + separator.length);
+        pkg.file_handle.readline_buffer = buf.substr(pos + separator.length);
+        if (!s.length) {
+            pkg.file_handle.readline_buffer = ' . chr(39) . chr(39) . ';
+            pkg.file_handle.eof = 1;
+            return null
+        }
+        return s;
+    });
+
+    p5typeglob_set("Perlito5::IO", "close", function (filehandle, List__, p5want) {
+        try {
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            if (handle_id == 1) {
+                process.stdout.close();
+            }
+            else if (handle_id == 2) {
+                process.stderr.close();
+            }
+            else {
+                fs.closeSync(handle_id);
+            }
+            pkg.file_handle.id = null;
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    } );
+
+    CORE.eof = function(List__) {
+        try {
+            var filehandle = List__.shift();
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            if (handle_id == null) {
+                return 1;  // file is not open
+            }
+            return pkg.file_handle.eof && pkg.file_handle.readline_buffer.length == 0;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.open = function(List__) {
+        try {
+            var filehandle = List__.shift();
+            var flags = List__.shift();
+            var path;
+            if (List__.length) {
+                path = List__.shift();
+            }
+            else {
+                // 2-argument open
+                var re = new RegExp("^([<>+|]*)(.*)$", "");
+                var capture = re.exec(flags);
+                flags = capture[1];
+                path = capture[2];
+            }
+            var v = filehandle;
+            var pkg;
+            if (CORE.ref([v])) {
+                // looks like a filehandle
+                pkg = v;
+            }
+            else {
+                // looks like a package name
+                pkg = p5make_package(v);
+                if (path == "-") {
+                    if (flags == ' . chr(39) . '>' . chr(39) . ' || flags == ' . chr(39) . '>>' . chr(39) . ' || flags == ' . chr(39) . '+>' . chr(39) . ' || flags == ' . chr(39) . '+>>' . chr(39) . ') {
+                        pkg.file_handle = p5pkg["STDOUT"].file_handle;
+                    }
+                    else {
+                        pkg.file_handle = p5pkg["STDIN"].file_handle;
+                    }
+                }
+            }
+            if (!pkg.file_handle) {
+                pkg.file_handle = {};
+            }
+            var handle_id = pkg.file_handle.id;
+            if (handle_id != null) {
+                if (handle_id < 2) {
+                    return 1;   // STDIN, STDOUT, STDERR
+                }
+                p5pkg["Perlito5::IO"].close(filehandle, []);
+            }
+            if (flags == ' . chr(39) . '>' . chr(39) . ') {
+                flags = ' . chr(39) . 'w' . chr(39) . '
+            }
+            else if (flags == ' . chr(39) . '>>' . chr(39) . ') {
+                flags = ' . chr(39) . 'a' . chr(39) . '
+            }
+            else if (flags == ' . chr(39) . '<' . chr(39) . ' || flags == ' . chr(39) . chr(39) . ' || flags == ' . chr(39) . '<:encoding(UTF-8)' . chr(39) . ') {
+                flags = ' . chr(39) . 'r' . chr(39) . '
+            }
+            else if (flags == ' . chr(39) . '+>' . chr(39) . ') {
+                flags = ' . chr(39) . 'w+' . chr(39) . '
+            }
+            else if (flags == ' . chr(39) . '+>>' . chr(39) . ') {
+                flags = ' . chr(39) . 'a+' . chr(39) . '
+            }
+            else if (flags == ' . chr(39) . '+<' . chr(39) . ') {
+                flags = ' . chr(39) . 'r+' . chr(39) . '
+            }
+            else {
+                CORE.die([ "don' . chr(39) . 't know what to do with MODE ' . chr(39) . '", flags, "' . chr(39) . '" ]);
+            }
+            var id = fs.openSync(path, flags);
+            pkg.file_handle = { id : id, readline_buffer : ' . chr(39) . chr(39) . ' };
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    var p5atime = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat["atime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5mtime = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat["mtime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5ctime = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat["ctime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5size = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat["size"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5is_file = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5is_directory = function(s) {
+        try {
+            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    var p5file_exists = function(s) {
+        return p5is_file(s) || p5is_directory(s);
+    };
+    var p5is_pipe = function(s) {
+        try {
+            var stat = fs.statSync(s);
+            return stat.isFIFO() ? 1 : "";
+        }
+        catch(err) {
+            try {
+                var filehandle = s;
+                var v = filehandle;
+                var pkg;
+                if (CORE.ref([v])) {
+                    // looks like a filehandle
+                    pkg = v;
+                }
+                else {
+                    // looks like a package name
+                    pkg = p5make_package(v);
+                }
+                if (!pkg.file_handle) {
+                    pkg.file_handle = {};
+                }
+                var handle_id = pkg.file_handle.id;
+                if (handle_id == 0) {
+                    return process.stdin.isTTY ? "" : 1;
+                }
+                else if (handle_id == 1) {
+                    return process.stdout.isTTY ? "" : 1;
+                }
+                else if (handle_id == 2) {
+                    return process.stderr.isTTY ? "" : 1;
+                }
+            }
+            catch(err) {
+            }
+        }
+        return ' . chr(39) . chr(39) . ';
+    };
+
+    CORE.binmode = function(List__) {
+        try {
+            // TODO
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.rmdir = function(List__) {
+        try {
+            fs.rmdir(p5str(List__[0]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.chdir = function(List__) {
+        try {
+            process.chdir(p5str(List__[0]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.exit = function(List__) {
+        process.exit(List__[0]);
+    };
+
+    CORE.rename = function(List__) {
+        try {
+            fs.renameSync(p5str(List__[0]), p5str(List__[1]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.unlink = function(List__) {
+        var count = 0;
+        try {
+            for(var i = 0; i < List__.length; i++) {
+                fs.unlinkSync(p5str(List__[i]));
+                count++;
+            }
+            return count;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return count;
+        }
+    };
+
+} else {
+    // not running in node.js
+    p5typeglob_set("Perlito5::IO", "print", function (filehandle, List__, p5want) {
+        var s = "";
+        for (var i = 0; i < List__.length; i++) {
+            s = s + p5str(List__[i]);
+        }
+        if (console && typeof console.log === ' . chr(39) . 'function' . chr(39) . ') {
+            console.log(s);
+        }
+        else if (typeof write === ' . chr(39) . 'function' . chr(39) . ') {
+            // d8 shell uses "write"
+            write(s);
+        }
+        else if (typeof print === ' . chr(39) . 'function' . chr(39) . ') {
+            // Rhino uses "print"
+            print(s);
+        }
+        else {
+            alert(s);
+        }
+        return 1;
+    });
+}
+
+p5typeglob_set("Perlito5::IO", "say", function (filehandle, List__, p5want) {
+    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( filehandle, List__);
+    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( filehandle, ["\\n"]);
+    return 1;
+} );
+p5typeglob_set("Perlito5::IO", "printf", function (filehandle, List__, p5want) {
+    p5pkg["Perlito5::IO"].print( filehandle, CORE.sprintf(List__));
+    return 1;
+} );
+
+CORE.select = function(List__) {
+    if (List__.length == 1) {
+        var v = List__[0];
+        p5pkg["Perlito5"].v_SELECT = v;
+    }
+    return p5pkg["Perlito5"].v_SELECT;
+};
+
+CORE.die = function(List__) {
+    var i;
+    var s = "";
+    for (var i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    if (s.substr(-1, 1) != "\\n") {
+        try {
+            if (s == "") {
+                s = "Died";
+            }
+            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;
+            s = s + "\\n" + new Error().stack + "\\n";
+        }
+        catch(err) { }
+    }
+    p5pkg["main"]["v_@"] = s;
+    throw(new p5_error("die", s));
+};
+
+CORE.say = function(List__) {
+    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].say( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);
+};
+CORE.print = function(List__) {
+    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);
+};
+CORE.printf = function(List__) {
+    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].printf( ' . chr(39) . 'STDOUT' . chr(39) . ', List__);
+};
+CORE.readline = function(List__, p5want) {
+    return p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].readline(List__, p5want);
+};
+
+CORE.warn = function(List__) {
+    var i;
+    var s = "";
+    for (var i = 0; i < List__.length; i++) {
+        s = s + p5str(List__[i]);
+    }
+    if (s.substr(-1, 1) != "\\n") {
+        try {
+            if (s == "") {
+                s = "Warning: something' . chr(39) . 's wrong";
+            }
+            s = s + " at " + p5pkg["Perlito5"].v_FILE_NAME + " line " + p5pkg["Perlito5"].v_LINE_NUMBER;
+            s = s + "\\n" + new Error().stack + "\\n";
+        }
+        catch(err) { }
+    }
+    p5pkg[' . chr(39) . 'Perlito5::IO' . chr(39) . '].print( ' . chr(39) . 'STDERR' . chr(39) . ', [s]);
+};
+
+
+'
     }
     1
 }
@@ -12006,7 +14964,211 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript2::Sprintf;
     sub Perlito5::JavaScript2::Sprintf::emit_javascript2 {
-        return '/**' . chr(10) . ' * Copyright (c) 2010 Jakob Westhoff' . chr(10) . ' *' . chr(10) . ' * Permission is hereby granted, free of charge, to any person obtaining a copy' . chr(10) . ' * of this software and associated documentation files (the "Software"), to deal' . chr(10) . ' * in the Software without restriction, including without limitation the rights' . chr(10) . ' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell' . chr(10) . ' * copies of the Software, and to permit persons to whom the Software is' . chr(10) . ' * furnished to do so, subject to the following conditions:' . chr(10) . ' * ' . chr(10) . ' * The above copyright notice and this permission notice shall be included in' . chr(10) . ' * all copies or substantial portions of the Software.' . chr(10) . ' * ' . chr(10) . ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR' . chr(10) . ' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,' . chr(10) . ' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE' . chr(10) . ' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER' . chr(10) . ' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,' . chr(10) . ' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN' . chr(10) . ' * THE SOFTWARE.' . chr(10) . ' */' . chr(10) . chr(10) . 'CORE.sprintf = function(List__) {' . chr(10) . '    var format = List__.shift();' . chr(10) . '    var list = List__;' . chr(10) . chr(10) . '    // Check for format definition' . chr(10) . '    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {' . chr(10) . '        CORE.die(["sprintf: The first arguments need to be a valid format string."]);' . chr(10) . '    }' . chr(10) . '    ' . chr(10) . '    /**' . chr(10) . '     * Define the regex to match a formating string' . chr(10) . '     * The regex consists of the following parts:' . chr(10) . '     * percent sign to indicate the start' . chr(10) . '     * (optional) sign specifier' . chr(10) . '     * (optional) padding specifier' . chr(10) . '     * (optional) alignment specifier' . chr(10) . '     * (optional) width specifier' . chr(10) . '     * (optional) precision specifier' . chr(10) . '     * type specifier:' . chr(10) . '     *  % - literal percent sign' . chr(10) . '     *  b - binary number' . chr(10) . '     *  c - ASCII character represented by the given value' . chr(10) . '     *  d - signed decimal number' . chr(10) . '     *  f - floating point value' . chr(10) . '     *  o - octal number' . chr(10) . '     *  s - string' . chr(10) . '     *  x - hexadecimal number (lowercase characters)' . chr(10) . '     *  X - hexadecimal number (uppercase characters)' . chr(10) . '     */' . chr(10) . '    var r = new RegExp( /%(' . chr(92) . '+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(' . chr(92) . '.([0-9]+))?([%bcdfosxX])/g );' . chr(10) . chr(10) . '    /**' . chr(10) . '     * Each format string is splitted into the following parts:' . chr(10) . '     * 0: Full format string' . chr(10) . '     * 1: sign specifier (+)' . chr(10) . '     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)' . chr(10) . '     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real ' . chr(10) . '     *    padding character' . chr(10) . '     * 4: alignment specifier' . chr(10) . '     * 5: width specifier' . chr(10) . '     * 6: precision specifier including the dot' . chr(10) . '     * 7: precision specifier without the dot' . chr(10) . '     * 8: type specifier' . chr(10) . '     */' . chr(10) . '    var parts      = [];' . chr(10) . '    var paramIndex = 0;' . chr(10) . '    var part;' . chr(10) . '    while ( part = r.exec( format ) ) {' . chr(10) . '        // Check if an input value has been provided, for the current' . chr(10) . '        // format string' . chr(10) . '        if ( paramIndex >= list.length ) {' . chr(10) . '            CORE.die(["sprintf: At least one argument was missing."]);' . chr(10) . '        }' . chr(10) . chr(10) . '        parts[parts.length] = {' . chr(10) . '            /* beginning of the part in the string */' . chr(10) . '            begin: part.index,' . chr(10) . '            /* end of the part in the string */' . chr(10) . '            end: part.index + part[0].length,' . chr(10) . '            /* force sign */' . chr(10) . '            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),' . chr(10) . '            /* is the given data negative */' . chr(10) . '            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,' . chr(10) . '            /* padding character (default: <space>) */' . chr(10) . '            padding: ( part[2] == undefined )' . chr(10) . '                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */' . chr(10) . '                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) ' . chr(10) . '                         ? ( part[3] ) /* use special char */' . chr(10) . '                         : ( part[2] ) /* use normal <space> or zero */' . chr(10) . '                       ),' . chr(10) . '            /* should the output be aligned left?*/' . chr(10) . '            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),' . chr(10) . '            /* width specifier (number or false) */' . chr(10) . '            width: ( part[5] != undefined ) ? part[5] : false,' . chr(10) . '            /* precision specifier (number or false) */' . chr(10) . '            precision: ( part[7] != undefined ) ? part[7] : false,' . chr(10) . '            /* type specifier */' . chr(10) . '            type: part[8],' . chr(10) . '            /* the given data associated with this part converted to a string */' . chr(10) . '            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false' . chr(10) . '        };' . chr(10) . '    }' . chr(10) . chr(10) . '    var newString = "";' . chr(10) . '    var start = 0;' . chr(10) . '    // Generate our new formated string' . chr(10) . '    for( var i=0; i<parts.length; ++i ) {' . chr(10) . '        // Add first unformated string part' . chr(10) . '        newString += format.substring( start, parts[i].begin );' . chr(10) . '        ' . chr(10) . '        // Mark the new string start' . chr(10) . '        start = parts[i].end;' . chr(10) . chr(10) . '        // Create the appropriate preformat substitution' . chr(10) . '        // This substitution is only the correct type conversion. All the' . chr(10) . '        // different options and flags haven' . chr(39) . 't been applied to it at this' . chr(10) . '        // point' . chr(10) . '        var preSubstitution = "";' . chr(10) . '        switch ( parts[i].type ) {' . chr(10) . '            case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                preSubstitution = "%";' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'd' . chr(39) . ':' . chr(10) . '                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'f' . chr(39) . ':' . chr(10) . '                preSubstitution = ( parts[i].precision == false )' . chr(10) . '                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )' . chr(10) . '                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'o' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'x' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();' . chr(10) . '            break;' . chr(10) . '            default:' . chr(10) . '                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';' . chr(10) . '        }' . chr(10) . chr(10) . '        // The % character is a special type and does not need further processing' . chr(10) . '        if ( parts[i].type ==  "%" ) {' . chr(10) . '            newString += preSubstitution;' . chr(10) . '            continue;' . chr(10) . '        }' . chr(10) . chr(10) . '        // Modify the preSubstitution by taking sign, padding and width' . chr(10) . '        // into account' . chr(10) . chr(10) . '        // Pad the string based on the given width' . chr(10) . '        if ( parts[i].width != false ) {' . chr(10) . '            // Padding needed?' . chr(10) . '            if ( parts[i].width > preSubstitution.length ) ' . chr(10) . '            {' . chr(10) . '                var origLength = preSubstitution.length;' . chr(10) . '                for( var j = 0; j < parts[i].width - origLength; ++j ) ' . chr(10) . '                {' . chr(10) . '                    preSubstitution = ( parts[i].alignLeft == true ) ' . chr(10) . '                                      ? ( preSubstitution + parts[i].padding )' . chr(10) . '                                      : ( parts[i].padding + preSubstitution );' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add a sign symbol if neccessary or enforced, but only if we are' . chr(10) . '        // not handling a string' . chr(10) . '        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {' . chr(10) . '            if ( parts[i].negative == true ) {' . chr(10) . '                preSubstitution = "-" + preSubstitution;' . chr(10) . '            }' . chr(10) . '            else if ( parts[i].sign == true ) {' . chr(10) . '                preSubstitution = "+" + preSubstitution;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add the substitution to the new string' . chr(10) . '        newString += preSubstitution;' . chr(10) . '    }' . chr(10) . chr(10) . '    // Add the last part of the given format string, which may still be there' . chr(10) . '    newString += format.substring( start, format.length );' . chr(10) . chr(10) . '    return newString;' . chr(10) . '};' . chr(10) . chr(10)
+        return '/**
+ * Copyright (c) 2010 Jakob Westhoff
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+CORE.sprintf = function(List__) {
+    var format = List__.shift();
+    var list = List__;
+
+    // Check for format definition
+    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {
+        CORE.die(["sprintf: The first arguments need to be a valid format string."]);
+    }
+    
+    /**
+     * Define the regex to match a formating string
+     * The regex consists of the following parts:
+     * percent sign to indicate the start
+     * (optional) sign specifier
+     * (optional) padding specifier
+     * (optional) alignment specifier
+     * (optional) width specifier
+     * (optional) precision specifier
+     * type specifier:
+     *  % - literal percent sign
+     *  b - binary number
+     *  c - ASCII character represented by the given value
+     *  d - signed decimal number
+     *  f - floating point value
+     *  o - octal number
+     *  s - string
+     *  x - hexadecimal number (lowercase characters)
+     *  X - hexadecimal number (uppercase characters)
+     */
+    var r = new RegExp( /%(\\+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(\\.([0-9]+))?([%bcdfosxX])/g );
+
+    /**
+     * Each format string is splitted into the following parts:
+     * 0: Full format string
+     * 1: sign specifier (+)
+     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)
+     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real 
+     *    padding character
+     * 4: alignment specifier
+     * 5: width specifier
+     * 6: precision specifier including the dot
+     * 7: precision specifier without the dot
+     * 8: type specifier
+     */
+    var parts      = [];
+    var paramIndex = 0;
+    var part;
+    while ( part = r.exec( format ) ) {
+        // Check if an input value has been provided, for the current
+        // format string
+        if ( paramIndex >= list.length ) {
+            CORE.die(["sprintf: At least one argument was missing."]);
+        }
+
+        parts[parts.length] = {
+            /* beginning of the part in the string */
+            begin: part.index,
+            /* end of the part in the string */
+            end: part.index + part[0].length,
+            /* force sign */
+            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),
+            /* is the given data negative */
+            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,
+            /* padding character (default: <space>) */
+            padding: ( part[2] == undefined )
+                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */
+                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) 
+                         ? ( part[3] ) /* use special char */
+                         : ( part[2] ) /* use normal <space> or zero */
+                       ),
+            /* should the output be aligned left?*/
+            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),
+            /* width specifier (number or false) */
+            width: ( part[5] != undefined ) ? part[5] : false,
+            /* precision specifier (number or false) */
+            precision: ( part[7] != undefined ) ? part[7] : false,
+            /* type specifier */
+            type: part[8],
+            /* the given data associated with this part converted to a string */
+            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false
+        };
+    }
+
+    var newString = "";
+    var start = 0;
+    // Generate our new formated string
+    for( var i=0; i<parts.length; ++i ) {
+        // Add first unformated string part
+        newString += format.substring( start, parts[i].begin );
+        
+        // Mark the new string start
+        start = parts[i].end;
+
+        // Create the appropriate preformat substitution
+        // This substitution is only the correct type conversion. All the
+        // different options and flags haven' . chr(39) . 't been applied to it at this
+        // point
+        var preSubstitution = "";
+        switch ( parts[i].type ) {
+            case ' . chr(39) . '%' . chr(39) . ':
+                preSubstitution = "%";
+            break;
+            case ' . chr(39) . 'b' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );
+            break;
+            case ' . chr(39) . 'c' . chr(39) . ':
+                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );
+            break;
+            case ' . chr(39) . 'd' . chr(39) . ':
+                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+            break;
+            case ' . chr(39) . 'f' . chr(39) . ':
+                preSubstitution = ( parts[i].precision == false )
+                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
+                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
+            break;
+            case ' . chr(39) . 'o' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );
+            break;
+            case ' . chr(39) . 's' . chr(39) . ':
+                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */
+            break;
+            case ' . chr(39) . 'x' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();
+            break;
+            case ' . chr(39) . 'X' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();
+            break;
+            default:
+                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';
+        }
+
+        // The % character is a special type and does not need further processing
+        if ( parts[i].type ==  "%" ) {
+            newString += preSubstitution;
+            continue;
+        }
+
+        // Modify the preSubstitution by taking sign, padding and width
+        // into account
+
+        // Pad the string based on the given width
+        if ( parts[i].width != false ) {
+            // Padding needed?
+            if ( parts[i].width > preSubstitution.length ) 
+            {
+                var origLength = preSubstitution.length;
+                for( var j = 0; j < parts[i].width - origLength; ++j ) 
+                {
+                    preSubstitution = ( parts[i].alignLeft == true ) 
+                                      ? ( preSubstitution + parts[i].padding )
+                                      : ( parts[i].padding + preSubstitution );
+                }
+            }
+        }
+
+        // Add a sign symbol if neccessary or enforced, but only if we are
+        // not handling a string
+        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {
+            if ( parts[i].negative == true ) {
+                preSubstitution = "-" + preSubstitution;
+            }
+            else if ( parts[i].sign == true ) {
+                preSubstitution = "+" + preSubstitution;
+            }
+        }
+
+        // Add the substitution to the new string
+        newString += preSubstitution;
+    }
+
+    // Add the last part of the given format string, which may still be there
+    newString += format.substring( start, format.length );
+
+    return newString;
+};
+
+'
     }
     1
 }
@@ -12104,7 +15266,7 @@ use feature 'say';
             }
         }
         sub Perlito5::JavaScript3::is_scalar {
-            !$_[0]->isa('Perlito5::AST::Int') && !$_[0]->isa('Perlito5::AST::Num') && !$_[0]->isa('Perlito5::AST::Buf') && !$_[0]->isa('Perlito5::AST::Sub') && !($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') && !($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}}) || $_[0]->{'code'} eq 'prefix:<' . chr(92) . '>'))
+            !$_[0]->isa('Perlito5::AST::Int') && !$_[0]->isa('Perlito5::AST::Num') && !$_[0]->isa('Perlito5::AST::Buf') && !$_[0]->isa('Perlito5::AST::Sub') && !($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') && !($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}}) || $_[0]->{'code'} eq 'prefix:<\\>'))
         }
         sub Perlito5::JavaScript3::to_value {
             my $v = shift;
@@ -12268,12 +15430,14 @@ use feature 'say';
             my $outer_pkg = $Perlito5::PKG_NAME;
             my $outer_throw = $Perlito5::THROW;
             $self->{'top_level'} && ($Perlito5::THROW = 0);
-            $has_local && ($out .= Perlito5::JavaScript3::tab($level) . 'var local_idx = p5LOCAL.length;' . chr(10));
+            $has_local && ($out .= Perlito5::JavaScript3::tab($level) . 'var local_idx = p5LOCAL.length;
+');
             if ($self->{'top_level'}) {
                 $level++
             }
             if ($create_context) {
-                $out .= Perlito5::JavaScript3::tab($level) . '(function () {' . chr(10);
+                $out .= Perlito5::JavaScript3::tab($level) . '(function () {
+';
                 $level++
             }
             my $tab = Perlito5::JavaScript3::tab($level);
@@ -12331,15 +15495,22 @@ use feature 'say';
                     my $body = $last_statement->body();
                     my $otherwise = $last_statement->otherwise();
                     $body = Perlito5::JavaScript3::LexicalBlock::->new('block' => $body->stmts(), 'needs_return' => 1);
-                    push(@str, 'if ( ' . Perlito5::JavaScript3::to_bool($cond, $level + 1) . ' ) {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}');
+                    push(@str, 'if ( ' . Perlito5::JavaScript3::to_bool($cond, $level + 1) . ' ) {' . '
+' . $body->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}');
                     if ($otherwise) {
                         $otherwise = Perlito5::JavaScript3::LexicalBlock::->new('block' => $otherwise->stmts(), 'needs_return' => 1);
-                        push(@str, chr(10) . Perlito5::JavaScript3::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}')
+                        push(@str, '
+' . Perlito5::JavaScript3::tab($level) . 'else {' . '
+' . $otherwise->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}')
                     }
                 }
                 elsif ($last_statement->isa('Perlito5::AST::Block')) {
                     my $body = Perlito5::JavaScript3::LexicalBlock::->new('block' => $last_statement->{'stmts'}, 'needs_return' => 1);
-                    push(@str, 'for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}')
+                    push(@str, 'for (var i_ = 0; i_ < 1 ; i_++) {' . '
+' . $body->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}')
                 }
                 elsif ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto' || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {
                     push(@str, $last_statement->emit_javascript3($level, 'runtime'))
@@ -12360,10 +15531,22 @@ use feature 'say';
             }
             if ($self->{'top_level'} && $Perlito5::THROW) {
                 $level--;
-                $out .= Perlito5::JavaScript3::tab($level) . 'try {' . chr(10) . join(chr(10), map($tab . $_, @str)) . chr(10) . Perlito5::JavaScript3::tab($level) . '}' . chr(10) . Perlito5::JavaScript3::tab($level) . 'catch(err) {' . chr(10) . Perlito5::JavaScript3::tab($level + 1) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::JavaScript3::tab($level + 2) . 'throw(err);' . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}' . chr(10) . Perlito5::JavaScript3::tab($level + 1) . 'else {' . chr(10) . Perlito5::JavaScript3::tab($level + 2) . ($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)') . ';' . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}' . chr(10) . Perlito5::JavaScript3::tab($level) . '}'
+                $out .= Perlito5::JavaScript3::tab($level) . 'try {
+' . join('
+', map($tab . $_, @str)) . '
+' . Perlito5::JavaScript3::tab($level) . '}' . '
+' . Perlito5::JavaScript3::tab($level) . 'catch(err) {' . '
+' . Perlito5::JavaScript3::tab($level + 1) . 'if ( err instanceof Error ) {' . '
+' . Perlito5::JavaScript3::tab($level + 2) . 'throw(err);' . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}' . '
+' . Perlito5::JavaScript3::tab($level + 1) . 'else {' . '
+' . Perlito5::JavaScript3::tab($level + 2) . ($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)') . ';
+' . Perlito5::JavaScript3::tab($level + 1) . '}' . '
+' . Perlito5::JavaScript3::tab($level) . '}'
             }
             else {
-                $out .= join(chr(10), map($tab . $_, @str))
+                $out .= join('
+', map($tab . $_, @str))
             }
             $Perlito5::PKG_NAME = $outer_pkg;
             $self->{'top_level'} && ($Perlito5::THROW = $outer_throw);
@@ -12375,7 +15558,10 @@ use feature 'say';
         sub Perlito5::AST::CompUnit::emit_javascript3 {
             my $self = $_[0];
             my $level = $_[1];
-            my $str = '(function () {' . chr(10) . Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}, 'needs_return' => 0)->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '})()' . chr(10);
+            my $str = '(function () {
+' . Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}, 'needs_return' => 0)->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '})()
+';
             return $str
         }
         sub Perlito5::AST::CompUnit::emit_javascript3_program {
@@ -12390,9 +15576,12 @@ use feature 'say';
                 $str .= Perlito5::JavaScript3::IO::->emit_javascript2();
                 $str .= Perlito5::JavaScript3::Sprintf::->emit_javascript2()
             }
-            $str .= 'var p5want = null;' . chr(10) . 'var ' . Perlito5::JavaScript3::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10);
+            $str .= 'var p5want = null;
+' . 'var ' . Perlito5::JavaScript3::pkg_new_var() . ' = p5pkg[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];
+';
             for my $comp_unit (@{$comp_units}) {
-                $str = $str . $comp_unit->emit_javascript3() . chr(10)
+                $str = $str . $comp_unit->emit_javascript3() . '
+'
             }
             return $str
         }
@@ -12429,9 +15618,12 @@ use feature 'say';
             my $init = '';
             if ($self->{'name'} eq 'INIT') {
                 my $tmp = 'p5pkg.main._tmp' . Perlito5::JavaScript3::get_label();
-                $init = Perlito5::JavaScript3::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
+                $init = Perlito5::JavaScript3::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;
+'
             }
-            return 'p5for_lex(' . 'function () {' . chr(10) . $init . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'stmts'}, 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}, ' . '[0], ' . $self->emit_javascript3_continue($level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+            return 'p5for_lex(' . 'function () {
+' . $init . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'stmts'}, 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}, ' . '[0], ' . $self->emit_javascript3_continue($level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
         }
         sub Perlito5::AST::Block::emit_javascript3_continue {
             my $self = shift;
@@ -12439,7 +15631,9 @@ use feature 'say';
             if (!$self->{'continue'} || !@{$self->{'continue'}->{'stmts'}}) {
                 return 'false'
             }
-            return 'function () {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'continue'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}'
+            return 'function () {
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'continue'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}'
         }
     }
     package Perlito5::AST::Index;
@@ -12512,8 +15706,8 @@ use feature 'say';
             my $level = shift;
             my $wantarray = shift;
             my $str_name = $self->{'name'};
-            $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-            $str_name eq '"' && ($str_name = chr(92) . '"');
+            $str_name eq '\\' && ($str_name = '\\\\');
+            $str_name eq '"' && ($str_name = '\\"');
             if ($self->{'sigil'} eq '@') {
                 if ($wantarray eq 'scalar') {
                     return $self->emit_javascript3($level, 'list') . '.FETCHSIZE()'
@@ -12577,8 +15771,8 @@ use feature 'say';
             }
             elsif ($self->{'decl'} eq 'our') {
                 my $str_name = $self->{'var'}->{'name'};
-                $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-                $str_name eq '"' && ($str_name = chr(92) . '"');
+                $str_name eq '\\' && ($str_name = '\\\\');
+                $str_name eq '"' && ($str_name = '\\"');
                 return 'p5global("' . $self->{'var'}->{'sigil'} . '", ' . '"' . ($self->{'var'}->{'namespace'} || $Perlito5::PKG_NAME) . '", ' . '"' . $str_name . '")'
             }
             elsif ($self->{'decl'} eq 'local') {
@@ -12760,7 +15954,7 @@ use feature 'say';
             my $self = $_[0];
             my $level = $_[1];
             '(new p5HashRef(new p5Hash(' . Perlito5::JavaScript3::to_list($self->{'arguments'}, $level, 'hash') . ')))'
-        }, 'prefix:<' . chr(92) . '>' => sub {
+        }, 'prefix:<\\>' => sub {
             my $self = $_[0];
             my $level = $_[1];
             my $arg = $self->{'arguments'}->[0];
@@ -12943,7 +16137,25 @@ use feature 'say';
                 my $var_env_js = '(new p5ArrayRef(new p5Array(' . Perlito5::JavaScript3::to_list($m) . ')))';
                 $eval = 'eval(perl5_to_js(' . Perlito5::JavaScript3::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . ', ' . '"' . $wantarray . '"' . '))'
             }
-            '(function (p5want) {' . chr(10) . 'var r = null;' . chr(10) . 'p5pkg["main"]["v_@"].assign("");' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'p5pkg["main"]["v_@"].assign(err);' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'p5pkg["main"]["v_@"].assign(err);' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'return(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})(' . ($wantarray eq 'list' ? 1 : $wantarray eq 'scalar' ? 0 : $wantarray eq 'void' ? 'null' : 'p5want') . ')'
+            '(function (p5want) {
+' . 'var r = null;
+' . 'p5pkg["main"]["v_@"].assign("");' . '
+' . 'try {
+' . 'r = ' . $eval . '
+' . '}
+' . 'catch(err) {
+' . 'if ( err instanceof p5_error ) {
+' . 'p5pkg["main"]["v_@"].assign(err);' . '
+' . '}
+' . 'else if ( err instanceof Error ) {
+' . 'p5pkg["main"]["v_@"].assign(err);' . '
+' . '}
+' . 'else {
+' . 'return(err);
+' . '}
+' . '}
+' . 'return r;
+' . '})(' . ($wantarray eq 'list' ? 1 : $wantarray eq 'scalar' ? 0 : $wantarray eq 'void' ? 'null' : 'p5want') . ')'
         }, 'undef' => sub {
             my $self = shift;
             my $level = shift;
@@ -12973,7 +16185,9 @@ use feature 'say';
             else {
                 $fun = [$fun]
             }
-            'p5map(' . Perlito5::JavaScript3::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}, ' . $list . ')'
+            'p5map(' . Perlito5::JavaScript3::pkg() . ', ' . 'function (p5want) {' . '
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}, ' . $list . ')'
         }, 'grep' => sub {
             my $self = shift;
             my $level = shift;
@@ -12987,7 +16201,9 @@ use feature 'say';
             else {
                 $fun = [$fun]
             }
-            'p5grep(' . Perlito5::JavaScript3::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}, ' . $list . ')'
+            'p5grep(' . Perlito5::JavaScript3::pkg() . ', ' . 'function (p5want) {' . '
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}, ' . $list . ')'
         }, 'sort' => sub {
             my $self = shift;
             my $level = shift;
@@ -12997,7 +16213,9 @@ use feature 'say';
             my $list;
             if (ref($in[0]) eq 'Perlito5::AST::Block') {
                 $fun = shift(@in);
-                $fun = 'function (p5want) {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun->{'stmts'}, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}'
+                $fun = 'function (p5want) {' . '
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $fun->{'stmts'}, 'needs_return' => 1, 'top_level' => 0))->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}'
             }
             else {
                 $fun = 'null'
@@ -13126,16 +16344,16 @@ use feature 'say';
                             }
                         }
                     }
-                    elsif ($c eq chr(92)) {
-                        if (substr($sig, 0, 2) eq chr(92) . '$') {
+                    elsif ($c eq '\\') {
+                        if (substr($sig, 0, 2) eq '\\$') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript3($level, 'scalar'))
                         }
-                        elsif (substr($sig, 0, 2) eq chr(92) . '@' || substr($sig, 0, 2) eq chr(92) . '%') {
+                        elsif (substr($sig, 0, 2) eq '\\@' || substr($sig, 0, 2) eq '\\%') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript3($level, 'list'))
                         }
-                        elsif (substr($sig, 0, 5) eq chr(92) . '[@%]') {
+                        elsif (substr($sig, 0, 5) eq '\\[@%]') {
                             $sig = substr($sig, 4);
                             (@in || !$optional) && push(@out, shift(@in)->emit_javascript3($level, 'list'))
                         }
@@ -13164,10 +16382,15 @@ use feature 'say';
             my $level = shift;
             my $cond = $self->{'cond'};
             my $body = Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
-            my $s = 'if ( ' . Perlito5::JavaScript3::to_bool($cond, $level + 1) . ' ) {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}';
+            my $s = 'if ( ' . Perlito5::JavaScript3::to_bool($cond, $level + 1) . ' ) {' . '
+' . $body->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}';
             if (@{$self->{'otherwise'}->stmts()}) {
                 my $otherwise = Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
-                $s = $s . chr(10) . Perlito5::JavaScript3::tab($level) . 'else {' . chr(10) . $otherwise->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}'
+                $s = $s . '
+' . Perlito5::JavaScript3::tab($level) . 'else {' . '
+' . $otherwise->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}'
             }
             return $s
         }
@@ -13181,7 +16404,9 @@ use feature 'say';
             my $body = Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
             my $expr = Perlito5::AST::Apply::->new('code' => 'infix:<==>', 'arguments' => [Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_'), $cond]);
             my $label = '';
-            my $s = 'if ( ' . Perlito5::JavaScript3::to_bool($expr, $level + 1) . ' ) {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::JavaScript3::tab($level) . '}';
+            my $s = 'if ( ' . Perlito5::JavaScript3::to_bool($expr, $level + 1) . ' ) {' . '
+' . $body->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level + 1) . 'throw(new p5_error("next", "' . $label . '"))' . Perlito5::JavaScript3::tab($level) . '}';
             return $s
         }
     }
@@ -13191,7 +16416,9 @@ use feature 'say';
             my $self = shift;
             my $level = shift;
             my $cond = $self->{'cond'};
-            return 'p5while(' . 'function () {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}, ' . Perlito5::JavaScript3::emit_function_javascript3($level, 0, $cond) . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+            return 'p5while(' . 'function () {
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}, ' . Perlito5::JavaScript3::emit_function_javascript3($level, 0, $cond) . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
         }
     }
     package Perlito5::AST::For;
@@ -13201,16 +16428,22 @@ use feature 'say';
             my $level = shift;
             if (ref($self->{'cond'}) eq 'ARRAY') {
                 my $body = Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'create_context' => 1);
-                return 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript3($level + 1) . ' ' : ' ') . ') {' . chr(10) . $body->emit_javascript3($level + 1) . chr(10) . Perlito5::JavaScript3::tab($level) . '}'
+                return 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? $self->{'cond'}->[1]->emit_javascript3($level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_javascript3($level + 1) . ' ' : ' ') . ') {' . '
+' . $body->emit_javascript3($level + 1) . '
+' . Perlito5::JavaScript3::tab($level) . '}'
             }
             my $cond = Perlito5::JavaScript3::to_list([$self->{'cond'}], $level + 1);
             if ($self->{'topic'}) {
                 my $v = $self->{'topic'};
                 my $sig = $v->emit_javascript3($level + 1);
-                return 'p5for_lex(' . 'function (' . $sig . ') {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+                return 'p5for_lex(' . 'function (' . $sig . ') {
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
             }
             else {
-                return 'p5for(' . Perlito5::JavaScript3::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . chr(10) . Perlito5::JavaScript3::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
+                return 'p5for(' . Perlito5::JavaScript3::pkg() . ', ' . 'function () {' . '
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'needs_return' => 0, 'top_level' => 0))->emit_javascript3($level + 2) . '
+' . Perlito5::JavaScript3::tab($level + 1) . '}, ' . $cond . ', ' . Perlito5::AST::Block::emit_javascript3_continue($self, $level) . ', ' . '"' . ($self->{'label'} || '') . '"' . ')'
             }
         }
     }
@@ -13219,7 +16452,10 @@ use feature 'say';
         sub Perlito5::AST::Sub::emit_javascript3 {
             my $self = shift;
             my $level = shift;
-            my $s = 'function (List__, p5want) {' . chr(10) . Perlito5::JavaScript3::tab($level + 1) . 'List__ = new p5Array(List__);' . chr(10) . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'block'}, 'needs_return' => 1, 'top_level' => 1))->emit_javascript3($level) . chr(10) . Perlito5::JavaScript3::tab($level) . '}';
+            my $s = 'function (List__, p5want) {' . '
+' . Perlito5::JavaScript3::tab($level + 1) . 'List__ = new p5Array(List__);' . '
+' . (Perlito5::JavaScript3::LexicalBlock::->new('block' => $self->{'block'}, 'needs_return' => 1, 'top_level' => 1))->emit_javascript3($level) . '
+' . Perlito5::JavaScript3::tab($level) . '}';
             if ($self->{'name'}) {
                 return 'p5typeglob_set("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'
             }
@@ -13234,7 +16470,8 @@ use feature 'say';
             my $self = shift;
             my $level = shift;
             Perlito5::Grammar::Use::emit_time_eval($self);
-            '// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)
+            '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
+'
         }
     }
     1
@@ -13244,7 +16481,1173 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript3::Runtime;
     sub Perlito5::JavaScript3::Runtime::emit_javascript3 {
-        return '//' . chr(10) . '// lib/Perlito5/JavaScript3/Runtime.js' . chr(10) . '//' . chr(10) . '// Runtime for "Perlito" Perl5-in-JavaScript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . chr(10) . 'if (typeof p5pkg !== "object") {' . chr(10) . '    p5pkg = {};' . chr(10) . '    p5LOCAL = [];' . chr(10) . chr(10) . '    var universal = function () {};' . chr(10) . '    p5pkg.UNIVERSAL = new universal();' . chr(10) . '    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";' . chr(10) . '    p5pkg.UNIVERSAL.isa = function (List__) {' . chr(10) . '        // TODO - use @ISA' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = p5str(List__[1]);' . chr(10) . '        if (o instanceof p5Scalar) {' . chr(10) . '            o = o.FETCH();' . chr(10) . '        }' . chr(10) . '        return o._class_._ref_ == s' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.can = function (List__) {' . chr(10) . '        var o = List__[0];' . chr(10) . '        var s = p5str(List__[1]);' . chr(10) . '        if (o instanceof p5Scalar) {' . chr(10) . '            o = o.FETCH();' . chr(10) . '        }' . chr(10) . '        if ( s.indexOf("::") == -1 ) {' . chr(10) . '            return p5method_lookup(s, o._class_._ref_, {})' . chr(10) . '        }' . chr(10) . '        var c = s.split("::");' . chr(10) . '        s = c.pop(); ' . chr(10) . '        return p5method_lookup(s, c.join("::"), {});' . chr(10) . '    };' . chr(10) . '    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;' . chr(10) . chr(10) . '    var core = function () {};' . chr(10) . '    p5pkg["CORE"] = new core();' . chr(10) . '    p5pkg["CORE"]._ref_ = "CORE";' . chr(10) . chr(10) . '    var core_global = function () {};' . chr(10) . '    core_global.prototype = p5pkg.CORE;' . chr(10) . '    p5pkg["CORE::GLOBAL"] = new core_global();' . chr(10) . '    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";' . chr(10) . chr(10) . '    p5_error = function (type, v) {' . chr(10) . '        this.type = type;' . chr(10) . '        this.v = this.message = v;' . chr(10) . '        this.toString = function(){' . chr(10) . '            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {' . chr(10) . '                return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "break" outside a given block' . chr(39) . chr(10) . '            }' . chr(10) . '            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {' . chr(10) . '                if (this.v == "") { return ' . chr(39) . 'Can' . chr(92) . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }' . chr(10) . '                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            return this.v;' . chr(10) . '        };' . chr(10) . '    };' . chr(10) . '    p5_error.prototype = Error.prototype;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5make_package(pkg_name) {' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        var tmp = function () {};' . chr(10) . '        tmp.prototype = p5pkg["CORE::GLOBAL"];' . chr(10) . '        p5pkg[pkg_name] = new tmp();' . chr(10) . '        p5pkg[pkg_name]._ref_ = pkg_name;' . chr(10) . '        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak' . chr(10) . chr(10) . '        // TODO - add the other package global variables' . chr(10) . '        p5pkg[pkg_name]["List_ISA"] = new p5Array([]);' . chr(10) . '        p5pkg[pkg_name]["v_a"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v_b"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v__"] = new p5Scalar(null);' . chr(10) . '        p5pkg[pkg_name]["v_AUTOLOAD"] = new p5Scalar(null);' . chr(10) . '    }' . chr(10) . '    return p5pkg[pkg_name];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5code_lookup_by_name(package_name, sub_name) {' . chr(10) . '    // sub_name can have an optional namespace' . chr(10) . '    var parts = sub_name.split(/::/);' . chr(10) . '    if (parts.length > 1) {' . chr(10) . '        sub_name = parts.pop();' . chr(10) . '        package_name = parts.join("::");' . chr(10) . '    }' . chr(10) . '    if (p5pkg.hasOwnProperty(package_name)) {' . chr(10) . '        var c = p5pkg[package_name];' . chr(10) . '        if ( c.hasOwnProperty(sub_name) ) {' . chr(10) . '            return c[sub_name]' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return null;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5get_class_for_method(method, class_name, seen) {' . chr(10) . '    // default mro' . chr(10) . '    // TODO - cache the methods that were already looked up' . chr(10) . '    if ( p5pkg[class_name].hasOwnProperty(method) ) {' . chr(10) . '        return class_name' . chr(10) . '    }' . chr(10) . '    var isa = p5pkg[class_name].List_ISA;' . chr(10) . '    for (var i = 0; i < isa.length; i++) {' . chr(10) . '        if (!seen[isa[i]]) {' . chr(10) . '            var m = p5get_class_for_method(method, isa[i], seen);' . chr(10) . '            if (m) {' . chr(10) . '                return m ' . chr(10) . '            }' . chr(10) . '            seen[isa[i]]++;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5method_lookup(method, class_name, seen) {' . chr(10) . '    var c = p5get_class_for_method(method, class_name, seen);' . chr(10) . '    if (c) {' . chr(10) . '        return p5pkg[c][method]' . chr(10) . '    }' . chr(10) . '    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {' . chr(10) . '        return p5pkg.UNIVERSAL[method]' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5call(invocant, method, list, p5want) {' . chr(10) . '    list.unshift(invocant);' . chr(10) . chr(10) . '    if (invocant instanceof p5Scalar) {' . chr(10) . '        // TODO - move p5call() to p5Scalar method' . chr(10) . '        invocant = invocant.FETCH();' . chr(10) . '    }' . chr(10) . chr(10) . '    if ( invocant.hasOwnProperty("_class_") ) {' . chr(10) . chr(10) . '        if ( invocant._class_.hasOwnProperty(method) ) {' . chr(10) . '            return invocant._class_[method](list, p5want)' . chr(10) . '        }' . chr(10) . '        var m = p5method_lookup(method, invocant._class_._ref_, {});' . chr(10) . '        if (m) {' . chr(10) . '            return m(list, p5want)' . chr(10) . '        }' . chr(10) . chr(10) . '        // method can have an optional namespace' . chr(10) . '        var pkg_name = method.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            var name = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '            m = p5method_lookup(name, pkg_name, {});' . chr(10) . '            if (m) {' . chr(10) . '                return m(list, p5want)' . chr(10) . '            }' . chr(10) . '            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);' . chr(10) . '        }' . chr(10) . chr(10) . '        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});' . chr(10) . '        if (pkg_name) {' . chr(10) . '            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;' . chr(10) . '            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);' . chr(10) . '        }' . chr(10) . chr(10) . '        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);' . chr(10) . chr(10) . '    }' . chr(10) . chr(10) . '    // the invocant doesn' . chr(39) . 't have a class' . chr(10) . chr(10) . '    if (typeof invocant === "string") {' . chr(10) . '        var aclass = p5make_package(invocant);' . chr(10) . '        return p5call(aclass, method, list, p5want);' . chr(10) . '    }' . chr(10) . chr(10) . '    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);' . chr(10) . chr(10) . '}' . chr(10) . chr(10) . 'function p5call_sub(namespace, name, list, p5want) {' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty(name)) {' . chr(10) . '        return p5pkg[namespace][name](list, p5want)' . chr(10) . '    }' . chr(10) . '    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {' . chr(10) . '        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;' . chr(10) . '        return p5pkg[namespace]["AUTOLOAD"](list, p5want)' . chr(10) . '    }' . chr(10) . '    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref(v) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        return p5pkg[pkg_name]["v_"+v];' . chr(10) . '    }' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5scalar_deref_set(v, n) {' . chr(10) . '    if (typeof v === "string") {' . chr(10) . '        var pkg_name = v.split(/::/);' . chr(10) . '        if (pkg_name.length > 1) {' . chr(10) . '            v = pkg_name.pop();' . chr(10) . '            pkg_name = pkg_name.join("::");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;' . chr(10) . '        }' . chr(10) . '        var c = v.charCodeAt(0);' . chr(10) . '        if (c < 27) {' . chr(10) . '            v = String.fromCharCode(c + 64) + v.substr(1);' . chr(10) . '            pkg_name = ' . chr(39) . 'main' . chr(39) . ';' . chr(10) . '        }' . chr(10) . '        p5pkg[pkg_name]["v_"+v] = n;' . chr(10) . '        return p5pkg[pkg_name]["v_"+v];' . chr(10) . '    }' . chr(10) . '    v._scalar_ = n;' . chr(10) . '    return v._scalar_;' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("main");' . chr(10) . 'p5make_package("Perlito5");' . chr(10) . 'p5pkg["Perlito5"].v_PKG_NAME = "main";' . chr(10) . 'p5pkg["main"]["v_@"]       = new p5Scalar("");  // $@' . chr(10) . 'p5pkg["main"]["v_|"]       = new p5Scalar(0);   // $|' . chr(10) . 'p5pkg["main"]["List_#"]    = new p5Array([]);   // @#' . chr(10) . 'p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O' . chr(10) . 'p5pkg["main"]["List_INC"]  = new p5Array([]);' . chr(10) . 'p5pkg["main"]["Hash_INC"]  = new p5Hash({});' . chr(10) . 'p5pkg["main"]["List_ARGV"] = new p5Array([]);' . chr(10) . 'p5pkg["main"]["Hash_ENV"]  = new p5Hash({});' . chr(10) . 'if (isNode) {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = new p5Array(process.argv.splice(2));' . chr(10) . '    p5pkg["main"]["Hash_ENV"]  = new p5Hash(process.env);' . chr(10) . '    p5pkg["main"]["v_$"]       = new p5Scalar(process.pid);' . chr(10) . '} else if (typeof arguments === "object") {' . chr(10) . '    p5pkg["main"]["List_ARGV"] = new p5Array(arguments);' . chr(10) . '}' . chr(10) . chr(10) . 'p5make_package("Perlito5::IO");' . chr(10) . 'p5make_package("Perlito5::Runtime");' . chr(10) . 'p5make_package("Perlito5::Grammar");' . chr(10) . chr(10) . 'function p5typeglob_set(pkg_name, sub_name, func) {' . chr(10) . '    p5make_package(pkg_name);' . chr(10) . '    p5pkg[pkg_name][sub_name] = func;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5set_glob(name, data) {' . chr(10) . '    if ( name.indexOf("::") == -1 ) {' . chr(10) . '        p5pkg[ p5pkg["Perlito5"].v_PKG_NAME.FETCH() ][name] = data;' . chr(10) . '        return data;' . chr(10) . '    }' . chr(10) . '    var c = name.split("::");' . chr(10) . '    s = c.pop(); ' . chr(10) . '    var pkg = c.join("::");' . chr(10) . '    p5make_package(pkg);' . chr(10) . '    p5pkg[pkg][s] = data;' . chr(10) . '    return data;' . chr(10) . '}' . chr(10) . chr(10) . 'var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ' };' . chr(10) . chr(10) . 'function p5set_local(namespace, name, sigil) {' . chr(10) . '    var vname = sigils[sigil] + name;' . chr(10) . '    p5LOCAL.push([namespace, vname, namespace[vname]]);' . chr(10) . chr(10) . '    if (sigil == ' . chr(39) . '$' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Scalar(null);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Array([]);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {' . chr(10) . '        namespace[vname] = new p5Hash({});' . chr(10) . '    }' . chr(10) . '    return namespace[vname];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5cleanup_local(idx, value) {' . chr(10) . '    while (p5LOCAL.length > idx) {' . chr(10) . '        l = p5LOCAL.pop();' . chr(10) . '        l[0][l[1]] = l[2];' . chr(10) . '    }' . chr(10) . '    return value;' . chr(10) . '}' . chr(10) . chr(10) . 'function p5global(sigil, namespace, name) {' . chr(10) . '    // TODO - autovivify namespace' . chr(10) . '    var vname = sigils[sigil] + name;' . chr(10) . '    var v = p5pkg[namespace][vname];' . chr(10) . '    if (v != null) {' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    if (sigil == ' . chr(39) . '$' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][vname] = new p5Scalar(null);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][vname] = new p5Array([]);' . chr(10) . '    }' . chr(10) . '    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {' . chr(10) . '        p5pkg[namespace][vname] = new p5Hash({});' . chr(10) . '    }' . chr(10) . '    return p5pkg[namespace][vname];' . chr(10) . '}' . chr(10) . chr(10) . 'function p5HashRef(o) {' . chr(10) . '    this._href_ = o;' . chr(10) . '    this._ref_ = "HASH";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return "HASH(0x0000)";  // TODO' . chr(10) . '    };' . chr(10) . '    this.hderef = function() {' . chr(10) . '        return this._href_;' . chr(10) . '    };' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        return this._href_.hset(i, v);' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        return this._href_.hget(i, autoviv);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ArrayRef(o) {' . chr(10) . '    this._aref_ = o;' . chr(10) . '    this._ref_ = "ARRAY";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return "ARRAY(0x0000)";  // TODO' . chr(10) . '    };' . chr(10) . '    this.aderef = function() {' . chr(10) . '        return this._aref_;' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        return this._aref_.aset(i, v);' . chr(10) . '    }' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        return this._aref_.aget(i, autoviv);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5ScalarRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "SCALAR";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return "SCALAR(0x0000)";  // TODO' . chr(10) . '    };' . chr(10) . '    this.sderef = function() {' . chr(10) . '        return this._scalar_;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5GlobRef(o) {' . chr(10) . '    this._scalar_ = o;' . chr(10) . '    this._ref_ = "GLOB";' . chr(10) . '    this.p5bool = function() { return 1 };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return "GLOB(0x0000)";  // TODO' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Array(o) {' . chr(10) . '    // TODO - array slice' . chr(10) . '    this._array_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        return this._array_.length != 0' . chr(10) . '    };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return ' . chr(39) . chr(39) . ' + this._array_.length;' . chr(10) . '    };' . chr(10) . '    this.p5num = function() {' . chr(10) . '        return this._array_.length;' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        if (i < 0) {' . chr(10) . '            i = this._array_.length + i;' . chr(10) . '        }' . chr(10) . '        if (this._array_[i] instanceof p5Scalar) {' . chr(10) . '            this._array_[i].assign(v);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            if (v instanceof p5Scalar) {' . chr(10) . '                this._array_[i] = v.FETCH();' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                this._array_[i] = v;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        if (i < 0) {' . chr(10) . '            i = this._array_.length + i;' . chr(10) . '        }' . chr(10) . '        if (autoviv) {' . chr(10) . '            if (autoviv == ' . chr(39) . 'lvalue' . chr(39) . ') {' . chr(10) . '                if (this._array_.length < i) {' . chr(10) . '                    // don' . chr(39) . 't vivify yet; create a proxy object' . chr(10) . '                    return new p5ArrayProxy(this, i);' . chr(10) . '                }' . chr(10) . '                if (!(this._array_[i] instanceof p5Scalar)) {' . chr(10) . '                    this._array_[i] = new p5Scalar(this._array_[i]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '                if (!(this._array_[i] instanceof p5ArrayRef) &&' . chr(10) . '                    !(this._array_[i] instanceof p5Scalar))' . chr(10) . '                {' . chr(10) . '                    this._array_[i] = new p5ArrayRef(new p5Array([]));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '                if (!(this._array_[i] instanceof p5HashRef) &&' . chr(10) . '                    !(this._array_[i] instanceof p5Scalar))' . chr(10) . '                {' . chr(10) . '                    this._array_[i] = new p5HashRef(new p5Hash({}));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return this._array_[i];' . chr(10) . '    };' . chr(10) . '    this.get_values = function(o) {' . chr(10) . '        // add values to the param (a native js list)' . chr(10) . '        for(var i = 0; i < this._array_.length; i++) {' . chr(10) . '            o.push(this._array_[i]);' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.get_lvalues = function(o) {' . chr(10) . '        // add lvalues to the param (a native js list)' . chr(10) . '        for(var i = 0; i < this._array_.length; i++) {' . chr(10) . '            o.push(this._array_[i] instanceof p5Scalar ? this._array_[i] : this.aget(i, "lvalue"));' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.assign = function(a) {' . chr(10) . '        if (a instanceof Array) {' . chr(10) . '            // TODO - cleanup, this shouldn' . chr(39) . 't happen' . chr(10) . '            this._array_ = a;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this._array_ = a._array_;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    };' . chr(10) . chr(10) . '    // operations that can be tie()' . chr(10) . '    this.FETCHSIZE = function() {' . chr(10) . '        return this._array_.length;' . chr(10) . '    };' . chr(10) . '    this.PUSH = function(v) {' . chr(10) . '        for(var i = 0; i < v._array_.length; i++) {' . chr(10) . '            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);' . chr(10) . '        }' . chr(10) . '        return this._array_.length;' . chr(10) . '    };' . chr(10) . '    this.UNSHIFT = function(v) {' . chr(10) . '        for(var i = v._array_.length-1; i >= 0; i--) {' . chr(10) . '            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);' . chr(10) . '        }' . chr(10) . '        return this._array_.length;' . chr(10) . '    };' . chr(10) . '    this.POP = function() {' . chr(10) . '        if (this._array_.length == null) {' . chr(10) . '            return null;' . chr(10) . '        }' . chr(10) . '        return this._array_.pop();' . chr(10) . '    };' . chr(10) . '    this.SHIFT = function(v) {' . chr(10) . '        if (this._array_.length == null) {' . chr(10) . '            return null;' . chr(10) . '        }' . chr(10) . '        return this._array_.shift();' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Hash(o) {' . chr(10) . '    // TODO - hash slice' . chr(10) . '    this._hash_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        o = this._hash_;' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        return false;' . chr(10) . '    };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return ' . chr(39) . chr(39) . ' + this.p5num() + ' . chr(39) . '/8' . chr(39) . ';' . chr(10) . '    };' . chr(10) . '    this.p5num = function() {' . chr(10) . '        var out = 0;' . chr(10) . '        for (var i in this._hash_) {' . chr(10) . '            out++;' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    };' . chr(10) . '    this.exists = function(i) {' . chr(10) . '        return this._hash_.hasOwnProperty(i);' . chr(10) . '    };' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        if (this._hash_[i] instanceof p5Scalar) {' . chr(10) . '            this._hash_[i].assign(v);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            if (v instanceof p5Scalar) {' . chr(10) . '                this._hash_[i] = v.FETCH();' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                this._hash_[i] = v;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        if (autoviv) {' . chr(10) . '            if (autoviv == ' . chr(39) . 'lvalue' . chr(39) . ') {' . chr(10) . '                if (! this._hash_.hasOwnProperty(i)) {' . chr(10) . '                    // don' . chr(39) . 't autovivify yet; create a proxy object' . chr(10) . '                    return new p5HashProxy(this, i);' . chr(10) . '                }' . chr(10) . '                if (!(this._hash_[i] instanceof p5Scalar)) {' . chr(10) . '                    this._hash_[i] = new p5Scalar(this._hash_[i]);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {' . chr(10) . '                if (!(this._hash_[i] instanceof p5ArrayRef) &&' . chr(10) . '                    !(this._hash_[i] instanceof p5Scalar))' . chr(10) . '                {' . chr(10) . '                    this._hash_[i] = new p5ArrayRef(new p5Array([]));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {' . chr(10) . '                if (!(this._hash_[i] instanceof p5HashRef) &&' . chr(10) . '                    !(this._hash_[i] instanceof p5Scalar))' . chr(10) . '                {' . chr(10) . '                    this._hash_[i] = new p5HashRef(new p5Hash({}));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return this._hash_[i];' . chr(10) . '    };' . chr(10) . '    this.get_values = function(o) {' . chr(10) . '        // add a native list of values to the param' . chr(10) . '        for (var i in this._hash_) {' . chr(10) . '            o.push(i);' . chr(10) . '            o.push(this._hash_[i]);' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.get_lvalues = function(o) {' . chr(10) . '        // add a native list of lvalues to the param' . chr(10) . '        for (var i in this._hash_) {' . chr(10) . '            o.push(i);' . chr(10) . '            o.push(this._hash_[i] instanceof p5Scalar ? this._hash_[i] : this.hget(i, "lvalue"));' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.assign = function(h) {' . chr(10) . '        if (h instanceof p5Hash) {' . chr(10) . '            this._hash_ = h._hash_;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // TODO - cleanup, this shouldn' . chr(39) . 't happen' . chr(10) . '            this._hash_ = h;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10) . 'function p5Scalar(o) {' . chr(10) . '    this._v_ = o;' . chr(10) . '    this._ref_ = "";' . chr(10) . chr(10) . '    // be a value' . chr(10) . '    this.p5bool = function() {' . chr(10) . '        return p5bool(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5string = function() {' . chr(10) . '        return p5str(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5num = function() {' . chr(10) . '        return p5num(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5code = function() {' . chr(10) . '        return p5code(this._v_);' . chr(10) . '    };' . chr(10) . '    this.p5incr = function() {' . chr(10) . '        this._v_ = p5incr(this._v_);' . chr(10) . '        return this._v_;' . chr(10) . '    };' . chr(10) . '    this.p5postincr = function() {' . chr(10) . '        var v = this._v_;' . chr(10) . '        this._v_ = p5incr(this._v_);' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . '    this.p5decr = function() {' . chr(10) . '        this._v_ = p5decr(this._v_);' . chr(10) . '        return this._v_;' . chr(10) . '    };' . chr(10) . '    this.p5postdecr = function() {' . chr(10) . '        var v = this._v_;' . chr(10) . '        this._v_ = p5decr(this._v_);' . chr(10) . '        return v;' . chr(10) . '    };' . chr(10) . chr(10) . '    // be a scalar ref' . chr(10) . '    this.sderef = function(i) {' . chr(10) . '        // TODO - autovivify scalar (with proxy object?)' . chr(10) . '        return this._v_.sderef();' . chr(10) . '    };' . chr(10) . chr(10) . '    // be an array ref' . chr(10) . '    this.aderef = function() {' . chr(10) . '        // TODO - autovivify array (with proxy object?)' . chr(10) . '        return this._v_.aderef();' . chr(10) . '    };' . chr(10) . '    this.aget = function(i, autoviv) {' . chr(10) . '        // TODO - autovivify array (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.aget(i, autoviv);' . chr(10) . '    };' . chr(10) . '    this.aset = function(i, v) {' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5ArrayRef(new p5Array([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.aset(i, v);' . chr(10) . '    };' . chr(10) . chr(10) . '    // be a hash ref' . chr(10) . '    this.hderef = function() {' . chr(10) . '        // TODO - autovivify hash (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hderef();' . chr(10) . '    };' . chr(10) . '    this.hget = function(i, autoviv) {' . chr(10) . '        // TODO - autovivify hash (with proxy object?)' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hget(i, autoviv);' . chr(10) . '    }' . chr(10) . '    this.hset = function(i, v) {' . chr(10) . '        if (this._v_ == null) {' . chr(10) . '            this._v_ = new p5HashRef(new p5Hash([]));' . chr(10) . '        }' . chr(10) . '        return this._v_.hset(i, v);' . chr(10) . '    }' . chr(10) . chr(10) . '    // be a container' . chr(10) . '    this.get_values = function(o) {' . chr(10) . '        // add a native list of values to the param' . chr(10) . '        o.push(this);' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.get_lvalues = function(o) {' . chr(10) . '        // add a native list of lvalues to the param' . chr(10) . '        o.push(this);' . chr(10) . '        return o;' . chr(10) . '    };' . chr(10) . '    this.assign = function(v) {' . chr(10) . '        if (v instanceof p5Scalar) {' . chr(10) . '            this._v_ = v.FETCH();' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this._v_ = v;' . chr(10) . '        }' . chr(10) . '        return this;' . chr(10) . '    };' . chr(10) . chr(10) . '    // operations that can be tie()' . chr(10) . '    this.FETCH = function() {' . chr(10) . '        // not an lvalue' . chr(10) . '        return this._v_;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . chr(10) . 'function p5HashProxy(h, k) {' . chr(10) . '    this._hashobj_ = h;' . chr(10) . '    this._key_ = k;' . chr(10) . '    this._v_ = null;' . chr(10) . '    this.assign = function(v) {' . chr(10) . '        // write-through; alternately, use read-through' . chr(10) . '        if (v instanceof p5Scalar) {' . chr(10) . '            this._v_ = v.FETCH();' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this._v_ = v;' . chr(10) . '        }' . chr(10) . '        return this._hashobj_.hset(this._key_, this._v_);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'p5HashProxy.prototype = new p5Scalar();' . chr(10) . chr(10) . chr(10) . 'function p5ArrayProxy(a, k) {' . chr(10) . '    this._arrayobj_ = a;' . chr(10) . '    this._key_ = k;' . chr(10) . '    this._v_ = null;' . chr(10) . '    this.assign = function(v) {' . chr(10) . '        // write-through; alternately, use read-through' . chr(10) . '        if (v instanceof p5Scalar) {' . chr(10) . '            this._v_ = v.FETCH();' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this._v_ = v;' . chr(10) . '        }' . chr(10) . '        return this._arrayobj_.aset(this._key_, this._v_);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'p5ArrayProxy.prototype = new p5Scalar();' . chr(10) . chr(10) . chr(10) . 'p5param_list = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        if (arguments[i] == null) {' . chr(10) . '            res.push(null)' . chr(10) . '        }' . chr(10) . '        else if (arguments[i].hasOwnProperty("get_lvalues")) {' . chr(10) . '            // container' . chr(10) . '            arguments[i].get_lvalues(res);' . chr(10) . '        }' . chr(10) . '        else if (arguments[i] instanceof Array) {' . chr(10) . '            // js Array -- possibly generated by p5context()' . chr(10) . '            // maybe too late to get lvalues -- needs more testing' . chr(10) . '            // this doesn' . chr(39) . 't handle nested Array' . chr(10) . '            o = arguments[i];' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-container' . chr(10) . '            res.push(arguments[i]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5list_to_a = function() {' . chr(10) . '    var res = [];' . chr(10) . '    for (i = 0; i < arguments.length; i++) {' . chr(10) . '        if (arguments[i] == null) {' . chr(10) . '            res.push(null)' . chr(10) . '        }' . chr(10) . '        else if (arguments[i].hasOwnProperty("get_values")) {' . chr(10) . '            // container' . chr(10) . '            arguments[i].get_values(res);' . chr(10) . '        }' . chr(10) . '        else if (arguments[i] instanceof Array) {' . chr(10) . '            // js Array -- possibly generated by p5context()' . chr(10) . '            o = arguments[i];' . chr(10) . '            for (j = 0; j < o.length; j++) {' . chr(10) . '                res.push(o[j]);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // non-container' . chr(10) . '            res.push(arguments[i]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'p5a_to_h = function(a) {' . chr(10) . '    var res = {};' . chr(10) . '    for (i = 0; i < a.length; i+=2) {' . chr(10) . '        res[p5str(a[i])] = a[i+1];' . chr(10) . '    }' . chr(10) . '    return res;' . chr(10) . '};' . chr(10) . chr(10) . 'if (isNode) {' . chr(10) . '    var fs = require("fs");' . chr(10) . '}' . chr(10) . chr(10) . 'p5context = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5list_to_a.apply(null, List__);' . chr(10) . '    }' . chr(10) . '    // scalar: return the last value' . chr(10) . '    var o = List__;' . chr(10) . '    while (o instanceof Array) {' . chr(10) . '        o =   o.length' . chr(10) . '            ? o[o.length-1]' . chr(10) . '            : null;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '}' . chr(10) . chr(10) . 'p5code = function(o) {' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    return o.p5code();' . chr(10) . '};' . chr(10) . chr(10) . 'p5str = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return CORE.join(["", o]);' . chr(10) . '    }' . chr(10) . '    if (typeof o.p5string === "function") {' . chr(10) . '        return o.p5string();' . chr(10) . '    }' . chr(10) . '    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {' . chr(10) . '        return o.toExponential().replace(/e-(' . chr(92) . 'd)$/,"e-0$1");' . chr(10) . '    }' . chr(10) . '    if (typeof o === "boolean") {' . chr(10) . '        return o ? "1" : "";' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "string") {' . chr(10) . '        return "" + o;' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5num = function(o) {' . chr(10) . '    if (o == null) {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "object" && (o instanceof Array)) {' . chr(10) . '        return o.length;' . chr(10) . '    }' . chr(10) . '    if (typeof o.p5num === "function") {' . chr(10) . '        return o.p5num();' . chr(10) . '    }' . chr(10) . '    if (typeof o !== "number") {' . chr(10) . '        return parseFloat(p5str(o));' . chr(10) . '    }' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'p5bool = function(o) {' . chr(10) . '    if (o) {' . chr(10) . '        if (typeof o === "boolean") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "number") {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        if (typeof o === "string") {' . chr(10) . '            return o != "" && o != "0";' . chr(10) . '        }' . chr(10) . '        if (typeof o.p5bool === "function") {' . chr(10) . '            return o.p5bool();' . chr(10) . '        }' . chr(10) . '        if (typeof o.length === "number") {' . chr(10) . '            return o.length;' . chr(10) . '        }' . chr(10) . '        if (o instanceof Error) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        for (var i in o) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    return false;' . chr(10) . '};' . chr(10) . chr(10) . 'p5incr = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o + 1;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(p5str(o));' . chr(10) . '};' . chr(10) . chr(10) . 'p5decr = function(o) {' . chr(10) . '    if (typeof o === "number") {' . chr(10) . '        return o - 1;' . chr(10) . '    }' . chr(10) . '    return p5num(o) - 1;' . chr(10) . '};' . chr(10) . chr(10) . 'p5and = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5or = function(a, fb) {' . chr(10) . '    if (p5bool(a)) {' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    return fb();' . chr(10) . '};' . chr(10) . chr(10) . 'p5defined_or = function(a, fb) {' . chr(10) . '    if (a == null) {' . chr(10) . '        return fb();' . chr(10) . '    }' . chr(10) . '    return a;' . chr(10) . '};' . chr(10) . chr(10) . 'p5cmp = function(a, b) {' . chr(10) . '    return a > b ? 1 : a < b ? -1 : 0 ' . chr(10) . '};' . chr(10) . chr(10) . 'p5complement = function(a) {' . chr(10) . '    return a < 0 ? ~a : 4294967295 - a' . chr(10) . '    // return a < 0 ? ~a : 18446744073709551615 - a' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_replicate = function(o, n) {' . chr(10) . '    n = p5num(n);' . chr(10) . '    return n ? Array(n + 1).join(o) : "";' . chr(10) . '};' . chr(10) . chr(10) . 'p5str_inc = function(s) {' . chr(10) . '    s = p5str(s);' . chr(10) . '    if (s.length < 2) {' . chr(10) . '        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {' . chr(10) . '            return String.fromCharCode(s.charCodeAt(0) + 1);' . chr(10) . '        }' . chr(10) . '        if (s == "9") {' . chr(10) . '            return "10";' . chr(10) . '        }' . chr(10) . '        if (s == "Z") {' . chr(10) . '            return "AA";' . chr(10) . '        }' . chr(10) . '        if (s == "z") {' . chr(10) . '            return "aa";' . chr(10) . '        }' . chr(10) . '        return "1";' . chr(10) . '    }' . chr(10) . '    var c = p5str_inc(s.substr(s.length-1, 1));' . chr(10) . '    if (c.length == 1) {' . chr(10) . '        return s.substr(0, s.length-1) + c;' . chr(10) . '    }' . chr(10) . '    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);' . chr(10) . '};' . chr(10) . chr(10) . 'p5for = function(namespace, func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    namespace["v__"] = new p5Scalar(null);' . chr(10) . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"].assign(args[i]);   // ??? - should this be a bind?' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '};' . chr(10) . chr(10) . 'p5for_lex = function(func, args, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    var _arg  = new p5Scalar(null);' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        try {' . chr(10) . '            _arg.assign(args[i]);' . chr(10) . '            func(_arg)' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5while = function(func, cond, cont, label) {' . chr(10) . '    var _redo = false;' . chr(10) . '    while (_redo || p5bool(cond())) {' . chr(10) . '        _redo = false;' . chr(10) . '        try {' . chr(10) . '            func()' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            if (err instanceof p5_error && err.v == label) {' . chr(10) . '                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '            }            ' . chr(10) . '            else {' . chr(10) . '                throw(err)' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (cont) {' . chr(10) . '            try {' . chr(10) . '                if (!_redo) { cont() }' . chr(10) . '            }' . chr(10) . '            catch(err) {' . chr(10) . '                if (err instanceof p5_error && err.v == label) {' . chr(10) . '                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }' . chr(10) . '                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }' . chr(10) . '                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }' . chr(10) . '                }            ' . chr(10) . '                else {' . chr(10) . '                    throw(err)' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'p5map = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    namespace["v__"] = new p5Scalar(null);' . chr(10) . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"].assign(args[i]);' . chr(10) . '        var o = p5list_to_a(func(1));' . chr(10) . '        for(var j = 0; j < o.length; j++) {' . chr(10) . '            out.push(o[j]);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5grep = function(namespace, func, args) {' . chr(10) . '    var v_old = namespace["v__"];' . chr(10) . '    namespace["v__"] = new p5Scalar(null);' . chr(10) . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < args.length; i++) {' . chr(10) . '        namespace["v__"].assign(args[i]);' . chr(10) . '        if (p5bool(func(0))) {' . chr(10) . '            out.push(args[i])' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    namespace["v__"] = v_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'p5sort = function(namespace, func, args) {' . chr(10) . '    var a_old = namespace["v_a"];' . chr(10) . '    var b_old = namespace["v_b"];' . chr(10) . '    namespace["v_a"] = new p5Scalar(null);' . chr(10) . '    namespace["v_b"] = new p5Scalar(null);' . chr(10) . chr(10) . '    var out = ' . chr(10) . '        func == null' . chr(10) . '        ? args.sort()' . chr(10) . '        : args.sort(' . chr(10) . '            function(a, b) {' . chr(10) . '                namespace["v_a"].assign(a);' . chr(10) . '                namespace["v_b"].assign(b);' . chr(10) . '                return func(0);' . chr(10) . '            }' . chr(10) . '        );' . chr(10) . '    namespace["v_a"] = a_old;' . chr(10) . '    namespace["v_b"] = b_old;' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'perl5_to_js = function( source, namespace, var_env_js, p5want ) {' . chr(10) . '    // CORE.say(["source: [" + source + "]"]);' . chr(10) . chr(10) . '    var strict_old = p5global("$", "Perlito5", "STRICT").FETCH();' . chr(10) . chr(10) . '    var namespace_old = p5global("$", "Perlito5", "PKG_NAME").FETCH();' . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace);' . chr(10) . chr(10) . '    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);' . chr(10) . chr(10) . '    if ( !p5bool(match) || p5str(match.hget("to")) != source.length ) {' . chr(10) . '        CORE.die(["Syntax error in eval near pos ", match.hget("to") ]);' . chr(10) . '    }' . chr(10) . chr(10) . '    ast = p5pkg.CORE.bless([' . chr(10) . '        new p5HashRef(new p5Hash({' . chr(10) . '            code: "do",' . chr(10) . '            arguments: [ p5pkg.CORE.bless([' . chr(10) . '                        new p5HashRef(new p5Hash({' . chr(10) . '                            stmts:   p5pkg["Perlito5::Match"].flat([match])' . chr(10) . '                        })),' . chr(10) . '                        p5pkg["Perlito5::AST::Block"]' . chr(10) . '                    ]) ]' . chr(10) . '        })),' . chr(10) . '        p5pkg["Perlito5::AST::Apply"]' . chr(10) . '    ]);' . chr(10) . chr(10) . '    // CORE.say(["ast: [" + ast + "]"]);' . chr(10) . '    js_code = p5call(ast, "emit_javascript3", [0, p5want]);' . chr(10) . '    // CORE.say(["js-source: [" + js_code + "]"]);' . chr(10) . chr(10) . '    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace_old);' . chr(10) . '    p5pkg["Perlito5"].v_STRICT.assign(strict_old);' . chr(10) . '    return js_code;' . chr(10) . '}' . chr(10) . chr(10)
+        return '//
+// lib/Perlito5/JavaScript3/Runtime.js
+//
+// Runtime for "Perlito" Perl5-in-JavaScript3
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var isNode = typeof require != "undefined";
+
+if (typeof p5pkg !== "object") {
+    p5pkg = {};
+    p5LOCAL = [];
+
+    var universal = function () {};
+    p5pkg.UNIVERSAL = new universal();
+    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";
+    p5pkg.UNIVERSAL.isa = function (List__) {
+        // TODO - use @ISA
+        var o = List__[0];
+        var s = p5str(List__[1]);
+        if (o instanceof p5Scalar) {
+            o = o.FETCH();
+        }
+        return o._class_._ref_ == s
+    };
+    p5pkg.UNIVERSAL.can = function (List__) {
+        var o = List__[0];
+        var s = p5str(List__[1]);
+        if (o instanceof p5Scalar) {
+            o = o.FETCH();
+        }
+        if ( s.indexOf("::") == -1 ) {
+            return p5method_lookup(s, o._class_._ref_, {})
+        }
+        var c = s.split("::");
+        s = c.pop(); 
+        return p5method_lookup(s, c.join("::"), {});
+    };
+    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;
+
+    var core = function () {};
+    p5pkg["CORE"] = new core();
+    p5pkg["CORE"]._ref_ = "CORE";
+
+    var core_global = function () {};
+    core_global.prototype = p5pkg.CORE;
+    p5pkg["CORE::GLOBAL"] = new core_global();
+    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
+
+    p5_error = function (type, v) {
+        this.type = type;
+        this.v = this.message = v;
+        this.toString = function(){
+            if (this.type == ' . chr(39) . 'break' . chr(39) . ') {
+                return ' . chr(39) . 'Can\\' . chr(39) . 't "break" outside a given block' . chr(39) . '
+            }
+            if (this.type == ' . chr(39) . 'next' . chr(39) . ' || this.type == ' . chr(39) . 'last' . chr(39) . ' || this.type == ' . chr(39) . 'redo' . chr(39) . ') {
+                if (this.v == "") { return ' . chr(39) . 'Can\\' . chr(39) . 't "' . chr(39) . ' + this.type + ' . chr(39) . '" outside a loop block' . chr(39) . ' }
+                return ' . chr(39) . 'Label not found for "' . chr(39) . ' + this.type + ' . chr(39) . ' ' . chr(39) . ' + this.v + ' . chr(39) . '"' . chr(39) . ';
+            }
+            return this.v;
+        };
+    };
+    p5_error.prototype = Error.prototype;
+}
+
+function p5make_package(pkg_name) {
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
+        var tmp = function () {};
+        tmp.prototype = p5pkg["CORE::GLOBAL"];
+        p5pkg[pkg_name] = new tmp();
+        p5pkg[pkg_name]._ref_ = pkg_name;
+        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak
+
+        // TODO - add the other package global variables
+        p5pkg[pkg_name]["List_ISA"] = new p5Array([]);
+        p5pkg[pkg_name]["v_a"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v_b"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v__"] = new p5Scalar(null);
+        p5pkg[pkg_name]["v_AUTOLOAD"] = new p5Scalar(null);
+    }
+    return p5pkg[pkg_name];
+}
+
+function p5code_lookup_by_name(package_name, sub_name) {
+    // sub_name can have an optional namespace
+    var parts = sub_name.split(/::/);
+    if (parts.length > 1) {
+        sub_name = parts.pop();
+        package_name = parts.join("::");
+    }
+    if (p5pkg.hasOwnProperty(package_name)) {
+        var c = p5pkg[package_name];
+        if ( c.hasOwnProperty(sub_name) ) {
+            return c[sub_name]
+        }
+    }
+    return null;
+}
+
+function p5get_class_for_method(method, class_name, seen) {
+    // default mro
+    // TODO - cache the methods that were already looked up
+    if ( p5pkg[class_name].hasOwnProperty(method) ) {
+        return class_name
+    }
+    var isa = p5pkg[class_name].List_ISA;
+    for (var i = 0; i < isa.length; i++) {
+        if (!seen[isa[i]]) {
+            var m = p5get_class_for_method(method, isa[i], seen);
+            if (m) {
+                return m 
+            }
+            seen[isa[i]]++;
+        }
+    }
+}
+
+function p5method_lookup(method, class_name, seen) {
+    var c = p5get_class_for_method(method, class_name, seen);
+    if (c) {
+        return p5pkg[c][method]
+    }
+    if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {
+        return p5pkg.UNIVERSAL[method]
+    }
+}
+
+function p5call(invocant, method, list, p5want) {
+    list.unshift(invocant);
+
+    if (invocant instanceof p5Scalar) {
+        // TODO - move p5call() to p5Scalar method
+        invocant = invocant.FETCH();
+    }
+
+    if ( invocant.hasOwnProperty("_class_") ) {
+
+        if ( invocant._class_.hasOwnProperty(method) ) {
+            return invocant._class_[method](list, p5want)
+        }
+        var m = p5method_lookup(method, invocant._class_._ref_, {});
+        if (m) {
+            return m(list, p5want)
+        }
+
+        // method can have an optional namespace
+        var pkg_name = method.split(/::/);
+        if (pkg_name.length > 1) {
+            var name = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+            m = p5method_lookup(name, pkg_name, {});
+            if (m) {
+                return m(list, p5want)
+            }
+            p5pkg.CORE.die(["method not found: ", name, " in class ", pkg_name]);
+        }
+
+        pkg_name = p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', invocant._class_._ref_, {}) || p5get_class_for_method(' . chr(39) . 'AUTOLOAD' . chr(39) . ', "UNIVERSAL", {});
+        if (pkg_name) {
+            p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;
+            return p5pkg[pkg_name]["AUTOLOAD"](list, p5want);
+        }
+
+        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._class_._ref_]);
+
+    }
+
+    // the invocant doesn' . chr(39) . 't have a class
+
+    if (typeof invocant === "string") {
+        var aclass = p5make_package(invocant);
+        return p5call(aclass, method, list, p5want);
+    }
+
+    p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);
+
+}
+
+function p5call_sub(namespace, name, list, p5want) {
+    if(p5pkg[namespace].hasOwnProperty(name)) {
+        return p5pkg[namespace][name](list, p5want)
+    }
+    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
+        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;
+        return p5pkg[namespace]["AUTOLOAD"](list, p5want)
+    }
+    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
+}
+
+function p5scalar_deref(v) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = String.fromCharCode(c + 64) + v.substr(1);
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        return p5pkg[pkg_name]["v_"+v];
+    }
+    return v._scalar_;
+}
+
+function p5scalar_deref_set(v, n) {
+    if (typeof v === "string") {
+        var pkg_name = v.split(/::/);
+        if (pkg_name.length > 1) {
+            v = pkg_name.pop();
+            pkg_name = pkg_name.join("::");
+        }
+        else {
+            pkg_name = p5pkg["Perlito5"].v_PKG_NAME;
+        }
+        var c = v.charCodeAt(0);
+        if (c < 27) {
+            v = String.fromCharCode(c + 64) + v.substr(1);
+            pkg_name = ' . chr(39) . 'main' . chr(39) . ';
+        }
+        p5pkg[pkg_name]["v_"+v] = n;
+        return p5pkg[pkg_name]["v_"+v];
+    }
+    v._scalar_ = n;
+    return v._scalar_;
+}
+
+p5make_package("main");
+p5make_package("Perlito5");
+p5pkg["Perlito5"].v_PKG_NAME = "main";
+p5pkg["main"]["v_@"]       = new p5Scalar("");  // $@
+p5pkg["main"]["v_|"]       = new p5Scalar(0);   // $|
+p5pkg["main"]["List_#"]    = new p5Array([]);   // @#
+p5scalar_deref_set(String.fromCharCode(15), isNode ? "node.js" : "javascript2");  // $^O
+p5pkg["main"]["List_INC"]  = new p5Array([]);
+p5pkg["main"]["Hash_INC"]  = new p5Hash({});
+p5pkg["main"]["List_ARGV"] = new p5Array([]);
+p5pkg["main"]["Hash_ENV"]  = new p5Hash({});
+if (isNode) {
+    p5pkg["main"]["List_ARGV"] = new p5Array(process.argv.splice(2));
+    p5pkg["main"]["Hash_ENV"]  = new p5Hash(process.env);
+    p5pkg["main"]["v_$"]       = new p5Scalar(process.pid);
+} else if (typeof arguments === "object") {
+    p5pkg["main"]["List_ARGV"] = new p5Array(arguments);
+}
+
+p5make_package("Perlito5::IO");
+p5make_package("Perlito5::Runtime");
+p5make_package("Perlito5::Grammar");
+
+function p5typeglob_set(pkg_name, sub_name, func) {
+    p5make_package(pkg_name);
+    p5pkg[pkg_name][sub_name] = func;
+}
+
+function p5set_glob(name, data) {
+    if ( name.indexOf("::") == -1 ) {
+        p5pkg[ p5pkg["Perlito5"].v_PKG_NAME.FETCH() ][name] = data;
+        return data;
+    }
+    var c = name.split("::");
+    s = c.pop(); 
+    var pkg = c.join("::");
+    p5make_package(pkg);
+    p5pkg[pkg][s] = data;
+    return data;
+}
+
+var sigils = { ' . chr(39) . '@' . chr(39) . ' : ' . chr(39) . 'List_' . chr(39) . ', ' . chr(39) . '%' . chr(39) . ' : ' . chr(39) . 'Hash_' . chr(39) . ', ' . chr(39) . '$' . chr(39) . ' : ' . chr(39) . 'v_' . chr(39) . ' };
+
+function p5set_local(namespace, name, sigil) {
+    var vname = sigils[sigil] + name;
+    p5LOCAL.push([namespace, vname, namespace[vname]]);
+
+    if (sigil == ' . chr(39) . '$' . chr(39) . ') {
+        namespace[vname] = new p5Scalar(null);
+    }
+    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {
+        namespace[vname] = new p5Array([]);
+    }
+    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {
+        namespace[vname] = new p5Hash({});
+    }
+    return namespace[vname];
+}
+
+function p5cleanup_local(idx, value) {
+    while (p5LOCAL.length > idx) {
+        l = p5LOCAL.pop();
+        l[0][l[1]] = l[2];
+    }
+    return value;
+}
+
+function p5global(sigil, namespace, name) {
+    // TODO - autovivify namespace
+    var vname = sigils[sigil] + name;
+    var v = p5pkg[namespace][vname];
+    if (v != null) {
+        return v;
+    }
+    if (sigil == ' . chr(39) . '$' . chr(39) . ') {
+        p5pkg[namespace][vname] = new p5Scalar(null);
+    }
+    else if (sigil == ' . chr(39) . '@' . chr(39) . ') {
+        p5pkg[namespace][vname] = new p5Array([]);
+    }
+    else if (sigil == ' . chr(39) . '%' . chr(39) . ') {
+        p5pkg[namespace][vname] = new p5Hash({});
+    }
+    return p5pkg[namespace][vname];
+}
+
+function p5HashRef(o) {
+    this._href_ = o;
+    this._ref_ = "HASH";
+    this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "HASH(0x0000)";  // TODO
+    };
+    this.hderef = function() {
+        return this._href_;
+    };
+    this.hset = function(i, v) {
+        return this._href_.hset(i, v);
+    };
+    this.hget = function(i, autoviv) {
+        return this._href_.hget(i, autoviv);
+    }
+}
+
+function p5ArrayRef(o) {
+    this._aref_ = o;
+    this._ref_ = "ARRAY";
+    this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "ARRAY(0x0000)";  // TODO
+    };
+    this.aderef = function() {
+        return this._aref_;
+    };
+    this.aset = function(i, v) {
+        return this._aref_.aset(i, v);
+    }
+    this.aget = function(i, autoviv) {
+        return this._aref_.aget(i, autoviv);
+    }
+}
+
+function p5ScalarRef(o) {
+    this._scalar_ = o;
+    this._ref_ = "SCALAR";
+    this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "SCALAR(0x0000)";  // TODO
+    };
+    this.sderef = function() {
+        return this._scalar_;
+    };
+}
+
+function p5GlobRef(o) {
+    this._scalar_ = o;
+    this._ref_ = "GLOB";
+    this.p5bool = function() { return 1 };
+    this.p5string = function() {
+        return "GLOB(0x0000)";  // TODO
+    };
+}
+
+function p5Array(o) {
+    // TODO - array slice
+    this._array_ = o;
+    this._ref_ = "";
+    this.p5bool = function() {
+        return this._array_.length != 0
+    };
+    this.p5string = function() {
+        return ' . chr(39) . chr(39) . ' + this._array_.length;
+    };
+    this.p5num = function() {
+        return this._array_.length;
+    };
+    this.aset = function(i, v) {
+        if (i < 0) {
+            i = this._array_.length + i;
+        }
+        if (this._array_[i] instanceof p5Scalar) {
+            this._array_[i].assign(v);
+        }
+        else {
+            if (v instanceof p5Scalar) {
+                this._array_[i] = v.FETCH();
+            }
+            else {
+                this._array_[i] = v;
+            }
+        }
+        return v;
+    };
+    this.aget = function(i, autoviv) {
+        if (i < 0) {
+            i = this._array_.length + i;
+        }
+        if (autoviv) {
+            if (autoviv == ' . chr(39) . 'lvalue' . chr(39) . ') {
+                if (this._array_.length < i) {
+                    // don' . chr(39) . 't vivify yet; create a proxy object
+                    return new p5ArrayProxy(this, i);
+                }
+                if (!(this._array_[i] instanceof p5Scalar)) {
+                    this._array_[i] = new p5Scalar(this._array_[i]);
+                }
+            }
+            else if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {
+                if (!(this._array_[i] instanceof p5ArrayRef) &&
+                    !(this._array_[i] instanceof p5Scalar))
+                {
+                    this._array_[i] = new p5ArrayRef(new p5Array([]));
+                }
+            }
+            else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {
+                if (!(this._array_[i] instanceof p5HashRef) &&
+                    !(this._array_[i] instanceof p5Scalar))
+                {
+                    this._array_[i] = new p5HashRef(new p5Hash({}));
+                }
+            }
+        }
+        return this._array_[i];
+    };
+    this.get_values = function(o) {
+        // add values to the param (a native js list)
+        for(var i = 0; i < this._array_.length; i++) {
+            o.push(this._array_[i]);
+        }
+        return o;
+    };
+    this.get_lvalues = function(o) {
+        // add lvalues to the param (a native js list)
+        for(var i = 0; i < this._array_.length; i++) {
+            o.push(this._array_[i] instanceof p5Scalar ? this._array_[i] : this.aget(i, "lvalue"));
+        }
+        return o;
+    };
+    this.assign = function(a) {
+        if (a instanceof Array) {
+            // TODO - cleanup, this shouldn' . chr(39) . 't happen
+            this._array_ = a;
+        }
+        else {
+            this._array_ = a._array_;
+        }
+        return this;
+    };
+
+    // operations that can be tie()
+    this.FETCHSIZE = function() {
+        return this._array_.length;
+    };
+    this.PUSH = function(v) {
+        for(var i = 0; i < v._array_.length; i++) {
+            this._array_.push(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);
+        }
+        return this._array_.length;
+    };
+    this.UNSHIFT = function(v) {
+        for(var i = v._array_.length-1; i >= 0; i--) {
+            this._array_.unshift(v._array_[i] instanceof p5Scalar ? v._array_[i].FETCH() :  v._array_[i]);
+        }
+        return this._array_.length;
+    };
+    this.POP = function() {
+        if (this._array_.length == null) {
+            return null;
+        }
+        return this._array_.pop();
+    };
+    this.SHIFT = function(v) {
+        if (this._array_.length == null) {
+            return null;
+        }
+        return this._array_.shift();
+    };
+}
+
+function p5Hash(o) {
+    // TODO - hash slice
+    this._hash_ = o;
+    this._ref_ = "";
+    this.p5bool = function() {
+        o = this._hash_;
+        for (var i in o) {
+            return true;
+        }
+        return false;
+    };
+    this.p5string = function() {
+        return ' . chr(39) . chr(39) . ' + this.p5num() + ' . chr(39) . '/8' . chr(39) . ';
+    };
+    this.p5num = function() {
+        var out = 0;
+        for (var i in this._hash_) {
+            out++;
+        }
+        return out;
+    };
+    this.exists = function(i) {
+        return this._hash_.hasOwnProperty(i);
+    };
+    this.hset = function(i, v) {
+        if (this._hash_[i] instanceof p5Scalar) {
+            this._hash_[i].assign(v);
+        }
+        else {
+            if (v instanceof p5Scalar) {
+                this._hash_[i] = v.FETCH();
+            }
+            else {
+                this._hash_[i] = v;
+            }
+        }
+        return v;
+    };
+    this.hget = function(i, autoviv) {
+        if (autoviv) {
+            if (autoviv == ' . chr(39) . 'lvalue' . chr(39) . ') {
+                if (! this._hash_.hasOwnProperty(i)) {
+                    // don' . chr(39) . 't autovivify yet; create a proxy object
+                    return new p5HashProxy(this, i);
+                }
+                if (!(this._hash_[i] instanceof p5Scalar)) {
+                    this._hash_[i] = new p5Scalar(this._hash_[i]);
+                }
+            }
+            else if (autoviv == ' . chr(39) . 'array' . chr(39) . ') {
+                if (!(this._hash_[i] instanceof p5ArrayRef) &&
+                    !(this._hash_[i] instanceof p5Scalar))
+                {
+                    this._hash_[i] = new p5ArrayRef(new p5Array([]));
+                }
+            }
+            else if (autoviv == ' . chr(39) . 'hash' . chr(39) . ') {
+                if (!(this._hash_[i] instanceof p5HashRef) &&
+                    !(this._hash_[i] instanceof p5Scalar))
+                {
+                    this._hash_[i] = new p5HashRef(new p5Hash({}));
+                }
+            }
+        }
+        return this._hash_[i];
+    };
+    this.get_values = function(o) {
+        // add a native list of values to the param
+        for (var i in this._hash_) {
+            o.push(i);
+            o.push(this._hash_[i]);
+        }
+        return o;
+    };
+    this.get_lvalues = function(o) {
+        // add a native list of lvalues to the param
+        for (var i in this._hash_) {
+            o.push(i);
+            o.push(this._hash_[i] instanceof p5Scalar ? this._hash_[i] : this.hget(i, "lvalue"));
+        }
+        return o;
+    };
+    this.assign = function(h) {
+        if (h instanceof p5Hash) {
+            this._hash_ = h._hash_;
+        }
+        else {
+            // TODO - cleanup, this shouldn' . chr(39) . 't happen
+            this._hash_ = h;
+        }
+        return this;
+    }
+}
+
+function p5Scalar(o) {
+    this._v_ = o;
+    this._ref_ = "";
+
+    // be a value
+    this.p5bool = function() {
+        return p5bool(this._v_);
+    };
+    this.p5string = function() {
+        return p5str(this._v_);
+    };
+    this.p5num = function() {
+        return p5num(this._v_);
+    };
+    this.p5code = function() {
+        return p5code(this._v_);
+    };
+    this.p5incr = function() {
+        this._v_ = p5incr(this._v_);
+        return this._v_;
+    };
+    this.p5postincr = function() {
+        var v = this._v_;
+        this._v_ = p5incr(this._v_);
+        return v;
+    };
+    this.p5decr = function() {
+        this._v_ = p5decr(this._v_);
+        return this._v_;
+    };
+    this.p5postdecr = function() {
+        var v = this._v_;
+        this._v_ = p5decr(this._v_);
+        return v;
+    };
+
+    // be a scalar ref
+    this.sderef = function(i) {
+        // TODO - autovivify scalar (with proxy object?)
+        return this._v_.sderef();
+    };
+
+    // be an array ref
+    this.aderef = function() {
+        // TODO - autovivify array (with proxy object?)
+        return this._v_.aderef();
+    };
+    this.aget = function(i, autoviv) {
+        // TODO - autovivify array (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5ArrayRef(new p5Array([]));
+        }
+        return this._v_.aget(i, autoviv);
+    };
+    this.aset = function(i, v) {
+        if (this._v_ == null) {
+            this._v_ = new p5ArrayRef(new p5Array([]));
+        }
+        return this._v_.aset(i, v);
+    };
+
+    // be a hash ref
+    this.hderef = function() {
+        // TODO - autovivify hash (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hderef();
+    };
+    this.hget = function(i, autoviv) {
+        // TODO - autovivify hash (with proxy object?)
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hget(i, autoviv);
+    }
+    this.hset = function(i, v) {
+        if (this._v_ == null) {
+            this._v_ = new p5HashRef(new p5Hash([]));
+        }
+        return this._v_.hset(i, v);
+    }
+
+    // be a container
+    this.get_values = function(o) {
+        // add a native list of values to the param
+        o.push(this);
+        return o;
+    };
+    this.get_lvalues = function(o) {
+        // add a native list of lvalues to the param
+        o.push(this);
+        return o;
+    };
+    this.assign = function(v) {
+        if (v instanceof p5Scalar) {
+            this._v_ = v.FETCH();
+        }
+        else {
+            this._v_ = v;
+        }
+        return this;
+    };
+
+    // operations that can be tie()
+    this.FETCH = function() {
+        // not an lvalue
+        return this._v_;
+    };
+}
+
+
+function p5HashProxy(h, k) {
+    this._hashobj_ = h;
+    this._key_ = k;
+    this._v_ = null;
+    this.assign = function(v) {
+        // write-through; alternately, use read-through
+        if (v instanceof p5Scalar) {
+            this._v_ = v.FETCH();
+        }
+        else {
+            this._v_ = v;
+        }
+        return this._hashobj_.hset(this._key_, this._v_);
+    }
+}
+p5HashProxy.prototype = new p5Scalar();
+
+
+function p5ArrayProxy(a, k) {
+    this._arrayobj_ = a;
+    this._key_ = k;
+    this._v_ = null;
+    this.assign = function(v) {
+        // write-through; alternately, use read-through
+        if (v instanceof p5Scalar) {
+            this._v_ = v.FETCH();
+        }
+        else {
+            this._v_ = v;
+        }
+        return this._arrayobj_.aset(this._key_, this._v_);
+    }
+}
+p5ArrayProxy.prototype = new p5Scalar();
+
+
+p5param_list = function() {
+    var res = [];
+    for (i = 0; i < arguments.length; i++) {
+        if (arguments[i] == null) {
+            res.push(null)
+        }
+        else if (arguments[i].hasOwnProperty("get_lvalues")) {
+            // container
+            arguments[i].get_lvalues(res);
+        }
+        else if (arguments[i] instanceof Array) {
+            // js Array -- possibly generated by p5context()
+            // maybe too late to get lvalues -- needs more testing
+            // this doesn' . chr(39) . 't handle nested Array
+            o = arguments[i];
+            for (j = 0; j < o.length; j++) {
+                res.push(o[j]);
+            }
+        }
+        else {
+            // non-container
+            res.push(arguments[i]);
+        }
+    }
+    return res;
+};
+
+p5list_to_a = function() {
+    var res = [];
+    for (i = 0; i < arguments.length; i++) {
+        if (arguments[i] == null) {
+            res.push(null)
+        }
+        else if (arguments[i].hasOwnProperty("get_values")) {
+            // container
+            arguments[i].get_values(res);
+        }
+        else if (arguments[i] instanceof Array) {
+            // js Array -- possibly generated by p5context()
+            o = arguments[i];
+            for (j = 0; j < o.length; j++) {
+                res.push(o[j]);
+            }
+        }
+        else {
+            // non-container
+            res.push(arguments[i]);
+        }
+    }
+    return res;
+};
+
+p5a_to_h = function(a) {
+    var res = {};
+    for (i = 0; i < a.length; i+=2) {
+        res[p5str(a[i])] = a[i+1];
+    }
+    return res;
+};
+
+if (isNode) {
+    var fs = require("fs");
+}
+
+p5context = function(List__, p5want) {
+    if (p5want) {
+        return p5list_to_a.apply(null, List__);
+    }
+    // scalar: return the last value
+    var o = List__;
+    while (o instanceof Array) {
+        o =   o.length
+            ? o[o.length-1]
+            : null;
+    }
+    return o;
+}
+
+p5code = function(o) {
+    if (typeof o === "function") {
+        return o;
+    }
+    return o.p5code();
+};
+
+p5str = function(o) {
+    if (o == null) {
+        return "";
+    }
+    if (typeof o === "object" && (o instanceof Array)) {
+        return CORE.join(["", o]);
+    }
+    if (typeof o.p5string === "function") {
+        return o.p5string();
+    }
+    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
+        return o.toExponential().replace(/e-(\\d)$/,"e-0$1");
+    }
+    if (typeof o === "boolean") {
+        return o ? "1" : "";
+    }
+    if (typeof o !== "string") {
+        return "" + o;
+    }
+    return o;
+};
+
+p5num = function(o) {
+    if (o == null) {
+        return 0;
+    }
+    if (typeof o === "object" && (o instanceof Array)) {
+        return o.length;
+    }
+    if (typeof o.p5num === "function") {
+        return o.p5num();
+    }
+    if (typeof o !== "number") {
+        return parseFloat(p5str(o));
+    }
+    return o;
+};
+
+p5bool = function(o) {
+    if (o) {
+        if (typeof o === "boolean") {
+            return o;
+        }
+        if (typeof o === "number") {
+            return o;
+        }
+        if (typeof o === "string") {
+            return o != "" && o != "0";
+        }
+        if (typeof o.p5bool === "function") {
+            return o.p5bool();
+        }
+        if (typeof o.length === "number") {
+            return o.length;
+        }
+        if (o instanceof Error) {
+            return true;
+        }
+        for (var i in o) {
+            return true;
+        }
+    }
+    return false;
+};
+
+p5incr = function(o) {
+    if (typeof o === "number") {
+        return o + 1;
+    }
+    return p5str_inc(p5str(o));
+};
+
+p5decr = function(o) {
+    if (typeof o === "number") {
+        return o - 1;
+    }
+    return p5num(o) - 1;
+};
+
+p5and = function(a, fb) {
+    if (p5bool(a)) {
+        return fb();
+    }
+    return a;
+};
+
+p5or = function(a, fb) {
+    if (p5bool(a)) {
+        return a;
+    }
+    return fb();
+};
+
+p5defined_or = function(a, fb) {
+    if (a == null) {
+        return fb();
+    }
+    return a;
+};
+
+p5cmp = function(a, b) {
+    return a > b ? 1 : a < b ? -1 : 0 
+};
+
+p5complement = function(a) {
+    return a < 0 ? ~a : 4294967295 - a
+    // return a < 0 ? ~a : 18446744073709551615 - a
+};
+
+p5str_replicate = function(o, n) {
+    n = p5num(n);
+    return n ? Array(n + 1).join(o) : "";
+};
+
+p5str_inc = function(s) {
+    s = p5str(s);
+    if (s.length < 2) {
+        if (s.match(/[012345678ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxy]/)) {
+            return String.fromCharCode(s.charCodeAt(0) + 1);
+        }
+        if (s == "9") {
+            return "10";
+        }
+        if (s == "Z") {
+            return "AA";
+        }
+        if (s == "z") {
+            return "aa";
+        }
+        return "1";
+    }
+    var c = p5str_inc(s.substr(s.length-1, 1));
+    if (c.length == 1) {
+        return s.substr(0, s.length-1) + c;
+    }
+    return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
+};
+
+p5for = function(namespace, func, args, cont, label) {
+    var _redo = false;
+
+    var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"].assign(args[i]);   // ??? - should this be a bind?
+        try {
+            func()
+        }
+        catch(err) {
+            if (err instanceof p5_error && err.v == label) {
+                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }
+                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+            }
+            else {
+                throw(err)
+            }
+        }
+        if (cont) {
+            try {
+                if (!_redo) { cont() }
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+        }
+    }
+    namespace["v__"] = v_old;
+};
+
+p5for_lex = function(func, args, cont, label) {
+    var _redo = false;
+    var _arg  = new p5Scalar(null);
+    for(var i = 0; i < args.length; i++) {
+        try {
+            _arg.assign(args[i]);
+            func(_arg)
+        }
+        catch(err) {
+            if (err instanceof p5_error && err.v == label) {
+                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { i--; _redo = true }
+                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+            }            
+            else {
+                throw(err)
+            }
+        }
+        if (cont) {
+            try {
+                if (!_redo) { cont() }
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+        }
+    }
+};
+
+p5while = function(func, cond, cont, label) {
+    var _redo = false;
+    while (_redo || p5bool(cond())) {
+        _redo = false;
+        try {
+            func()
+        }
+        catch(err) {
+            if (err instanceof p5_error && err.v == label) {
+                if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+            }            
+            else {
+                throw(err)
+            }
+        }
+        if (cont) {
+            try {
+                if (!_redo) { cont() }
+            }
+            catch(err) {
+                if (err instanceof p5_error && err.v == label) {
+                    if (err.type == ' . chr(39) . 'last' . chr(39) . ') { return }
+                    else if (err.type == ' . chr(39) . 'redo' . chr(39) . ') { _redo = true }
+                    else if (err.type != ' . chr(39) . 'next' . chr(39) . ') { throw(err) }
+                }            
+                else {
+                    throw(err)
+                }
+            }
+        }
+    }
+};
+
+p5map = function(namespace, func, args) {
+    var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"].assign(args[i]);
+        var o = p5list_to_a(func(1));
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
+    }
+    namespace["v__"] = v_old;
+    return out;
+};
+
+p5grep = function(namespace, func, args) {
+    var v_old = namespace["v__"];
+    namespace["v__"] = new p5Scalar(null);
+
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"].assign(args[i]);
+        if (p5bool(func(0))) {
+            out.push(args[i])
+        }
+    }
+    namespace["v__"] = v_old;
+    return out;
+};
+
+p5sort = function(namespace, func, args) {
+    var a_old = namespace["v_a"];
+    var b_old = namespace["v_b"];
+    namespace["v_a"] = new p5Scalar(null);
+    namespace["v_b"] = new p5Scalar(null);
+
+    var out = 
+        func == null
+        ? args.sort()
+        : args.sort(
+            function(a, b) {
+                namespace["v_a"].assign(a);
+                namespace["v_b"].assign(b);
+                return func(0);
+            }
+        );
+    namespace["v_a"] = a_old;
+    namespace["v_b"] = b_old;
+    return out;
+};
+
+perl5_to_js = function( source, namespace, var_env_js, p5want ) {
+    // CORE.say(["source: [" + source + "]"]);
+
+    var strict_old = p5global("$", "Perlito5", "STRICT").FETCH();
+
+    var namespace_old = p5global("$", "Perlito5", "PKG_NAME").FETCH();
+    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace);
+
+    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);
+
+    if ( !p5bool(match) || p5str(match.hget("to")) != source.length ) {
+        CORE.die(["Syntax error in eval near pos ", match.hget("to") ]);
+    }
+
+    ast = p5pkg.CORE.bless([
+        new p5HashRef(new p5Hash({
+            code: "do",
+            arguments: [ p5pkg.CORE.bless([
+                        new p5HashRef(new p5Hash({
+                            stmts:   p5pkg["Perlito5::Match"].flat([match])
+                        })),
+                        p5pkg["Perlito5::AST::Block"]
+                    ]) ]
+        })),
+        p5pkg["Perlito5::AST::Apply"]
+    ]);
+
+    // CORE.say(["ast: [" + ast + "]"]);
+    js_code = p5call(ast, "emit_javascript3", [0, p5want]);
+    // CORE.say(["js-source: [" + js_code + "]"]);
+
+    p5pkg["Perlito5"].v_PKG_NAME.assign(namespace_old);
+    p5pkg["Perlito5"].v_STRICT.assign(strict_old);
+    return js_code;
+}
+
+'
     }
     1
 }
@@ -13253,7 +17656,409 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript3::CORE;
     sub Perlito5::JavaScript3::CORE::emit_javascript3 {
-        return '//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/JavaScript3/CORE.js' . chr(10) . '//' . chr(10) . '// CORE functions for "Perlito" Perl5-in-JavaScript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var CORE = p5pkg.CORE;' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            process.stdout.write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    }' . chr(10) . '} else {' . chr(10) . '    CORE.print = function(List__) {' . chr(10) . '        var i;' . chr(10) . '        for (i = 0; i < List__.length; i++) {' . chr(10) . '            write(p5str(List__[i]));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    };' . chr(10) . '}' . chr(10) . chr(10) . 'CORE.say = function(List__) {' . chr(10) . '    CORE.print(List__);' . chr(10) . '    return CORE.print(["' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.die = function(List__) {' . chr(10) . '    var o = List__[0]._array_;   // prototype is ' . chr(39) . '@' . chr(39) . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < o.length; i++) {' . chr(10) . '        s = s + p5str(o[i]);' . chr(10) . '    }' . chr(10) . '    try {' . chr(10) . '        s = s + "' . chr(92) . 'n" + new Error().stack;' . chr(10) . '    }' . chr(10) . '    catch(err) { }' . chr(10) . '    p5pkg["main"]["v_@"].assign("Died: " + s);' . chr(10) . '    throw(new p5_error("die", "Died: " + s));' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.warn = function(List__) {' . chr(10) . '    var o = List__[0]._array_;   // prototype is ' . chr(39) . '@' . chr(39) . chr(10) . '    var i;' . chr(10) . '    var s = "";' . chr(10) . '    for (i = 0; i < o.length; i++) {' . chr(10) . '        s = s + p5str(o[i]);' . chr(10) . '    }' . chr(10) . '    try {' . chr(10) . '        s = s + "' . chr(92) . 'n" + new Error().stack;' . chr(10) . '    }' . chr(10) . '    catch(err) { }' . chr(10) . '    CORE.print(["Warning: " + s + "' . chr(92) . 'n"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.bless = function(List__) {' . chr(10) . '    var o        = List__[0];' . chr(10) . '    var pkg_name = List__[1];' . chr(10) . '    if (o instanceof p5Scalar) {' . chr(10) . '        o = o.FETCH();' . chr(10) . '    }' . chr(10) . '    if (pkg_name instanceof p5Scalar) {' . chr(10) . '        pkg_name = pkg_name.FETCH();' . chr(10) . '    }' . chr(10) . '    if (typeof pkg_name === "object") {' . chr(10) . '        // bless {}, Class' . chr(10) . '        o._class_ = pkg_name;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    if (!p5pkg.hasOwnProperty(pkg_name)) {' . chr(10) . '        p5make_package(pkg_name);' . chr(10) . '    }' . chr(10) . '    o._class_ = p5pkg[pkg_name];' . chr(10) . '    return o;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.caller = function(List__, p5want) {' . chr(10) . '    if (p5want) {' . chr(10) . '        return p5pkg["Perlito5"]["CALLER"][0];' . chr(10) . '    }' . chr(10) . '    return p5pkg["Perlito5"]["CALLER"][0][0];' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.chr = function(List__) {' . chr(10) . '    var v = p5num(List__[0]);' . chr(10) . '    return String.fromCharCode(v >= 0 ? v : 65533);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ord = function(List__) {' . chr(10) . '    return p5str(List__[0]).charCodeAt(0);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.oct = function(List__) {' . chr(10) . '    var v = p5str(List__[0]);' . chr(10) . '    var b = v.substr(0,2);' . chr(10) . '    v = v.replace("_", "");' . chr(10) . '    if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }' . chr(10) . '    if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }' . chr(10) . '    return parseInt(v, 8);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.abs   = function(List__) { return Math.abs(p5num(List__[0])) };' . chr(10) . 'CORE.exp   = function(List__) { return Math.exp(p5num(List__[0])) };' . chr(10) . 'CORE.log   = function(List__) { return Math.log(p5num(List__[0])) };' . chr(10) . 'CORE.cos   = function(List__) { return Math.cos(p5num(List__[0])) };' . chr(10) . 'CORE.sin   = function(List__) { return Math.sin(p5num(List__[0])) };' . chr(10) . 'CORE.sqrt  = function(List__) { return Math.sqrt(p5num(List__[0])) };' . chr(10) . 'CORE.atan2 = function(List__) { return Math.atan2(p5num(List__[0]), p5num(List__[1])) };' . chr(10) . 'CORE.int   = function(List__) { ' . chr(10) . '    var v = p5num(List__[0]);' . chr(10) . '    return v > 0 ? Math.floor(v) : Math.ceil(v)' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.rand = function(List__) {' . chr(10) . '    var v = p5num(List__[0]) || 1;' . chr(10) . '    return Math.random() * v;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };' . chr(10) . 'CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };' . chr(10) . chr(10) . 'CORE.lcfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.ucfirst = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";' . chr(10) . '    s = s.length > 1 ? s.substr(1) : "";' . chr(10) . '    return c + s' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.quotemeta = function(List__) {' . chr(10) . '    var s = p5str(List__[0]);' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < s.length; i++) {' . chr(10) . '        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {' . chr(10) . '            out.push(String.fromCharCode(92));' . chr(10) . '        }' . chr(10) . '        out.push(s.substr(i, 1));' . chr(10) . '    }' . chr(10) . '    return out.join("");       ' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.substr = function(List__) {' . chr(10) . chr(10) . '    // TODO - lvalue substr()' . chr(10) . chr(10) . '    var s           = p5str(List__[0]);' . chr(10) . '    var offset      = p5num(List__[1]);' . chr(10) . '    var length      = List__.length > 2 ? p5num(List__[2]) : s.length;' . chr(10) . '    var replacement = List__[3];' . chr(10) . chr(10) . '    if (length < 0) {' . chr(10) . '        length = s.length - offset + length;' . chr(10) . '    }' . chr(10) . '    return s.substr(offset, length);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.defined = function(List__) {' . chr(10) . '    return (List__[0] instanceof p5Scalar) ? ( List__[0].FETCH() != null ) : ( List__[0] != null )' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.values = function(List__, p5want) {' . chr(10) . '    var o = List__[0]._hash_;' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return new p5Array([]);' . chr(10) . '        };' . chr(10) . '        if (typeof o.values === "function") {' . chr(10) . '            return o.values();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(o[i]);' . chr(10) . '        }' . chr(10) . '        return new p5Array(out);' . chr(10) . '    }' . chr(10) . '    return CORE.keys(List__, p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.keys = function(List__, p5want) {' . chr(10) . '    var o = List__[0]._hash_;' . chr(10) . '    delete o["_each_"];' . chr(10) . '    if (p5want) {' . chr(10) . '        if (o == null) {' . chr(10) . '            return new p5Array([]);' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return o.keys();' . chr(10) . '        }' . chr(10) . '        var out = [];' . chr(10) . '        for (var i in o) {' . chr(10) . '            out.push(i);' . chr(10) . '        }' . chr(10) . '        return new p5Array(out);' . chr(10) . '    }' . chr(10) . '    else {' . chr(10) . '        if (o == null) {' . chr(10) . '            return 0;' . chr(10) . '        }' . chr(10) . '        if (typeof o.keys === "function") {' . chr(10) . '            return CORE.scalar([o.keys()]);' . chr(10) . '        }' . chr(10) . '        var out = 0;' . chr(10) . '        for (var i in o) {' . chr(10) . '            out++;' . chr(10) . '        }' . chr(10) . '        return out;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.each = function(List__, p5want) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o.hasOwnProperty("_each_")) {' . chr(10) . '        return o._each_(p5want)' . chr(10) . '    }' . chr(10) . '    var keys = CORE.keys([o], 1);' . chr(10) . '    var i = 0;' . chr(10) . '    o._each_ = function () {' . chr(10) . '        if (i < keys.length) {' . chr(10) . '            i++;' . chr(10) . '            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];' . chr(10) . '        }' . chr(10) . '        i = 0;' . chr(10) . '        return p5want ? [] : null;' . chr(10) . '    };' . chr(10) . '    return o._each_(p5want);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.reverse = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o instanceof p5Scalar) {' . chr(10) . '        o = o.FETCH();' . chr(10) . '    }' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (typeof o === "string") {' . chr(10) . '        return o.split("").reverse().join("")' . chr(10) . '    }' . chr(10) . '    var out = [];' . chr(10) . '    for(var i = 0; i < o.length; i++) {' . chr(10) . '        out.unshift(o[i]);' . chr(10) . '    }' . chr(10) . '    return out;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.splice = function(List__, p5want) {' . chr(10) . '    var array  = List__.shift()._array_;' . chr(10) . '    // CORE.say([ array ]);' . chr(10) . '    var offset = p5num(List__.shift());' . chr(10) . '    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);' . chr(10) . chr(10) . '    if (limit < 0) {' . chr(10) . '        limit = array.length + limit - 1;' . chr(10) . '    }' . chr(10) . chr(10) . '    var list = [offset, limit];' . chr(10) . '    for(var i = 0; i < List__.length; i++) {' . chr(10) . '        list = p5list_to_a( list, List__[i]);' . chr(10) . '    }' . chr(10) . chr(10) . '    out = array.splice.apply(array, list);' . chr(10) . '    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);' . chr(10) . '    return p5want ? out : out.pop();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pop = function(List__) {' . chr(10) . '    return List__[0].POP();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.shift = function(List__) {' . chr(10) . '    return List__[0].SHIFT();' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.push = function(List__) {' . chr(10) . '    return List__[0].PUSH(List__[1]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.unshift = function(List__) {' . chr(10) . '    return List__[0].UNSHIFT(List__[1]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.join = function(List__) {' . chr(10) . '    var s = List__[0];' . chr(10) . '    var o = List__[1]._array_;' . chr(10) . '    var a = [];' . chr(10) . '    for (i = 0; i < o.length; i++) {' . chr(10) . '        a.push( p5str(o[i]) );' . chr(10) . '    }' . chr(10) . '    return a.join(s);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.index = function(List__) {' . chr(10) . '    try {' . chr(10) . '        return p5str(List__[0]).indexOf(p5str(List__[1]), p5num(List__[2]));' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . 'CORE.rindex = function(List__) {' . chr(10) . '    var o = p5str(List__[0]);' . chr(10) . '    var s = List__[1];' . chr(10) . '    try {' . chr(10) . '        if (List__.length > 2) {' . chr(10) . '            var i = p5num(List__[2]);' . chr(10) . '            if (i < 0) {' . chr(10) . '                if (s.length == 0) {' . chr(10) . '                    return 0;' . chr(10) . '                }' . chr(10) . '                return -1;' . chr(10) . '            }' . chr(10) . '            return o.lastIndexOf(s, i);' . chr(10) . '        }' . chr(10) . '        return o.lastIndexOf(s);' . chr(10) . '    }' . chr(10) . '    catch(err) {' . chr(10) . '        return -1;' . chr(10) . '    }' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.length = function(List__) {' . chr(10) . '    var o = p5str(List__[0]);' . chr(10) . '    return o.length;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };' . chr(10) . 'CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };' . chr(10) . chr(10) . 'CORE.ref = function(List__) {' . chr(10) . '    var o = List__[0];' . chr(10) . '    if (o instanceof p5Scalar) {' . chr(10) . '        o = o.FETCH();' . chr(10) . '    }' . chr(10) . '    if (o == null) {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    if (o._class_ && typeof o._class_._ref_ === "string") {' . chr(10) . '        // blessed reference' . chr(10) . '        return o._class_._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o._ref_ === "string") {' . chr(10) . '        // un-blessed reference' . chr(10) . '        return o._ref_;' . chr(10) . '    }' . chr(10) . '    if (typeof o === "function") {' . chr(10) . '        return "CODE";' . chr(10) . '    }' . chr(10) . '    return "";' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.split = function(List__) {' . chr(10) . '    var pattern = List__[0];' . chr(10) . '    var s       = p5str(List__[1]);' . chr(10) . '    var limit   = List__[2];' . chr(10) . '    if (typeof pattern === "string") {' . chr(10) . '        if (pattern == " ") {' . chr(10) . '            var res = [];' . chr(10) . '            for (var i_ = 0, a_ = s.split(/(?: |' . chr(92) . 'n)+/); i_ < a_.length ; i_++) {' . chr(10) . '                if (a_[i_] != "") {' . chr(10) . '                    res.push(a_[i_])' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        return s.split(pattern);' . chr(10) . '    }' . chr(10) . '    CORE.die(["not implemented"]);' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.prototype = function(List__, data) {' . chr(10) . '    var name = List__[0];' . chr(10) . '    // TODO - fully qualify "name" using information from "data"' . chr(10) . '    // XXX - lookup in CORE::GLOBAL?' . chr(10) . '    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]' . chr(10) . '};' . chr(10) . chr(10)
+        return '//
+//
+// lib/Perlito5/JavaScript3/CORE.js
+//
+// CORE functions for "Perlito" Perl5-in-JavaScript3
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var CORE = p5pkg.CORE;
+
+var isNode = typeof require != "undefined";
+if (isNode) {
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            process.stdout.write(p5str(List__[i]));
+        }
+        return 1;
+    }
+} else {
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            write(p5str(List__[i]));
+        }
+        return 1;
+    };
+}
+
+CORE.say = function(List__) {
+    CORE.print(List__);
+    return CORE.print(["\\n"]);
+};
+
+CORE.die = function(List__) {
+    var o = List__[0]._array_;   // prototype is ' . chr(39) . '@' . chr(39) . '
+    var i;
+    var s = "";
+    for (i = 0; i < o.length; i++) {
+        s = s + p5str(o[i]);
+    }
+    try {
+        s = s + "\\n" + new Error().stack;
+    }
+    catch(err) { }
+    p5pkg["main"]["v_@"].assign("Died: " + s);
+    throw(new p5_error("die", "Died: " + s));
+};
+
+CORE.warn = function(List__) {
+    var o = List__[0]._array_;   // prototype is ' . chr(39) . '@' . chr(39) . '
+    var i;
+    var s = "";
+    for (i = 0; i < o.length; i++) {
+        s = s + p5str(o[i]);
+    }
+    try {
+        s = s + "\\n" + new Error().stack;
+    }
+    catch(err) { }
+    CORE.print(["Warning: " + s + "\\n"]);
+};
+
+CORE.bless = function(List__) {
+    var o        = List__[0];
+    var pkg_name = List__[1];
+    if (o instanceof p5Scalar) {
+        o = o.FETCH();
+    }
+    if (pkg_name instanceof p5Scalar) {
+        pkg_name = pkg_name.FETCH();
+    }
+    if (typeof pkg_name === "object") {
+        // bless {}, Class
+        o._class_ = pkg_name;
+        return o;
+    }
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
+        p5make_package(pkg_name);
+    }
+    o._class_ = p5pkg[pkg_name];
+    return o;
+};
+
+CORE.caller = function(List__, p5want) {
+    if (p5want) {
+        return p5pkg["Perlito5"]["CALLER"][0];
+    }
+    return p5pkg["Perlito5"]["CALLER"][0][0];
+};
+
+CORE.chr = function(List__) {
+    var v = p5num(List__[0]);
+    return String.fromCharCode(v >= 0 ? v : 65533);
+};
+
+CORE.ord = function(List__) {
+    return p5str(List__[0]).charCodeAt(0);
+};
+
+CORE.oct = function(List__) {
+    var v = p5str(List__[0]);
+    var b = v.substr(0,2);
+    v = v.replace("_", "");
+    if (b == "0b" || b == "0B") { return parseInt(v.substr(2), 2)  }
+    if (b == "0x" || b == "0X") { return parseInt(v.substr(2), 16) }
+    return parseInt(v, 8);
+};
+
+CORE.abs   = function(List__) { return Math.abs(p5num(List__[0])) };
+CORE.exp   = function(List__) { return Math.exp(p5num(List__[0])) };
+CORE.log   = function(List__) { return Math.log(p5num(List__[0])) };
+CORE.cos   = function(List__) { return Math.cos(p5num(List__[0])) };
+CORE.sin   = function(List__) { return Math.sin(p5num(List__[0])) };
+CORE.sqrt  = function(List__) { return Math.sqrt(p5num(List__[0])) };
+CORE.atan2 = function(List__) { return Math.atan2(p5num(List__[0]), p5num(List__[1])) };
+CORE.int   = function(List__) { 
+    var v = p5num(List__[0]);
+    return v > 0 ? Math.floor(v) : Math.ceil(v)
+};
+
+CORE.rand = function(List__) {
+    var v = p5num(List__[0]) || 1;
+    return Math.random() * v;
+};
+
+CORE.lc      = function(List__) { return p5str(List__[0]).toLowerCase() };
+CORE.uc      = function(List__) { return p5str(List__[0]).toUpperCase() };
+
+CORE.lcfirst = function(List__) {
+    var s = p5str(List__[0]);
+    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";
+    s = s.length > 1 ? s.substr(1) : "";
+    return c + s
+};
+
+CORE.ucfirst = function(List__) {
+    var s = p5str(List__[0]);
+    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";
+    s = s.length > 1 ? s.substr(1) : "";
+    return c + s
+};
+
+CORE.quotemeta = function(List__) {
+    var s = p5str(List__[0]);
+    var out = [];
+    for(var i = 0; i < s.length; i++) {
+        if (s.substr(i, 1).match(/[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]/)) {
+            out.push(String.fromCharCode(92));
+        }
+        out.push(s.substr(i, 1));
+    }
+    return out.join("");       
+};
+
+CORE.substr = function(List__) {
+
+    // TODO - lvalue substr()
+
+    var s           = p5str(List__[0]);
+    var offset      = p5num(List__[1]);
+    var length      = List__.length > 2 ? p5num(List__[2]) : s.length;
+    var replacement = List__[3];
+
+    if (length < 0) {
+        length = s.length - offset + length;
+    }
+    return s.substr(offset, length);
+};
+
+CORE.defined = function(List__) {
+    return (List__[0] instanceof p5Scalar) ? ( List__[0].FETCH() != null ) : ( List__[0] != null )
+};
+
+CORE.values = function(List__, p5want) {
+    var o = List__[0]._hash_;
+    delete o["_each_"];
+    if (p5want) {
+        if (o == null) {
+            return new p5Array([]);
+        };
+        if (typeof o.values === "function") {
+            return o.values();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(o[i]);
+        }
+        return new p5Array(out);
+    }
+    return CORE.keys(List__, p5want);
+};
+
+CORE.keys = function(List__, p5want) {
+    var o = List__[0]._hash_;
+    delete o["_each_"];
+    if (p5want) {
+        if (o == null) {
+            return new p5Array([]);
+        }
+        if (typeof o.keys === "function") {
+            return o.keys();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(i);
+        }
+        return new p5Array(out);
+    }
+    else {
+        if (o == null) {
+            return 0;
+        }
+        if (typeof o.keys === "function") {
+            return CORE.scalar([o.keys()]);
+        }
+        var out = 0;
+        for (var i in o) {
+            out++;
+        }
+        return out;
+    }
+};
+
+CORE.each = function(List__, p5want) {
+    var o = List__[0];
+    if (o.hasOwnProperty("_each_")) {
+        return o._each_(p5want)
+    }
+    var keys = CORE.keys([o], 1);
+    var i = 0;
+    o._each_ = function () {
+        if (i < keys.length) {
+            i++;
+            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];
+        }
+        i = 0;
+        return p5want ? [] : null;
+    };
+    return o._each_(p5want);
+};
+
+CORE.reverse = function(List__) {
+    var o = List__[0];
+    if (o instanceof p5Scalar) {
+        o = o.FETCH();
+    }
+    if (o == null) {
+        return "";
+    }
+    if (typeof o === "string") {
+        return o.split("").reverse().join("")
+    }
+    var out = [];
+    for(var i = 0; i < o.length; i++) {
+        out.unshift(o[i]);
+    }
+    return out;
+};
+
+CORE.splice = function(List__, p5want) {
+    var array  = List__.shift()._array_;
+    // CORE.say([ array ]);
+    var offset = p5num(List__.shift());
+    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);
+
+    if (limit < 0) {
+        limit = array.length + limit - 1;
+    }
+
+    var list = [offset, limit];
+    for(var i = 0; i < List__.length; i++) {
+        list = p5list_to_a( list, List__[i]);
+    }
+
+    out = array.splice.apply(array, list);
+    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
+    return p5want ? out : out.pop();
+};
+
+CORE.pop = function(List__) {
+    return List__[0].POP();
+};
+
+CORE.shift = function(List__) {
+    return List__[0].SHIFT();
+};
+
+CORE.push = function(List__) {
+    return List__[0].PUSH(List__[1]);
+};
+
+CORE.unshift = function(List__) {
+    return List__[0].UNSHIFT(List__[1]);
+};
+
+CORE.join = function(List__) {
+    var s = List__[0];
+    var o = List__[1]._array_;
+    var a = [];
+    for (i = 0; i < o.length; i++) {
+        a.push( p5str(o[i]) );
+    }
+    return a.join(s);
+};
+
+CORE.index = function(List__) {
+    try {
+        return p5str(List__[0]).indexOf(p5str(List__[1]), p5num(List__[2]));
+    }
+    catch(err) {
+        return -1;
+    }
+};
+CORE.rindex = function(List__) {
+    var o = p5str(List__[0]);
+    var s = List__[1];
+    try {
+        if (List__.length > 2) {
+            var i = p5num(List__[2]);
+            if (i < 0) {
+                if (s.length == 0) {
+                    return 0;
+                }
+                return -1;
+            }
+            return o.lastIndexOf(s, i);
+        }
+        return o.lastIndexOf(s);
+    }
+    catch(err) {
+        return -1;
+    }
+};
+
+CORE.length = function(List__) {
+    var o = p5str(List__[0]);
+    return o.length;
+};
+
+CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
+CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };
+
+CORE.ref = function(List__) {
+    var o = List__[0];
+    if (o instanceof p5Scalar) {
+        o = o.FETCH();
+    }
+    if (o == null) {
+        return "";
+    }
+    if (o._class_ && typeof o._class_._ref_ === "string") {
+        // blessed reference
+        return o._class_._ref_;
+    }
+    if (typeof o._ref_ === "string") {
+        // un-blessed reference
+        return o._ref_;
+    }
+    if (typeof o === "function") {
+        return "CODE";
+    }
+    return "";
+};
+
+CORE.split = function(List__) {
+    var pattern = List__[0];
+    var s       = p5str(List__[1]);
+    var limit   = List__[2];
+    if (typeof pattern === "string") {
+        if (pattern == " ") {
+            var res = [];
+            for (var i_ = 0, a_ = s.split(/(?: |\\n)+/); i_ < a_.length ; i_++) {
+                if (a_[i_] != "") {
+                    res.push(a_[i_])
+                }
+            }
+            return res;
+        }
+        return s.split(pattern);
+    }
+    CORE.die(["not implemented"]);
+};
+
+CORE.prototype = function(List__, data) {
+    var name = List__[0];
+    // TODO - fully qualify "name" using information from "data"
+    // XXX - lookup in CORE::GLOBAL?
+    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
+};
+
+'
     }
     1
 }
@@ -13262,7 +18067,143 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript3::IO;
     sub Perlito5::JavaScript3::IO::emit_javascript3 {
-        return '//' . chr(10) . '//' . chr(10) . '// lib/Perlito5/JavaScript3/IO.js' . chr(10) . '//' . chr(10) . '// I/O functions for "Perlito" Perl5-in-JavaScript3' . chr(10) . '//' . chr(10) . '// AUTHORS' . chr(10) . '//' . chr(10) . '// Flavio Soibelmann Glock  fglock@gmail.com' . chr(10) . '//' . chr(10) . '// COPYRIGHT' . chr(10) . '//' . chr(10) . '// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . '//' . chr(10) . '// This program is free software; you can redistribute it and/or modify it' . chr(10) . '// under the same terms as Perl itself.' . chr(10) . '//' . chr(10) . '// See http://www.perl.com/perl/misc/Artistic.html' . chr(10) . chr(10) . 'var isNode = typeof require != "undefined";' . chr(10) . 'if (isNode) {' . chr(10) . chr(10) . '    var fs = require("fs");' . chr(10) . chr(10) . '    p5atime = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["atime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5mtime = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["mtime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5ctime = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["ctime"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5size = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat["size"];' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_file = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5is_directory = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        try {' . chr(10) . '            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . '    p5file_exists = function(s) {' . chr(10) . '        s = p5str(s);' . chr(10) . '        return p5is_file(s) || p5is_directory(s);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.chdir = function(List__) {' . chr(10) . '        try {' . chr(10) . '            process.chdir(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.close = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.closeSync(p5str(List__[0]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.exit = function(List__) {' . chr(10) . '        process.exit(List__[0]);' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.rename = function(List__) {' . chr(10) . '        try {' . chr(10) . '            fs.renameSync(p5str(List__[0]), p5str(List__[1]));' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return ' . chr(39) . chr(39) . ';' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '    CORE.unlink = function(List__) {' . chr(10) . '        var count = 0;' . chr(10) . '        try {' . chr(10) . '            for(var i = 0; i < List__.length; i++) {' . chr(10) . '                fs.unlinkSync(p5str(List__[i]));' . chr(10) . '                count++;' . chr(10) . '            }' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '        catch(err) {' . chr(10) . '            p5pkg["main"]["v_!"] = err;' . chr(10) . '            return count;' . chr(10) . '        }' . chr(10) . '    };' . chr(10) . chr(10) . '}' . chr(10) . chr(10)
+        return '//
+//
+// lib/Perlito5/JavaScript3/IO.js
+//
+// I/O functions for "Perlito" Perl5-in-JavaScript3
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var isNode = typeof require != "undefined";
+if (isNode) {
+
+    var fs = require("fs");
+
+    p5atime = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat["atime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5mtime = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat["mtime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5ctime = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat["ctime"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5size = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat["size"];
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5is_file = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5is_directory = function(s) {
+        s = p5str(s);
+        try {
+            var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+    p5file_exists = function(s) {
+        s = p5str(s);
+        return p5is_file(s) || p5is_directory(s);
+    };
+
+    CORE.chdir = function(List__) {
+        try {
+            process.chdir(p5str(List__[0]));
+            return 1;
+        }
+        catch(err) {
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.close = function(List__) {
+        try {
+            fs.closeSync(p5str(List__[0]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.exit = function(List__) {
+        process.exit(List__[0]);
+    };
+
+    CORE.rename = function(List__) {
+        try {
+            fs.renameSync(p5str(List__[0]), p5str(List__[1]));
+            return 1;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return ' . chr(39) . chr(39) . ';
+        }
+    };
+
+    CORE.unlink = function(List__) {
+        var count = 0;
+        try {
+            for(var i = 0; i < List__.length; i++) {
+                fs.unlinkSync(p5str(List__[i]));
+                count++;
+            }
+            return count;
+        }
+        catch(err) {
+            p5pkg["main"]["v_!"] = err;
+            return count;
+        }
+    };
+
+}
+
+'
     }
     1
 }
@@ -13271,7 +18212,214 @@ use feature 'say';
     undef();
     package Perlito5::JavaScript3::Sprintf;
     sub Perlito5::JavaScript3::Sprintf::emit_javascript3 {
-        return '/**' . chr(10) . ' * Copyright (c) 2010 Jakob Westhoff' . chr(10) . ' *' . chr(10) . ' * Permission is hereby granted, free of charge, to any person obtaining a copy' . chr(10) . ' * of this software and associated documentation files (the "Software"), to deal' . chr(10) . ' * in the Software without restriction, including without limitation the rights' . chr(10) . ' * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell' . chr(10) . ' * copies of the Software, and to permit persons to whom the Software is' . chr(10) . ' * furnished to do so, subject to the following conditions:' . chr(10) . ' * ' . chr(10) . ' * The above copyright notice and this permission notice shall be included in' . chr(10) . ' * all copies or substantial portions of the Software.' . chr(10) . ' * ' . chr(10) . ' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR' . chr(10) . ' * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,' . chr(10) . ' * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE' . chr(10) . ' * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER' . chr(10) . ' * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,' . chr(10) . ' * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN' . chr(10) . ' * THE SOFTWARE.' . chr(10) . ' */' . chr(10) . chr(10) . 'CORE.sprintf = function(List__) {' . chr(10) . '    var format = List__[0];' . chr(10) . '    var list = List__[1];' . chr(10) . chr(10) . '    // Check for format definition' . chr(10) . '    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {' . chr(10) . '        CORE.die(["sprintf: The first arguments need to be a valid format string."]);' . chr(10) . '    }' . chr(10) . '    ' . chr(10) . '    /**' . chr(10) . '     * Define the regex to match a formating string' . chr(10) . '     * The regex consists of the following parts:' . chr(10) . '     * percent sign to indicate the start' . chr(10) . '     * (optional) sign specifier' . chr(10) . '     * (optional) padding specifier' . chr(10) . '     * (optional) alignment specifier' . chr(10) . '     * (optional) width specifier' . chr(10) . '     * (optional) precision specifier' . chr(10) . '     * type specifier:' . chr(10) . '     *  % - literal percent sign' . chr(10) . '     *  b - binary number' . chr(10) . '     *  c - ASCII character represented by the given value' . chr(10) . '     *  d - signed decimal number' . chr(10) . '     *  f - floating point value' . chr(10) . '     *  o - octal number' . chr(10) . '     *  s - string' . chr(10) . '     *  x - hexadecimal number (lowercase characters)' . chr(10) . '     *  X - hexadecimal number (uppercase characters)' . chr(10) . '     */' . chr(10) . '    var r = new RegExp( /%(' . chr(92) . '+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(' . chr(92) . '.([0-9]+))?([%bcdfosxX])/g );' . chr(10) . chr(10) . '    /**' . chr(10) . '     * Each format string is splitted into the following parts:' . chr(10) . '     * 0: Full format string' . chr(10) . '     * 1: sign specifier (+)' . chr(10) . '     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)' . chr(10) . '     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real ' . chr(10) . '     *    padding character' . chr(10) . '     * 4: alignment specifier' . chr(10) . '     * 5: width specifier' . chr(10) . '     * 6: precision specifier including the dot' . chr(10) . '     * 7: precision specifier without the dot' . chr(10) . '     * 8: type specifier' . chr(10) . '     */' . chr(10) . '    var parts      = [];' . chr(10) . '    var paramIndex = 0;' . chr(10) . '    while ( part = r.exec( format ) ) {' . chr(10) . '        // Check if an input value has been provided, for the current' . chr(10) . '        // format string' . chr(10) . '        if ( paramIndex >= list.length ) {' . chr(10) . '            CORE.die(["sprintf: At least one argument was missing."]);' . chr(10) . '        }' . chr(10) . chr(10) . '        parts[parts.length] = {' . chr(10) . '            /* beginning of the part in the string */' . chr(10) . '            begin: part.index,' . chr(10) . '            /* end of the part in the string */' . chr(10) . '            end: part.index + part[0].length,' . chr(10) . '            /* force sign */' . chr(10) . '            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),' . chr(10) . '            /* is the given data negative */' . chr(10) . '            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,' . chr(10) . '            /* padding character (default: <space>) */' . chr(10) . '            padding: ( part[2] == undefined )' . chr(10) . '                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */' . chr(10) . '                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) ' . chr(10) . '                         ? ( part[3] ) /* use special char */' . chr(10) . '                         : ( part[2] ) /* use normal <space> or zero */' . chr(10) . '                       ),' . chr(10) . '            /* should the output be aligned left?*/' . chr(10) . '            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),' . chr(10) . '            /* width specifier (number or false) */' . chr(10) . '            width: ( part[5] != undefined ) ? part[5] : false,' . chr(10) . '            /* precision specifier (number or false) */' . chr(10) . '            precision: ( part[7] != undefined ) ? part[7] : false,' . chr(10) . '            /* type specifier */' . chr(10) . '            type: part[8],' . chr(10) . '            /* the given data associated with this part converted to a string */' . chr(10) . '            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false' . chr(10) . '        };' . chr(10) . '    }' . chr(10) . chr(10) . '    var newString = "";' . chr(10) . '    var start = 0;' . chr(10) . '    // Generate our new formated string' . chr(10) . '    for( var i=0; i<parts.length; ++i ) {' . chr(10) . '        // Add first unformated string part' . chr(10) . '        newString += format.substring( start, parts[i].begin );' . chr(10) . '        ' . chr(10) . '        // Mark the new string start' . chr(10) . '        start = parts[i].end;' . chr(10) . chr(10) . '        // Create the appropriate preformat substitution' . chr(10) . '        // This substitution is only the correct type conversion. All the' . chr(10) . '        // different options and flags haven' . chr(39) . 't been applied to it at this' . chr(10) . '        // point' . chr(10) . '        var preSubstitution = "";' . chr(10) . '        switch ( parts[i].type ) {' . chr(10) . '            case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                preSubstitution = "%";' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'd' . chr(39) . ':' . chr(10) . '                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'f' . chr(39) . ':' . chr(10) . '                preSubstitution = ( parts[i].precision == false )' . chr(10) . '                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )' . chr(10) . '                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'o' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'x' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();' . chr(10) . '            break;' . chr(10) . '            case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();' . chr(10) . '            break;' . chr(10) . '            default:' . chr(10) . '                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';' . chr(10) . '        }' . chr(10) . chr(10) . '        // The % character is a special type and does not need further processing' . chr(10) . '        if ( parts[i].type ==  "%" ) {' . chr(10) . '            newString += preSubstitution;' . chr(10) . '            continue;' . chr(10) . '        }' . chr(10) . chr(10) . '        // Modify the preSubstitution by taking sign, padding and width' . chr(10) . '        // into account' . chr(10) . chr(10) . '        // Pad the string based on the given width' . chr(10) . '        if ( parts[i].width != false ) {' . chr(10) . '            // Padding needed?' . chr(10) . '            if ( parts[i].width > preSubstitution.length ) ' . chr(10) . '            {' . chr(10) . '                var origLength = preSubstitution.length;' . chr(10) . '                for( var j = 0; j < parts[i].width - origLength; ++j ) ' . chr(10) . '                {' . chr(10) . '                    preSubstitution = ( parts[i].alignLeft == true ) ' . chr(10) . '                                      ? ( preSubstitution + parts[i].padding )' . chr(10) . '                                      : ( parts[i].padding + preSubstitution );' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add a sign symbol if neccessary or enforced, but only if we are' . chr(10) . '        // not handling a string' . chr(10) . '        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' ' . chr(10) . '          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {' . chr(10) . '            if ( parts[i].negative == true ) {' . chr(10) . '                preSubstitution = "-" + preSubstitution;' . chr(10) . '            }' . chr(10) . '            else if ( parts[i].sign == true ) {' . chr(10) . '                preSubstitution = "+" + preSubstitution;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // Add the substitution to the new string' . chr(10) . '        newString += preSubstitution;' . chr(10) . '    }' . chr(10) . chr(10) . '    // Add the last part of the given format string, which may still be there' . chr(10) . '    newString += format.substring( start, format.length );' . chr(10) . chr(10) . '    return newString;' . chr(10) . '};' . chr(10) . chr(10) . 'CORE.printf = function(List__) {' . chr(10) . '    return CORE.print([ CORE.sprintf(List__) ]);' . chr(10) . '};' . chr(10) . chr(10)
+        return '/**
+ * Copyright (c) 2010 Jakob Westhoff
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+CORE.sprintf = function(List__) {
+    var format = List__[0];
+    var list = List__[1];
+
+    // Check for format definition
+    if ( typeof format != ' . chr(39) . 'string' . chr(39) . ' ) {
+        CORE.die(["sprintf: The first arguments need to be a valid format string."]);
+    }
+    
+    /**
+     * Define the regex to match a formating string
+     * The regex consists of the following parts:
+     * percent sign to indicate the start
+     * (optional) sign specifier
+     * (optional) padding specifier
+     * (optional) alignment specifier
+     * (optional) width specifier
+     * (optional) precision specifier
+     * type specifier:
+     *  % - literal percent sign
+     *  b - binary number
+     *  c - ASCII character represented by the given value
+     *  d - signed decimal number
+     *  f - floating point value
+     *  o - octal number
+     *  s - string
+     *  x - hexadecimal number (lowercase characters)
+     *  X - hexadecimal number (uppercase characters)
+     */
+    var r = new RegExp( /%(\\+)?([0 ]|' . chr(39) . '(.))?(-)?([0-9]+)?(\\.([0-9]+))?([%bcdfosxX])/g );
+
+    /**
+     * Each format string is splitted into the following parts:
+     * 0: Full format string
+     * 1: sign specifier (+)
+     * 2: padding specifier (0/<space>/' . chr(39) . '<any char>)
+     * 3: if the padding character starts with a ' . chr(39) . ' this will be the real 
+     *    padding character
+     * 4: alignment specifier
+     * 5: width specifier
+     * 6: precision specifier including the dot
+     * 7: precision specifier without the dot
+     * 8: type specifier
+     */
+    var parts      = [];
+    var paramIndex = 0;
+    while ( part = r.exec( format ) ) {
+        // Check if an input value has been provided, for the current
+        // format string
+        if ( paramIndex >= list.length ) {
+            CORE.die(["sprintf: At least one argument was missing."]);
+        }
+
+        parts[parts.length] = {
+            /* beginning of the part in the string */
+            begin: part.index,
+            /* end of the part in the string */
+            end: part.index + part[0].length,
+            /* force sign */
+            sign: ( part[1] == ' . chr(39) . '+' . chr(39) . ' ),
+            /* is the given data negative */
+            negative: ( parseInt( list[paramIndex] ) < 0 ) ? true : false,
+            /* padding character (default: <space>) */
+            padding: ( part[2] == undefined )
+                     ? ( ' . chr(39) . ' ' . chr(39) . ' ) /* default */
+                     : ( ( part[2].substring( 0, 1 ) == "' . chr(39) . '" ) 
+                         ? ( part[3] ) /* use special char */
+                         : ( part[2] ) /* use normal <space> or zero */
+                       ),
+            /* should the output be aligned left?*/
+            alignLeft: ( part[4] == ' . chr(39) . '-' . chr(39) . ' ),
+            /* width specifier (number or false) */
+            width: ( part[5] != undefined ) ? part[5] : false,
+            /* precision specifier (number or false) */
+            precision: ( part[7] != undefined ) ? part[7] : false,
+            /* type specifier */
+            type: part[8],
+            /* the given data associated with this part converted to a string */
+            data: ( part[8] != ' . chr(39) . '%' . chr(39) . ' ) ? String ( list[paramIndex++] ) : false
+        };
+    }
+
+    var newString = "";
+    var start = 0;
+    // Generate our new formated string
+    for( var i=0; i<parts.length; ++i ) {
+        // Add first unformated string part
+        newString += format.substring( start, parts[i].begin );
+        
+        // Mark the new string start
+        start = parts[i].end;
+
+        // Create the appropriate preformat substitution
+        // This substitution is only the correct type conversion. All the
+        // different options and flags haven' . chr(39) . 't been applied to it at this
+        // point
+        var preSubstitution = "";
+        switch ( parts[i].type ) {
+            case ' . chr(39) . '%' . chr(39) . ':
+                preSubstitution = "%";
+            break;
+            case ' . chr(39) . 'b' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );
+            break;
+            case ' . chr(39) . 'c' . chr(39) . ':
+                preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );
+            break;
+            case ' . chr(39) . 'd' . chr(39) . ':
+                preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
+            break;
+            case ' . chr(39) . 'f' . chr(39) . ':
+                preSubstitution = ( parts[i].precision == false )
+                                  ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
+                                  : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
+            break;
+            case ' . chr(39) . 'o' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );
+            break;
+            case ' . chr(39) . 's' . chr(39) . ':
+                preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */
+            break;
+            case ' . chr(39) . 'x' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();
+            break;
+            case ' . chr(39) . 'X' . chr(39) . ':
+                preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();
+            break;
+            default:
+                throw ' . chr(39) . 'sprintf: Unknown type "' . chr(39) . ' + parts[i].type + ' . chr(39) . '" detected. This should never happen. Maybe the regex is wrong.' . chr(39) . ';
+        }
+
+        // The % character is a special type and does not need further processing
+        if ( parts[i].type ==  "%" ) {
+            newString += preSubstitution;
+            continue;
+        }
+
+        // Modify the preSubstitution by taking sign, padding and width
+        // into account
+
+        // Pad the string based on the given width
+        if ( parts[i].width != false ) {
+            // Padding needed?
+            if ( parts[i].width > preSubstitution.length ) 
+            {
+                var origLength = preSubstitution.length;
+                for( var j = 0; j < parts[i].width - origLength; ++j ) 
+                {
+                    preSubstitution = ( parts[i].alignLeft == true ) 
+                                      ? ( preSubstitution + parts[i].padding )
+                                      : ( parts[i].padding + preSubstitution );
+                }
+            }
+        }
+
+        // Add a sign symbol if neccessary or enforced, but only if we are
+        // not handling a string
+        if ( parts[i].type == ' . chr(39) . 'b' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'd' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'o' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'f' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'x' . chr(39) . ' 
+          || parts[i].type == ' . chr(39) . 'X' . chr(39) . ' ) {
+            if ( parts[i].negative == true ) {
+                preSubstitution = "-" + preSubstitution;
+            }
+            else if ( parts[i].sign == true ) {
+                preSubstitution = "+" + preSubstitution;
+            }
+        }
+
+        // Add the substitution to the new string
+        newString += preSubstitution;
+    }
+
+    // Add the last part of the given format string, which may still be there
+    newString += format.substring( start, format.length );
+
+    return newString;
+};
+
+CORE.printf = function(List__) {
+    return CORE.print([ CORE.sprintf(List__) ]);
+};
+
+'
     }
     1
 }
@@ -13385,8 +18533,8 @@ use feature 'say';
         sub Perlito5::AST::Var::emit_perl5 {
             my $self = $_[0];
             my $str_name = $self->{'name'};
-            $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-            $str_name eq chr(39) && ($str_name = chr(92) . chr(39));
+            $str_name eq '\\' && ($str_name = '\\\\');
+            $str_name eq chr(39) && ($str_name = '\\' . chr(39));
             my $ns = '';
             if ($self->{'namespace'}) {
                 $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';
@@ -13686,7 +18834,7 @@ use feature 'say';
         label(@_)
     });
     my %pair = ('(' => ')', '[' => ']', '{' => '}', '<' => '>');
-    our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<->>' => {'fix' => 'infix', 'prec' => -1, 'str' => '->'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' x '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'list:<.>' => {'fix' => 'list', 'prec' => 6, 'str' => ' . '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 11, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 14, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' // '}, 'ternary:<? :>' => {'fix' => 'ternary', 'prec' => 16}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 18, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 19, 'str' => ', '}, 'prefix:<not>' => {'fix' => 'prefix', 'prec' => 20, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 21, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' xor '});
+    our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<->>' => {'fix' => 'infix', 'prec' => -1, 'str' => '->'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'prefix:<\\>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '\\'}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' x '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'list:<.>' => {'fix' => 'list', 'prec' => 6, 'str' => ' . '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 7, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 9, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' cmp '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 11, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 13, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 14, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 15, 'str' => ' // '}, 'ternary:<? :>' => {'fix' => 'ternary', 'prec' => 16}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 17, 'str' => ' //= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 18, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 19, 'str' => ', '}, 'prefix:<not>' => {'fix' => 'prefix', 'prec' => 20, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 21, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 22, 'str' => ' xor '});
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
         for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 15, 'str' => $_}
@@ -13883,7 +19031,8 @@ use feature 'say';
     sub Perlito5::Perl5::PrettyPrinter::statement_modifier {
         my($data, $level, $out) = @_;
         render($data->[1], $level, $out);
-        push(@{$out}, chr(10), tab($level + 1));
+        push(@{$out}, '
+', tab($level + 1));
         render($data->[2], $level, $out)
     }
     sub Perlito5::Perl5::PrettyPrinter::block {
@@ -13892,14 +19041,16 @@ use feature 'say';
             push(@{$out}, '{}');
             return
         }
-        push(@{$out}, '{', chr(10));
+        push(@{$out}, '{', '
+');
         $level++;
         for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
             $line != $#{$data} && statement_need_semicolon($d) && push(@{$out}, ';');
-            push(@{$out}, chr(10))
+            push(@{$out}, '
+')
         }
         $level--;
         push(@{$out}, tab($level), '}')
@@ -13911,7 +19062,8 @@ use feature 'say';
             push(@{$out}, tab($level));
             render($d, $level, $out);
             $line != $#{$data} && statement_need_semicolon($d) && push(@{$out}, ';');
-            push(@{$out}, chr(10))
+            push(@{$out}, '
+')
         }
     }
     1
@@ -13925,14 +19077,19 @@ use feature 'say';
         my @data = $ast->emit_perl5(0, $want);
         my $out = [];
         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $code = 'package ' . $Perlito5::PKG_NAME . '; ' . join('', @{$out}) . chr(10);
+        my $code = 'package ' . $Perlito5::PKG_NAME . '; ' . join('', @{$out}) . '
+';
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
         return eval($code)
     }
     sub Perlito5::Perl5::Runtime::emit_perl5 {
-        return chr(10) . 'use v5.10;' . chr(10) . 'use feature ' . chr(39) . 'say' . chr(39) . ';' . chr(10) . chr(10)
+        return '
+use v5.10;
+use feature ' . chr(39) . 'say' . chr(39) . ';
+
+'
     }
     1
 }
@@ -14208,8 +19365,8 @@ use feature 'say';
                 return ['op' => 'infix:<.>', $v->emit_perl6(), ['keyword' => 'end']]
             }
             my $str_name = $self->{'name'};
-            $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-            $str_name eq '"' && ($str_name = chr(92) . '"');
+            $str_name eq '\\' && ($str_name = '\\\\');
+            $str_name eq '"' && ($str_name = '\\"');
             if ($self->{'sigil'} eq '::') {
                 if ($self->{'namespace'} eq '__PACKAGE__') {
                     return ['bareword' => '$?PACKAGE']
@@ -14232,7 +19389,7 @@ use feature 'say';
                 return $self->{'sigil'} . $bareword
             }
             if ($self->{'sigil'} eq '$') {
-                $bareword eq '/' && return '"' . chr(92) . 'n"';
+                $bareword eq '/' && return '"\\n"';
                 $bareword eq '$' && return '$*PID';
                 $bareword eq 0 && return '$*PROGRAM_NAME';
                 $bareword eq '@' && return '$!';
@@ -14568,7 +19725,7 @@ use feature 'say';
         var(@_)
     });
     my %pair = ('(' => ')', '[' => ']', '{' => '}');
-    our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'p6_prefix:<^>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '^'}, 'prefix:<' . chr(92) . '>' => {'fix' => 'prefix', 'prec' => 3, 'str' => chr(92)}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<~>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<leq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' leq '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<~=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ~= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'prefix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
+    our %op = ('prefix:<$>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$'}, 'prefix:<@>' => {'fix' => 'deref', 'prec' => 0, 'str' => '@'}, 'prefix:<%>' => {'fix' => 'deref', 'prec' => 0, 'str' => '%'}, 'prefix:<&>' => {'fix' => 'deref', 'prec' => 0, 'str' => '&'}, 'prefix:<*>' => {'fix' => 'deref', 'prec' => 0, 'str' => '*'}, 'prefix:<$#>' => {'fix' => 'deref', 'prec' => 0, 'str' => '$#'}, 'circumfix:<[ ]>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '['}, 'circumfix:<{ }>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '{'}, 'circumfix:<( )>' => {'fix' => 'circumfix', 'prec' => 0, 'str' => '('}, 'infix:<.>' => {'fix' => 'infix', 'prec' => -1, 'str' => '.'}, 'prefix:<-->' => {'fix' => 'prefix', 'prec' => 1, 'str' => '--'}, 'prefix:<++>' => {'fix' => 'prefix', 'prec' => 1, 'str' => '++'}, 'postfix:<-->' => {'fix' => 'postfix', 'prec' => 1, 'str' => '--'}, 'postfix:<++>' => {'fix' => 'postfix', 'prec' => 1, 'str' => '++'}, 'infix:<**>' => {'fix' => 'infix', 'prec' => 2, 'str' => '**'}, 'p6_prefix:<^>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '^'}, 'prefix:<\\>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '\\'}, 'prefix:<+>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '+'}, 'prefix:<->' => {'fix' => 'prefix', 'prec' => 3, 'str' => '-'}, 'prefix:<~>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '~'}, 'prefix:<!>' => {'fix' => 'prefix', 'prec' => 3, 'str' => '!'}, 'infix:<=~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' =~ '}, 'infix:<!~>' => {'fix' => 'infix', 'prec' => 4, 'str' => ' !~ '}, 'infix:<*>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' * '}, 'infix:</>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' / '}, 'infix:<%>' => {'fix' => 'infix', 'prec' => 5, 'str' => ' % '}, 'infix:<+>' => {'fix' => 'infix', 'prec' => 6, 'str' => ' + '}, 'infix:<->' => {'fix' => 'infix', 'prec' => 6, 'str' => ' - '}, 'infix:<x>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' x '}, 'infix:<xx>' => {'fix' => 'infix', 'prec' => 8, 'str' => ' xx '}, 'list:<~>' => {'fix' => 'list', 'prec' => 10, 'str' => ' ~ '}, 'infix:<~>' => {'fix' => 'infix', 'prec' => 10, 'str' => ' ~ '}, 'infix:<<<>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' << '}, 'infix:<>>>' => {'fix' => 'infix', 'prec' => 12, 'str' => ' >> '}, 'infix:<lt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' lt '}, 'infix:<le>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' le '}, 'infix:<gt>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' gt '}, 'infix:<ge>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' ge '}, 'infix:<<=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' <= '}, 'infix:<>=>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' >= '}, 'infix:<<>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' < '}, 'infix:<>>' => {'fix' => 'infix', 'prec' => 90, 'str' => ' > '}, 'infix:<<=>>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' <=> '}, 'infix:<cmp>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' cmp '}, 'infix:<leq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' leq '}, 'infix:<==>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' == '}, 'infix:<!=>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' != '}, 'infix:<ne>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' ne '}, 'infix:<eq>' => {'fix' => 'infix', 'prec' => 100, 'str' => ' eq '}, 'infix:<&>' => {'fix' => 'infix', 'prec' => 110, 'str' => ' & '}, 'infix:<|>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' | '}, 'infix:<^>' => {'fix' => 'infix', 'prec' => 120, 'str' => ' ^ '}, 'infix:<..>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' .. '}, 'infix:<...>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ... '}, 'infix:<~~>' => {'fix' => 'infix', 'prec' => 130, 'str' => ' ~~ '}, 'infix:<&&>' => {'fix' => 'infix', 'prec' => 140, 'str' => ' && '}, 'infix:<||>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' || '}, 'infix:<//>' => {'fix' => 'infix', 'prec' => 150, 'str' => ' // '}, 'ternary:<?? !!>' => {'fix' => 'ternary', 'prec' => 160}, 'infix:<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' = '}, 'infix:<**=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' **= '}, 'infix:<+=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' += '}, 'infix:<-=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' -= '}, 'infix:<*=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' *= '}, 'infix:</=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' /= '}, 'infix:<x=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' x= '}, 'infix:<|=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' |= '}, 'infix:<&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &= '}, 'infix:<.=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' .= '}, 'infix:<<<=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' <<= '}, 'infix:<>>=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' >>= '}, 'infix:<%=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' %= '}, 'infix:<||=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ||= '}, 'infix:<&&=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' &&= '}, 'infix:<^=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ^= '}, 'infix:<//=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' //= '}, 'infix:<~=>' => {'fix' => 'infix', 'prec' => 170, 'str' => ' ~= '}, 'infix:<=>>' => {'fix' => 'infix', 'prec' => 180, 'str' => ' => '}, 'list:<,>' => {'fix' => 'list', 'prec' => 190, 'str' => ', '}, 'infix:<:>' => {'fix' => 'infix', 'prec' => 190, 'str' => ':'}, 'prefix:<not>' => {'fix' => 'prefix', 'prec' => 200, 'str' => ' not '}, 'infix:<and>' => {'fix' => 'infix', 'prec' => 210, 'str' => ' and '}, 'infix:<or>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' or '}, 'infix:<xor>' => {'fix' => 'infix', 'prec' => 220, 'str' => ' xor '});
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
         for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 8, 'str' => $_}
@@ -14774,7 +19931,8 @@ use feature 'say';
     sub Perlito5::Perl6::PrettyPrinter::statement_modifier {
         my($data, $level, $out) = @_;
         render($data->[1], $level, $out);
-        push(@{$out}, chr(10), tab($level + 1));
+        push(@{$out}, '
+', tab($level + 1));
         render($data->[2], $level, $out)
     }
     sub Perlito5::Perl6::PrettyPrinter::block {
@@ -14783,14 +19941,16 @@ use feature 'say';
             push(@{$out}, '{}');
             return
         }
-        push(@{$out}, '{', chr(10));
+        push(@{$out}, '{', '
+');
         $level++;
         for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
             push(@{$out}, tab($level));
             render($d, $level, $out);
             $line != $#{$data} && statement_need_semicolon($d) && push(@{$out}, ';');
-            push(@{$out}, chr(10))
+            push(@{$out}, '
+')
         }
         $level--;
         push(@{$out}, tab($level), '}')
@@ -14802,7 +19962,8 @@ use feature 'say';
             push(@{$out}, tab($level));
             render($d, $level, $out);
             $line != $#{$data} && statement_need_semicolon($d) && push(@{$out}, ';');
-            push(@{$out}, chr(10))
+            push(@{$out}, '
+')
         }
     }
     1
@@ -14828,7 +19989,7 @@ use feature 'say';
                     $tmp = $tmp . $c
                 }
                 else {
-                    $tmp .= sprintf(chr(92) . 'x%02x', ord($c))
+                    $tmp .= sprintf('\\x%02x', ord($c))
                 }
             }
             return '"' . $tmp . '"'
@@ -14845,15 +20006,25 @@ use feature 'say';
                     push(@body, $_)
                 }
             }
-            join(chr(10), map(Perlito5::XS::tab($level) . $_->emit_xs($level), @body)) . chr(10) . chr(10) . chr(10)
+            join('
+', map(Perlito5::XS::tab($level) . $_->emit_xs($level), @body)) . '
+' . '
+' . '
+'
         }
         sub Perlito5::AST::CompUnit::emit_xs_program {
             my $comp_units = $_[0];
-            my $str = Perlito5::Compiler::do_not_edit('/*') . '*/' . chr(10) . '#include "EXTERN.h"' . chr(10) . '#include "perl.h"' . chr(10) . '#include "XSUB.h"' . chr(10) . chr(10);
+            my $str = Perlito5::Compiler::do_not_edit('/*') . '*/
+' . '#include "EXTERN.h"
+' . '#include "perl.h"
+' . '#include "XSUB.h"
+' . '
+';
             for my $comp_unit (@{$comp_units}) {
                 $str .= $comp_unit->emit_xs(0)
             }
-            $str .= chr(10);
+            $str .= '
+';
             return $str
         }
     }
@@ -14886,7 +20057,10 @@ use feature 'say';
         sub Perlito5::AST::Block::emit_xs {
             my $self = $_[0];
             my $level = $_[1];
-            'do {{' . chr(10) . join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'stmts'}})) . chr(10) . Perlito5::XS::tab($level) . '}}'
+            'do {{
+' . join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'stmts'}})) . '
+' . Perlito5::XS::tab($level) . '}}'
         }
     }
     package Perlito5::AST::Index;
@@ -14925,8 +20099,8 @@ use feature 'say';
             my $self = $_[0];
             my $level = $_[1];
             my $str_name = $self->{'name'};
-            $str_name eq chr(92) && ($str_name = chr(92) . chr(92));
-            $str_name eq '"' && ($str_name = chr(92) . '"');
+            $str_name eq '\\' && ($str_name = '\\\\');
+            $str_name eq '"' && ($str_name = '\\"');
             my $ns = '';
             if (0 && $self->{'namespace'}) {
                 if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {
@@ -15044,9 +20218,12 @@ use feature 'say';
             }
             if ($code eq 'map') {
                 if ($self->{'special_arg'}) {
-                    return 'map {' . chr(10) . join(';' . chr(10), map {
+                    return 'map {
+' . join(';
+', map {
                         Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1)
-                    } @{$self->{'special_arg'}->{'stmts'}}) . chr(10) . Perlito5::XS::tab($level) . '} ' . join(',', map {
+                    } @{$self->{'special_arg'}->{'stmts'}}) . '
+' . Perlito5::XS::tab($level) . '} ' . join(',', map {
                         $_->emit_xs($level + 1)
                     } @{$self->{'arguments'}})
                 }
@@ -15071,8 +20248,8 @@ use feature 'say';
             if ($code eq 'circumfix:<{ }>') {
                 return '{' . join(', ', map($_->emit_xs($level + 1), @{$self->{'arguments'}})) . '}'
             }
-            if ($code eq 'prefix:<' . chr(92) . '>') {
-                return chr(92) . join(' ', map($_->emit_xs($level + 1), @{$self->{'arguments'}})) . ''
+            if ($code eq 'prefix:<\\>') {
+                return '\\' . join(' ', map($_->emit_xs($level + 1), @{$self->{'arguments'}})) . ''
             }
             if ($code eq 'prefix:<$>') {
                 return '${' . join(' ', map($_->emit_xs($level + 1), @{$self->{'arguments'}})) . '}'
@@ -15121,7 +20298,7 @@ use feature 'say';
                     $eval = $arg->emit_xs($level + 1)
                 }
                 else {
-                    $eval = '(do { ' . 'my $m = Perlito5::Grammar::exp_stmts(' . $arg->emit_xs($level + 1, 'scalar') . ', 0);' . 'my $source; ' . '$source .= (defined $_ ? $_->emit_xs(0, "scalar") : "") . ";' . chr(92) . 'n" ' . 'for @{ Perlito5::Match::flat($m) }; ' . 'eval $source;' . '})'
+                    $eval = '(do { ' . 'my $m = Perlito5::Grammar::exp_stmts(' . $arg->emit_xs($level + 1, 'scalar') . ', 0);' . 'my $source; ' . '$source .= (defined $_ ? $_->emit_xs(0, "scalar") : "") . ";\\n" ' . 'for @{ Perlito5::Match::flat($m) }; ' . 'eval $source;' . '})'
                 }
                 return $eval
             }
@@ -15156,7 +20333,14 @@ use feature 'say';
         sub Perlito5::AST::If::emit_xs {
             my $self = $_[0];
             my $level = $_[1];
-            return 'if (' . $self->{'cond'}->emit_xs($level + 1) . ') {' . chr(10) . ($self->{'body'} ? join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . chr(10) : '') . Perlito5::XS::tab($level) . '}' . ($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()}) ? (chr(10) . Perlito5::XS::tab($level) . 'else {' . chr(10) . join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'otherwise'}->stmts()})) . chr(10) . Perlito5::XS::tab($level) . '}') : '')
+            return 'if (' . $self->{'cond'}->emit_xs($level + 1) . ') {
+' . ($self->{'body'} ? join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . '
+' : '') . Perlito5::XS::tab($level) . '}' . ($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()}) ? ('
+' . Perlito5::XS::tab($level) . 'else {
+' . join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'otherwise'}->stmts()})) . '
+' . Perlito5::XS::tab($level) . '}') : '')
         }
     }
     package Perlito5::AST::When;
@@ -15164,7 +20348,10 @@ use feature 'say';
         sub Perlito5::AST::When::emit_xs {
             my $self = $_[0];
             my $level = $_[1];
-            return 'when (' . $self->{'cond'}->emit_xs($level + 1) . ') {' . chr(10) . ($self->{'body'} ? join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . chr(10) : '') . Perlito5::XS::tab($level) . '}'
+            return 'when (' . $self->{'cond'}->emit_xs($level + 1) . ') {
+' . ($self->{'body'} ? join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . '
+' : '') . Perlito5::XS::tab($level) . '}'
         }
     }
     package Perlito5::AST::While;
@@ -15173,7 +20360,10 @@ use feature 'say';
             my $self = $_[0];
             my $level = $_[1];
             my $cond = $self->{'cond'};
-            'for ( ' . ($self->{'init'} ? $self->{'init'}->emit_xs($level + 1) . '; ' : '; ') . ($cond ? $cond->emit_xs($level + 1) . '; ' : '; ') . ($self->{'continue'} ? $self->{'continue'}->emit_xs($level + 1) . ' ' : ' ') . ') {' . chr(10) . join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::XS::tab($level) . '}'
+            'for ( ' . ($self->{'init'} ? $self->{'init'}->emit_xs($level + 1) . '; ' : '; ') . ($cond ? $cond->emit_xs($level + 1) . '; ' : '; ') . ($self->{'continue'} ? $self->{'continue'}->emit_xs($level + 1) . ' ' : ' ') . ') {' . '
+' . join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . '
+' . Perlito5::XS::tab($level) . '}'
         }
     }
     package Perlito5::AST::For;
@@ -15197,7 +20387,10 @@ use feature 'say';
             else {
                 $sig = $sig_ast->emit_xs($level + 1) . ' '
             }
-            return 'for ' . $sig . '(' . $cond . ') {' . chr(10) . join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::XS::tab($level) . '}'
+            return 'for ' . $sig . '(' . $cond . ') {' . '
+' . join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'body'}->stmts()})) . '
+' . Perlito5::XS::tab($level) . '}'
         }
     }
     package Perlito5::AST::Decl;
@@ -15220,7 +20413,11 @@ use feature 'say';
             $self->{'name'} && ($name = $self->{'name'} . ' ');
             my $sig = $self->{'sig'};
             my $i = 0;
-            'void ' . $name . '()' . chr(10) . 'PPCODE:' . chr(10) . join(';' . chr(10), map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'block'}})) . ';' . chr(10)
+            'void ' . $name . '()
+' . 'PPCODE:
+' . join(';
+', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'block'}})) . ';
+'
         }
     }
     package Perlito5::AST::Use;
@@ -15229,7 +20426,9 @@ use feature 'say';
             my $self = shift;
             my $level = shift;
             Perlito5::Grammar::Use::emit_time_eval($self);
-            return chr(10) . Perlito5::XS::tab($level) . '# ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)
+            return '
+' . Perlito5::XS::tab($level) . '# ' . $self->{'code'} . ' ' . $self->{'mod'} . '
+'
         }
     }
     1
@@ -15765,7 +20964,7 @@ use feature 'say';
         }, 'circumfix:<{ }>' => sub {
             my($self, $level, $wantarray) = @_;
             '(new PlHashRef(new PlHash(' . Perlito5::Java::to_list($self->{'arguments'}, $level) . ')))'
-        }, 'prefix:<' . chr(92) . '>' => sub {
+        }, 'prefix:<\\>' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
             if ($arg->isa('Perlito5::AST::Apply')) {
@@ -15929,7 +21128,8 @@ use feature 'say';
             if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'state' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
                 if ($wantarray eq 'void') {
                     my $tmp = Perlito5::Java::get_label();
-                    return join(';' . chr(10) . Perlito5::Java::tab($level), 'PlArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
+                    return join(';
+' . Perlito5::Java::tab($level), 'PlArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
                 }
                 my $tmp = Perlito5::Java::get_label();
                 my $tmp2 = Perlito5::Java::get_label();
@@ -16004,7 +21204,7 @@ use feature 'say';
                 die('Java eval string not yet implemented')
             }
             my $context = Perlito5::Java::to_context($wantarray);
-            Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "' . chr(92) . 'n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "' . chr(92) . 'n" + err.stack + "' . chr(92) . 'n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
+            Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
         }, 'length' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = shift(@{$self->{'arguments'}});
@@ -16408,11 +21608,21 @@ use feature 'say';
             }
             if ($self->{'namespace'}) {
                 if ($self->{'namespace'} eq 'Java' && $code eq 'inline') {
-                    if ($self->{'arguments'}->[0]->isa('Perlito5::AST::Buf')) {
-                        return $self->{'arguments'}->[0]->{'buf'}
+                    my @args = @{$self->{'arguments'}};
+                    if (@args != 1) {
+                        die('Java::inline needs a single argument')
+                    }
+                    if ($args[0]->isa('Perlito5::AST::Apply') && $args[0]->{'code'} eq 'list:<.>') {
+                        @args = @{$args[0]->{'arguments'}};
+                        if (@args != 1) {
+                            die('Java::inline needs a string constant, got:', Data::Dumper::Dumper(\@args))
+                        }
+                    }
+                    if ($args[0]->isa('Perlito5::AST::Buf')) {
+                        return $args[0]->{'buf'}
                     }
                     else {
-                        die('Java::inline needs a string constant')
+                        die('Java::inline needs a string constant, got:', Data::Dumper::Dumper(\@args))
                     }
                 }
                 $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $code) . ')'
@@ -16471,20 +21681,20 @@ use feature 'say';
                             }
                         }
                     }
-                    elsif ($c eq chr(92)) {
-                        if (substr($sig, 0, 2) eq chr(92) . '$') {
+                    elsif ($c eq '\\') {
+                        if (substr($sig, 0, 2) eq '\\$') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'scalar'))
                         }
-                        elsif (substr($sig, 0, 2) eq chr(92) . '@' || substr($sig, 0, 2) eq chr(92) . '%') {
+                        elsif (substr($sig, 0, 2) eq '\\@' || substr($sig, 0, 2) eq '\\%') {
                             $sig = substr($sig, 1);
                             (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
                         }
-                        elsif (substr($sig, 0, 5) eq chr(92) . '[@%]') {
+                        elsif (substr($sig, 0, 5) eq '\\[@%]') {
                             $sig = substr($sig, 4);
                             (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
                         }
-                        elsif (substr($sig, 0, 6) eq chr(92) . '[$@%]') {
+                        elsif (substr($sig, 0, 6) eq '\\[$@%]') {
                             $sig = substr($sig, 5);
                             (@in || !$optional) && push(@out, shift(@in)->emit_java($level + 1, 'list'))
                         }
@@ -16952,7 +22162,8 @@ use feature 'say';
             wantarray && return @argument;
             my $s;
             !ref($argument[0]) && ($s = shift(@argument));
-            return join(chr(10), ($s ? $s : ()), emit_java_list_with_tabs($level, [\@argument]))
+            return join('
+', ($s ? $s : ()), emit_java_list_with_tabs($level, [\@argument]))
         }
         sub Perlito5::Java::emit_wrap_statement_java {
             my($level, $wantarray, $argument) = @_;
@@ -17139,9 +22350,12 @@ use feature 'say';
             my $out = [];
             Perlito5::Perl5::PrettyPrinter::pretty_print([$args_ast->emit_perl5()], 0, $out);
             my $args_perl5 = join('', @{$out});
-            $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:' . chr(10) . ${'@'} . chr(10) . $args_perl5);
+            $Java_class->{$class} = eval($args_perl5) or die('error in arguments to generate Java class:
+' . ${'@'} . '
+' . $args_perl5);
             if ($Java_class->{$class}->{'java_path'}) {
-                $str .= 'package ' . $Java_class->{$class}->{'java_path'} . ';' . chr(10)
+                $str .= 'package ' . $Java_class->{$class}->{'java_path'} . ';
+'
             }
             elsif ($Java_class->{$class}->{'import'}) {
                 Perlito5::Java::set_java_class_defaults($class, $Java_class->{$class}->{'import'})
@@ -17191,14 +22405,16 @@ use feature 'say';
             my @main;
             for my $comp_unit (@{$comp_units}) {
                 my @str = $comp_unit->emit_java($level + 1, $wantarray);
-                @str && ($str[-1] .= ';' . chr(10));
+                @str && ($str[-1] .= ';
+');
                 push(@main, @str)
             }
             if ($options{'expand_use'}) {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
             }
-            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"next' . chr(92) . '" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"last' . chr(92) . '" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't ' . chr(92) . '"redo' . chr(92) . '" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . chr(10);
+            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
+';
             return $str
         }
         sub Perlito5::AST::CompUnit::emit_java_get_decl {
@@ -17272,7 +22488,8 @@ use feature 'say';
             my $init = '';
             if ($self->{'name'} eq 'INIT') {
                 my $tmp = 'p5pkg.main.' . Perlito5::Java::get_label();
-                $init = Perlito5::Java::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;' . chr(10)
+                $init = Perlito5::Java::tab($level + 2) . 'if (' . $tmp . ') { return }; ' . $tmp . ' = 1;
+'
             }
             my @str = $body->emit_java($level + 1, $wantarray);
             if ($Perlito5::THROW) {
@@ -17617,10 +22834,12 @@ use feature 'say';
                 return $self->emit_java() . '.set(' . $list . '.shift())'
             }
             if ($sigil eq '@') {
-                return join(';' . chr(10) . Perlito5::Java::tab($level), $self->emit_java() . ' = ' . $list, $list . ' = new PlArray()')
+                return join(';
+' . Perlito5::Java::tab($level), $self->emit_java() . ' = ' . $list, $list . ' = new PlArray()')
             }
             if ($sigil eq '%') {
-                return join(';' . chr(10) . Perlito5::Java::tab($level), $self->emit_java() . ' = new PlHash(' . $list . ')', $list . ' = new PlArray()')
+                return join(';
+' . Perlito5::Java::tab($level), $self->emit_java() . ' = new PlHash(' . $list . ')', $list . ' = new PlArray()')
             }
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
         }
@@ -18090,7 +23309,8 @@ use feature 'say';
                 return 'PlCx.UNDEF'
             }
             else {
-                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)
+                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
+'
             }
         }
         sub Perlito5::AST::Use::emit_java_get_decl {
@@ -18107,13 +23327,1184 @@ use feature 'say';
     undef();
     package Perlito5::Java::CORE;
     undef();
-    my %FileFunc = ('open' => '        int argCount = List__.to_int();' . chr(10) . '        Path path = null; ' . chr(10) . '        String mode = "";' . chr(10) . '        try {' . chr(10) . '            fh.readlineBuffer = new StringBuilder();' . chr(10) . '            fh.eof = false;' . chr(10) . '            if (fh.outputStream != null) {' . chr(10) . '                fh.outputStream.close();' . chr(10) . '            }' . chr(10) . '            if (fh.reader != null) {' . chr(10) . '                fh.reader.close();' . chr(10) . '            }' . chr(10) . '            if (argCount == 0) {' . chr(10) . '                PlCORE.die("TODO - not implemented: single argument open()");' . chr(10) . '            }' . chr(10) . '            if (argCount == 1) {' . chr(10) . '                // EXPR' . chr(10) . '                String s = List__.aget(0).toString();' . chr(10) . '                path = Paths.get(s);' . chr(10) . '                PlCORE.die("TODO - not implemented: 2-argument open()");' . chr(10) . '            }' . chr(10) . '            if (argCount > 1) {' . chr(10) . '                // MODE,EXPR,LIST?' . chr(10) . '                mode = List__.aget(0).toString();' . chr(10) . '                String s = List__.aget(1).toString();' . chr(10) . '                path = Paths.get(s);' . chr(10) . '            }' . chr(10) . '            if (mode.equals("<")) {' . chr(10) . '                // TODO: charset' . chr(10) . '                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);' . chr(10) . '                fh.outputStream = null;' . chr(10) . '            }' . chr(10) . '            else if (mode.equals(">")) {' . chr(10) . '                // TODO: charset' . chr(10) . '                fh.reader = null;' . chr(10) . '                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));' . chr(10) . '            }' . chr(10) . '            else if (mode.equals(">>")) {' . chr(10) . '                // TODO: charset' . chr(10) . '                fh.reader = null;' . chr(10) . '                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                PlCORE.die("TODO - not implemented: open() mode ' . chr(39) . '" + mode + "' . chr(39) . '");' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        catch(IOException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return PlCx.INT1;' . chr(10), 'close' => '        try {' . chr(10) . '            fh.readlineBuffer = new StringBuilder();' . chr(10) . '            fh.eof = true;' . chr(10) . '            if (fh.outputStream != null) {' . chr(10) . '                fh.outputStream.close();' . chr(10) . '            }' . chr(10) . '            if (fh.reader != null) {' . chr(10) . '                fh.reader.close();' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        catch(IOException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return PlCx.INT1;' . chr(10), 'print' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        return PlCx.INT1;' . chr(10), 'say' => '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            fh.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        fh.outputStream.println("");' . chr(10) . '        return PlCx.INT1;' . chr(10), 'readline' => '        if (want == PlCx.LIST) {' . chr(10) . '            // read all lines' . chr(10) . '            PlArray res = new PlArray();' . chr(10) . '            PlObject s;' . chr(10) . '            while (!(s = PlCORE.readline(PlCx.SCALAR, fh, List__)).is_undef()) {' . chr(10) . '                res.push(s);' . chr(10) . '            }' . chr(10) . '            return res;' . chr(10) . '        }' . chr(10) . '        PlObject plsep = PlV.get("main::v_/");' . chr(10) . '        boolean slurp = false;' . chr(10) . '        if (plsep.is_undef()) {' . chr(10) . '            slurp = true;' . chr(10) . '        }' . chr(10) . '        if (fh.eof) {' . chr(10) . '            if (fh.is_argv) {' . chr(10) . '                // "ARGV" is special' . chr(10) . '                PlArray argv = PlV.array_get("main::List_ARGV");' . chr(10) . '                PlFileHandle in = new PlFileHandle();' . chr(10) . '                if (argv.to_int() > 0) {' . chr(10) . '                    // arg list contains file name' . chr(10) . '                    PlCORE.open(PlCx.VOID, in, new PlArray(new PlString("<"), argv.shift()));' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    // read from STDIN' . chr(10) . '                    fh.is_argv = false;     // clear the magic bit' . chr(10) . '                    in  = PlCx.STDIN;' . chr(10) . '                }' . chr(10) . '                fh.readlineBuffer   = in.readlineBuffer;' . chr(10) . '                fh.eof              = in.eof;' . chr(10) . '                fh.outputStream     = in.outputStream;' . chr(10) . '                fh.reader           = in.reader;' . chr(10) . '            }' . chr(10) . '            if (fh.eof) {' . chr(10) . '                return PlCx.UNDEF;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        String sep = plsep.toString();' . chr(10) . '        StringBuilder buf = fh.readlineBuffer;' . chr(10) . '        // read from filehandle until "sep" or eof()' . chr(10) . '        int pos = slurp ? -1 : buf.indexOf(sep);' . chr(10) . '        while (pos < 0 && !fh.eof) {' . chr(10) . '            // read more' . chr(10) . '            int len = 1000;' . chr(10) . '            char[] c = new char[len];' . chr(10) . '            int num_chars = 0;' . chr(10) . '            try {' . chr(10) . '                num_chars = fh.reader.read(c, 0, len);' . chr(10) . '                if (num_chars > 0) {' . chr(10) . '                    // TODO - use: new String(bytes,"UTF-8")' . chr(10) . '                    String s = new String(c, 0, num_chars);' . chr(10) . '                    buf.append(s);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            catch(IOException e) {' . chr(10) . '                PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '                return PlCx.UNDEF;' . chr(10) . '            }' . chr(10) . '            if (num_chars > 0) {' . chr(10) . '                if (!slurp) {' . chr(10) . '                    pos = buf.indexOf(sep);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // eof' . chr(10) . '                fh.eof = true;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        String s;' . chr(10) . '        if (fh.eof || pos < 0) {' . chr(10) . '            s = buf.toString();' . chr(10) . '            fh.readlineBuffer = new StringBuilder();' . chr(10) . '            fh.eof = true;' . chr(10) . '            if (s.length() == 0) {' . chr(10) . '                return PlCx.UNDEF;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            pos += sep.length();' . chr(10) . '            s = buf.substring(0, pos);' . chr(10) . '            fh.readlineBuffer = new StringBuilder(buf.substring(pos));' . chr(10) . '        }' . chr(10) . '        return new PlString(s);' . chr(10), 'getc' => '        PlLvalue buf = new PlLvalue();' . chr(10) . '        PlCORE.sysread(want, fh, PlArray.construct_list_of_aliases(buf, PlCx.INT1));' . chr(10) . '        return buf;' . chr(10), 'read' => '        return PlCORE.sysread(want, fh, List__);' . chr(10), 'sysread' => '        int leng = List__.aget(1).to_int();' . chr(10) . '        int ofs = List__.aget(2).to_int();' . chr(10) . chr(10) . '        if (fh.eof) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        StringBuilder buf = fh.readlineBuffer;' . chr(10) . '        // read from filehandle until "len"' . chr(10) . '        int pos = buf.length();' . chr(10) . '        while (pos < leng && !fh.eof) {' . chr(10) . '            // read more' . chr(10) . '            int len = 1000;' . chr(10) . '            char[] c = new char[len];' . chr(10) . '            int num_chars = 0;' . chr(10) . '            try {' . chr(10) . '                num_chars = fh.reader.read(c, 0, len);' . chr(10) . '                if (num_chars > 0) {' . chr(10) . '                    // TODO - use: new String(bytes,"UTF-8")' . chr(10) . '                    String s = new String(c, 0, num_chars);' . chr(10) . '                    buf.append(s);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            catch(IOException e) {' . chr(10) . '                PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '                return PlCx.UNDEF;' . chr(10) . '            }' . chr(10) . '            if (num_chars > 0) {' . chr(10) . '                pos = buf.length();' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // eof' . chr(10) . '                fh.eof = true;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        String s;' . chr(10) . '        if (fh.eof || pos < leng) {' . chr(10) . '            s = buf.toString();' . chr(10) . '            fh.readlineBuffer = new StringBuilder();' . chr(10) . '            fh.eof = true;' . chr(10) . '            if (s.length() == 0) {' . chr(10) . '                return PlCx.UNDEF;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            s = buf.substring(0, leng);' . chr(10) . '            fh.readlineBuffer = new StringBuilder(buf.substring(leng));' . chr(10) . '        }' . chr(10) . chr(10) . '        leng = s.length();' . chr(10) . '        if (ofs == 0) {' . chr(10) . '            List__.aset(0, s);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            die("TODO: sysread with OFFSET");' . chr(10) . '        }' . chr(10) . '        return new PlInt(leng);' . chr(10));
+    my %FileFunc = ('open' => '        int argCount = List__.to_int();
+        Path path = null; 
+        String mode = "";
+        try {
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = false;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+            if (argCount == 0) {
+                PlCORE.die("TODO - not implemented: single argument open()");
+            }
+            if (argCount == 1) {
+                // EXPR
+                String s = List__.aget(0).toString();
+                path = Paths.get(s);
+                PlCORE.die("TODO - not implemented: 2-argument open()");
+            }
+            if (argCount > 1) {
+                // MODE,EXPR,LIST?
+                mode = List__.aget(0).toString();
+                String s = List__.aget(1).toString();
+                path = Paths.get(s);
+            }
+            if (mode.equals("<")) {
+                // TODO: charset
+                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
+                fh.outputStream = null;
+            }
+            else if (mode.equals(">")) {
+                // TODO: charset
+                fh.reader = null;
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
+            }
+            else if (mode.equals(">>")) {
+                // TODO: charset
+                fh.reader = null;
+                fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
+            }
+            else {
+                PlCORE.die("TODO - not implemented: open() mode ' . chr(39) . '" + mode + "' . chr(39) . '");
+            }
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
+', 'close' => '        try {
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            if (fh.outputStream != null) {
+                fh.outputStream.close();
+            }
+            if (fh.reader != null) {
+                fh.reader.close();
+            }
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+        return PlCx.INT1;
+', 'print' => '        for (int i = 0; i < List__.to_int(); i++) {
+            fh.outputStream.print(List__.aget(i).toString());
+        }
+        return PlCx.INT1;
+', 'say' => '        for (int i = 0; i < List__.to_int(); i++) {
+            fh.outputStream.print(List__.aget(i).toString());
+        }
+        fh.outputStream.println("");
+        return PlCx.INT1;
+', 'readline' => '        if (want == PlCx.LIST) {
+            // read all lines
+            PlArray res = new PlArray();
+            PlObject s;
+            while (!(s = PlCORE.readline(PlCx.SCALAR, fh, List__)).is_undef()) {
+                res.push(s);
+            }
+            return res;
+        }
+        PlObject plsep = PlV.get("main::v_/");
+        boolean slurp = false;
+        if (plsep.is_undef()) {
+            slurp = true;
+        }
+        if (fh.eof) {
+            if (fh.is_argv) {
+                // "ARGV" is special
+                PlArray argv = PlV.array_get("main::List_ARGV");
+                PlFileHandle in = new PlFileHandle();
+                if (argv.to_int() > 0) {
+                    // arg list contains file name
+                    PlCORE.open(PlCx.VOID, in, new PlArray(new PlString("<"), argv.shift()));
+                }
+                else {
+                    // read from STDIN
+                    fh.is_argv = false;     // clear the magic bit
+                    in  = PlCx.STDIN;
+                }
+                fh.readlineBuffer   = in.readlineBuffer;
+                fh.eof              = in.eof;
+                fh.outputStream     = in.outputStream;
+                fh.reader           = in.reader;
+            }
+            if (fh.eof) {
+                return PlCx.UNDEF;
+            }
+        }
+        String sep = plsep.toString();
+        StringBuilder buf = fh.readlineBuffer;
+        // read from filehandle until "sep" or eof()
+        int pos = slurp ? -1 : buf.indexOf(sep);
+        while (pos < 0 && !fh.eof) {
+            // read more
+            int len = 1000;
+            char[] c = new char[len];
+            int num_chars = 0;
+            try {
+                num_chars = fh.reader.read(c, 0, len);
+                if (num_chars > 0) {
+                    // TODO - use: new String(bytes,"UTF-8")
+                    String s = new String(c, 0, num_chars);
+                    buf.append(s);
+                }
+            }
+            catch(IOException e) {
+                PlV.set("main::v_!", new PlString(e.getMessage()));
+                return PlCx.UNDEF;
+            }
+            if (num_chars > 0) {
+                if (!slurp) {
+                    pos = buf.indexOf(sep);
+                }
+            }
+            else {
+                // eof
+                fh.eof = true;
+            }
+        }
+        String s;
+        if (fh.eof || pos < 0) {
+            s = buf.toString();
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            if (s.length() == 0) {
+                return PlCx.UNDEF;
+            }
+        }
+        else {
+            pos += sep.length();
+            s = buf.substring(0, pos);
+            fh.readlineBuffer = new StringBuilder(buf.substring(pos));
+        }
+        return new PlString(s);
+', 'getc' => '        PlLvalue buf = new PlLvalue();
+        PlCORE.sysread(want, fh, PlArray.construct_list_of_aliases(buf, PlCx.INT1));
+        return buf;
+', 'read' => '        return PlCORE.sysread(want, fh, List__);
+', 'sysread' => '        int leng = List__.aget(1).to_int();
+        int ofs = List__.aget(2).to_int();
+
+        if (fh.eof) {
+            return PlCx.UNDEF;
+        }
+        StringBuilder buf = fh.readlineBuffer;
+        // read from filehandle until "len"
+        int pos = buf.length();
+        while (pos < leng && !fh.eof) {
+            // read more
+            int len = 1000;
+            char[] c = new char[len];
+            int num_chars = 0;
+            try {
+                num_chars = fh.reader.read(c, 0, len);
+                if (num_chars > 0) {
+                    // TODO - use: new String(bytes,"UTF-8")
+                    String s = new String(c, 0, num_chars);
+                    buf.append(s);
+                }
+            }
+            catch(IOException e) {
+                PlV.set("main::v_!", new PlString(e.getMessage()));
+                return PlCx.UNDEF;
+            }
+            if (num_chars > 0) {
+                pos = buf.length();
+            }
+            else {
+                // eof
+                fh.eof = true;
+            }
+        }
+        String s;
+        if (fh.eof || pos < leng) {
+            s = buf.toString();
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = true;
+            if (s.length() == 0) {
+                return PlCx.UNDEF;
+            }
+        }
+        else {
+            s = buf.substring(0, leng);
+            fh.readlineBuffer = new StringBuilder(buf.substring(leng));
+        }
+
+        leng = s.length();
+        if (ofs == 0) {
+            List__.aset(0, s);
+        }
+        else {
+            die("TODO: sysread with OFFSET");
+        }
+        return new PlInt(leng);
+');
     sub Perlito5::Java::CORE::emit_java {
-        return chr(10) . 'class PlCORE {' . chr(10) . join('', map {
-            '    public static final PlObject ' . $_ . '(int want, PlObject filehandle, PlArray List__) {' . chr(10) . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);' . chr(10) . $FileFunc{$_} . '    }' . chr(10) . '    public static final PlObject ' . $_ . '(int want, String filehandle, PlArray List__) {' . chr(10) . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);' . chr(10) . $FileFunc{$_} . '    }' . chr(10)
+        return '
+class PlCORE {
+' . join('', map {
+            '    public static final PlObject ' . $_ . '(int want, PlObject filehandle, PlArray List__) {
+' . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);
+' . $FileFunc{$_} . '    }
+' . '    public static final PlObject ' . $_ . '(int want, String filehandle, PlArray List__) {
+' . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);
+' . $FileFunc{$_} . '    }
+'
         } sort {
             $a cmp $b
-        } keys(%FileFunc)) . '    public static final PlObject say(String s) {' . chr(10) . '        // say() shortcut for internal use' . chr(10) . '        return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));' . chr(10) . '    }' . chr(10) . '    public static final PlObject mkdir(int want, PlArray List__) {' . chr(10) . '        try {' . chr(10) . '            Path file = Paths.get(List__.aget(0).toString());' . chr(10) . '            int mask = List__.aget(1).to_int();' . chr(10) . '            Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);' . chr(10) . '            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);' . chr(10) . '            Files.createDirectory(file, attr);' . chr(10) . '            return PlCx.INT1;' . chr(10) . '        }' . chr(10) . '        catch(IOException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '        }' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final PlObject rmdir(int want, PlArray List__) {' . chr(10) . '        try {' . chr(10) . '            Path file = Paths.get(List__.aget(0).toString());' . chr(10) . '            Files.delete(file);' . chr(10) . '            return PlCx.INT1;' . chr(10) . '        }' . chr(10) . '        catch(NoSuchFileException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString("No such file or directory"));' . chr(10) . '        }' . chr(10) . '        catch(DirectoryNotEmptyException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString("Directory not empty"));' . chr(10) . '        }' . chr(10) . '        catch(IOException e) {' . chr(10) . '            PlV.set("main::v_!", new PlString(e.getMessage()));' . chr(10) . '        }' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final PlObject exit(int want, PlArray List__) {' . chr(10) . '        int arg = List__.aget(0).to_int();' . chr(10) . '        System.exit(arg);' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final PlObject warn(int want, PlArray List__) {' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            PlCx.STDERR.outputStream.print(List__.aget(i).toString());' . chr(10) . '        }' . chr(10) . '        PlCx.STDERR.outputStream.println("");' . chr(10) . '        return PlCx.INT1;' . chr(10) . '    }' . chr(10) . '    public static final PlObject die(int want, PlArray List__) {' . chr(10) . '        PlObject arg = List__.aget(0);' . chr(10) . '        if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {' . chr(10) . '            throw new PlDieException(PlCx.DIED);' . chr(10) . '        }' . chr(10) . '        if (List__.to_int() == 1) {' . chr(10) . '            throw new PlDieException(arg);' . chr(10) . '        }' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            String item = List__.aget(i).toString();' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        throw new PlDieException(new PlString(sb.toString()));' . chr(10) . '    }' . chr(10) . '    public static final PlObject die(String s) {' . chr(10) . '        // die() shortcut' . chr(10) . '        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));' . chr(10) . '    }' . chr(10) . '    public static final PlString ref(int want, PlArray List__) {' . chr(10) . '        return List__.aget(0).ref();' . chr(10) . '    }' . chr(10) . '    public static final PlObject values(int want, PlObject List__) {' . chr(10) . '        return want == PlCx.LIST ? List__.values() : List__.values().scalar();' . chr(10) . '    }' . chr(10) . '    public static final PlObject keys(int want, PlObject List__) {' . chr(10) . '        return want == PlCx.LIST ? List__.keys() : List__.keys().scalar();' . chr(10) . '    }' . chr(10) . '    public static final PlObject each(int want, PlObject List__) {' . chr(10) . '        return want == PlCx.LIST ? List__.each() : List__.each().aget(0);' . chr(10) . '    }' . chr(10) . '    public static final PlObject chomp(int want, PlObject Object__) {' . chr(10) . '        String sep = PlV.get("main::v_/").toString();' . chr(10) . '        int sepSize = sep.length();' . chr(10) . '        int result = 0;' . chr(10) . '        String toChomp = Object__.toString();' . chr(10) . '        if(toChomp.substring(toChomp.length() - sepSize, toChomp.length()).equals(sep)) {' . chr(10) . '            toChomp = toChomp.substring(0, toChomp.length() - sepSize);' . chr(10) . '            result += sepSize;' . chr(10) . '        }' . chr(10) . chr(10) . '        Object__.set(new PlString(toChomp));' . chr(10) . '            ' . chr(10) . '        return new PlInt(result);' . chr(10) . '    }' . chr(10) . '    public static final PlObject chomp(int want, PlArray List__) {' . chr(10) . '        int result = 0;' . chr(10) . '        for(int i = 0; i < List__.to_int(); ++i) {' . chr(10) . '            PlObject item = List__.aget_lvalue(i);' . chr(10) . '            result += chomp(want, item).to_int();' . chr(10) . '        }' . chr(10) . chr(10) . '        return new PlInt(result);' . chr(10) . '    }' . chr(10) . '    public static final PlString chop(int want, PlObject Object__) {' . chr(10) . '        String str = Object__.toString();' . chr(10) . '        String returnValue = "";' . chr(10) . '        if (str.length() > 0) {' . chr(10) . '            returnValue = str.substring(str.length() -1);' . chr(10) . '            Object__.set(new PlString(str.substring(0, str.length()-1)));' . chr(10) . '        }' . chr(10) . chr(10) . '        return new PlString(returnValue);' . chr(10) . '    }' . chr(10) . '    public static final PlObject chop(int want, PlArray List__) {' . chr(10) . '        PlString result = PlCx.EMPTY;' . chr(10) . '        for(int i = 0; i < List__.to_int(); ++i) {' . chr(10) . '            PlObject item = List__.aget_lvalue(i);' . chr(10) . '            result = chop(want, item);' . chr(10) . '        }' . chr(10) . chr(10) . '        return result;' . chr(10) . '    }' . chr(10) . '    public static final PlObject scalar(int want, PlArray List__) {' . chr(10) . '        if (List__.to_int() == 0) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return List__.aget(-1).scalar();' . chr(10) . '    }' . chr(10) . '    public static final PlObject hex(int want, PlObject List__) {' . chr(10) . '        String s = List__.toString();' . chr(10) . '        if(s.startsWith("0x") || s.startsWith("0X")) {' . chr(10) . '            s = s.substring(2);' . chr(10) . '        }' . chr(10) . '        try {' . chr(10) . '            return new PlInt(Long.parseLong(s, 16));' . chr(10) . '        } catch (java.lang.NumberFormatException e) {' . chr(10) . '            return new PlInt(0);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject oct(int want, PlObject List__) {' . chr(10) . '        String valueTobeCoverted = List__.toString();' . chr(10) . '        try {' . chr(10) . '            if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {' . chr(10) . '                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));' . chr(10) . '            } else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {' . chr(10) . '                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));' . chr(10) . '            } else {' . chr(10) . '                return new PlInt(Long.parseLong(valueTobeCoverted, 8));' . chr(10) . '            }' . chr(10) . '        } catch (NumberFormatException n) {' . chr(10) . '            ' . chr(10) . '        } catch (Exception e) {' . chr(10) . '            // result = e.getMessage();' . chr(10) . '        }' . chr(10) . '        return new PlInt(0);' . chr(10) . '    }' . chr(10) . '    public static final PlObject sprintf(int want, PlObject List__) {' . chr(10) . '        String format = List__.aget(0).toString();' . chr(10) . '        // "%3s"' . chr(10) . '        int length = format.length();' . chr(10) . '        int offset = 0;' . chr(10) . '        int args_max = List__.to_int();' . chr(10) . '        int args_index = 0;' . chr(10) . '        Object args[] = new Object[args_max];' . chr(10) . '        for ( ; offset < length; ) {' . chr(10) . '            int c = format.codePointAt(offset);' . chr(10) . '            switch (c) {' . chr(10) . '                case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                    offset++;' . chr(10) . '                    boolean scanning = true;' . chr(10) . '                    for ( ; offset < length && scanning ; ) {' . chr(10) . '                        c = format.codePointAt(offset);' . chr(10) . '                        switch (c) {' . chr(10) . '                            case ' . chr(39) . '%' . chr(39) . ':' . chr(10) . '                                scanning = false;' . chr(10) . '                                offset++;' . chr(10) . '                                break;' . chr(10) . '                            case ' . chr(39) . 'c' . chr(39) . ': case ' . chr(39) . 's' . chr(39) . ': case ' . chr(39) . 'd' . chr(39) . ': case ' . chr(39) . 'u' . chr(39) . ': case ' . chr(39) . 'o' . chr(39) . ':' . chr(10) . '                            case ' . chr(39) . 'x' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ': case ' . chr(39) . 'f' . chr(39) . ': case ' . chr(39) . 'g' . chr(39) . ':' . chr(10) . '                            case ' . chr(39) . 'X' . chr(39) . ': case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'G' . chr(39) . ': case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '                            case ' . chr(39) . 'B' . chr(39) . ': case ' . chr(39) . 'p' . chr(39) . ': case ' . chr(39) . 'n' . chr(39) . ':' . chr(10) . '                            case ' . chr(39) . 'i' . chr(39) . ': case ' . chr(39) . 'D' . chr(39) . ': case ' . chr(39) . 'U' . chr(39) . ': case ' . chr(39) . 'O' . chr(39) . ': case ' . chr(39) . 'F' . chr(39) . ':' . chr(10) . '                                scanning = false;' . chr(10) . '                                switch (c) {' . chr(10) . '                                    case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '                                        args[args_index] = List__.aget(args_index+1).toString();' . chr(10) . '                                        break;' . chr(10) . '                                    case ' . chr(39) . 'd' . chr(39) . ': case ' . chr(39) . 'o' . chr(39) . ': case ' . chr(39) . 'x' . chr(39) . ': case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '                                    case ' . chr(39) . 'u' . chr(39) . ': case ' . chr(39) . 'b' . chr(39) . ': case ' . chr(39) . 'B' . chr(39) . ': case ' . chr(39) . 'p' . chr(39) . ':' . chr(10) . '                                    case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '                                        args[args_index] = List__.aget(args_index+1).to_int();' . chr(10) . '                                        break;' . chr(10) . '                                    case ' . chr(39) . 'f' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ': case ' . chr(39) . 'g' . chr(39) . ':' . chr(10) . '                                    case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'G' . chr(39) . ':' . chr(10) . '                                        args[args_index] = List__.aget(args_index+1).to_double();' . chr(10) . '                                        break;' . chr(10) . '                                    default:' . chr(10) . '                                        break;' . chr(10) . '                                }' . chr(10) . '                                args_index++;' . chr(10) . '                                if (args_index > args_max) {' . chr(10) . '                                    // panic' . chr(10) . '                                    offset = length;' . chr(10) . '                                }' . chr(10) . '                                offset++;' . chr(10) . '                                break;' . chr(10) . '                            default:' . chr(10) . '                                offset++;' . chr(10) . '                                break;' . chr(10) . '                        }' . chr(10) . '                    }' . chr(10) . '                    break;' . chr(10) . '                default:' . chr(10) . '                    offset++;' . chr(10) . '                    break;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return new PlString(String.format(format, args));' . chr(10) . '    }' . chr(10) . '    public static final PlObject crypt(int want, PlArray List__) {' . chr(10) . '        if(List__.to_int() < 2) {' . chr(10) . '            die("Not enough arguments for crypt");' . chr(10) . '        }' . chr(10) . '        if(List__.to_int() > 2) {' . chr(10) . '            die("Too many arguments for crypt");' . chr(10) . '        }' . chr(10) . '        String plainText = List__.shift().toString();' . chr(10) . '        String salt = List__.shift().toString();' . chr(10) . chr(10) . '        while(salt.length() < 2) {' . chr(10) . '            salt = salt.concat(".");' . chr(10) . '        }' . chr(10) . '        ' . chr(10) . '        return new PlString(PlCrypt.crypt(salt, plainText));' . chr(10) . '    }' . chr(10) . '    public static final PlObject join(int want, PlArray List__) {' . chr(10) . '        String s = List__.shift().toString();' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        boolean first = true;' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            String item = List__.aget(i).toString();' . chr(10) . '            if (first)' . chr(10) . '                first = false;' . chr(10) . '            else' . chr(10) . '                sb.append(s);' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        return new PlString(sb.toString());' . chr(10) . '    }' . chr(10) . '    public static final PlObject reverse(int want, PlArray List__) {' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            PlArray ret = new PlArray(List__);' . chr(10) . '            Collections.reverse(ret.a);' . chr(10) . '            return ret;' . chr(10) . '        }' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        for (int i = 0; i < List__.to_int(); i++) {' . chr(10) . '            sb.append( List__.aget(i).toString() );' . chr(10) . '        }' . chr(10) . '        return new PlString(sb.reverse().toString());' . chr(10) . '    }' . chr(10) . '    public static final PlObject fc(int want,  PlObject Object__) {' . chr(10) . '        return new PlString(Object__.toString().toLowerCase());' . chr(10) . '    }' . chr(10) . '    public static final PlObject pack(int want, PlArray List__) {' . chr(10) . '        String template = List__.aget(0).toString();' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        int index = 1;' . chr(10) . '        for(int i = 0; i < template.length(); ++i) {' . chr(10) . '            switch(template.charAt(i)) {' . chr(10) . '            case ' . chr(39) . 'a' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_a(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'A' . chr(39) . ':' . chr(10) . '            {    ' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_A(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'Z' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_Z(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_b(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'B' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_B(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'h' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_h(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'H' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_H(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'c' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_c(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'C' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_C(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'W' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_W(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 's' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_s(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'S' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_S(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'l' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_l(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'L' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_L(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'q' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_q(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'Q' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_Q(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'i' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_i(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'I' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_I(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'n' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_n(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'N' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_N(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'v' . chr(39) . ':   ' . chr(10) . '            {' . chr(10) . '                result.append(pack_v(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'V' . chr(39) . ':   ' . chr(10) . '            {' . chr(10) . '                result.append(pack_V(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'j' . chr(39) . ':   ' . chr(10) . '            {' . chr(10) . '                result.append(pack_j(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'J' . chr(39) . ':   ' . chr(10) . '            {' . chr(10) . '                result.append(pack_J(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'f' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_f(List__.aget(index).to_double()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'd' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . 'F' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_d(List__.aget(index).to_double()));' . chr(10) . '                ++index;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'p' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                for(int k = 0; k < size; ++k) {' . chr(10) . '                    if(List__.aget(index + k).is_undef()) {' . chr(10) . '                        result.append(pack_q("0"));' . chr(10) . '                    ' . chr(10) . '                    } else {' . chr(10) . '                        result.append(pack_p(List__.aget(index + k).toString()));' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '                index += i;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'u' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                result.append(pack_u(List__.aget(index).toString()));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'w' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                String[] input = new String[size];' . chr(10) . '                for(int j = 0; j < size; ++j) {' . chr(10) . '                    input[j] = List__.aget(index + j).toString();' . chr(10) . '                }' . chr(10) . '                result.append(pack_w(input, size));' . chr(10) . '                index += size;' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'x' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(pack_x(size));' . chr(10) . '                ++index;                ' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'X' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                int length = result.length();' . chr(10) . '                result.delete(Math.max(0,length - size), length);' . chr(10) . '                ++index;                ' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . '@' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                int length = result.length();' . chr(10) . '                if(size > length) {' . chr(10) . '                    result.append(new char[size - length]);' . chr(10) . '                }' . chr(10) . '                ++index;                ' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . '.' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '               int size = List__.aget(index).to_int();' . chr(10) . '                int length = result.length();' . chr(10) . '                if(size > length) {' . chr(10) . '                    result.append(new char[size - length]);' . chr(10) . '                }' . chr(10) . '                ++index;                ' . chr(10) . '                break;        ' . chr(10) . '            }' . chr(10) . '            default:' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        return new PlString(result.toString());' . chr(10) . '    }' . chr(10) . '    public static final PlObject unpack(int want, PlArray List__) {' . chr(10) . '        String template = List__.aget(0).toString();' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        int index = 1;' . chr(10) . '        for(int i = 0; i < template.length(); ++i) {' . chr(10) . '            switch(template.charAt(i)) {' . chr(10) . '            case ' . chr(39) . 'a' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(unpack_a(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'A' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(unpack_A(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'Z' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(unpack_Z(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            case ' . chr(39) . 'b' . chr(39) . ':' . chr(10) . '            {' . chr(10) . '                int size = pack_size(template, i);' . chr(10) . '                result.append(unpack_b(List__.aget(index).toString(), size));' . chr(10) . '                ++index;' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '            default:' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return new PlString(result.toString());' . chr(10) . '    }' . chr(10) . '    private static final int pack_size(String s, int pos) {' . chr(10) . '        int howMany = 0;' . chr(10) . '        while(s.length() > (pos + 1 + howMany) && java.lang.Character.isDigit(s.charAt(pos + 1 + howMany))) {' . chr(10) . '            ++howMany;' . chr(10) . '        }' . chr(10) . '        if(howMany != 0) {' . chr(10) . '            return java.lang.Integer.parseInt(s.substring(pos + 1, pos + 1 + howMany));' . chr(10) . '        }' . chr(10) . '        return 1;' . chr(10) . '    }' . chr(10) . '    private static final String pack_a(String s, int size) {' . chr(10) . '        if(s.length() >= size) {' . chr(10) . '            return s.substring(0,size);' . chr(10) . '        }' . chr(10) . '        String padding = new String(new char[size - s.length()]);' . chr(10) . '        return s + padding;    ' . chr(10) . '    }' . chr(10) . '    private static final String unpack_a(String s, int size) {' . chr(10) . '        if(s.length() >= size) {' . chr(10) . '            return s.substring(0,size);' . chr(10) . '        }' . chr(10) . '        return s; ' . chr(10) . '    }' . chr(10) . '    private static final String pack_A(String s, int size) {' . chr(10) . '        if(s.length() >= size) {' . chr(10) . '            return s.substring(0,size);' . chr(10) . '        }' . chr(10) . '        String padding = new String(new char[size - s.length()]).replace(' . chr(39) . chr(92) . '0' . chr(39) . ', ' . chr(39) . ' ' . chr(39) . ');' . chr(10) . '        return s + padding;    ' . chr(10) . '    }' . chr(10) . '    private static final String unpack_A(String s, int size) {' . chr(10) . '        if(s.length() >= size) {' . chr(10) . '            return s.substring(0,size);' . chr(10) . '        }' . chr(10) . '        return s; ' . chr(10) . '    }' . chr(10) . '    private static final String pack_Z(String s, int size) {' . chr(10) . '        s = s.substring(0, java.lang.Math.min(size - 1, s.length()));' . chr(10) . '        return s +  new String(new char[size - s.length()]);' . chr(10) . '    }' . chr(10) . '    private static final String unpack_Z(String s, int size) {' . chr(10) . '        if(s.length() >= size) {' . chr(10) . '            return s.substring(0,size);' . chr(10) . '        }' . chr(10) . '        return s; ' . chr(10) . '    }' . chr(10) . '    private static final String pack_b(String s, int size) {' . chr(10) . '        s = s.substring(0, Math.min(size, s.length()));' . chr(10) . '        int wanted8strings = (size + 7) / 8;' . chr(10) . '        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(' . chr(39) . chr(92) . '0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');' . chr(10) . '        StringBuilder input = new StringBuilder();' . chr(10) . '        for(int i = 0; i < s.length(); ++i) {' . chr(10) . '            if(s.codePointAt(i) % 2 == 1) {' . chr(10) . '                input.append("1");' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                input.append("0");' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        s = input.toString();' . chr(10) . '        for(int i = 0; i < wanted8strings; ++i) {' . chr(10) . '            String part = s.substring(i * 8, i * 8 + 8);' . chr(10) . '            int first = java.lang.Integer.parseInt(new StringBuilder(part.substring(0,4)).reverse().toString(), 2);' . chr(10) . '            int second = java.lang.Integer.parseInt(new StringBuilder(part.substring(4,8)).reverse().toString(), 2);' . chr(10) . '            result.append(Character.toString((char)(first + second * 16)));' . chr(10) . '        }' . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    private static final String unpack_b(String s, int size) {' . chr(10) . '        byte[] bytes = s.getBytes();' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        byte mask = (byte)128;' . chr(10) . '        for(int i = 0; i < size; ++i) {' . chr(10) . '            byte b = bytes[i / 8];' . chr(10) . '            if((b & mask) > 0) {' . chr(10) . '                result.append("1");' . chr(10) . '            } else {' . chr(10) . '                result.append("0");' . chr(10) . '            }' . chr(10) . '            if(mask == 1) {' . chr(10) . '                mask = (byte)128;' . chr(10) . '            } else {' . chr(10) . '                mask /= 2;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    private static final String pack_B(String s, int size) {' . chr(10) . '        s = s.substring(0, Math.min(size, s.length()));' . chr(10) . '        int wanted8strings = (size + 7) / 8;' . chr(10) . '        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(' . chr(39) . chr(92) . '0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');' . chr(10) . '        StringBuilder input = new StringBuilder();' . chr(10) . '        for(int i = 0; i < s.length(); ++i) {' . chr(10) . '            if(s.codePointAt(i) % 2 == 1) {' . chr(10) . '                input.append("1");' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                input.append("0");' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        s = input.toString();' . chr(10) . '        for(int i = 0; i < wanted8strings; ++i) {' . chr(10) . '            String part = s.substring(i * 8, i * 8 + 8);' . chr(10) . '            int ascii = java.lang.Integer.parseInt(part, 2);' . chr(10) . '            result.append(Character.toString((char)ascii));' . chr(10) . '        }' . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    private static final String pack_h(String s, int size) {' . chr(10) . '        int index  = 0;' . chr(10) . '        if(s.length() < size * 2) {' . chr(10) . '            s += new String(new char[size * 2 - s.length()]).replace(' . chr(39) . chr(92) . '0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');' . chr(10) . '        }' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        while(index < size) {' . chr(10) . '            String part = s.substring(index + 1, index + 2) + s.substring(index, index + 1);' . chr(10) . '            int ascii = java.lang.Integer.parseInt(part, 16);' . chr(10) . '            result.append(Character.toString((char)ascii));' . chr(10) . '            index += 2;' . chr(10) . '        }' . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    private static final String pack_H(String s, int size) {' . chr(10) . '        int index  = 0;' . chr(10) . '        if(s.length() < size * 2) {' . chr(10) . '            s += new String(new char[size * 2 - s.length()]).replace(' . chr(39) . chr(92) . '0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');' . chr(10) . '        }' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        while(index < size) {' . chr(10) . '            String part = s.substring(index, index + 2);' . chr(10) . '            int ascii = java.lang.Integer.parseInt(part, 16);' . chr(10) . '            result.append(Character.toString((char)ascii));' . chr(10) . '            index += 2;' . chr(10) . '        }' . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    private static String pack_c(String s) {' . chr(10) . '        try {' . chr(10) . '            int ascii = java.lang.Integer.parseInt(s) % 128;' . chr(10) . '            return Character.toString((char)ascii);' . chr(10) . '        } catch(Exception e) {' . chr(10) . '            return "";' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    private static String pack_C(String s) {' . chr(10) . '        try {' . chr(10) . '            int ascii = (java.lang.Integer.parseInt(s) + 256) % 256;' . chr(10) . '            return Character.toString((char)ascii);' . chr(10) . '        } catch(Exception e) {' . chr(10) . '            return "";' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    private static String pack_W(String s) {' . chr(10) . '        for(int i = 0; i < s.length(); ++i) {' . chr(10) . '            if(!java.lang.Character.isDigit(s.charAt(i))) {' . chr(10) . '                s = s.substring(0, i);' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        int value = java.lang.Integer.parseInt(s);' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        sb.appendCodePoint(value);' . chr(10) . '        return sb.toString();' . chr(10) . '    }' . chr(10) . '    private static String pack_number_2_string(String s, int size, boolean signed) {' . chr(10) . '        for(int i = 0; i < s.length(); ++i) {' . chr(10) . '            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == ' . chr(39) . '-' . chr(39) . ')) {' . chr(10) . '                s = s.substring(0, i);' . chr(10) . '                break;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        long value = java.lang.Long.parseLong(s);' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        for(int i = 0; i < size; ++i) {' . chr(10) . '            result.append((char)((value / (int)Math.pow(2,8*i)) % 256));' . chr(10) . '        }' . chr(10) . '        return result.toString();        ' . chr(10) . '    }' . chr(10) . '    private static String pack_s(String s) {' . chr(10) . '        return pack_number_2_string(s, 2, true);' . chr(10) . '    }' . chr(10) . '    private static String pack_S(String s) {' . chr(10) . '        return pack_number_2_string(s, 2, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_l(String s) {' . chr(10) . '        return pack_number_2_string(s, 4, true);' . chr(10) . '    }' . chr(10) . '    public static final String pack_L(String s) {' . chr(10) . '        return pack_number_2_string(s, 4, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_q(String s) {' . chr(10) . '        return pack_number_2_string(s, 8, true);' . chr(10) . '    }' . chr(10) . '    public static final String pack_Q(String s) {' . chr(10) . '        return pack_number_2_string(s, 8, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_i(String s) {' . chr(10) . '        return pack_number_2_string(s, 4, true);' . chr(10) . '    }' . chr(10) . '    public static final String pack_I(String s) {' . chr(10) . '        return pack_number_2_string(s, 4, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_n(String s) {' . chr(10) . '        return new StringBuilder(pack_number_2_string(s, 2, false)).reverse().toString();' . chr(10) . '    }' . chr(10) . '    public static final String pack_N(String s) {' . chr(10) . '        return new StringBuilder(pack_number_2_string(s, 4, false)).reverse().toString();' . chr(10) . '    }' . chr(10) . '    public static final String pack_v(String s) {' . chr(10) . '        return pack_number_2_string(s, 2, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_V(String s) {' . chr(10) . '        return pack_number_2_string(s, 4, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_j(String s) {' . chr(10) . '        return pack_number_2_string(s, 8, true);' . chr(10) . '    }' . chr(10) . '    public static final String pack_J(String s) {' . chr(10) . '        return pack_number_2_string(s, 8, false);' . chr(10) . '    }' . chr(10) . '    public static final String pack_f(double d) {' . chr(10) . '        float f = (float)d;' . chr(10) . '        int intBits = java.lang.Float.floatToRawIntBits(f); ' . chr(10) . '        char one = (char)(intBits / (int)Math.pow(2, 24));' . chr(10) . '        char two = (char)((intBits / (int)Math.pow(2, 16)) % 256);' . chr(10) . '        char three = (char)((intBits / (int)Math.pow(2, 8)) % 256);' . chr(10) . '        char four = (char)(intBits % 256);' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        result.append(Character.toString(four));' . chr(10) . '        result.append(Character.toString(three));' . chr(10) . '        result.append(Character.toString(two));' . chr(10) . '        result.append(Character.toString(one));' . chr(10) . '        return result.toString();        ' . chr(10) . '    }' . chr(10) . '    public static final String pack_d(double d) {' . chr(10) . '        long intBits = java.lang.Double.doubleToRawLongBits(d);' . chr(10) . '        char one =  (char)(intBits / (long)Math.pow(2, 56));' . chr(10) . '        char two = (char)((intBits / (long)Math.pow(2, 48)) % 256);' . chr(10) . '        char three = (char)((intBits / (long)Math.pow(2, 40)) % 256);' . chr(10) . '        char four = (char)((intBits / (long)Math.pow(2, 32)) % 256);' . chr(10) . '        char five = (char)((intBits / (long)Math.pow(2, 24)) % 256);' . chr(10) . '        char six = (char)((intBits / (long)Math.pow(2, 16)) % 256);' . chr(10) . '        char seven = (char)((intBits / (long)Math.pow(2, 8)) % 256);' . chr(10) . '        char eight = (char)(intBits % 256);' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        result.append(eight);' . chr(10) . '        result.append(seven);' . chr(10) . '        result.append(six);' . chr(10) . '        result.append(five);' . chr(10) . '        result.append(four);' . chr(10) . '        result.append(three);' . chr(10) . '        result.append(two);' . chr(10) . '        result.append(one);' . chr(10) . '        return result.toString();        ' . chr(10) . '    }' . chr(10) . '    private static StringBuilder pack_pointers = new StringBuilder();' . chr(10) . '    private static Map<Long, Integer> pack_pointers_size = new HashMap<Long, Integer>();' . chr(10) . '    private static final long pack_pointers_magic_value = 654321;' . chr(10) . '    public static final String pack_p(String s) {' . chr(10) . '        long pointer = pack_pointers.length() + pack_pointers_magic_value;' . chr(10) . '        pack_pointers.append(s);' . chr(10) . chr(10) . '        pack_pointers_size.put(pointer, s.length());' . chr(10) . '        return pack_q(new Long(pointer).toString());' . chr(10) . '    }' . chr(10) . '    public static final String pack_u(String s) {' . chr(10) . '        int index = 0;' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        StringBuilder line = new StringBuilder();' . chr(10) . '        int tooMany = 0;' . chr(10) . '        while(s.length() > index * 3) {' . chr(10) . '            String cur = s.substring(index * 3, Math.min(index * 3 + 3, s.length()));' . chr(10) . '            while(cur.length() < 3) {' . chr(10) . '                ++tooMany;' . chr(10) . '                cur += ' . chr(39) . chr(92) . '0' . chr(39) . ';' . chr(10) . '            }' . chr(10) . '            byte[] bytes = cur.getBytes();' . chr(10) . '            char value1 = (char)((bytes[0] >> 2) + 32);' . chr(10) . '            char value2 = (char)(((bytes[0] & 3) << 4) + (bytes[1] >> 4) + 32);' . chr(10) . '            char value3 = (char)(((bytes[1] & 15) << 2) + (bytes[2] >> 6) + 32);' . chr(10) . '            char value4 = (char)((bytes[2] & 63) + 32);' . chr(10) . chr(10) . '            line.append(value1);' . chr(10) . '            line.append(value2);' . chr(10) . '            line.append(value3);' . chr(10) . '            line.append(value4);' . chr(10) . '            ' . chr(10) . '            if(line.length() == 60 && index != 0) {' . chr(10) . '                line.insert(0, (char)(32 + (45 - tooMany)));' . chr(10) . '                line.append("' . chr(92) . 'n");' . chr(10) . '                result.append(line.toString());' . chr(10) . '                line = new StringBuilder();' . chr(10) . '            }' . chr(10) . '            ++index;' . chr(10) . '        }' . chr(10) . '        if(line.length() > 0) {' . chr(10) . '            line.insert(0, (char)(32 + ((index * 3 - tooMany) % 45)));' . chr(10) . '            line.append("' . chr(92) . 'n");' . chr(10) . '            result.append(line);' . chr(10) . '        }' . chr(10) . chr(10) . '        return result.toString().replaceAll(" ", "`");' . chr(10) . '    }' . chr(10) . '    public static final String pack_w(String[] s, int size) {' . chr(10) . '        java.math.BigInteger max_byte = new java.math.BigInteger("128");' . chr(10) . '        StringBuilder result = new StringBuilder();' . chr(10) . '        for(int i = 0; i < size; ++i) {' . chr(10) . '            java.math.BigInteger current = new java.math.BigInteger(s[i]);' . chr(10) . '            if(current.signum() < 0) {' . chr(10) . '                throw new PlDieException(new PlString("Cannot compress negative numbers in pack"));' . chr(10) . '            }' . chr(10) . '            while(current.compareTo(max_byte) > 0) {' . chr(10) . '                int part = current.mod(max_byte).intValue();' . chr(10) . '                result.append((char) (part + 128));' . chr(10) . '                current = current.divide(max_byte);' . chr(10) . '            }' . chr(10) . '            result.append((char)current.intValue());' . chr(10) . '        }' . chr(10) . chr(10) . '        return result.toString();' . chr(10) . '    }' . chr(10) . '    public static final String pack_x(int size) {' . chr(10) . '        return new String(new char[size]);' . chr(10) . '    }' . chr(10) . '    public static final PlObject time(int want, PlArray List__) {' . chr(10) . '        return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));' . chr(10) . '    }' . chr(10) . '    public static final PlObject sleep(int want, PlArray List__) {' . chr(10) . '        long s = (new Double(List__.shift().to_double() * 1000)).longValue();' . chr(10) . '        try {' . chr(10) . '            TimeUnit.MILLISECONDS.sleep(s);' . chr(10) . '        } catch (InterruptedException e) {' . chr(10) . '            //Handle exception' . chr(10) . '        }' . chr(10) . '        return new PlDouble(s / 1000.0);' . chr(10) . '    }' . chr(10) . '    public static final PlObject system(int want, PlArray List__) {' . chr(10) . '        // TODO - see perldoc -f system' . chr(10) . '        try {' . chr(10) . '            String[] args = new String[List__.to_int()];' . chr(10) . '            int i = 0;' . chr(10) . '            for (PlObject s : List__.a) {' . chr(10) . '                args[i++] = s.toString();' . chr(10) . '            }' . chr(10) . '            String s = null;' . chr(10) . '            Process p = Runtime.getRuntime().exec(args);' . chr(10) . '            // BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));' . chr(10) . '            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));' . chr(10) . '            // System.out.println("STDOUT' . chr(92) . 'n");' . chr(10) . '            // while ((s = stdInput.readLine()) != null) {' . chr(10) . '            //     System.out.println("  " + s);' . chr(10) . '            // }' . chr(10) . '            // System.out.println("STDERR' . chr(92) . 'n");' . chr(10) . '            // while ((s = stdError.readLine()) != null) {' . chr(10) . '            //     System.out.println("  " + s);' . chr(10) . '            // }' . chr(10) . '            return PlCx.INT0;' . chr(10) . '        }' . chr(10) . '        catch (IOException e) {' . chr(10) . '            // System.out.println("IOexception: ");' . chr(10) . '            // e.printStackTrace();' . chr(10) . '            return PlCx.MIN1;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject qx(int want, PlArray List__) {' . chr(10) . '        // TODO - see perldoc -f qx' . chr(10) . '        try {' . chr(10) . '            String[] args = new String[List__.to_int()];' . chr(10) . '            int i = 0;' . chr(10) . '            for (PlObject s : List__.a) {' . chr(10) . '                args[i++] = s.toString();' . chr(10) . '            }' . chr(10) . '            PlArray res = new PlArray();' . chr(10) . '            String s = null;' . chr(10) . '            Process p = Runtime.getRuntime().exec(args);' . chr(10) . '            // ??? set PlCx.UTF8' . chr(10) . '            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));' . chr(10) . '            // System.out.println("STDOUT' . chr(92) . 'n");' . chr(10) . '            while ((s = stdInput.readLine()) != null) {' . chr(10) . '                // System.out.println("  " + s);' . chr(10) . '                res.push(s + "' . chr(92) . 'n");' . chr(10) . '            }' . chr(10) . '            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));' . chr(10) . '            // System.out.println("STDERR' . chr(92) . 'n");' . chr(10) . '            // while ((s = stdError.readLine()) != null) {' . chr(10) . '            //     System.out.println("  " + s);' . chr(10) . '            // }' . chr(10) . '            if (want == PlCx.LIST) {' . chr(10) . '                return res;' . chr(10) . '            }' . chr(10) . '            res.unshift(PlCx.EMPTY);' . chr(10) . '            return join(want, res);' . chr(10) . '        }' . chr(10) . '        catch (IOException e) {' . chr(10) . '            // System.out.println("IOexception: ");' . chr(10) . '            // e.printStackTrace();' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . chr(10)
+        } keys(%FileFunc)) . '    public static final PlObject say(String s) {
+        // say() shortcut for internal use
+        return PlCORE.say(PlCx.VOID, PlCx.STDOUT, new PlArray(new PlString(s)));
+    }
+    public static final PlObject mkdir(int want, PlArray List__) {
+        try {
+            Path file = Paths.get(List__.aget(0).toString());
+            int mask = List__.aget(1).to_int();
+            Set<PosixFilePermission> perms = PerlOp.MaskToPermissions(mask);
+            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+            Files.createDirectory(file, attr);
+            return PlCx.INT1;
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject rmdir(int want, PlArray List__) {
+        try {
+            Path file = Paths.get(List__.aget(0).toString());
+            Files.delete(file);
+            return PlCx.INT1;
+        }
+        catch(NoSuchFileException e) {
+            PlV.set("main::v_!", new PlString("No such file or directory"));
+        }
+        catch(DirectoryNotEmptyException e) {
+            PlV.set("main::v_!", new PlString("Directory not empty"));
+        }
+        catch(IOException e) {
+            PlV.set("main::v_!", new PlString(e.getMessage()));
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject exit(int want, PlArray List__) {
+        int arg = List__.aget(0).to_int();
+        System.exit(arg);
+        return PlCx.UNDEF;
+    }
+    public static final PlObject warn(int want, PlArray List__) {
+        for (int i = 0; i < List__.to_int(); i++) {
+            PlCx.STDERR.outputStream.print(List__.aget(i).toString());
+        }
+        PlCx.STDERR.outputStream.println("");
+        return PlCx.INT1;
+    }
+    public static final PlObject die(int want, PlArray List__) {
+        PlObject arg = List__.aget(0);
+        if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
+            throw new PlDieException(PlCx.DIED);
+        }
+        if (List__.to_int() == 1) {
+            throw new PlDieException(arg);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < List__.to_int(); i++) {
+            String item = List__.aget(i).toString();
+            sb.append(item);
+        }
+        throw new PlDieException(new PlString(sb.toString()));
+    }
+    public static final PlObject die(String s) {
+        // die() shortcut
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString(s)));
+    }
+    public static final PlString ref(int want, PlArray List__) {
+        return List__.aget(0).ref();
+    }
+    public static final PlObject values(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.values() : List__.values().scalar();
+    }
+    public static final PlObject keys(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.keys() : List__.keys().scalar();
+    }
+    public static final PlObject each(int want, PlObject List__) {
+        return want == PlCx.LIST ? List__.each() : List__.each().aget(0);
+    }
+    public static final PlObject chomp(int want, PlObject Object__) {
+        String sep = PlV.get("main::v_/").toString();
+        int sepSize = sep.length();
+        int result = 0;
+        String toChomp = Object__.toString();
+        if(toChomp.substring(toChomp.length() - sepSize, toChomp.length()).equals(sep)) {
+            toChomp = toChomp.substring(0, toChomp.length() - sepSize);
+            result += sepSize;
+        }
+
+        Object__.set(new PlString(toChomp));
+            
+        return new PlInt(result);
+    }
+    public static final PlObject chomp(int want, PlArray List__) {
+        int result = 0;
+        for(int i = 0; i < List__.to_int(); ++i) {
+            PlObject item = List__.aget_lvalue(i);
+            result += chomp(want, item).to_int();
+        }
+
+        return new PlInt(result);
+    }
+    public static final PlString chop(int want, PlObject Object__) {
+        String str = Object__.toString();
+        String returnValue = "";
+        if (str.length() > 0) {
+            returnValue = str.substring(str.length() -1);
+            Object__.set(new PlString(str.substring(0, str.length()-1)));
+        }
+
+        return new PlString(returnValue);
+    }
+    public static final PlObject chop(int want, PlArray List__) {
+        PlString result = PlCx.EMPTY;
+        for(int i = 0; i < List__.to_int(); ++i) {
+            PlObject item = List__.aget_lvalue(i);
+            result = chop(want, item);
+        }
+
+        return result;
+    }
+    public static final PlObject scalar(int want, PlArray List__) {
+        if (List__.to_int() == 0) {
+            return PlCx.UNDEF;
+        }
+        return List__.aget(-1).scalar();
+    }
+    public static final PlObject hex(int want, PlObject List__) {
+        String s = List__.toString();
+        if(s.startsWith("0x") || s.startsWith("0X")) {
+            s = s.substring(2);
+        }
+        try {
+            return new PlInt(Long.parseLong(s, 16));
+        } catch (java.lang.NumberFormatException e) {
+            return new PlInt(0);
+        }
+    }
+    public static final PlObject oct(int want, PlObject List__) {
+        String valueTobeCoverted = List__.toString();
+        try {
+            if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {
+                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));
+            } else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
+                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
+            } else {
+                return new PlInt(Long.parseLong(valueTobeCoverted, 8));
+            }
+        } catch (NumberFormatException n) {
+            
+        } catch (Exception e) {
+            // result = e.getMessage();
+        }
+        return new PlInt(0);
+    }
+    public static final PlObject sprintf(int want, PlObject List__) {
+        String format = List__.aget(0).toString();
+        // "%3s"
+        int length = format.length();
+        int offset = 0;
+        int args_max = List__.to_int();
+        int args_index = 0;
+        Object args[] = new Object[args_max];
+        for ( ; offset < length; ) {
+            int c = format.codePointAt(offset);
+            switch (c) {
+                case ' . chr(39) . '%' . chr(39) . ':
+                    offset++;
+                    boolean scanning = true;
+                    for ( ; offset < length && scanning ; ) {
+                        c = format.codePointAt(offset);
+                        switch (c) {
+                            case ' . chr(39) . '%' . chr(39) . ':
+                                scanning = false;
+                                offset++;
+                                break;
+                            case ' . chr(39) . 'c' . chr(39) . ': case ' . chr(39) . 's' . chr(39) . ': case ' . chr(39) . 'd' . chr(39) . ': case ' . chr(39) . 'u' . chr(39) . ': case ' . chr(39) . 'o' . chr(39) . ':
+                            case ' . chr(39) . 'x' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ': case ' . chr(39) . 'f' . chr(39) . ': case ' . chr(39) . 'g' . chr(39) . ':
+                            case ' . chr(39) . 'X' . chr(39) . ': case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'G' . chr(39) . ': case ' . chr(39) . 'b' . chr(39) . ':
+                            case ' . chr(39) . 'B' . chr(39) . ': case ' . chr(39) . 'p' . chr(39) . ': case ' . chr(39) . 'n' . chr(39) . ':
+                            case ' . chr(39) . 'i' . chr(39) . ': case ' . chr(39) . 'D' . chr(39) . ': case ' . chr(39) . 'U' . chr(39) . ': case ' . chr(39) . 'O' . chr(39) . ': case ' . chr(39) . 'F' . chr(39) . ':
+                                scanning = false;
+                                switch (c) {
+                                    case ' . chr(39) . 's' . chr(39) . ':
+                                        args[args_index] = List__.aget(args_index+1).toString();
+                                        break;
+                                    case ' . chr(39) . 'd' . chr(39) . ': case ' . chr(39) . 'o' . chr(39) . ': case ' . chr(39) . 'x' . chr(39) . ': case ' . chr(39) . 'X' . chr(39) . ':
+                                    case ' . chr(39) . 'u' . chr(39) . ': case ' . chr(39) . 'b' . chr(39) . ': case ' . chr(39) . 'B' . chr(39) . ': case ' . chr(39) . 'p' . chr(39) . ':
+                                    case ' . chr(39) . 'c' . chr(39) . ':
+                                        args[args_index] = List__.aget(args_index+1).to_int();
+                                        break;
+                                    case ' . chr(39) . 'f' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ': case ' . chr(39) . 'g' . chr(39) . ':
+                                    case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'G' . chr(39) . ':
+                                        args[args_index] = List__.aget(args_index+1).to_double();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                args_index++;
+                                if (args_index > args_max) {
+                                    // panic
+                                    offset = length;
+                                }
+                                offset++;
+                                break;
+                            default:
+                                offset++;
+                                break;
+                        }
+                    }
+                    break;
+                default:
+                    offset++;
+                    break;
+            }
+        }
+        return new PlString(String.format(format, args));
+    }
+    public static final PlObject crypt(int want, PlArray List__) {
+        if(List__.to_int() < 2) {
+            die("Not enough arguments for crypt");
+        }
+        if(List__.to_int() > 2) {
+            die("Too many arguments for crypt");
+        }
+        String plainText = List__.shift().toString();
+        String salt = List__.shift().toString();
+
+        while(salt.length() < 2) {
+            salt = salt.concat(".");
+        }
+        
+        return new PlString(PlCrypt.crypt(salt, plainText));
+    }
+    public static final PlObject join(int want, PlArray List__) {
+        String s = List__.shift().toString();
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (int i = 0; i < List__.to_int(); i++) {
+            String item = List__.aget(i).toString();
+            if (first)
+                first = false;
+            else
+                sb.append(s);
+            sb.append(item);
+        }
+        return new PlString(sb.toString());
+    }
+    public static final PlObject reverse(int want, PlArray List__) {
+        if (want == PlCx.LIST) {
+            PlArray ret = new PlArray(List__);
+            Collections.reverse(ret.a);
+            return ret;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < List__.to_int(); i++) {
+            sb.append( List__.aget(i).toString() );
+        }
+        return new PlString(sb.reverse().toString());
+    }
+    public static final PlObject fc(int want,  PlObject Object__) {
+        return new PlString(Object__.toString().toLowerCase());
+    }
+    public static final PlObject pack(int want, PlArray List__) {
+        String template = List__.aget(0).toString();
+        StringBuilder result = new StringBuilder();
+        int index = 1;
+        for(int i = 0; i < template.length(); ++i) {
+            switch(template.charAt(i)) {
+            case ' . chr(39) . 'a' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_a(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'A' . chr(39) . ':
+            {    
+                int size = pack_size(template, i);
+                result.append(pack_A(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'Z' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_Z(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'b' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_b(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'B' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_B(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'h' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_h(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'H' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_H(List__.aget(index).toString(), size));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'c' . chr(39) . ':
+            {
+                result.append(pack_c(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'C' . chr(39) . ':
+            {
+                result.append(pack_C(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'W' . chr(39) . ':
+            {
+                result.append(pack_W(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 's' . chr(39) . ':
+            {
+                result.append(pack_s(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'S' . chr(39) . ':
+            {
+                result.append(pack_S(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'l' . chr(39) . ':
+            {
+                result.append(pack_l(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'L' . chr(39) . ':
+            {
+                result.append(pack_L(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'q' . chr(39) . ':
+            {
+                result.append(pack_q(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'Q' . chr(39) . ':
+            {
+                result.append(pack_Q(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'i' . chr(39) . ':
+            {
+                result.append(pack_i(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'I' . chr(39) . ':
+            {
+                result.append(pack_I(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'n' . chr(39) . ':
+            {
+                result.append(pack_n(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'N' . chr(39) . ':
+            {
+                result.append(pack_N(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'v' . chr(39) . ':   
+            {
+                result.append(pack_v(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'V' . chr(39) . ':   
+            {
+                result.append(pack_V(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'j' . chr(39) . ':   
+            {
+                result.append(pack_j(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'J' . chr(39) . ':   
+            {
+                result.append(pack_J(List__.aget(index).toString()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'f' . chr(39) . ':
+            {
+                result.append(pack_f(List__.aget(index).to_double()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'd' . chr(39) . ':
+            case ' . chr(39) . 'F' . chr(39) . ':
+            {
+                result.append(pack_d(List__.aget(index).to_double()));
+                ++index;
+                break;        
+            }
+            case ' . chr(39) . 'p' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                for(int k = 0; k < size; ++k) {
+                    if(List__.aget(index + k).is_undef()) {
+                        result.append(pack_q("0"));
+                    
+                    } else {
+                        result.append(pack_p(List__.aget(index + k).toString()));
+                    }
+                }
+                index += i;
+            }
+            case ' . chr(39) . 'u' . chr(39) . ':
+            {
+                result.append(pack_u(List__.aget(index).toString()));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'w' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                String[] input = new String[size];
+                for(int j = 0; j < size; ++j) {
+                    input[j] = List__.aget(index + j).toString();
+                }
+                result.append(pack_w(input, size));
+                index += size;
+                break;        
+            }
+            case ' . chr(39) . 'x' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(pack_x(size));
+                ++index;                
+                break;        
+            }
+            case ' . chr(39) . 'X' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                int length = result.length();
+                result.delete(Math.max(0,length - size), length);
+                ++index;                
+                break;        
+            }
+            case ' . chr(39) . '@' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                int length = result.length();
+                if(size > length) {
+                    result.append(new char[size - length]);
+                }
+                ++index;                
+                break;        
+            }
+            case ' . chr(39) . '.' . chr(39) . ':
+            {
+               int size = List__.aget(index).to_int();
+                int length = result.length();
+                if(size > length) {
+                    result.append(new char[size - length]);
+                }
+                ++index;                
+                break;        
+            }
+            default:
+            }
+        }
+
+        return new PlString(result.toString());
+    }
+    public static final PlObject unpack(int want, PlArray List__) {
+        String template = List__.aget(0).toString();
+        StringBuilder result = new StringBuilder();
+        int index = 1;
+        for(int i = 0; i < template.length(); ++i) {
+            switch(template.charAt(i)) {
+            case ' . chr(39) . 'a' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(unpack_a(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'A' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(unpack_A(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'Z' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(unpack_Z(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            case ' . chr(39) . 'b' . chr(39) . ':
+            {
+                int size = pack_size(template, i);
+                result.append(unpack_b(List__.aget(index).toString(), size));
+                ++index;
+                break;
+            }
+            default:
+            }
+        }
+        return new PlString(result.toString());
+    }
+    private static final int pack_size(String s, int pos) {
+        int howMany = 0;
+        while(s.length() > (pos + 1 + howMany) && java.lang.Character.isDigit(s.charAt(pos + 1 + howMany))) {
+            ++howMany;
+        }
+        if(howMany != 0) {
+            return java.lang.Integer.parseInt(s.substring(pos + 1, pos + 1 + howMany));
+        }
+        return 1;
+    }
+    private static final String pack_a(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        String padding = new String(new char[size - s.length()]);
+        return s + padding;    
+    }
+    private static final String unpack_a(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        return s; 
+    }
+    private static final String pack_A(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        String padding = new String(new char[size - s.length()]).replace(' . chr(39) . '\\0' . chr(39) . ', ' . chr(39) . ' ' . chr(39) . ');
+        return s + padding;    
+    }
+    private static final String unpack_A(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        return s; 
+    }
+    private static final String pack_Z(String s, int size) {
+        s = s.substring(0, java.lang.Math.min(size - 1, s.length()));
+        return s +  new String(new char[size - s.length()]);
+    }
+    private static final String unpack_Z(String s, int size) {
+        if(s.length() >= size) {
+            return s.substring(0,size);
+        }
+        return s; 
+    }
+    private static final String pack_b(String s, int size) {
+        s = s.substring(0, Math.min(size, s.length()));
+        int wanted8strings = (size + 7) / 8;
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(' . chr(39) . '\\0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');
+        StringBuilder input = new StringBuilder();
+        for(int i = 0; i < s.length(); ++i) {
+            if(s.codePointAt(i) % 2 == 1) {
+                input.append("1");
+            }
+            else {
+                input.append("0");
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        s = input.toString();
+        for(int i = 0; i < wanted8strings; ++i) {
+            String part = s.substring(i * 8, i * 8 + 8);
+            int first = java.lang.Integer.parseInt(new StringBuilder(part.substring(0,4)).reverse().toString(), 2);
+            int second = java.lang.Integer.parseInt(new StringBuilder(part.substring(4,8)).reverse().toString(), 2);
+            result.append(Character.toString((char)(first + second * 16)));
+        }
+        return result.toString();
+    }
+    private static final String unpack_b(String s, int size) {
+        byte[] bytes = s.getBytes();
+        StringBuilder result = new StringBuilder();
+        byte mask = (byte)128;
+        for(int i = 0; i < size; ++i) {
+            byte b = bytes[i / 8];
+            if((b & mask) > 0) {
+                result.append("1");
+            } else {
+                result.append("0");
+            }
+            if(mask == 1) {
+                mask = (byte)128;
+            } else {
+                mask /= 2;
+            }
+        }
+        return result.toString();
+    }
+    private static final String pack_B(String s, int size) {
+        s = s.substring(0, Math.min(size, s.length()));
+        int wanted8strings = (size + 7) / 8;
+        s += new String(new char[(wanted8strings * 8) - s.length()]).replace(' . chr(39) . '\\0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');
+        StringBuilder input = new StringBuilder();
+        for(int i = 0; i < s.length(); ++i) {
+            if(s.codePointAt(i) % 2 == 1) {
+                input.append("1");
+            }
+            else {
+                input.append("0");
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        s = input.toString();
+        for(int i = 0; i < wanted8strings; ++i) {
+            String part = s.substring(i * 8, i * 8 + 8);
+            int ascii = java.lang.Integer.parseInt(part, 2);
+            result.append(Character.toString((char)ascii));
+        }
+        return result.toString();
+    }
+    private static final String pack_h(String s, int size) {
+        int index  = 0;
+        if(s.length() < size * 2) {
+            s += new String(new char[size * 2 - s.length()]).replace(' . chr(39) . '\\0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');
+        }
+        StringBuilder result = new StringBuilder();
+        while(index < size) {
+            String part = s.substring(index + 1, index + 2) + s.substring(index, index + 1);
+            int ascii = java.lang.Integer.parseInt(part, 16);
+            result.append(Character.toString((char)ascii));
+            index += 2;
+        }
+        return result.toString();
+    }
+    private static final String pack_H(String s, int size) {
+        int index  = 0;
+        if(s.length() < size * 2) {
+            s += new String(new char[size * 2 - s.length()]).replace(' . chr(39) . '\\0' . chr(39) . ', ' . chr(39) . '0' . chr(39) . ');
+        }
+        StringBuilder result = new StringBuilder();
+        while(index < size) {
+            String part = s.substring(index, index + 2);
+            int ascii = java.lang.Integer.parseInt(part, 16);
+            result.append(Character.toString((char)ascii));
+            index += 2;
+        }
+        return result.toString();
+    }
+    private static String pack_c(String s) {
+        try {
+            int ascii = java.lang.Integer.parseInt(s) % 128;
+            return Character.toString((char)ascii);
+        } catch(Exception e) {
+            return "";
+        }
+    }
+    private static String pack_C(String s) {
+        try {
+            int ascii = (java.lang.Integer.parseInt(s) + 256) % 256;
+            return Character.toString((char)ascii);
+        } catch(Exception e) {
+            return "";
+        }
+    }
+    private static String pack_W(String s) {
+        for(int i = 0; i < s.length(); ++i) {
+            if(!java.lang.Character.isDigit(s.charAt(i))) {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        int value = java.lang.Integer.parseInt(s);
+        StringBuilder sb = new StringBuilder();
+        sb.appendCodePoint(value);
+        return sb.toString();
+    }
+    private static String pack_number_2_string(String s, int size, boolean signed) {
+        for(int i = 0; i < s.length(); ++i) {
+            if(!java.lang.Character.isDigit(s.charAt(i)) && !(s.charAt(i) == ' . chr(39) . '-' . chr(39) . ')) {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        long value = java.lang.Long.parseLong(s);
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < size; ++i) {
+            result.append((char)((value / (int)Math.pow(2,8*i)) % 256));
+        }
+        return result.toString();        
+    }
+    private static String pack_s(String s) {
+        return pack_number_2_string(s, 2, true);
+    }
+    private static String pack_S(String s) {
+        return pack_number_2_string(s, 2, false);
+    }
+    public static final String pack_l(String s) {
+        return pack_number_2_string(s, 4, true);
+    }
+    public static final String pack_L(String s) {
+        return pack_number_2_string(s, 4, false);
+    }
+    public static final String pack_q(String s) {
+        return pack_number_2_string(s, 8, true);
+    }
+    public static final String pack_Q(String s) {
+        return pack_number_2_string(s, 8, false);
+    }
+    public static final String pack_i(String s) {
+        return pack_number_2_string(s, 4, true);
+    }
+    public static final String pack_I(String s) {
+        return pack_number_2_string(s, 4, false);
+    }
+    public static final String pack_n(String s) {
+        return new StringBuilder(pack_number_2_string(s, 2, false)).reverse().toString();
+    }
+    public static final String pack_N(String s) {
+        return new StringBuilder(pack_number_2_string(s, 4, false)).reverse().toString();
+    }
+    public static final String pack_v(String s) {
+        return pack_number_2_string(s, 2, false);
+    }
+    public static final String pack_V(String s) {
+        return pack_number_2_string(s, 4, false);
+    }
+    public static final String pack_j(String s) {
+        return pack_number_2_string(s, 8, true);
+    }
+    public static final String pack_J(String s) {
+        return pack_number_2_string(s, 8, false);
+    }
+    public static final String pack_f(double d) {
+        float f = (float)d;
+        int intBits = java.lang.Float.floatToRawIntBits(f); 
+        char one = (char)(intBits / (int)Math.pow(2, 24));
+        char two = (char)((intBits / (int)Math.pow(2, 16)) % 256);
+        char three = (char)((intBits / (int)Math.pow(2, 8)) % 256);
+        char four = (char)(intBits % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(Character.toString(four));
+        result.append(Character.toString(three));
+        result.append(Character.toString(two));
+        result.append(Character.toString(one));
+        return result.toString();        
+    }
+    public static final String pack_d(double d) {
+        long intBits = java.lang.Double.doubleToRawLongBits(d);
+        char one =  (char)(intBits / (long)Math.pow(2, 56));
+        char two = (char)((intBits / (long)Math.pow(2, 48)) % 256);
+        char three = (char)((intBits / (long)Math.pow(2, 40)) % 256);
+        char four = (char)((intBits / (long)Math.pow(2, 32)) % 256);
+        char five = (char)((intBits / (long)Math.pow(2, 24)) % 256);
+        char six = (char)((intBits / (long)Math.pow(2, 16)) % 256);
+        char seven = (char)((intBits / (long)Math.pow(2, 8)) % 256);
+        char eight = (char)(intBits % 256);
+        StringBuilder result = new StringBuilder();
+        result.append(eight);
+        result.append(seven);
+        result.append(six);
+        result.append(five);
+        result.append(four);
+        result.append(three);
+        result.append(two);
+        result.append(one);
+        return result.toString();        
+    }
+    private static StringBuilder pack_pointers = new StringBuilder();
+    private static Map<Long, Integer> pack_pointers_size = new HashMap<Long, Integer>();
+    private static final long pack_pointers_magic_value = 654321;
+    public static final String pack_p(String s) {
+        long pointer = pack_pointers.length() + pack_pointers_magic_value;
+        pack_pointers.append(s);
+
+        pack_pointers_size.put(pointer, s.length());
+        return pack_q(new Long(pointer).toString());
+    }
+    public static final String pack_u(String s) {
+        int index = 0;
+        StringBuilder result = new StringBuilder();
+        StringBuilder line = new StringBuilder();
+        int tooMany = 0;
+        while(s.length() > index * 3) {
+            String cur = s.substring(index * 3, Math.min(index * 3 + 3, s.length()));
+            while(cur.length() < 3) {
+                ++tooMany;
+                cur += ' . chr(39) . '\\0' . chr(39) . ';
+            }
+            byte[] bytes = cur.getBytes();
+            char value1 = (char)((bytes[0] >> 2) + 32);
+            char value2 = (char)(((bytes[0] & 3) << 4) + (bytes[1] >> 4) + 32);
+            char value3 = (char)(((bytes[1] & 15) << 2) + (bytes[2] >> 6) + 32);
+            char value4 = (char)((bytes[2] & 63) + 32);
+
+            line.append(value1);
+            line.append(value2);
+            line.append(value3);
+            line.append(value4);
+            
+            if(line.length() == 60 && index != 0) {
+                line.insert(0, (char)(32 + (45 - tooMany)));
+                line.append("\\n");
+                result.append(line.toString());
+                line = new StringBuilder();
+            }
+            ++index;
+        }
+        if(line.length() > 0) {
+            line.insert(0, (char)(32 + ((index * 3 - tooMany) % 45)));
+            line.append("\\n");
+            result.append(line);
+        }
+
+        return result.toString().replaceAll(" ", "`");
+    }
+    public static final String pack_w(String[] s, int size) {
+        java.math.BigInteger max_byte = new java.math.BigInteger("128");
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < size; ++i) {
+            java.math.BigInteger current = new java.math.BigInteger(s[i]);
+            if(current.signum() < 0) {
+                throw new PlDieException(new PlString("Cannot compress negative numbers in pack"));
+            }
+            while(current.compareTo(max_byte) > 0) {
+                int part = current.mod(max_byte).intValue();
+                result.append((char) (part + 128));
+                current = current.divide(max_byte);
+            }
+            result.append((char)current.intValue());
+        }
+
+        return result.toString();
+    }
+    public static final String pack_x(int size) {
+        return new String(new char[size]);
+    }
+    public static final PlObject time(int want, PlArray List__) {
+        return new PlInt( (long)Math.floor(System.currentTimeMillis() * 0.001 + 0.5));
+    }
+    public static final PlObject sleep(int want, PlArray List__) {
+        long s = (new Double(List__.shift().to_double() * 1000)).longValue();
+        try {
+            TimeUnit.MILLISECONDS.sleep(s);
+        } catch (InterruptedException e) {
+            //Handle exception
+        }
+        return new PlDouble(s / 1000.0);
+    }
+    public static final PlObject system(int want, PlArray List__) {
+        // TODO - see perldoc -f system
+        try {
+            String[] args = new String[List__.to_int()];
+            int i = 0;
+            for (PlObject s : List__.a) {
+                args[i++] = s.toString();
+            }
+            String s = null;
+            Process p = Runtime.getRuntime().exec(args);
+            // BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            // System.out.println("STDOUT\\n");
+            // while ((s = stdInput.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
+            // System.out.println("STDERR\\n");
+            // while ((s = stdError.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
+            return PlCx.INT0;
+        }
+        catch (IOException e) {
+            // System.out.println("IOexception: ");
+            // e.printStackTrace();
+            return PlCx.MIN1;
+        }
+    }
+    public static final PlObject qx(int want, PlArray List__) {
+        // TODO - see perldoc -f qx
+        try {
+            String[] args = new String[List__.to_int()];
+            int i = 0;
+            for (PlObject s : List__.a) {
+                args[i++] = s.toString();
+            }
+            PlArray res = new PlArray();
+            String s = null;
+            Process p = Runtime.getRuntime().exec(args);
+            // ??? set PlCx.UTF8
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            // System.out.println("STDOUT\\n");
+            while ((s = stdInput.readLine()) != null) {
+                // System.out.println("  " + s);
+                res.push(s + "\\n");
+            }
+            // BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            // System.out.println("STDERR\\n");
+            // while ((s = stdError.readLine()) != null) {
+            //     System.out.println("  " + s);
+            // }
+            if (want == PlCx.LIST) {
+                return res;
+            }
+            res.unshift(PlCx.EMPTY);
+            return join(want, res);
+        }
+        catch (IOException e) {
+            // System.out.println("IOexception: ");
+            // e.printStackTrace();
+            return PlCx.UNDEF;
+        }
+    }
+}
+
+'
     }
     1
 }
@@ -18123,7 +24514,568 @@ use feature 'say';
     package Perlito5::Java::Crypt;
     undef();
     sub Perlito5::Java::Crypt::emit_java {
-        return chr(10) . '/****************************************************************************' . chr(10) . ' * Java-based implementation of the unix crypt(3) command' . chr(10) . ' *' . chr(10) . ' * Based upon C source code written by Eric Young, eay@psych.uq.oz.au' . chr(10) . ' * Java conversion by John F. Dumas, jdumas@zgs.com' . chr(10) . ' *' . chr(10) . ' * Found at http://locutus.kingwoodcable.com/jfd/crypt.html' . chr(10) . ' * Found at http://cseweb.ucsd.edu/classes/sp12/cse130-a/static/pa5/Crypt.java' . chr(10) . ' * Minor optimizations by Wes Biggs, wes@cacas.org' . chr(10) . ' *' . chr(10) . ' * Eric' . chr(39) . 's original code is licensed under the BSD license.  As this is' . chr(10) . ' * derivative, the same license applies.' . chr(10) . ' *' . chr(10) . ' * Note: Crypt.class is much smaller when compiled with javac -O' . chr(10) . ' ****************************************************************************/' . chr(10) . chr(10) . 'class PlCrypt {' . chr(10) . '  private PlCrypt() {} // defined so class can' . chr(39) . 't be instantiated.' . chr(10) . chr(10) . '  private static final int ITERATIONS = 16;' . chr(10) . chr(10) . '  private static final boolean shifts2[] = {' . chr(10) . '    false, false, true, true, true, true, true, true,' . chr(10) . '    false, true,  true, true, true, true, true, false' . chr(10) . '  };' . chr(10) . chr(10) . '  private static final int skb[][] = {' . chr(10) . '    {' . chr(10) . '      /* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */' . chr(10) . '      0x00000000, 0x00000010, 0x20000000, 0x20000010, ' . chr(10) . '      0x00010000, 0x00010010, 0x20010000, 0x20010010, ' . chr(10) . '      0x00000800, 0x00000810, 0x20000800, 0x20000810, ' . chr(10) . '      0x00010800, 0x00010810, 0x20010800, 0x20010810, ' . chr(10) . '      0x00000020, 0x00000030, 0x20000020, 0x20000030, ' . chr(10) . '      0x00010020, 0x00010030, 0x20010020, 0x20010030, ' . chr(10) . '      0x00000820, 0x00000830, 0x20000820, 0x20000830, ' . chr(10) . '      0x00010820, 0x00010830, 0x20010820, 0x20010830, ' . chr(10) . '      0x00080000, 0x00080010, 0x20080000, 0x20080010, ' . chr(10) . '      0x00090000, 0x00090010, 0x20090000, 0x20090010, ' . chr(10) . '      0x00080800, 0x00080810, 0x20080800, 0x20080810, ' . chr(10) . '      0x00090800, 0x00090810, 0x20090800, 0x20090810, ' . chr(10) . '      0x00080020, 0x00080030, 0x20080020, 0x20080030, ' . chr(10) . '      0x00090020, 0x00090030, 0x20090020, 0x20090030, ' . chr(10) . '      0x00080820, 0x00080830, 0x20080820, 0x20080830, ' . chr(10) . '      0x00090820, 0x00090830, 0x20090820, 0x20090830, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for C bits (numbered as per FIPS 46) 7 8 10 11 12 13 */' . chr(10) . '      0x00000000, 0x02000000, 0x00002000, 0x02002000, ' . chr(10) . '      0x00200000, 0x02200000, 0x00202000, 0x02202000, ' . chr(10) . '      0x00000004, 0x02000004, 0x00002004, 0x02002004, ' . chr(10) . '      0x00200004, 0x02200004, 0x00202004, 0x02202004, ' . chr(10) . '      0x00000400, 0x02000400, 0x00002400, 0x02002400, ' . chr(10) . '      0x00200400, 0x02200400, 0x00202400, 0x02202400, ' . chr(10) . '      0x00000404, 0x02000404, 0x00002404, 0x02002404, ' . chr(10) . '      0x00200404, 0x02200404, 0x00202404, 0x02202404, ' . chr(10) . '      0x10000000, 0x12000000, 0x10002000, 0x12002000, ' . chr(10) . '      0x10200000, 0x12200000, 0x10202000, 0x12202000, ' . chr(10) . '      0x10000004, 0x12000004, 0x10002004, 0x12002004, ' . chr(10) . '      0x10200004, 0x12200004, 0x10202004, 0x12202004, ' . chr(10) . '      0x10000400, 0x12000400, 0x10002400, 0x12002400, ' . chr(10) . '      0x10200400, 0x12200400, 0x10202400, 0x12202400, ' . chr(10) . '      0x10000404, 0x12000404, 0x10002404, 0x12002404, ' . chr(10) . '      0x10200404, 0x12200404, 0x10202404, 0x12202404, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for C bits (numbered as per FIPS 46) 14 15 16 17 19 20 */' . chr(10) . '      0x00000000, 0x00000001, 0x00040000, 0x00040001, ' . chr(10) . '      0x01000000, 0x01000001, 0x01040000, 0x01040001, ' . chr(10) . '      0x00000002, 0x00000003, 0x00040002, 0x00040003, ' . chr(10) . '      0x01000002, 0x01000003, 0x01040002, 0x01040003, ' . chr(10) . '      0x00000200, 0x00000201, 0x00040200, 0x00040201, ' . chr(10) . '      0x01000200, 0x01000201, 0x01040200, 0x01040201, ' . chr(10) . '      0x00000202, 0x00000203, 0x00040202, 0x00040203, ' . chr(10) . '      0x01000202, 0x01000203, 0x01040202, 0x01040203, ' . chr(10) . '      0x08000000, 0x08000001, 0x08040000, 0x08040001, ' . chr(10) . '      0x09000000, 0x09000001, 0x09040000, 0x09040001, ' . chr(10) . '      0x08000002, 0x08000003, 0x08040002, 0x08040003, ' . chr(10) . '      0x09000002, 0x09000003, 0x09040002, 0x09040003, ' . chr(10) . '      0x08000200, 0x08000201, 0x08040200, 0x08040201, ' . chr(10) . '      0x09000200, 0x09000201, 0x09040200, 0x09040201, ' . chr(10) . '      0x08000202, 0x08000203, 0x08040202, 0x08040203, ' . chr(10) . '      0x09000202, 0x09000203, 0x09040202, 0x09040203, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for C bits (numbered as per FIPS 46) 21 23 24 26 27 28 */' . chr(10) . '      0x00000000, 0x00100000, 0x00000100, 0x00100100, ' . chr(10) . '      0x00000008, 0x00100008, 0x00000108, 0x00100108, ' . chr(10) . '      0x00001000, 0x00101000, 0x00001100, 0x00101100, ' . chr(10) . '      0x00001008, 0x00101008, 0x00001108, 0x00101108, ' . chr(10) . '      0x04000000, 0x04100000, 0x04000100, 0x04100100, ' . chr(10) . '      0x04000008, 0x04100008, 0x04000108, 0x04100108, ' . chr(10) . '      0x04001000, 0x04101000, 0x04001100, 0x04101100, ' . chr(10) . '      0x04001008, 0x04101008, 0x04001108, 0x04101108, ' . chr(10) . '      0x00020000, 0x00120000, 0x00020100, 0x00120100, ' . chr(10) . '      0x00020008, 0x00120008, 0x00020108, 0x00120108, ' . chr(10) . '      0x00021000, 0x00121000, 0x00021100, 0x00121100, ' . chr(10) . '      0x00021008, 0x00121008, 0x00021108, 0x00121108, ' . chr(10) . '      0x04020000, 0x04120000, 0x04020100, 0x04120100, ' . chr(10) . '      0x04020008, 0x04120008, 0x04020108, 0x04120108, ' . chr(10) . '      0x04021000, 0x04121000, 0x04021100, 0x04121100, ' . chr(10) . '      0x04021008, 0x04121008, 0x04021108, 0x04121108, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for D bits (numbered as per FIPS 46) 1 2 3 4 5 6 */' . chr(10) . '      0x00000000, 0x10000000, 0x00010000, 0x10010000, ' . chr(10) . '      0x00000004, 0x10000004, 0x00010004, 0x10010004, ' . chr(10) . '      0x20000000, 0x30000000, 0x20010000, 0x30010000, ' . chr(10) . '      0x20000004, 0x30000004, 0x20010004, 0x30010004, ' . chr(10) . '      0x00100000, 0x10100000, 0x00110000, 0x10110000, ' . chr(10) . '      0x00100004, 0x10100004, 0x00110004, 0x10110004, ' . chr(10) . '      0x20100000, 0x30100000, 0x20110000, 0x30110000, ' . chr(10) . '      0x20100004, 0x30100004, 0x20110004, 0x30110004, ' . chr(10) . '      0x00001000, 0x10001000, 0x00011000, 0x10011000, ' . chr(10) . '      0x00001004, 0x10001004, 0x00011004, 0x10011004, ' . chr(10) . '      0x20001000, 0x30001000, 0x20011000, 0x30011000, ' . chr(10) . '      0x20001004, 0x30001004, 0x20011004, 0x30011004, ' . chr(10) . '      0x00101000, 0x10101000, 0x00111000, 0x10111000, ' . chr(10) . '      0x00101004, 0x10101004, 0x00111004, 0x10111004, ' . chr(10) . '      0x20101000, 0x30101000, 0x20111000, 0x30111000, ' . chr(10) . '      0x20101004, 0x30101004, 0x20111004, 0x30111004, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for D bits (numbered as per FIPS 46) 8 9 11 12 13 14 */' . chr(10) . '      0x00000000, 0x08000000, 0x00000008, 0x08000008, ' . chr(10) . '      0x00000400, 0x08000400, 0x00000408, 0x08000408, ' . chr(10) . '      0x00020000, 0x08020000, 0x00020008, 0x08020008, ' . chr(10) . '      0x00020400, 0x08020400, 0x00020408, 0x08020408, ' . chr(10) . '      0x00000001, 0x08000001, 0x00000009, 0x08000009, ' . chr(10) . '      0x00000401, 0x08000401, 0x00000409, 0x08000409, ' . chr(10) . '      0x00020001, 0x08020001, 0x00020009, 0x08020009, ' . chr(10) . '      0x00020401, 0x08020401, 0x00020409, 0x08020409, ' . chr(10) . '      0x02000000, 0x0A000000, 0x02000008, 0x0A000008, ' . chr(10) . '      0x02000400, 0x0A000400, 0x02000408, 0x0A000408, ' . chr(10) . '      0x02020000, 0x0A020000, 0x02020008, 0x0A020008, ' . chr(10) . '      0x02020400, 0x0A020400, 0x02020408, 0x0A020408, ' . chr(10) . '      0x02000001, 0x0A000001, 0x02000009, 0x0A000009, ' . chr(10) . '      0x02000401, 0x0A000401, 0x02000409, 0x0A000409, ' . chr(10) . '      0x02020001, 0x0A020001, 0x02020009, 0x0A020009, ' . chr(10) . '      0x02020401, 0x0A020401, 0x02020409, 0x0A020409, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for D bits (numbered as per FIPS 46) 16 17 18 19 20 21 */' . chr(10) . '      0x00000000, 0x00000100, 0x00080000, 0x00080100, ' . chr(10) . '      0x01000000, 0x01000100, 0x01080000, 0x01080100, ' . chr(10) . '      0x00000010, 0x00000110, 0x00080010, 0x00080110, ' . chr(10) . '      0x01000010, 0x01000110, 0x01080010, 0x01080110, ' . chr(10) . '      0x00200000, 0x00200100, 0x00280000, 0x00280100, ' . chr(10) . '      0x01200000, 0x01200100, 0x01280000, 0x01280100, ' . chr(10) . '      0x00200010, 0x00200110, 0x00280010, 0x00280110, ' . chr(10) . '      0x01200010, 0x01200110, 0x01280010, 0x01280110, ' . chr(10) . '      0x00000200, 0x00000300, 0x00080200, 0x00080300, ' . chr(10) . '      0x01000200, 0x01000300, 0x01080200, 0x01080300, ' . chr(10) . '      0x00000210, 0x00000310, 0x00080210, 0x00080310, ' . chr(10) . '      0x01000210, 0x01000310, 0x01080210, 0x01080310, ' . chr(10) . '      0x00200200, 0x00200300, 0x00280200, 0x00280300, ' . chr(10) . '      0x01200200, 0x01200300, 0x01280200, 0x01280300, ' . chr(10) . '      0x00200210, 0x00200310, 0x00280210, 0x00280310, ' . chr(10) . '      0x01200210, 0x01200310, 0x01280210, 0x01280310, ' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* for D bits (numbered as per FIPS 46) 22 23 24 25 27 28 */' . chr(10) . '      0x00000000, 0x04000000, 0x00040000, 0x04040000, ' . chr(10) . '      0x00000002, 0x04000002, 0x00040002, 0x04040002, ' . chr(10) . '      0x00002000, 0x04002000, 0x00042000, 0x04042000, ' . chr(10) . '      0x00002002, 0x04002002, 0x00042002, 0x04042002, ' . chr(10) . '      0x00000020, 0x04000020, 0x00040020, 0x04040020, ' . chr(10) . '      0x00000022, 0x04000022, 0x00040022, 0x04040022, ' . chr(10) . '      0x00002020, 0x04002020, 0x00042020, 0x04042020, ' . chr(10) . '      0x00002022, 0x04002022, 0x00042022, 0x04042022, ' . chr(10) . '      0x00000800, 0x04000800, 0x00040800, 0x04040800, ' . chr(10) . '      0x00000802, 0x04000802, 0x00040802, 0x04040802, ' . chr(10) . '      0x00002800, 0x04002800, 0x00042800, 0x04042800, ' . chr(10) . '      0x00002802, 0x04002802, 0x00042802, 0x04042802, ' . chr(10) . '      0x00000820, 0x04000820, 0x00040820, 0x04040820, ' . chr(10) . '      0x00000822, 0x04000822, 0x00040822, 0x04040822, ' . chr(10) . '      0x00002820, 0x04002820, 0x00042820, 0x04042820, ' . chr(10) . '      0x00002822, 0x04002822, 0x00042822, 0x04042822, ' . chr(10) . '    }' . chr(10) . '  };' . chr(10) . '  ' . chr(10) . '  private static final int SPtrans[][] = {' . chr(10) . '    {' . chr(10) . '      /* nibble 0 */' . chr(10) . '      0x00820200, 0x00020000, 0x80800000, 0x80820200,' . chr(10) . '      0x00800000, 0x80020200, 0x80020000, 0x80800000,' . chr(10) . '      0x80020200, 0x00820200, 0x00820000, 0x80000200,' . chr(10) . '      0x80800200, 0x00800000, 0x00000000, 0x80020000,' . chr(10) . '      0x00020000, 0x80000000, 0x00800200, 0x00020200,' . chr(10) . '      0x80820200, 0x00820000, 0x80000200, 0x00800200,' . chr(10) . '      0x80000000, 0x00000200, 0x00020200, 0x80820000,' . chr(10) . '      0x00000200, 0x80800200, 0x80820000, 0x00000000,' . chr(10) . '      0x00000000, 0x80820200, 0x00800200, 0x80020000,' . chr(10) . '      0x00820200, 0x00020000, 0x80000200, 0x00800200,' . chr(10) . '      0x80820000, 0x00000200, 0x00020200, 0x80800000,' . chr(10) . '      0x80020200, 0x80000000, 0x80800000, 0x00820000,' . chr(10) . '      0x80820200, 0x00020200, 0x00820000, 0x80800200,' . chr(10) . '      0x00800000, 0x80000200, 0x80020000, 0x00000000,' . chr(10) . '      0x00020000, 0x00800000, 0x80800200, 0x00820200,' . chr(10) . '      0x80000000, 0x80820000, 0x00000200, 0x80020200,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 1 */' . chr(10) . '      0x10042004, 0x00000000, 0x00042000, 0x10040000,' . chr(10) . '      0x10000004, 0x00002004, 0x10002000, 0x00042000,' . chr(10) . '      0x00002000, 0x10040004, 0x00000004, 0x10002000,' . chr(10) . '      0x00040004, 0x10042000, 0x10040000, 0x00000004,' . chr(10) . '      0x00040000, 0x10002004, 0x10040004, 0x00002000,' . chr(10) . '      0x00042004, 0x10000000, 0x00000000, 0x00040004,' . chr(10) . '      0x10002004, 0x00042004, 0x10042000, 0x10000004,' . chr(10) . '      0x10000000, 0x00040000, 0x00002004, 0x10042004,' . chr(10) . '      0x00040004, 0x10042000, 0x10002000, 0x00042004,' . chr(10) . '      0x10042004, 0x00040004, 0x10000004, 0x00000000,' . chr(10) . '      0x10000000, 0x00002004, 0x00040000, 0x10040004,' . chr(10) . '      0x00002000, 0x10000000, 0x00042004, 0x10002004,' . chr(10) . '      0x10042000, 0x00002000, 0x00000000, 0x10000004,' . chr(10) . '      0x00000004, 0x10042004, 0x00042000, 0x10040000,' . chr(10) . '      0x10040004, 0x00040000, 0x00002004, 0x10002000,' . chr(10) . '      0x10002004, 0x00000004, 0x10040000, 0x00042000,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 2 */' . chr(10) . '      0x41000000, 0x01010040, 0x00000040, 0x41000040,' . chr(10) . '      0x40010000, 0x01000000, 0x41000040, 0x00010040,' . chr(10) . '      0x01000040, 0x00010000, 0x01010000, 0x40000000,' . chr(10) . '      0x41010040, 0x40000040, 0x40000000, 0x41010000,' . chr(10) . '      0x00000000, 0x40010000, 0x01010040, 0x00000040,' . chr(10) . '      0x40000040, 0x41010040, 0x00010000, 0x41000000,' . chr(10) . '      0x41010000, 0x01000040, 0x40010040, 0x01010000,' . chr(10) . '      0x00010040, 0x00000000, 0x01000000, 0x40010040,' . chr(10) . '      0x01010040, 0x00000040, 0x40000000, 0x00010000,' . chr(10) . '      0x40000040, 0x40010000, 0x01010000, 0x41000040,' . chr(10) . '      0x00000000, 0x01010040, 0x00010040, 0x41010000,' . chr(10) . '      0x40010000, 0x01000000, 0x41010040, 0x40000000,' . chr(10) . '      0x40010040, 0x41000000, 0x01000000, 0x41010040,' . chr(10) . '      0x00010000, 0x01000040, 0x41000040, 0x00010040,' . chr(10) . '      0x01000040, 0x00000000, 0x41010000, 0x40000040,' . chr(10) . '      0x41000000, 0x40010040, 0x00000040, 0x01010000,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 3 */' . chr(10) . '      0x00100402, 0x04000400, 0x00000002, 0x04100402,' . chr(10) . '      0x00000000, 0x04100000, 0x04000402, 0x00100002,' . chr(10) . '      0x04100400, 0x04000002, 0x04000000, 0x00000402,' . chr(10) . '      0x04000002, 0x00100402, 0x00100000, 0x04000000,' . chr(10) . '      0x04100002, 0x00100400, 0x00000400, 0x00000002,' . chr(10) . '      0x00100400, 0x04000402, 0x04100000, 0x00000400,' . chr(10) . '      0x00000402, 0x00000000, 0x00100002, 0x04100400,' . chr(10) . '      0x04000400, 0x04100002, 0x04100402, 0x00100000,' . chr(10) . '      0x04100002, 0x00000402, 0x00100000, 0x04000002,' . chr(10) . '      0x00100400, 0x04000400, 0x00000002, 0x04100000,' . chr(10) . '      0x04000402, 0x00000000, 0x00000400, 0x00100002,' . chr(10) . '      0x00000000, 0x04100002, 0x04100400, 0x00000400,' . chr(10) . '      0x04000000, 0x04100402, 0x00100402, 0x00100000,' . chr(10) . '      0x04100402, 0x00000002, 0x04000400, 0x00100402,' . chr(10) . '      0x00100002, 0x00100400, 0x04100000, 0x04000402,' . chr(10) . '      0x00000402, 0x04000000, 0x04000002, 0x04100400,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 4 */' . chr(10) . '      0x02000000, 0x00004000, 0x00000100, 0x02004108,' . chr(10) . '      0x02004008, 0x02000100, 0x00004108, 0x02004000,' . chr(10) . '      0x00004000, 0x00000008, 0x02000008, 0x00004100,' . chr(10) . '      0x02000108, 0x02004008, 0x02004100, 0x00000000,' . chr(10) . '      0x00004100, 0x02000000, 0x00004008, 0x00000108,' . chr(10) . '      0x02000100, 0x00004108, 0x00000000, 0x02000008,' . chr(10) . '      0x00000008, 0x02000108, 0x02004108, 0x00004008,' . chr(10) . '      0x02004000, 0x00000100, 0x00000108, 0x02004100,' . chr(10) . '      0x02004100, 0x02000108, 0x00004008, 0x02004000,' . chr(10) . '      0x00004000, 0x00000008, 0x02000008, 0x02000100,' . chr(10) . '      0x02000000, 0x00004100, 0x02004108, 0x00000000,' . chr(10) . '      0x00004108, 0x02000000, 0x00000100, 0x00004008,' . chr(10) . '      0x02000108, 0x00000100, 0x00000000, 0x02004108,' . chr(10) . '      0x02004008, 0x02004100, 0x00000108, 0x00004000,' . chr(10) . '      0x00004100, 0x02004008, 0x02000100, 0x00000108,' . chr(10) . '      0x00000008, 0x00004108, 0x02004000, 0x02000008,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 5 */' . chr(10) . '      0x20000010, 0x00080010, 0x00000000, 0x20080800,' . chr(10) . '      0x00080010, 0x00000800, 0x20000810, 0x00080000,' . chr(10) . '      0x00000810, 0x20080810, 0x00080800, 0x20000000,' . chr(10) . '      0x20000800, 0x20000010, 0x20080000, 0x00080810,' . chr(10) . '      0x00080000, 0x20000810, 0x20080010, 0x00000000,' . chr(10) . '      0x00000800, 0x00000010, 0x20080800, 0x20080010,' . chr(10) . '      0x20080810, 0x20080000, 0x20000000, 0x00000810,' . chr(10) . '      0x00000010, 0x00080800, 0x00080810, 0x20000800,' . chr(10) . '      0x00000810, 0x20000000, 0x20000800, 0x00080810,' . chr(10) . '      0x20080800, 0x00080010, 0x00000000, 0x20000800,' . chr(10) . '      0x20000000, 0x00000800, 0x20080010, 0x00080000,' . chr(10) . '      0x00080010, 0x20080810, 0x00080800, 0x00000010,' . chr(10) . '      0x20080810, 0x00080800, 0x00080000, 0x20000810,' . chr(10) . '      0x20000010, 0x20080000, 0x00080810, 0x00000000,' . chr(10) . '      0x00000800, 0x20000010, 0x20000810, 0x20080800,' . chr(10) . '      0x20080000, 0x00000810, 0x00000010, 0x20080010,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 6 */' . chr(10) . '      0x00001000, 0x00000080, 0x00400080, 0x00400001,' . chr(10) . '      0x00401081, 0x00001001, 0x00001080, 0x00000000,' . chr(10) . '      0x00400000, 0x00400081, 0x00000081, 0x00401000,' . chr(10) . '      0x00000001, 0x00401080, 0x00401000, 0x00000081,' . chr(10) . '      0x00400081, 0x00001000, 0x00001001, 0x00401081,' . chr(10) . '      0x00000000, 0x00400080, 0x00400001, 0x00001080,' . chr(10) . '      0x00401001, 0x00001081, 0x00401080, 0x00000001,' . chr(10) . '      0x00001081, 0x00401001, 0x00000080, 0x00400000,' . chr(10) . '      0x00001081, 0x00401000, 0x00401001, 0x00000081,' . chr(10) . '      0x00001000, 0x00000080, 0x00400000, 0x00401001,' . chr(10) . '      0x00400081, 0x00001081, 0x00001080, 0x00000000,' . chr(10) . '      0x00000080, 0x00400001, 0x00000001, 0x00400080,' . chr(10) . '      0x00000000, 0x00400081, 0x00400080, 0x00001080,' . chr(10) . '      0x00000081, 0x00001000, 0x00401081, 0x00400000,' . chr(10) . '      0x00401080, 0x00000001, 0x00001001, 0x00401081,' . chr(10) . '      0x00400001, 0x00401080, 0x00401000, 0x00001001,' . chr(10) . '    },' . chr(10) . '    {' . chr(10) . '      /* nibble 7 */' . chr(10) . '      0x08200020, 0x08208000, 0x00008020, 0x00000000,' . chr(10) . '      0x08008000, 0x00200020, 0x08200000, 0x08208020,' . chr(10) . '      0x00000020, 0x08000000, 0x00208000, 0x00008020,' . chr(10) . '      0x00208020, 0x08008020, 0x08000020, 0x08200000,' . chr(10) . '      0x00008000, 0x00208020, 0x00200020, 0x08008000,' . chr(10) . '      0x08208020, 0x08000020, 0x00000000, 0x00208000,' . chr(10) . '      0x08000000, 0x00200000, 0x08008020, 0x08200020,' . chr(10) . '      0x00200000, 0x00008000, 0x08208000, 0x00000020,' . chr(10) . '      0x00200000, 0x00008000, 0x08000020, 0x08208020,' . chr(10) . '      0x00008020, 0x08000000, 0x00000000, 0x00208000,' . chr(10) . '      0x08200020, 0x08008020, 0x08008000, 0x00200020,' . chr(10) . '      0x08208000, 0x00000020, 0x00200020, 0x08008000,' . chr(10) . '      0x08208020, 0x00200000, 0x08200000, 0x08000020,' . chr(10) . '      0x00208000, 0x00008020, 0x08008020, 0x08200000,' . chr(10) . '      0x00000020, 0x08208000, 0x00208020, 0x00000000,' . chr(10) . '      0x08000000, 0x08200020, 0x00008000, 0x00208020' . chr(10) . '    }' . chr(10) . '  };' . chr(10) . '  ' . chr(10) . '  private static final int byteToUnsigned(byte b) {' . chr(10) . '    int value = (int) b;' . chr(10) . '    return (value >= 0) ? value : value + 256;' . chr(10) . '  }' . chr(10) . chr(10) . '  private static int fourBytesToInt(byte b[], int offset) {' . chr(10) . '    return byteToUnsigned(b[offset++]) ' . chr(10) . '      | (byteToUnsigned(b[offset++]) <<  8) ' . chr(10) . '      | (byteToUnsigned(b[offset++]) << 16) ' . chr(10) . '      | (byteToUnsigned(b[offset]) << 24);' . chr(10) . '  }' . chr(10) . chr(10) . '  private static final void intToFourBytes(int iValue, byte b[], int offset) {' . chr(10) . '    b[offset++] = (byte)((iValue)        & 0xff);' . chr(10) . '    b[offset++] = (byte)((iValue >>> 8 ) & 0xff);' . chr(10) . '    b[offset++] = (byte)((iValue >>> 16) & 0xff);' . chr(10) . '    b[offset] = (byte)((iValue >>> 24) & 0xff);' . chr(10) . '  }' . chr(10) . '  ' . chr(10) . '  private static final void PERM_OP(int a, int b, int n, int m, int results[]) {' . chr(10) . '    int t;' . chr(10) . chr(10) . '    t = ((a >>> n) ^ b) & m;' . chr(10) . '    a ^= t << n;' . chr(10) . '    b ^= t;' . chr(10) . chr(10) . '    results[0] = a;' . chr(10) . '    results[1] = b;' . chr(10) . '  }' . chr(10) . chr(10) . '  private static final int HPERM_OP(int a, int n, int m) {' . chr(10) . '    int t;' . chr(10) . '    ' . chr(10) . '    t = ((a << (16 - n)) ^ a) & m;' . chr(10) . '    a = a ^ t ^ (t >>> (16 - n));' . chr(10) . '    ' . chr(10) . '    return a;' . chr(10) . '  }' . chr(10) . chr(10) . '  private static int [] des_set_key(byte key[]) {' . chr(10) . '    int schedule[] = new int [ITERATIONS * 2];' . chr(10) . '    ' . chr(10) . '    int c = fourBytesToInt(key, 0);' . chr(10) . '    int d = fourBytesToInt(key, 4);' . chr(10) . '    ' . chr(10) . '    int results[] = new int[2];' . chr(10) . chr(10) . '    PERM_OP(d, c, 4, 0x0f0f0f0f, results);' . chr(10) . '    d = results[0]; c = results[1];' . chr(10) . '    ' . chr(10) . '    c = HPERM_OP(c, -2, 0xcccc0000);' . chr(10) . '    d = HPERM_OP(d, -2, 0xcccc0000);' . chr(10) . '    ' . chr(10) . '    PERM_OP(d, c, 1, 0x55555555, results);' . chr(10) . '    d = results[0]; c = results[1];' . chr(10) . '    ' . chr(10) . '    PERM_OP(c, d, 8, 0x00ff00ff, results);' . chr(10) . '    c = results[0]; d = results[1];' . chr(10) . '    ' . chr(10) . '    PERM_OP(d, c, 1, 0x55555555, results);' . chr(10) . '    d = results[0]; c = results[1];' . chr(10) . '    ' . chr(10) . '    d = (((d & 0x000000ff) <<  16) |  (d & 0x0000ff00)     |' . chr(10) . '     ((d & 0x00ff0000) >>> 16) | ((c & 0xf0000000) >>> 4));' . chr(10) . '    c &= 0x0fffffff;' . chr(10) . '    ' . chr(10) . '    int s, t;' . chr(10) . '    int j = 0;' . chr(10) . '    ' . chr(10) . '    for(int i = 0; i < ITERATIONS; i ++) {' . chr(10) . '      if(shifts2[i]) {' . chr(10) . '    c = (c >>> 2) | (c << 26);' . chr(10) . '    d = (d >>> 2) | (d << 26);' . chr(10) . '      } else {' . chr(10) . '    c = (c >>> 1) | (c << 27);' . chr(10) . '    d = (d >>> 1) | (d << 27);' . chr(10) . '      }' . chr(10) . '      ' . chr(10) . '      c &= 0x0fffffff;' . chr(10) . '      d &= 0x0fffffff;' . chr(10) . '      ' . chr(10) . '      s = skb[0][ (c       ) & 0x3f                       ]|' . chr(10) . '    skb[1][((c >>>  6) & 0x03) | ((c >>>  7) & 0x3c)]|' . chr(10) . '    skb[2][((c >>> 13) & 0x0f) | ((c >>> 14) & 0x30)]|' . chr(10) . '    skb[3][((c >>> 20) & 0x01) | ((c >>> 21) & 0x06) |' . chr(10) . '                   ((c >>> 22) & 0x38)];' . chr(10) . chr(10) . '      t = skb[4][ (d     )  & 0x3f                       ]|' . chr(10) . '    skb[5][((d >>> 7) & 0x03) | ((d >>>  8) & 0x3c)]|' . chr(10) . '    skb[6][ (d >>>15) & 0x3f                       ]|' . chr(10) . '    skb[7][((d >>>21) & 0x0f) | ((d >>> 22) & 0x30)];' . chr(10) . '      ' . chr(10) . '      schedule[j++] = ((t <<  16) | (s & 0x0000ffff)) & 0xffffffff;' . chr(10) . '      s             = ((s >>> 16) | (t & 0xffff0000));' . chr(10) . '      ' . chr(10) . '      s             = (s << 4) | (s >>> 28);' . chr(10) . '      schedule[j++] = s & 0xffffffff;' . chr(10) . '    }' . chr(10) . '    return schedule;' . chr(10) . '  }' . chr(10) . chr(10) . '  private static final int D_ENCRYPT(int L, int R, int S, int E0, int E1, int s[]) {' . chr(10) . '    int t, u, v;' . chr(10) . '    ' . chr(10) . '    v = R ^ (R >>> 16);' . chr(10) . '    u = v & E0;' . chr(10) . '    v = v & E1;' . chr(10) . '    u = (u ^ (u << 16)) ^ R ^ s[S];' . chr(10) . '    t = (v ^ (v << 16)) ^ R ^ s[S + 1];' . chr(10) . '    t = (t >>> 4) | (t << 28);' . chr(10) . '    ' . chr(10) . '    L ^= SPtrans[1][(t       ) & 0x3f] |' . chr(10) . '      SPtrans[3][(t >>>  8) & 0x3f] |' . chr(10) . '      SPtrans[5][(t >>> 16) & 0x3f] |' . chr(10) . '      SPtrans[7][(t >>> 24) & 0x3f] |' . chr(10) . '      SPtrans[0][(u       ) & 0x3f] |' . chr(10) . '      SPtrans[2][(u >>>  8) & 0x3f] |' . chr(10) . '      SPtrans[4][(u >>> 16) & 0x3f] |' . chr(10) . '      SPtrans[6][(u >>> 24) & 0x3f];' . chr(10) . chr(10) . '    return L;' . chr(10) . '  }' . chr(10) . '  ' . chr(10) . '  private static final int [] body(int schedule[], int Eswap0, int Eswap1) {' . chr(10) . '    int left = 0;' . chr(10) . '    int right = 0;' . chr(10) . '    int t     = 0;' . chr(10) . chr(10) . '    for (int j = 0; j < 25; j ++) {' . chr(10) . '      for (int i = 0; i < ITERATIONS * 2; i += 4) {' . chr(10) . '    left  = D_ENCRYPT(left,  right, i,     Eswap0, Eswap1, schedule);' . chr(10) . '    right = D_ENCRYPT(right, left,  i + 2, Eswap0, Eswap1, schedule);' . chr(10) . '      }' . chr(10) . '      t     = left; ' . chr(10) . '      left  = right; ' . chr(10) . '      right = t;' . chr(10) . '    }' . chr(10) . '    ' . chr(10) . '    t = right;' . chr(10) . chr(10) . '    right = (left >>> 1) | (left << 31);' . chr(10) . '    left  = (t    >>> 1) | (t    << 31);' . chr(10) . '    ' . chr(10) . '    left  &= 0xffffffff;' . chr(10) . '    right &= 0xffffffff;' . chr(10) . chr(10) . '    int results[] = new int[2];' . chr(10) . chr(10) . '    PERM_OP(right, left, 1, 0x55555555, results); ' . chr(10) . '    right = results[0]; left = results[1];' . chr(10) . '    ' . chr(10) . '    PERM_OP(left, right, 8, 0x00ff00ff, results); ' . chr(10) . '    left = results[0]; right = results[1];' . chr(10) . chr(10) . '    PERM_OP(right, left, 2, 0x33333333, results); ' . chr(10) . '    right = results[0]; left = results[1];' . chr(10) . '    ' . chr(10) . '    PERM_OP(left, right, 16, 0x0000ffff, results);' . chr(10) . '    left = results[0]; right = results[1];' . chr(10) . '    ' . chr(10) . '    PERM_OP(right, left, 4, 0x0f0f0f0f, results);' . chr(10) . '    right = results[0]; left = results[1];' . chr(10) . '    ' . chr(10) . '    int out[] = new int[2];' . chr(10) . '    ' . chr(10) . '    out[0] = left; ' . chr(10) . '    out[1] = right;' . chr(10) . '    ' . chr(10) . '    return out;' . chr(10) . '  }' . chr(10) . chr(10) . '  public static final String alphabet = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";' . chr(10) . chr(10) . '  public static final String crypt(String salt, String original) {' . chr(10) . '    // wwb -- Should do some sanity checks: salt needs to be 2 chars, in alpha.' . chr(10) . '    while(salt.length() < 2)' . chr(10) . '      salt += "A";' . chr(10) . chr(10) . '    char[] buffer = new char [13];' . chr(10) . chr(10) . '    char charZero = salt.charAt(0);' . chr(10) . '    char charOne  = salt.charAt(1);' . chr(10) . '    ' . chr(10) . '    buffer[0] = charZero;' . chr(10) . '    buffer[1] = charOne;' . chr(10) . chr(10) . '    int Eswap0 = alphabet.indexOf(charZero);' . chr(10) . '    int Eswap1 = alphabet.indexOf(charOne) << 4;' . chr(10) . '    byte key[] = new byte[8];' . chr(10) . '    ' . chr(10) . '    for(int i = 0; i < key.length; i ++)' . chr(10) . '      key[i] = (byte)0;' . chr(10) . '    ' . chr(10) . '    for(int i = 0; i < key.length && i < original.length(); i ++)' . chr(10) . '      key[i] = (byte) (((int) original.charAt(i)) << 1);' . chr(10) . chr(10) . '    int schedule[] = des_set_key(key);' . chr(10) . '    int out[]      = body(schedule, Eswap0, Eswap1);' . chr(10) . '    ' . chr(10) . '    byte b[] = new byte[9];' . chr(10) . '    ' . chr(10) . '    intToFourBytes(out[0], b, 0);' . chr(10) . '    intToFourBytes(out[1], b, 4);' . chr(10) . '    b[8] = 0;' . chr(10) . chr(10) . '    for(int i = 2, y = 0, u = 0x80; i < 13; i ++) {' . chr(10) . '      for(int j = 0, c = 0; j < 6; j ++) {' . chr(10) . '        c <<= 1;' . chr(10) . chr(10) . '        if(((int)b[y] & u) != 0)' . chr(10) . '          c |= 1;' . chr(10) . chr(10) . '        u >>>= 1;' . chr(10) . '        ' . chr(10) . '        if (u == 0) {' . chr(10) . '          y++;' . chr(10) . '          u = 0x80;' . chr(10) . '        }' . chr(10) . '        buffer[i] = alphabet.charAt(c);' . chr(10) . '      }' . chr(10) . '    }' . chr(10) . '    return new String(buffer);' . chr(10) . '  }' . chr(10) . '}' . chr(10)
+        return '
+/****************************************************************************
+ * Java-based implementation of the unix crypt(3) command
+ *
+ * Based upon C source code written by Eric Young, eay@psych.uq.oz.au
+ * Java conversion by John F. Dumas, jdumas@zgs.com
+ *
+ * Found at http://locutus.kingwoodcable.com/jfd/crypt.html
+ * Found at http://cseweb.ucsd.edu/classes/sp12/cse130-a/static/pa5/Crypt.java
+ * Minor optimizations by Wes Biggs, wes@cacas.org
+ *
+ * Eric' . chr(39) . 's original code is licensed under the BSD license.  As this is
+ * derivative, the same license applies.
+ *
+ * Note: Crypt.class is much smaller when compiled with javac -O
+ ****************************************************************************/
+
+class PlCrypt {
+  private PlCrypt() {} // defined so class can' . chr(39) . 't be instantiated.
+
+  private static final int ITERATIONS = 16;
+
+  private static final boolean shifts2[] = {
+    false, false, true, true, true, true, true, true,
+    false, true,  true, true, true, true, true, false
+  };
+
+  private static final int skb[][] = {
+    {
+      /* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
+      0x00000000, 0x00000010, 0x20000000, 0x20000010, 
+      0x00010000, 0x00010010, 0x20010000, 0x20010010, 
+      0x00000800, 0x00000810, 0x20000800, 0x20000810, 
+      0x00010800, 0x00010810, 0x20010800, 0x20010810, 
+      0x00000020, 0x00000030, 0x20000020, 0x20000030, 
+      0x00010020, 0x00010030, 0x20010020, 0x20010030, 
+      0x00000820, 0x00000830, 0x20000820, 0x20000830, 
+      0x00010820, 0x00010830, 0x20010820, 0x20010830, 
+      0x00080000, 0x00080010, 0x20080000, 0x20080010, 
+      0x00090000, 0x00090010, 0x20090000, 0x20090010, 
+      0x00080800, 0x00080810, 0x20080800, 0x20080810, 
+      0x00090800, 0x00090810, 0x20090800, 0x20090810, 
+      0x00080020, 0x00080030, 0x20080020, 0x20080030, 
+      0x00090020, 0x00090030, 0x20090020, 0x20090030, 
+      0x00080820, 0x00080830, 0x20080820, 0x20080830, 
+      0x00090820, 0x00090830, 0x20090820, 0x20090830, 
+    },
+    {
+      /* for C bits (numbered as per FIPS 46) 7 8 10 11 12 13 */
+      0x00000000, 0x02000000, 0x00002000, 0x02002000, 
+      0x00200000, 0x02200000, 0x00202000, 0x02202000, 
+      0x00000004, 0x02000004, 0x00002004, 0x02002004, 
+      0x00200004, 0x02200004, 0x00202004, 0x02202004, 
+      0x00000400, 0x02000400, 0x00002400, 0x02002400, 
+      0x00200400, 0x02200400, 0x00202400, 0x02202400, 
+      0x00000404, 0x02000404, 0x00002404, 0x02002404, 
+      0x00200404, 0x02200404, 0x00202404, 0x02202404, 
+      0x10000000, 0x12000000, 0x10002000, 0x12002000, 
+      0x10200000, 0x12200000, 0x10202000, 0x12202000, 
+      0x10000004, 0x12000004, 0x10002004, 0x12002004, 
+      0x10200004, 0x12200004, 0x10202004, 0x12202004, 
+      0x10000400, 0x12000400, 0x10002400, 0x12002400, 
+      0x10200400, 0x12200400, 0x10202400, 0x12202400, 
+      0x10000404, 0x12000404, 0x10002404, 0x12002404, 
+      0x10200404, 0x12200404, 0x10202404, 0x12202404, 
+    },
+    {
+      /* for C bits (numbered as per FIPS 46) 14 15 16 17 19 20 */
+      0x00000000, 0x00000001, 0x00040000, 0x00040001, 
+      0x01000000, 0x01000001, 0x01040000, 0x01040001, 
+      0x00000002, 0x00000003, 0x00040002, 0x00040003, 
+      0x01000002, 0x01000003, 0x01040002, 0x01040003, 
+      0x00000200, 0x00000201, 0x00040200, 0x00040201, 
+      0x01000200, 0x01000201, 0x01040200, 0x01040201, 
+      0x00000202, 0x00000203, 0x00040202, 0x00040203, 
+      0x01000202, 0x01000203, 0x01040202, 0x01040203, 
+      0x08000000, 0x08000001, 0x08040000, 0x08040001, 
+      0x09000000, 0x09000001, 0x09040000, 0x09040001, 
+      0x08000002, 0x08000003, 0x08040002, 0x08040003, 
+      0x09000002, 0x09000003, 0x09040002, 0x09040003, 
+      0x08000200, 0x08000201, 0x08040200, 0x08040201, 
+      0x09000200, 0x09000201, 0x09040200, 0x09040201, 
+      0x08000202, 0x08000203, 0x08040202, 0x08040203, 
+      0x09000202, 0x09000203, 0x09040202, 0x09040203, 
+    },
+    {
+      /* for C bits (numbered as per FIPS 46) 21 23 24 26 27 28 */
+      0x00000000, 0x00100000, 0x00000100, 0x00100100, 
+      0x00000008, 0x00100008, 0x00000108, 0x00100108, 
+      0x00001000, 0x00101000, 0x00001100, 0x00101100, 
+      0x00001008, 0x00101008, 0x00001108, 0x00101108, 
+      0x04000000, 0x04100000, 0x04000100, 0x04100100, 
+      0x04000008, 0x04100008, 0x04000108, 0x04100108, 
+      0x04001000, 0x04101000, 0x04001100, 0x04101100, 
+      0x04001008, 0x04101008, 0x04001108, 0x04101108, 
+      0x00020000, 0x00120000, 0x00020100, 0x00120100, 
+      0x00020008, 0x00120008, 0x00020108, 0x00120108, 
+      0x00021000, 0x00121000, 0x00021100, 0x00121100, 
+      0x00021008, 0x00121008, 0x00021108, 0x00121108, 
+      0x04020000, 0x04120000, 0x04020100, 0x04120100, 
+      0x04020008, 0x04120008, 0x04020108, 0x04120108, 
+      0x04021000, 0x04121000, 0x04021100, 0x04121100, 
+      0x04021008, 0x04121008, 0x04021108, 0x04121108, 
+    },
+    {
+      /* for D bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
+      0x00000000, 0x10000000, 0x00010000, 0x10010000, 
+      0x00000004, 0x10000004, 0x00010004, 0x10010004, 
+      0x20000000, 0x30000000, 0x20010000, 0x30010000, 
+      0x20000004, 0x30000004, 0x20010004, 0x30010004, 
+      0x00100000, 0x10100000, 0x00110000, 0x10110000, 
+      0x00100004, 0x10100004, 0x00110004, 0x10110004, 
+      0x20100000, 0x30100000, 0x20110000, 0x30110000, 
+      0x20100004, 0x30100004, 0x20110004, 0x30110004, 
+      0x00001000, 0x10001000, 0x00011000, 0x10011000, 
+      0x00001004, 0x10001004, 0x00011004, 0x10011004, 
+      0x20001000, 0x30001000, 0x20011000, 0x30011000, 
+      0x20001004, 0x30001004, 0x20011004, 0x30011004, 
+      0x00101000, 0x10101000, 0x00111000, 0x10111000, 
+      0x00101004, 0x10101004, 0x00111004, 0x10111004, 
+      0x20101000, 0x30101000, 0x20111000, 0x30111000, 
+      0x20101004, 0x30101004, 0x20111004, 0x30111004, 
+    },
+    {
+      /* for D bits (numbered as per FIPS 46) 8 9 11 12 13 14 */
+      0x00000000, 0x08000000, 0x00000008, 0x08000008, 
+      0x00000400, 0x08000400, 0x00000408, 0x08000408, 
+      0x00020000, 0x08020000, 0x00020008, 0x08020008, 
+      0x00020400, 0x08020400, 0x00020408, 0x08020408, 
+      0x00000001, 0x08000001, 0x00000009, 0x08000009, 
+      0x00000401, 0x08000401, 0x00000409, 0x08000409, 
+      0x00020001, 0x08020001, 0x00020009, 0x08020009, 
+      0x00020401, 0x08020401, 0x00020409, 0x08020409, 
+      0x02000000, 0x0A000000, 0x02000008, 0x0A000008, 
+      0x02000400, 0x0A000400, 0x02000408, 0x0A000408, 
+      0x02020000, 0x0A020000, 0x02020008, 0x0A020008, 
+      0x02020400, 0x0A020400, 0x02020408, 0x0A020408, 
+      0x02000001, 0x0A000001, 0x02000009, 0x0A000009, 
+      0x02000401, 0x0A000401, 0x02000409, 0x0A000409, 
+      0x02020001, 0x0A020001, 0x02020009, 0x0A020009, 
+      0x02020401, 0x0A020401, 0x02020409, 0x0A020409, 
+    },
+    {
+      /* for D bits (numbered as per FIPS 46) 16 17 18 19 20 21 */
+      0x00000000, 0x00000100, 0x00080000, 0x00080100, 
+      0x01000000, 0x01000100, 0x01080000, 0x01080100, 
+      0x00000010, 0x00000110, 0x00080010, 0x00080110, 
+      0x01000010, 0x01000110, 0x01080010, 0x01080110, 
+      0x00200000, 0x00200100, 0x00280000, 0x00280100, 
+      0x01200000, 0x01200100, 0x01280000, 0x01280100, 
+      0x00200010, 0x00200110, 0x00280010, 0x00280110, 
+      0x01200010, 0x01200110, 0x01280010, 0x01280110, 
+      0x00000200, 0x00000300, 0x00080200, 0x00080300, 
+      0x01000200, 0x01000300, 0x01080200, 0x01080300, 
+      0x00000210, 0x00000310, 0x00080210, 0x00080310, 
+      0x01000210, 0x01000310, 0x01080210, 0x01080310, 
+      0x00200200, 0x00200300, 0x00280200, 0x00280300, 
+      0x01200200, 0x01200300, 0x01280200, 0x01280300, 
+      0x00200210, 0x00200310, 0x00280210, 0x00280310, 
+      0x01200210, 0x01200310, 0x01280210, 0x01280310, 
+    },
+    {
+      /* for D bits (numbered as per FIPS 46) 22 23 24 25 27 28 */
+      0x00000000, 0x04000000, 0x00040000, 0x04040000, 
+      0x00000002, 0x04000002, 0x00040002, 0x04040002, 
+      0x00002000, 0x04002000, 0x00042000, 0x04042000, 
+      0x00002002, 0x04002002, 0x00042002, 0x04042002, 
+      0x00000020, 0x04000020, 0x00040020, 0x04040020, 
+      0x00000022, 0x04000022, 0x00040022, 0x04040022, 
+      0x00002020, 0x04002020, 0x00042020, 0x04042020, 
+      0x00002022, 0x04002022, 0x00042022, 0x04042022, 
+      0x00000800, 0x04000800, 0x00040800, 0x04040800, 
+      0x00000802, 0x04000802, 0x00040802, 0x04040802, 
+      0x00002800, 0x04002800, 0x00042800, 0x04042800, 
+      0x00002802, 0x04002802, 0x00042802, 0x04042802, 
+      0x00000820, 0x04000820, 0x00040820, 0x04040820, 
+      0x00000822, 0x04000822, 0x00040822, 0x04040822, 
+      0x00002820, 0x04002820, 0x00042820, 0x04042820, 
+      0x00002822, 0x04002822, 0x00042822, 0x04042822, 
+    }
+  };
+  
+  private static final int SPtrans[][] = {
+    {
+      /* nibble 0 */
+      0x00820200, 0x00020000, 0x80800000, 0x80820200,
+      0x00800000, 0x80020200, 0x80020000, 0x80800000,
+      0x80020200, 0x00820200, 0x00820000, 0x80000200,
+      0x80800200, 0x00800000, 0x00000000, 0x80020000,
+      0x00020000, 0x80000000, 0x00800200, 0x00020200,
+      0x80820200, 0x00820000, 0x80000200, 0x00800200,
+      0x80000000, 0x00000200, 0x00020200, 0x80820000,
+      0x00000200, 0x80800200, 0x80820000, 0x00000000,
+      0x00000000, 0x80820200, 0x00800200, 0x80020000,
+      0x00820200, 0x00020000, 0x80000200, 0x00800200,
+      0x80820000, 0x00000200, 0x00020200, 0x80800000,
+      0x80020200, 0x80000000, 0x80800000, 0x00820000,
+      0x80820200, 0x00020200, 0x00820000, 0x80800200,
+      0x00800000, 0x80000200, 0x80020000, 0x00000000,
+      0x00020000, 0x00800000, 0x80800200, 0x00820200,
+      0x80000000, 0x80820000, 0x00000200, 0x80020200,
+    },
+    {
+      /* nibble 1 */
+      0x10042004, 0x00000000, 0x00042000, 0x10040000,
+      0x10000004, 0x00002004, 0x10002000, 0x00042000,
+      0x00002000, 0x10040004, 0x00000004, 0x10002000,
+      0x00040004, 0x10042000, 0x10040000, 0x00000004,
+      0x00040000, 0x10002004, 0x10040004, 0x00002000,
+      0x00042004, 0x10000000, 0x00000000, 0x00040004,
+      0x10002004, 0x00042004, 0x10042000, 0x10000004,
+      0x10000000, 0x00040000, 0x00002004, 0x10042004,
+      0x00040004, 0x10042000, 0x10002000, 0x00042004,
+      0x10042004, 0x00040004, 0x10000004, 0x00000000,
+      0x10000000, 0x00002004, 0x00040000, 0x10040004,
+      0x00002000, 0x10000000, 0x00042004, 0x10002004,
+      0x10042000, 0x00002000, 0x00000000, 0x10000004,
+      0x00000004, 0x10042004, 0x00042000, 0x10040000,
+      0x10040004, 0x00040000, 0x00002004, 0x10002000,
+      0x10002004, 0x00000004, 0x10040000, 0x00042000,
+    },
+    {
+      /* nibble 2 */
+      0x41000000, 0x01010040, 0x00000040, 0x41000040,
+      0x40010000, 0x01000000, 0x41000040, 0x00010040,
+      0x01000040, 0x00010000, 0x01010000, 0x40000000,
+      0x41010040, 0x40000040, 0x40000000, 0x41010000,
+      0x00000000, 0x40010000, 0x01010040, 0x00000040,
+      0x40000040, 0x41010040, 0x00010000, 0x41000000,
+      0x41010000, 0x01000040, 0x40010040, 0x01010000,
+      0x00010040, 0x00000000, 0x01000000, 0x40010040,
+      0x01010040, 0x00000040, 0x40000000, 0x00010000,
+      0x40000040, 0x40010000, 0x01010000, 0x41000040,
+      0x00000000, 0x01010040, 0x00010040, 0x41010000,
+      0x40010000, 0x01000000, 0x41010040, 0x40000000,
+      0x40010040, 0x41000000, 0x01000000, 0x41010040,
+      0x00010000, 0x01000040, 0x41000040, 0x00010040,
+      0x01000040, 0x00000000, 0x41010000, 0x40000040,
+      0x41000000, 0x40010040, 0x00000040, 0x01010000,
+    },
+    {
+      /* nibble 3 */
+      0x00100402, 0x04000400, 0x00000002, 0x04100402,
+      0x00000000, 0x04100000, 0x04000402, 0x00100002,
+      0x04100400, 0x04000002, 0x04000000, 0x00000402,
+      0x04000002, 0x00100402, 0x00100000, 0x04000000,
+      0x04100002, 0x00100400, 0x00000400, 0x00000002,
+      0x00100400, 0x04000402, 0x04100000, 0x00000400,
+      0x00000402, 0x00000000, 0x00100002, 0x04100400,
+      0x04000400, 0x04100002, 0x04100402, 0x00100000,
+      0x04100002, 0x00000402, 0x00100000, 0x04000002,
+      0x00100400, 0x04000400, 0x00000002, 0x04100000,
+      0x04000402, 0x00000000, 0x00000400, 0x00100002,
+      0x00000000, 0x04100002, 0x04100400, 0x00000400,
+      0x04000000, 0x04100402, 0x00100402, 0x00100000,
+      0x04100402, 0x00000002, 0x04000400, 0x00100402,
+      0x00100002, 0x00100400, 0x04100000, 0x04000402,
+      0x00000402, 0x04000000, 0x04000002, 0x04100400,
+    },
+    {
+      /* nibble 4 */
+      0x02000000, 0x00004000, 0x00000100, 0x02004108,
+      0x02004008, 0x02000100, 0x00004108, 0x02004000,
+      0x00004000, 0x00000008, 0x02000008, 0x00004100,
+      0x02000108, 0x02004008, 0x02004100, 0x00000000,
+      0x00004100, 0x02000000, 0x00004008, 0x00000108,
+      0x02000100, 0x00004108, 0x00000000, 0x02000008,
+      0x00000008, 0x02000108, 0x02004108, 0x00004008,
+      0x02004000, 0x00000100, 0x00000108, 0x02004100,
+      0x02004100, 0x02000108, 0x00004008, 0x02004000,
+      0x00004000, 0x00000008, 0x02000008, 0x02000100,
+      0x02000000, 0x00004100, 0x02004108, 0x00000000,
+      0x00004108, 0x02000000, 0x00000100, 0x00004008,
+      0x02000108, 0x00000100, 0x00000000, 0x02004108,
+      0x02004008, 0x02004100, 0x00000108, 0x00004000,
+      0x00004100, 0x02004008, 0x02000100, 0x00000108,
+      0x00000008, 0x00004108, 0x02004000, 0x02000008,
+    },
+    {
+      /* nibble 5 */
+      0x20000010, 0x00080010, 0x00000000, 0x20080800,
+      0x00080010, 0x00000800, 0x20000810, 0x00080000,
+      0x00000810, 0x20080810, 0x00080800, 0x20000000,
+      0x20000800, 0x20000010, 0x20080000, 0x00080810,
+      0x00080000, 0x20000810, 0x20080010, 0x00000000,
+      0x00000800, 0x00000010, 0x20080800, 0x20080010,
+      0x20080810, 0x20080000, 0x20000000, 0x00000810,
+      0x00000010, 0x00080800, 0x00080810, 0x20000800,
+      0x00000810, 0x20000000, 0x20000800, 0x00080810,
+      0x20080800, 0x00080010, 0x00000000, 0x20000800,
+      0x20000000, 0x00000800, 0x20080010, 0x00080000,
+      0x00080010, 0x20080810, 0x00080800, 0x00000010,
+      0x20080810, 0x00080800, 0x00080000, 0x20000810,
+      0x20000010, 0x20080000, 0x00080810, 0x00000000,
+      0x00000800, 0x20000010, 0x20000810, 0x20080800,
+      0x20080000, 0x00000810, 0x00000010, 0x20080010,
+    },
+    {
+      /* nibble 6 */
+      0x00001000, 0x00000080, 0x00400080, 0x00400001,
+      0x00401081, 0x00001001, 0x00001080, 0x00000000,
+      0x00400000, 0x00400081, 0x00000081, 0x00401000,
+      0x00000001, 0x00401080, 0x00401000, 0x00000081,
+      0x00400081, 0x00001000, 0x00001001, 0x00401081,
+      0x00000000, 0x00400080, 0x00400001, 0x00001080,
+      0x00401001, 0x00001081, 0x00401080, 0x00000001,
+      0x00001081, 0x00401001, 0x00000080, 0x00400000,
+      0x00001081, 0x00401000, 0x00401001, 0x00000081,
+      0x00001000, 0x00000080, 0x00400000, 0x00401001,
+      0x00400081, 0x00001081, 0x00001080, 0x00000000,
+      0x00000080, 0x00400001, 0x00000001, 0x00400080,
+      0x00000000, 0x00400081, 0x00400080, 0x00001080,
+      0x00000081, 0x00001000, 0x00401081, 0x00400000,
+      0x00401080, 0x00000001, 0x00001001, 0x00401081,
+      0x00400001, 0x00401080, 0x00401000, 0x00001001,
+    },
+    {
+      /* nibble 7 */
+      0x08200020, 0x08208000, 0x00008020, 0x00000000,
+      0x08008000, 0x00200020, 0x08200000, 0x08208020,
+      0x00000020, 0x08000000, 0x00208000, 0x00008020,
+      0x00208020, 0x08008020, 0x08000020, 0x08200000,
+      0x00008000, 0x00208020, 0x00200020, 0x08008000,
+      0x08208020, 0x08000020, 0x00000000, 0x00208000,
+      0x08000000, 0x00200000, 0x08008020, 0x08200020,
+      0x00200000, 0x00008000, 0x08208000, 0x00000020,
+      0x00200000, 0x00008000, 0x08000020, 0x08208020,
+      0x00008020, 0x08000000, 0x00000000, 0x00208000,
+      0x08200020, 0x08008020, 0x08008000, 0x00200020,
+      0x08208000, 0x00000020, 0x00200020, 0x08008000,
+      0x08208020, 0x00200000, 0x08200000, 0x08000020,
+      0x00208000, 0x00008020, 0x08008020, 0x08200000,
+      0x00000020, 0x08208000, 0x00208020, 0x00000000,
+      0x08000000, 0x08200020, 0x00008000, 0x00208020
+    }
+  };
+  
+  private static final int byteToUnsigned(byte b) {
+    int value = (int) b;
+    return (value >= 0) ? value : value + 256;
+  }
+
+  private static int fourBytesToInt(byte b[], int offset) {
+    return byteToUnsigned(b[offset++]) 
+      | (byteToUnsigned(b[offset++]) <<  8) 
+      | (byteToUnsigned(b[offset++]) << 16) 
+      | (byteToUnsigned(b[offset]) << 24);
+  }
+
+  private static final void intToFourBytes(int iValue, byte b[], int offset) {
+    b[offset++] = (byte)((iValue)        & 0xff);
+    b[offset++] = (byte)((iValue >>> 8 ) & 0xff);
+    b[offset++] = (byte)((iValue >>> 16) & 0xff);
+    b[offset] = (byte)((iValue >>> 24) & 0xff);
+  }
+  
+  private static final void PERM_OP(int a, int b, int n, int m, int results[]) {
+    int t;
+
+    t = ((a >>> n) ^ b) & m;
+    a ^= t << n;
+    b ^= t;
+
+    results[0] = a;
+    results[1] = b;
+  }
+
+  private static final int HPERM_OP(int a, int n, int m) {
+    int t;
+    
+    t = ((a << (16 - n)) ^ a) & m;
+    a = a ^ t ^ (t >>> (16 - n));
+    
+    return a;
+  }
+
+  private static int [] des_set_key(byte key[]) {
+    int schedule[] = new int [ITERATIONS * 2];
+    
+    int c = fourBytesToInt(key, 0);
+    int d = fourBytesToInt(key, 4);
+    
+    int results[] = new int[2];
+
+    PERM_OP(d, c, 4, 0x0f0f0f0f, results);
+    d = results[0]; c = results[1];
+    
+    c = HPERM_OP(c, -2, 0xcccc0000);
+    d = HPERM_OP(d, -2, 0xcccc0000);
+    
+    PERM_OP(d, c, 1, 0x55555555, results);
+    d = results[0]; c = results[1];
+    
+    PERM_OP(c, d, 8, 0x00ff00ff, results);
+    c = results[0]; d = results[1];
+    
+    PERM_OP(d, c, 1, 0x55555555, results);
+    d = results[0]; c = results[1];
+    
+    d = (((d & 0x000000ff) <<  16) |  (d & 0x0000ff00)     |
+     ((d & 0x00ff0000) >>> 16) | ((c & 0xf0000000) >>> 4));
+    c &= 0x0fffffff;
+    
+    int s, t;
+    int j = 0;
+    
+    for(int i = 0; i < ITERATIONS; i ++) {
+      if(shifts2[i]) {
+    c = (c >>> 2) | (c << 26);
+    d = (d >>> 2) | (d << 26);
+      } else {
+    c = (c >>> 1) | (c << 27);
+    d = (d >>> 1) | (d << 27);
+      }
+      
+      c &= 0x0fffffff;
+      d &= 0x0fffffff;
+      
+      s = skb[0][ (c       ) & 0x3f                       ]|
+    skb[1][((c >>>  6) & 0x03) | ((c >>>  7) & 0x3c)]|
+    skb[2][((c >>> 13) & 0x0f) | ((c >>> 14) & 0x30)]|
+    skb[3][((c >>> 20) & 0x01) | ((c >>> 21) & 0x06) |
+                   ((c >>> 22) & 0x38)];
+
+      t = skb[4][ (d     )  & 0x3f                       ]|
+    skb[5][((d >>> 7) & 0x03) | ((d >>>  8) & 0x3c)]|
+    skb[6][ (d >>>15) & 0x3f                       ]|
+    skb[7][((d >>>21) & 0x0f) | ((d >>> 22) & 0x30)];
+      
+      schedule[j++] = ((t <<  16) | (s & 0x0000ffff)) & 0xffffffff;
+      s             = ((s >>> 16) | (t & 0xffff0000));
+      
+      s             = (s << 4) | (s >>> 28);
+      schedule[j++] = s & 0xffffffff;
+    }
+    return schedule;
+  }
+
+  private static final int D_ENCRYPT(int L, int R, int S, int E0, int E1, int s[]) {
+    int t, u, v;
+    
+    v = R ^ (R >>> 16);
+    u = v & E0;
+    v = v & E1;
+    u = (u ^ (u << 16)) ^ R ^ s[S];
+    t = (v ^ (v << 16)) ^ R ^ s[S + 1];
+    t = (t >>> 4) | (t << 28);
+    
+    L ^= SPtrans[1][(t       ) & 0x3f] |
+      SPtrans[3][(t >>>  8) & 0x3f] |
+      SPtrans[5][(t >>> 16) & 0x3f] |
+      SPtrans[7][(t >>> 24) & 0x3f] |
+      SPtrans[0][(u       ) & 0x3f] |
+      SPtrans[2][(u >>>  8) & 0x3f] |
+      SPtrans[4][(u >>> 16) & 0x3f] |
+      SPtrans[6][(u >>> 24) & 0x3f];
+
+    return L;
+  }
+  
+  private static final int [] body(int schedule[], int Eswap0, int Eswap1) {
+    int left = 0;
+    int right = 0;
+    int t     = 0;
+
+    for (int j = 0; j < 25; j ++) {
+      for (int i = 0; i < ITERATIONS * 2; i += 4) {
+    left  = D_ENCRYPT(left,  right, i,     Eswap0, Eswap1, schedule);
+    right = D_ENCRYPT(right, left,  i + 2, Eswap0, Eswap1, schedule);
+      }
+      t     = left; 
+      left  = right; 
+      right = t;
+    }
+    
+    t = right;
+
+    right = (left >>> 1) | (left << 31);
+    left  = (t    >>> 1) | (t    << 31);
+    
+    left  &= 0xffffffff;
+    right &= 0xffffffff;
+
+    int results[] = new int[2];
+
+    PERM_OP(right, left, 1, 0x55555555, results); 
+    right = results[0]; left = results[1];
+    
+    PERM_OP(left, right, 8, 0x00ff00ff, results); 
+    left = results[0]; right = results[1];
+
+    PERM_OP(right, left, 2, 0x33333333, results); 
+    right = results[0]; left = results[1];
+    
+    PERM_OP(left, right, 16, 0x0000ffff, results);
+    left = results[0]; right = results[1];
+    
+    PERM_OP(right, left, 4, 0x0f0f0f0f, results);
+    right = results[0]; left = results[1];
+    
+    int out[] = new int[2];
+    
+    out[0] = left; 
+    out[1] = right;
+    
+    return out;
+  }
+
+  public static final String alphabet = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+  public static final String crypt(String salt, String original) {
+    // wwb -- Should do some sanity checks: salt needs to be 2 chars, in alpha.
+    while(salt.length() < 2)
+      salt += "A";
+
+    char[] buffer = new char [13];
+
+    char charZero = salt.charAt(0);
+    char charOne  = salt.charAt(1);
+    
+    buffer[0] = charZero;
+    buffer[1] = charOne;
+
+    int Eswap0 = alphabet.indexOf(charZero);
+    int Eswap1 = alphabet.indexOf(charOne) << 4;
+    byte key[] = new byte[8];
+    
+    for(int i = 0; i < key.length; i ++)
+      key[i] = (byte)0;
+    
+    for(int i = 0; i < key.length && i < original.length(); i ++)
+      key[i] = (byte) (((int) original.charAt(i)) << 1);
+
+    int schedule[] = des_set_key(key);
+    int out[]      = body(schedule, Eswap0, Eswap1);
+    
+    byte b[] = new byte[9];
+    
+    intToFourBytes(out[0], b, 0);
+    intToFourBytes(out[1], b, 4);
+    b[8] = 0;
+
+    for(int i = 2, y = 0, u = 0x80; i < 13; i ++) {
+      for(int j = 0, c = 0; j < 6; j ++) {
+        c <<= 1;
+
+        if(((int)b[y] & u) != 0)
+          c |= 1;
+
+        u >>>= 1;
+        
+        if (u == 0) {
+          y++;
+          u = 0x80;
+        }
+        buffer[i] = alphabet.charAt(c);
+      }
+    }
+    return new String(buffer);
+  }
+}
+'
     }
     1
 }
@@ -18198,8 +25150,10 @@ use feature 'say';
             }
             push(@out, '    }')
         }
-        push(@out, '}' . chr(10));
-        return join(chr(10), @out)
+        push(@out, '}
+');
+        return join('
+', @out)
     }
     sub Perlito5::Java::Runtime::emit_java {
         my($self, %args) = @_;
@@ -18210,9 +25164,24 @@ use feature 'say';
         for $_ (values(%java_classes)) {
             $native_to_perl{$_->{'java_type'}} = $_->{'java_native_to_perl'}
         }
-        return '// start Perl-Java runtime' . chr(10) . '// this is generated code - see: lib/Perlito5/Java/Runtime.pm' . chr(10) . chr(10) . 'import java.lang.Math;' . chr(10) . 'import java.lang.System;' . chr(10) . 'import java.util.*;' . chr(10) . 'import java.io.*;' . chr(10) . 'import java.nio.file.*;' . chr(10) . 'import java.nio.file.attribute.*;' . chr(10) . 'import java.nio.charset.*;' . chr(10) . 'import static java.nio.file.attribute.PosixFilePermission.*;' . chr(10) . 'import java.util.regex.Pattern;' . chr(10) . 'import java.util.regex.Matcher;' . chr(10) . 'import java.util.concurrent.TimeUnit;' . chr(10) . join('', (map {
+        return '// start Perl-Java runtime
+// this is generated code - see: lib/Perlito5/Java/Runtime.pm
+
+import java.lang.Math;
+import java.lang.System;
+import java.util.*;
+import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.*;
+import java.nio.charset.*;
+import static java.nio.file.attribute.PosixFilePermission.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
+' . join('', (map {
             my $class = $java_classes{$_};
-            $class->{'import'} ? 'import ' . $class->{'import'} . ';' . chr(10) : ()
+            $class->{'import'} ? 'import ' . $class->{'import'} . ';
+' : ()
         } sort {
             $a cmp $b
         } keys(%java_classes))) . join('', (map {
@@ -18220,99 +25189,3847 @@ use feature 'say';
             $class->{'extends'} || $class->{'implements'} ? emit_java_extends($class, \%java_classes) : ()
         } sort {
             $a cmp $b
-        } keys(%java_classes))) . Perlito5::Java::CORE::->emit_java() . 'class PlControlException extends RuntimeException {' . chr(10) . '}' . chr(10) . 'class PlNextException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlNextException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlLastException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlLastException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlRedoException    extends PlControlException {' . chr(10) . '    public int label_id;' . chr(10) . chr(10) . '    public PlRedoException(int i) {' . chr(10) . '        this.label_id = i;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlReturnException  extends PlControlException {' . chr(10) . '    public PlObject ret;' . chr(10) . chr(10) . '    public PlReturnException(PlObject ret) {' . chr(10) . '        this.ret = ret;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlDieException  extends PlControlException {' . chr(10) . '    public PlObject ret;' . chr(10) . chr(10) . '    public PlDieException(PlObject ret) {' . chr(10) . '        this.ret = ret;' . chr(10) . '    }' . chr(10) . '    public String getMessage() {' . chr(10) . '        return this.ret.toString();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlCx {' . chr(10) . '    public static final int     VOID   = 0;' . chr(10) . '    public static final int     SCALAR = 1;' . chr(10) . '    public static final int     LIST   = 2;' . chr(10) . '    public static final PlUndef  UNDEF  = new PlUndef();' . chr(10) . '    public static final PlBool   TRUE   = new PlBool(true);' . chr(10) . '    public static final PlBool   FALSE  = new PlBool(false);' . chr(10) . '    public static final PlFileHandle STDIN  = new PlFileHandle();' . chr(10) . '    public static final PlFileHandle STDOUT = new PlFileHandle();' . chr(10) . '    public static final PlFileHandle STDERR = new PlFileHandle();' . chr(10) . '    public static final Charset UTF8        = Charset.forName("UTF-8");' . chr(10) . '    public static final PlString DIED   = new PlString("Died");' . chr(10) . '    public static final PlString EMPTY  = new PlString("");' . chr(10) . '    public static final String  ARGV   = "main::List_ARGV";' . chr(10) . '    public static final String  ENV    = "main::Hash_ENV";' . chr(10) . '    public static final PlNextException NEXT = new PlNextException(0);' . chr(10) . '    public static final PlLastException LAST = new PlLastException(0);' . chr(10) . chr(10) . '    ' . join(chr(10) . '    ', map {
+        } keys(%java_classes))) . Perlito5::Java::CORE::->emit_java() . 'class PlControlException extends RuntimeException {
+}
+class PlNextException    extends PlControlException {
+    public int label_id;
+
+    public PlNextException(int i) {
+        this.label_id = i;
+    }
+}
+class PlLastException    extends PlControlException {
+    public int label_id;
+
+    public PlLastException(int i) {
+        this.label_id = i;
+    }
+}
+class PlRedoException    extends PlControlException {
+    public int label_id;
+
+    public PlRedoException(int i) {
+        this.label_id = i;
+    }
+}
+class PlReturnException  extends PlControlException {
+    public PlObject ret;
+
+    public PlReturnException(PlObject ret) {
+        this.ret = ret;
+    }
+}
+class PlDieException  extends PlControlException {
+    public PlObject ret;
+
+    public PlDieException(PlObject ret) {
+        this.ret = ret;
+    }
+    public String getMessage() {
+        return this.ret.toString();
+    }
+}
+class PlCx {
+    public static final int     VOID   = 0;
+    public static final int     SCALAR = 1;
+    public static final int     LIST   = 2;
+    public static final PlUndef  UNDEF  = new PlUndef();
+    public static final PlBool   TRUE   = new PlBool(true);
+    public static final PlBool   FALSE  = new PlBool(false);
+    public static final PlFileHandle STDIN  = new PlFileHandle();
+    public static final PlFileHandle STDOUT = new PlFileHandle();
+    public static final PlFileHandle STDERR = new PlFileHandle();
+    public static final Charset UTF8        = Charset.forName("UTF-8");
+    public static final PlString DIED   = new PlString("Died");
+    public static final PlString EMPTY  = new PlString("");
+    public static final String  ARGV   = "main::List_ARGV";
+    public static final String  ENV    = "main::Hash_ENV";
+    public static final PlNextException NEXT = new PlNextException(0);
+    public static final PlLastException LAST = new PlLastException(0);
+
+' . '    ' . join('
+    ', map {
             'public static final PlInt ' . ($_ < 0 ? 'MIN' : 'INT') . abs($_) . ' = new PlInt(' . $_ . ');'
-        } (-2 .. 2)) . chr(10) . '    ' . join(chr(10) . '    ', @{$args{'java_constants'} // []}) . chr(10) . '}' . chr(10) . Perlito5::Java::Crypt::->emit_java() . 'class PerlCompare implements Comparator<PlObject> {' . chr(10) . '    public PlClosure sorter;' . chr(10) . '    public PlLvalue v_a;' . chr(10) . '    public PlLvalue v_b;' . chr(10) . '    public PerlCompare (PlClosure sorter, PlLvalue a, PlLvalue b) {' . chr(10) . '        this.sorter = sorter;' . chr(10) . '        this.v_a = a;' . chr(10) . '        this.v_b = b;' . chr(10) . '    }' . chr(10) . '    public int compare (PlObject a, PlObject b) {' . chr(10) . '        v_a.set(a);' . chr(10) . '        v_b.set(b);' . chr(10) . '        return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PerlOp {' . chr(10) . '    // PerlOp implements operators: && ||' . chr(10) . '    //      and auxiliary functions' . chr(10) . '    //' . chr(10) . '    // note: ' . chr(39) . '+' . chr(39) . ' add() and ' . chr(39) . '-' . chr(39) . ' sub() are PlObject methods, not implemented here.' . chr(10) . '    //' . chr(10) . '    // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations' . chr(10) . '    // TODO - ' . chr(39) . 'boolean_stack' . chr(39) . ' should be reset when an exception happens' . chr(10) . chr(10) . '    private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();' . chr(10) . '    private static PlArray local_stack = new PlArray();' . chr(10) . '    private static Random random = new Random();' . chr(10) . chr(10) . '    // filehandles' . chr(10) . '    public static final PlFileHandle get_filehandle(PlObject fh) {' . chr(10) . '        if (fh.is_lvalue()) {' . chr(10) . '            if (fh.is_undef()) {' . chr(10) . '                // $fh autovivification to filehandle' . chr(10) . '                fh.set(new PlFileHandle());' . chr(10) . '            }' . chr(10) . '            fh = fh.get();' . chr(10) . '        }' . chr(10) . '        if (fh.is_filehandle()) {' . chr(10) . '            return (PlFileHandle)fh;' . chr(10) . '        }' . chr(10) . '        return get_filehandle(fh.toString());    // get "GLOB" by name' . chr(10) . '    }' . chr(10) . '    public static final PlFileHandle get_filehandle(String s) {' . chr(10) . '        PlObject fh = PlV.get(s);    // get "GLOB" by name' . chr(10) . '        if (fh.is_undef()) {' . chr(10) . '            // autovivification to filehandle' . chr(10) . '            PlFileHandle f = new PlFileHandle();' . chr(10) . '            if (s.equals("ARGV")) {' . chr(10) . '                f.is_argv = true;' . chr(10) . '            }' . chr(10) . '            fh.set(f);' . chr(10) . '        }' . chr(10) . '        return (PlFileHandle)(fh.get());' . chr(10) . '    }' . chr(10) . '    public static final Set<PosixFilePermission> MaskToPermissions(int mask) {' . chr(10) . '        final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();' . chr(10) . '        // TODO - provide a workaround' . chr(10) . '        // if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");' . chr(10) . '        // if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");' . chr(10) . '        // if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");' . chr(10) . '        if ((mask & 00400)==0) perm.add(OWNER_READ);' . chr(10) . '        if ((mask & 00200)==0) perm.add(OWNER_WRITE);' . chr(10) . '        if ((mask & 00100)==0) perm.add(OWNER_EXECUTE);' . chr(10) . '        if ((mask & 00040)==0) perm.add(GROUP_READ);' . chr(10) . '        if ((mask & 00020)==0) perm.add(GROUP_WRITE);' . chr(10) . '        if ((mask & 00010)==0) perm.add(GROUP_EXECUTE);' . chr(10) . '        if ((mask & 00004)==0) perm.add(OTHERS_READ);' . chr(10) . '        if ((mask & 00002)==0) perm.add(OTHERS_WRITE);' . chr(10) . '        if ((mask & 00001)==0) perm.add(OTHERS_EXECUTE);' . chr(10) . '        return perm;' . chr(10) . '    }' . chr(10) . chr(10) . '    // objects' . chr(10) . '    // coderef methods can be called on ANY invocant' . chr(10) . '    //  $m = sub {...};' . chr(10) . '    //  $a->$m' . chr(10) . '    public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {' . chr(10) . '        if ( method.is_coderef() ) {' . chr(10) . '            args.unshift(invocant);' . chr(10) . '            return method.apply(context, args);' . chr(10) . '        }' . chr(10) . '        else if ( method.is_lvalue() ) {' . chr(10) . '            return call( invocant, method.get(), args, context );' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return call( invocant, method.toString(), args, context );' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {' . chr(10) . '        if ( method.is_coderef() ) {' . chr(10) . '            args.unshift( new PlString(invocant) );' . chr(10) . '            return method.apply(context, args);' . chr(10) . '        }' . chr(10) . '        else if ( method.is_lvalue() ) {' . chr(10) . '            return call( invocant, method.get(), args, context );' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return call( invocant, method.toString(), args, context );' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    // Intermediate calls, which have to be dispatched properly' . chr(10) . '    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {' . chr(10) . '        if ( invocant.is_undef() ) {' . chr(10) . '            PlCORE.die( "Can' . chr(39) . 't call method ' . chr(92) . '"" + method' . chr(10) . '                + "' . chr(92) . '" on an undefined value" );' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . chr(10) . '        if ( invocant.is_lvalue() ) {' . chr(10) . '            invocant = invocant.get();' . chr(10) . '        }' . chr(10) . chr(10) . '        PlClass pClass = invocant.blessed_class();' . chr(10) . chr(10) . '        if ( pClass == null ) {' . chr(10) . '            PlCORE.die( "Can' . chr(39) . 't call method ' . chr(92) . '"" + method' . chr(10) . '                + "' . chr(92) . '" on unblessed reference" );' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return call( pClass.className().toString(), method, args, context );' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject call( String invocant, String method, PlArray args, int context ) {' . chr(10) . '        if ( invocant.equals("") ) {' . chr(10) . '            PlCORE.die( "Can' . chr(39) . 't call method ' . chr(92) . '"" + method' . chr(10) . '                + "' . chr(92) . '" on an undefined value" );' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . chr(10) . '        PlObject methodCode;' . chr(10) . '        if (method.indexOf("::") == -1) {' . chr(10) . '            methodCode = PlV.get(invocant + "::" + method);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // fully qualified method name' . chr(10) . '            methodCode = PlV.get(method);' . chr(10) . '        }' . chr(10) . chr(10) . '        if (methodCode.is_undef()) {' . chr(10) . '            PlCORE.die( "Can' . chr(39) . 't locate object method ' . chr(92) . '"" + method' . chr(10) . '                + "' . chr(92) . '" via package ' . chr(92) . '"" + invocant' . chr(10) . '                + "' . chr(92) . '" (perhaps you forgot to load ' . chr(92) . '"" + invocant + "' . chr(92) . '"?" );' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . chr(10) . '        args.unshift( new PlString(invocant) );' . chr(10) . '        return methodCode.apply(context, args);' . chr(10) . '    }' . chr(10) . chr(10) . '    // local()' . chr(10) . '    public static final PlObject push_local(PlHash container, String index) {' . chr(10) . '        local_stack.a.add(container);' . chr(10) . '        local_stack.a.add(new PlString(index));' . chr(10) . '        PlLvalue empty = new PlLvalue();' . chr(10) . '        local_stack.a.add(container.hget_lvalue(index));' . chr(10) . '        container.h.put(index, empty);' . chr(10) . '        return empty;' . chr(10) . '    }' . chr(10) . '    public static final PlObject push_local(PlArray container, int index) {' . chr(10) . '        local_stack.a.add(container);' . chr(10) . '        local_stack.a.add(new PlInt(index));' . chr(10) . '        PlLvalue empty = new PlLvalue();' . chr(10) . '        local_stack.a.add(container.aget_lvalue(index));' . chr(10) . '        container.a.set(index, empty);' . chr(10) . '        return empty;' . chr(10) . '    }' . chr(10) . '    public static final int local_length() {' . chr(10) . '        return local_stack.to_int();' . chr(10) . '    }' . chr(10) . '    public static final PlObject cleanup_local(int pos, PlObject ret) {' . chr(10) . '        while (local_stack.to_int() > pos) {' . chr(10) . '            PlLvalue lvalue    = (PlLvalue)local_stack.pop();' . chr(10) . '            PlObject index     = local_stack.pop();' . chr(10) . '            PlObject container = local_stack.pop();' . chr(10) . '            if (container.is_array()) {' . chr(10) . '                ((PlArray)container).a.set(index.to_int(), lvalue);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                ((PlHash)container).h.put(index.toString(), lvalue);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return ret;' . chr(10) . '    }' . chr(10) . chr(10) . '    // context()' . chr(10) . '    //      - handles run-time scalar/list/void context in expression results' . chr(10) . '    public static final PlObject context(int want, PlObject arg) {' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return arg;' . chr(10) . '        }' . chr(10) . '        return arg.scalar();' . chr(10) . '    }' . chr(10) . '    public static final PlObject context(int want) {' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return new PlArray();' . chr(10) . '        }' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final PlObject context(int want, PlObject... args) {' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return new PlArray(args);' . chr(10) . '        }' . chr(10) . '        return args[args.length-1].scalar();' . chr(10) . '    }' . chr(10) . chr(10) . '    // process id' . chr(10) . '    public static PlObject getPID() {' . chr(10) . '      String processName =' . chr(10) . '        java.lang.management.ManagementFactory.getRuntimeMXBean().getName();' . chr(10) . '      return new PlString(processName.split("@")[0]);' . chr(10) . '    }' . chr(10) . chr(10) . '    // statement()' . chr(10) . '    //      - workaround for "Error: not a statement"' . chr(10) . '    //      - this is the compile-time version of context(null, arg)' . chr(10) . '    public static final void statement(PlObject... args) { }' . chr(10) . '    public static final void statement() { }' . chr(10) . chr(10) . '    // control-flow exceptions' . chr(10) . '    public static final PlObject next() {' . chr(10) . '        throw PlCx.NEXT;' . chr(10) . '    }' . chr(10) . '    public static final PlObject next(int label_id) {' . chr(10) . '        throw new PlNextException(label_id);' . chr(10) . '    }' . chr(10) . '    public static final PlObject last() {' . chr(10) . '        throw PlCx.LAST;' . chr(10) . '    }' . chr(10) . '    public static final PlObject last(int label_id) {' . chr(10) . '        throw new PlLastException(label_id);' . chr(10) . '    }' . chr(10) . '    public static final PlObject redo(int label_id) {' . chr(10) . '        throw new PlRedoException(label_id);' . chr(10) . '    }' . chr(10) . '    public static final PlObject ret(PlObject ret) {' . chr(10) . '        throw new PlReturnException(ret);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject gotoOp(int ctx, PlObject s, PlArray List__) {' . chr(10) . '        if (s.is_coderef()) {' . chr(10) . '            // goto &subr;' . chr(10) . '            throw new PlReturnException(s.apply(ctx, List__));' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("goto() not implemented");' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject caller(int ctx, PlObject s) {' . chr(10) . '        int item = s.to_int();' . chr(10) . '        PlCORE.die("caller() not implemented");' . chr(10) . chr(10) . '        // TODO' . chr(10) . '        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();' . chr(10) . '        for (StackTraceElement elem : stackTraceElements) {' . chr(10) . '            PlCORE.say(elem.getMethodName());' . chr(10) . '        }' . chr(10) . '        // The last element of the array represents the bottom of the stack,' . chr(10) . '        // which is the least recent method invocation in the sequence.' . chr(10) . '        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().' . chr(10) . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject srand() {' . chr(10) . '        random = new Random();' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public static final PlObject srand(int s) {' . chr(10) . '        random = new Random(s);' . chr(10) . '        return new PlInt(s);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject rand(double s) {' . chr(10) . '        if (s == 0.0) {' . chr(10) . '            s = 1.0;' . chr(10) . '        }' . chr(10) . '        return new PlDouble(s * random.nextDouble());' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {' . chr(10) . '        if (ctx == PlCx.LIST) {' . chr(10) . '            // TODO - range when first argument is string' . chr(10) . '            long start = _start.to_long(),' . chr(10) . '                 end   = _end.to_long();' . chr(10) . '            int size = Math.max(0, (int)(end - start + 1));' . chr(10) . '            long[] ret = new long[size];' . chr(10) . '            for (int i = 0; i < size; ++i) {' . chr(10) . '                ret[i] = start + i;' . chr(10) . '            }' . chr(10) . '            return ret;' . chr(10) . '        }' . chr(10) . '        PlCORE.die("Range not implemented for context " + ctx);' . chr(10) . '        // TODO - range in boolean (scalar) context' . chr(10) . '        // http://perldoc.perl.org/perlop.html#Range-Operators' . chr(10) . '        // In scalar context, ".." returns a boolean value.' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {' . chr(10) . '        if (arg1.is_undef()) {' . chr(10) . '            return arg0.is_undef() ? PlCx.TRUE : PlCx.FALSE;' . chr(10) . '        }' . chr(10) . '        if (arg1.is_string()) {' . chr(10) . '            return arg0.str_eq(arg1);' . chr(10) . '        }' . chr(10) . '        if (arg1.is_num() || arg1.is_int()) {' . chr(10) . '            return arg0.num_eq(arg1);' . chr(10) . '        }' . chr(10) . '        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type ' . chr(39) . '"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString("' . chr(39) . '")));' . chr(10) . '    }' . chr(10) . chr(10) . '    // and1(x) ? y : and3()' . chr(10) . '    public static final boolean and1(PlObject arg1) {' . chr(10) . '        if (arg1.to_bool()) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            boolean_stack.add(0, arg1);' . chr(10) . '            return false;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject and3() {' . chr(10) . '        return boolean_stack.remove(0);' . chr(10) . '    }' . chr(10) . chr(10) . '    // or1(x) ? or2() : y' . chr(10) . '    public static final boolean or1(PlObject arg1) {' . chr(10) . '        if (arg1.to_bool()) {' . chr(10) . '            boolean_stack.add(0, arg1);' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return false;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject or2() {' . chr(10) . '        return boolean_stack.remove(0);' . chr(10) . '    }' . chr(10) . chr(10) . '    // defined_or1(x) ? defined_or2() : y' . chr(10) . '    public static final boolean defined_or1(PlObject arg1) {' . chr(10) . '        if (!arg1.is_undef()) {' . chr(10) . '            boolean_stack.add(0, arg1);' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return false;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject defined_or2() {' . chr(10) . '        return boolean_stack.remove(0);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlInt ord(PlString s) {' . chr(10) . '        String item = s.toString();' . chr(10) . '        return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlString string_replicate(PlObject s, PlObject c) {' . chr(10) . '        int count = c.to_int();' . chr(10) . '        if ( count < 1 ) {' . chr(10) . '            return new PlString("");' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            String raw_s = s.toString();' . chr(10) . '            StringBuilder sb = new StringBuilder();' . chr(10) . '            for (int i = 0; i < count; i++) {' . chr(10) . '                sb.append(raw_s);' . chr(10) . '            }' . chr(10) . '            return new PlString(sb.toString());' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {' . chr(10) . '        int count = c.to_int();' . chr(10) . '        PlArray a = new PlArray();' . chr(10) . '        if (count > 0) {' . chr(10) . '            for (int i = 0; i < count; i++) {' . chr(10) . '                a.push( o );' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return (wantarray == PlCx.LIST ) ? a : a.length_of_array();' . chr(10) . '    }' . chr(10) . '    public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {' . chr(10) . '        PlArray ret = new PlArray();' . chr(10) . '        int size = a.to_int();' . chr(10) . '        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");' . chr(10) . '        PlObject v__val = v__ref.get();' . chr(10) . '        for (int i = 0; i < size; i++) {' . chr(10) . '            boolean result;' . chr(10) . '            PlObject temp = a.aget(i);' . chr(10) . '            v__ref.set(temp);' . chr(10) . '            result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();' . chr(10) . '            if (result) {' . chr(10) . '                ret.push(temp);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        v__ref.set(v__val);' . chr(10) . '        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();' . chr(10) . '    }' . chr(10) . '    public static final PlObject map(PlClosure c, PlArray a, int wantarray) {' . chr(10) . '        // TODO - pass @_ to the closure' . chr(10) . '        PlArray ret = new PlArray();' . chr(10) . '        int size = a.to_int();' . chr(10) . '        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");' . chr(10) . '        PlObject v__val = v__ref.get();' . chr(10) . '        for (int i = 0; i < size; i++) {' . chr(10) . '            v__ref.set(a.aget(i));' . chr(10) . '            ret.push(c.apply(PlCx.LIST, new PlArray()));' . chr(10) . '        }' . chr(10) . '        v__ref.set(v__val);' . chr(10) . '        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();' . chr(10) . '    }' . chr(10) . '    public static final PlObject sort(PlClosure c, PlArray a, int wantarray) {' . chr(10) . '        // TODO - pass @_ to the closure' . chr(10) . '        String pkg = c.pkg_name;' . chr(10) . '        PlArray ret = new PlArray(a);' . chr(10) . '        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");' . chr(10) . '        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");' . chr(10) . '        PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);' . chr(10) . '        PlObject v_a_val = v_a_ref.get();' . chr(10) . '        PlObject v_b_val = v_b_ref.get();' . chr(10) . '        Collections.sort(ret.a, comp);' . chr(10) . '        v_a_ref.set(v_a_val);' . chr(10) . '        v_b_ref.set(v_b_val);' . chr(10) . '        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();' . chr(10) . '    }' . chr(10) . '    public static final PlObject reduce(PlArray List__) {' . chr(10) . '        // PlClosure c, PlArray a' . chr(10) . '        PlObject arg = List__.shift();' . chr(10) . '        PlClosure c = (PlClosure)arg;' . chr(10) . '        // List::Util reduce()' . chr(10) . '        // TODO - pass @_ to the closure' . chr(10) . '        // TODO - use ' . chr(39) . chr(92) . '@' . chr(39) . ' signature for better performance' . chr(10) . '        String pkg = c.pkg_name;' . chr(10) . '        PlObject ret = PlCx.UNDEF;' . chr(10) . '        int size = List__.to_int();' . chr(10) . '        if (size == 0) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        if (size == 1) {' . chr(10) . '            return List__.aget(0);' . chr(10) . '        }' . chr(10) . '        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");' . chr(10) . '        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");' . chr(10) . '        PlObject v_a_val = v_a_ref.get();' . chr(10) . '        PlObject v_b_val = v_b_ref.get();' . chr(10) . '        v_a_ref.set(List__.aget(0));' . chr(10) . '        for (int i = 1; i < size; i++) {' . chr(10) . '            v_b_ref.set(List__.aget(i));' . chr(10) . '            v_a_ref.set(c.apply(PlCx.SCALAR, new PlArray()));' . chr(10) . '        }' . chr(10) . '        ret = v_a_ref.get();' . chr(10) . '        v_a_ref.set(v_a_val);' . chr(10) . '        v_b_ref.set(v_b_val);' . chr(10) . '        return ret;' . chr(10) . '    }' . chr(10) . chr(10) . '    public static PlObject prototype(PlObject arg, String packageName) {' . chr(10) . '        if (arg.is_coderef()) {' . chr(10) . '            if (arg.is_lvalue()) {' . chr(10) . '                return ((PlClosure)arg.get()).prototype();' . chr(10) . '            }' . chr(10) . '            return ((PlClosure)arg).prototype();' . chr(10) . '        }' . chr(10) . '        String method = arg.toString();' . chr(10) . '        PlObject methodCode;' . chr(10) . '        if (method.indexOf("::") == -1) {' . chr(10) . '            methodCode = PlV.get(packageName + "::" + method);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // fully qualified name' . chr(10) . '            methodCode = PlV.get(method);' . chr(10) . '        }' . chr(10) . '        if (methodCode.is_coderef()) {' . chr(10) . '            return prototype(methodCode, packageName); ' . chr(10) . '        }' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . chr(10) . '    private static String double_escape(String s) {' . chr(10) . '        // add double escapes: ' . chr(92) . chr(92) . 'w instead of ' . chr(92) . 'w' . chr(10) . '        return s.replace("' . chr(92) . chr(92) . '", "' . chr(92) . chr(92) . chr(92) . chr(92) . '");' . chr(10) . '    }' . chr(10) . chr(10) . '    private static int _character_class_escape(int offset, String s, StringBuilder sb, int length) {' . chr(10) . '        // [ ... ]' . chr(10) . '        int offset3 = offset;' . chr(10) . '        for ( ; offset3 < length; ) {' . chr(10) . '            final int c3 = s.codePointAt(offset3);' . chr(10) . '            switch (c3) {' . chr(10) . '                case ' . chr(39) . ']' . chr(39) . ':' . chr(10) . '                    sb.append(Character.toChars(c3));' . chr(10) . '                    return offset3;' . chr(10) . '                case ' . chr(39) . ' ' . chr(39) . ':' . chr(10) . '                    sb.append("' . chr(92) . chr(92) . ' ");   // make this space a "token", even inside /x' . chr(10) . '                    break;' . chr(10) . '                default:' . chr(10) . '                    sb.append(Character.toChars(c3));' . chr(10) . '                    break;' . chr(10) . '            }' . chr(10) . '            offset3++;' . chr(10) . '        }' . chr(10) . '        return offset3;' . chr(10) . '    }' . chr(10) . chr(10) . '    public static String character_class_escape(String s) {' . chr(10) . '        // escape spaces in character classes' . chr(10) . '        final int length = s.length();' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        for (int offset = 0; offset < length; ) {' . chr(10) . '            final int c = s.codePointAt(offset);' . chr(10) . '            switch (c) {' . chr(10) . '                case ' . chr(39) . chr(92) . chr(92) . chr(39) . ':  // escape - ' . chr(92) . '[' . chr(10) . '                            sb.append(Character.toChars(c));' . chr(10) . '                            if (offset < length) {' . chr(10) . '                                offset++;' . chr(10) . '                                int c2 = s.codePointAt(offset);' . chr(10) . '                                sb.append(Character.toChars(c2));' . chr(10) . '                            }' . chr(10) . '                            break;' . chr(10) . '                case ' . chr(39) . '[' . chr(39) . ':   // character class' . chr(10) . '                            sb.append(Character.toChars(c));' . chr(10) . '                            offset++;' . chr(10) . '                            offset = _character_class_escape(offset, s, sb, length);' . chr(10) . '                            break;' . chr(10) . '                default:    // normal char' . chr(10) . '                            sb.append(Character.toChars(c));' . chr(10) . '                            break;' . chr(10) . '            }' . chr(10) . '            offset++;' . chr(10) . '        }' . chr(10) . '        return sb.toString();' . chr(10) . '    }' . chr(10) . chr(10) . '    // ****** pos()' . chr(10) . '    // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects' . chr(10) . chr(10) . '    public static final PlObject pos(PlObject var) {' . chr(10) . '        // TODO - check that var is lvalue' . chr(10) . '        Integer pos = ((PlLvalue)var).pos;' . chr(10) . '        if (pos == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return new PlInt(pos);' . chr(10) . '    }' . chr(10) . '    public static final PlObject set_pos(PlObject var, PlObject value, PlRegexResult matcher, String str) {' . chr(10) . '        // TODO - check that var is lvalue' . chr(10) . '        if (value.is_undef()) {' . chr(10) . '            ((PlLvalue)var).pos = null;' . chr(10) . '            return value;' . chr(10) . '        }' . chr(10) . chr(10) . '        int pos = value.to_int();' . chr(10) . chr(10) . '        // check for zero-length match' . chr(10) . '        int old_pos = pos(var).to_int();' . chr(10) . chr(10) . '        if (old_pos == pos) {' . chr(10) . '            // PlCORE.say("zero length match");' . chr(10) . '            if (matcher.regex_zero_length_flag) {' . chr(10) . '                if (matcher.matcher.find()) {' . chr(10) . '                    matcher.regex_string = str;' . chr(10) . '                    pos = matcher.matcher.end();' . chr(10) . chr(10) . '                    // TODO - $&' . chr(10) . '                    // String cap1 = str.substring(old_pos, pos);' . chr(10) . '                    // String cap = str.substring(matcher.start(), matcher.end());' . chr(10) . '                    // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());' . chr(10) . chr(10) . '                    matcher.regex_zero_length_flag = false;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    reset_match();' . chr(10) . '                    ((PlLvalue)var).pos = null;' . chr(10) . '                    return PlCx.UNDEF;' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                matcher.regex_zero_length_flag = true;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . chr(10) . '        // TODO - test that pos < string length' . chr(10) . '        value = new PlInt(pos);' . chr(10) . '        ((PlLvalue)var).pos = pos;' . chr(10) . '        return value;' . chr(10) . '    }' . chr(10) . chr(10) . '    // ****** regex variables' . chr(10) . '    // class PlRegexResult extends PlObject {' . chr(10) . '    //     public static Matcher matcher;      // regex captures' . chr(10) . '    //     public static String  regex_string; // last string used in a regex' . chr(10) . '    public static final PlHash regex_var = new PlHash();' . chr(10) . chr(10) . '    public static final PlRegexResult get_match() {' . chr(10) . '        return (PlRegexResult)regex_var.hget_lvalue("__match__").get();' . chr(10) . '    }' . chr(10) . '    public static final void local_match() {' . chr(10) . '        regex_var.hget_lvalue_local("__match__");' . chr(10) . '    }' . chr(10) . '    public static final PlRegexResult set_match(Matcher m, String s) {' . chr(10) . '        PlRegexResult match = new PlRegexResult();' . chr(10) . '        match.matcher = m;' . chr(10) . '        match.regex_string = s;' . chr(10) . '        match.regex_zero_length_flag = false;' . chr(10) . '        regex_var.hset("__match__", match);' . chr(10) . '        return match;' . chr(10) . '    }' . chr(10) . '    public static final void reset_match() {' . chr(10) . '        PlRegexResult match = new PlRegexResult();' . chr(10) . '        match.regex_zero_length_flag = false;' . chr(10) . '        regex_var.hset("__match__", match);' . chr(10) . '    }' . chr(10) . '    public static final PlObject regex_var(int var_number) {' . chr(10) . '        if (var_number == 0) {' . chr(10) . '            PlCORE.die("$0 not implemented");' . chr(10) . '        }' . chr(10) . '        Matcher matcher = get_match().matcher;' . chr(10) . '        if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        String cap = matcher.group(var_number);' . chr(10) . '        if (cap == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return new PlString(cap);' . chr(10) . '    }' . chr(10) . '    public static final PlObject regex_var(String var_name) {' . chr(10) . '        PlRegexResult match = get_match();' . chr(10) . '        Matcher matcher = match.matcher;' . chr(10) . '        String str = match.regex_string;' . chr(10) . '        if (matcher == null || str == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        if (var_name.equals("&")) {' . chr(10) . '            // $&' . chr(10) . '            String cap = str.substring(matcher.start(), matcher.end());' . chr(10) . '            return new PlString(cap);' . chr(10) . '        }' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . chr(10) . '    // ****** end regex variables' . chr(10) . chr(10) . '    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {' . chr(10) . '        String str = input.toString();' . chr(10) . '        if (want != PlCx.LIST) {' . chr(10) . '            Matcher matcher = pat.p.matcher(str);' . chr(10) . '            if (global) {' . chr(10) . '                // scalar context, global match' . chr(10) . '                PlObject pos = pos(input);' . chr(10) . '                boolean find;' . chr(10) . '                if (pos.is_undef()) {' . chr(10) . '                    find = matcher.find();' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    find = matcher.find(pos.to_int());' . chr(10) . '                }' . chr(10) . '                if (find) {' . chr(10) . '                    PlRegexResult match = set_match(matcher, str);' . chr(10) . '                    set_pos(input, new PlInt(matcher.end()), match, str);' . chr(10) . '                    return PlCx.TRUE;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    reset_match();' . chr(10) . '                    set_pos(input, PlCx.UNDEF, null, null);' . chr(10) . '                    return PlCx.FALSE;' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                // scalar context, non-global match' . chr(10) . '                if (matcher.find()) {' . chr(10) . '                    set_match(matcher, str);' . chr(10) . '                    return PlCx.TRUE;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    reset_match();' . chr(10) . '                    return PlCx.FALSE;' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        // list context' . chr(10) . '        Matcher matcher = pat.p.matcher(str);' . chr(10) . '        PlArray ret = new PlArray();' . chr(10) . '        if (global) {' . chr(10) . '            // list context, global match' . chr(10) . '            boolean found = false;' . chr(10) . '            while (matcher.find()) {' . chr(10) . '                found = true;' . chr(10) . '                for (int i = 1; i <= matcher.groupCount(); i++) {' . chr(10) . '                    String cap = matcher.group(i);' . chr(10) . '                    if (cap == null) {' . chr(10) . '                        ret.push(PlCx.UNDEF);' . chr(10) . '                    }' . chr(10) . '                    else {' . chr(10) . '                        ret.push(cap);' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            if (found) {' . chr(10) . '                set_match(matcher, str);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                reset_match();' . chr(10) . '            }' . chr(10) . '            set_pos(input, PlCx.UNDEF, null, null);' . chr(10) . '            return ret;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // list context, non-global match' . chr(10) . '            if (matcher.find()) {' . chr(10) . '                set_match(matcher, str);' . chr(10) . '                for (int i = 1; i <= matcher.groupCount(); i++) {' . chr(10) . '                    String cap = matcher.group(i);' . chr(10) . '                    if (cap == null) {' . chr(10) . '                        ret.push(PlCx.UNDEF);' . chr(10) . '                    }' . chr(10) . '                    else {' . chr(10) . '                        ret.push(cap);' . chr(10) . '                    }' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                reset_match();' . chr(10) . '            }' . chr(10) . '            return ret;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global) {' . chr(10) . '        return match(s, pat.get(), want, global);' . chr(10) . '    }' . chr(10) . '    public static final PlObject match(PlObject s, PlObject pat, int want, boolean global) {' . chr(10) . '        // TODO - cache the compiled pattern' . chr(10) . '        return match(s, new PlRegex(pat, 0), want, global);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {' . chr(10) . '        // TODO - use "global" flag' . chr(10) . '        if (want != PlCx.LIST) {' . chr(10) . '            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));' . chr(10) . '        }' . chr(10) . '        PlCORE.die("not implemented string replace in list context");' . chr(10) . '        return s;' . chr(10) . '    }' . chr(10) . '    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {' . chr(10) . '        // TODO - cache the compiled pattern' . chr(10) . '        return replace(s, new PlRegex(pat, 0), rep, want, global);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject replace(PlLvalue s, PlRegex pat, String rep, int want, boolean global) {' . chr(10) . '        // TODO - use "global" flag' . chr(10) . '        if (want != PlCx.LIST) {' . chr(10) . '            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep)));' . chr(10) . '        }' . chr(10) . '        PlCORE.die("not implemented string replace in list context");' . chr(10) . '        return s;' . chr(10) . '    }' . chr(10) . '    public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {' . chr(10) . '        // TODO - cache the compiled pattern' . chr(10) . '        return replace(s, new PlRegex(pat, 0), rep, want, global);' . chr(10) . '    }' . chr(10) . chr(10) . '    // $v =~ tr/xyz/abc/i' . chr(10) . '    // PerlOp.tr(v_v_100, new PlString("xyz"), new PlString("abc"), "", PlCx.VOID)' . chr(10) . '    public static final PlObject tr(PlObject pstr, PlObject psearchChars, PlObject preplaceChars, String modifier, int want) {' . chr(10) . '        String str          = pstr.toString();' . chr(10) . '        String searchChars  = psearchChars.toString();' . chr(10) . '        String replaceChars = preplaceChars.toString();' . chr(10) . '        int modified = 0;' . chr(10) . '        final int replaceCharsLength = replaceChars.length();' . chr(10) . '        final int strLength = str.length();' . chr(10) . '        final StringBuilder buf = new StringBuilder(strLength);' . chr(10) . '        for (int i = 0; i < strLength; i++) {' . chr(10) . '            final char ch = str.charAt(i);' . chr(10) . '            final int index = searchChars.indexOf(ch);' . chr(10) . '            if (index >= 0) {' . chr(10) . '                modified++;' . chr(10) . '                if (index < replaceCharsLength) {' . chr(10) . '                    buf.append(replaceChars.charAt(index));' . chr(10) . '                }' . chr(10) . '            } else {' . chr(10) . '                buf.append(ch);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        if (modified > 0) {' . chr(10) . '            pstr.set(new PlString(buf.toString()));' . chr(10) . '        }' . chr(10) . '        return new PlInt(modified);' . chr(10) . '    }' . chr(10) . chr(10) . '}' . chr(10) . 'class PlV {' . chr(10) . '    // PlV implements namespaces and global variables' . chr(10) . '    //' . chr(10) . '    // TODO - import CORE subroutines in new namespaces, if needed' . chr(10) . '    // TODO - cache lookups in lexical variables (see PlClosure implementation)' . chr(10) . chr(10) . '    public static final PlHash var = new PlHash();' . chr(10) . chr(10) . '    public static final PlLvalue get(String name) {' . chr(10) . '        return (PlLvalue)var.hget_lvalue(name);' . chr(10) . '    }' . chr(10) . '    public static final PlLvalue get_local(String name) {' . chr(10) . '        return (PlLvalue)var.hget_lvalue_local(name);' . chr(10) . '    }' . chr(10) . '    public static final PlObject set(String name, PlObject v) {' . chr(10) . '        return var.hset(name, v);' . chr(10) . '    }' . chr(10) . '    public static final PlObject set_local(String name, PlObject v) {' . chr(10) . '        return var.hget_lvalue_local(name).set(v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlHash hash_get(String name) {' . chr(10) . '        return (PlHash)var.hget_hashref(name).get();' . chr(10) . '    }' . chr(10) . '    public static final PlHash hash_get_local(String name) {' . chr(10) . '        return (PlHash)var.hget_lvalue_local(name).get_hashref().get();' . chr(10) . '    }' . chr(10) . '    public static final PlObject hash_set(String name, PlObject v) {' . chr(10) . '        return var.hget_hashref(name).hash_deref_set(v);' . chr(10) . '    }' . chr(10) . '    public static final PlObject hash_set_local(String name, PlObject v) {' . chr(10) . '        return var.hget_lvalue_local(name).get_hashref().hash_deref_set(v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlArray array_get(String name) {' . chr(10) . '        return (PlArray)var.hget_arrayref(name).get();' . chr(10) . '    }' . chr(10) . '    public static final PlArray array_get_local(String name) {' . chr(10) . '        return (PlArray)var.hget_lvalue_local(name).get_arrayref().get();' . chr(10) . '    }' . chr(10) . '    public static final PlObject array_set(String name, PlObject v) {' . chr(10) . '        return var.hget_arrayref(name).array_deref_set(v);' . chr(10) . '    }' . chr(10) . '    public static final PlObject array_set_local(String name, PlObject v) {' . chr(10) . '        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {' . chr(10) . '        if (name.is_coderef()) {' . chr(10) . '            return name;' . chr(10) . '        }' . chr(10) . '        String s = name.toString();' . chr(10) . '        if (s.indexOf("::") == -1) {' . chr(10) . '            s = nameSpace + "::" + s;' . chr(10) . '        }' . chr(10) . '        return var.hget(s);' . chr(10) . '    }' . chr(10) . chr(10) . '    public static final String glob_name_fixup(String name, String prefix) {' . chr(10) . '        // TODO - append namespace if needed' . chr(10) . '        String[] part = name.split("::");' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        for (int i = 0; i < part.length - 1; i++) {' . chr(10) . '            sb.append(part[i]);' . chr(10) . '            sb.append("::");' . chr(10) . '        }' . chr(10) . '        sb.append(prefix);' . chr(10) . '        sb.append(part[part.length - 1]);' . chr(10) . '        String internalName = sb.toString();' . chr(10) . '        // PlCORE.say("internalName " + internalName);' . chr(10) . '        return internalName;' . chr(10) . '    }' . chr(10) . '    public static final PlObject glob_set(PlObject name, PlObject v, String nameSpace) {' . chr(10) . '        String s = name.toString();' . chr(10) . '        if (s.indexOf("::") == -1) {' . chr(10) . '            s = nameSpace + "::" + s;' . chr(10) . '        }' . chr(10) . '        return glob_set(s, v);' . chr(10) . '    }' . chr(10) . '    public static final PlObject glob_set(String name, PlObject v) {' . chr(10) . '        PlObject value = v.aget(0);' . chr(10) . '        if (value.is_coderef()) {' . chr(10) . '            PlV.set(name, value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_hashref()) {' . chr(10) . '            PlV.set(glob_name_fixup(name, "Hash_"), value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_arrayref()) {' . chr(10) . '            PlV.set(glob_name_fixup(name, "List_"), value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_scalarref()) {' . chr(10) . '            PlV.set(glob_name_fixup(name, "v_"), value);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            PlCORE.die("not implemented assign " + value.ref() + " to glob");' . chr(10) . '        }' . chr(10) . '        return value;' . chr(10) . '    }' . chr(10) . '    public static final PlObject glob_set_local(String name, PlObject v) {' . chr(10) . '        PlObject value = v.aget(0);' . chr(10) . '        if (value.is_coderef()) {' . chr(10) . '            PlV.set_local(name, value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_hashref()) {' . chr(10) . '            PlV.set_local(glob_name_fixup(name, "Hash_"), value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_arrayref()) {' . chr(10) . '            PlV.set_local(glob_name_fixup(name, "List_"), value);' . chr(10) . '        }' . chr(10) . '        else if (value.is_scalarref()) {' . chr(10) . '            PlV.set_local(glob_name_fixup(name, "v_"), value);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            PlCORE.die("not implemented assign " + value.ref() + " to glob");' . chr(10) . '        }' . chr(10) . '        return value;' . chr(10) . '    }' . chr(10) . chr(10) . '}' . chr(10) . 'class PlEnv {' . chr(10) . '    public static final void init(String[] args) {' . chr(10) . '        PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]' . chr(10) . '        PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>' . chr(10) . '        PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "' . chr(10) . '        PlV.set("main::v_/", new PlString("' . chr(92) . 'n"));                  // $/ = "' . chr(92) . 'n"' . chr(10) . '        PlCx.STDIN.inputStream   = System.in;' . chr(10) . '        PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));' . chr(10) . '        PlCx.STDIN.eof           = false;' . chr(10) . chr(10) . '        PlCx.STDOUT.outputStream = System.out;' . chr(10) . '        PlCx.STDERR.outputStream = System.err;' . chr(10) . '        PlV.set("STDIN",  PlCx.STDIN);                             // "GLOB"' . chr(10) . '        PlV.set("STDOUT", PlCx.STDOUT);' . chr(10) . '        PlV.set("STDERR", PlCx.STDERR);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlObject {' . chr(10) . '    public static final PlString REF = new PlString("");' . chr(10) . chr(10) . '    public PlObject() {' . chr(10) . '    }' . chr(10) . join('', (map {
+        } (-2 .. 2)) . '
+' . '    ' . join('
+    ', @{$args{'java_constants'} // []}) . '
+' . '}
+' . Perlito5::Java::Crypt::->emit_java() . 'class PerlCompare implements Comparator<PlObject> {
+    public PlClosure sorter;
+    public PlLvalue v_a;
+    public PlLvalue v_b;
+    public PerlCompare (PlClosure sorter, PlLvalue a, PlLvalue b) {
+        this.sorter = sorter;
+        this.v_a = a;
+        this.v_b = b;
+    }
+    public int compare (PlObject a, PlObject b) {
+        v_a.set(a);
+        v_b.set(b);
+        return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();
+    }
+}
+class PerlOp {
+    // PerlOp implements operators: && ||
+    //      and auxiliary functions
+    //
+    // note: ' . chr(39) . '+' . chr(39) . ' add() and ' . chr(39) . '-' . chr(39) . ' sub() are PlObject methods, not implemented here.
+    //
+    // TODO - see Perlito5/JavaScript2/Runtime.pm for more operator implementations
+    // TODO - ' . chr(39) . 'boolean_stack' . chr(39) . ' should be reset when an exception happens
+
+    private static ArrayList<PlObject> boolean_stack = new ArrayList<PlObject>();
+    private static PlArray local_stack = new PlArray();
+    private static Random random = new Random();
+
+    // filehandles
+    public static final PlFileHandle get_filehandle(PlObject fh) {
+        if (fh.is_lvalue()) {
+            if (fh.is_undef()) {
+                // $fh autovivification to filehandle
+                fh.set(new PlFileHandle());
+            }
+            fh = fh.get();
+        }
+        if (fh.is_filehandle()) {
+            return (PlFileHandle)fh;
+        }
+        return get_filehandle(fh.toString());    // get "GLOB" by name
+    }
+    public static final PlFileHandle get_filehandle(String s) {
+        PlObject fh = PlV.get(s);    // get "GLOB" by name
+        if (fh.is_undef()) {
+            // autovivification to filehandle
+            PlFileHandle f = new PlFileHandle();
+            if (s.equals("ARGV")) {
+                f.is_argv = true;
+            }
+            fh.set(f);
+        }
+        return (PlFileHandle)(fh.get());
+    }
+    public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
+        final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();
+        // TODO - provide a workaround
+        // if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
+        // if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
+        // if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
+        if ((mask & 00400)==0) perm.add(OWNER_READ);
+        if ((mask & 00200)==0) perm.add(OWNER_WRITE);
+        if ((mask & 00100)==0) perm.add(OWNER_EXECUTE);
+        if ((mask & 00040)==0) perm.add(GROUP_READ);
+        if ((mask & 00020)==0) perm.add(GROUP_WRITE);
+        if ((mask & 00010)==0) perm.add(GROUP_EXECUTE);
+        if ((mask & 00004)==0) perm.add(OTHERS_READ);
+        if ((mask & 00002)==0) perm.add(OTHERS_WRITE);
+        if ((mask & 00001)==0) perm.add(OTHERS_EXECUTE);
+        return perm;
+    }
+
+    // objects
+    // coderef methods can be called on ANY invocant
+    //  $m = sub {...};
+    //  $a->$m
+    public static final PlObject call( PlObject invocant, PlObject method, PlArray args, int context ) {
+        if ( method.is_coderef() ) {
+            args.unshift(invocant);
+            return method.apply(context, args);
+        }
+        else if ( method.is_lvalue() ) {
+            return call( invocant, method.get(), args, context );
+        }
+        else {
+            return call( invocant, method.toString(), args, context );
+        }
+    }
+    public static final PlObject call( String invocant, PlObject method, PlArray args, int context ) {
+        if ( method.is_coderef() ) {
+            args.unshift( new PlString(invocant) );
+            return method.apply(context, args);
+        }
+        else if ( method.is_lvalue() ) {
+            return call( invocant, method.get(), args, context );
+        }
+        else {
+            return call( invocant, method.toString(), args, context );
+        }
+    }
+    // Intermediate calls, which have to be dispatched properly
+    public static final PlObject call( PlObject invocant, String method, PlArray args, int context ) {
+        if ( invocant.is_undef() ) {
+            PlCORE.die( "Can' . chr(39) . 't call method \\"" + method
+                + "\\" on an undefined value" );
+            return PlCx.UNDEF;
+        }
+
+        if ( invocant.is_lvalue() ) {
+            invocant = invocant.get();
+        }
+
+        PlClass pClass = invocant.blessed_class();
+
+        if ( pClass == null ) {
+            PlCORE.die( "Can' . chr(39) . 't call method \\"" + method
+                + "\\" on unblessed reference" );
+            return PlCx.UNDEF;
+        }
+        else {
+            return call( pClass.className().toString(), method, args, context );
+        }
+    }
+    public static final PlObject call( String invocant, String method, PlArray args, int context ) {
+        if ( invocant.equals("") ) {
+            PlCORE.die( "Can' . chr(39) . 't call method \\"" + method
+                + "\\" on an undefined value" );
+            return PlCx.UNDEF;
+        }
+
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.get(invocant + "::" + method);
+        }
+        else {
+            // fully qualified method name
+            methodCode = PlV.get(method);
+        }
+
+        if (methodCode.is_undef()) {
+            PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
+                + "\\" via package \\"" + invocant
+                + "\\" (perhaps you forgot to load \\"" + invocant + "\\"?" );
+            return PlCx.UNDEF;
+        }
+
+        args.unshift( new PlString(invocant) );
+        return methodCode.apply(context, args);
+    }
+
+    // local()
+    public static final PlObject push_local(PlHash container, String index) {
+        local_stack.a.add(container);
+        local_stack.a.add(new PlString(index));
+        PlLvalue empty = new PlLvalue();
+        local_stack.a.add(container.hget_lvalue(index));
+        container.h.put(index, empty);
+        return empty;
+    }
+    public static final PlObject push_local(PlArray container, int index) {
+        local_stack.a.add(container);
+        local_stack.a.add(new PlInt(index));
+        PlLvalue empty = new PlLvalue();
+        local_stack.a.add(container.aget_lvalue(index));
+        container.a.set(index, empty);
+        return empty;
+    }
+    public static final int local_length() {
+        return local_stack.to_int();
+    }
+    public static final PlObject cleanup_local(int pos, PlObject ret) {
+        while (local_stack.to_int() > pos) {
+            PlLvalue lvalue    = (PlLvalue)local_stack.pop();
+            PlObject index     = local_stack.pop();
+            PlObject container = local_stack.pop();
+            if (container.is_array()) {
+                ((PlArray)container).a.set(index.to_int(), lvalue);
+            }
+            else {
+                ((PlHash)container).h.put(index.toString(), lvalue);
+            }
+        }
+        return ret;
+    }
+
+    // context()
+    //      - handles run-time scalar/list/void context in expression results
+    public static final PlObject context(int want, PlObject arg) {
+        if (want == PlCx.LIST) {
+            return arg;
+        }
+        return arg.scalar();
+    }
+    public static final PlObject context(int want) {
+        if (want == PlCx.LIST) {
+            return new PlArray();
+        }
+        return PlCx.UNDEF;
+    }
+    public static final PlObject context(int want, PlObject... args) {
+        if (want == PlCx.LIST) {
+            return new PlArray(args);
+        }
+        return args[args.length-1].scalar();
+    }
+
+    // process id
+    public static PlObject getPID() {
+      String processName =
+        java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+      return new PlString(processName.split("@")[0]);
+    }
+
+    // statement()
+    //      - workaround for "Error: not a statement"
+    //      - this is the compile-time version of context(null, arg)
+    public static final void statement(PlObject... args) { }
+    public static final void statement() { }
+
+    // control-flow exceptions
+    public static final PlObject next() {
+        throw PlCx.NEXT;
+    }
+    public static final PlObject next(int label_id) {
+        throw new PlNextException(label_id);
+    }
+    public static final PlObject last() {
+        throw PlCx.LAST;
+    }
+    public static final PlObject last(int label_id) {
+        throw new PlLastException(label_id);
+    }
+    public static final PlObject redo(int label_id) {
+        throw new PlRedoException(label_id);
+    }
+    public static final PlObject ret(PlObject ret) {
+        throw new PlReturnException(ret);
+    }
+
+    public static final PlObject gotoOp(int ctx, PlObject s, PlArray List__) {
+        if (s.is_coderef()) {
+            // goto &subr;
+            throw new PlReturnException(s.apply(ctx, List__));
+        }
+        return PlCORE.die("goto() not implemented");
+    }
+
+    public static final PlObject caller(int ctx, PlObject s) {
+        int item = s.to_int();
+        PlCORE.die("caller() not implemented");
+
+        // TODO
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        for (StackTraceElement elem : stackTraceElements) {
+            PlCORE.say(elem.getMethodName());
+        }
+        // The last element of the array represents the bottom of the stack,
+        // which is the least recent method invocation in the sequence.
+        // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
+
+        return null;
+    }
+
+    public static final PlObject srand() {
+        random = new Random();
+        return PlCx.UNDEF;
+    }
+    public static final PlObject srand(int s) {
+        random = new Random(s);
+        return new PlInt(s);
+    }
+
+    public static final PlObject rand(double s) {
+        if (s == 0.0) {
+            s = 1.0;
+        }
+        return new PlDouble(s * random.nextDouble());
+    }
+
+    public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
+        if (ctx == PlCx.LIST) {
+            // TODO - range when first argument is string
+            long start = _start.to_long(),
+                 end   = _end.to_long();
+            int size = Math.max(0, (int)(end - start + 1));
+            long[] ret = new long[size];
+            for (int i = 0; i < size; ++i) {
+                ret[i] = start + i;
+            }
+            return ret;
+        }
+        PlCORE.die("Range not implemented for context " + ctx);
+        // TODO - range in boolean (scalar) context
+        // http://perldoc.perl.org/perlop.html#Range-Operators
+        // In scalar context, ".." returns a boolean value.
+        return null;
+    }
+
+    public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {
+        if (arg1.is_undef()) {
+            return arg0.is_undef() ? PlCx.TRUE : PlCx.FALSE;
+        }
+        if (arg1.is_string()) {
+            return arg0.str_eq(arg1);
+        }
+        if (arg1.is_num() || arg1.is_int()) {
+            return arg0.num_eq(arg1);
+        }
+        return PlCORE.die(PlCx.VOID, new PlArray(new PlString("Not implemented: smartmatch operator with argument type ' . chr(39) . '"), PlCORE.ref(PlCx.SCALAR, new PlArray(arg1)), new PlString("' . chr(39) . '")));
+    }
+
+    // and1(x) ? y : and3()
+    public static final boolean and1(PlObject arg1) {
+        if (arg1.to_bool()) {
+            return true;
+        }
+        else {
+            boolean_stack.add(0, arg1);
+            return false;
+        }
+    }
+    public static final PlObject and3() {
+        return boolean_stack.remove(0);
+    }
+
+    // or1(x) ? or2() : y
+    public static final boolean or1(PlObject arg1) {
+        if (arg1.to_bool()) {
+            boolean_stack.add(0, arg1);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public static final PlObject or2() {
+        return boolean_stack.remove(0);
+    }
+
+    // defined_or1(x) ? defined_or2() : y
+    public static final boolean defined_or1(PlObject arg1) {
+        if (!arg1.is_undef()) {
+            boolean_stack.add(0, arg1);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public static final PlObject defined_or2() {
+        return boolean_stack.remove(0);
+    }
+
+    public static final PlInt ord(PlString s) {
+        String item = s.toString();
+        return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
+    }
+
+    public static final PlString string_replicate(PlObject s, PlObject c) {
+        int count = c.to_int();
+        if ( count < 1 ) {
+            return new PlString("");
+        }
+        else {
+            String raw_s = s.toString();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++) {
+                sb.append(raw_s);
+            }
+            return new PlString(sb.toString());
+        }
+    }
+    public static final PlObject list_replicate(PlArray o, PlObject c, int wantarray) {
+        int count = c.to_int();
+        PlArray a = new PlArray();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                a.push( o );
+            }
+        }
+        return (wantarray == PlCx.LIST ) ? a : a.length_of_array();
+    }
+    public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
+        PlArray ret = new PlArray();
+        int size = a.to_int();
+        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+        PlObject v__val = v__ref.get();
+        for (int i = 0; i < size; i++) {
+            boolean result;
+            PlObject temp = a.aget(i);
+            v__ref.set(temp);
+            result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
+            if (result) {
+                ret.push(temp);
+            }
+        }
+        v__ref.set(v__val);
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
+    }
+    public static final PlObject map(PlClosure c, PlArray a, int wantarray) {
+        // TODO - pass @_ to the closure
+        PlArray ret = new PlArray();
+        int size = a.to_int();
+        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+        PlObject v__val = v__ref.get();
+        for (int i = 0; i < size; i++) {
+            v__ref.set(a.aget(i));
+            ret.push(c.apply(PlCx.LIST, new PlArray()));
+        }
+        v__ref.set(v__val);
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
+    }
+    public static final PlObject sort(PlClosure c, PlArray a, int wantarray) {
+        // TODO - pass @_ to the closure
+        String pkg = c.pkg_name;
+        PlArray ret = new PlArray(a);
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
+        PlObject v_a_val = v_a_ref.get();
+        PlObject v_b_val = v_b_ref.get();
+        Collections.sort(ret.a, comp);
+        v_a_ref.set(v_a_val);
+        v_b_ref.set(v_b_val);
+        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
+    }
+
+    public static PlObject prototype(PlObject arg, String packageName) {
+        if (arg.is_coderef()) {
+            if (arg.is_lvalue()) {
+                return ((PlClosure)arg.get()).prototype();
+            }
+            return ((PlClosure)arg).prototype();
+        }
+        String method = arg.toString();
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.get(packageName + "::" + method);
+        }
+        else {
+            // fully qualified name
+            methodCode = PlV.get(method);
+        }
+        if (methodCode.is_coderef()) {
+            return prototype(methodCode, packageName); 
+        }
+        return PlCx.UNDEF;
+    }
+
+    private static String double_escape(String s) {
+        // add double escapes: \\\\w instead of \\w
+        return s.replace("\\\\", "\\\\\\\\");
+    }
+
+    private static int _character_class_escape(int offset, String s, StringBuilder sb, int length) {
+        // [ ... ]
+        int offset3 = offset;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {
+                case ' . chr(39) . ']' . chr(39) . ':
+                    sb.append(Character.toChars(c3));
+                    return offset3;
+                case ' . chr(39) . ' ' . chr(39) . ':
+                    sb.append("\\\\ ");   // make this space a "token", even inside /x
+                    break;
+                default:
+                    sb.append(Character.toChars(c3));
+                    break;
+            }
+            offset3++;
+        }
+        return offset3;
+    }
+
+    public static String character_class_escape(String s) {
+        // escape spaces in character classes
+        final int length = s.length();
+        StringBuilder sb = new StringBuilder();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case ' . chr(39) . '\\\\' . chr(39) . ':  // escape - \\[
+                            sb.append(Character.toChars(c));
+                            if (offset < length) {
+                                offset++;
+                                int c2 = s.codePointAt(offset);
+                                sb.append(Character.toChars(c2));
+                            }
+                            break;
+                case ' . chr(39) . '[' . chr(39) . ':   // character class
+                            sb.append(Character.toChars(c));
+                            offset++;
+                            offset = _character_class_escape(offset, s, sb, length);
+                            break;
+                default:    // normal char
+                            sb.append(Character.toChars(c));
+                            break;
+            }
+            offset++;
+        }
+        return sb.toString();
+    }
+
+    // ****** pos()
+    // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
+
+    public static final PlObject pos(PlObject var) {
+        // TODO - check that var is lvalue
+        Integer pos = ((PlLvalue)var).pos;
+        if (pos == null) {
+            return PlCx.UNDEF;
+        }
+        return new PlInt(pos);
+    }
+    public static final PlObject set_pos(PlObject var, PlObject value, PlRegexResult matcher, String str) {
+        // TODO - check that var is lvalue
+        if (value.is_undef()) {
+            ((PlLvalue)var).pos = null;
+            return value;
+        }
+
+        int pos = value.to_int();
+
+        // check for zero-length match
+        int old_pos = pos(var).to_int();
+
+        if (old_pos == pos) {
+            // PlCORE.say("zero length match");
+            if (matcher.regex_zero_length_flag) {
+                if (matcher.matcher.find()) {
+                    matcher.regex_string = str;
+                    pos = matcher.matcher.end();
+
+                    // TODO - $&
+                    // String cap1 = str.substring(old_pos, pos);
+                    // String cap = str.substring(matcher.start(), matcher.end());
+                    // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
+
+                    matcher.regex_zero_length_flag = false;
+                }
+                else {
+                    reset_match();
+                    ((PlLvalue)var).pos = null;
+                    return PlCx.UNDEF;
+                }
+            }
+            else {
+                matcher.regex_zero_length_flag = true;
+            }
+        }
+
+        // TODO - test that pos < string length
+        value = new PlInt(pos);
+        ((PlLvalue)var).pos = pos;
+        return value;
+    }
+
+    // ****** regex variables
+    // class PlRegexResult extends PlObject {
+    //     public static Matcher matcher;      // regex captures
+    //     public static String  regex_string; // last string used in a regex
+    public static final PlHash regex_var = new PlHash();
+
+    public static final PlRegexResult get_match() {
+        return (PlRegexResult)regex_var.hget_lvalue("__match__").get();
+    }
+    public static final void local_match() {
+        regex_var.hget_lvalue_local("__match__");
+    }
+    public static final PlRegexResult set_match(Matcher m, String s) {
+        PlRegexResult match = new PlRegexResult();
+        match.matcher = m;
+        match.regex_string = s;
+        match.regex_zero_length_flag = false;
+        regex_var.hset("__match__", match);
+        return match;
+    }
+    public static final void reset_match() {
+        PlRegexResult match = new PlRegexResult();
+        match.regex_zero_length_flag = false;
+        regex_var.hset("__match__", match);
+    }
+    public static final PlObject regex_var(int var_number) {
+        if (var_number == 0) {
+            PlCORE.die("$0 not implemented");
+        }
+        Matcher matcher = get_match().matcher;
+        if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
+            return PlCx.UNDEF;
+        }
+        String cap = matcher.group(var_number);
+        if (cap == null) {
+            return PlCx.UNDEF;
+        }
+        return new PlString(cap);
+    }
+    public static final PlObject regex_var(String var_name) {
+        PlRegexResult match = get_match();
+        Matcher matcher = match.matcher;
+        String str = match.regex_string;
+        if (matcher == null || str == null) {
+            return PlCx.UNDEF;
+        }
+        if (var_name.equals("&")) {
+            // $&
+            String cap = str.substring(matcher.start(), matcher.end());
+            return new PlString(cap);
+        }
+        return PlCx.UNDEF;
+    }
+
+    // ****** end regex variables
+
+    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
+        String str = input.toString();
+        if (want != PlCx.LIST) {
+            Matcher matcher = pat.p.matcher(str);
+            if (global) {
+                // scalar context, global match
+                PlObject pos = pos(input);
+                boolean find;
+                if (pos.is_undef()) {
+                    find = matcher.find();
+                }
+                else {
+                    find = matcher.find(pos.to_int());
+                }
+                if (find) {
+                    PlRegexResult match = set_match(matcher, str);
+                    set_pos(input, new PlInt(matcher.end()), match, str);
+                    return PlCx.TRUE;
+                }
+                else {
+                    reset_match();
+                    set_pos(input, PlCx.UNDEF, null, null);
+                    return PlCx.FALSE;
+                }
+            }
+            else {
+                // scalar context, non-global match
+                if (matcher.find()) {
+                    set_match(matcher, str);
+                    return PlCx.TRUE;
+                }
+                else {
+                    reset_match();
+                    return PlCx.FALSE;
+                }
+            }
+        }
+        // list context
+        Matcher matcher = pat.p.matcher(str);
+        PlArray ret = new PlArray();
+        if (global) {
+            // list context, global match
+            boolean found = false;
+            while (matcher.find()) {
+                found = true;
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    String cap = matcher.group(i);
+                    if (cap == null) {
+                        ret.push(PlCx.UNDEF);
+                    }
+                    else {
+                        ret.push(cap);
+                    }
+                }
+            }
+            if (found) {
+                set_match(matcher, str);
+            }
+            else {
+                reset_match();
+            }
+            set_pos(input, PlCx.UNDEF, null, null);
+            return ret;
+        }
+        else {
+            // list context, non-global match
+            if (matcher.find()) {
+                set_match(matcher, str);
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    String cap = matcher.group(i);
+                    if (cap == null) {
+                        ret.push(PlCx.UNDEF);
+                    }
+                    else {
+                        ret.push(cap);
+                    }
+                }
+            }
+            else {
+                reset_match();
+            }
+            return ret;
+        }
+    }
+    public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global) {
+        return match(s, pat.get(), want, global);
+    }
+    public static final PlObject match(PlObject s, PlObject pat, int want, boolean global) {
+        // TODO - cache the compiled pattern
+        return match(s, new PlRegex(pat, 0), want, global);
+    }
+
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
+        // TODO - use "global" flag
+        if (want != PlCx.LIST) {
+            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+        }
+        PlCORE.die("not implemented string replace in list context");
+        return s;
+    }
+    public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
+        // TODO - cache the compiled pattern
+        return replace(s, new PlRegex(pat, 0), rep, want, global);
+    }
+
+    public static final PlObject replace(PlLvalue s, PlRegex pat, String rep, int want, boolean global) {
+        // TODO - use "global" flag
+        if (want != PlCx.LIST) {
+            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep)));
+        }
+        PlCORE.die("not implemented string replace in list context");
+        return s;
+    }
+    public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
+        // TODO - cache the compiled pattern
+        return replace(s, new PlRegex(pat, 0), rep, want, global);
+    }
+
+    // $v =~ tr/xyz/abc/i
+    // PerlOp.tr(v_v_100, new PlString("xyz"), new PlString("abc"), "", PlCx.VOID)
+    public static final PlObject tr(PlObject pstr, PlObject psearchChars, PlObject preplaceChars, String modifier, int want) {
+        String str          = pstr.toString();
+        String searchChars  = psearchChars.toString();
+        String replaceChars = preplaceChars.toString();
+        int modified = 0;
+        final int replaceCharsLength = replaceChars.length();
+        final int strLength = str.length();
+        final StringBuilder buf = new StringBuilder(strLength);
+        for (int i = 0; i < strLength; i++) {
+            final char ch = str.charAt(i);
+            final int index = searchChars.indexOf(ch);
+            if (index >= 0) {
+                modified++;
+                if (index < replaceCharsLength) {
+                    buf.append(replaceChars.charAt(index));
+                }
+            } else {
+                buf.append(ch);
+            }
+        }
+        if (modified > 0) {
+            pstr.set(new PlString(buf.toString()));
+        }
+        return new PlInt(modified);
+    }
+
+}
+class PlV {
+    // PlV implements namespaces and global variables
+    //
+    // TODO - import CORE subroutines in new namespaces, if needed
+    // TODO - cache lookups in lexical variables (see PlClosure implementation)
+
+    public static final PlHash var = new PlHash();
+
+    public static final PlLvalue get(String name) {
+        return (PlLvalue)var.hget_lvalue(name);
+    }
+    public static final PlLvalue get_local(String name) {
+        return (PlLvalue)var.hget_lvalue_local(name);
+    }
+    public static final PlObject set(String name, PlObject v) {
+        return var.hset(name, v);
+    }
+    public static final PlObject set_local(String name, PlObject v) {
+        return var.hget_lvalue_local(name).set(v);
+    }
+
+    public static final PlHash hash_get(String name) {
+        return (PlHash)var.hget_hashref(name).get();
+    }
+    public static final PlHash hash_get_local(String name) {
+        return (PlHash)var.hget_lvalue_local(name).get_hashref().get();
+    }
+    public static final PlObject hash_set(String name, PlObject v) {
+        return var.hget_hashref(name).hash_deref_set(v);
+    }
+    public static final PlObject hash_set_local(String name, PlObject v) {
+        return var.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
+    }
+
+    public static final PlArray array_get(String name) {
+        return (PlArray)var.hget_arrayref(name).get();
+    }
+    public static final PlArray array_get_local(String name) {
+        return (PlArray)var.hget_lvalue_local(name).get_arrayref().get();
+    }
+    public static final PlObject array_set(String name, PlObject v) {
+        return var.hget_arrayref(name).array_deref_set(v);
+    }
+    public static final PlObject array_set_local(String name, PlObject v) {
+        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
+    }
+
+    public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
+        if (name.is_coderef()) {
+            return name;
+        }
+        String s = name.toString();
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
+        return var.hget(s);
+    }
+
+    public static final String glob_name_fixup(String name, String prefix) {
+        // TODO - append namespace if needed
+        String[] part = name.split("::");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < part.length - 1; i++) {
+            sb.append(part[i]);
+            sb.append("::");
+        }
+        sb.append(prefix);
+        sb.append(part[part.length - 1]);
+        String internalName = sb.toString();
+        // PlCORE.say("internalName " + internalName);
+        return internalName;
+    }
+    public static final PlObject glob_set(PlObject name, PlObject v, String nameSpace) {
+        String s = name.toString();
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
+        return glob_set(s, v);
+    }
+    public static final PlObject glob_set(String name, PlObject v) {
+        PlObject value = v.aget(0);
+        if (value.is_coderef()) {
+            PlV.set(name, value);
+        }
+        else if (value.is_hashref()) {
+            PlV.set(glob_name_fixup(name, "Hash_"), value);
+        }
+        else if (value.is_arrayref()) {
+            PlV.set(glob_name_fixup(name, "List_"), value);
+        }
+        else if (value.is_scalarref()) {
+            PlV.set(glob_name_fixup(name, "v_"), value);
+        }
+        else {
+            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+        }
+        return value;
+    }
+    public static final PlObject glob_set_local(String name, PlObject v) {
+        PlObject value = v.aget(0);
+        if (value.is_coderef()) {
+            PlV.set_local(name, value);
+        }
+        else if (value.is_hashref()) {
+            PlV.set_local(glob_name_fixup(name, "Hash_"), value);
+        }
+        else if (value.is_arrayref()) {
+            PlV.set_local(glob_name_fixup(name, "List_"), value);
+        }
+        else if (value.is_scalarref()) {
+            PlV.set_local(glob_name_fixup(name, "v_"), value);
+        }
+        else {
+            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+        }
+        return value;
+    }
+
+}
+class PlEnv {
+    public static final void init(String[] args) {
+        PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
+        PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
+        PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
+        PlV.set("main::v_/", new PlString("\\n"));                  // $/ = "\\n"
+        PlCx.STDIN.inputStream   = System.in;
+        PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
+        PlCx.STDIN.eof           = false;
+
+        PlCx.STDOUT.outputStream = System.out;
+        PlCx.STDERR.outputStream = System.err;
+        PlV.set("STDIN",  PlCx.STDIN);                             // "GLOB"
+        PlV.set("STDOUT", PlCx.STDOUT);
+        PlV.set("STDERR", PlCx.STDERR);
+    }
+}
+class PlObject {
+    public static final PlString REF = new PlString("");
+
+    public PlObject() {
+    }
+' . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{'java_type'};
             my $perl_to_java = $class->{'perl_to_java'};
-            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        PlCORE.die("error .' . $perl_to_java . '!");' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) : ()
+            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public ' . $java_class_name . ' ' . $perl_to_java . '() {
+' . '        PlCORE.die("error .' . $perl_to_java . '!");
+' . '        return null;
+' . '    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%java_classes))) . '    // public String toString() {' . chr(10) . '    //     return this.toString();' . chr(10) . '    // }' . chr(10) . '    public int to_int() {' . chr(10) . '        long v = this.to_long();' . chr(10) . '        if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {' . chr(10) . '            PlCORE.die("numeric overflow converting to int");' . chr(10) . '        }' . chr(10) . '        return (int)v;' . chr(10) . '    }' . chr(10) . '    public byte to_byte() {' . chr(10) . '        long v = this.to_long();' . chr(10) . '        if (v > Byte.MAX_VALUE || v < Byte.MIN_VALUE) {' . chr(10) . '            PlCORE.die("numeric overflow converting to byte");' . chr(10) . '        }' . chr(10) . '        return (byte)v;' . chr(10) . '    }' . chr(10) . '    public short to_short() {' . chr(10) . '        long v = this.to_long();' . chr(10) . '        if (v > Short.MAX_VALUE || v < Short.MIN_VALUE) {' . chr(10) . '            PlCORE.die("numeric overflow converting to short");' . chr(10) . '        }' . chr(10) . '        return (short)v;' . chr(10) . '    }' . chr(10) . '    public float to_float() {' . chr(10) . '        double v = this.to_double();' . chr(10) . '        return (float)v;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        PlCORE.die("error .to_long!");' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    public PlObject end_of_array_index() {' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        PlCORE.die("error .to_double!");' . chr(10) . '        return 0.0;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        PlCORE.die("error .to_bool!");' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public PlObject apply(int want, PlArray List__) {' . chr(10) . '        // $ perl -e ' . chr(39) . ' $a = 5; $a->() ' . chr(39) . chr(10) . '        // Undefined subroutine &main::5 called' . chr(10) . '        PlCORE.die("subroutine call error");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject length() {' . chr(10) . '        return new PlInt(this.toString().length());' . chr(10) . '    }' . chr(10) . '    public PlObject get_arrayref() {' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject shift() {' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject get_hashref() {' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_scalarref(PlObject i) {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_scalarref(String i) {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref() {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref_set(PlObject v) {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_list_of_aliases(int want, PlArray a) {' . chr(10) . '        if (this.is_array()) {' . chr(10) . '            return ((PlArray)this).aget_list_of_aliases(want, a);' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY");' . chr(10) . '    }' . chr(10) . '    public PlObject aget_lvalue(int pos) {' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public PlObject aget_scalarref(PlObject i) {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_scalarref(int i) {' . chr(10) . '        PlCORE.die("Not a SCALAR reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlArray array_deref() {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return (PlArray)this;' . chr(10) . '    }' . chr(10) . '    public PlObject array_deref_set(PlObject i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_arrayref(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_arrayref(String i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_hashref(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_hashref(String i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget_arrayref(PlObject i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_arrayref(int i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_hashref(PlObject i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_hashref(int i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hash_deref() {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref_set(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget(String i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue(String i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue_local(PlObject i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue_local(String i) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hset(PlObject s, PlObject v) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject hset(String s, PlObject v) {' . chr(10) . '        PlCORE.die("Not a HASH reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget(PlObject i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aget(int i) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aset(int i, PlObject v) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject aset(PlObject i, PlObject v) {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject to_array() {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject length_of_array() {' . chr(10) . '        PlCORE.die("Not an ARRAY reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject values() {' . chr(10) . '        PlCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject keys() {' . chr(10) . '        PlCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject each() {' . chr(10) . '        PlCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject exists(PlObject i) {' . chr(10) . '        PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject delete(PlObject i) {' . chr(10) . '        PlCORE.die("delete argument is not a HASH or ARRAY element or slice");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject set(PlObject o) {' . chr(10) . '        PlCORE.die("Modification of a read-only value attempted");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject get() {' . chr(10) . '        PlCORE.die("error .get!");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public boolean is_int() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_num() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_hash() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_array() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_lvalue() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_ref() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_scalarref() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_arrayref() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_hashref() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_coderef() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_filehandle() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '    public PlObject refaddr() {' . chr(10) . '        // Scalar::Util::refaddr()' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public PlObject reftype() {' . chr(10) . '        // Scalar::Util::reftype()' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public PlObject blessed() {' . chr(10) . '        // Scalar::Util::blessed()' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public PlObject _decr() {' . chr(10) . '        // --$x' . chr(10) . '        return PlCx.MIN1;' . chr(10) . '    }' . chr(10) . '    public PlObject _incr() {' . chr(10) . '        // ++$x' . chr(10) . '        return PlCx.INT1;' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        return new PlInt(-this.to_long());' . chr(10) . '    }' . chr(10) . '    public PlObject abs() {' . chr(10) . '        long c = this.to_long();' . chr(10) . '        return new PlInt(c < 0 ? -c : c);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject sqrt() { return new PlDouble(Math.sqrt(this.to_double())); }' . chr(10) . '    public PlObject cos()  { return new PlDouble(Math.cos(this.to_double())); }' . chr(10) . '    public PlObject sin()  { return new PlDouble(Math.sin(this.to_double())); }' . chr(10) . '    public PlObject exp()  { return new PlDouble(Math.exp(this.to_double())); }' . chr(10) . '    public PlObject log()  { return new PlDouble(Math.log(this.to_double())); }' . chr(10) . '    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double())); }' . chr(10) . '    public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }' . chr(10) . chr(10) . '    public PlObject pre_decr() {' . chr(10) . '        // --$x' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't modify constant item in predecrement (--)");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject post_decr() {' . chr(10) . '        // $x--' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't modify constant item in postdecrement (--)");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject pre_incr() {' . chr(10) . '        // ++$x' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't modify constant item in preincrement (++)");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject post_incr() {' . chr(10) . '        // $x++' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't modify constant item in postincrement (++)");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject lcfirst() {' . chr(10) . '        String s = this.toString();' . chr(10) . '        int len = s.length();' . chr(10) . '        if (len == 0) {' . chr(10) . '            return new PlString(s);' . chr(10) . '        }' . chr(10) . '        if (len == 1) {' . chr(10) . '            return new PlString(s.toLowerCase());' . chr(10) . '        }' . chr(10) . '        return new PlString( s.substring(0,1).toLowerCase() + s.substring(1) );' . chr(10) . '    }' . chr(10) . '    public PlObject ucfirst() {' . chr(10) . '        String s = this.toString();' . chr(10) . '        int len = s.length();' . chr(10) . '        if (len == 0) {' . chr(10) . '            return new PlString(s);' . chr(10) . '        }' . chr(10) . '        if (len == 1) {' . chr(10) . '            return new PlString(s.toUpperCase());' . chr(10) . '        }' . chr(10) . '        return new PlString( s.substring(0,1).toUpperCase() + s.substring(1) );' . chr(10) . '    }' . chr(10) . '    public PlObject quotemeta() {' . chr(10) . '        String s = this.toString();' . chr(10) . '        return new PlString(Matcher.quoteReplacement(s));' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject substr(PlObject offset) {' . chr(10) . '        // substr EXPR,OFFSET' . chr(10) . '        String s = this.toString();' . chr(10) . '        int ofs = offset.to_int();' . chr(10) . '        if (ofs < 0) {' . chr(10) . '            ofs = s.length() + ofs;' . chr(10) . '        }' . chr(10) . '        if (ofs < 0) {' . chr(10) . '            ofs = 0;' . chr(10) . '        }' . chr(10) . '        if (ofs >= s.length()) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return new PlString(s.substring(ofs));' . chr(10) . '    }' . chr(10) . '    public PlObject substr(PlObject offset, PlObject length) {' . chr(10) . '        // substr EXPR,OFFSET,LENGTH' . chr(10) . '        String s = this.toString();' . chr(10) . '        int ofs = offset.to_int();' . chr(10) . '        int len = length.to_int();' . chr(10) . '        if (ofs < 0) {' . chr(10) . '            ofs = s.length() + ofs;' . chr(10) . '        }' . chr(10) . '        if (ofs >= s.length()) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . chr(10) . '        if (len < 0) {' . chr(10) . '            len = s.length() + len;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            len = ofs + len;' . chr(10) . '        }' . chr(10) . chr(10) . '        if (len >= s.length()) {' . chr(10) . '            len = s.length();' . chr(10) . '        }' . chr(10) . '        if (len <= 0) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        if (ofs < 0) {' . chr(10) . '            ofs = 0;' . chr(10) . '        }' . chr(10) . '        return new PlString(s.substring(ofs, len));' . chr(10) . '    }' . chr(10) . '    public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {' . chr(10) . '        // substr EXPR,OFFSET,LENGTH,REPLACEMENT' . chr(10) . '        PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject bless(PlString className) {' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't bless non-reference value");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlClass blessed_class() {' . chr(10) . '        return null;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject str_cmp(PlObject b) {' . chr(10) . '        int c = this.toString().compareTo(b.toString());' . chr(10) . '        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp(PlObject b) {' . chr(10) . '        return b.num_cmp2(this);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp2(PlObject b) {' . chr(10) . '        Long blong = new Long(b.to_long());' . chr(10) . '        int c = blong.compareTo(this.to_long());' . chr(10) . '        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%java_classes))) . '    // public String toString() {
+    //     return this.toString();
+    // }
+    public int to_int() {
+        long v = this.to_long();
+        if (v > Integer.MAX_VALUE || v < Integer.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to int");
+        }
+        return (int)v;
+    }
+    public byte to_byte() {
+        long v = this.to_long();
+        if (v > Byte.MAX_VALUE || v < Byte.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to byte");
+        }
+        return (byte)v;
+    }
+    public short to_short() {
+        long v = this.to_long();
+        if (v > Short.MAX_VALUE || v < Short.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to short");
+        }
+        return (short)v;
+    }
+    public float to_float() {
+        double v = this.to_double();
+        return (float)v;
+    }
+    public long to_long() {
+        PlCORE.die("error .to_long!");
+        return 0;
+    }
+    public PlObject end_of_array_index() {
+        return PlCORE.die("Not an ARRAY reference");
+    }
+    public double to_double() {
+        PlCORE.die("error .to_double!");
+        return 0.0;
+    }
+    public boolean to_bool() {
+        PlCORE.die("error .to_bool!");
+        return true;
+    }
+    public boolean is_undef() {
+        return false;
+    }
+    public PlObject apply(int want, PlArray List__) {
+        // $ perl -e ' . chr(39) . ' $a = 5; $a->() ' . chr(39) . '
+        // Undefined subroutine &main::5 called
+        PlCORE.die("subroutine call error");
+        return this;
+    }
+
+    public PlObject length() {
+        return new PlInt(this.toString().length());
+    }
+    public PlObject get_arrayref() {
+        return PlCORE.die("Not an ARRAY reference");
+    }
+
+    public PlObject shift() {
+        return PlCORE.die("Not an ARRAY reference");
+    }
+
+    public PlObject get_hashref() {
+        return PlCORE.die("Not a HASH reference");
+    }
+
+    public PlObject hget_scalarref(PlObject i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject hget_scalarref(String i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject scalar_deref() {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject aget_list_of_aliases(int want, PlArray a) {
+        if (this.is_array()) {
+            return ((PlArray)this).aget_list_of_aliases(want, a);
+        }
+        return PlCORE.die("Not an ARRAY");
+    }
+    public PlObject aget_lvalue(int pos) {
+        return PlCORE.die("Not an ARRAY reference");
+    }
+    public PlObject aget_scalarref(PlObject i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+    public PlObject aget_scalarref(int i) {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
+
+    public PlArray array_deref() {
+        PlCORE.die("Not an ARRAY reference");
+        return (PlArray)this;
+    }
+    public PlObject array_deref_set(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+
+    public PlObject hget_arrayref(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_arrayref(String i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_hashref(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_hashref(String i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+
+    public PlObject aget_arrayref(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aget_arrayref(int i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aget_hashref(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aget_hashref(int i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+
+    public PlObject hash_deref() {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hash_deref_set(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+
+    public PlObject hget(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget(String i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_lvalue(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_lvalue(String i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_lvalue_local(PlObject i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hget_lvalue_local(String i) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+
+    public PlObject hset(PlObject s, PlObject v) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+    public PlObject hset(String s, PlObject v) {
+        PlCORE.die("Not a HASH reference");
+        return this;
+    }
+
+    public PlObject aget(PlObject i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aget(int i) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aset(int i, PlObject v) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject to_array() {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject length_of_array() {
+        PlCORE.die("Not an ARRAY reference");
+        return this;
+    }
+    public PlObject values() {
+        PlCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject keys() {
+        PlCORE.die("Type of argument to keys on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject each() {
+        PlCORE.die("Type of argument to each on reference must be unblessed hashref or arrayref");
+        return this;
+    }
+    public PlObject exists(PlObject i) {
+        PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+        return this;
+    }
+    public PlObject delete(PlObject i) {
+        PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
+        return this;
+    }
+    public PlObject set(PlObject o) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject get() {
+        PlCORE.die("error .get!");
+        return this;
+    }
+    public boolean is_int() {
+        return false;
+    }
+    public boolean is_num() {
+        return false;
+    }
+    public boolean is_string() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public boolean is_hash() {
+        return false;
+    }
+    public boolean is_array() {
+        return false;
+    }
+    public boolean is_lvalue() {
+        return false;
+    }
+    public boolean is_ref() {
+        return false;
+    }
+    public boolean is_scalarref() {
+        return false;
+    }
+    public boolean is_arrayref() {
+        return false;
+    }
+    public boolean is_hashref() {
+        return false;
+    }
+    public boolean is_coderef() {
+        return false;
+    }
+    public boolean is_filehandle() {
+        return false;
+    }
+    public PlString ref() {
+        return REF;
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        return PlCx.UNDEF;
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return PlCx.UNDEF;
+    }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+        return PlCx.UNDEF;
+    }
+    public PlObject _decr() {
+        // --$x
+        return PlCx.MIN1;
+    }
+    public PlObject _incr() {
+        // ++$x
+        return PlCx.INT1;
+    }
+    public PlObject neg() {
+        return new PlInt(-this.to_long());
+    }
+    public PlObject abs() {
+        long c = this.to_long();
+        return new PlInt(c < 0 ? -c : c);
+    }
+
+    public PlObject sqrt() { return new PlDouble(Math.sqrt(this.to_double())); }
+    public PlObject cos()  { return new PlDouble(Math.cos(this.to_double())); }
+    public PlObject sin()  { return new PlDouble(Math.sin(this.to_double())); }
+    public PlObject exp()  { return new PlDouble(Math.exp(this.to_double())); }
+    public PlObject log()  { return new PlDouble(Math.log(this.to_double())); }
+    public PlObject pow(PlObject arg)    { return new PlDouble(Math.pow(this.to_double(), arg.to_double())); }
+    public PlObject atan2(PlObject arg)  { return new PlDouble(Math.atan2(this.to_double(), arg.to_double())); }
+
+    public PlObject pre_decr() {
+        // --$x
+        PlCORE.die("Can' . chr(39) . 't modify constant item in predecrement (--)");
+        return this;
+    }
+    public PlObject post_decr() {
+        // $x--
+        PlCORE.die("Can' . chr(39) . 't modify constant item in postdecrement (--)");
+        return this;
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        PlCORE.die("Can' . chr(39) . 't modify constant item in preincrement (++)");
+        return this;
+    }
+    public PlObject post_incr() {
+        // $x++
+        PlCORE.die("Can' . chr(39) . 't modify constant item in postincrement (++)");
+        return this;
+    }
+
+    public PlObject lcfirst() {
+        String s = this.toString();
+        int len = s.length();
+        if (len == 0) {
+            return new PlString(s);
+        }
+        if (len == 1) {
+            return new PlString(s.toLowerCase());
+        }
+        return new PlString( s.substring(0,1).toLowerCase() + s.substring(1) );
+    }
+    public PlObject ucfirst() {
+        String s = this.toString();
+        int len = s.length();
+        if (len == 0) {
+            return new PlString(s);
+        }
+        if (len == 1) {
+            return new PlString(s.toUpperCase());
+        }
+        return new PlString( s.substring(0,1).toUpperCase() + s.substring(1) );
+    }
+    public PlObject quotemeta() {
+        String s = this.toString();
+        return new PlString(Matcher.quoteReplacement(s));
+    }
+
+    public PlObject substr(PlObject offset) {
+        // substr EXPR,OFFSET
+        String s = this.toString();
+        int ofs = offset.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+        if (ofs >= s.length()) {
+            return PlCx.UNDEF;
+        }
+        return new PlString(s.substring(ofs));
+    }
+    public PlObject substr(PlObject offset, PlObject length) {
+        // substr EXPR,OFFSET,LENGTH
+        String s = this.toString();
+        int ofs = offset.to_int();
+        int len = length.to_int();
+        if (ofs < 0) {
+            ofs = s.length() + ofs;
+        }
+        if (ofs >= s.length()) {
+            return PlCx.UNDEF;
+        }
+
+        if (len < 0) {
+            len = s.length() + len;
+        }
+        else {
+            len = ofs + len;
+        }
+
+        if (len >= s.length()) {
+            len = s.length();
+        }
+        if (len <= 0) {
+            return PlCx.UNDEF;
+        }
+        if (ofs < 0) {
+            ofs = 0;
+        }
+        return new PlString(s.substring(ofs, len));
+    }
+    public PlObject substr(PlObject offset, PlObject length, PlObject replacement) {
+        // substr EXPR,OFFSET,LENGTH,REPLACEMENT
+        PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
+        return this;
+    }
+    public PlObject bless(PlString className) {
+        PlCORE.die("Can' . chr(39) . 't bless non-reference value");
+        return this;
+    }
+    public PlClass blessed_class() {
+        return null;
+    }
+    public PlObject scalar() {
+        return this;
+    }
+    public PlObject str_cmp(PlObject b) {
+        int c = this.toString().compareTo(b.toString());
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+    }
+    public PlObject num_cmp(PlObject b) {
+        return b.num_cmp2(this);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        Long blong = new Long(b.to_long());
+        int c = blong.compareTo(this.to_long());
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+    }
+' . (join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{'op'};
             my $returns = $number_binop{$perl}->{'returns'};
-            '    public PlObject ' . $perl . '(PlObject s) {' . chr(10) . '        return s.' . $perl . '2(this);' . chr(10) . '    }' . chr(10) . ($returns eq 'PlDouble' ? '    public PlObject ' . $perl . '2(PlObject s) {' . chr(10) . '        return new ' . $returns . '( s.to_double() ' . $native . ' this.to_double() );' . chr(10) . '    }' . chr(10) : '    public PlObject ' . $perl . '2(PlObject s) {' . chr(10) . '        return new ' . $returns . '( s.to_long() ' . $native . ' this.to_long() );' . chr(10) . '    }' . chr(10))
+            '    public PlObject ' . $perl . '(PlObject s) {
+        return s.' . $perl . '2(this);
+    }
+' . ($returns eq 'PlDouble' ? '    public PlObject ' . $perl . '2(PlObject s) {
+        return new ' . $returns . '( s.to_double() ' . $native . ' this.to_double() );
+    }
+' : '    public PlObject ' . $perl . '2(PlObject s) {
+        return new ' . $returns . '( s.to_long() ' . $native . ' this.to_long() );
+    }
+')
         } sort {
             $a cmp $b
         } keys(%number_binop))) . (join('', map {
             my $perl = $_;
             my $native = $string_binop{$perl}->{'op'};
             my $returns = $string_binop{$perl}->{'returns'};
-            '    public PlObject ' . $perl . '(PlObject b) {' . chr(10) . '        return new ' . $returns . '(this.toString().compareTo(b.toString()) ' . $native . ');' . chr(10) . '    }' . chr(10)
+            '    public PlObject ' . $perl . '(PlObject b) {
+        return new ' . $returns . '(this.toString().compareTo(b.toString()) ' . $native . ');
+    }
+'
         } sort {
             $a cmp $b
-        } keys(%string_binop))) . '}' . chr(10) . 'class PlReference extends PlObject {' . chr(10) . '    public static final PlString REF = new PlString("REF");' . chr(10) . '    public PlClass bless;' . chr(10) . chr(10) . '    public boolean is_ref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlReference bless(PlString className) {' . chr(10) . '        this.bless = new PlClass(className);' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlClass blessed_class() {' . chr(10) . '        return this.bless;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlString ref() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return REF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";' . chr(10) . '    }' . chr(10) . '    public PlInt refaddr() {' . chr(10) . '        // Scalar::Util::refaddr()' . chr(10) . '        return new PlInt(this.hashCode());' . chr(10) . '    }' . chr(10) . '    public PlObject blessed() {' . chr(10) . '        // Scalar::Util::blessed()' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject reftype() {' . chr(10) . '        // Scalar::Util::reftype()' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlFileHandle extends PlReference {' . chr(10) . '    public static final PlString REF = new PlString("GLOB");' . chr(10) . '    public PrintStream outputStream;    // System.out, System.err' . chr(10) . '    public InputStream inputStream;     // System.in' . chr(10) . '    public BufferedReader reader;       // Console.reader' . chr(10) . '    public StringBuilder readlineBuffer;' . chr(10) . '    public boolean eof;' . chr(10) . '    public boolean is_argv;' . chr(10) . chr(10) . '    public PlFileHandle() {' . chr(10) . '        this.readlineBuffer = new StringBuilder();' . chr(10) . '        this.eof = true;' . chr(10) . '        this.is_argv = false;' . chr(10) . '    }' . chr(10) . chr(10) . '    public boolean is_filehandle() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlRegex extends PlReference {' . chr(10) . '    public Pattern p;' . chr(10) . '    public String  original_string;' . chr(10) . '    // public Matcher m;' . chr(10) . '    public static final PlString REF = new PlString("Regexp");' . chr(10) . chr(10) . '    public PlRegex(String p, int flags) {' . chr(10) . '        this.original_string = p;' . chr(10) . '        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);' . chr(10) . '    }' . chr(10) . '    public PlRegex(PlObject p, int flags) {' . chr(10) . '        this.original_string = p.toString();' . chr(10) . '        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        // TODO - show flags' . chr(10) . '        return this.original_string;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlRegexResult extends PlObject {' . chr(10) . '    public static Matcher matcher;      // regex captures' . chr(10) . '    public static String  regex_string; // last string used in a regex' . chr(10) . '    public static boolean regex_zero_length_flag;' . chr(10) . '}' . chr(10) . 'class PlClosure extends PlReference implements Runnable {' . chr(10) . '    public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }' . chr(10) . '    public PlObject prototype;   // ' . chr(39) . '$$$' . chr(39) . chr(10) . '    public String pkg_name;      // ' . chr(39) . 'main' . chr(39) . chr(10) . '    public static final PlString REF = new PlString("CODE");' . chr(10) . chr(10) . '    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {' . chr(10) . '        this.prototype = prototype;' . chr(10) . '        this.env = env;' . chr(10) . '        this.pkg_name = pkg_name;' . chr(10) . '    }' . chr(10) . '    // Note: apply() is inherited from PlObject' . chr(10) . '    public PlObject apply(int want, PlArray List__) {' . chr(10) . '        PlCORE.die("it looks like you have a closure without a block");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public void run() {' . chr(10) . '        // run as a thread' . chr(10) . '        this.apply(PlCx.VOID, new PlArray());' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return REF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public boolean is_coderef() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject prototype() {' . chr(10) . '        return this.prototype;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlLvalueRef extends PlReference {' . chr(10) . '    private PlObject o;' . chr(10) . '    public static final PlString REF = new PlString("SCALAR");' . chr(10) . chr(10) . '    public PlString ref() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return REF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        int id = System.identityHashCode(this.o);' . chr(10) . '        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";' . chr(10) . '    }' . chr(10) . '    public PlLvalueRef(PlLvalue o) {' . chr(10) . '        this.o = o;' . chr(10) . '    }' . chr(10) . '    public PlLvalueRef(PlObject o) {' . chr(10) . '        this.o = o;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref() {' . chr(10) . '        return this.o.get();' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref_set(PlObject v) {' . chr(10) . '        return this.o.set(v);' . chr(10) . '    }' . chr(10) . '    public boolean is_scalarref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject get() {' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlArrayRef extends PlArray {' . chr(10) . '    public static final PlString REF = new PlString("ARRAY");' . chr(10) . '    public PlClass bless;' . chr(10) . chr(10) . '    public String toString() {' . chr(10) . '        int id = System.identityHashCode(this.a);' . chr(10) . '        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";' . chr(10) . '    }' . chr(10) . '    public PlArrayRef() {' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        this.a = new ArrayList<PlObject>();' . chr(10) . '    }' . chr(10) . '    public PlArrayRef(PlArray o) {' . chr(10) . '        this.a = o.a;' . chr(10) . '        this.each_iterator = o.each_iterator;' . chr(10) . '    }' . chr(10) . '    public PlArrayRef(PlObject o) {' . chr(10) . '        this.a = ((PlArray)o).a;' . chr(10) . '        this.each_iterator = ((PlArray)o).each_iterator;' . chr(10) . '    }' . chr(10) . '    public PlObject set(PlArray o) {' . chr(10) . '        this.a = o.a;' . chr(10) . '        this.each_iterator = o.each_iterator;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject get() {' . chr(10) . '        PlArray o = new PlArray();' . chr(10) . '        o.a = this.a;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlArray array_deref() {' . chr(10) . '        PlArray o = new PlArray();' . chr(10) . '        o.a = this.a;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject array_deref_set(PlObject v) {' . chr(10) . '        super.set(v);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public boolean is_array() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_ref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean is_arrayref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArrayRef bless(PlString className) {' . chr(10) . '        this.bless = new PlClass(className);' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlClass blessed_class() {' . chr(10) . '        return this.bless;' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return REF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject refaddr() {' . chr(10) . '        // Scalar::Util::refaddr()' . chr(10) . '        int id = System.identityHashCode(this.a);' . chr(10) . '        return new PlInt(id);' . chr(10) . '    }' . chr(10) . '    public PlObject blessed() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject reftype() {' . chr(10) . '        // Scalar::Util::reftype()' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlHashRef extends PlHash {' . chr(10) . '    public static final PlString REF = new PlString("HASH");' . chr(10) . '    public PlClass bless;' . chr(10) . chr(10) . '    public String toString() {' . chr(10) . '        int id = System.identityHashCode(this.h);' . chr(10) . '        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";' . chr(10) . '    }' . chr(10) . '    public PlHashRef() {' . chr(10) . '        this.h = new HashMap<String, PlObject>();' . chr(10) . '        this.each_iterator = null;' . chr(10) . '    }' . chr(10) . '    public PlHashRef(PlHash o) {' . chr(10) . '        this.h = o.h;' . chr(10) . '        this.each_iterator = o.each_iterator;' . chr(10) . '    }' . chr(10) . '    public PlHashRef(PlObject o) {' . chr(10) . '        this.h = ((PlHash)o).h;' . chr(10) . '        this.each_iterator = ((PlHash)o).each_iterator;' . chr(10) . '    }' . chr(10) . '    public PlObject set(PlHash o) {' . chr(10) . '        this.h = o.h;' . chr(10) . '        this.each_iterator = o.each_iterator;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject get() {' . chr(10) . '        PlHash o = new PlHash();' . chr(10) . '        o.h = this.h;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref() {' . chr(10) . '        PlHash o = new PlHash();' . chr(10) . '        o.h = this.h;' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref_set(PlObject v) {' . chr(10) . '        super.set(v);' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public boolean is_hash() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_ref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean is_hashref() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlHashRef bless(PlString className) {' . chr(10) . '        this.bless = new PlClass(className);' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlClass blessed_class() {' . chr(10) . '        return this.bless;' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return REF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject refaddr() {' . chr(10) . '        // Scalar::Util::refaddr()' . chr(10) . '        int id = System.identityHashCode(this.h);' . chr(10) . '        return new PlInt(id);' . chr(10) . '    }' . chr(10) . '    public PlObject blessed() {' . chr(10) . '        if ( this.bless == null ) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return this.bless.className();' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject reftype() {' . chr(10) . '        // Scalar::Util::reftype()' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlClass {' . chr(10) . '    public static PlHash classes = new PlHash();' . chr(10) . '    public PlString className;' . chr(10) . chr(10) . '    public PlClass (PlString blessing) {' . chr(10) . '        this.className = blessing;' . chr(10) . '        if (classes.exists(className) == null) {' . chr(10) . '            classes.hset(className, className);' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlString className() {' . chr(10) . '        return this.className;' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return this.className == null;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlLvalue extends PlObject {' . chr(10) . '    private PlObject o;' . chr(10) . '    public Integer pos;' . chr(10) . chr(10) . '    // Note: several versions of PlLvalue()' . chr(10) . '    public PlLvalue() {' . chr(10) . '        this.o = PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public PlLvalue(PlObject o) {' . chr(10) . '        this.o = o;' . chr(10) . '    }' . chr(10) . '    public PlLvalue(PlLvalue o) {' . chr(10) . '        this.o = o.get();' . chr(10) . '    }' . chr(10) . '    public PlLvalue(PlArray o) {' . chr(10) . '        // $a = @x' . chr(10) . '        this.o = o.scalar();' . chr(10) . '    }' . chr(10) . '    public PlLvalue(PlHash o) {' . chr(10) . '        // $a = %x' . chr(10) . '        this.o = o.scalar();' . chr(10) . '    }' . chr(10) . '    public PlObject get() {' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '    public PlObject get_scalarref() {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.o = ar;' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_scalarref()) {' . chr(10) . '            return this.o;' . chr(10) . '        }' . chr(10) . '        // Modification of a read-only value attempted' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '    public PlObject get_arrayref() {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            PlArrayRef ar = new PlArrayRef();' . chr(10) . '            this.o = ar;' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_arrayref()) {' . chr(10) . '            return this.o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public PlObject get_hashref() {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.o = hr;' . chr(10) . '            return this.o;' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_hashref()) {' . chr(10) . '            return this.o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . '    public PlObject aget(PlObject i) {' . chr(10) . '        return this.o.aget(i);' . chr(10) . '    }' . chr(10) . '    public PlObject aget(int i) {' . chr(10) . '        return this.o.aget(i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget_scalarref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlArrayRef();' . chr(10) . '        }' . chr(10) . '        return this.o.aget_scalarref(i);' . chr(10) . '    }' . chr(10) . '    public PlObject aget_arrayref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlArrayRef();' . chr(10) . '        }' . chr(10) . '        return this.o.aget_arrayref(i);' . chr(10) . '    }' . chr(10) . '    public PlObject aget_hashref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlArrayRef();' . chr(10) . '        }' . chr(10) . '        return this.o.aget_hashref(i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aset(int i, PlObject v) {' . chr(10) . '        return this.o.aset(i, v);' . chr(10) . '    }' . chr(10) . '    public PlObject aset(PlObject i, PlObject v) {' . chr(10) . '        return this.o.aset(i, v);' . chr(10) . '    }' . chr(10) . '    public PlObject hget(PlObject i) {' . chr(10) . '        return this.o.hget(i);' . chr(10) . '    }' . chr(10) . '    public PlObject hget(String i) {' . chr(10) . '        return this.o.hget(i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_scalarref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlHashRef();' . chr(10) . '        }' . chr(10) . '        return this.o.hget_scalarref(i);' . chr(10) . '    }' . chr(10) . '    public PlObject hget_arrayref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlHashRef();' . chr(10) . '        }' . chr(10) . '        return this.o.hget_arrayref(i);' . chr(10) . '    }' . chr(10) . '    public PlObject hget_hashref(PlObject i) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlHashRef();' . chr(10) . '        }' . chr(10) . '        return this.o.hget_hashref(i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hset(PlObject s, PlObject v) {' . chr(10) . '        return this.o.hset(s, v);' . chr(10) . '    }' . chr(10) . '    public PlObject hset(String s, PlObject v) {' . chr(10) . '        return this.o.hset(s, v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject scalar_deref() {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.o = ar;' . chr(10) . '        }' . chr(10) . '        return this.o.scalar_deref();' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref_set(PlObject v) {' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.o = ar;' . chr(10) . '        }' . chr(10) . '        return this.o.scalar_deref_set(v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlArray array_deref() {' . chr(10) . '        // @$x doesn' . chr(39) . 't autovivify' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            return new PlArray();' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_arrayref()) {' . chr(10) . '            return (PlArray)(this.o.get());' . chr(10) . '        }' . chr(10) . '        return (PlArray)PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public PlObject array_deref_set(PlObject v) {' . chr(10) . '        // @$x = ...' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlArrayRef();' . chr(10) . '            return this.o.array_deref_set(v);' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_arrayref()) {' . chr(10) . '            return this.o.array_deref_set(v);' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hash_deref() {' . chr(10) . '        // %$x doesn' . chr(39) . 't autovivify' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            return new PlHash();' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_hashref()) {' . chr(10) . '            return this.o.get();' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref_set(PlObject v) {' . chr(10) . '        // %$x = ...' . chr(10) . '        if (this.o.is_undef()) {' . chr(10) . '            this.o = new PlHashRef();' . chr(10) . '            return this.o.hash_deref_set(v);' . chr(10) . '        }' . chr(10) . '        else if (this.o.is_hashref()) {' . chr(10) . '            return this.o.hash_deref_set(v);' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . '    public PlObject apply(int want, PlArray List__) {' . chr(10) . '        return this.o.apply(want, List__);' . chr(10) . '    }' . chr(10) . chr(10) . '    // Note: several versions of set()' . chr(10) . '    public PlLvalue set(PlObject o) {' . chr(10) . '        if (o == null) {' . chr(10) . '            o = PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        if (o.is_lvalue()) {' . chr(10) . '            o = o.get();' . chr(10) . '        }' . chr(10) . '        this.o = o;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlLvalue set(PlString o) {' . chr(10) . '        this.o = o;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlLvalue set(PlInt o) {' . chr(10) . '        this.o = o;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlLvalue set(PlLvalue o) {' . chr(10) . '        this.o = o.get();' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlLvalue set(PlArray o) {' . chr(10) . '        // $a = @x' . chr(10) . '        this.o = o.scalar();' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlLvalue set(PlHash o) {' . chr(10) . '        // $a = %x' . chr(10) . '        this.o = o.scalar();' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%string_binop))) . '}
+class PlReference extends PlObject {
+    public static final PlString REF = new PlString("REF");
+    public PlClass bless;
+
+    public boolean is_ref() {
+        return true;
+    }
+    public PlReference bless(PlString className) {
+        this.bless = new PlClass(className);
+        return this;
+    }
+    public PlClass blessed_class() {
+        return this.bless;
+    }
+
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+
+    public boolean to_bool() {
+        return true;
+    }
+    public String toString() {
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+    }
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
+        return new PlInt(this.hashCode());
+    }
+    public PlObject blessed() {
+        // Scalar::Util::blessed()
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+}
+class PlFileHandle extends PlReference {
+    public static final PlString REF = new PlString("GLOB");
+    public PrintStream outputStream;    // System.out, System.err
+    public InputStream inputStream;     // System.in
+    public BufferedReader reader;       // Console.reader
+    public StringBuilder readlineBuffer;
+    public boolean eof;
+    public boolean is_argv;
+
+    public PlFileHandle() {
+        this.readlineBuffer = new StringBuilder();
+        this.eof = true;
+        this.is_argv = false;
+    }
+
+    public boolean is_filehandle() {
+        return true;
+    }
+}
+class PlRegex extends PlReference {
+    public Pattern p;
+    public String  original_string;
+    // public Matcher m;
+    public static final PlString REF = new PlString("Regexp");
+
+    public PlRegex(String p, int flags) {
+        this.original_string = p;
+        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+    }
+    public PlRegex(PlObject p, int flags) {
+        this.original_string = p.toString();
+        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+    }
+    public String toString() {
+        // TODO - show flags
+        return this.original_string;
+    }
+}
+class PlRegexResult extends PlObject {
+    public static Matcher matcher;      // regex captures
+    public static String  regex_string; // last string used in a regex
+    public static boolean regex_zero_length_flag;
+}
+class PlClosure extends PlReference implements Runnable {
+    public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
+    public PlObject prototype;   // ' . chr(39) . '$$$' . chr(39) . '
+    public String pkg_name;      // ' . chr(39) . 'main' . chr(39) . '
+    public static final PlString REF = new PlString("CODE");
+
+    public PlClosure(PlObject prototype, PlObject[] env, String pkg_name) {
+        this.prototype = prototype;
+        this.env = env;
+        this.pkg_name = pkg_name;
+    }
+    // Note: apply() is inherited from PlObject
+    public PlObject apply(int want, PlArray List__) {
+        PlCORE.die("it looks like you have a closure without a block");
+        return this;
+    }
+    public void run() {
+        // run as a thread
+        this.apply(PlCx.VOID, new PlArray());
+    }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public boolean is_coderef() {
+        return true;
+    }
+    public PlObject prototype() {
+        return this.prototype;
+    }
+}
+class PlLvalueRef extends PlReference {
+    private PlObject o;
+    public static final PlString REF = new PlString("SCALAR");
+
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public String toString() {
+        int id = System.identityHashCode(this.o);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+    }
+    public PlLvalueRef(PlLvalue o) {
+        this.o = o;
+    }
+    public PlLvalueRef(PlObject o) {
+        this.o = o;
+    }
+    public PlObject scalar_deref() {
+        return this.o.get();
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        return this.o.set(v);
+    }
+    public boolean is_scalarref() {
+        return true;
+    }
+    public PlObject get() {
+        return this.o;
+    }
+}
+class PlArrayRef extends PlArray {
+    public static final PlString REF = new PlString("ARRAY");
+    public PlClass bless;
+
+    public String toString() {
+        int id = System.identityHashCode(this.a);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+    }
+    public PlArrayRef() {
+        this.each_iterator = 0;
+        this.a = new ArrayList<PlObject>();
+    }
+    public PlArrayRef(PlArray o) {
+        this.a = o.a;
+        this.each_iterator = o.each_iterator;
+    }
+    public PlArrayRef(PlObject o) {
+        this.a = ((PlArray)o).a;
+        this.each_iterator = ((PlArray)o).each_iterator;
+    }
+    public PlObject set(PlArray o) {
+        this.a = o.a;
+        this.each_iterator = o.each_iterator;
+        return o;
+    }
+    public PlObject get() {
+        PlArray o = new PlArray();
+        o.a = this.a;
+        return o;
+    }
+    public PlArray array_deref() {
+        PlArray o = new PlArray();
+        o.a = this.a;
+        return o;
+    }
+    public PlObject array_deref_set(PlObject v) {
+        super.set(v);
+        return v;
+    }
+    public boolean is_array() {
+        return false;
+    }
+    public boolean is_ref() {
+        return true;
+    }
+    public boolean is_arrayref() {
+        return true;
+    }
+    public boolean to_bool() {
+        return true;
+    }
+    public PlObject scalar() {
+        return this;
+    }
+    public PlArrayRef bless(PlString className) {
+        this.bless = new PlClass(className);
+        return this;
+    }
+    public PlClass blessed_class() {
+        return this.bless;
+    }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.a);
+        return new PlInt(id);
+    }
+    public PlObject blessed() {
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+}
+class PlHashRef extends PlHash {
+    public static final PlString REF = new PlString("HASH");
+    public PlClass bless;
+
+    public String toString() {
+        int id = System.identityHashCode(this.h);
+        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+    }
+    public PlHashRef() {
+        this.h = new HashMap<String, PlObject>();
+        this.each_iterator = null;
+    }
+    public PlHashRef(PlHash o) {
+        this.h = o.h;
+        this.each_iterator = o.each_iterator;
+    }
+    public PlHashRef(PlObject o) {
+        this.h = ((PlHash)o).h;
+        this.each_iterator = ((PlHash)o).each_iterator;
+    }
+    public PlObject set(PlHash o) {
+        this.h = o.h;
+        this.each_iterator = o.each_iterator;
+        return o;
+    }
+    public PlObject get() {
+        PlHash o = new PlHash();
+        o.h = this.h;
+        return o;
+    }
+    public PlObject hash_deref() {
+        PlHash o = new PlHash();
+        o.h = this.h;
+        return o;
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        super.set(v);
+        return v;
+    }
+    public boolean is_hash() {
+        return false;
+    }
+    public boolean is_ref() {
+        return true;
+    }
+    public boolean is_hashref() {
+        return true;
+    }
+    public PlObject scalar() {
+        return this;
+    }
+    public boolean to_bool() {
+        return true;
+    }
+    public PlHashRef bless(PlString className) {
+        this.bless = new PlClass(className);
+        return this;
+    }
+    public PlClass blessed_class() {
+        return this.bless;
+    }
+    public PlString ref() {
+        if ( this.bless == null ) {
+            return REF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        int id = System.identityHashCode(this.h);
+        return new PlInt(id);
+    }
+    public PlObject blessed() {
+        if ( this.bless == null ) {
+            return PlCx.UNDEF;
+        }
+        else {
+            return this.bless.className();
+        }
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return REF;
+    }
+}
+class PlClass {
+    public static PlHash classes = new PlHash();
+    public PlString className;
+
+    public PlClass (PlString blessing) {
+        this.className = blessing;
+        if (classes.exists(className) == null) {
+            classes.hset(className, className);
+        }
+    }
+    public PlString className() {
+        return this.className;
+    }
+    public boolean is_undef() {
+        return this.className == null;
+    }
+}
+class PlLvalue extends PlObject {
+    private PlObject o;
+    public Integer pos;
+
+    // Note: several versions of PlLvalue()
+    public PlLvalue() {
+        this.o = PlCx.UNDEF;
+    }
+    public PlLvalue(PlObject o) {
+        this.o = o;
+    }
+    public PlLvalue(PlLvalue o) {
+        this.o = o.get();
+    }
+    public PlLvalue(PlArray o) {
+        // $a = @x
+        this.o = o.scalar();
+    }
+    public PlLvalue(PlHash o) {
+        // $a = %x
+        this.o = o.scalar();
+    }
+    public PlObject get() {
+        return this.o;
+    }
+    public PlObject get_scalarref() {
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
+            return ar;
+        }
+        else if (this.o.is_scalarref()) {
+            return this.o;
+        }
+        // Modification of a read-only value attempted
+        return this.o;
+    }
+    public PlObject get_arrayref() {
+        if (this.o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.o = ar;
+            return ar;
+        }
+        else if (this.o.is_arrayref()) {
+            return this.o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+    public PlObject get_hashref() {
+        if (this.o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.o = hr;
+            return this.o;
+        }
+        else if (this.o.is_hashref()) {
+            return this.o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+    public PlObject aget(PlObject i) {
+        return this.o.aget(i);
+    }
+    public PlObject aget(int i) {
+        return this.o.aget(i);
+    }
+
+    public PlObject aget_scalarref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
+        return this.o.aget_scalarref(i);
+    }
+    public PlObject aget_arrayref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
+        return this.o.aget_arrayref(i);
+    }
+    public PlObject aget_hashref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
+        return this.o.aget_hashref(i);
+    }
+
+    public PlObject aset(int i, PlObject v) {
+        return this.o.aset(i, v);
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        return this.o.aset(i, v);
+    }
+    public PlObject hget(PlObject i) {
+        return this.o.hget(i);
+    }
+    public PlObject hget(String i) {
+        return this.o.hget(i);
+    }
+
+    public PlObject hget_scalarref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
+        return this.o.hget_scalarref(i);
+    }
+    public PlObject hget_arrayref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
+        return this.o.hget_arrayref(i);
+    }
+    public PlObject hget_hashref(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
+        return this.o.hget_hashref(i);
+    }
+
+    public PlObject hset(PlObject s, PlObject v) {
+        return this.o.hset(s, v);
+    }
+    public PlObject hset(String s, PlObject v) {
+        return this.o.hset(s, v);
+    }
+
+    public PlObject scalar_deref() {
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
+        }
+        return this.o.scalar_deref();
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
+        }
+        return this.o.scalar_deref_set(v);
+    }
+
+    public PlArray array_deref() {
+        // @$x doesn' . chr(39) . 't autovivify
+        if (this.o.is_undef()) {
+            return new PlArray();
+        }
+        else if (this.o.is_arrayref()) {
+            return (PlArray)(this.o.get());
+        }
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
+    }
+    public PlObject array_deref_set(PlObject v) {
+        // @$x = ...
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+            return this.o.array_deref_set(v);
+        }
+        else if (this.o.is_arrayref()) {
+            return this.o.array_deref_set(v);
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+
+    public PlObject hash_deref() {
+        // %$x doesn' . chr(39) . 't autovivify
+        if (this.o.is_undef()) {
+            return new PlHash();
+        }
+        else if (this.o.is_hashref()) {
+            return this.o.get();
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        // %$x = ...
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+            return this.o.hash_deref_set(v);
+        }
+        else if (this.o.is_hashref()) {
+            return this.o.hash_deref_set(v);
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+    public PlObject apply(int want, PlArray List__) {
+        return this.o.apply(want, List__);
+    }
+
+    // Note: several versions of set()
+    public PlLvalue set(PlObject o) {
+        if (o == null) {
+            o = PlCx.UNDEF;
+        }
+        if (o.is_lvalue()) {
+            o = o.get();
+        }
+        this.o = o;
+        return this;
+    }
+    public PlLvalue set(PlString o) {
+        this.o = o;
+        return this;
+    }
+    public PlLvalue set(PlInt o) {
+        this.o = o;
+        return this;
+    }
+    public PlLvalue set(PlLvalue o) {
+        this.o = o.get();
+        return this;
+    }
+    public PlLvalue set(PlArray o) {
+        // $a = @x
+        this.o = o.scalar();
+        return this;
+    }
+    public PlLvalue set(PlHash o) {
+        // $a = %x
+        this.o = o.scalar();
+        return this;
+    }
+' . (join('', map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
-            $native && $perl ? '    public PlLvalue set(' . $native . ' s) {' . chr(10) . '        this.o = new ' . $perl . '(s);' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) : ()
+            $native && $perl ? '    public PlLvalue set(' . $native . ' s) {
+        this.o = new ' . $perl . '(s);
+        return this;
+    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%native_to_perl))) . '    public PlObject exists(PlObject a) {' . chr(10) . '        return this.o.exists(a);' . chr(10) . '    }' . chr(10) . '    public PlObject delete(PlObject a) {' . chr(10) . '        return this.o.delete(a);' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        return this.o.toString();' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return this.o.to_long();' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return this.o.to_double();' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return this.o.to_bool();' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp(PlObject b) {' . chr(10) . '        return this.o.num_cmp(b);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp2(PlObject b) {' . chr(10) . '        return b.num_cmp(this.o);' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%native_to_perl))) . '    public PlObject exists(PlObject a) {
+        return this.o.exists(a);
+    }
+    public PlObject delete(PlObject a) {
+        return this.o.delete(a);
+    }
+    public String toString() {
+        return this.o.toString();
+    }
+    public long to_long() {
+        return this.o.to_long();
+    }
+    public double to_double() {
+        return this.o.to_double();
+    }
+    public boolean to_bool() {
+        return this.o.to_bool();
+    }
+    public PlObject num_cmp(PlObject b) {
+        return this.o.num_cmp(b);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        return b.num_cmp(this.o);
+    }
+' . (join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{'op'};
-            '    public PlObject ' . $perl . '(PlObject s) {' . chr(10) . '        return this.o.' . $perl . '(s);' . chr(10) . '    }' . chr(10) . '    public PlObject ' . $perl . '2(PlObject s) {' . chr(10) . '        return s.' . $perl . '(this.o);' . chr(10) . '    }' . chr(10)
+            '    public PlObject ' . $perl . '(PlObject s) {
+        return this.o.' . $perl . '(s);
+    }
+    public PlObject ' . $perl . '2(PlObject s) {
+        return s.' . $perl . '(this.o);
+    }
+'
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '    public boolean is_int() {' . chr(10) . '        return this.o.is_int();' . chr(10) . '    }' . chr(10) . '    public boolean is_num() {' . chr(10) . '        return this.o.is_num();' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return this.o.is_string();' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return this.o.is_bool();' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return this.o.is_undef();' . chr(10) . '    }' . chr(10) . '    public boolean is_lvalue() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public boolean is_coderef() {' . chr(10) . '        return this.o.is_coderef();' . chr(10) . '    }' . chr(10) . '    public boolean is_filehandle() {' . chr(10) . '        return this.o.is_filehandle();' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject pre_decr() {' . chr(10) . '        // --$x' . chr(10) . '        this.o = this.o._decr();' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '    public PlObject post_decr() {' . chr(10) . '        // $x--' . chr(10) . '        PlObject res = this.o;' . chr(10) . '        this.o = this.o._decr();' . chr(10) . '        return res;' . chr(10) . '    }' . chr(10) . '    public PlObject pre_incr() {' . chr(10) . '        // ++$x' . chr(10) . '        this.o = this.o._incr();' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '    public PlObject post_incr() {' . chr(10) . '        // $x++' . chr(10) . '        PlObject res = this.o;' . chr(10) . '        if (res.is_undef()) {' . chr(10) . '            res = PlCx.INT0;' . chr(10) . '        }' . chr(10) . '        this.o = this.o._incr();' . chr(10) . '        return res;' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        return this.o.neg();' . chr(10) . '    }' . chr(10) . '    public PlObject abs() {' . chr(10) . '        return this.o.abs();' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return this.o;' . chr(10) . '    }' . chr(10) . '    public PlObject bless(PlString className) {' . chr(10) . '        return this.o.bless(className);' . chr(10) . '    }' . chr(10) . '    public PlClass blessed_class() {' . chr(10) . '        return this.o.blessed_class();' . chr(10) . '    }' . chr(10) . '    public PlObject blessed() {' . chr(10) . '        return this.o.blessed();' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        return this.o.ref();' . chr(10) . '    }' . chr(10) . '    public PlObject refaddr() {' . chr(10) . '        // Scalar::Util::refaddr()' . chr(10) . '        return this.o.refaddr();' . chr(10) . '    }' . chr(10) . '    public PlObject reftype() {' . chr(10) . '        // Scalar::Util::reftype()' . chr(10) . '        return this.o.reftype();' . chr(10) . '    }' . chr(10) . join('', (map {
+        } keys(%number_binop))) . '    public boolean is_int() {
+        return this.o.is_int();
+    }
+    public boolean is_num() {
+        return this.o.is_num();
+    }
+    public boolean is_string() {
+        return this.o.is_string();
+    }
+    public boolean is_bool() {
+        return this.o.is_bool();
+    }
+    public boolean is_undef() {
+        return this.o.is_undef();
+    }
+    public boolean is_lvalue() {
+        return true;
+    }
+    public boolean is_coderef() {
+        return this.o.is_coderef();
+    }
+    public boolean is_filehandle() {
+        return this.o.is_filehandle();
+    }
+
+    public PlObject pre_decr() {
+        // --$x
+        this.o = this.o._decr();
+        return this.o;
+    }
+    public PlObject post_decr() {
+        // $x--
+        PlObject res = this.o;
+        this.o = this.o._decr();
+        return res;
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        this.o = this.o._incr();
+        return this.o;
+    }
+    public PlObject post_incr() {
+        // $x++
+        PlObject res = this.o;
+        if (res.is_undef()) {
+            res = PlCx.INT0;
+        }
+        this.o = this.o._incr();
+        return res;
+    }
+    public PlObject neg() {
+        return this.o.neg();
+    }
+    public PlObject abs() {
+        return this.o.abs();
+    }
+    public PlObject scalar() {
+        return this.o;
+    }
+    public PlObject bless(PlString className) {
+        return this.o.bless(className);
+    }
+    public PlClass blessed_class() {
+        return this.o.blessed_class();
+    }
+    public PlObject blessed() {
+        return this.o.blessed();
+    }
+    public PlString ref() {
+        return this.o.ref();
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        return this.o.refaddr();
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return this.o.reftype();
+    }
+' . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{'java_type'};
             my $perl_to_java = $class->{'perl_to_java'};
-            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.o.' . $perl_to_java . '();' . chr(10) . '    }' . chr(10) : ()
+            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public ' . $java_class_name . ' ' . $perl_to_java . '() {
+        return this.o.' . $perl_to_java . '();
+    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%java_classes))) . '}' . chr(10) . 'class PlArray extends PlObject {' . chr(10) . '    public ArrayList<PlObject> a;' . chr(10) . '    public int each_iterator;' . chr(10) . '    public PlArray( ArrayList<PlObject> a ) {' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        this.a = a;' . chr(10) . '    }' . chr(10) . '    public PlArray() {' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        this.a = new ArrayList<PlObject>();' . chr(10) . '    }' . chr(10) . '    public PlArray(PlObject... args) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (PlObject s : args) {' . chr(10) . '            if (s.is_hash()) {' . chr(10) . '                // @x = %x;' . chr(10) . '                s = s.to_array();' . chr(10) . '            }' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                // @x = ( @x, @y );' . chr(10) . '                for (int i = 0; i < s.to_long(); i++) {' . chr(10) . '                    aa.add(s.aget(i));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else if (s.is_lvalue()) {' . chr(10) . '                aa.add(s.get());' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                aa.add(s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        this.a = aa;' . chr(10) . '    }' . chr(10) . '    public static PlArray construct_list_of_aliases(PlObject... args) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (PlObject s : args) {' . chr(10) . '            if (s.is_hash()) {' . chr(10) . '                // ( %x );' . chr(10) . '                s = ((PlHash)s).to_list_of_aliases();' . chr(10) . '            }' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                // ( @x, @y );' . chr(10) . '                for (int i = 0; i < s.to_long(); i++) {' . chr(10) . '                    aa.add(s.aget_lvalue(i));' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                aa.add(s);  // store lvalue as-is' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        return result;' . chr(10) . '    }' . chr(10) . '    public PlObject list_set(int want, PlArray s) {' . chr(10) . '        // @x[3,4] = ( @x, @y );' . chr(10) . '        for (int i = 0; i < this.to_long(); i++) {' . chr(10) . '            this.aset(i, s.aget(i));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return this;' . chr(10) . '        }' . chr(10) . '        return this.pop();' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject set(PlObject s) {' . chr(10) . '        this.a.clear();' . chr(10) . '        PlObject tmp;' . chr(10) . '        if (s.is_hash()) {' . chr(10) . '            // @x = %x;' . chr(10) . '            s = s.to_array();' . chr(10) . '        }' . chr(10) . '        if (s.is_array()) {' . chr(10) . '            // @x = ( @x, @y );' . chr(10) . '            for (int i = 0; i < s.to_long(); i++) {' . chr(10) . '                tmp = s.aget(i);' . chr(10) . '                if (tmp.is_lvalue()) {' . chr(10) . '                    this.a.add(tmp.get());' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    this.a.add(tmp);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.a.add(s);' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject set(byte[] bs) {' . chr(10) . '        this.a.clear();' . chr(10) . '        // @x = byte[] native;' . chr(10) . '        for(byte b : bs){' . chr(10) . '            int i = b;' . chr(10) . '            this.a.add(new PlInt(i));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(byte[] bs) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.set(bs);' . chr(10) . '        this.each_iterator = aa.each_iterator;' . chr(10) . '        this.a = aa.a;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject set(long[] longs) {' . chr(10) . '        this.a.clear();' . chr(10) . '        // @x = long[] native;' . chr(10) . '        for(long i : longs){' . chr(10) . '            this.a.add(new PlInt(i));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(long[] longs) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.set(longs);' . chr(10) . '        this.each_iterator = aa.each_iterator;' . chr(10) . '        this.a = aa.a;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject set(int[] ints) {' . chr(10) . '        this.a.clear();' . chr(10) . '        // @x = int[] native;' . chr(10) . '        for(int i : ints){' . chr(10) . '            this.a.add(new PlInt(i));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(int[] ints) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.set(ints);' . chr(10) . '        this.each_iterator = aa.each_iterator;' . chr(10) . '        this.a = aa.a;' . chr(10) . '    }' . chr(10) . '    public PlObject set(String[] strings) {' . chr(10) . '        this.a.clear();' . chr(10) . '        for (String s : strings) {' . chr(10) . '            this.a.add(new PlString(s));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(String[] strings) {' . chr(10) . '        PlArray arr = new PlArray();' . chr(10) . '        arr.set(strings);' . chr(10) . '        this.each_iterator = arr.each_iterator;' . chr(10) . '        this.a = arr.a;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject set(Map<String, String> env) {' . chr(10) . '        this.a.clear();' . chr(10) . '        for (String envName : env.keySet()) {' . chr(10) . '            this.a.add(new PlString(envName));' . chr(10) . '            this.a.add(new PlString(env.get(envName)));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(Map<String, String> strings) {' . chr(10) . '        PlArray arr = new PlArray();' . chr(10) . '        arr.set(strings);' . chr(10) . '        this.each_iterator = arr.each_iterator;' . chr(10) . '        this.a = arr.a;' . chr(10) . '    }' . chr(10) . chr(10) . '    // TODO - Double[]' . chr(10) . join('', (map {
+        } keys(%java_classes))) . '}
+class PlArray extends PlObject {
+    public ArrayList<PlObject> a;
+    public int each_iterator;
+    public PlArray( ArrayList<PlObject> a ) {
+        this.each_iterator = 0;
+        this.a = a;
+    }
+    public PlArray() {
+        this.each_iterator = 0;
+        this.a = new ArrayList<PlObject>();
+    }
+    public PlArray(PlObject... args) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                // @x = ( @x, @y );
+                for (int i = 0; i < s.to_long(); i++) {
+                    aa.add(s.aget(i));
+                }
+            }
+            else if (s.is_lvalue()) {
+                aa.add(s.get());
+            }
+            else {
+                aa.add(s);
+            }
+        }
+        this.each_iterator = 0;
+        this.a = aa;
+    }
+    public static PlArray construct_list_of_aliases(PlObject... args) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // ( %x );
+                s = ((PlHash)s).to_list_of_aliases();
+            }
+            if (s.is_array()) {
+                // ( @x, @y );
+                for (int i = 0; i < s.to_long(); i++) {
+                    aa.add(s.aget_lvalue(i));
+                }
+            }
+            else {
+                aa.add(s);  // store lvalue as-is
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        return result;
+    }
+    public PlObject list_set(int want, PlArray s) {
+        // @x[3,4] = ( @x, @y );
+        for (int i = 0; i < this.to_long(); i++) {
+            this.aset(i, s.aget(i));
+        }
+        this.each_iterator = 0;
+        if (want == PlCx.LIST) {
+            return this;
+        }
+        return this.pop();
+    }
+
+    public PlObject set(PlObject s) {
+        this.a.clear();
+        PlObject tmp;
+        if (s.is_hash()) {
+            // @x = %x;
+            s = s.to_array();
+        }
+        if (s.is_array()) {
+            // @x = ( @x, @y );
+            for (int i = 0; i < s.to_long(); i++) {
+                tmp = s.aget(i);
+                if (tmp.is_lvalue()) {
+                    this.a.add(tmp.get());
+                }
+                else {
+                    this.a.add(tmp);
+                }
+            }
+        }
+        else {
+            this.a.add(s);
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlObject set(byte[] bs) {
+        this.a.clear();
+        // @x = byte[] native;
+        for(byte b : bs){
+            int i = b;
+            this.a.add(new PlInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(byte[] bs) {
+        PlArray aa = new PlArray();
+        aa.set(bs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
+
+    public PlObject set(long[] longs) {
+        this.a.clear();
+        // @x = long[] native;
+        for(long i : longs){
+            this.a.add(new PlInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(long[] longs) {
+        PlArray aa = new PlArray();
+        aa.set(longs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
+
+    public PlObject set(int[] ints) {
+        this.a.clear();
+        // @x = int[] native;
+        for(int i : ints){
+            this.a.add(new PlInt(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(int[] ints) {
+        PlArray aa = new PlArray();
+        aa.set(ints);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
+    public PlObject set(String[] strings) {
+        this.a.clear();
+        for (String s : strings) {
+            this.a.add(new PlString(s));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(String[] strings) {
+        PlArray arr = new PlArray();
+        arr.set(strings);
+        this.each_iterator = arr.each_iterator;
+        this.a = arr.a;
+    }
+
+    public PlObject set(Map<String, String> env) {
+        this.a.clear();
+        for (String envName : env.keySet()) {
+            this.a.add(new PlString(envName));
+            this.a.add(new PlString(env.get(envName)));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(Map<String, String> strings) {
+        PlArray arr = new PlArray();
+        arr.set(strings);
+        this.each_iterator = arr.each_iterator;
+        this.a = arr.a;
+    }
+
+    // TODO - Double[]
+' . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{'java_type'};
             my $perl_to_java = $class->{'perl_to_java'};
             my $perl_package = $class->{'perl_package'};
             my $java_native_to_perl = $class->{'java_native_to_perl'};
-            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public PlObject set(' . $java_class_name . '[] stuffs) {' . chr(10) . '        this.a.clear();' . chr(10) . '        // @x = ' . $java_class_name . '[] native;' . chr(10) . '        for(' . $java_class_name . ' i : stuffs){' . chr(10) . '            this.a.add(new ' . $java_native_to_perl . '(i));' . chr(10) . '        }' . chr(10) . '        this.each_iterator = 0;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlArray(' . $java_class_name . '[] stuffs) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.set(stuffs);' . chr(10) . '        this.each_iterator = aa.each_iterator;' . chr(10) . '        this.a = aa.a;' . chr(10) . '    }' . chr(10) : ()
+            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public PlObject set(' . $java_class_name . '[] stuffs) {
+        this.a.clear();
+        // @x = ' . $java_class_name . '[] native;
+        for(' . $java_class_name . ' i : stuffs){
+            this.a.add(new ' . $java_native_to_perl . '(i));
+        }
+        this.each_iterator = 0;
+        return this;
+    }
+    public PlArray(' . $java_class_name . '[] stuffs) {
+        PlArray aa = new PlArray();
+        aa.set(stuffs);
+        this.each_iterator = aa.each_iterator;
+        this.a = aa.a;
+    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%java_classes))) . '    public PlObject aget(PlObject i) {' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos >= this.a.size()) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return this.a.get(pos);' . chr(10) . '    }' . chr(10) . '    public PlObject aget(int i) {' . chr(10) . '        int pos  = i;' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos >= this.a.size()) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return this.a.get(pos);' . chr(10) . '    }' . chr(10) . '    public PlObject aget_lvalue(int pos) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        if (size <= pos) {' . chr(10) . '            while (size < pos) {' . chr(10) . '                this.a.add( PlCx.UNDEF );' . chr(10) . '                size++;' . chr(10) . '            }' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.a.add(a);' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        PlObject o = this.a.get(pos);' . chr(10) . '        if (o == null) {' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.a.set(pos, a);' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        else if (o.is_lvalue()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        PlLvalue a = new PlLvalue(o);' . chr(10) . '        this.a.set(pos, a);' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_lvalue(PlObject i) {' . chr(10) . '        return this.aget_lvalue(i.to_int());' . chr(10) . '    }' . chr(10) . '    public PlObject aget_lvalue_local(PlObject i) {' . chr(10) . '        return this.aget_lvalue_local(i.to_int());' . chr(10) . '    }' . chr(10) . '    public PlObject aget_lvalue_local(int i) {' . chr(10) . '        return PerlOp.push_local(this, i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget_list_of_aliases(int want, PlArray a) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (int i = 0; i < a.to_int(); i++) {' . chr(10) . '            aa.add( this.aget_lvalue(i) );' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return result;' . chr(10) . '        }' . chr(10) . '        return result.pop();' . chr(10) . '    }' . chr(10) . '    public PlObject aget_hash_list_of_aliases(int want, PlArray a) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (int i = 0; i < a.to_int(); i++) {' . chr(10) . '            aa.add( new PlInt(i) );' . chr(10) . '            aa.add( this.aget_lvalue(i) );' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return result;' . chr(10) . '        }' . chr(10) . '        return result.pop();' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject get_scalar(PlObject i) {' . chr(10) . '        // $$x' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.aset(i, new PlLvalueRef(a));' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o.get();' . chr(10) . '        }' . chr(10) . '        // Modification of a read-only value attempted' . chr(10) . '        // return PlCORE.die("Not an SCALAR reference");' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject aget_scalarref(PlObject i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.aset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a SCALAR reference");' . chr(10) . '    }' . chr(10) . '    public PlObject aget_scalarref(int i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.aset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a SCALAR reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget_arrayref(PlObject i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlArrayRef ar = new PlArrayRef();' . chr(10) . '            this.aset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_arrayref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public PlObject aget_arrayref(int i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlArrayRef ar = new PlArrayRef();' . chr(10) . '            this.aset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_arrayref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject aget_hashref(PlObject i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.aset(i, hr);' . chr(10) . '            return hr;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hashref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . '    public PlObject aget_hashref(int i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.aset(i, hr);' . chr(10) . '            return hr;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hashref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject get_hash(int i) {' . chr(10) . '        PlObject o = this.aget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.aset(i, hr);' . chr(10) . '            return hr;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hashref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    // Note: multiple versions of set()' . chr(10) . '    public PlObject aset(PlObject i, PlObject v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        if (size <= pos) {' . chr(10) . '            while (size < pos) {' . chr(10) . '                this.a.add( PlCx.UNDEF );' . chr(10) . '                size++;' . chr(10) . '            }' . chr(10) . '            this.a.add(v.scalar());' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        PlObject old = this.a.get(pos);' . chr(10) . '        if (old.is_lvalue()) {' . chr(10) . '            old.set(v.scalar());' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.a.set(pos, v.scalar());' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public PlObject aset(int i, PlObject v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i;' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        if (size <= pos) {' . chr(10) . '            while (size < pos) {' . chr(10) . '                this.a.add( PlCx.UNDEF );' . chr(10) . '                size++;' . chr(10) . '            }' . chr(10) . '            this.a.add(v.scalar());' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        PlObject old = this.a.get(pos);' . chr(10) . '        if (old.is_lvalue()) {' . chr(10) . '            old.set(v.scalar());' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.a.set(pos, v.scalar());' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public PlObject aset(PlObject i, PlLvalue v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        if (size <= pos) {' . chr(10) . '            while (size < pos) {' . chr(10) . '                this.a.add( PlCx.UNDEF );' . chr(10) . '                size++;' . chr(10) . '            }' . chr(10) . '            this.a.add(v.scalar());' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        PlObject old = this.a.get(pos);' . chr(10) . '        if (old.is_lvalue()) {' . chr(10) . '            old.set(v.get());' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.a.set(pos, v.get());' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public PlObject aset(int i, PlLvalue v) {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        int pos  = i;' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = size + pos;' . chr(10) . '        }' . chr(10) . '        if (size <= pos) {' . chr(10) . '            while (size < pos) {' . chr(10) . '                this.a.add( PlCx.UNDEF );' . chr(10) . '                size++;' . chr(10) . '            }' . chr(10) . '            this.a.add(v.scalar());' . chr(10) . '            return v;' . chr(10) . '        }' . chr(10) . '        PlObject old = this.a.get(pos);' . chr(10) . '        if (old.is_lvalue()) {' . chr(10) . '            old.set(v.get());' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.a.set(pos, v.get());' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%java_classes))) . '    public PlObject aget(PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.UNDEF;
+        }
+        return this.a.get(pos);
+    }
+    public PlObject aget(int i) {
+        int pos  = i;
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.UNDEF;
+        }
+        return this.a.get(pos);
+    }
+    public PlObject aget_lvalue(int pos) {
+        int size = this.a.size();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            PlLvalue a = new PlLvalue();
+            this.a.add(a);
+            return a;
+        }
+        PlObject o = this.a.get(pos);
+        if (o == null) {
+            PlLvalue a = new PlLvalue();
+            this.a.set(pos, a);
+            return a;
+        }
+        else if (o.is_lvalue()) {
+            return o;
+        }
+        PlLvalue a = new PlLvalue(o);
+        this.a.set(pos, a);
+        return a;
+    }
+    public PlObject aget_lvalue(PlObject i) {
+        return this.aget_lvalue(i.to_int());
+    }
+    public PlObject aget_lvalue_local(PlObject i) {
+        return this.aget_lvalue_local(i.to_int());
+    }
+    public PlObject aget_lvalue_local(int i) {
+        return PerlOp.push_local(this, i);
+    }
+
+    public PlObject aget_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            aa.add( this.aget_lvalue(i) );
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
+    }
+    public PlObject aget_hash_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            aa.add( new PlInt(i) );
+            aa.add( this.aget_lvalue(i) );
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
+    }
+
+    public PlObject get_scalar(PlObject i) {
+        // $$x
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlLvalue a = new PlLvalue();
+            this.aset(i, new PlLvalueRef(a));
+            return a;
+        }
+        else if (o.is_scalarref()) {
+            return o.get();
+        }
+        // Modification of a read-only value attempted
+        // return PlCORE.die("Not an SCALAR reference");
+        return o;
+    }
+    public PlObject aget_scalarref(PlObject i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        return PlCORE.die("Not a SCALAR reference");
+    }
+    public PlObject aget_scalarref(int i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        return PlCORE.die("Not a SCALAR reference");
+    }
+
+    public PlObject aget_arrayref(PlObject i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_arrayref()) {
+            return o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+    public PlObject aget_arrayref(int i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.aset(i, ar);
+            return ar;
+        }
+        else if (o.is_arrayref()) {
+            return o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+
+    public PlObject aget_hashref(PlObject i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.aset(i, hr);
+            return hr;
+        }
+        else if (o.is_hashref()) {
+            return o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+    public PlObject aget_hashref(int i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.aset(i, hr);
+            return hr;
+        }
+        else if (o.is_hashref()) {
+            return o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+
+    public PlObject get_hash(int i) {
+        PlObject o = this.aget(i);
+        if (o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.aset(i, hr);
+            return hr;
+        }
+        else if (o.is_hashref()) {
+            return o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+
+    // Note: multiple versions of set()
+    public PlObject aset(PlObject i, PlObject v) {
+        int size = this.a.size();
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
+        }
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.scalar());
+        }
+        else {
+            this.a.set(pos, v.scalar());
+        }
+        return v;
+    }
+    public PlObject aset(int i, PlObject v) {
+        int size = this.a.size();
+        int pos  = i;
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
+        }
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.scalar());
+        }
+        else {
+            this.a.set(pos, v.scalar());
+        }
+        return v;
+    }
+    public PlObject aset(PlObject i, PlLvalue v) {
+        int size = this.a.size();
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
+        }
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.get());
+        }
+        else {
+            this.a.set(pos, v.get());
+        }
+        return v;
+    }
+    public PlObject aset(int i, PlLvalue v) {
+        int size = this.a.size();
+        int pos  = i;
+        if (pos < 0) {
+            pos = size + pos;
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            this.a.add(v.scalar());
+            return v;
+        }
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            old.set(v.get());
+        }
+        else {
+            this.a.set(pos, v.get());
+        }
+        return v;
+    }
+' . (join('', map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
-            $native && $perl ? '    public PlObject aset(PlObject i, ' . $native . ' s) {' . chr(10) . '        return this.aset(i, new ' . $perl . '(s));' . chr(10) . '    }' . chr(10) . '    public PlObject aset(int i, ' . $native . ' s) {' . chr(10) . '        return this.aset(i, new ' . $perl . '(s));' . chr(10) . '    }' . chr(10) . '    public PlObject push(' . $native . ' s) {' . chr(10) . '        this.a.add(new ' . $perl . '(s));' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) : ()
+            $native && $perl ? '    public PlObject aset(PlObject i, ' . $native . ' s) {
+        return this.aset(i, new ' . $perl . '(s));
+    }
+    public PlObject aset(int i, ' . $native . ' s) {
+        return this.aset(i, new ' . $perl . '(s));
+    }
+    public PlObject push(' . $native . ' s) {
+        this.a.add(new ' . $perl . '(s));
+        return this.length_of_array();
+    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%native_to_perl))) . chr(10) . '    // Note: multiple versions of push()' . chr(10) . '    public PlObject push(PlObject v) {' . chr(10) . '        if (v.is_array()) {' . chr(10) . '            return this.push( (PlArray)v );' . chr(10) . '        }' . chr(10) . '        this.a.add(v.scalar());' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . '    public PlObject push(PlLvalue v) {' . chr(10) . '        this.a.add(v.get());' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . '    public PlObject push(PlArray args) {' . chr(10) . '        for (int i = 0; i < args.to_int(); i++) {' . chr(10) . '            PlObject s = args.aget(i);' . chr(10) . '            if (s.is_hash()) {' . chr(10) . '                // @x = %x;' . chr(10) . '                s = s.to_array();' . chr(10) . '            }' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                this.push(s);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                this.a.add(s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . chr(10) . '    // Note: multiple versions of unshift()' . chr(10) . '    public PlObject unshift(PlObject v) {' . chr(10) . '        if (v.is_array()) {' . chr(10) . '            return this.unshift( (PlArray)v );' . chr(10) . '        }' . chr(10) . '        this.a.add(0, v.scalar());' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . '    public PlObject unshift(PlLvalue v) {' . chr(10) . '        this.a.add(0, v.get());' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . '    public PlObject unshift(PlArray args) {' . chr(10) . '        for (int i = args.to_int() - 1; i >= 0; i--) {' . chr(10) . '            PlObject s = args.aget(i);' . chr(10) . '            if (s.is_hash()) {' . chr(10) . '                // @x = %x;' . chr(10) . '                s = s.to_array();' . chr(10) . '            }' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                this.unshift(s);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                this.a.add(0, s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject pop() {' . chr(10) . '        int size = this.a.size() - 1;' . chr(10) . '        if (size >= 0) {' . chr(10) . '            return this.a.remove(size);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject shift() {' . chr(10) . '        int size = this.a.size();' . chr(10) . '        if (size > 0) {' . chr(10) . '            return this.a.remove(0);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject exists(PlObject i) {' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos >= this.a.size()) {' . chr(10) . '            return PlCx.FALSE;' . chr(10) . '        }' . chr(10) . '        return PlCx.TRUE;' . chr(10) . '    }' . chr(10) . '    public PlObject delete(int want, PlObject i) {' . chr(10) . '        int pos  = i.to_int();' . chr(10) . '        if (pos < 0) {' . chr(10) . '            pos = this.a.size() + pos;' . chr(10) . '        }' . chr(10) . '        if ((pos+1) == this.a.size()) {' . chr(10) . '            return this.pop();' . chr(10) . '        }' . chr(10) . '        if (pos < 0 || pos >= this.a.size()) {' . chr(10) . '            return PlCx.FALSE;' . chr(10) . '        }' . chr(10) . '        PlObject res = this.aget(i);' . chr(10) . '        this.aset(i, PlCx.UNDEF);' . chr(10) . '        return res;' . chr(10) . '    }' . chr(10) . '    public PlObject values() {' . chr(10) . '        // return a copy' . chr(10) . '        return new PlArray(this);' . chr(10) . '    }' . chr(10) . '    public PlObject keys() {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        int size = this.a.size();' . chr(10) . '        for (int i = 0; i < size; i++) {' . chr(10) . '            aa.push(new PlInt(i));' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . '    public PlObject each() {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        int size = this.a.size();' . chr(10) . '        if (this.each_iterator < size) {' . chr(10) . '            aa.push(new PlInt(this.each_iterator));' . chr(10) . '            aa.push(this.aget(this.each_iterator));' . chr(10) . '            this.each_iterator++;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // return empty list' . chr(10) . '            this.each_iterator = 0;' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        StringBuilder sb = new StringBuilder();' . chr(10) . '        int size = this.a.size();' . chr(10) . '        for (int i = 0; i < size; i++) {' . chr(10) . '            String item = this.a.get(i).toString();' . chr(10) . '            sb.append(item);' . chr(10) . '        }' . chr(10) . '        return sb.toString();' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return this.a.size();' . chr(10) . '    }' . chr(10) . '    public int to_int() {' . chr(10) . '        return this.a.size();' . chr(10) . '    }' . chr(10) . '    public PlObject length_of_array() {' . chr(10) . '        return new PlInt(this.a.size());' . chr(10) . '    }' . chr(10) . '    public PlObject end_of_array_index() {' . chr(10) . '        return new PlInt(this.a.size() - 1);' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return 0.0 + this.to_long();' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return (this.a.size() > 0);' . chr(10) . '    }' . chr(10) . '    public boolean is_int() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_num() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_array() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return this.length_of_array();' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlHash extends PlObject {' . chr(10) . '    public HashMap<String, PlObject> h;' . chr(10) . '    public Iterator<Map.Entry<String, PlObject>> each_iterator;' . chr(10) . chr(10) . '    public PlHash() {' . chr(10) . '        this.each_iterator = null;' . chr(10) . '        this.h = new HashMap<String, PlObject>();' . chr(10) . '    }' . chr(10) . '    public PlHash(PlObject... args) {' . chr(10) . '        PlHash hh = new PlHash();' . chr(10) . '        int args_size = args.length;' . chr(10) . '        for (int i = 0; i < args_size; i++) {' . chr(10) . '            PlObject s = args[i];' . chr(10) . '            if (s.is_hash()) {' . chr(10) . '                // @x = %x;' . chr(10) . '                s = s.to_array();' . chr(10) . '            }' . chr(10) . '            if (s.is_array()) {' . chr(10) . '                // %x = ( @x, @y );' . chr(10) . '                int array_size = s.to_int();' . chr(10) . '                for (int j = 0; j < array_size; j++) {' . chr(10) . '                    PlObject key = s.aget(j);' . chr(10) . '                    j++;' . chr(10) . '                    PlObject value;' . chr(10) . '                    if ( j >= array_size ) {' . chr(10) . '                        // TODO - emit warning about odd number of arguments' . chr(10) . '                        value = PlCx.UNDEF;' . chr(10) . '                    }' . chr(10) . '                    else {' . chr(10) . '                        value = s.aget(j);' . chr(10) . '                    }' . chr(10) . '                    hh.hset(key, value);' . chr(10) . '                }' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                i++;' . chr(10) . '                PlObject value;' . chr(10) . '                if ( i >= args_size ) {' . chr(10) . '                    // TODO - emit warning about odd number of arguments' . chr(10) . '                    value = PlCx.UNDEF;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    value = args[i];' . chr(10) . '                }' . chr(10) . '                hh.hset(s, value);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        this.each_iterator = null;' . chr(10) . '        this.h = hh.to_HashMap();' . chr(10) . '    }' . chr(10) . '    private HashMap<String, PlObject> to_HashMap() {' . chr(10) . '        return this.h;' . chr(10) . '    }' . chr(10) . '    public PlObject set(PlObject s) {' . chr(10) . '        this.h.clear();' . chr(10) . '        if (s.is_hash()) {' . chr(10) . '            // @x = %x;' . chr(10) . '            s = s.to_array();' . chr(10) . '        }' . chr(10) . '        if (s.is_array()) {' . chr(10) . '            // %x = ( @x, @y );' . chr(10) . '            int array_size = s.to_int();' . chr(10) . '            for (int j = 0; j < array_size; j++) {' . chr(10) . '                PlObject key = s.aget(j);' . chr(10) . '                j++;' . chr(10) . '                PlObject value;' . chr(10) . '                if ( j >= array_size ) {' . chr(10) . '                    // TODO - emit warning about odd number of arguments' . chr(10) . '                    value = PlCx.UNDEF;' . chr(10) . '                }' . chr(10) . '                else {' . chr(10) . '                    value = s.aget(j);' . chr(10) . '                }' . chr(10) . '                this.hset(key, value);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            // TODO - emit warning about odd number of arguments' . chr(10) . '            this.hset(s, PlCx.UNDEF);' . chr(10) . '        }' . chr(10) . '        this.each_iterator = null;' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject to_array() {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {' . chr(10) . '            String key = entry.getKey();' . chr(10) . '            PlObject value = entry.getValue();' . chr(10) . '            aa.push(new PlString(key));' . chr(10) . '            aa.push(value);' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlArray to_list_of_aliases() {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {' . chr(10) . '            String key = entry.getKey();' . chr(10) . '            aa.add(new PlString(key));' . chr(10) . '            PlObject value = entry.getValue();' . chr(10) . '            if (value == null) {' . chr(10) . '                PlLvalue a = new PlLvalue();' . chr(10) . '                this.h.put(key, a);' . chr(10) . '                aa.add(a);' . chr(10) . '            }' . chr(10) . '            else if (value.is_lvalue()) {' . chr(10) . '                aa.add(value);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                PlLvalue a = new PlLvalue(value);' . chr(10) . '                this.h.put(key, a);' . chr(10) . '                aa.add(a);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        return result;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget(PlObject i) {' . chr(10) . '        PlObject o = this.h.get(i.toString());' . chr(10) . '        if (o == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject hget(String i) {' . chr(10) . '        PlObject o = this.h.get(i);' . chr(10) . '        if (o == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_list_of_aliases(int want, PlArray a) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (int i = 0; i < a.to_int(); i++) {' . chr(10) . '            String key = a.aget(i).toString();' . chr(10) . '            PlObject value = this.h.get(key);' . chr(10) . '            if (value == null) {' . chr(10) . '                PlLvalue v = new PlLvalue();' . chr(10) . '                this.h.put(key, v);' . chr(10) . '                aa.add(v);' . chr(10) . '            }' . chr(10) . '            else if (value.is_lvalue()) {' . chr(10) . '                aa.add(value);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                PlLvalue v = new PlLvalue(value);' . chr(10) . '                this.h.put(key, v);' . chr(10) . '                aa.add(v);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return result;' . chr(10) . '        }' . chr(10) . '        return result.pop();' . chr(10) . '    }' . chr(10) . '    public PlObject hget_hash_list_of_aliases(int want, PlArray a) {' . chr(10) . '        ArrayList<PlObject> aa = new ArrayList<PlObject>();' . chr(10) . '        for (int i = 0; i < a.to_int(); i++) {' . chr(10) . '            String key = a.aget(i).toString();' . chr(10) . '            aa.add(new PlString(key));' . chr(10) . '            PlObject value = this.h.get(key);' . chr(10) . '            if (value == null) {' . chr(10) . '                PlLvalue v = new PlLvalue();' . chr(10) . '                this.h.put(key, v);' . chr(10) . '                aa.add(v);' . chr(10) . '            }' . chr(10) . '            else if (value.is_lvalue()) {' . chr(10) . '                aa.add(value);' . chr(10) . '            }' . chr(10) . '            else {' . chr(10) . '                PlLvalue v = new PlLvalue(value);' . chr(10) . '                this.h.put(key, v);' . chr(10) . '                aa.add(v);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        PlArray result = new PlArray();' . chr(10) . '        result.a = aa;' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return result;' . chr(10) . '        }' . chr(10) . '        return result.pop();' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_lvalue(PlObject i) {' . chr(10) . '        PlObject o = this.h.get(i.toString());' . chr(10) . '        if (o == null) {' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.h.put(i.toString(), a);' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        else if (o.is_lvalue()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        PlLvalue a = new PlLvalue(o);' . chr(10) . '        this.h.put(i.toString(), a);' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue(String i) {' . chr(10) . '        PlObject o = this.h.get(i);' . chr(10) . '        if (o == null) {' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.h.put(i, a);' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        else if (o.is_lvalue()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        PlLvalue a = new PlLvalue(o);' . chr(10) . '        this.h.put(i, a);' . chr(10) . '        return a;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue_local(PlObject i) {' . chr(10) . '        return this.hget_lvalue_local(i.toString());' . chr(10) . '    }' . chr(10) . '    public PlObject hget_lvalue_local(String i) {' . chr(10) . '        return PerlOp.push_local(this, i);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject get_scalar(PlObject i) {' . chr(10) . '        // $$x' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalue a = new PlLvalue();' . chr(10) . '            this.hset(i, new PlLvalueRef(a));' . chr(10) . '            return a;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o.get();' . chr(10) . '        }' . chr(10) . '        // Modification of a read-only value attempted' . chr(10) . '        // return PlCORE.die("Not an SCALAR reference");' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_scalarref(PlObject i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.hset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        // Modification of a read-only value attempted' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . '    public PlObject hget_scalarref(String i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());' . chr(10) . '            this.hset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_scalarref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        // Modification of a read-only value attempted' . chr(10) . '        return o;' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_arrayref(PlObject i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlArrayRef ar = new PlArrayRef();' . chr(10) . '            this.hset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_arrayref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . '    public PlObject hget_arrayref(String i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlArrayRef ar = new PlArrayRef();' . chr(10) . '            this.hset(i, ar);' . chr(10) . '            return ar;' . chr(10) . '        }' . chr(10) . '        else if (o.is_arrayref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not an ARRAY reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject hget_hashref(PlObject i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.hset(i, hr);' . chr(10) . '            return hr;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hashref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . '    public PlObject hget_hashref(String i) {' . chr(10) . '        PlObject o = this.hget(i);' . chr(10) . '        if (o.is_undef()) {' . chr(10) . '            PlHashRef hr = new PlHashRef();' . chr(10) . '            this.hset(i, hr);' . chr(10) . '            return hr;' . chr(10) . '        }' . chr(10) . '        else if (o.is_hashref()) {' . chr(10) . '            return o;' . chr(10) . '        }' . chr(10) . '        return PlCORE.die("Not a HASH reference");' . chr(10) . '    }' . chr(10) . chr(10) . '    // Note: multiple versions of set()' . chr(10) . '    public PlObject hset(PlObject s, PlObject v) {' . chr(10) . '        String key = s.toString();' . chr(10) . '        PlObject value = v.scalar();' . chr(10) . '        PlObject o = this.h.get(key);' . chr(10) . '        if (o != null && o.is_lvalue()) {' . chr(10) . '            o.set(value);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.h.put(key, value);' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public PlObject hset(String key, PlObject v) {' . chr(10) . '        PlObject value = v.scalar();' . chr(10) . '        PlObject o = this.h.get(key);' . chr(10) . '        if (o != null && o.is_lvalue()) {' . chr(10) . '            o.set(value);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            this.h.put(key, value);' . chr(10) . '        }' . chr(10) . '        return v;' . chr(10) . '    }' . chr(10) . '    public PlObject hset(PlObject s, PlLvalue v) {' . chr(10) . '        return this.hset(s, v.get());' . chr(10) . '    }' . chr(10) . '    public PlObject hset(String s, PlLvalue v) {' . chr(10) . '        return this.hset(s, v.get());' . chr(10) . '    }' . chr(10) . '    public PlObject hset(int want, PlArray s, PlArray v) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . chr(10) . '        for (int i = 0; i < v.to_int(); i++){' . chr(10) . '            aa.push(this.hset(v.aget(i), s.aget(i)));' . chr(10) . '        };' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return aa;' . chr(10) . '        }' . chr(10) . '        return aa.pop();' . chr(10) . '    }' . chr(10) . '    public PlObject exists(PlObject i) {' . chr(10) . '        return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;' . chr(10) . '    }' . chr(10) . '    public PlObject delete(PlObject i) {' . chr(10) . '        PlObject r = this.h.remove(i.toString());' . chr(10) . '        if (r == null) {' . chr(10) . '            return PlCx.UNDEF;' . chr(10) . '        }' . chr(10) . '        return r;' . chr(10) . '    }' . chr(10) . '    public PlObject delete(int want, PlArray a) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . chr(10) . '        for (int i = 0; i < a.to_int(); i++) {' . chr(10) . '            PlObject r = this.delete(a.aget(i));' . chr(10) . '            aa.push(r);' . chr(10) . '        }' . chr(10) . '        if (want == PlCx.LIST) {' . chr(10) . '            return aa;' . chr(10) . '        }' . chr(10) . '        return aa.pop();' . chr(10) . '    }' . chr(10) . '    public PlObject delete(int want, PlString a) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.push(a);' . chr(10) . '        return delete(want, aa);' . chr(10) . '    }' . chr(10) . '    public PlObject delete(int want, PlLvalue a) {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        aa.push(a);' . chr(10) . '        return delete(want, aa);' . chr(10) . '    }' . chr(10) . '    public PlObject values() {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {' . chr(10) . '            PlObject value = entry.getValue();' . chr(10) . '            aa.push(value);' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . '    public PlObject keys() {' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {' . chr(10) . '            String key = entry.getKey();' . chr(10) . '            aa.push(new PlString(key));' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . '    public PlObject each() {' . chr(10) . '        if (this.each_iterator == null) {' . chr(10) . '            this.each_iterator = this.h.entrySet().iterator();' . chr(10) . '        }' . chr(10) . '        PlArray aa = new PlArray();' . chr(10) . '        if (this.each_iterator.hasNext()) {' . chr(10) . '            Map.Entry<String, PlObject> entry = this.each_iterator.next();' . chr(10) . '            String key = entry.getKey();' . chr(10) . '            aa.push(new PlString(key));' . chr(10) . '            PlObject value = entry.getValue();' . chr(10) . '            aa.push(value);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '             // return empty list' . chr(10) . '             this.each_iterator = null;' . chr(10) . '        }' . chr(10) . '        return aa;' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%native_to_perl))) . '
+    // Note: multiple versions of push()
+    public PlObject push(PlObject v) {
+        if (v.is_array()) {
+            return this.push( (PlArray)v );
+        }
+        this.a.add(v.scalar());
+        return this.length_of_array();
+    }
+    public PlObject push(PlLvalue v) {
+        this.a.add(v.get());
+        return this.length_of_array();
+    }
+    public PlObject push(PlArray args) {
+        for (int i = 0; i < args.to_int(); i++) {
+            PlObject s = args.aget(i);
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                this.push(s);
+            }
+            else {
+                this.a.add(s);
+            }
+        }
+        return this.length_of_array();
+    }
+
+    // Note: multiple versions of unshift()
+    public PlObject unshift(PlObject v) {
+        if (v.is_array()) {
+            return this.unshift( (PlArray)v );
+        }
+        this.a.add(0, v.scalar());
+        return this.length_of_array();
+    }
+    public PlObject unshift(PlLvalue v) {
+        this.a.add(0, v.get());
+        return this.length_of_array();
+    }
+    public PlObject unshift(PlArray args) {
+        for (int i = args.to_int() - 1; i >= 0; i--) {
+            PlObject s = args.aget(i);
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                this.unshift(s);
+            }
+            else {
+                this.a.add(0, s);
+            }
+        }
+        return this.length_of_array();
+    }
+
+    public PlObject pop() {
+        int size = this.a.size() - 1;
+        if (size >= 0) {
+            return this.a.remove(size);
+        }
+        else {
+            return PlCx.UNDEF;
+        }
+    }
+    public PlObject shift() {
+        int size = this.a.size();
+        if (size > 0) {
+            return this.a.remove(0);
+        }
+        else {
+            return PlCx.UNDEF;
+        }
+    }
+    public PlObject exists(PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.FALSE;
+        }
+        return PlCx.TRUE;
+    }
+    public PlObject delete(int want, PlObject i) {
+        int pos  = i.to_int();
+        if (pos < 0) {
+            pos = this.a.size() + pos;
+        }
+        if ((pos+1) == this.a.size()) {
+            return this.pop();
+        }
+        if (pos < 0 || pos >= this.a.size()) {
+            return PlCx.FALSE;
+        }
+        PlObject res = this.aget(i);
+        this.aset(i, PlCx.UNDEF);
+        return res;
+    }
+    public PlObject values() {
+        // return a copy
+        return new PlArray(this);
+    }
+    public PlObject keys() {
+        PlArray aa = new PlArray();
+        int size = this.a.size();
+        for (int i = 0; i < size; i++) {
+            aa.push(new PlInt(i));
+        }
+        return aa;
+    }
+    public PlObject each() {
+        PlArray aa = new PlArray();
+        int size = this.a.size();
+        if (this.each_iterator < size) {
+            aa.push(new PlInt(this.each_iterator));
+            aa.push(this.aget(this.each_iterator));
+            this.each_iterator++;
+        }
+        else {
+            // return empty list
+            this.each_iterator = 0;
+        }
+        return aa;
+    }
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int size = this.a.size();
+        for (int i = 0; i < size; i++) {
+            String item = this.a.get(i).toString();
+            sb.append(item);
+        }
+        return sb.toString();
+    }
+    public long to_long() {
+        return this.a.size();
+    }
+    public int to_int() {
+        return this.a.size();
+    }
+    public PlObject length_of_array() {
+        return new PlInt(this.a.size());
+    }
+    public PlObject end_of_array_index() {
+        return new PlInt(this.a.size() - 1);
+    }
+    public double to_double() {
+        return 0.0 + this.to_long();
+    }
+    public boolean to_bool() {
+        return (this.a.size() > 0);
+    }
+    public boolean is_int() {
+        return false;
+    }
+    public boolean is_num() {
+        return false;
+    }
+    public boolean is_string() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public boolean is_array() {
+        return true;
+    }
+    public PlObject scalar() {
+        return this.length_of_array();
+    }
+}
+class PlHash extends PlObject {
+    public HashMap<String, PlObject> h;
+    public Iterator<Map.Entry<String, PlObject>> each_iterator;
+
+    public PlHash() {
+        this.each_iterator = null;
+        this.h = new HashMap<String, PlObject>();
+    }
+    public PlHash(PlObject... args) {
+        PlHash hh = new PlHash();
+        int args_size = args.length;
+        for (int i = 0; i < args_size; i++) {
+            PlObject s = args[i];
+            if (s.is_hash()) {
+                // @x = %x;
+                s = s.to_array();
+            }
+            if (s.is_array()) {
+                // %x = ( @x, @y );
+                int array_size = s.to_int();
+                for (int j = 0; j < array_size; j++) {
+                    PlObject key = s.aget(j);
+                    j++;
+                    PlObject value;
+                    if ( j >= array_size ) {
+                        // TODO - emit warning about odd number of arguments
+                        value = PlCx.UNDEF;
+                    }
+                    else {
+                        value = s.aget(j);
+                    }
+                    hh.hset(key, value);
+                }
+            }
+            else {
+                i++;
+                PlObject value;
+                if ( i >= args_size ) {
+                    // TODO - emit warning about odd number of arguments
+                    value = PlCx.UNDEF;
+                }
+                else {
+                    value = args[i];
+                }
+                hh.hset(s, value);
+            }
+        }
+        this.each_iterator = null;
+        this.h = hh.to_HashMap();
+    }
+    private HashMap<String, PlObject> to_HashMap() {
+        return this.h;
+    }
+    public PlObject set(PlObject s) {
+        this.h.clear();
+        if (s.is_hash()) {
+            // @x = %x;
+            s = s.to_array();
+        }
+        if (s.is_array()) {
+            // %x = ( @x, @y );
+            int array_size = s.to_int();
+            for (int j = 0; j < array_size; j++) {
+                PlObject key = s.aget(j);
+                j++;
+                PlObject value;
+                if ( j >= array_size ) {
+                    // TODO - emit warning about odd number of arguments
+                    value = PlCx.UNDEF;
+                }
+                else {
+                    value = s.aget(j);
+                }
+                this.hset(key, value);
+            }
+        }
+        else {
+            // TODO - emit warning about odd number of arguments
+            this.hset(s, PlCx.UNDEF);
+        }
+        this.each_iterator = null;
+        return this;
+    }
+
+    public PlObject to_array() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            PlObject value = entry.getValue();
+            aa.push(new PlString(key));
+            aa.push(value);
+        }
+        return aa;
+    }
+
+    public PlArray to_list_of_aliases() {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            aa.add(new PlString(key));
+            PlObject value = entry.getValue();
+            if (value == null) {
+                PlLvalue a = new PlLvalue();
+                this.h.put(key, a);
+                aa.add(a);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue a = new PlLvalue(value);
+                this.h.put(key, a);
+                aa.add(a);
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        return result;
+    }
+
+    public PlObject hget(PlObject i) {
+        PlObject o = this.h.get(i.toString());
+        if (o == null) {
+            return PlCx.UNDEF;
+        }
+        return o;
+    }
+    public PlObject hget(String i) {
+        PlObject o = this.h.get(i);
+        if (o == null) {
+            return PlCx.UNDEF;
+        }
+        return o;
+    }
+    public PlObject hget_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            String key = a.aget(i).toString();
+            PlObject value = this.h.get(key);
+            if (value == null) {
+                PlLvalue v = new PlLvalue();
+                this.h.put(key, v);
+                aa.add(v);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue v = new PlLvalue(value);
+                this.h.put(key, v);
+                aa.add(v);
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
+    }
+    public PlObject hget_hash_list_of_aliases(int want, PlArray a) {
+        ArrayList<PlObject> aa = new ArrayList<PlObject>();
+        for (int i = 0; i < a.to_int(); i++) {
+            String key = a.aget(i).toString();
+            aa.add(new PlString(key));
+            PlObject value = this.h.get(key);
+            if (value == null) {
+                PlLvalue v = new PlLvalue();
+                this.h.put(key, v);
+                aa.add(v);
+            }
+            else if (value.is_lvalue()) {
+                aa.add(value);
+            }
+            else {
+                PlLvalue v = new PlLvalue(value);
+                this.h.put(key, v);
+                aa.add(v);
+            }
+        }
+        PlArray result = new PlArray();
+        result.a = aa;
+        if (want == PlCx.LIST) {
+            return result;
+        }
+        return result.pop();
+    }
+
+    public PlObject hget_lvalue(PlObject i) {
+        PlObject o = this.h.get(i.toString());
+        if (o == null) {
+            PlLvalue a = new PlLvalue();
+            this.h.put(i.toString(), a);
+            return a;
+        }
+        else if (o.is_lvalue()) {
+            return o;
+        }
+        PlLvalue a = new PlLvalue(o);
+        this.h.put(i.toString(), a);
+        return a;
+    }
+    public PlObject hget_lvalue(String i) {
+        PlObject o = this.h.get(i);
+        if (o == null) {
+            PlLvalue a = new PlLvalue();
+            this.h.put(i, a);
+            return a;
+        }
+        else if (o.is_lvalue()) {
+            return o;
+        }
+        PlLvalue a = new PlLvalue(o);
+        this.h.put(i, a);
+        return a;
+    }
+    public PlObject hget_lvalue_local(PlObject i) {
+        return this.hget_lvalue_local(i.toString());
+    }
+    public PlObject hget_lvalue_local(String i) {
+        return PerlOp.push_local(this, i);
+    }
+
+    public PlObject get_scalar(PlObject i) {
+        // $$x
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlLvalue a = new PlLvalue();
+            this.hset(i, new PlLvalueRef(a));
+            return a;
+        }
+        else if (o.is_scalarref()) {
+            return o.get();
+        }
+        // Modification of a read-only value attempted
+        // return PlCORE.die("Not an SCALAR reference");
+        return o;
+    }
+
+    public PlObject hget_scalarref(PlObject i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.hset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        // Modification of a read-only value attempted
+        return o;
+    }
+    public PlObject hget_scalarref(String i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.hset(i, ar);
+            return ar;
+        }
+        else if (o.is_scalarref()) {
+            return o;
+        }
+        // Modification of a read-only value attempted
+        return o;
+    }
+
+    public PlObject hget_arrayref(PlObject i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.hset(i, ar);
+            return ar;
+        }
+        else if (o.is_arrayref()) {
+            return o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+    public PlObject hget_arrayref(String i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.hset(i, ar);
+            return ar;
+        }
+        else if (o.is_arrayref()) {
+            return o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
+    }
+
+    public PlObject hget_hashref(PlObject i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.hset(i, hr);
+            return hr;
+        }
+        else if (o.is_hashref()) {
+            return o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+    public PlObject hget_hashref(String i) {
+        PlObject o = this.hget(i);
+        if (o.is_undef()) {
+            PlHashRef hr = new PlHashRef();
+            this.hset(i, hr);
+            return hr;
+        }
+        else if (o.is_hashref()) {
+            return o;
+        }
+        return PlCORE.die("Not a HASH reference");
+    }
+
+    // Note: multiple versions of set()
+    public PlObject hset(PlObject s, PlObject v) {
+        String key = s.toString();
+        PlObject value = v.scalar();
+        PlObject o = this.h.get(key);
+        if (o != null && o.is_lvalue()) {
+            o.set(value);
+        }
+        else {
+            this.h.put(key, value);
+        }
+        return v;
+    }
+    public PlObject hset(String key, PlObject v) {
+        PlObject value = v.scalar();
+        PlObject o = this.h.get(key);
+        if (o != null && o.is_lvalue()) {
+            o.set(value);
+        }
+        else {
+            this.h.put(key, value);
+        }
+        return v;
+    }
+    public PlObject hset(PlObject s, PlLvalue v) {
+        return this.hset(s, v.get());
+    }
+    public PlObject hset(String s, PlLvalue v) {
+        return this.hset(s, v.get());
+    }
+    public PlObject hset(int want, PlArray s, PlArray v) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < v.to_int(); i++){
+            aa.push(this.hset(v.aget(i), s.aget(i)));
+        };
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
+    }
+    public PlObject exists(PlObject i) {
+        return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
+    }
+    public PlObject delete(PlObject i) {
+        PlObject r = this.h.remove(i.toString());
+        if (r == null) {
+            return PlCx.UNDEF;
+        }
+        return r;
+    }
+    public PlObject delete(int want, PlArray a) {
+        PlArray aa = new PlArray();
+
+        for (int i = 0; i < a.to_int(); i++) {
+            PlObject r = this.delete(a.aget(i));
+            aa.push(r);
+        }
+        if (want == PlCx.LIST) {
+            return aa;
+        }
+        return aa.pop();
+    }
+    public PlObject delete(int want, PlString a) {
+        PlArray aa = new PlArray();
+        aa.push(a);
+        return delete(want, aa);
+    }
+    public PlObject delete(int want, PlLvalue a) {
+        PlArray aa = new PlArray();
+        aa.push(a);
+        return delete(want, aa);
+    }
+    public PlObject values() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            PlObject value = entry.getValue();
+            aa.push(value);
+        }
+        return aa;
+    }
+    public PlObject keys() {
+        PlArray aa = new PlArray();
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            String key = entry.getKey();
+            aa.push(new PlString(key));
+        }
+        return aa;
+    }
+    public PlObject each() {
+        if (this.each_iterator == null) {
+            this.each_iterator = this.h.entrySet().iterator();
+        }
+        PlArray aa = new PlArray();
+        if (this.each_iterator.hasNext()) {
+            Map.Entry<String, PlObject> entry = this.each_iterator.next();
+            String key = entry.getKey();
+            aa.push(new PlString(key));
+            PlObject value = entry.getValue();
+            aa.push(value);
+        }
+        else {
+             // return empty list
+             this.each_iterator = null;
+        }
+        return aa;
+    }
+' . (join('', map {
             my $native = $_;
             my $perl = $native_to_perl{$native};
-            $native && $perl ? '    public PlObject hset(PlObject s, ' . $native . ' v) {' . chr(10) . '        return this.hset(s, new ' . $perl . '(v));' . chr(10) . '    }' . chr(10) . '    public PlObject hset(String s, ' . $native . ' v) {' . chr(10) . '        return this.hset(s, new ' . $perl . '(v));' . chr(10) . '    }' . chr(10) : ()
+            $native && $perl ? '    public PlObject hset(PlObject s, ' . $native . ' v) {
+        return this.hset(s, new ' . $perl . '(v));
+    }
+    public PlObject hset(String s, ' . $native . ' v) {
+        return this.hset(s, new ' . $perl . '(v));
+    }
+' : ()
         } sort {
             $a cmp $b
-        } keys(%native_to_perl))) . chr(10) . '    public String toString() {' . chr(10) . '        // TODO' . chr(10) . '        return "" + this.hashCode();' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        // TODO' . chr(10) . '        return this.hashCode();' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return 0.0 + this.to_long();' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {' . chr(10) . '            return true;' . chr(10) . '        }' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_int() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_num() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_hash() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar() {' . chr(10) . '        return new PlString(this.toString());' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlUndef extends PlObject {' . chr(10) . '    public PlUndef() {' . chr(10) . '    }' . chr(10) . '    public PlObject apply(int want, PlArray List__) {' . chr(10) . '        // $a->()' . chr(10) . '        PlCORE.die("Can' . chr(39) . 't use an undefined value as a subroutine reference");' . chr(10) . '        return this;' . chr(10) . '    }' . chr(10) . '    public PlObject length() {' . chr(10) . '        return PlCx.UNDEF;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return 0;' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return 0.0;' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        return "";' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return false;' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlBool extends PlObject {' . chr(10) . '    private boolean i;' . chr(10) . '    public PlBool(boolean i) {' . chr(10) . '        this.i = i;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        if (this.i) {' . chr(10) . '            return 1;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return 0;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        if (this.i) {' . chr(10) . '            return 1.0;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return 0.0;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        if (this.i) {' . chr(10) . '            return "1";' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return "";' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return this.i;' . chr(10) . '    }' . chr(10) . '    public boolean is_bool() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject _decr() {' . chr(10) . '        // --$x' . chr(10) . '        if (i) {' . chr(10) . '            return PlCx.INT0;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return PlCx.MIN1;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject _incr() {' . chr(10) . '        // ++$x' . chr(10) . '        if (i) {' . chr(10) . '            return new PlInt(2);' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return PlCx.INT1;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        if (i) {' . chr(10) . '            return PlCx.MIN1;' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            return PlCx.INT0;' . chr(10) . '        }' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlInt extends PlObject {' . chr(10) . '    private long i;' . chr(10) . '    public PlInt(long i) {' . chr(10) . '        this.i = i;' . chr(10) . '    }' . chr(10) . '    public PlInt(int i) {' . chr(10) . '        this.i = (long)i;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return this.i;' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return (double)(this.i);' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        return "" + this.i;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return this.i != 0;' . chr(10) . '    }' . chr(10) . '    public boolean is_int() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject _decr() {' . chr(10) . '        // --$x' . chr(10) . '        return new PlInt(i-1);' . chr(10) . '    }' . chr(10) . '    public PlObject _incr() {' . chr(10) . '        // ++$x' . chr(10) . '        return new PlInt(i+1);' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        return new PlInt(-i);' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlDouble extends PlObject {' . chr(10) . '    private double i;' . chr(10) . '    public PlDouble(double i) {' . chr(10) . '        this.i = i;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return (long)(this.i);' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return this.i;' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        double v = this.i;' . chr(10) . '        String s;' . chr(10) . '        if (   v < 0.0001 && v > -0.0001' . chr(10) . '            || v < -1E14' . chr(10) . '            || v >  1E14 )' . chr(10) . '        {' . chr(10) . '            // use scientific notation' . chr(10) . '            s = String.format("%20.20e", v);' . chr(10) . '            s = s.replaceAll("' . chr(92) . chr(92) . '.?0*e", "e");' . chr(10) . '            if (s.equals("0e+00")) {' . chr(10) . '                s = "0";' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        else {' . chr(10) . '            s = String.format("%20.20f", v);' . chr(10) . '            s = s.replaceAll("' . chr(92) . chr(92) . '.?0*$", "");' . chr(10) . '        }' . chr(10) . '        return s;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return this.i != 0.0;' . chr(10) . '    }' . chr(10) . '    public PlObject _decr() {' . chr(10) . '        // --$x' . chr(10) . '        return new PlDouble(i-1);' . chr(10) . '    }' . chr(10) . '    public PlObject _incr() {' . chr(10) . '        // ++$x' . chr(10) . '        return new PlDouble(i+1);' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        return new PlDouble(-i);' . chr(10) . '    }' . chr(10) . '    public PlObject abs() {' . chr(10) . '        return new PlDouble(i < 0.0 ? -i : i);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp(PlObject b) {' . chr(10) . '        int c = new Double(this.i).compareTo(b.to_double());' . chr(10) . '        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp2(PlObject b) {' . chr(10) . '        int c = new Double(b.to_double()).compareTo(this.i);' . chr(10) . '        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%native_to_perl))) . '
+    public String toString() {
+        // TODO
+        return "" + this.hashCode();
+    }
+    public long to_long() {
+        // TODO
+        return this.hashCode();
+    }
+    public double to_double() {
+        return 0.0 + this.to_long();
+    }
+    public boolean to_bool() {
+        for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
+            return true;
+        }
+        return false;
+    }
+    public boolean is_int() {
+        return false;
+    }
+    public boolean is_num() {
+        return false;
+    }
+    public boolean is_string() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public boolean is_hash() {
+        return true;
+    }
+    public PlObject scalar() {
+        return new PlString(this.toString());
+    }
+}
+class PlUndef extends PlObject {
+    public PlUndef() {
+    }
+    public PlObject apply(int want, PlArray List__) {
+        // $a->()
+        PlCORE.die("Can' . chr(39) . 't use an undefined value as a subroutine reference");
+        return this;
+    }
+    public PlObject length() {
+        return PlCx.UNDEF;
+    }
+    public long to_long() {
+        return 0;
+    }
+    public double to_double() {
+        return 0.0;
+    }
+    public String toString() {
+        return "";
+    }
+    public boolean to_bool() {
+        return false;
+    }
+    public boolean is_bool() {
+        return false;
+    }
+    public boolean is_undef() {
+        return true;
+    }
+}
+class PlBool extends PlObject {
+    private boolean i;
+    public PlBool(boolean i) {
+        this.i = i;
+    }
+    public long to_long() {
+        if (this.i) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    public double to_double() {
+        if (this.i) {
+            return 1.0;
+        }
+        else {
+            return 0.0;
+        }
+    }
+    public String toString() {
+        if (this.i) {
+            return "1";
+        }
+        else {
+            return "";
+        }
+    }
+    public boolean to_bool() {
+        return this.i;
+    }
+    public boolean is_bool() {
+        return true;
+    }
+    public PlObject _decr() {
+        // --$x
+        if (i) {
+            return PlCx.INT0;
+        }
+        else {
+            return PlCx.MIN1;
+        }
+    }
+    public PlObject _incr() {
+        // ++$x
+        if (i) {
+            return new PlInt(2);
+        }
+        else {
+            return PlCx.INT1;
+        }
+    }
+    public PlObject neg() {
+        if (i) {
+            return PlCx.MIN1;
+        }
+        else {
+            return PlCx.INT0;
+        }
+    }
+}
+class PlInt extends PlObject {
+    private long i;
+    public PlInt(long i) {
+        this.i = i;
+    }
+    public PlInt(int i) {
+        this.i = (long)i;
+    }
+    public long to_long() {
+        return this.i;
+    }
+    public double to_double() {
+        return (double)(this.i);
+    }
+    public String toString() {
+        return "" + this.i;
+    }
+    public boolean to_bool() {
+        return this.i != 0;
+    }
+    public boolean is_int() {
+        return true;
+    }
+    public PlObject _decr() {
+        // --$x
+        return new PlInt(i-1);
+    }
+    public PlObject _incr() {
+        // ++$x
+        return new PlInt(i+1);
+    }
+    public PlObject neg() {
+        return new PlInt(-i);
+    }
+}
+class PlDouble extends PlObject {
+    private double i;
+    public PlDouble(double i) {
+        this.i = i;
+    }
+    public long to_long() {
+        return (long)(this.i);
+    }
+    public double to_double() {
+        return this.i;
+    }
+    public String toString() {
+        double v = this.i;
+        String s;
+        if (   v < 0.0001 && v > -0.0001
+            || v < -1E14
+            || v >  1E14 )
+        {
+            // use scientific notation
+            s = String.format("%20.20e", v);
+            s = s.replaceAll("\\\\.?0*e", "e");
+            if (s.equals("0e+00")) {
+                s = "0";
+            }
+        }
+        else {
+            s = String.format("%20.20f", v);
+            s = s.replaceAll("\\\\.?0*$", "");
+        }
+        return s;
+    }
+    public boolean to_bool() {
+        return this.i != 0.0;
+    }
+    public PlObject _decr() {
+        // --$x
+        return new PlDouble(i-1);
+    }
+    public PlObject _incr() {
+        // ++$x
+        return new PlDouble(i+1);
+    }
+    public PlObject neg() {
+        return new PlDouble(-i);
+    }
+    public PlObject abs() {
+        return new PlDouble(i < 0.0 ? -i : i);
+    }
+    public PlObject num_cmp(PlObject b) {
+        int c = new Double(this.i).compareTo(b.to_double());
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        int c = new Double(b.to_double()).compareTo(this.i);
+        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+    }
+' . (join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{'op'};
             my $returns = $number_binop{$perl}->{'num_returns'};
-            '    public PlObject ' . $perl . '(PlObject s) {' . chr(10) . '        // num - int, num - num' . chr(10) . '        return new ' . $returns . '( this.i ' . $native . ' s.to_double() );' . chr(10) . '    }' . chr(10) . '    public PlObject ' . $perl . '2(PlObject s) {' . chr(10) . '        // int - num' . chr(10) . '        return new ' . $returns . '( s.to_double() ' . $native . ' this.i );' . chr(10) . '    }' . chr(10)
+            '    public PlObject ' . $perl . '(PlObject s) {
+        // num - int, num - num
+        return new ' . $returns . '( this.i ' . $native . ' s.to_double() );
+    }
+    public PlObject ' . $perl . '2(PlObject s) {
+        // int - num
+        return new ' . $returns . '( s.to_double() ' . $native . ' this.i );
+    }
+'
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '    public boolean is_num() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '}' . chr(10) . 'class PlString extends PlObject {' . chr(10) . '    private java.lang.String s;' . chr(10) . '    private PlObject numericValue;' . chr(10) . chr(10) . '    public PlString(String s) {' . chr(10) . '        this.s = s;' . chr(10) . '    }' . chr(10) . '    public PlString(char s) {' . chr(10) . '        this.s = "" + s;' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref() {' . chr(10) . '        if (s.length() == 1) {' . chr(10) . '            if (this._looks_like_non_negative_integer()) {' . chr(10) . '                return PerlOp.regex_var(this.to_int());' . chr(10) . '            }' . chr(10) . '            if (s.equals("&")) {' . chr(10) . '                return PerlOp.regex_var(s);' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "v_");' . chr(10) . '        return PlV.get(internalName);' . chr(10) . '    }' . chr(10) . '    public PlObject scalar_deref_set(PlObject v) {' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "v_");' . chr(10) . '        return PlV.set(internalName, v);' . chr(10) . '    }' . chr(10) . '    public PlArray array_deref() {' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "List_");' . chr(10) . '        return PlV.array_get(internalName);' . chr(10) . '    }' . chr(10) . '    public PlObject array_deref_set(PlObject v) {' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "List_");' . chr(10) . '        return PlV.set(internalName, v);' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref() {' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "Hash_");' . chr(10) . '        return PlV.get(internalName);' . chr(10) . '    }' . chr(10) . '    public PlObject hash_deref_set(PlObject v) {' . chr(10) . '        String internalName = PlV.glob_name_fixup(s, "Hash_");' . chr(10) . '        return PlV.set(internalName, v);' . chr(10) . '    }' . chr(10) . chr(10) . '    public PlObject parse() {' . chr(10) . '        if (numericValue == null) {' . chr(10) . '            numericValue = this._parse();' . chr(10) . '        }' . chr(10) . '        return numericValue;' . chr(10) . '    }' . chr(10) . '    private boolean _looks_like_non_negative_integer() {' . chr(10) . '        final int length = s.length();' . chr(10) . '        for (int offset = 0; offset < length; ) {' . chr(10) . '            final int c = s.codePointAt(offset);' . chr(10) . '            switch (c) {' . chr(10) . '                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                    break;' . chr(10) . '                default:' . chr(10) . '                    return false;' . chr(10) . '            }' . chr(10) . '        }' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    private PlObject _parse_exp(int length, int signal, int offset, int next) {' . chr(10) . '        // 123.45E^^^' . chr(10) . '        int offset3 = next;' . chr(10) . '        for ( ; offset3 < length; ) {' . chr(10) . '            final int c3 = s.codePointAt(offset3);' . chr(10) . '            switch (c3) {' . chr(10) . '                case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ':' . chr(10) . '                    // TODO' . chr(10) . '                    break;' . chr(10) . '                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                    break;' . chr(10) . '                default:    // invalid' . chr(10) . '                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));' . chr(10) . '            }' . chr(10) . '            offset3++;' . chr(10) . '        }' . chr(10) . '        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));' . chr(10) . '    }' . chr(10) . '    private PlObject _parse_dot(int length, int signal, int offset, int next) {' . chr(10) . '        // 123.^^^' . chr(10) . '        int offset3 = next;' . chr(10) . '        for ( ; offset3 < length; ) {' . chr(10) . '            final int c3 = s.codePointAt(offset3);' . chr(10) . '            switch (c3) {' . chr(10) . '                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                    break;' . chr(10) . '                case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':' . chr(10) . '                    // start exponential part' . chr(10) . '                    return _parse_exp(length, signal, offset, offset3+1);' . chr(10) . '                default:    // invalid' . chr(10) . '                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));' . chr(10) . '            }' . chr(10) . '            offset3++;' . chr(10) . '        }' . chr(10) . '        if (offset3 == 1) {' . chr(10) . '            return PlCx.INT0;   // string is "."' . chr(10) . '        }' . chr(10) . '        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));' . chr(10) . '    }' . chr(10) . '    private PlObject _parse() {' . chr(10) . '        final int length = s.length();' . chr(10) . '        int signal = 0;' . chr(10) . '        for (int offset = 0; offset < length; ) {' . chr(10) . '            final int c = s.codePointAt(offset);' . chr(10) . '            switch (c) {' . chr(10) . '                case ' . chr(39) . 'i' . chr(39) . ': case ' . chr(39) . 'I' . chr(39) . ':' . chr(10) . '                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {' . chr(10) . '                                if (signal < 0) {' . chr(10) . '                                    return new PlDouble(Double.NEGATIVE_INFINITY);' . chr(10) . '                                }' . chr(10) . '                                else {' . chr(10) . '                                    return new PlDouble(Double.POSITIVE_INFINITY);' . chr(10) . '                                }' . chr(10) . '                            }' . chr(10) . '                            return PlCx.INT0;' . chr(10) . '                case ' . chr(39) . 'n' . chr(39) . ': case ' . chr(39) . 'N' . chr(39) . ':' . chr(10) . '                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {' . chr(10) . '                                return new PlDouble(Double.NaN);' . chr(10) . '                            }' . chr(10) . '                            return PlCx.INT0;' . chr(10) . '                case ' . chr(39) . '.' . chr(39) . ':   // starts with dot' . chr(10) . '                            if (signal != 0) {' . chr(10) . '                                signal = 1;' . chr(10) . '                            }' . chr(10) . '                            return _parse_dot(length, signal, offset, offset+1);' . chr(10) . '                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                            // starts with number' . chr(10) . '                            if (signal == 0) {' . chr(10) . '                                signal = 1;' . chr(10) . '                            }' . chr(10) . '                            int offset2 = offset+1;' . chr(10) . '                            for ( ; offset2 < length; ) {' . chr(10) . '                                final int c2 = s.codePointAt(offset2);' . chr(10) . '                                switch (c2) {' . chr(10) . '                                    case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '                                    case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                                        // more numbers' . chr(10) . '                                        break;' . chr(10) . '                                    case ' . chr(39) . '.' . chr(39) . ':' . chr(10) . '                                        // start decimal part' . chr(10) . '                                        return _parse_dot(length, signal, offset, offset2+1);' . chr(10) . '                                    case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':' . chr(10) . '                                        // start exponential part' . chr(10) . '                                        return _parse_exp(length, signal, offset, offset2+1);' . chr(10) . '                                    default:' . chr(10) . '                                        // return integer' . chr(10) . '                                        if (signal < 0) {' . chr(10) . '                                            return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));' . chr(10) . '                                        }' . chr(10) . '                                        else {' . chr(10) . '                                            return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));' . chr(10) . '                                        }' . chr(10) . '                                }' . chr(10) . '                                offset2++;' . chr(10) . '                            }' . chr(10) . '                            // integer' . chr(10) . '                            if (signal < 0) {' . chr(10) . '                                return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));' . chr(10) . '                            }' . chr(10) . '                            else {' . chr(10) . '                                return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));' . chr(10) . '                            }' . chr(10) . '                case ' . chr(39) . '+' . chr(39) . ':   // starts with +' . chr(10) . '                            if (signal != 0) {' . chr(10) . '                                // invalid' . chr(10) . '                                return PlCx.INT0;' . chr(10) . '                            }' . chr(10) . '                            signal = 1;' . chr(10) . '                            break;' . chr(10) . '                case ' . chr(39) . '-' . chr(39) . ':   // starts with -' . chr(10) . '                            if (signal != 0) {' . chr(10) . '                                // invalid' . chr(10) . '                                return PlCx.INT0;' . chr(10) . '                            }' . chr(10) . '                            signal = -1;' . chr(10) . '                            break;' . chr(10) . '                case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . chr(92) . 't' . chr(39) . ': case ' . chr(39) . chr(92) . 'n' . chr(39) . ': case ' . chr(39) . chr(92) . 'r' . chr(39) . ':' . chr(10) . '                            // starts with space' . chr(10) . '                            if (signal != 0) {' . chr(10) . '                                // invalid' . chr(10) . '                                return PlCx.INT0;' . chr(10) . '                            }' . chr(10) . '                            break;' . chr(10) . '                default:    // invalid' . chr(10) . '                            return PlCx.INT0;' . chr(10) . '            }' . chr(10) . '            offset++;' . chr(10) . '        }' . chr(10) . '        return PlCx.INT0;' . chr(10) . '    }' . chr(10) . '    public long to_long() {' . chr(10) . '        return this.parse().to_long();' . chr(10) . '    }' . chr(10) . '    public double to_double() {' . chr(10) . '        return this.parse().to_double();' . chr(10) . '    }' . chr(10) . '    public String toString() {' . chr(10) . '        return this.s;' . chr(10) . '    }' . chr(10) . '    public boolean to_bool() {' . chr(10) . '        return !( this.s.equals("") || this.s.equals("0") );' . chr(10) . '    }' . chr(10) . '    public boolean is_string() {' . chr(10) . '        return true;' . chr(10) . '    }' . chr(10) . '    public PlObject _decr() {' . chr(10) . '        // --$x' . chr(10) . '        return this.add(PlCx.MIN1);' . chr(10) . '    }' . chr(10) . chr(10) . '    // $x++ when $x is PlString' . chr(10) . '    private static final String _string_increment(String s) {' . chr(10) . '        if (s.length() < 2) {' . chr(10) . '            final int c = s.codePointAt(0);' . chr(10) . '            if ((c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '8' . chr(39) . ') || (c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Y' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'y' . chr(39) . ')) {' . chr(10) . '                return "" + (char)(c + 1);' . chr(10) . '            }' . chr(10) . '            if (c == ' . chr(39) . '9' . chr(39) . ') {' . chr(10) . '                return "10";' . chr(10) . '            }' . chr(10) . '            if (c == ' . chr(39) . 'Z' . chr(39) . ') {' . chr(10) . '                return "AA";' . chr(10) . '            }' . chr(10) . '            if (c == ' . chr(39) . 'z' . chr(39) . ') {' . chr(10) . '                return "aa";' . chr(10) . '            }' . chr(10) . '            return "1";' . chr(10) . '        }' . chr(10) . '        String c = _string_increment(s.substring(s.length()-1, s.length()));' . chr(10) . '        if (c.length() == 1) {' . chr(10) . '            return s.substring(0, s.length()-1) + c;' . chr(10) . '        }' . chr(10) . '        return _string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());' . chr(10) . '    }' . chr(10) . '    public PlObject _incr() {' . chr(10) . '        // ++$x' . chr(10) . '        final int length = s.length();' . chr(10) . '        if (length == 0) {' . chr(10) . '            return PlCx.INT1;' . chr(10) . '        }' . chr(10) . '        int c = this.s.codePointAt(0);' . chr(10) . '        switch (c) {' . chr(10) . '            case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . chr(92) . 't' . chr(39) . ': case ' . chr(39) . chr(92) . 'n' . chr(39) . ': case ' . chr(39) . chr(92) . 'r' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ': case ' . chr(39) . '.' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                return this.add(PlCx.INT1);' . chr(10) . '        }' . chr(10) . '        c = s.codePointAt(length - 1);' . chr(10) . '        if ((c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '8' . chr(39) . ') || (c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Y' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'y' . chr(39) . ')) {' . chr(10) . '            return new PlString(s.substring(0, length-1) + (char)(c + 1));' . chr(10) . '        }' . chr(10) . '        return new PlString(_string_increment(this.s));' . chr(10) . '    }' . chr(10) . '    public PlObject neg() {' . chr(10) . '        final int length = s.length();' . chr(10) . '        if (length == 0) {' . chr(10) . '            return PlCx.INT0;' . chr(10) . '        }' . chr(10) . '        final int c = this.s.codePointAt(0);' . chr(10) . '        switch (c) {' . chr(10) . '            case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ':' . chr(10) . '                if (c == ' . chr(39) . '+' . chr(39) . ') {' . chr(10) . '                    return new PlString( ' . chr(39) . '-' . chr(39) . ' + s.substring(1) );' . chr(10) . '                }' . chr(10) . '                if (c == ' . chr(39) . '-' . chr(39) . ') {' . chr(10) . '                    return new PlString( ' . chr(39) . '+' . chr(39) . ' + s.substring(1) );' . chr(10) . '                }' . chr(10) . '            case ' . chr(39) . '.' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . chr(92) . 't' . chr(39) . ': case ' . chr(39) . chr(92) . 'n' . chr(39) . ': case ' . chr(39) . chr(92) . 'r' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':' . chr(10) . '            case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':' . chr(10) . '                return this.parse().neg();' . chr(10) . '        }' . chr(10) . '        if ((c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Z' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'z' . chr(39) . ')) {' . chr(10) . '            return new PlString( ' . chr(39) . '-' . chr(39) . ' + s );' . chr(10) . '        }' . chr(10) . '        return PlCx.INT0;' . chr(10) . '    }' . chr(10) . '    public PlObject abs() {' . chr(10) . '        return this.parse().abs();' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp(PlObject b) {' . chr(10) . '        return this.parse().num_cmp(b);' . chr(10) . '    }' . chr(10) . '    public PlObject num_cmp2(PlObject b) {' . chr(10) . '        return b.num_cmp2(this.parse());' . chr(10) . '    }' . chr(10) . (join('', map {
+        } keys(%number_binop))) . '    public boolean is_num() {
+        return true;
+    }
+}
+class PlString extends PlObject {
+    private java.lang.String s;
+    private PlObject numericValue;
+
+    public PlString(String s) {
+        this.s = s;
+    }
+    public PlString(char s) {
+        this.s = "" + s;
+    }
+    public PlObject scalar_deref() {
+        if (s.length() == 1) {
+            if (this._looks_like_non_negative_integer()) {
+                return PerlOp.regex_var(this.to_int());
+            }
+            if (s.equals("&")) {
+                return PerlOp.regex_var(s);
+            }
+        }
+        String internalName = PlV.glob_name_fixup(s, "v_");
+        return PlV.get(internalName);
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "v_");
+        return PlV.set(internalName, v);
+    }
+    public PlArray array_deref() {
+        String internalName = PlV.glob_name_fixup(s, "List_");
+        return PlV.array_get(internalName);
+    }
+    public PlObject array_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "List_");
+        return PlV.set(internalName, v);
+    }
+    public PlObject hash_deref() {
+        String internalName = PlV.glob_name_fixup(s, "Hash_");
+        return PlV.get(internalName);
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        String internalName = PlV.glob_name_fixup(s, "Hash_");
+        return PlV.set(internalName, v);
+    }
+
+    public PlObject parse() {
+        if (numericValue == null) {
+            numericValue = this._parse();
+        }
+        return numericValue;
+    }
+    private boolean _looks_like_non_negative_integer() {
+        final int length = s.length();
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    private PlObject _parse_exp(int length, int signal, int offset, int next) {
+        // 123.45E^^^
+        int offset3 = next;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {
+                case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ':
+                    // TODO
+                    break;
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                default:    // invalid
+                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+            }
+            offset3++;
+        }
+        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+    }
+    private PlObject _parse_dot(int length, int signal, int offset, int next) {
+        // 123.^^^
+        int offset3 = next;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':
+                    // start exponential part
+                    return _parse_exp(length, signal, offset, offset3+1);
+                default:    // invalid
+                    return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+            }
+            offset3++;
+        }
+        if (offset3 == 1) {
+            return PlCx.INT0;   // string is "."
+        }
+        return new PlDouble(Double.parseDouble(this.s.substring(0, offset3)));
+    }
+    private PlObject _parse() {
+        final int length = s.length();
+        int signal = 0;
+        for (int offset = 0; offset < length; ) {
+            final int c = s.codePointAt(offset);
+            switch (c) {
+                case ' . chr(39) . 'i' . chr(39) . ': case ' . chr(39) . 'I' . chr(39) . ':
+                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
+                                if (signal < 0) {
+                                    return new PlDouble(Double.NEGATIVE_INFINITY);
+                                }
+                                else {
+                                    return new PlDouble(Double.POSITIVE_INFINITY);
+                                }
+                            }
+                            return PlCx.INT0;
+                case ' . chr(39) . 'n' . chr(39) . ': case ' . chr(39) . 'N' . chr(39) . ':
+                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
+                                return new PlDouble(Double.NaN);
+                            }
+                            return PlCx.INT0;
+                case ' . chr(39) . '.' . chr(39) . ':   // starts with dot
+                            if (signal != 0) {
+                                signal = 1;
+                            }
+                            return _parse_dot(length, signal, offset, offset+1);
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                            // starts with number
+                            if (signal == 0) {
+                                signal = 1;
+                            }
+                            int offset2 = offset+1;
+                            for ( ; offset2 < length; ) {
+                                final int c2 = s.codePointAt(offset2);
+                                switch (c2) {
+                                    case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                                    case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                                        // more numbers
+                                        break;
+                                    case ' . chr(39) . '.' . chr(39) . ':
+                                        // start decimal part
+                                        return _parse_dot(length, signal, offset, offset2+1);
+                                    case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':
+                                        // start exponential part
+                                        return _parse_exp(length, signal, offset, offset2+1);
+                                    default:
+                                        // return integer
+                                        if (signal < 0) {
+                                            return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                                        }
+                                        else {
+                                            return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                                        }
+                                }
+                                offset2++;
+                            }
+                            // integer
+                            if (signal < 0) {
+                                return new PlInt(-Integer.parseInt(this.s.substring(offset, offset2)));
+                            }
+                            else {
+                                return new PlInt(Integer.parseInt(this.s.substring(offset, offset2)));
+                            }
+                case ' . chr(39) . '+' . chr(39) . ':   // starts with +
+                            if (signal != 0) {
+                                // invalid
+                                return PlCx.INT0;
+                            }
+                            signal = 1;
+                            break;
+                case ' . chr(39) . '-' . chr(39) . ':   // starts with -
+                            if (signal != 0) {
+                                // invalid
+                                return PlCx.INT0;
+                            }
+                            signal = -1;
+                            break;
+                case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . '\\t' . chr(39) . ': case ' . chr(39) . '\\n' . chr(39) . ': case ' . chr(39) . '\\r' . chr(39) . ':
+                            // starts with space
+                            if (signal != 0) {
+                                // invalid
+                                return PlCx.INT0;
+                            }
+                            break;
+                default:    // invalid
+                            return PlCx.INT0;
+            }
+            offset++;
+        }
+        return PlCx.INT0;
+    }
+    public long to_long() {
+        return this.parse().to_long();
+    }
+    public double to_double() {
+        return this.parse().to_double();
+    }
+    public String toString() {
+        return this.s;
+    }
+    public boolean to_bool() {
+        return !( this.s.equals("") || this.s.equals("0") );
+    }
+    public boolean is_string() {
+        return true;
+    }
+    public PlObject _decr() {
+        // --$x
+        return this.add(PlCx.MIN1);
+    }
+
+    // $x++ when $x is PlString
+    private static final String _string_increment(String s) {
+        if (s.length() < 2) {
+            final int c = s.codePointAt(0);
+            if ((c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '8' . chr(39) . ') || (c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Y' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'y' . chr(39) . ')) {
+                return "" + (char)(c + 1);
+            }
+            if (c == ' . chr(39) . '9' . chr(39) . ') {
+                return "10";
+            }
+            if (c == ' . chr(39) . 'Z' . chr(39) . ') {
+                return "AA";
+            }
+            if (c == ' . chr(39) . 'z' . chr(39) . ') {
+                return "aa";
+            }
+            return "1";
+        }
+        String c = _string_increment(s.substring(s.length()-1, s.length()));
+        if (c.length() == 1) {
+            return s.substring(0, s.length()-1) + c;
+        }
+        return _string_increment(s.substring(0, s.length()-1)) + c.substring(c.length()-1, c.length());
+    }
+    public PlObject _incr() {
+        // ++$x
+        final int length = s.length();
+        if (length == 0) {
+            return PlCx.INT1;
+        }
+        int c = this.s.codePointAt(0);
+        switch (c) {
+            case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . '\\t' . chr(39) . ': case ' . chr(39) . '\\n' . chr(39) . ': case ' . chr(39) . '\\r' . chr(39) . ':
+            case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ': case ' . chr(39) . '.' . chr(39) . ':
+            case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+            case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                return this.add(PlCx.INT1);
+        }
+        c = s.codePointAt(length - 1);
+        if ((c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '8' . chr(39) . ') || (c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Y' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'y' . chr(39) . ')) {
+            return new PlString(s.substring(0, length-1) + (char)(c + 1));
+        }
+        return new PlString(_string_increment(this.s));
+    }
+    public PlObject neg() {
+        final int length = s.length();
+        if (length == 0) {
+            return PlCx.INT0;
+        }
+        final int c = this.s.codePointAt(0);
+        switch (c) {
+            case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ':
+                if (c == ' . chr(39) . '+' . chr(39) . ') {
+                    return new PlString( ' . chr(39) . '-' . chr(39) . ' + s.substring(1) );
+                }
+                if (c == ' . chr(39) . '-' . chr(39) . ') {
+                    return new PlString( ' . chr(39) . '+' . chr(39) . ' + s.substring(1) );
+                }
+            case ' . chr(39) . '.' . chr(39) . ':
+            case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . '\\t' . chr(39) . ': case ' . chr(39) . '\\n' . chr(39) . ': case ' . chr(39) . '\\r' . chr(39) . ':
+            case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+            case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                return this.parse().neg();
+        }
+        if ((c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Z' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'z' . chr(39) . ')) {
+            return new PlString( ' . chr(39) . '-' . chr(39) . ' + s );
+        }
+        return PlCx.INT0;
+    }
+    public PlObject abs() {
+        return this.parse().abs();
+    }
+    public PlObject num_cmp(PlObject b) {
+        return this.parse().num_cmp(b);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        return b.num_cmp2(this.parse());
+    }
+' . (join('', map {
             my $perl = $_;
             my $native = $number_binop{$perl}->{'op'};
             my $returns = $number_binop{$perl}->{'returns'};
             my $num_returns = $number_binop{$perl}->{'num_returns'};
             if ($returns eq 'PlDouble') {
-                '    public PlObject ' . $perl . '(PlObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public PlObject ' . $perl . '2(PlObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return b.' . $perl . '(this.parse());' . chr(10) . '    }' . chr(10)
+                '    public PlObject ' . $perl . '(PlObject b) {
+        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num
+        return this.parse().' . $perl . '(b);
+    }
+    public PlObject ' . $perl . '2(PlObject b) {
+        // int - ' . chr(39) . 'num' . chr(39) . '
+        return b.' . $perl . '(this.parse());
+    }
+'
             }
             else {
-                '    public PlObject ' . $perl . '(PlObject b) {' . chr(10) . '        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num' . chr(10) . '        return this.parse().' . $perl . '(b);' . chr(10) . '    }' . chr(10) . '    public PlObject ' . $perl . '2(PlObject b) {' . chr(10) . '        // int - ' . chr(39) . 'num' . chr(39) . chr(10) . '        return b.' . $perl . '(this.parse());' . chr(10) . '    }' . chr(10)
+                '    public PlObject ' . $perl . '(PlObject b) {
+        // ' . chr(39) . 'num' . chr(39) . ' - int, ' . chr(39) . 'num' . chr(39) . ' - num
+        return this.parse().' . $perl . '(b);
+    }
+    public PlObject ' . $perl . '2(PlObject b) {
+        // int - ' . chr(39) . 'num' . chr(39) . '
+        return b.' . $perl . '(this.parse());
+    }
+'
             }
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '}' . chr(10) . join('', (map {
+        } keys(%number_binop))) . '}
+' . join('', (map {
             my $class = $java_classes{$_};
             my $java_class_name = $class->{'java_type'};
             my $perl_to_java = $class->{'perl_to_java'};
             my $perl_package = $class->{'perl_package'};
             my $java_native_to_perl = $class->{'java_native_to_perl'};
-            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? 'class ' . $java_native_to_perl . ' extends PlReference {' . chr(10) . '    public static final PlString REF = new PlString("' . $perl_package . '");' . chr(10) . '    private ' . $java_class_name . ' stuff;' . chr(10) . chr(10) . '    public ' . $java_native_to_perl . '(' . $java_class_name . ' stuff) {' . chr(10) . '        this.stuff = stuff;' . chr(10) . '    }' . chr(10) . '    public ' . $java_class_name . ' ' . $perl_to_java . '() {' . chr(10) . '        return this.stuff;' . chr(10) . '    }' . chr(10) . '    public PlString ref() {' . chr(10) . '        return REF;' . chr(10) . '    }' . chr(10) . '    public boolean is_undef() {' . chr(10) . '        return stuff == null;' . chr(10) . '    }' . chr(10) . '}' . chr(10) : ()
+            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? 'class ' . $java_native_to_perl . ' extends PlReference {
+    public static final PlString REF = new PlString("' . $perl_package . '");
+    private ' . $java_class_name . ' stuff;
+
+    public ' . $java_native_to_perl . '(' . $java_class_name . ' stuff) {
+        this.stuff = stuff;
+    }
+    public ' . $java_class_name . ' ' . $perl_to_java . '() {
+        return this.stuff;
+    }
+    public PlString ref() {
+        return REF;
+    }
+    public boolean is_undef() {
+        return stuff == null;
+    }
+}
+' : ()
         } sort {
             $a cmp $b
-        } keys(%java_classes))) . '// end Perl-Java runtime' . chr(10)
+        } keys(%java_classes))) . '// end Perl-Java runtime
+'
     }
     1
 }
@@ -18384,8 +29101,42 @@ use feature 'say';
         warn('// Perlito5 compiler');
         warn('// ARGV: ' . join(${'"'}, @ARGV))
     }
-    my $help_message = chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -c              check syntax only (runs BEGIN and CHECK blocks)' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10) . '    -E program      like -e, but enables all optional features' . chr(10) . '    -h --help' . chr(10) . '    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -[mM][-]module  execute "use/no module..." before executing program' . chr(10) . '    -n              assume "while (<>) { ... }" loop around program' . chr(10) . '    -p              assume loop like -n but print line also, like sed' . chr(10) . '    -V --version' . chr(10) . '    -v' . chr(10) . '    --verbose' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6, xs, java' . chr(10) . '    -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump' . chr(10) . '    -Cast-json      emits a dump of the abstract syntax tree in JSON format' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    --boilerplate --noboilerplate' . chr(10) . '                    emits or not boilerplate code' . chr(10) . '    --bootstrapping set this when compiling the compiler,' . chr(10) . '                    otherwise the new subroutine definitions will overwrite the current compiler' . chr(10);
-    my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.' . chr(10) . chr(10) . 'The Perl language is Copyright 1987-2012, Larry Wall' . chr(10) . 'The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.' . chr(10) . chr(10) . 'Perl may be copied only under the terms of either the Artistic License or the' . chr(10) . 'GNU General Public License, which may be found in the Perl 5 source kit.' . chr(10) . chr(10) . 'Complete documentation for Perl, including FAQ lists, should be found on' . chr(10) . 'this system using "man perl" or "perldoc perl".  If you have access to the' . chr(10) . 'Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . chr(10);
+    my $help_message = '
+perlito5 [switches] [programfile]
+  switches:
+    -c              check syntax only (runs BEGIN and CHECK blocks)
+    -e program      one line of program (omit programfile)
+    -E program      like -e, but enables all optional features
+    -h --help
+    -Idirectory     specify @INC/include directory (several -I' . chr(39) . 's allowed)
+    -[mM][-]module  execute "use/no module..." before executing program
+    -n              assume "while (<>) { ... }" loop around program
+    -p              assume loop like -n but print line also, like sed
+    -V --version
+    -v
+    --verbose
+    -Ctarget        target backend: js, perl5, perl6, xs, java
+    -Cast-perl5     emits a dump of the abstract syntax tree as a Perl dump
+    -Cast-json      emits a dump of the abstract syntax tree in JSON format
+    --expand_use --noexpand_use
+                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time
+    --boilerplate --noboilerplate
+                    emits or not boilerplate code
+    --bootstrapping set this when compiling the compiler,
+                    otherwise the new subroutine definitions will overwrite the current compiler
+';
+    my $copyright_message = 'This is Perlito5 ' . $_V5_COMPILER_VERSION . ', an implementation of the Perl language.
+
+The Perl language is Copyright 1987-2012, Larry Wall
+The Perlito5 implementation is Copyright 2011, 2012 by Flavio Soibelmann Glock and others.
+
+Perl may be copied only under the terms of either the Artistic License or the
+GNU General Public License, which may be found in the Perl 5 source kit.
+
+Complete documentation for Perl, including FAQ lists, should be found on
+this system using "man perl" or "perldoc perl".  If you have access to the
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
+';
     sub Perlito5::chomp_switch {
         my $s = substr($ARGV[0], 2);
         if ($s) {
@@ -18447,7 +29198,8 @@ use feature 'say';
         elsif (substr($ARGV[0], 0, 2) eq '-i') {
             $i_switch = 1;
             $ARGV[0] ne '-i' && ($i_switch_extension = get_text_from_switch());
-            die('switch -i ' . $i_switch_extension . ' not yet implemented.' . chr(10));
+            die('switch -i ' . $i_switch_extension . ' not yet implemented.
+');
             shift(@ARGV)
         }
         elsif ($ARGV[0] eq '-MO=Deparse') {
@@ -18498,7 +29250,7 @@ use feature 'say';
         elsif (substr($ARGV[0], 0, 2) eq '-p') {
             if ($wrapper_priority < 2) {
                 $wrapper_begin = ' LINE: while (<>) { ';
-                $wrapper_end = ' } continue { ' . ' print or die "-p destination: $!' . chr(92) . 'n"; ' . ' } ';
+                $wrapper_end = ' } continue { ' . ' print or die "-p destination: $!\\n"; ' . ' } ';
                 $wrapper_priority = 2
             }
             chomp_switch()
@@ -18550,7 +29302,8 @@ use feature 'say';
             last(ARG_LOOP)
         }
         else {
-            die('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).' . chr(10))
+            die('Unrecognized switch: ' . $ARGV[0] . '  (-h will show valid options).
+')
         }
     }
     if (!$expand_use) {
@@ -18572,7 +29325,8 @@ use feature 'say';
                 $source = <STDIN>
             }
             else {
-                open(FILE, '<:encoding(UTF-8)', $source_filename) or die('Cannot read ' . $source_filename . ': ' . ${'!'} . chr(10));
+                open(FILE, '<:encoding(UTF-8)', $source_filename) or die('Cannot read ' . $source_filename . ': ' . ${'!'} . '
+');
                 local $/ = undef;
                 $source = <FILE>;
                 close(FILE)
@@ -18586,9 +29340,14 @@ use feature 'say';
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::PROTO = {};
         Perlito5::set_global_phase('BEGIN');
-        $source = chr(10) . '# line 1' . chr(10) . $source;
+        $source = '
+# line 1
+' . $source;
         if ($wrapper_begin) {
-            $source = ' ' . $wrapper_begin . ';' . chr(10) . '                    ' . $source . ';' . chr(10) . '                    ' . $wrapper_end . chr(10) . '                  '
+            $source = ' ' . $wrapper_begin . ';
+                    ' . $source . ';
+                    ' . $wrapper_end . '
+                  '
         }
         $backend eq 'java' && Perlito5::Java::Lib::init();
         ($backend eq 'js' || ${chr(15)} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
@@ -18596,7 +29355,17 @@ use feature 'say';
             $Perlito5::EXPAND_USE = 1;
             local ${'@'};
             my $init = join('; ', @Use);
-            eval(chr(10) . '            Perlito5::set_global_phase("CHECK");' . chr(10) . '            $_->() for @Perlito5::CHECK_BLOCK;' . chr(10) . '            package main;' . chr(10) . '            ' . $init . ';' . chr(10) . '            Perlito5::set_global_phase("INIT");' . chr(10) . '            $_->() for @Perlito5::INIT_BLOCK;' . chr(10) . '            Perlito5::set_global_phase("RUN");' . chr(10) . '            ' . $source . ';' . chr(10) . '            $@ = undef' . chr(10) . '        ');
+            eval('
+            Perlito5::set_global_phase("CHECK");
+            $_->() for @Perlito5::CHECK_BLOCK;
+            package main;
+            ' . $init . ';
+            Perlito5::set_global_phase("INIT");
+            $_->() for @Perlito5::INIT_BLOCK;
+            Perlito5::set_global_phase("RUN");
+            ' . $source . ';
+            $@ = undef
+        ');
             my $error = ${'@'};
             $error && warn($error);
             Perlito5::set_global_phase('END');
@@ -18667,7 +29436,8 @@ use feature 'say';
                         my @data = Perlito5::AST::CompUnit::emit_perl5_program($comp_units);
                         my $out = [];
                         Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-                        print(join('', @{$out}), ';1' . chr(10))
+                        print(join('', @{$out}), ';1
+')
                     }
                     elsif ($backend eq 'perl6') {
                         if ($boilerplate) {
@@ -18682,7 +29452,8 @@ use feature 'say';
                         my $out = [];
                         Perlito5::Perl6::PrettyPrinter::pretty_print(\@data, 0, $out);
                         print(join('', @{$out}));
-                        $boilerplate && print(chr(10))
+                        $boilerplate && print('
+')
                     }
                     elsif ($backend eq 'js') {
                         print(Perlito5::AST::CompUnit::emit_javascript2_program($comp_units, 'expand_use' => $expand_use))
