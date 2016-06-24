@@ -15,6 +15,12 @@ our @EXPORT_OK = qw(
 
 # TODO - pairfirst
 
+package List::Util::_Pair {
+    # For objects returned by pairs()
+    sub List::Util::_Pair::key   { shift->[0] }
+    sub List::Util::_Pair::value { shift->[1] }
+}
+
 sub reduce (&@) {
     if (@_) {
     Java::inline '
@@ -145,7 +151,7 @@ sub shuffle {
 
 sub pairkeys   { pairmap { $a }         @_ }
 sub pairvalues { pairmap { $b }         @_ }
-sub pairs      { pairmap { [ $a, $b ] } @_ }
+sub pairs      { pairmap { bless [ $a, $b ], 'List::Util::_Pair' } @_ }
 
 1;
 
