@@ -8,9 +8,11 @@ our @EXPORT_OK = qw(
     concat product sum sum0
     none notall all any
     shuffle
+    pairmap
+    pairs pairkeys pairvalues
 );
 
-# TODO - pairmap pairgrep pairfirst pairs pairkeys pairvalues
+# TODO - pairgrep pairfirst
 
 sub reduce (&@) {
     if (@_) {
@@ -118,6 +120,10 @@ sub shuffle {
     }
     @out;
 }
+
+sub pairkeys   { pairmap { $a }         @_ }
+sub pairvalues { pairmap { $b }         @_ }
+sub pairs      { pairmap { [ $a, $b ] } @_ }
 
 1;
 
