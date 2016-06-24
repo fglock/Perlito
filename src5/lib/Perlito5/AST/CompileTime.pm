@@ -15,17 +15,17 @@ package Perlito5::AST::CompUnit;
 
 package Perlito5::AST::Int;
 {
-    sub emit_compile_time { return @_ }
+    sub emit_compile_time { return $_[0] }
 }
 
 package Perlito5::AST::Num;
 {
-    sub emit_compile_time { return @_ }
+    sub emit_compile_time { return $_[0] }
 }
 
 package Perlito5::AST::Buf;
 {
-    sub emit_compile_time { return @_ }
+    sub emit_compile_time { return $_[0] }
 }
 
 package Perlito5::AST::Block;

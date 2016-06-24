@@ -8270,19 +8270,19 @@ use feature 'say';
     package Perlito5::AST::Int;
     {
         sub Perlito5::AST::Int::emit_compile_time {
-            return @_
+            return $_[0]
         }
     }
     package Perlito5::AST::Num;
     {
         sub Perlito5::AST::Num::emit_compile_time {
-            return @_
+            return $_[0]
         }
     }
     package Perlito5::AST::Buf;
     {
         sub Perlito5::AST::Buf::emit_compile_time {
-            return @_
+            return $_[0]
         }
     }
     package Perlito5::AST::Block;
