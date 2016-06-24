@@ -846,6 +846,17 @@ use feature 'say';
             return 'sub { "DUMMY" }'
         }
         my @out;
+        my $res;
+        $res = eval {
+            for my $i (0 .. $#{$obj}) {
+                my $here = $pos . '->[' . $i . ']';
+                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
+')
+            }
+            join('', 'bless([
+' . @out, $tab, '], ' . chr(39) . $ref . chr(39) . ')')
+        };
+        $res && return $res;
         for my $i (sort {
             $a cmp $b
         } keys(%{$obj})) {

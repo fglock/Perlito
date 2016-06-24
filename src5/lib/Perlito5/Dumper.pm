@@ -70,9 +70,22 @@ sub _dumper {
     # };
     # $@ = '';
     
-    # assume it's a blessed HASH
     
     my @out;
+    my $res;
+    $res = eval {
+        for my $i ( 0 .. $#$obj ) {
+            my $here = $pos . '->[' . $i . ']';
+            push @out, 
+                $tab1,
+                _dumper($obj->[$i], $tab1, $seen, $here), 
+                ",\n";
+        }
+        join('', "bless([\n" . @out, $tab, "], '$ref')");
+    };
+    return $res if $res;
+
+    # assume it's a blessed HASH
     for my $i ( sort keys %$obj ) {
         my $here = $pos . '->{' . $i . '}';
         push @out, 
