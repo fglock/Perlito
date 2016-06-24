@@ -10,9 +10,10 @@ our @EXPORT_OK = qw(
     shuffle
     pairmap
     pairs pairkeys pairvalues
+    pairgrep
 );
 
-# TODO - pairgrep pairfirst
+# TODO - pairfirst
 
 sub reduce (&@) {
     if (@_) {
@@ -42,6 +43,36 @@ sub reduce (&@) {
         v_a_ref.set(v_a_val);
         v_b_ref.set(v_b_val);
         return ret
+    ';
+    }
+    return undef;
+}
+
+sub pairgrep (&@) {
+    if (@_) {
+    Java::inline '
+        // PlClosure c, PlArray a
+        PlObject arg = List__.shift();
+        PlClosure c = (PlClosure)arg;
+        String pkg = c.pkg_name;
+        PlArray ret = new PlArray();
+        int size = List__.to_int();
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlObject v_a_val = v_a_ref.get();
+        PlObject v_b_val = v_b_ref.get();
+        int i = 0;
+        while (i < size) {
+            v_a_ref.set(List__.aget(i++));
+            v_b_ref.set(List__.aget(i++));
+            boolean result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
+            if (result) {
+                ret.push(new PlArray(v_a_ref, v_b_ref));
+            }
+        }
+        v_a_ref.set(v_a_val);
+        v_b_ref.set(v_b_val);
+        return (want == PlCx.LIST ) ? ret : ret.length_of_array()
     ';
     }
     return undef;
@@ -141,7 +172,10 @@ sub first (&@) {
            } undef, @_
 }
 
-
+# quick test
+#
+# perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e 'use Scalar::Util "refaddr"; print refaddr(\1), "\n"; use List::Util "sum", "pairmap", "pairs", "pairgrep"; say sum (4,5,6); use Data::Dumper; say Dumper [pairs (3,5,6,7)]; say Dumper [pairgrep { $a==$b } (4,5,6,7,9,9)]; '  > Main.java ; javac Main.java ; java Main
+#
 
 =head1 COPYRIGHT
 
