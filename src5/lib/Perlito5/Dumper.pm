@@ -55,21 +55,7 @@ sub _dumper {
         return 'sub { "DUMMY" }';
     }
 
-    # TODO find out what kind of reference this is (ARRAY, HASH, ...)
     # local $@;
-    # eval {
-    #     my @data = @$obj;
-    #     say "is array";
-    #     return 'bless(' . "..." . ", '$ref')";
-    # }
-    # or eval {
-    #     $@ = '';
-    #     my %data = %$obj;
-    #     say "is hash";
-    #     return 'bless(' . "..." . ", '$ref')";
-    # };
-    # $@ = '';
-    
     
     my @out;
     my $res;
@@ -81,7 +67,7 @@ sub _dumper {
                 _dumper($obj->[$i], $tab1, $seen, $here), 
                 ",\n";
         }
-        join('', "bless([\n" . @out, $tab, "], '$ref')");
+        join('', "bless([\n", @out, $tab, "], '$ref')");
     };
     return $res if $res;
 

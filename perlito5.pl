@@ -854,7 +854,7 @@ use feature 'say';
 ')
             }
             join('', 'bless([
-' . @out, $tab, '], ' . chr(39) . $ref . chr(39) . ')')
+', @out, $tab, '], ' . chr(39) . $ref . chr(39) . ')')
         };
         $res && return $res;
         for my $i (sort {
