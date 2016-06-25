@@ -3,6 +3,7 @@ use strict;
 
 use Exporter qw(import);
 our @EXPORT = qw(encode_base64 decode_base64);
+our @EXPORT_OK = qw(encode_base64url decode_base64url encoded_base64_length decoded_base64_length);
 
 # Java 8 only
 # package Java::Base64 { import => "java.util.Base64" }
@@ -69,14 +70,33 @@ sub decode_base64url {
     return decode_base64($s);
 }
 
+
+sub encoded_base64_length { length(encode_base64(@_)) }
+sub decoded_base64_length { length(decode_base64(@_)) }
+
 1;
 
 __END__
 
-Test:
+# Test:
+# 
+# perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use MIME::Base64; print MIME::Base64::encode_base64("abc"), "\n"; '  > Main.java ; javac Main.java ; java Main
+# 
 
-perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use MIME::Base64; print MIME::Base64::encode_base64("abc"), "\n"; '  > Main.java
-javac Main.java
-java Main
+=head1 COPYRIGHT
 
+The original MIME::Base64 module is
+
+Copyright 1995-1999, 2001-2004, 2010 Gisle Aas.
+
+This library is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+Distantly based on LWP::Base64 written by Martijn Koster
+<m.koster@nexor.co.uk> and Joerg Reichelt <j.reichelt@nexor.co.uk> and
+code posted to comp.lang.perl <3pd2lp$6gf@wsinti07.win.tue.nl> by Hans
+Mulder <hansm@wsinti07.win.tue.nl>
+
+The XS implementation uses code from metamail.  Copyright 1991 Bell
+Communications Research, Inc. (Bellcore)
 

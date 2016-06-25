@@ -6,10 +6,8 @@ our @EXPORT_OK = qw(
     blessed refaddr reftype
     weaken unweaken isweak
     looks_like_number
+    dualvar isdual isvstring openhandle readonly set_prototype tainted
 );
-
-# TODO - dualvar isdual isvstring openhandle readonly set_prototype tainted
-# TODO - "looks_like_number" needs some work
 
 sub refaddr {
     Java::inline("List__.aget(0).refaddr()");
@@ -37,11 +35,20 @@ sub isweak {
 }
 
 sub looks_like_number {
+    # TODO - "looks_like_number" needs some work
     # TODO - '123A' => false
        (0 + $_[0])
     || ($_[0] eq '0')
     || ($_[0] eq '0E0')
 }
+
+sub dualvar       { ... }
+sub isdual        { ... }
+sub isvstring     { ... }
+sub openhandle    { ... }
+sub readonly      { ... }
+sub set_prototype { ... }
+sub tainted       { ... }
 
 1;
 
