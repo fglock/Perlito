@@ -955,7 +955,9 @@ package Perlito5::AST::Apply;
                         'attributes' => [],
                         _eval_block => 1,
                     ),
-                    'arguments' => [],
+                    'arguments' => [
+                        Perlito5::AST::Var::LIST_ARG(),
+                    ],
                 );
                 return $ast->emit_java( $level + 1, $wantarray );
             }

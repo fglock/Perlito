@@ -14,7 +14,8 @@ sub md5_hex {
         my String $s = shift->toString();
         my $result = Java::BigInteger->new(1, Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")))->toString(16);
         return $result;
-    };
+    }
+    or die $@;
 }
 
 1;
