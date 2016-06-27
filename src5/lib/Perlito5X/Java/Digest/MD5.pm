@@ -1,4 +1,5 @@
 package Digest::MD5;
+use MIME::Base64;
 use strict;
 
 use Exporter qw(import);
@@ -18,8 +19,25 @@ sub md5_hex {
     or die $@;
 }
 
-sub md5 { ... }
-sub md5_base64 { ... }
+sub md5 {
+    eval {
+        my String $s = shift->toString();
+        my $result = String->new(Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")));
+        return $result;
+    }
+    or die $@;
+}
+
+sub md5_base64 {
+    eval {
+        my String $s = shift->toString();
+        my $result =
+            Java::DatatypeConverter->printBase64Binary( Java::MessageDigest->getInstance("MD5")->digest($s->getBytes("UTF-8")) );
+        $result =~ s/=+$//;
+        return $result;
+    }
+    or die $@;
+}
 
 1;
 
