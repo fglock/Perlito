@@ -45,7 +45,7 @@ __END__
 
 # Test:
 # 
-# perl perlito5.pl -Isrc5/lib -I. -It -I src5/lib/Perlito5X/Java  -Cjava -e ' use Digest::MD5; print Digest::MD5::md5("abc"), "\n"; '  > Main.java ; javac Main.java ; java Main
+# perl perlito5.pl -Isrc5/lib -Isrc5 -Cjava -e ' use Digest::MD5; print Digest::MD5::md5("abc"), "\n"; '  > Main.java ; javac Main.java ; java Main
 #
 
 
