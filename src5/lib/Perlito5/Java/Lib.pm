@@ -7,6 +7,8 @@ sub init {
     Perlito5::Grammar::Use::register_internal_module( 'MIME::Base64' => 'Perlito5X::Java::MIME::Base64' );
     Perlito5::Grammar::Use::register_internal_module( 'Scalar::Util' => 'Perlito5X::Java::Scalar::Util' );
     Perlito5::Grammar::Use::register_internal_module( 'List::Util'   => 'Perlito5X::Java::List::Util' );
+    Perlito5::Grammar::Use::register_internal_module( 'Digest::MD5'  => 'Perlito5X::Java::Digest::MD5' );
+    Perlito5::Grammar::Use::register_internal_module( 'Digest::SHA1'  => 'Perlito5X::Java::Digest::SHA1' );
 }
 
 1;
