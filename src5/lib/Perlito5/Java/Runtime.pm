@@ -1620,7 +1620,7 @@ EOT
         PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
         return this;
     }
-    public PlObject bless(PlString className) {
+    public PlObject bless(PlObject className) {
         PlCORE.die("Can't bless non-reference value");
         return this;
     }
@@ -1686,6 +1686,10 @@ class PlReference extends PlObject {
     }
     public PlReference bless(PlString className) {
         this.bless = new PlClass(className);
+        return this;
+    }
+    public PlReference bless(PlObject className) {
+        this.bless = new PlClass(new PlString(className.toString()));
         return this;
     }
     public PlClass blessed_class() {
@@ -1896,6 +1900,10 @@ class PlArrayRef extends PlArray {
         this.bless = new PlClass(className);
         return this;
     }
+    public PlArrayRef bless(PlObject className) {
+        this.bless = new PlClass(new PlString(className.toString()));
+        return this;
+    }
     public PlClass blessed_class() {
         return this.bless;
     }
@@ -1981,6 +1989,10 @@ class PlHashRef extends PlHash {
     }
     public PlHashRef bless(PlString className) {
         this.bless = new PlClass(className);
+        return this;
+    }
+    public PlHashRef bless(PlObject className) {
+        this.bless = new PlClass(new PlString(className.toString()));
         return this;
     }
     public PlClass blessed_class() {
@@ -2362,6 +2374,9 @@ EOT
     }
     public PlObject bless(PlString className) {
         return this.o.bless(className);
+    }
+    public PlObject bless(PlObject className) {
+        return this.o.bless(new PlString(className.toString()));
     }
     public PlClass blessed_class() {
         return this.o.blessed_class();
