@@ -21281,6 +21281,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $v->emit_java($level) . '.push(' . $arguments[0]->emit_java() . ')'
             }
             return $v->emit_java($level) . '.push(' . Perlito5::Java::to_list(\@arguments) . ')'
+        }, 'splice' => sub {
+            my($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{'arguments'}};
+            my $array = shift(@arguments);
+            my $offset = shift(@arguments);
+            my $length = shift(@arguments);
+            'PlCORE.splice(' . Perlito5::Java::to_context($wantarray) . ', ' . $array->emit_java($level) . ($offset ? (', ' . $offset->emit_java($level)) : ()) . ($length ? (', ' . $length->emit_java($level)) : ()) . (@arguments ? (', ' . Perlito5::Java::to_list(@arguments)) : ()) . ')'
         }, 'pos' => sub {
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
