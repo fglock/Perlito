@@ -23720,10 +23720,10 @@ class PlCORE {
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
         for (int i = pos; i < size; i++) {
             res.unshift(List__.pop());
         }
@@ -23741,7 +23741,7 @@ class PlCORE {
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
 
@@ -23760,7 +23760,7 @@ class PlCORE {
         }
 
         int diff = last - pos;
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));
         }
@@ -23784,7 +23784,7 @@ class PlCORE {
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
 
@@ -23803,7 +23803,7 @@ class PlCORE {
         }
 
         int diff = last - pos;
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
 
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));

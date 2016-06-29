@@ -15,6 +15,7 @@
 -- mkdir(), rmdir()
 -- pack (a..X, @ and . with number working)
 -- unpack (a,A,Z with number working)
+-- splice()
 
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:

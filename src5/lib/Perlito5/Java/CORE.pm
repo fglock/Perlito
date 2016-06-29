@@ -414,10 +414,10 @@ EOT
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
         for (int i = pos; i < size; i++) {
             res.unshift(List__.pop());
         }
@@ -435,7 +435,7 @@ EOT
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
 
@@ -454,7 +454,7 @@ EOT
         }
 
         int diff = last - pos;
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));
         }
@@ -478,7 +478,7 @@ EOT
         if (pos < 0) {
             pos = List__.a.size() + pos;
         }
-        if (pos < 0 || pos >= List__.a.size()) {
+        if (pos < 0 || pos > List__.a.size()) {
             return PlCx.UNDEF;
         }
 
@@ -497,7 +497,7 @@ EOT
         }
 
         int diff = last - pos;
-        PlArray res = new PlArray(List__);
+        PlArray res = new PlArray();
 
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));
