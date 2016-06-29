@@ -457,9 +457,11 @@ EOT
         PlArray res = new PlArray(List__);
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));
+        }
+        for (int i = pos; i < (size - diff); i++) {
             List__.a.set(i, List__.a.get(i+diff));
         }
-        for (int i = last; i < size; i++) {
+        for (int i = 0; i < diff; i++) {
             List__.pop();
         }
         if (want == PlCx.LIST) {
@@ -496,13 +498,17 @@ EOT
 
         int diff = last - pos;
         PlArray res = new PlArray(List__);
+
         for (int i = pos; i < last; i++) {
             res.push(List__.a.get(i));
+        }
+        for (int i = pos; i < (size - diff); i++) {
             List__.a.set(i, List__.a.get(i+diff));
         }
-        for (int i = last; i < size; i++) {
+        for (int i = 0; i < diff; i++) {
             List__.pop();
         }
+
         List__.a.addAll(pos, list.a);
         if (want == PlCx.LIST) {
             return res;

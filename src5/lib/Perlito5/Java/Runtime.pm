@@ -562,15 +562,15 @@ class PerlOp {
         return new PlDouble(s * random.nextDouble());
     }
 
-    public static final long[] range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
+    public static final PlObject range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
         if (ctx == PlCx.LIST) {
             // TODO - range when first argument is string
             long start = _start.to_long(),
                  end   = _end.to_long();
             int size = Math.max(0, (int)(end - start + 1));
-            long[] ret = new long[size];
+            PlArray ret = new PlArray();
             for (int i = 0; i < size; ++i) {
-                ret[i] = start + i;
+                ret.push(start + i);
             }
             return ret;
         }
@@ -578,7 +578,7 @@ class PerlOp {
         // TODO - range in boolean (scalar) context
         // http://perldoc.perl.org/perlop.html#Range-Operators
         // In scalar context, ".." returns a boolean value.
-        return null;
+        return PlCx.UNDEF;
     }
 
     public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {
