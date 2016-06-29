@@ -23703,6 +23703,17 @@ class PlCORE {
         }
         return List__.aget(-1).scalar();
     }
+    public static final PlObject splice(int want, PlArray List__) {
+        PlArray res = new PlArray(List__);
+        List__.a.clear();
+        if (want == PlCx.LIST) {
+            return res;
+        }
+        if (res.to_int() == 0) {
+            return PlCx.UNDEF;
+        }
+        return res.aget(-1);
+    }
     public static final PlObject hex(int want, PlObject List__) {
         String s = List__.toString();
         if(s.startsWith("0x") || s.startsWith("0X")) {
