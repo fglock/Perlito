@@ -25513,9 +25513,26 @@ class PerlOp {
                 + "\\" on unblessed reference" );
             return PlCx.UNDEF;
         }
-        else {
-            return call( pClass.className().toString(), method, args, context );
+        String className = pClass.className().toString();
+
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.get(className + "::" + method);
         }
+        else {
+            // fully qualified method name
+            methodCode = PlV.get(method);
+        }
+
+        if (methodCode.is_undef()) {
+            PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
+                + "\\" via package \\"" + className
+                + "\\" (perhaps you forgot to load \\"" + className + "\\"?" );
+            return PlCx.UNDEF;
+        }
+
+        args.unshift( invocant );
+        return methodCode.apply(context, args);
     }
     public static final PlObject call( String invocant, String method, PlArray args, int context ) {
         if ( invocant.equals("") ) {
