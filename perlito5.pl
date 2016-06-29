@@ -21287,7 +21287,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $array = shift(@arguments);
             my $offset = shift(@arguments);
             my $length = shift(@arguments);
-            'PlCORE.splice(' . Perlito5::Java::to_context($wantarray) . ', ' . $array->emit_java($level) . ($offset ? (', ' . $offset->emit_java($level)) : ()) . ($length ? (', ' . $length->emit_java($level)) : ()) . (@arguments ? (', ' . Perlito5::Java::to_list(@arguments)) : ()) . ')'
+            'PlCORE.splice(' . Perlito5::Java::to_context($wantarray) . ', ' . $array->emit_java($level) . ($offset ? (', ' . $offset->emit_java($level)) : ()) . ($length ? (', ' . $length->emit_java($level)) : ()) . (@arguments ? (', ' . Perlito5::Java::to_list(\@arguments)) : ()) . ')'
         }, 'pos' => sub {
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -23768,6 +23768,48 @@ class PlCORE {
         for (int i = last; i < size; i++) {
             List__.pop();
         }
+        if (want == PlCx.LIST) {
+            return res;
+        }
+        if (res.to_int() == 0) {
+            return PlCx.UNDEF;
+        }
+        return res.aget(-1);
+    }
+    public static final PlObject splice(int want, PlArray List__, PlObject offset, PlObject length, PlArray list) {
+        int size = List__.to_int();
+        int pos  = offset.to_int();
+        if (pos < 0) {
+            pos = List__.a.size() + pos;
+        }
+        if (pos < 0 || pos >= List__.a.size()) {
+            return PlCx.UNDEF;
+        }
+
+        int last = length.to_int();
+        if (last < 0) {
+            last = List__.a.size() + last;
+        }
+        else {
+            last = pos + last;
+        }
+        if (last < 0) {
+            return PlCx.UNDEF;
+        }
+        if (last > size) {
+            last = size;
+        }
+
+        int diff = last - pos;
+        PlArray res = new PlArray(List__);
+        for (int i = pos; i < last; i++) {
+            res.push(List__.a.get(i));
+            List__.a.set(i, List__.a.get(i+diff));
+        }
+        for (int i = last; i < size; i++) {
+            List__.pop();
+        }
+        List__.a.addAll(pos, list.a);
         if (want == PlCx.LIST) {
             return res;
         }

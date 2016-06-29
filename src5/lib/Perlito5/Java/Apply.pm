@@ -1110,7 +1110,7 @@ package Perlito5::AST::Apply;
                 . $array->emit_java($level)
                 . ($offset ? (', ' . $offset->emit_java($level)) : ())
                 . ($length ? (', ' . $length->emit_java($level)) : ())
-                . (@arguments ? (', ' . Perlito5::Java::to_list(@arguments)) : ())
+                . (@arguments ? (', ' . Perlito5::Java::to_list(\@arguments)) : ())
             . ')';
         },
 
