@@ -23714,6 +23714,28 @@ class PlCORE {
         }
         return res.aget(-1);
     }
+    public static final PlObject splice(int want, PlArray List__, PlObject offset) {
+        int size = List__.to_int();
+        int pos  = offset.to_int();
+        if (pos < 0) {
+            pos = List__.a.size() + pos;
+        }
+        if (pos < 0 || pos >= List__.a.size()) {
+            return PlCx.UNDEF;
+        }
+        PlArray res = new PlArray(List__);
+        for (int i = pos; i < size; i++) {
+            res.unshift(List__.pop());
+        }
+        if (want == PlCx.LIST) {
+            return res;
+        }
+        if (res.to_int() == 0) {
+            return PlCx.UNDEF;
+        }
+        return res.aget(-1);
+    }
+
     public static final PlObject hex(int want, PlObject List__) {
         String s = List__.toString();
         if(s.startsWith("0x") || s.startsWith("0X")) {
