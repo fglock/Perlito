@@ -25704,13 +25704,24 @@ class PerlOp {
 
     public static final PlObject range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
         if (ctx == PlCx.LIST) {
-            // TODO - range when first argument is string
-            long start = _start.to_long(),
-                 end   = _end.to_long();
-            int size = Math.max(0, (int)(end - start + 1));
             PlArray ret = new PlArray();
-            for (int i = 0; i < size; ++i) {
-                ret.push(start + i);
+            if (_start.is_string() && _end.is_string()) {
+                // TODO - range when first argument is string
+                PlString a = new PlString(_start.toString());
+                String b = _end.toString();
+                while (  (a.int_length() < b.length())
+                      || (a.int_length() == b.length() && a.boolean_str_le(b)) ) {
+                    ret.push(a);
+                    a = (PlString)a._incr();
+                }
+            }
+            else {
+                long start = _start.to_long(),
+                     end   = _end.to_long();
+                int size = Math.max(0, (int)(end - start + 1));
+                for (int i = 0; i < size; ++i) {
+                    ret.push(start + i);
+                }
             }
             return ret;
         }
@@ -29072,6 +29083,15 @@ class PlString extends PlObject {
     }
     public boolean is_string() {
         return true;
+    }
+    public boolean boolean_str_le(String b) {
+        return this.s.compareTo(b) <= 0;
+    }
+    public int int_length() {
+        return this.s.length();
+    }
+    public PlObject length() {
+        return new PlInt(this.s.length());
     }
     public PlObject _decr() {
         // --$x
