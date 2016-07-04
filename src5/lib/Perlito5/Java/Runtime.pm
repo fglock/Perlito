@@ -298,32 +298,57 @@ class PerlCompare implements Comparator<PlObject> {
         return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();
     }
 }
-class PerlRange {
+class PerlRangeString implements Iterator<PlObject> {
+    public PlString v_start;
+    public String   v_end;
+    public PerlRangeString(PlString v_start, String v_end) {
+        this.v_start = v_start;
+        this.v_end = v_end;
+    }
+    public PlObject next() {
+        PlString ret = v_start;
+        v_start = (PlString)v_start._incr();
+        return ret;
+    }
+    public boolean hasNext() {
+        return (  (v_start.int_length() < v_end.length())
+               || (v_start.int_length() == v_end.length() && v_start.boolean_str_le(v_end)) );
+    }
+}
+class PerlRangeInt implements Iterator<PlObject> {
+    public long     v_start;
+    public long     v_end;
+    public PerlRangeInt(long v_start, long v_end) {
+        this.v_start = v_start;
+        this.v_end = v_end;
+    }
+    public PlObject next() {
+        PlInt ret = new PlInt(v_start);
+        v_start++;
+        return ret;
+    }
+    public boolean hasNext() {
+        return v_start <= v_end;
+    }
+}
+class PerlRange implements Iterable<PlObject> {
     public PlObject v_start;
     public PlObject v_end;
     public PerlRange(PlObject v_start, PlObject v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
     }
+    public final Iterator<PlObject> iterator() {
+        if (this.v_start.is_string() && this.v_end.is_string()) {
+            return new PerlRangeString(new PlString(this.v_start.toString()), this.v_end.toString());
+        }
+        return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+    }
     public final PlObject range(int want, String var, int ignore) {
         if (want == PlCx.LIST) {
             PlArray ret = new PlArray();
-            if (this.v_start.is_string() && this.v_end.is_string()) {
-                PlString a = new PlString(this.v_start.toString());
-                String b = this.v_end.toString();
-                while (  (a.int_length() < b.length())
-                      || (a.int_length() == b.length() && a.boolean_str_le(b)) ) {
-                    ret.push(a);
-                    a = (PlString)a._incr();
-                }
-            }
-            else {
-                long start = this.v_start.to_long(),
-                     end   = this.v_end.to_long();
-                int size = Math.max(0, (int)(end - start + 1));
-                for (int i = 0; i < size; ++i) {
-                    ret.push(start + i);
-                }
+            for (PlObject i : this) {
+                ret.push(i);
             }
             return ret;
         }
