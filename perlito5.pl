@@ -21083,10 +21083,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             Perlito5::Java::to_list($self->{'arguments'})
         }, 'infix:<..>' => sub {
             my($self, $level, $wantarray) = @_;
-            return 'PerlOp.range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 0 . ')'
+            return 'new PerlRange(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ').range(' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 0 . ')'
         }, 'infix:<...>' => sub {
             my($self, $level, $wantarray) = @_;
-            return 'PerlOp.range(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 1 . ')'
+            return 'new PerlRange(' . $self->{'arguments'}->[0]->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level) . ').range(' . Perlito5::Java::to_context($wantarray) . ', ' . '"' . Perlito5::Java::get_label() . '"' . ', ' . 1 . ')'
         }, 'delete' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
@@ -25421,6 +25421,42 @@ class PlCx {
         return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();
     }
 }
+class PerlRange {
+    public PlObject v_start;
+    public PlObject v_end;
+    public PerlRange(PlObject v_start, PlObject v_end) {
+        this.v_start = v_start;
+        this.v_end = v_end;
+    }
+    public final PlObject range(int want, String var, int ignore) {
+        if (want == PlCx.LIST) {
+            PlArray ret = new PlArray();
+            if (this.v_start.is_string() && this.v_end.is_string()) {
+                PlString a = new PlString(this.v_start.toString());
+                String b = this.v_end.toString();
+                while (  (a.int_length() < b.length())
+                      || (a.int_length() == b.length() && a.boolean_str_le(b)) ) {
+                    ret.push(a);
+                    a = (PlString)a._incr();
+                }
+            }
+            else {
+                long start = this.v_start.to_long(),
+                     end   = this.v_end.to_long();
+                int size = Math.max(0, (int)(end - start + 1));
+                for (int i = 0; i < size; ++i) {
+                    ret.push(start + i);
+                }
+            }
+            return ret;
+        }
+        PlCORE.die("Range not implemented for context " + want);
+        // TODO - range in boolean (scalar) context
+        // http://perldoc.perl.org/perlop.html#Range-Operators
+        // In scalar context, ".." returns a boolean value.
+        return PlCx.UNDEF;
+    }
+}
 class PerlOp {
     // PerlOp implements operators: && ||
     //      and auxiliary functions
@@ -25700,36 +25736,6 @@ class PerlOp {
             s = 1.0;
         }
         return new PlDouble(s * random.nextDouble());
-    }
-
-    public static final PlObject range(PlObject _start, PlObject _end, int ctx, String var, int ignore) {
-        if (ctx == PlCx.LIST) {
-            PlArray ret = new PlArray();
-            if (_start.is_string() && _end.is_string()) {
-                // TODO - range when first argument is string
-                PlString a = new PlString(_start.toString());
-                String b = _end.toString();
-                while (  (a.int_length() < b.length())
-                      || (a.int_length() == b.length() && a.boolean_str_le(b)) ) {
-                    ret.push(a);
-                    a = (PlString)a._incr();
-                }
-            }
-            else {
-                long start = _start.to_long(),
-                     end   = _end.to_long();
-                int size = Math.max(0, (int)(end - start + 1));
-                for (int i = 0; i < size; ++i) {
-                    ret.push(start + i);
-                }
-            }
-            return ret;
-        }
-        PlCORE.die("Range not implemented for context " + ctx);
-        // TODO - range in boolean (scalar) context
-        // http://perldoc.perl.org/perlop.html#Range-Operators
-        // In scalar context, ".." returns a boolean value.
-        return PlCx.UNDEF;
     }
 
     public static final PlObject smartmatch_scalar(PlObject arg0, PlObject arg1) {

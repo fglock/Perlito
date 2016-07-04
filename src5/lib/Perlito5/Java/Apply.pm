@@ -699,8 +699,10 @@ package Perlito5::AST::Apply;
         },
         'infix:<..>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'PerlOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
-                              . $self->{arguments}->[1]->emit_java($level) . ', '
+            return 'new PerlRange('
+                              . $self->{arguments}->[0]->emit_java($level) . ', '
+                              . $self->{arguments}->[1]->emit_java($level)
+                        . ').range('
                               . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
                               . '0'
@@ -708,8 +710,10 @@ package Perlito5::AST::Apply;
         },
         'infix:<...>' => sub {
             my ($self, $level, $wantarray) = @_;
-            return 'PerlOp.range(' . $self->{arguments}->[0]->emit_java($level) . ', '
-                              . $self->{arguments}->[1]->emit_java($level) . ', '
+            return 'new PerlRange('
+                              . $self->{arguments}->[0]->emit_java($level) . ', '
+                              . $self->{arguments}->[1]->emit_java($level)
+                        . ').range('
                               . Perlito5::Java::to_context($wantarray) . ', '
                               . '"' . Perlito5::Java::get_label() . '"' . ', '
                               . '1'
