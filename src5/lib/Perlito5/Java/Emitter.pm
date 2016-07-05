@@ -2577,7 +2577,17 @@ package Perlito5::AST::For;
                 '}';
         }
         else {
-            my $cond = Perlito5::Java::to_list([$self->{cond}], $level + 1);
+            my $cond = $self->{cond};
+            if ( $cond->isa( 'Perlito5::AST::Apply' ) && $cond->{code} eq 'infix:<..>' ) {
+                $cond = 'new PerlRange('
+                              . $cond->{arguments}->[0]->emit_java($level + 1) . ', '
+                              . $cond->{arguments}->[1]->emit_java($level + 1)
+                        . ')';
+            }
+            else {
+                $cond = Perlito5::Java::to_list([$cond], $level + 1) . '.a';
+            }
+
             my $topic = $self->{topic};
             my $local_label = Perlito5::Java::get_label();
             my $decl = '';
@@ -2593,7 +2603,7 @@ package Perlito5::AST::For;
             my $s;
             if ($decl eq 'my' || $decl eq 'state') {
                 push @str,
-                        'for (PlObject ' . $local_label . ' : ' . $cond . '.a) {',
+                        'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
@@ -2607,7 +2617,7 @@ package Perlito5::AST::For;
                 # use global variable or $_
                 # TODO - localize variable
                 push @str,
-                        'for (PlObject ' . $local_label . ' : ' . $cond . '.a) {',
+                        'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,

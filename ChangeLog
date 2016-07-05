@@ -6,8 +6,6 @@
 
 	utf8 support (Java)
 
-	optimize "for (0..1000000)" by Luca Falsina
-
 - Java:
 -- "Scalar::Util", "List::Util" ports.
 -- BEGIN block fixes - "Exporter" works.
@@ -16,6 +14,7 @@
 -- pack (a..X, @ and . with number working)
 -- unpack (a,A,Z with number working)
 -- splice()
+-- optimize "for (0..1000000)"
 
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:

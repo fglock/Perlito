@@ -2748,17 +2748,6 @@ use feature 'say';
         })));
         $tmp ? $MATCH : 0
     }
-    sub Perlito5::Grammar::transform_in_c_style_for_loop {
-        my($exp_term, $current_topic, $continue_block) = @_;
-        my $converted_exp_term;
-        if ((0 and $exp_term->isa('Perlito5::AST::Apply') and $exp_term->code() eq 'infix:<..>' and $exp_term->arguments()->[0]->isa('Perlito5::AST::Int') and $exp_term->arguments()->[1]->isa('Perlito5::AST::Int') and !($continue_block && @{$continue_block->{'stmts'}}))) {
-            $converted_exp_term = [Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic, $exp_term->arguments()->[0]]), Perlito5::AST::Apply::->new('code' => 'infix:<<=>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic, $exp_term->arguments()->[1]]), Perlito5::AST::Apply::->new('code' => 'postfix:<++>', 'namespace' => $exp_term->namespace(), 'arguments' => [$current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var() : $current_topic])];
-            [($converted_exp_term, undef)]
-        }
-        else {
-            [($exp_term, $current_topic)]
-        }
-    }
     sub Perlito5::Grammar::is_bareword {
         my $term = shift;
         $term->isa('Perlito5::AST::Apply') and $term->{'bareword'}
@@ -2881,8 +2870,7 @@ use feature 'say';
                     my $header = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::paren_parse'});
                     my $topic = $MATCH->{'_tmp'};
                     my $continue_block = $MATCH->{'opt_continue_block'}->{'capture'};
-                    my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
-                    $MATCH->{'capture'} = Perlito5::AST::For::->new('cond' => $transform_array_ref->[0], 'body' => $body, 'continue' => $continue_block, 'topic' => $transform_array_ref->[1]);
+                    $MATCH->{'capture'} = Perlito5::AST::For::->new('cond' => $header, 'body' => $body, 'continue' => $continue_block, 'topic' => $topic);
                     1
                 }))
             }) || (do {
@@ -3039,10 +3027,7 @@ use feature 'say';
                     }
                     else {
                         $header = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'}->{'capture'};
-                        $topic = Perlito5::AST::Var::SCALAR_ARG();
-                        my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
-                        $header = $transform_array_ref->[0];
-                        $topic = $transform_array_ref->[1]
+                        $topic = Perlito5::AST::Var::SCALAR_ARG()
                     }
                     $MATCH->{'capture'} = Perlito5::AST::For::->new('cond' => $header, 'body' => $body, 'continue' => $continue_block, 'topic' => $topic);
                     1
@@ -23217,7 +23202,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 push(@str, 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_java($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Java::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_java($level + 1) . ' ' : '') . ') {', [(Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
             }
             else {
-                my $cond = Perlito5::Java::to_list([$self->{'cond'}], $level + 1);
+                my $cond = $self->{'cond'};
+                if ($cond->isa('Perlito5::AST::Apply') && $cond->{'code'} eq 'infix:<..>') {
+                    $cond = 'new PerlRange(' . $cond->{'arguments'}->[0]->emit_java($level + 1) . ', ' . $cond->{'arguments'}->[1]->emit_java($level + 1) . ')'
+                }
+                else {
+                    $cond = Perlito5::Java::to_list([$cond], $level + 1) . '.a'
+                }
                 my $topic = $self->{'topic'};
                 my $local_label = Perlito5::Java::get_label();
                 my $decl = '';
@@ -23232,10 +23223,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
                 my $s;
                 if ($decl eq 'my' || $decl eq 'state') {
-                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
+                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                 }
                 else {
-                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . '.a) {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
+                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                 }
             }
             if ($Perlito5::THROW) {

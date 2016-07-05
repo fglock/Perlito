@@ -91,57 +91,6 @@ token when {
     { Perlito5::Grammar::Scope::end_compile_time_scope() }
 };
 
-sub transform_in_c_style_for_loop {
-    my ($exp_term, $current_topic, $continue_block) = @_;
-    my $converted_exp_term;
-
-    # for(a..z) must not be transformed in a c-style for because the direct translation behaves differently
-    # no continue-block -- because c-style for doesn't have a continue block in Perl
-    # All the other type of for(exp1 .. exp2) can be converted
-    # XXX - disabled for all cases,
-    #   see t5/unit/redo.t
-    #   we need to use a temp variable to track the loop count
-    #   otherwise, changing the "topic" or "last value" will alter the loop
-    if (0
-            and $exp_term->isa('Perlito5::AST::Apply') and $exp_term->code eq 'infix:<..>' 
-            and $exp_term->arguments->[0]->isa('Perlito5::AST::Int') 
-            and $exp_term->arguments->[1]->isa('Perlito5::AST::Int')
-            and !( $continue_block && @{ $continue_block->{stmts} } ) ) {
-
-        $converted_exp_term = [
-            Perlito5::AST::Apply->new(
-                code => 'infix:<=>',
-                namespace => $exp_term->namespace,
-                arguments => [
-                    $current_topic,
-                    $exp_term->arguments->[0],
-                ],
-            ),
-            Perlito5::AST::Apply->new(
-                code => 'infix:<<=>',
-                namespace => $exp_term->namespace,
-                arguments => [
-                    $current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var : $current_topic,
-                    $exp_term->arguments->[1],
-                ],
-            ),
-            Perlito5::AST::Apply->new(
-                code => 'postfix:<++>',
-                namespace => $exp_term->namespace,
-                arguments => [
-                    $current_topic->isa('Perlito5::AST::Decl') ? $current_topic->var : $current_topic,
-                ],
-            ),
-        ];
-
-        # Return the c-style for loop and an undefined topic
-        [ ($converted_exp_term, undef) ];
-    } else {
-        # No translation is possible. Just return the same exp_term and topic
-        [ ($exp_term, $current_topic) ];
-    }
-}
-
 sub is_bareword {
     my $term = shift;
 
@@ -164,13 +113,12 @@ token for {
                 my $header = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::paren_parse"});
                 my $topic = $MATCH->{_tmp};
                 my $continue_block = $MATCH->{opt_continue_block}{capture};
-                my $transform_array_ref = transform_in_c_style_for_loop( $header, $topic, $continue_block );
                 
                 $MATCH->{capture} = Perlito5::AST::For->new( 
-                        cond  => $transform_array_ref->[0],
+                        cond  => $header,
                         body  => $body,
                         continue => $continue_block,
-                        topic => $transform_array_ref->[1],
+                        topic => $topic,
                      );
             }
     |
@@ -212,10 +160,6 @@ token for {
             else {
                 $header = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"}{capture};
                 $topic  = Perlito5::AST::Var::SCALAR_ARG();
-
-                my $transform_array_ref = transform_in_c_style_for_loop($header, $topic, $continue_block);
-                $header = $transform_array_ref->[0];
-                $topic = $transform_array_ref->[1];
             }
 
             $MATCH->{capture} = Perlito5::AST::For->new( 
