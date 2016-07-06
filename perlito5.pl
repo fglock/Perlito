@@ -25448,6 +25448,7 @@ class PerlRangeInt implements Iterator<PlObject> {
 class PerlRange implements Iterable<PlObject> {
     public PlObject v_start;
     public PlObject v_end;
+    private static HashMap<String, Integer> flip_flop = new HashMap<String, Integer>();
     public PerlRange(PlObject v_start, PlObject v_end) {
         this.v_start = v_start;
         this.v_end = v_end;
@@ -25458,7 +25459,7 @@ class PerlRange implements Iterable<PlObject> {
         }
         return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
     }
-    public final PlObject range(int want, String var, int ignore) {
+    public final PlObject range(int want, String id, int ignore) {
         if (want == PlCx.LIST) {
             PlArray ret = new PlArray();
             for (PlObject i : this) {
@@ -25466,11 +25467,23 @@ class PerlRange implements Iterable<PlObject> {
             }
             return ret;
         }
-        PlCORE.die("Range not implemented for context " + want);
-        // TODO - range in boolean (scalar) context
-        // http://perldoc.perl.org/perlop.html#Range-Operators
-        // In scalar context, ".." returns a boolean value.
-        return PlCx.UNDEF;
+        // TODO - http://perldoc.perl.org/perlop.html#Range-Operators
+        Integer v = flip_flop.get(id);
+        if (v == null) {
+            v = 1;
+        }
+        else if (v == v_end.to_int()) {
+            flip_flop.put(id, 0);
+            return new PlString("" + v + "E0");
+        }
+        else if (v != 0) {
+            v++;
+        }
+        else {
+            v = 0;
+        }
+        flip_flop.put(id, v);
+        return new PlInt(v);
     }
 }
 class PerlOp {
