@@ -25459,7 +25459,7 @@ class PerlRange implements Iterable<PlObject> {
         }
         return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
     }
-    public final PlObject range(int want, String id, int ignore) {
+    public final PlObject range(int want, String id, int three_dots) {
         if (want == PlCx.LIST) {
             PlArray ret = new PlArray();
             for (PlObject i : this) {
@@ -25467,23 +25467,38 @@ class PerlRange implements Iterable<PlObject> {
             }
             return ret;
         }
-        // TODO - http://perldoc.perl.org/perlop.html#Range-Operators
+        // http://perldoc.perl.org/perlop.html#Range-Operators
         Integer v = flip_flop.get(id);
-        if (v == null) {
-            v = 1;
-        }
-        else if (v == v_end.to_int()) {
-            flip_flop.put(id, 0);
-            return new PlString("" + v + "E0");
-        }
-        else if (v != 0) {
+        if (v != null && v != 0) {
             v++;
+            if (v_end.to_bool()) {
+                flip_flop.put(id, 0);
+                return new PlString("" + v + "E0");
+            }
+            else {
+                flip_flop.put(id, v);
+                return new PlInt(v);
+            }
         }
         else {
-            v = 0;
+            if (v_start.to_bool()) {
+                v = 1;
+            }
+            else {
+                v = 0;
+            }
+            if (v != 0 && three_dots == 0 && v_end.to_bool()) {
+                flip_flop.put(id, 0);
+                return new PlString("" + v + "E0");
+            }
+            else {
+                flip_flop.put(id, v);
+                if (v == 0) {
+                    return PlCx.EMPTY;
+                }
+                return new PlInt(v);
+            }
         }
-        flip_flop.put(id, v);
-        return new PlInt(v);
     }
 }
 class PerlOp {
