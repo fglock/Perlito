@@ -7,6 +7,7 @@
 	utf8 support (Java)
 
 - Java:
+-- "Encode.pm" encode_utf8, decode_utf8
 -- "Scalar::Util", "List::Util" ports.
 -- BEGIN block fixes - "Exporter" works.
 -- "$$" variable (process id)
