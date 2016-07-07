@@ -5,7 +5,7 @@ use Exporter qw(import);
 our @EXPORT    = qw(encode_utf8 decode_utf8);
 our @EXPORT_OK = qw(encode_utf8 decode_utf8);
 
-sub encode_utf8 {
+sub encode_utf8 ($) {
     eval {
         if (@_) {
         Java::inline '
@@ -13,7 +13,8 @@ sub encode_utf8 {
             byte[] bytes = s.getBytes("UTF-8");
             StringBuilder sb = new StringBuilder();
             for (byte b : bytes) {
-                sb.append((char)b);
+                int i = b < 0 ? 256 + b : b;
+                sb.append((char)i);
             }
             return new PlString(sb.toString())
         ';
@@ -23,7 +24,7 @@ sub encode_utf8 {
     or die $@;
 }
 
-sub decode_utf8 {
+sub decode_utf8 ($;$) {
     eval {
         if (@_) {
         Java::inline '
