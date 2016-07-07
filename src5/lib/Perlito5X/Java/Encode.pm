@@ -1,6 +1,10 @@
 package Encode;
 use strict;
 
+use Exporter qw(import);
+our @EXPORT    = qw(encode_utf8 decode_utf8);
+our @EXPORT_OK = qw(encode_utf8 decode_utf8);
+
 sub encode_utf8 {
     eval {
         if (@_) {
