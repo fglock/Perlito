@@ -137,6 +137,9 @@ sub escape_string {
         {
             $tmp = $tmp . $c;
         }
+        elsif (ord($c) > 127) {
+            $tmp = $tmp . '\x{' . sprintf("%x", ord($c)) . '}';
+        }
         else {
             push @out, "'$tmp'" if $tmp ne '';
             push @out, "chr(" . ord($c) . ")";

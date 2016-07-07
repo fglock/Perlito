@@ -883,6 +883,9 @@ use feature 'say';
             elsif (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {
                 $tmp = $tmp . $c
             }
+            elsif (ord($c) > 127) {
+                $tmp = $tmp . '\\x{' . sprintf('%x', ord($c)) . '}'
+            }
             else {
                 $tmp ne '' && push(@out, chr(39) . $tmp . chr(39));
                 push(@out, 'chr(' . ord($c) . ')');
