@@ -3,7 +3,19 @@ use strict;
 
 use Exporter qw(import);
 our @EXPORT    = qw(encode_utf8 decode_utf8);
-our @EXPORT_OK = qw(encode_utf8 decode_utf8);
+our @EXPORT_OK = qw(encode_utf8 decode_utf8 encode decode);
+
+sub encode ($$;$) {
+    my ($code) = @_;
+    encode_utf8($_[1]) if $code eq 'utf8';
+    die "not implemented: $code";
+}
+
+sub decode ($$;$) {
+    my ($code) = @_;
+    decode_utf8($_[1]) if $code eq 'utf8';
+    die "not implemented: $code";
+}
 
 sub encode_utf8 ($) {
     eval {
