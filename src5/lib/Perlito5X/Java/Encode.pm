@@ -56,3 +56,17 @@ sub decode ($$;$) {
 
 1;
 
+__END__
+
+
+=head1 COPYRIGHT
+
+The original Encode module is
+
+Copyright 2002-2014 Dan Kogai I<< <dankogai@cpan.org> >>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
