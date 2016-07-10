@@ -258,6 +258,8 @@ package Perlito5::Java;
         print           1
         say             1
         printf          1
+        return          1
+        push            1
         infix:<=>       1
         postfix:<++>    1
         postfix:<-->    1

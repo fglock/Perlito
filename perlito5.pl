@@ -21836,7 +21836,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
         our %native_op_unary = ('postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
         our %native_op_to_bool = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
-        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
+        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
         my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
         sub Perlito5::Java::escape_string {
             my $s = shift;
