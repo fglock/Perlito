@@ -25887,17 +25887,30 @@ class PerlOp {
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
     public static final PlObject map(PlClosure c, PlArray a, int wantarray) {
-        // TODO - pass @_ to the closure
-        PlArray ret = new PlArray();
-        int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
-        PlObject v__val = v__ref.get();
-        for (int i = 0; i < size; i++) {
-            v__ref.set(a.aget(i));
-            ret.push(c.apply(PlCx.LIST, new PlArray()));
+        if (wantarray == PlCx.LIST ) {
+            PlArray ret = new PlArray();
+            int size = a.to_int();
+            PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+            PlObject v__val = v__ref.get();
+            for (int i = 0; i < size; i++) {
+                v__ref.set(a.aget(i));
+                ret.push(c.apply(PlCx.LIST, new PlArray()));
+            }
+            v__ref.set(v__val);
+            return ret;
         }
-        v__ref.set(v__val);
-        return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
+        else {
+            int ret = 0;
+            int size = a.to_int();
+            PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+            PlObject v__val = v__ref.get();
+            for (int i = 0; i < size; i++) {
+                v__ref.set(a.aget(i));
+                ret += c.apply(PlCx.LIST, new PlArray()).length_of_array_int();
+            }
+            v__ref.set(v__val);
+            return new PlInt(ret);
+        }
     }
     public static final PlObject sort(PlClosure c, PlArray a, int wantarray) {
         // TODO - pass @_ to the closure
@@ -26611,6 +26624,9 @@ class PlObject {
     public PlObject length_of_array() {
         PlCORE.die("Not an ARRAY reference");
         return this;
+    }
+    public int length_of_array_int() {
+        return 1;
     }
     public PlObject values() {
         PlCORE.die("Type of argument to values on reference must be unblessed hashref or arrayref");
@@ -28223,6 +28239,9 @@ class PlArray extends PlObject {
     }
     public PlObject length_of_array() {
         return new PlInt(this.a.size());
+    }
+    public int length_of_array_int() {
+        return this.a.size();
     }
     public PlObject end_of_array_index() {
         return new PlInt(this.a.size() - 1);
