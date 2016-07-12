@@ -20713,7 +20713,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return Perlito5::Java::emit_java_autovivify($self->{'arguments'}->[0], $level + 1, 'hash') . '.hash_deref_set(' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
             }
             if ($code eq 'prefix:<*>') {
-                return 'PlV.glob_set(' . Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                return 'PlV.glob_set(' . Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1) . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             my $open = $wantarray eq 'void' ? '' : '(';
             my $close = $wantarray eq 'void' ? '' : ')';
