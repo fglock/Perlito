@@ -2617,7 +2617,10 @@ package Perlito5::AST::For;
             }
             else {
                 # use global variable or $_
-                # TODO - localize variable
+                # localize variable
+                my $local_label2 = Perlito5::Java::get_label();
+                push @str, 'int ' . $local_label2 . ' = PerlOp.local_length();';
+                push @str, $v->emit_java_global($level + 1, 'scalar', 1) . ";";
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
@@ -2628,6 +2631,7 @@ package Perlito5::AST::For;
                             )->emit_java($level + 2, $wantarray),
                           ],
                         '}';
+                push @str, 'PerlOp.cleanup_local(' . $local_label2 . ', PlCx.UNDEF);';
             }
         }
         if ($Perlito5::THROW) {
