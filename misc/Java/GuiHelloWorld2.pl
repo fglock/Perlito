@@ -45,7 +45,7 @@ package Action {
             this.code = code;
         }
         public void handle(ActionEvent action) {
-            this.code.apply(PlCx.VOID, new PlArray( new PlObject(action) ));
+            this.code.apply(PlCx.VOID, new PlArray( new pActionEvent(action) ));
         }
     ",
 }
