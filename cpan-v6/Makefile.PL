@@ -33,6 +33,7 @@ WriteMakefile(
                 If
                 Index
                 Lookup
+                Main
                 Method
                 Pair
                 Sig

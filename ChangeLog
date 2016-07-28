@@ -17,6 +17,9 @@
 -- splice()
 -- optimize "for (0..1000000)"
 
+0.047 cpan:v6  2016-07-28
+- hide internal classes from CPAN index
+
 9.021 cpan:Perlito5  2016-05-10
 - JavaScript:
 -- state variables by Yati Sagade

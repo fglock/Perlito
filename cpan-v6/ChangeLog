@@ -1,5 +1,8 @@
 - changed namespace from Perlito to Perlito6
 
+0.047  2016-07-28
+- hide "Main" class from CPAN
+
 0.046  2016-05-07
 - hide "JavaScript" class from CPAN
 
