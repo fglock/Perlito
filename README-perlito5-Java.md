@@ -962,6 +962,10 @@ String replace:
     MacBookingcom:Perlito flavioglock$ java Main
     Exception in thread "main" java.lang.ClassCastException: PlUndef cannot be cast to PlRegexResult
 
+    TODO: create a closure unless the replacement is a constant ($1 is not a constant)
+
+    TODO: make PerlOp.replace() accept a closure
+
 See also:
 
     "Replace Rhino regexp implementation with java.util.regex"
