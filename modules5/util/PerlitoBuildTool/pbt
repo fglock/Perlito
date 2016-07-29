@@ -1,0 +1,58 @@
+APP_NAME=$1;
+MAIN_CLASS=$2
+PACKAGE=$3
+
+echo "building ${APP_NAME}...";
+
+##########################
+# TODO's:
+#   - create package folder tree for java source code
+#   - create package folter tree for class files (this will
+#     not be needed after support for packages is added to
+#     perlito
+
+##########################
+# PATHS:
+PERLITO5_ROOT=./../../..;
+PROJECT_ROOT=./examples/$APP_NAME;
+DEPS=./examples/$APP_NAME/dep;
+CLASS_OUT=./examples/$APP_NAME/out/class;
+JAVA_OUT=./examples/$APP_NAME/src;
+
+##########################
+# Public class spec since file-name=public-class-name:
+PUBLIC_CLASS=$MAIN_CLASS; #PUpperCase;
+
+###########################
+# won't be needed after package support is added to perlito
+PACKAGE_STRUCT=$PACKAGE; # org/perlito/udfs;
+JAVA_OUT=$JAVA_OUT/$PACKAGE_STRUCT;
+###########################
+
+echo "Generating java source. Java src root: $JAVA_OUT";
+
+perl $PERLITO5_ROOT/perlito5.pl -I{$PERLITO5_ROOT}/src5/lib -I$PROJECT_ROOT -Cjava $PROJECT_ROOT/main.pl > $JAVA_OUT/$PUBLIC_CLASS.java ;
+
+##########################
+# TODO:
+#   -- compile option
+# echo "class out => $CLASS_OUT";
+#
+# javac -cp "$DEPS/*"  $JAVA_OUT/$PUBLIC_CLASS.java -d $CLASS_OUT;
+
+##########################
+# TODO:
+#   --jar option
+#
+# pushd $CLASS_ROOT 
+#    jar -cf $PROJECT_ROOT/out/jar/myudf.jar $CLASS_OUT/*
+# popd
+
+##########################
+# TODO: 
+#   --run option
+#
+# pushd $CLASS_OUT
+#    java $PUBLIC_CLASS
+# popd
+

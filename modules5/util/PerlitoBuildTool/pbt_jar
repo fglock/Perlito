@@ -1,0 +1,71 @@
+APP_NAME=$1;
+MAIN_CLASS=$2
+PACKAGE=$3
+PERLITO5_ROOT=$4;
+##########################
+# TODO's:
+#   - create package folder tree for java source code
+
+##########################
+# PATHS:
+PROJECT_ROOT=$PERLITO5_ROOT/modules5/util/PerlitoBuildTool/examples/$APP_NAME;
+DEPS=$PERLITO5_ROOT/modules5/util/PerlitoBuildTool/examples/$APP_NAME/dep;
+CLASS_OUT=$PERLITO5_ROOT/modules5/util/PerlitoBuildTool/examples/$APP_NAME/out/class;
+JAR_OUT=$PERLITO5_ROOT/modules5/util/PerlitoBuildTool/examples/$APP_NAME/out/jar;
+JAVA_OUT=$PERLITO5_ROOT/modules5/util/PerlitoBuildTool/examples/$APP_NAME/src;
+
+##########################
+# Public class spec since file-name=public-class-name:
+PUBLIC_CLASS=$MAIN_CLASS; #PUpperCase;
+
+###########################
+# won't be needed after package support is added to perlito
+PACKAGE_STRUCT=$PACKAGE; # org/perlito/udfs;
+JAVA_OUT=$JAVA_OUT/$PACKAGE_STRUCT;
+###########################
+
+echo "------------------------------------------------"
+echo "Generating java source. Java src root: $JAVA_OUT";
+echo "";
+
+if [[ ! -e "$JAVA_OUT" ]]; then
+    mkdir -p $JAVA_OUT
+fi
+
+perl $PERLITO5_ROOT/perlito5.pl -I{$PERLITO5_ROOT}/src5/lib -I$PROJECT_ROOT -Cjava $PROJECT_ROOT/main.pl > $JAVA_OUT/$PUBLIC_CLASS.java ;
+
+##########################
+# TODO:
+#   -- compile option
+echo "------------------------------------------------";
+echo "compiling java code to class out => $CLASS_OUT";
+echo "";
+
+if [[ ! -e "$CLASS_OUT" ]]; then
+    mkdir -p $CLASS_OUT
+fi
+
+javac -source 7 -target 7 -cp "$DEPS/*"  $JAVA_OUT/$PUBLIC_CLASS.java -d $CLASS_OUT;
+
+##########################
+# TODO:
+#   --jar option
+#
+echo "------------------------------------------------";
+echo "packaging to jar...";
+echo "";
+pwd
+
+if [[ ! -e "$JAR_OUT" ]]; then
+    mkdir -p $PROJECT_ROOT/out/jar
+    echo "$JAR_OUT"
+fi
+
+pushd $CLASS_OUT > /dev/null
+   jar -cf $JAR_OUT/${APP_NAME}.jar ./*
+   ls -lh  $JAR_OUT/${APP_NAME}.jar
+popd > /dev/null
+
+echo "running..."
+pwd
+echo "java -cp $JAR_OUT/${APP_NAME}.jar org.perlito.$APP_NAME.Main"
