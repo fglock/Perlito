@@ -62,8 +62,8 @@ if [[ ! -e "$JAR_OUT" ]]; then
 fi
 
 pushd $CLASS_OUT > /dev/null
-   jar -cf $JAR_OUT/${APP_NAME}.jar ./*
-   ls -lh  $JAR_OUT/${APP_NAME}.jar
+   jar -cf $JAR_OUT/$APP_NAME.jar ./*
+   ls -lh  $JAR_OUT/$APP_NAME.jar
 popd > /dev/null
 
 echo "running..."

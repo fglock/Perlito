@@ -1,8 +1,8 @@
 Run with:
 
 cd $perlito_root_folder/modules5/util/PerlitoBuildTool
-./pbt_run myapp MyApp org/perlito/myapp $perlito_root_folder
+./pbt_run myapp Main org/perlito/myapp $perlito_root_folder
 
 Build with:
 cd $perlito_root_folder/modules5/util/PerlitoBuildTool
-./pbt_run myapp MyApp org/perlito/myapp $perlito_root_folder
+./pbt_run myapp Main org/perlito/myapp $perlito_root_folder
