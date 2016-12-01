@@ -4784,6 +4784,7 @@ use feature 'say';
         my $arguments = $ast->{'arguments'};
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
+        local $Perlito5::STRICT = 0;
         if (!$Perlito5::EXPAND_USE) {
             expand_use($ast)
         }
@@ -4857,7 +4858,6 @@ use feature 'say';
         local $/ = undef;
         my $source = <FILE>;
         close(FILE);
-        local $Perlito5::STRICT = 0;
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         $m->{'to'} != length($source) && Perlito5::Compiler::error('Syntax Error near ', $m->{'to'});
         if ($m->{'to'} != length($source)) {
@@ -4880,6 +4880,7 @@ use feature 'say';
         my $comp_unit = shift;
         for my $stmt (@{$comp_unit->body()}) {
             if ($stmt->isa('Perlito5::AST::Use')) {
+                local $Perlito5::STRICT = 0;
                 expand_use($stmt)
             }
         }

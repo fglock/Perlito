@@ -189,6 +189,7 @@ sub parse_time_eval {
     # TODO: the module should run in a new scope
     #   without access to the current lexical variables
 
+    local $Perlito5::STRICT = 0;
     if ( !$Perlito5::EXPAND_USE ) {
         expand_use($ast);
     }
@@ -307,7 +308,6 @@ sub expand_use {
 
     # compile; push AST into comp_units
     # warn $source;
-    local $Perlito5::STRICT = 0;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     Perlito5::Compiler::error "Syntax Error near ", $m->{to}
         if $m->{to} != length($source);
@@ -347,6 +347,7 @@ sub add_comp_unit {
     # warn "parsed comp_unit: '", $comp_unit->name, "'";
     for my $stmt (@{ $comp_unit->body }) {
         if ($stmt->isa('Perlito5::AST::Use')) {
+            local $Perlito5::STRICT = 0;
             expand_use($stmt);
         }
     }
