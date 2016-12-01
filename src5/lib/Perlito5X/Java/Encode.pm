@@ -10,7 +10,7 @@ sub encode_utf8 ($) {
 }
 
 sub encode ($$;$) {
-    return encode('UTF-8', $_[1], $_[2]) if $code eq 'utf8';
+    return encode('UTF-8', $_[1], $_[2]) if $_[0] eq 'utf8';
     eval {
         if (@_) {
         Java::inline '
@@ -35,7 +35,7 @@ sub decode_utf8 ($;$) {
 }
 
 sub decode ($$;$) {
-    return decode('UTF-8', $_[1], $_[2]) if $code eq 'utf8';
+    return decode('UTF-8', $_[1], $_[2]) if $_[0] eq 'utf8';
     eval {
         if (@_) {
         Java::inline '
