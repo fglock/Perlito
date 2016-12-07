@@ -660,6 +660,26 @@ sub term_bareword {
 
     # it's just a bareword - we will disambiguate later
 
+    # TODO - forbid barewords that are not "GLOB" - "close FILE" is ok
+    #
+    # if ($Perlito5::STRICT) {
+    #     if (
+    #         !(
+    #             exists( $Perlito5::PROTO->{$effective_name} )
+    #             || (
+    #                 ( !$namespace || $namespace eq 'CORE' )
+    #                 && exists $Perlito5::CORE_PROTO->{"CORE::$name"}    # subroutine comes from CORE
+    #             )
+    #         )
+    #       )
+    #     {
+    #         # subroutine was not predeclared
+    #         # print STDERR "effective_name [$effective_name]\n";
+    #         Perlito5::Compiler::error 'Bareword "' . ( $namespace ? "${namespace}::" : "" ) . $name . '" not allowed while "strict subs" in use';
+
+    #     }
+    # }
+
     $m_name->{capture} = [ 'postfix_or_term', 'funcall_no_params',
             $namespace,
             $name

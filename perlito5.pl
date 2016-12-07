@@ -23313,13 +23313,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 @js_block = $block->emit_java($level + 3, 'runtime');
                 $Perlito5::THROW_RETURN = $outer_throw
             }
-            my $s = Perlito5::Java::emit_wrap_java($level, 'new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg . ') {', ['public PlObject apply(int want, PlArray List__) {', \@js_block, '}'], '}');
+            my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::JavaScript2::get_label();
-                return 'if (!PlV.get("main::init_' . $idx . '").to_bool()) {' . 'PlV.set("main::init_' . $idx . '", (PlCx.INT1));' . 'PlV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . $s . ');' . '}'
+                return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.get("main::init_' . $idx . '").to_bool()) {', ['PlV.set("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
             }
             else {
-                return $s
+                return '' . Perlito5::Java::emit_wrap_java($level, @s)
             }
         }
         sub Perlito5::AST::Sub::emit_java_get_decl {
