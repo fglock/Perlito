@@ -21005,7 +21005,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 if ($arg->sigil() eq '&') {
                     my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
-                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{'name'}) . ')'
+                    return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{'name'}) . ')'
                 }
             }
             return '(new PlLvalueRef(' . $arg->emit_java($level) . '))'
@@ -21259,7 +21259,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($Perlito5::Java::is_inside_subroutine) {
                 return 'List__.shift()'
             }
-            return 'PlV.array_get("main::List_ARGV").shift()'
+            return 'PlV.array_get("main::ARGV").shift()'
         }, 'pop' => sub {
             my($self, $level, $wantarray) = @_;
             if ($self->{'arguments'} && @{$self->{'arguments'}}) {
@@ -21268,7 +21268,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($Perlito5::Java::is_inside_subroutine) {
                 return 'List__.pop()'
             }
-            return 'PlV.array_get("main::List_ARGV").pop()'
+            return 'PlV.array_get("main::ARGV").pop()'
         }, 'unshift' => sub {
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -21644,10 +21644,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         die('Java::inline needs a string constant, got:', Data::Dumper::Dumper(\@args))
                     }
                 }
-                $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $code) . ')'
+                $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $code) . ')'
             }
             else {
-                $code = 'PlV.get(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code) . ')'
+                $code = 'PlV.cget(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code) . ')'
             }
             my $sig;
             my $may_need_autoload;
@@ -22327,7 +22327,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $out;
             if ($self->{'eval_block'}) {
-                return (@pre, 'try {', \@str, '}', 'catch(PlReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}', 'catch(PlNextException e) {', ['throw e;'], '}', 'catch(PlLastException e) {', ['throw e;'], '}', 'catch(PlRedoException e) {', ['throw e;'], '}', 'catch(PlDieException e) {', ['PlV.set("main::v_@", e.ret);', 'return PlCx.UNDEF;'], '}', 'catch(Exception e) {', ['PlV.set("main::v_@", new PlString(e.getMessage()));', 'return PlCx.UNDEF;'], '}')
+                return (@pre, 'try {', \@str, '}', 'catch(PlReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}', 'catch(PlNextException e) {', ['throw e;'], '}', 'catch(PlLastException e) {', ['throw e;'], '}', 'catch(PlRedoException e) {', ['throw e;'], '}', 'catch(PlDieException e) {', ['PlV.set("main::@", e.ret);', 'return PlCx.UNDEF;'], '}', 'catch(Exception e) {', ['PlV.set("main::@", new PlString(e.getMessage()));', 'return PlCx.UNDEF;'], '}')
             }
             elsif ($self->{'top_level'} && $Perlito5::THROW_RETURN) {
                 push(@pre, 'try {', [@str], '}', 'catch(PlReturnException e) {', [emit_return($has_local, $local_label, 'e.ret') . ';'], '}');
@@ -22432,7 +22432,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
             }
-            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.get(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
+            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
 ';
             return $str
         }
@@ -22690,7 +22690,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
     }
     package Perlito5::AST::Var;
     {
-        my $table = {'$' => 'v_', '@' => 'List_', '%' => 'Hash_', '&' => ''};
+        my $table = {'$' => '', '@' => '', '%' => '', '&' => ''};
         sub Perlito5::AST::Var::emit_java_global {
             my($self, $level, $wantarray, $localize) = @_;
             my $local = $localize ? '_local' : '';
@@ -22731,7 +22731,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($sigil eq '*') {}
             if ($sigil eq '&') {
                 my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
-                return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $str_name) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
+                return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $str_name) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', List__)'
             }
             if ($sigil eq '@') {
                 if ($self->{'sigil'} eq '$#') {
@@ -22977,7 +22977,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($meth eq 'postcircumfix:<( )>') {
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
                     my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
-                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
+                    return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
                 }
                 my $invocant;
                 if (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>') {
@@ -23316,7 +23316,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::JavaScript2::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.get("main::init_' . $idx . '").to_bool()) {', ['PlV.set("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.set(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
+                return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.get("main::init_' . $idx . '").to_bool()) {', ['PlV.set("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.cset(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
             }
             else {
                 return '' . Perlito5::Java::emit_wrap_java($level, @s)
@@ -23403,7 +23403,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
         }
         catch(IOException e) {
-            PlV.set("main::v_!", new PlString(e.getMessage()));
+            PlV.set("main::!", new PlString(e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -23418,7 +23418,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
         }
         catch(IOException e) {
-            PlV.set("main::v_!", new PlString(e.getMessage()));
+            PlV.set("main::!", new PlString(e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -23440,7 +23440,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             return res;
         }
-        PlObject plsep = PlV.get("main::v_/");
+        PlObject plsep = PlV.get("main::/");
         boolean slurp = false;
         if (plsep.is_undef()) {
             slurp = true;
@@ -23448,7 +23448,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         if (fh.eof) {
             if (fh.is_argv) {
                 // "ARGV" is special
-                PlArray argv = PlV.array_get("main::List_ARGV");
+                PlArray argv = PlV.array_get("main::ARGV");
                 PlFileHandle in = new PlFileHandle();
                 if (argv.to_int() > 0) {
                     // arg list contains file name
@@ -23486,7 +23486,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             catch(IOException e) {
-                PlV.set("main::v_!", new PlString(e.getMessage()));
+                PlV.set("main::!", new PlString(e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -23541,7 +23541,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             catch(IOException e) {
-                PlV.set("main::v_!", new PlString(e.getMessage()));
+                PlV.set("main::!", new PlString(e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -23602,7 +23602,7 @@ class PlCORE {
             return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.set("main::v_!", new PlString(e.getMessage()));
+            PlV.set("main::!", new PlString(e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -23613,13 +23613,13 @@ class PlCORE {
             return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
-            PlV.set("main::v_!", new PlString("No such file or directory"));
+            PlV.set("main::!", new PlString("No such file or directory"));
         }
         catch(DirectoryNotEmptyException e) {
-            PlV.set("main::v_!", new PlString("Directory not empty"));
+            PlV.set("main::!", new PlString("Directory not empty"));
         }
         catch(IOException e) {
-            PlV.set("main::v_!", new PlString(e.getMessage()));
+            PlV.set("main::!", new PlString(e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -23667,7 +23667,7 @@ class PlCORE {
         return want == PlCx.LIST ? List__.each() : List__.each().aget(0);
     }
     public static final PlObject chomp(int want, PlObject Object__) {
-        String sep = PlV.get("main::v_/").toString();
+        String sep = PlV.get("main::/").toString();
         int sepSize = sep.length();
         int result = 0;
         String toChomp = Object__.toString();
@@ -25393,8 +25393,8 @@ class PlCx {
     public static final Charset UTF8        = Charset.forName("UTF-8");
     public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
-    public static final String  ARGV   = "main::List_ARGV";
-    public static final String  ENV    = "main::Hash_ENV";
+    public static final String  ARGV   = "main::ARGV";
+    public static final String  ENV    = "main::ENV";
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);
 
@@ -25617,11 +25617,11 @@ class PerlOp {
 
         PlObject methodCode;
         if (method.indexOf("::") == -1) {
-            methodCode = PlV.get(className + "::" + method);
+            methodCode = PlV.cget(className + "::" + method);
         }
         else {
             // fully qualified method name
-            methodCode = PlV.get(method);
+            methodCode = PlV.cget(method);
         }
 
         if (methodCode.is_undef()) {
@@ -25643,11 +25643,11 @@ class PerlOp {
 
         PlObject methodCode;
         if (method.indexOf("::") == -1) {
-            methodCode = PlV.get(invocant + "::" + method);
+            methodCode = PlV.cget(invocant + "::" + method);
         }
         else {
             // fully qualified method name
-            methodCode = PlV.get(method);
+            methodCode = PlV.cget(method);
         }
 
         if (methodCode.is_undef()) {
@@ -25877,7 +25877,7 @@ class PerlOp {
     public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+        PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
@@ -25895,7 +25895,7 @@ class PerlOp {
         if (wantarray == PlCx.LIST ) {
             PlArray ret = new PlArray();
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+            PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -25907,7 +25907,7 @@ class PerlOp {
         else {
             int ret = 0;
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.get("main::v__");
+            PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -25921,8 +25921,8 @@ class PerlOp {
         // TODO - pass @_ to the closure
         String pkg = c.pkg_name;
         PlArray ret = new PlArray(a);
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
         PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
@@ -25942,11 +25942,11 @@ class PerlOp {
         String method = arg.toString();
         PlObject methodCode;
         if (method.indexOf("::") == -1) {
-            methodCode = PlV.get(packageName + "::" + method);
+            methodCode = PlV.cget(packageName + "::" + method);
         }
         else {
             // fully qualified name
-            methodCode = PlV.get(method);
+            methodCode = PlV.cget(method);
         }
         if (methodCode.is_coderef()) {
             return prototype(methodCode, packageName); 
@@ -26273,6 +26273,9 @@ class PlV {
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
     public static final PlHash var = new PlHash();
+    public static final PlHash cvar = new PlHash();
+    public static final PlHash avar = new PlHash();
+    public static final PlHash hvar = new PlHash();
 
     public static final PlLvalue get(String name) {
         return (PlLvalue)var.hget_lvalue(name);
@@ -26287,31 +26290,69 @@ class PlV {
         return var.hget_lvalue_local(name).set(v);
     }
 
+    public static final PlLvalue cget(String name) {
+        return (PlLvalue)cvar.hget_lvalue(name);
+    }
+    public static final PlLvalue cget_local(String name) {
+        return (PlLvalue)cvar.hget_lvalue_local(name);
+    }
+    public static final PlObject cset(String name, PlObject v) {
+        return cvar.hset(name, v);
+    }
+    public static final PlObject cset_local(String name, PlObject v) {
+        return cvar.hget_lvalue_local(name).set(v);
+    }
+
     public static final PlHash hash_get(String name) {
-        return (PlHash)var.hget_hashref(name).get();
+        return (PlHash)hvar.hget_hashref(name).get();
     }
     public static final PlHash hash_get_local(String name) {
-        return (PlHash)var.hget_lvalue_local(name).get_hashref().get();
+        return (PlHash)hvar.hget_lvalue_local(name).get_hashref().get();
     }
     public static final PlObject hash_set(String name, PlObject v) {
-        return var.hget_hashref(name).hash_deref_set(v);
+        return hvar.hget_hashref(name).hash_deref_set(v);
     }
     public static final PlObject hash_set_local(String name, PlObject v) {
-        return var.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
+        return hvar.hget_lvalue_local(name).get_hashref().hash_deref_set(v);
+    }
+    public static final PlLvalue hget(String name) {
+        return (PlLvalue)hvar.hget_lvalue(name);
+    }
+    public static final PlLvalue hget_local(String name) {
+        return (PlLvalue)hvar.hget_lvalue_local(name);
+    }
+    public static final PlObject hset(String name, PlObject v) {
+        return hvar.hset(name, v);
+    }
+    public static final PlObject hset_local(String name, PlObject v) {
+        return hvar.hget_lvalue_local(name).set(v);
     }
 
     public static final PlArray array_get(String name) {
-        return (PlArray)var.hget_arrayref(name).get();
+        return (PlArray)avar.hget_arrayref(name).get();
     }
     public static final PlArray array_get_local(String name) {
-        return (PlArray)var.hget_lvalue_local(name).get_arrayref().get();
+        return (PlArray)avar.hget_lvalue_local(name).get_arrayref().get();
     }
     public static final PlObject array_set(String name, PlObject v) {
-        return var.hget_arrayref(name).array_deref_set(v);
+        return avar.hget_arrayref(name).array_deref_set(v);
     }
     public static final PlObject array_set_local(String name, PlObject v) {
-        return var.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
+        return avar.hget_lvalue_local(name).get_arrayref().array_deref_set(v);
     }
+    public static final PlLvalue aget(String name) {
+        return (PlLvalue)avar.hget_lvalue(name);
+    }
+    public static final PlLvalue aget_local(String name) {
+        return (PlLvalue)avar.hget_lvalue_local(name);
+    }
+    public static final PlObject aset(String name, PlObject v) {
+        return avar.hset(name, v);
+    }
+    public static final PlObject aset_local(String name, PlObject v) {
+        return avar.hget_lvalue_local(name).set(v);
+    }
+
 
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
@@ -26321,23 +26362,9 @@ class PlV {
         if (s.indexOf("::") == -1) {
             s = nameSpace + "::" + s;
         }
-        return var.hget(s);
+        return PlV.cget(s);
     }
 
-    public static final String glob_name_fixup(String name, String prefix) {
-        // TODO - append namespace if needed
-        String[] part = name.split("::");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < part.length - 1; i++) {
-            sb.append(part[i]);
-            sb.append("::");
-        }
-        sb.append(prefix);
-        sb.append(part[part.length - 1]);
-        String internalName = sb.toString();
-        // PlCORE.say("internalName " + internalName);
-        return internalName;
-    }
     public static final PlObject glob_set(PlObject name, PlObject v, String nameSpace) {
         String s = name.toString();
         if (s.indexOf("::") == -1) {
@@ -26348,16 +26375,16 @@ class PlV {
     public static final PlObject glob_set(String name, PlObject v) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
-            PlV.set(name, value);
+            PlV.cset(name, value);
         }
         else if (value.is_hashref()) {
-            PlV.set(glob_name_fixup(name, "Hash_"), value);
+            PlV.hset(name, value);
         }
         else if (value.is_arrayref()) {
-            PlV.set(glob_name_fixup(name, "List_"), value);
+            PlV.aset(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.set(glob_name_fixup(name, "v_"), value);
+            PlV.set(name, value);
         }
         else {
             PlCORE.die("not implemented assign " + value.ref() + " to glob");
@@ -26367,16 +26394,16 @@ class PlV {
     public static final PlObject glob_set_local(String name, PlObject v) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
-            PlV.set_local(name, value);
+            PlV.cset_local(name, value);
         }
         else if (value.is_hashref()) {
-            PlV.set_local(glob_name_fixup(name, "Hash_"), value);
+            PlV.hset_local(name, value);
         }
         else if (value.is_arrayref()) {
-            PlV.set_local(glob_name_fixup(name, "List_"), value);
+            PlV.aset_local(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.set_local(glob_name_fixup(name, "v_"), value);
+            PlV.set_local(name, value);
         }
         else {
             PlCORE.die("not implemented assign " + value.ref() + " to glob");
@@ -26389,8 +26416,8 @@ class PlEnv {
     public static final void init(String[] args) {
         PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
         PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
-        PlV.set("main::v_" + (char)34, new PlString(" "));         // $" = " "
-        PlV.set("main::v_/", new PlString("\\n"));                  // $/ = "\\n"
+        PlV.set("main::" + (char)34, new PlString(" "));         // $" = " "
+        PlV.set("main::/", new PlString("\\n"));                  // $/ = "\\n"
         PlCx.STDIN.inputStream   = System.in;
         PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
         PlCx.STDIN.eof           = false;
@@ -28969,28 +28996,22 @@ class PlString extends PlObject {
                 return PerlOp.regex_var(s);
             }
         }
-        String internalName = PlV.glob_name_fixup(s, "v_");
-        return PlV.get(internalName);
+        return PlV.get(s);
     }
     public PlObject scalar_deref_set(PlObject v) {
-        String internalName = PlV.glob_name_fixup(s, "v_");
-        return PlV.set(internalName, v);
+        return PlV.set(s, v);
     }
     public PlArray array_deref() {
-        String internalName = PlV.glob_name_fixup(s, "List_");
-        return PlV.array_get(internalName);
+        return PlV.array_get(s);
     }
     public PlObject array_deref_set(PlObject v) {
-        String internalName = PlV.glob_name_fixup(s, "List_");
-        return PlV.set(internalName, v);
+        return PlV.set(s, v);
     }
     public PlObject hash_deref() {
-        String internalName = PlV.glob_name_fixup(s, "Hash_");
-        return PlV.get(internalName);
+        return PlV.hget(s);
     }
     public PlObject hash_deref_set(PlObject v) {
-        String internalName = PlV.glob_name_fixup(s, "Hash_");
-        return PlV.set(internalName, v);
+        return PlV.hset(s, v);
     }
 
     public PlObject parse() {

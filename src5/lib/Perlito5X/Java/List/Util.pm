@@ -34,8 +34,8 @@ sub reduce (&@) {
         if (size == 1) {
             return List__.aget(0);
         }
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         v_a_ref.set(List__.aget(0));
@@ -61,8 +61,8 @@ sub pairgrep (&@) {
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
         int size = List__.to_int();
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         int i = 0;
@@ -91,8 +91,8 @@ sub pairmap (&@) {
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
         int size = List__.to_int();
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         int i = 0;
@@ -118,8 +118,8 @@ sub pairfirst (&@) {
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
         int size = List__.to_int();
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::v_a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::v_b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         int i = 0;

@@ -611,7 +611,7 @@ package Perlito5::AST::Apply;
                 }
                 if ( $arg->sigil eq '&' ) {
                     my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
-                    return 'PlV.get(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{name} ) . ')'
+                    return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $arg->{name} ) . ')'
                 }
             }
             return '(new PlLvalueRef(' . $arg->emit_java($level) . '))';
@@ -1074,7 +1074,7 @@ package Perlito5::AST::Apply;
             if ($Perlito5::Java::is_inside_subroutine) {
                 return 'List__.shift()';                        # shift @_
             }
-            return 'PlV.array_get("main::List_ARGV").shift()';  # shift @ARGV
+            return 'PlV.array_get("main::ARGV").shift()';  # shift @ARGV
         },
         'pop' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1084,7 +1084,7 @@ package Perlito5::AST::Apply;
             if ($Perlito5::Java::is_inside_subroutine) {
                 return 'List__.pop()';                          # pop @_
             }
-            return 'PlV.array_get("main::List_ARGV").pop()';    # pop @ARGV
+            return 'PlV.array_get("main::ARGV").pop()';    # pop @ARGV
         },
         'unshift' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1640,10 +1640,10 @@ package Perlito5::AST::Apply;
                     die "Java::inline needs a string constant, got:", Data::Dumper::Dumper(\@args);
                 }
             }
-            $code = 'PlV.get(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'
+            $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'
         }
         else {
-            $code = 'PlV.get(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code ) . ')'
+            $code = 'PlV.cget(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME . '::' . $code ) . ')'
         }
 
         my $sig;
