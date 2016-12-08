@@ -266,8 +266,6 @@ class PlCx {
     public static final Charset UTF8        = Charset.forName("UTF-8");
     public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
-    public static final String  ARGV   = "main::ARGV";
-    public static final String  ENV    = "main::ENV";
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);
 
@@ -415,7 +413,7 @@ class PerlOp {
         return get_filehandle(fh.toString());    // get "GLOB" by name
     }
     public static final PlFileHandle get_filehandle(String s) {
-        PlObject fh = PlV.get(s);    // get "GLOB" by name
+        PlObject fh = PlV.fget(s);    // get "GLOB" by name
         if (fh.is_undef()) {
             // autovivification to filehandle
             PlFileHandle f = new PlFileHandle();
@@ -1150,10 +1148,11 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static final PlHash var = new PlHash();
-    public static final PlHash cvar = new PlHash();
-    public static final PlHash avar = new PlHash();
-    public static final PlHash hvar = new PlHash();
+    public static final PlHash var = new PlHash();  // scalar
+    public static final PlHash cvar = new PlHash(); // code
+    public static final PlHash avar = new PlHash(); // array
+    public static final PlHash hvar = new PlHash(); // hash
+    public static final PlHash fvar = new PlHash(); // file
 
     public static final PlLvalue get(String name) {
         return (PlLvalue)var.hget_lvalue(name);
@@ -1231,6 +1230,19 @@ class PlV {
         return avar.hget_lvalue_local(name).set(v);
     }
 
+    public static final PlLvalue fget(String name) {
+        return (PlLvalue)fvar.hget_lvalue(name);
+    }
+    public static final PlLvalue fget_local(String name) {
+        return (PlLvalue)fvar.hget_lvalue_local(name);
+    }
+    public static final PlObject fset(String name, PlObject v) {
+        return fvar.hset(name, v);
+    }
+    public static final PlObject fset_local(String name, PlObject v) {
+        return fvar.hget_lvalue_local(name).set(v);
+    }
+
 
     public static final PlObject code_lookup_by_name(String nameSpace, PlObject name) {
         if (name.is_coderef()) {
@@ -1292,8 +1304,8 @@ class PlV {
 }
 class PlEnv {
     public static final void init(String[] args) {
-        PlV.array_set(PlCx.ARGV, new PlArray(args));               // args is String[]
-        PlV.hash_set(PlCx.ENV,   new PlArray(System.getenv()));    // env  is Map<String, String>
+        PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
+        PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.set("main::" + (char)34, new PlString(" "));         // $" = " "
         PlV.set("main::/", new PlString("\n"));                  // $/ = "\n"
         PlCx.STDIN.inputStream   = System.in;
@@ -1302,9 +1314,9 @@ class PlEnv {
 
         PlCx.STDOUT.outputStream = System.out;
         PlCx.STDERR.outputStream = System.err;
-        PlV.set("STDIN",  PlCx.STDIN);                             // "GLOB"
-        PlV.set("STDOUT", PlCx.STDOUT);
-        PlV.set("STDERR", PlCx.STDERR);
+        PlV.fset("STDIN",  PlCx.STDIN);                             // "GLOB"
+        PlV.fset("STDOUT", PlCx.STDOUT);
+        PlV.fset("STDERR", PlCx.STDERR);
     }
 }
 class PlObject {
