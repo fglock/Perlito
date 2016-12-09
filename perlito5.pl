@@ -25538,7 +25538,21 @@ class PerlOp {
     }
     public static final PlFileHandle get_filehandle(String s, String nameSpace) {
         if (s.indexOf("::") == -1) {
-            s = nameSpace + "::" + s;
+            if (s.equals("STDOUT")) {
+                s = "main::STDOUT";
+            }
+            else if (s.equals("STDERR")) {
+                s = "main::STDERR";
+            }
+            else if (s.equals("STDIN")) {
+                s = "main::STDIN";
+            }
+            else if (s.equals("ARGV")) {
+                s = "main::ARGV";
+            }
+            else {
+                s = nameSpace + "::" + s;
+            }
         }
         PlObject fh = PlV.fget(s);    // get "GLOB" by name
         return (PlFileHandle)(fh.get());
