@@ -1962,7 +1962,10 @@ package Perlito5::AST::Var;
             return "PlV.hash_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '*' ) {
-            return "PlV.glob_set$local(" . $index . ', ' . Perlito5::Java::to_list([$arguments], $level+1) . ')';
+            return "PlV.glob_set$local(" . $index . ', '
+                . Perlito5::Java::to_list([$arguments], $level+1) . ', '
+                . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+                . ')';
         }
         if ( $sigil eq '&' ) {
             # return 'PlV.cget(' . $index . ').apply(' . Perlito5::Java::to_context($wantarray) . ', List__)';

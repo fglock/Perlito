@@ -22787,7 +22787,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return 'PlV.hash_set' . $local . '(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
             }
             if ($sigil eq '*') {
-                return 'PlV.glob_set' . $local . '(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ')'
+                return 'PlV.glob_set' . $local . '(' . $index . ', ' . Perlito5::Java::to_list([$arguments], $level + 1) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             if ($sigil eq '&') {}
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
@@ -26396,14 +26396,7 @@ class PlV {
         return PlV.cget(s);
     }
 
-    public static final PlObject glob_set(PlObject name, PlObject v, String nameSpace) {
-        String s = name.toString();
-        if (s.indexOf("::") == -1) {
-            s = nameSpace + "::" + s;
-        }
-        return glob_set(s, v);
-    }
-    public static final PlObject glob_set(String name, PlObject v) {
+    public static final PlObject glob_set(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
             PlV.cset(name, value);
@@ -26420,7 +26413,7 @@ class PlV {
         else if (value.is_typeglobref()) {
             // *x = \\*y
             PlGlobRef gl = (PlGlobRef)value;
-            return glob_set(name, new PlArray(gl.filehandle));
+            return glob_set(name, new PlArray(gl.filehandle), nameSpace);
         }
         else if (value.is_filehandle()) {
             // *x = *y
@@ -26429,8 +26422,15 @@ class PlV {
             if (typeglob_name == null) {
                 PlCORE.die("not implemented assign anonymous typeglob to typeglob");
             }
+            return glob_set_local(name, new PlArray(new PlString(typeglob_name)), nameSpace);
+        }
+        else if (!value.is_ref()) {
+            String typeglob_name = value.toString();
+            if (typeglob_name.indexOf("::") == -1) {
+                typeglob_name = nameSpace + "::" + typeglob_name;
+            }
             // TODO - share lvalue containers (alias)
-            PlV.fset(name, fh);
+            PlV.fset(name, PlV.fget(typeglob_name));
             PlV.cset(name, PlV.cget(typeglob_name));
             PlV.sset(name, PlV.sget(typeglob_name));
             PlV.aset(name, PlV.aget(typeglob_name));
@@ -26441,7 +26441,7 @@ class PlV {
         }
         return value;
     }
-    public static final PlObject glob_set_local(String name, PlObject v) {
+    public static final PlObject glob_set_local(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
             PlV.cset_local(name, value);
@@ -26458,7 +26458,7 @@ class PlV {
         else if (value.is_typeglobref()) {
             // local *x = \\*y
             PlGlobRef gl = (PlGlobRef)value;
-            return glob_set_local(name, new PlArray(gl.filehandle));
+            return glob_set_local(name, new PlArray(gl.filehandle), nameSpace);
         }
         else if (value.is_filehandle()) {
             // local *x = *y
@@ -26467,8 +26467,15 @@ class PlV {
             if (typeglob_name == null) {
                 PlCORE.die("not implemented assign anonymous typeglob to typeglob");
             }
+            return glob_set_local(name, new PlArray(new PlString(typeglob_name)), nameSpace);
+        }
+        else if (!value.is_ref()) {
+            String typeglob_name = value.toString();
+            if (typeglob_name.indexOf("::") == -1) {
+                typeglob_name = nameSpace + "::" + typeglob_name;
+            }
             // TODO - share lvalue containers (alias)
-            PlV.fset_local(name, fh);
+            PlV.fset_local(name, PlV.fget(typeglob_name));
             PlV.cset_local(name, PlV.cget(typeglob_name));
             PlV.sset_local(name, PlV.sget(typeglob_name));
             PlV.aset_local(name, PlV.aget(typeglob_name));
