@@ -414,14 +414,6 @@ class PerlOp {
     }
     public static final PlFileHandle get_filehandle(String s) {
         PlObject fh = PlV.fget(s);    // get "GLOB" by name
-        if (fh.is_undef()) {
-            // autovivification to filehandle
-            PlFileHandle f = new PlFileHandle();
-            if (s.equals("ARGV")) {
-                f.is_argv = true;
-            }
-            fh.set(f);
-        }
         return (PlFileHandle)(fh.get());
     }
     public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
@@ -753,7 +745,7 @@ class PerlOp {
     public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
-        PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
+        PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
         PlObject v__val = v__ref.get();
         for (int i = 0; i < size; i++) {
             boolean result;
@@ -771,7 +763,7 @@ class PerlOp {
         if (wantarray == PlCx.LIST ) {
             PlArray ret = new PlArray();
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
+            PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -783,7 +775,7 @@ class PerlOp {
         else {
             int ret = 0;
             int size = a.to_int();
-            PlLvalue v__ref = (PlLvalue)PlV.get("main::_");
+            PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
@@ -797,8 +789,8 @@ class PerlOp {
         // TODO - pass @_ to the closure
         String pkg = c.pkg_name;
         PlArray ret = new PlArray(a);
-        PlLvalue v_a_ref = (PlLvalue)PlV.get(pkg + "::a");
-        PlLvalue v_b_ref = (PlLvalue)PlV.get(pkg + "::b");
+        PlLvalue v_a_ref = (PlLvalue)PlV.sget(pkg + "::a");
+        PlLvalue v_b_ref = (PlLvalue)PlV.sget(pkg + "::b");
         PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
@@ -1148,25 +1140,27 @@ class PlV {
     // TODO - import CORE subroutines in new namespaces, if needed
     // TODO - cache lookups in lexical variables (see PlClosure implementation)
 
-    public static final PlHash var = new PlHash();  // scalar
+    public static final PlHash svar = new PlHash(); // scalar
     public static final PlHash cvar = new PlHash(); // code
     public static final PlHash avar = new PlHash(); // array
     public static final PlHash hvar = new PlHash(); // hash
     public static final PlHash fvar = new PlHash(); // file
 
-    public static final PlLvalue get(String name) {
-        return (PlLvalue)var.hget_lvalue(name);
+    // scalar
+    public static final PlLvalue sget(String name) {
+        return (PlLvalue)svar.hget_lvalue(name);
     }
-    public static final PlLvalue get_local(String name) {
-        return (PlLvalue)var.hget_lvalue_local(name);
+    public static final PlLvalue sget_local(String name) {
+        return (PlLvalue)svar.hget_lvalue_local(name);
     }
-    public static final PlObject set(String name, PlObject v) {
-        return var.hset(name, v);
+    public static final PlObject sset(String name, PlObject v) {
+        return svar.hset(name, v);
     }
-    public static final PlObject set_local(String name, PlObject v) {
-        return var.hget_lvalue_local(name).set(v);
+    public static final PlObject sset_local(String name, PlObject v) {
+        return svar.hget_lvalue_local(name).set(v);
     }
 
+    // code
     public static final PlLvalue cget(String name) {
         return (PlLvalue)cvar.hget_lvalue(name);
     }
@@ -1180,6 +1174,7 @@ class PlV {
         return cvar.hget_lvalue_local(name).set(v);
     }
 
+    // hash
     public static final PlHash hash_get(String name) {
         return (PlHash)hvar.hget_hashref(name).get();
     }
@@ -1205,6 +1200,7 @@ class PlV {
         return hvar.hget_lvalue_local(name).set(v);
     }
 
+    // array
     public static final PlArray array_get(String name) {
         return (PlArray)avar.hget_arrayref(name).get();
     }
@@ -1230,11 +1226,32 @@ class PlV {
         return avar.hget_lvalue_local(name).set(v);
     }
 
+    // filehandle
     public static final PlLvalue fget(String name) {
-        return (PlLvalue)fvar.hget_lvalue(name);
+        PlLvalue v = (PlLvalue)fvar.hget_lvalue(name);
+        if (v.is_undef()) {
+            // autovivification to filehandle
+            PlFileHandle f = new PlFileHandle();
+            if (name.equals("ARGV")) {
+                f.is_argv = true;
+            }
+            f.typeglob_name = name;
+            v.set(f);
+        }
+        return v;
     }
     public static final PlLvalue fget_local(String name) {
-        return (PlLvalue)fvar.hget_lvalue_local(name);
+        PlLvalue v = (PlLvalue)fvar.hget_lvalue_local(name);
+        if (v.is_undef()) {
+            // autovivification to filehandle
+            PlFileHandle f = new PlFileHandle();
+            if (name.equals("ARGV")) {
+                f.is_argv = true;
+            }
+            f.typeglob_name = name;
+            v.set(f);
+        }
+        return v;
     }
     public static final PlObject fset(String name, PlObject v) {
         return fvar.hset(name, v);
@@ -1274,10 +1291,24 @@ class PlV {
             PlV.aset(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.set(name, value);
+            PlV.sset(name, value);
+        }
+        else if (value.is_filehandle()) {
+            // *x = *y
+            PlFileHandle fh = (PlFileHandle)value;
+            String typeglob_name = fh.typeglob_name;
+            if (typeglob_name == null) {
+                PlCORE.die("not implemented assign anonymous typeglob to typeglob");
+            }
+            // TODO - share lvalue containers (alias)
+            PlV.fset(name, fh);
+            PlV.cset(name, PlV.cget(typeglob_name));
+            PlV.sset(name, PlV.sget(typeglob_name));
+            PlV.aset(name, PlV.aget(typeglob_name));
+            PlV.hset(name, PlV.hget(typeglob_name));
         }
         else {
-            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+            PlCORE.die("not implemented assign " + value.ref() + " to typeglob");
         }
         return value;
     }
@@ -1293,10 +1324,24 @@ class PlV {
             PlV.aset_local(name, value);
         }
         else if (value.is_scalarref()) {
-            PlV.set_local(name, value);
+            PlV.sset_local(name, value);
+        }
+        else if (value.is_filehandle()) {
+            // local *x = *y
+            PlFileHandle fh = (PlFileHandle)value;
+            String typeglob_name = fh.typeglob_name;
+            if (typeglob_name == null) {
+                PlCORE.die("not implemented assign anonymous typeglob to typeglob");
+            }
+            // TODO - share lvalue containers (alias)
+            PlV.fset_local(name, fh);
+            PlV.cset_local(name, PlV.cget(typeglob_name));
+            PlV.sset_local(name, PlV.sget(typeglob_name));
+            PlV.aset_local(name, PlV.aget(typeglob_name));
+            PlV.hset_local(name, PlV.hget(typeglob_name));
         }
         else {
-            PlCORE.die("not implemented assign " + value.ref() + " to glob");
+            PlCORE.die("not implemented assign " + value.ref() + " to typeglob");
         }
         return value;
     }
@@ -1306,8 +1351,8 @@ class PlEnv {
     public static final void init(String[] args) {
         PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
         PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
-        PlV.set("main::" + (char)34, new PlString(" "));         // $" = " "
-        PlV.set("main::/", new PlString("\n"));                  // $/ = "\n"
+        PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
+        PlV.sset("main::/", new PlString("\n"));                  // $/ = "\n"
         PlCx.STDIN.inputStream   = System.in;
         PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
         PlCx.STDIN.eof           = false;
@@ -1873,6 +1918,7 @@ class PlReference extends PlObject {
 }
 class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
+    public String typeglob_name;
     public PrintStream outputStream;    // System.out, System.err
     public InputStream inputStream;     // System.in
     public BufferedReader reader;       // Console.reader
@@ -3940,16 +3986,16 @@ class PlString extends PlObject {
                 return PerlOp.regex_var(s);
             }
         }
-        return PlV.get(s);
+        return PlV.sget(s);
     }
     public PlObject scalar_deref_set(PlObject v) {
-        return PlV.set(s, v);
+        return PlV.sset(s, v);
     }
     public PlArray array_deref() {
         return PlV.array_get(s);
     }
     public PlObject array_deref_set(PlObject v) {
-        return PlV.set(s, v);
+        return PlV.aset(s, v);
     }
     public PlObject hash_deref() {
         return PlV.hget(s);

@@ -1073,12 +1073,12 @@ package Perlito5::Java::LexicalBlock;
                     [ "throw e;" ],
                 "}",
                 "catch(PlDieException e) {",
-                    [ 'PlV.set("main::@", e.ret);',
+                    [ 'PlV.sset("main::@", e.ret);',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
                 "catch(Exception e) {",
-                    [ 'PlV.set("main::@", new PlString(e.getMessage()));',
+                    [ 'PlV.sset("main::@", new PlString(e.getMessage()));',
                       "return PlCx.UNDEF;",
                     ],
                 "}",
@@ -1884,9 +1884,10 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
-            return "PlV.get$local(" . $index . ')';
+            return "PlV.sget$local(" . $index . ')';
         }
         if ( $sigil eq '*' ) {
+            return "PlV.fget$local(" . $index . ')';
         }
         if ( $sigil eq '&' ) {
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
@@ -1946,7 +1947,7 @@ package Perlito5::AST::Var;
 
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         if ( $sigil eq '$' ) {
-            return "PlV.set$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
+            return "PlV.sset$local(" . $index . ', ' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')';
         }
         if ( $sigil eq '@' ) {
 
@@ -2735,8 +2736,8 @@ package Perlito5::AST::Sub;
         if ( $self->{name} ) {
             my $idx  = Perlito5::JavaScript2::get_label();
             return Perlito5::Java::emit_wrap_java($level,
-                   'if (!PlV.get("main::init_' . $idx . '").to_bool()) {',
-                     [  'PlV.set("main::init_' . $idx . '", (PlCx.INT1));',
+                   'if (!PlV.sget("main::init_' . $idx . '").to_bool()) {',
+                     [  'PlV.sset("main::init_' . $idx . '", (PlCx.INT1));',
                         'PlV.cset('
                           . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", "
                           . Perlito5::Java::emit_wrap_java($level + 1, @s)

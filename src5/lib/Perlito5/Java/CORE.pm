@@ -58,7 +58,7 @@ my %FileFunc = (
             }
         }
         catch(IOException e) {
-            PlV.set("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -75,7 +75,7 @@ EOT
             }
         }
         catch(IOException e) {
-            PlV.set("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getMessage()));
             return PlCx.UNDEF;
         }
         return PlCx.INT1;
@@ -103,7 +103,7 @@ EOT
             }
             return res;
         }
-        PlObject plsep = PlV.get("main::/");
+        PlObject plsep = PlV.sget("main::/");
         boolean slurp = false;
         if (plsep.is_undef()) {
             slurp = true;
@@ -149,7 +149,7 @@ EOT
                 }
             }
             catch(IOException e) {
-                PlV.set("main::!", new PlString(e.getMessage()));
+                PlV.sset("main::!", new PlString(e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -217,7 +217,7 @@ EOT
                 }
             }
             catch(IOException e) {
-                PlV.set("main::!", new PlString(e.getMessage()));
+                PlV.sset("main::!", new PlString(e.getMessage()));
                 return PlCx.UNDEF;
             }
             if (num_chars > 0) {
@@ -285,7 +285,7 @@ EOT
             return PlCx.INT1;
         }
         catch(IOException e) {
-            PlV.set("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -296,13 +296,13 @@ EOT
             return PlCx.INT1;
         }
         catch(NoSuchFileException e) {
-            PlV.set("main::!", new PlString("No such file or directory"));
+            PlV.sset("main::!", new PlString("No such file or directory"));
         }
         catch(DirectoryNotEmptyException e) {
-            PlV.set("main::!", new PlString("Directory not empty"));
+            PlV.sset("main::!", new PlString("Directory not empty"));
         }
         catch(IOException e) {
-            PlV.set("main::!", new PlString(e.getMessage()));
+            PlV.sset("main::!", new PlString(e.getMessage()));
         }
         return PlCx.UNDEF;
     }
@@ -350,7 +350,7 @@ EOT
         return want == PlCx.LIST ? List__.each() : List__.each().aget(0);
     }
     public static final PlObject chomp(int want, PlObject Object__) {
-        String sep = PlV.get("main::/").toString();
+        String sep = PlV.sget("main::/").toString();
         int sepSize = sep.length();
         int result = 0;
         String toChomp = Object__.toString();
