@@ -261,12 +261,7 @@ class PlCORE {
 EOT
     # emit all file-related functions
     . join("", map {
-          "    public static final PlObject $_(int want, PlObject filehandle, PlArray List__) {\n"
-        . "        PlFileHandle fh = PerlOp.get_filehandle(filehandle);\n"
-        .       $FileFunc{$_}
-        . "    }\n"
-        . "    public static final PlObject $_(int want, String filehandle, PlArray List__) {\n"
-        . "        PlFileHandle fh = PerlOp.get_filehandle(filehandle);\n"
+          "    public static final PlObject $_(int want, PlFileHandle fh, PlArray List__) {\n"
         .       $FileFunc{$_}
         . "    }\n"
         } sort keys %FileFunc

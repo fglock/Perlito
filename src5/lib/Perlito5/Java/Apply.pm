@@ -569,6 +569,11 @@ package Perlito5::AST::Apply;
             my $arg   = $self->{arguments}->[0];
             'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')([])';
         },
+        'prefix:<*>' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my $arg   = $self->{arguments}->[0];
+            return 'PerlOp.get_filehandle(' . $arg->emit_java( $level ) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ')';
+        },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
             'new PlArrayRef(' . Perlito5::Java::to_list( $self->{arguments} ) . ')';
@@ -1205,7 +1210,10 @@ package Perlito5::AST::Apply;
             my @in  = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
-                $fun  = $self->{special_arg}->emit_java( $level );
+                $fun  = 'PerlOp.get_filehandle('
+                    . $self->{special_arg}->emit_java( $level ) . ', '
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+                    . ')';
             }
             else {
                 $fun  = 'PlCx.STDOUT';
@@ -1218,7 +1226,10 @@ package Perlito5::AST::Apply;
             my @in  = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
-                $fun  = $self->{special_arg}->emit_java( $level );
+                $fun  = 'PerlOp.get_filehandle('
+                    . $self->{special_arg}->emit_java( $level ) . ', '
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+                    . ')';
             }
             else {
                 $fun  = 'PlCx.STDOUT';
@@ -1231,7 +1242,10 @@ package Perlito5::AST::Apply;
             my @in  = @{$self->{arguments}};
             my $fun;
             if ( $self->{special_arg} ) {
-                $fun  = $self->{special_arg}->emit_java( $level );
+                $fun  = 'PerlOp.get_filehandle('
+                    . $self->{special_arg}->emit_java( $level ) . ', '
+                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+                    . ')';
             }
             else {
                 $fun  = 'PlCx.STDOUT';
@@ -1315,7 +1329,10 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             'PlCORE.close('
              .      Perlito5::Java::to_context($wantarray) . ', '
-             .      $fun->emit_java( $level ) . ', '
+             .      'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      '), '
              .      'PlArray.construct_list_of_aliases('
              .        join(', ', map( $_->emit_java($level, 'list'), @in ))
              .      ')'
@@ -1328,7 +1345,10 @@ package Perlito5::AST::Apply;
             $Perlito5::STRICT = 0;  # allow FILE bareword
             'PlCORE.open('
              .      Perlito5::Java::to_context($wantarray) . ', '
-             .      $fun->emit_java( $level ) . ', '
+             .      'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      '), '
              .      'PlArray.construct_list_of_aliases('
              .        join(', ', map( $_->emit_java($level, 'list'), @in ))
              .      ')'
@@ -1348,7 +1368,10 @@ package Perlito5::AST::Apply;
             my @in  = @{$self->{arguments}};
             my $fun = shift(@in);
             if ( $fun ) {
-                $fun  = $fun->emit_java( $level );
+                $fun  = 'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      ')';
             }
             else {
                 $fun  = 'PlCx.STDIN';
@@ -1368,7 +1391,10 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             'PlCORE.read('
              .      Perlito5::Java::to_context($wantarray) . ', '
-             .      $fun->emit_java( $level ) . ', '
+             .      'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      '), '
              .      'PlArray.construct_list_of_aliases('
              .        join(', ', map( $_->emit_java($level, 'list'), @in ))
              .      ')'
@@ -1381,7 +1407,10 @@ package Perlito5::AST::Apply;
             my $fun = shift(@in);
             'PlCORE.sysread('
              .      Perlito5::Java::to_context($wantarray) . ', '
-             .      $fun->emit_java( $level ) . ', '
+             .      'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      '), '
              .      'PlArray.construct_list_of_aliases('
              .        join(', ', map( $_->emit_java($level, 'list'), @in ))
              .      ')'
@@ -1400,7 +1429,13 @@ package Perlito5::AST::Apply;
                        'namespace' => '',
                    }, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java( $level ) . ', ' . $list . ')';
+            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', '
+             .      'PerlOp.get_filehandle('
+             .        $fun->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      '), '
+             .      $list
+             . ')';
         },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;

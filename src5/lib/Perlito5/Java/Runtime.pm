@@ -399,7 +399,7 @@ class PerlOp {
     private static Random random = new Random();
 
     // filehandles
-    public static final PlFileHandle get_filehandle(PlObject fh) {
+    public static final PlFileHandle get_filehandle(PlObject fh, String nameSpace) {
         if (fh.is_lvalue()) {
             if (fh.is_undef()) {
                 // $fh autovivification to filehandle
@@ -410,9 +410,12 @@ class PerlOp {
         if (fh.is_filehandle()) {
             return (PlFileHandle)fh;
         }
-        return get_filehandle(fh.toString());    // get "GLOB" by name
+        return get_filehandle(fh.toString(), nameSpace);    // get "GLOB" by name
     }
-    public static final PlFileHandle get_filehandle(String s) {
+    public static final PlFileHandle get_filehandle(String s, String nameSpace) {
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
         PlObject fh = PlV.fget(s);    // get "GLOB" by name
         return (PlFileHandle)(fh.get());
     }
@@ -1232,7 +1235,7 @@ class PlV {
         if (v.is_undef()) {
             // autovivification to filehandle
             PlFileHandle f = new PlFileHandle();
-            if (name.equals("ARGV")) {
+            if (name.equals("main::ARGV")) {
                 f.is_argv = true;
             }
             f.typeglob_name = name;
@@ -1245,7 +1248,7 @@ class PlV {
         if (v.is_undef()) {
             // autovivification to filehandle
             PlFileHandle f = new PlFileHandle();
-            if (name.equals("ARGV")) {
+            if (name.equals("main::ARGV")) {
                 f.is_argv = true;
             }
             f.typeglob_name = name;
@@ -1272,6 +1275,9 @@ class PlV {
         return PlV.cget(s);
     }
 
+    public static final PlObject glob_set(PlString name, PlObject v, String nameSpace) {
+        return glob_set(name.toString(), v, nameSpace);
+    }
     public static final PlObject glob_set(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
@@ -1316,6 +1322,9 @@ class PlV {
             PlCORE.die("not implemented assign " + value.ref() + " to typeglob");
         }
         return value;
+    }
+    public static final PlObject glob_set_local(PlString name, PlObject v, String nameSpace) {
+        return glob_set_local(name.toString(), v, nameSpace);
     }
     public static final PlObject glob_set_local(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);

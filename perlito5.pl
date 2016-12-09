@@ -20970,6 +20970,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
             'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')([])'
+        }, 'prefix:<*>' => sub {
+            my($self, $level, $wantarray) = @_;
+            my $arg = $self->{'arguments'}->[0];
+            return 'PerlOp.get_filehandle(' . $arg->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
         }, 'circumfix:<[ ]>' => sub {
             my($self, $level, $wantarray) = @_;
             'new PlArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
@@ -21361,7 +21365,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = $self->{'special_arg'}->emit_java($level)
+                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21373,7 +21377,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = $self->{'special_arg'}->emit_java($level)
+                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21385,7 +21389,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = $self->{'special_arg'}->emit_java($level)
+                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21449,13 +21453,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
         }, 'open' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             $Perlito5::STRICT = 0;
-            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
         }, 'chomp' => sub {
             my($self, $level, $wantarray) = @_;
             'PlCORE.chomp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
@@ -21467,7 +21471,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             if ($fun) {
-                $fun = $fun->emit_java($level)
+                $fun = 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
             }
             else {
                 $fun = 'PlCx.STDIN'
@@ -21477,18 +21481,18 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
         }, 'sysread' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
         }, 'readline' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun->emit_java($level) . ', ' . $list . ')'
+            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . $list . ')'
         }, 'map' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -23581,11 +23585,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         return '
 class PlCORE {
 ' . join('', map {
-            '    public static final PlObject ' . $_ . '(int want, PlObject filehandle, PlArray List__) {
-' . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);
-' . $FileFunc{$_} . '    }
-' . '    public static final PlObject ' . $_ . '(int want, String filehandle, PlArray List__) {
-' . '        PlFileHandle fh = PerlOp.get_filehandle(filehandle);
+            '    public static final PlObject ' . $_ . '(int want, PlFileHandle fh, PlArray List__) {
 ' . $FileFunc{$_} . '    }
 '
         } sort {
@@ -25523,7 +25523,7 @@ class PerlOp {
     private static Random random = new Random();
 
     // filehandles
-    public static final PlFileHandle get_filehandle(PlObject fh) {
+    public static final PlFileHandle get_filehandle(PlObject fh, String nameSpace) {
         if (fh.is_lvalue()) {
             if (fh.is_undef()) {
                 // $fh autovivification to filehandle
@@ -25534,9 +25534,12 @@ class PerlOp {
         if (fh.is_filehandle()) {
             return (PlFileHandle)fh;
         }
-        return get_filehandle(fh.toString());    // get "GLOB" by name
+        return get_filehandle(fh.toString(), nameSpace);    // get "GLOB" by name
     }
-    public static final PlFileHandle get_filehandle(String s) {
+    public static final PlFileHandle get_filehandle(String s, String nameSpace) {
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
         PlObject fh = PlV.fget(s);    // get "GLOB" by name
         return (PlFileHandle)(fh.get());
     }
@@ -26356,7 +26359,7 @@ class PlV {
         if (v.is_undef()) {
             // autovivification to filehandle
             PlFileHandle f = new PlFileHandle();
-            if (name.equals("ARGV")) {
+            if (name.equals("main::ARGV")) {
                 f.is_argv = true;
             }
             f.typeglob_name = name;
@@ -26369,7 +26372,7 @@ class PlV {
         if (v.is_undef()) {
             // autovivification to filehandle
             PlFileHandle f = new PlFileHandle();
-            if (name.equals("ARGV")) {
+            if (name.equals("main::ARGV")) {
                 f.is_argv = true;
             }
             f.typeglob_name = name;
@@ -26396,6 +26399,9 @@ class PlV {
         return PlV.cget(s);
     }
 
+    public static final PlObject glob_set(PlString name, PlObject v, String nameSpace) {
+        return glob_set(name.toString(), v, nameSpace);
+    }
     public static final PlObject glob_set(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);
         if (value.is_coderef()) {
@@ -26440,6 +26446,9 @@ class PlV {
             PlCORE.die("not implemented assign " + value.ref() + " to typeglob");
         }
         return value;
+    }
+    public static final PlObject glob_set_local(PlString name, PlObject v, String nameSpace) {
+        return glob_set_local(name.toString(), v, nameSpace);
     }
     public static final PlObject glob_set_local(String name, PlObject v, String nameSpace) {
         PlObject value = v.aget(0);
