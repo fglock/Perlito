@@ -1379,15 +1379,21 @@ class PlEnv {
         PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
         PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
         PlV.sset("main::/", new PlString("\n"));                  // $/ = "\n"
+
         PlCx.STDIN.inputStream   = System.in;
         PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
         PlCx.STDIN.eof           = false;
+        PlCx.STDIN.typeglob_name = "main::STDIN";
 
         PlCx.STDOUT.outputStream = System.out;
+        PlCx.STDOUT.typeglob_name = "main::STDOUT";
+
         PlCx.STDERR.outputStream = System.err;
-        PlV.fset("STDIN",  PlCx.STDIN);                             // "GLOB"
-        PlV.fset("STDOUT", PlCx.STDOUT);
-        PlV.fset("STDERR", PlCx.STDERR);
+        PlCx.STDERR.typeglob_name = "main::STDERR";
+
+        PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
+        PlV.fset("main::STDOUT", PlCx.STDOUT);
+        PlV.fset("main::STDERR", PlCx.STDERR);
     }
 }
 class PlObject {
