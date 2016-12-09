@@ -236,6 +236,8 @@ Perl variable @_ (the parameter list) is not shared.
 
 "local" stack is shared.
 
+Perlito also has an internal "boolean" stack, which is shared.
+
 Perl lexical variables are not shared between threads.
 Variables captured in closures running in different threads
 are shared.
@@ -896,6 +898,7 @@ Perl features
 
     (DONE) pos()
     typeglob operations
+        TODO - add tests
 
     caller
 
