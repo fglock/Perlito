@@ -1176,6 +1176,9 @@ class PlV {
     public static final PlObject sset_local(String name, PlObject v) {
         return svar.hget_lvalue_local(name).set(v);
     }
+    public static final void sset_alias(String name, PlLvalue v) {
+        svar.h.put(name, v);
+    }
 
     // code
     public static final PlLvalue cget(String name) {
@@ -1189,6 +1192,9 @@ class PlV {
     }
     public static final PlObject cset_local(String name, PlObject v) {
         return cvar.hget_lvalue_local(name).set(v);
+    }
+    public static final void cset_alias(String name, PlLvalue v) {
+        cvar.h.put(name, v);
     }
 
     // hash
@@ -1318,7 +1324,7 @@ class PlV {
             if (typeglob_name == null) {
                 PlCORE.die("not implemented assign anonymous typeglob to typeglob");
             }
-            return glob_set_local(name, new PlArray(new PlString(typeglob_name)), nameSpace);
+            return glob_set(name, new PlArray(new PlString(typeglob_name)), nameSpace);
         }
         else if (!value.is_ref()) {
             String typeglob_name = value.toString();
@@ -1327,8 +1333,8 @@ class PlV {
             }
             // TODO - share lvalue containers (alias)
             PlV.fset(name, PlV.fget(typeglob_name));
-            PlV.cset(name, PlV.cget(typeglob_name));
-            PlV.sset(name, PlV.sget(typeglob_name));
+            PlV.cset_alias(name, PlV.cget(typeglob_name));
+            PlV.sset_alias(name, PlV.sget(typeglob_name));
             PlV.aset(name, PlV.aget(typeglob_name));
             PlV.hset(name, PlV.hget(typeglob_name));
         }
@@ -1375,8 +1381,10 @@ class PlV {
             }
             // TODO - share lvalue containers (alias)
             PlV.fset_local(name, PlV.fget(typeglob_name));
-            PlV.cset_local(name, PlV.cget(typeglob_name));
-            PlV.sset_local(name, PlV.sget(typeglob_name));
+            PlV.cset_local(name, PlCx.UNDEF);
+            PlV.cset_alias(name, PlV.cget(typeglob_name));
+            PlV.sset_local(name, PlCx.UNDEF);
+            PlV.sset_alias(name, PlV.sget(typeglob_name));
             PlV.aset_local(name, PlV.aget(typeglob_name));
             PlV.hset_local(name, PlV.hget(typeglob_name));
         }
