@@ -26417,6 +26417,11 @@ class PlV {
         else if (value.is_scalarref()) {
             PlV.sset(name, value);
         }
+        else if (value.is_typeglobref()) {
+            // *x = \\*y
+            PlGlobRef gl = (PlGlobRef)value;
+            return glob_set(name, new PlArray(gl.filehandle));
+        }
         else if (value.is_filehandle()) {
             // *x = *y
             PlFileHandle fh = (PlFileHandle)value;
@@ -26449,6 +26454,11 @@ class PlV {
         }
         else if (value.is_scalarref()) {
             PlV.sset_local(name, value);
+        }
+        else if (value.is_typeglobref()) {
+            // local *x = \\*y
+            PlGlobRef gl = (PlGlobRef)value;
+            return glob_set_local(name, new PlArray(gl.filehandle));
         }
         else if (value.is_filehandle()) {
             // local *x = *y
@@ -26771,6 +26781,9 @@ class PlObject {
     public boolean is_ref() {
         return false;
     }
+    public boolean is_typeglobref() {
+        return false;
+    }
     public boolean is_scalarref() {
         return false;
     }
@@ -27022,6 +27035,24 @@ class PlReference extends PlObject {
     public PlObject reftype() {
         // Scalar::Util::reftype()
         return REF;
+    }
+}
+class PlGlobRef extends PlReference {
+    public static final PlString REF = new PlString("GLOB");
+    public PlFileHandle filehandle;
+
+    public PlGlobRef(PlFileHandle filehandle) {
+        this.filehandle = filehandle;
+    }
+    public PlGlobRef(PlLvalue v) {
+        PlObject o = v.get();
+        this.filehandle = (PlFileHandle)o;
+    }
+    public PlGlobRef(PlObject o) {
+        this.filehandle = (PlFileHandle)o;
+    }
+    public boolean is_typeglobref() {
+        return true;
     }
 }
 class PlFileHandle extends PlReference {
