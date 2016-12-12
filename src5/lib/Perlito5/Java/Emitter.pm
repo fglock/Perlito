@@ -697,6 +697,14 @@ package Perlito5::Java;
             )
     }
 
+    sub to_filehandle {
+        my ($item, $level) = @_;
+        return      'PerlOp.get_filehandle('
+             .        $item->emit_java( $level ) . ', '
+             .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+             .      ')'
+    }
+
     sub to_param_list {
         my ($items, $level) = @_;
 

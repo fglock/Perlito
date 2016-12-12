@@ -20973,7 +20973,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'prefix:<*>' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
-            return 'PerlOp.get_filehandle(' . $arg->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+            return Perlito5::Java::to_filehandle($arg, $level + 1)
         }, 'circumfix:<[ ]>' => sub {
             my($self, $level, $wantarray) = @_;
             'new PlArrayRef(' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
@@ -21365,7 +21365,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                $fun = Perlito5::Java::to_filehandle($self->{'special_arg'}, $level + 1)
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21377,7 +21377,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                $fun = Perlito5::Java::to_filehandle($self->{'special_arg'}, $level + 1)
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21389,7 +21389,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun;
             if ($self->{'special_arg'}) {
-                $fun = 'PerlOp.get_filehandle(' . $self->{'special_arg'}->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                $fun = Perlito5::Java::to_filehandle($self->{'special_arg'}, $level + 1)
             }
             else {
                 $fun = 'PlCx.STDOUT'
@@ -21453,13 +21453,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
+            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'open' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             $Perlito5::STRICT = 0;
-            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
+            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'chomp' => sub {
             my($self, $level, $wantarray) = @_;
             'PlCORE.chomp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
@@ -21471,7 +21471,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             if ($fun) {
-                $fun = 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                $fun = Perlito5::Java::to_filehandle($fun, $level + 1)
             }
             else {
                 $fun = 'PlCx.STDIN'
@@ -21481,18 +21481,18 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
+            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'sysread' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
+            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'readline' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in);
-            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . $list . ')'
+            'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . $list . ')'
         }, 'map' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -22096,6 +22096,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         sub Perlito5::Java::is_scalar {
             $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || Perlito5::AST::Sub::is_anon_sub($_[0]) || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}})))
+        }
+        sub Perlito5::Java::to_filehandle {
+            my($item, $level) = @_;
+            return 'PerlOp.get_filehandle(' . $item->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
         }
         sub Perlito5::Java::to_param_list {
             my($items, $level) = @_;
