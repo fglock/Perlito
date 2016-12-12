@@ -27201,7 +27201,7 @@ class PlLvalueRef extends PlReference {
         this.o = o;
     }
     public PlObject scalar_deref() {
-        return this.o.get();
+        return this.o;
     }
     public PlObject scalar_deref_set(PlObject v) {
         return this.o.set(v);
