@@ -2677,6 +2677,58 @@ EOT
 
     . <<'EOT'
 }
+class PlROvalue extends PlLvalue {
+    private PlObject o;
+    public Integer pos;
+
+    // Note: several versions of PlROvalue()
+    public PlROvalue() {
+        this.o = PlCx.UNDEF;
+    }
+    public PlROvalue(PlObject o) {
+        this.o = o;
+    }
+    public PlROvalue(PlLvalue o) {
+        this.o = o.get();
+    }
+    public PlROvalue(PlArray o) {
+        // $a = @x
+        this.o = o.scalar();
+    }
+    public PlROvalue(PlHash o) {
+        // $a = %x
+        this.o = o.scalar();
+    }
+
+    public PlLvalue set(Object o) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject pre_decr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject post_decr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject pre_incr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject post_incr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject bless(PlString className) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject bless(PlObject className) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+}
 class PlArray extends PlObject {
     public ArrayList<PlObject> a;
     public int each_iterator;

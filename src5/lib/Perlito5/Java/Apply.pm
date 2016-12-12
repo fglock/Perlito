@@ -1333,9 +1333,7 @@ package Perlito5::AST::Apply;
              .        $fun->emit_java( $level ) . ', '
              .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
              .      '), '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
-             .      ')'
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
              . ')';
         },
         'open' => sub {
@@ -1349,9 +1347,7 @@ package Perlito5::AST::Apply;
              .        $fun->emit_java( $level ) . ', '
              .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
              .      '), '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
-             .      ')'
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
              . ')';
         },
         'chomp' => sub {
@@ -1379,9 +1375,7 @@ package Perlito5::AST::Apply;
             'PlCORE.getc('
              .      Perlito5::Java::to_context($wantarray) . ', '
              .      $fun . ', '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
-             .      ')'
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
              . ')';
         },
         'read' => sub {
@@ -1395,9 +1389,7 @@ package Perlito5::AST::Apply;
              .        $fun->emit_java( $level ) . ', '
              .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
              .      '), '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
-             .      ')'
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
              . ')';
         },
         'sysread' => sub {
@@ -1411,9 +1403,7 @@ package Perlito5::AST::Apply;
              .        $fun->emit_java( $level ) . ', '
              .        Perlito5::Java::escape_string($Perlito5::PKG_NAME)
              .      '), '
-             .      'PlArray.construct_list_of_aliases('
-             .        join(', ', map( $_->emit_java($level, 'list'), @in ))
-             .      ')'
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
              . ')';
         },
         'readline' => sub {
@@ -1779,13 +1769,11 @@ package Perlito5::AST::Apply;
             return $code . '.apply('
                         . Perlito5::Java::to_context($wantarray)
                         . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')'
+                        # . Perlito5::Java::to_param_list(\@in, $level+1)  # TODO
                 . ')';
         }
 
         my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
-        my $arg_code = 'PlArray.construct_list_of_aliases('
-             .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
-             . ')';
 
         # TODO - autoload
         # if ( $may_need_autoload ) {
@@ -1802,7 +1790,7 @@ package Perlito5::AST::Apply;
 
         $code . '.apply('
                 . Perlito5::Java::to_context($wantarray) . ', '
-                . $arg_code
+                . Perlito5::Java::to_param_list($items, $level+1)
               . ')';
 
     }

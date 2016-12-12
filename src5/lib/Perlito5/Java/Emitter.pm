@@ -697,9 +697,36 @@ package Perlito5::Java;
             )
     }
 
+    sub to_param_list {
+        my ($items, $level) = @_;
+
+        if (@$items == 0) {
+            return "new PlArray()";
+        }
+
+        my $item = $items->[0];
+        if ( $item->isa('Perlito5::AST::Apply') && ( $item->code eq 'infix:<..>' ) ) {
+            return '(PlArray)(' . $item->emit_java($level, 'list') . ')';
+        }
+
+        'PlArray.construct_list_of_aliases('
+        .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
+        . ')';
+    }
+
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
         my $level = $_[1];
+
+        if (@$items == 0) {
+            return "new PlArray()";
+        }
+
+        my $item = $items->[0];
+        if ( $item->isa('Perlito5::AST::Var') && ( $item->sigil eq '@' ) ) {
+            return $item->emit_java($level, 'list');
+        }
+
         return 'new PlArray('
              .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
              . ')';

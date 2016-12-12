@@ -21453,13 +21453,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.close(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'open' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
             $Perlito5::STRICT = 0;
-            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.open(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'chomp' => sub {
             my($self, $level, $wantarray) = @_;
             'PlCORE.chomp(' . Perlito5::Java::to_context($wantarray) . ', ' . $self->{'arguments'}->[0]->emit_java($level) . ')'
@@ -21476,17 +21476,17 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             else {
                 $fun = 'PlCx.STDIN'
             }
-            'PlCORE.getc(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.getc(' . Perlito5::Java::to_context($wantarray) . ', ' . $fun . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'read' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.read(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'sysread' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
             my $fun = shift(@in);
-            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @in)) . ')' . ')'
+            'PlCORE.sysread(' . Perlito5::Java::to_context($wantarray) . ', ' . 'PerlOp.get_filehandle(' . $fun->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . '), ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'readline' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -21727,8 +21727,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', PlArray.construct_list_of_aliases(' . join(', ', @out) . ')' . ')'
             }
             my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
-            my $arg_code = 'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')';
-            $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . $arg_code . ')'
+            $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
         }
         sub Perlito5::AST::Apply::emit_java_set_list {
             my($self, $level, $list) = @_;
@@ -22098,9 +22097,27 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::Java::is_scalar {
             $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || Perlito5::AST::Sub::is_anon_sub($_[0]) || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}})))
         }
+        sub Perlito5::Java::to_param_list {
+            my($items, $level) = @_;
+            if (@{$items} == 0) {
+                return 'new PlArray()'
+            }
+            my $item = $items->[0];
+            if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<..>')) {
+                return '(PlArray)(' . $item->emit_java($level, 'list') . ')'
+            }
+            'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')'
+        }
         sub Perlito5::Java::to_list {
             my $items = to_list_preprocess($_[0]);
             my $level = $_[1];
+            if (@{$items} == 0) {
+                return 'new PlArray()'
+            }
+            my $item = $items->[0];
+            if ($item->isa('Perlito5::AST::Var') && ($item->sigil() eq '@')) {
+                return $item->emit_java($level, 'list')
+            }
             return 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')'
         }
         sub Perlito5::Java::to_list_preprocess {
@@ -27768,6 +27785,58 @@ class PlLvalue extends PlObject {
         } sort {
             $a cmp $b
         } keys(%java_classes))) . '}
+class PlROvalue extends PlLvalue {
+    private PlObject o;
+    public Integer pos;
+
+    // Note: several versions of PlROvalue()
+    public PlROvalue() {
+        this.o = PlCx.UNDEF;
+    }
+    public PlROvalue(PlObject o) {
+        this.o = o;
+    }
+    public PlROvalue(PlLvalue o) {
+        this.o = o.get();
+    }
+    public PlROvalue(PlArray o) {
+        // $a = @x
+        this.o = o.scalar();
+    }
+    public PlROvalue(PlHash o) {
+        // $a = %x
+        this.o = o.scalar();
+    }
+
+    public PlLvalue set(Object o) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject pre_decr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject post_decr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject pre_incr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject post_incr() {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject bless(PlString className) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+    public PlObject bless(PlObject className) {
+        PlCORE.die("Modification of a read-only value attempted");
+        return this;
+    }
+}
 class PlArray extends PlObject {
     public ArrayList<PlObject> a;
     public int each_iterator;
