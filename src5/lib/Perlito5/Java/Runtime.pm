@@ -1295,11 +1295,10 @@ class PlV {
         return PlV.cget(s);
     }
 
-    public static final PlObject glob_set(PlString name, PlObject v, String nameSpace) {
-        return glob_set(name.toString(), v, nameSpace);
+    public static final PlObject glob_set(PlString name, PlObject value, String nameSpace) {
+        return glob_set(name.toString(), value, nameSpace);
     }
-    public static final PlObject glob_set(String name, PlObject v, String nameSpace) {
-        PlObject value = v.aget(0);
+    public static final PlObject glob_set(String name, PlObject value, String nameSpace) {
         if (value.is_coderef()) {
             PlV.cset(name, value);
         }
@@ -1315,7 +1314,7 @@ class PlV {
         else if (value.is_typeglobref()) {
             // *x = \*y
             PlGlobRef gl = (PlGlobRef)value;
-            return glob_set(name, new PlArray(gl.filehandle), nameSpace);
+            return glob_set(name, gl.filehandle, nameSpace);
         }
         else if (value.is_filehandle()) {
             // *x = *y
@@ -1324,7 +1323,7 @@ class PlV {
             if (typeglob_name == null) {
                 PlCORE.die("not implemented assign anonymous typeglob to typeglob");
             }
-            return glob_set(name, new PlArray(new PlString(typeglob_name)), nameSpace);
+            return glob_set(name, new PlString(typeglob_name), nameSpace);
         }
         else if (!value.is_ref()) {
             String typeglob_name = value.toString();
@@ -1343,11 +1342,10 @@ class PlV {
         }
         return value;
     }
-    public static final PlObject glob_set_local(PlString name, PlObject v, String nameSpace) {
-        return glob_set_local(name.toString(), v, nameSpace);
+    public static final PlObject glob_set_local(PlString name, PlObject value, String nameSpace) {
+        return glob_set_local(name.toString(), value, nameSpace);
     }
-    public static final PlObject glob_set_local(String name, PlObject v, String nameSpace) {
-        PlObject value = v.aget(0);
+    public static final PlObject glob_set_local(String name, PlObject value, String nameSpace) {
         if (value.is_coderef()) {
             PlV.cset_local(name, value);
         }
@@ -1363,7 +1361,7 @@ class PlV {
         else if (value.is_typeglobref()) {
             // local *x = \*y
             PlGlobRef gl = (PlGlobRef)value;
-            return glob_set_local(name, new PlArray(gl.filehandle), nameSpace);
+            return glob_set_local(name, gl.filehandle, nameSpace);
         }
         else if (value.is_filehandle()) {
             // local *x = *y
@@ -1372,7 +1370,7 @@ class PlV {
             if (typeglob_name == null) {
                 PlCORE.die("not implemented assign anonymous typeglob to typeglob");
             }
-            return glob_set_local(name, new PlArray(new PlString(typeglob_name)), nameSpace);
+            return glob_set_local(name, new PlString(typeglob_name), nameSpace);
         }
         else if (!value.is_ref()) {
             String typeglob_name = value.toString();

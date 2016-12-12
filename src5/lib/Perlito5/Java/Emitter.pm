@@ -1963,7 +1963,7 @@ package Perlito5::AST::Var;
         }
         if ( $sigil eq '*' ) {
             return "PlV.glob_set$local(" . $index . ', '
-                . Perlito5::Java::to_list([$arguments], $level+1) . ', '
+                . Perlito5::Java::to_scalar([$arguments], $level+1) . ', '
                 . Perlito5::Java::escape_string($Perlito5::PKG_NAME)
                 . ')';
         }
