@@ -1392,7 +1392,7 @@ package Perlito5::AST::Apply;
                        'arguments' => [],
                        'bareword' => 1,
                        'code' => 'ARGV',
-                       'namespace' => '',
+                       'namespace' => 'main',
                    }, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in);
             'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', '

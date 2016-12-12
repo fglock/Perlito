@@ -21490,7 +21490,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'readline' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
-            my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => ''}, 'Perlito5::AST::Apply');
+            my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => 'main'}, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in);
             'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . $list . ')'
         }, 'map' => sub {
