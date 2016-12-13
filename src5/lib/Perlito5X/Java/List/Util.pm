@@ -39,9 +39,10 @@ sub reduce (&@) {
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         v_a_ref.set(List__.aget(0));
+        PlArray empty_args = new PlArray();
         for (int i = 1; i < size; i++) {
             v_b_ref.set(List__.aget(i));
-            v_a_ref.set(c.apply(PlCx.SCALAR, new PlArray()));
+            v_a_ref.set(c.apply(PlCx.SCALAR, empty_args));
         }
         ret = v_a_ref.get();
         v_a_ref.set(v_a_val);
@@ -65,11 +66,12 @@ sub pairgrep (&@) {
         PlLvalue v_b_ref = (PlLvalue)PlV.sget(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
+        PlArray empty_args = new PlArray();
         int i = 0;
         while (i < size) {
             v_a_ref.set(List__.aget(i++));
             v_b_ref.set(List__.aget(i++));
-            boolean result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
+            boolean result = c.apply(PlCx.SCALAR, empty_args).to_bool();
             if (result) {
                 ret.push(new PlArray(v_a_ref, v_b_ref));
             }
@@ -95,11 +97,12 @@ sub pairmap (&@) {
         PlLvalue v_b_ref = (PlLvalue)PlV.sget(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
+        PlArray empty_args = new PlArray();
         int i = 0;
         while (i < size) {
             v_a_ref.set(List__.aget(i++));
             v_b_ref.set(List__.aget(i++));
-            ret.push(c.apply(PlCx.SCALAR, new PlArray()));
+            ret.push(c.apply(PlCx.SCALAR, empty_args));
         }
         v_a_ref.set(v_a_val);
         v_b_ref.set(v_b_val);
@@ -122,11 +125,12 @@ sub pairfirst (&@) {
         PlLvalue v_b_ref = (PlLvalue)PlV.sget(pkg + "::b");
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
+        PlArray empty_args = new PlArray();
         int i = 0;
         while (i < size) {
             v_a_ref.set(List__.aget(i++));
             v_b_ref.set(List__.aget(i++));
-            boolean result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
+            boolean result = c.apply(PlCx.SCALAR, empty_args).to_bool();
             if (result) {
                 ret.push(new PlArray(v_a_ref, v_b_ref));
                 return (want == PlCx.LIST ) ? ret : ret.length_of_array();
