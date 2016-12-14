@@ -27502,9 +27502,15 @@ class PlLvalue extends PlObject {
         return PlCORE.die("Not a HASH reference");
     }
     public PlObject aget(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aget(i);
     }
     public PlObject aget(int i) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aget(i);
     }
 
