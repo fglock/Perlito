@@ -552,7 +552,7 @@ class PerlOp {
         local_stack.a.add(new PlString(index));
         PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.hget_lvalue(index));
-        container.h.put(index, empty);
+        container.hset_alias(index, empty);
         return empty;
     }
     public static final PlObject push_local(PlArray container, int index) {
@@ -560,7 +560,7 @@ class PerlOp {
         local_stack.a.add(new PlInt(index));
         PlLvalue empty = new PlLvalue();
         local_stack.a.add(container.aget_lvalue(index));
-        container.a.set(index, empty);
+        container.aset_alias(index, empty);
         return empty;
     }
     public static final int local_length() {
@@ -572,10 +572,10 @@ class PerlOp {
             PlObject index     = local_stack.pop();
             PlObject container = local_stack.pop();
             if (container.is_array()) {
-                ((PlArray)container).a.set(index.to_int(), lvalue);
+                ((PlArray)container).aset_alias(index.to_int(), lvalue);
             }
             else {
-                ((PlHash)container).h.put(index.toString(), lvalue);
+                ((PlHash)container).hset_alias(index.toString(), lvalue);
             }
         }
         return ret;
@@ -1177,7 +1177,7 @@ class PlV {
         return svar.hget_lvalue_local(name).set(v);
     }
     public static final void sset_alias(String name, PlLvalue v) {
-        svar.h.put(name, v);
+        svar.hset_alias(name, v);
     }
 
     // code
@@ -1194,7 +1194,7 @@ class PlV {
         return cvar.hget_lvalue_local(name).set(v);
     }
     public static final void cset_alias(String name, PlLvalue v) {
-        cvar.h.put(name, v);
+        cvar.hset_alias(name, v);
     }
 
     // hash
@@ -3234,6 +3234,9 @@ EOT
             sort keys %native_to_perl ))
 
     . <<'EOT'
+    public PlObject aset_alias(int i, PlLvalue lvalue) {
+        return this.a.set(i, lvalue);
+    }
 
     // Note: multiple versions of push()
     public PlObject push(PlObject v) {
@@ -3767,6 +3770,9 @@ class PlHash extends PlObject {
             return aa;
         }
         return aa.pop();
+    }
+    public PlObject hset_alias(String s, PlLvalue lvalue) {
+        return this.h.put(s, lvalue);
     }
     public PlObject exists(PlObject i) {
         return this.h.containsKey(i.toString()) ? PlCx.TRUE : PlCx.FALSE;
