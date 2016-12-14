@@ -2762,7 +2762,11 @@ class PlArray extends PlObject {
             if (s.is_array()) {
                 // @x = ( @x, @y );
                 for (int i = 0; i < s.to_long(); i++) {
-                    aa.add(s.aget(i));
+                    PlObject v = s.aget(i);
+                    if (v.is_lvalue()) {
+                        v = v.get();
+                    }
+                    aa.add(v);
                 }
             }
             else if (s.is_lvalue()) {
