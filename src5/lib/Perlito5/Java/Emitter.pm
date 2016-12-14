@@ -1444,6 +1444,12 @@ package Perlito5::AST::Int;
         }
         "new PlInt(" . $v . "L)";
     }
+    sub emit_java_set {
+        die "Can't modify constant item in scalar assignment";
+    }
+    sub emit_java_set_list {
+        die "Can't modify constant item in list assignment";
+    }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
 }
@@ -1454,6 +1460,12 @@ package Perlito5::AST::Num;
         my ($self, $level, $wantarray) = @_;
         "new PlDouble(" . $self->{num} . ")";
     }
+    sub emit_java_set {
+        die "Can't modify constant item in scalar assignment";
+    }
+    sub emit_java_set_list {
+        die "Can't modify constant item in list assignment";
+    }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
 }
@@ -1463,6 +1475,12 @@ package Perlito5::AST::Buf;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         "new PlString(" . Perlito5::Java::escape_string( $self->{buf} ) . ")";
+    }
+    sub emit_java_set {
+        die "Can't modify constant item in scalar assignment";
+    }
+    sub emit_java_set_list {
+        die "Can't modify constant item in list assignment";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }

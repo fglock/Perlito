@@ -22484,6 +22484,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             'new PlInt(' . $v . 'L)'
         }
+        sub Perlito5::AST::Int::emit_java_set {
+            die('Can' . chr(39) . 't modify constant item in scalar assignment')
+        }
+        sub Perlito5::AST::Int::emit_java_set_list {
+            die('Can' . chr(39) . 't modify constant item in list assignment')
+        }
         sub Perlito5::AST::Int::emit_java_get_decl {
             ()
         }
@@ -22497,6 +22503,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             'new PlDouble(' . $self->{'num'} . ')'
         }
+        sub Perlito5::AST::Num::emit_java_set {
+            die('Can' . chr(39) . 't modify constant item in scalar assignment')
+        }
+        sub Perlito5::AST::Num::emit_java_set_list {
+            die('Can' . chr(39) . 't modify constant item in list assignment')
+        }
         sub Perlito5::AST::Num::emit_java_get_decl {
             ()
         }
@@ -22509,6 +22521,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Buf::emit_java {
             my($self, $level, $wantarray) = @_;
             'new PlString(' . Perlito5::Java::escape_string($self->{'buf'}) . ')'
+        }
+        sub Perlito5::AST::Buf::emit_java_set {
+            die('Can' . chr(39) . 't modify constant item in scalar assignment')
+        }
+        sub Perlito5::AST::Buf::emit_java_set_list {
+            die('Can' . chr(39) . 't modify constant item in list assignment')
         }
         sub Perlito5::AST::Buf::emit_java_get_decl {
             ()
