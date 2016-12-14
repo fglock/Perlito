@@ -2995,7 +2995,7 @@ EOT
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
-            aa.add( this.aget_lvalue(i) );
+            aa.add( this.aget_lvalue(a.aget(i)) );
         }
         PlArray result = new PlArray();
         result.a = aa;

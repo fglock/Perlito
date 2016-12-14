@@ -21142,14 +21142,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $parameters = $self->{'arguments'}->[0];
             my $arguments = $self->{'arguments'}->[1];
             if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'state' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
-                if ($wantarray eq 'void') {
-                    my $tmp = Perlito5::Java::get_label();
-                    return join(';
-' . Perlito5::Java::tab($level), 'PlArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1), (map($_->emit_java_set_list($level, $tmp), @{$parameters->arguments()})))
-                }
-                my $tmp = Perlito5::Java::get_label();
-                my $tmp2 = Perlito5::Java::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'PlArray ' . $tmp . ' = ' . Perlito5::Java::to_list([$arguments], $level + 1) . ';', 'PlArray ' . $tmp2 . ' = ' . $tmp . '.slice(0);', (map($_->emit_java_set_list($level + 1, $tmp) . ';', @{$parameters->arguments()})), 'return ' . $tmp2)
+                return Perlito5::Java::to_param_list($parameters->{'arguments'}, $level + 1) . '.list_set(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$arguments], $level) . ')'
             }
             return $parameters->emit_java_set($arguments, $level + 1, $wantarray)
         }, 'break' => sub {
@@ -28115,7 +28108,7 @@ class PlArray extends PlObject {
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
-            aa.add( this.aget_lvalue(i) );
+            aa.add( this.aget_lvalue(a.aget(i)) );
         }
         PlArray result = new PlArray();
         result.a = aa;
