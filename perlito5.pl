@@ -22103,7 +22103,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($item->isa('Perlito5::AST::Apply') && ($item->code() eq 'infix:<..>')) {
                 return '(PlArray)(' . $item->emit_java($level, 'list') . ')'
             }
-            'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')'
+            'PlArray.construct_list_of_aliases(' . join(', ', map($_->emit_java($level, 'list', 'lvalue'), @{$items})) . ')'
         }
         sub Perlito5::Java::to_list {
             my $items = to_list_preprocess($_[0]);
@@ -27528,9 +27528,15 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject aset(int i, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aset(i, v);
     }
     public PlObject aset(PlObject i, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aset(i, v);
     }
     public PlObject hget(PlObject i) {

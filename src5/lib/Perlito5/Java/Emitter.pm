@@ -718,7 +718,7 @@ package Perlito5::Java;
         }
 
         'PlArray.construct_list_of_aliases('
-        .   join(', ', map( $_->emit_java($level, 'list'), @$items ))
+        .   join(', ', map( $_->emit_java($level, 'list', 'lvalue'), @$items ))
         . ')';
     }
 

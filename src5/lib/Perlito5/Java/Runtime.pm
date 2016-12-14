@@ -2388,9 +2388,15 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject aset(int i, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aset(i, v);
     }
     public PlObject aset(PlObject i, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlArrayRef();
+        }
         return this.o.aset(i, v);
     }
     public PlObject hget(PlObject i) {
