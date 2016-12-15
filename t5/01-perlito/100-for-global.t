@@ -68,3 +68,11 @@ say '1..17';
     print "ok 17 - leave loop # @a\n";
 }
 
+# TODO - add test
+# $ perl -e ' for (1,2,3) { $_++ } '
+# Modification of a read-only value attempted at -e line 1.
+
+# TODO - add test
+# $ perl -e ' for my $v (1,2,3) { $v++ } '
+# Modification of a read-only value attempted at -e line 1.
+
