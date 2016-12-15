@@ -2826,6 +2826,14 @@ use feature 'say';
                             }
                         }) && (do {
                             $MATCH->{'_tmp'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Sigil::term_sigil'})->[1];
+                            my $v = $MATCH->{'_tmp'};
+                            my $look = Perlito5::Grammar::Scope::lookup_variable($v);
+                            my $decl = $look && $look->{'_decl'} ? $look->{'_decl'} : 'global';
+                            if ($decl ne 'global') {
+                                $v->{'_id'} = $Perlito5::ID++;
+                                $v->{'_decl'} = $decl;
+                                $MATCH->{'_tmp'} = Perlito5::AST::Decl::->new('decl' => $decl, 'var' => $v)
+                            }
                             1
                         }))
                     })

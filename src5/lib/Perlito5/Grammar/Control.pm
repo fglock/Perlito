@@ -104,7 +104,25 @@ token for {
         [ <.Perlito5::Grammar::Space::ws> <Perlito5::Grammar::Expression::term_declarator>
             { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::term_declarator"})->[1] }
         | <.Perlito5::Grammar::Space::opt_ws> <before '$'> <Perlito5::Grammar::Sigil::term_sigil>
-            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1] }
+            { $MATCH->{_tmp} = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Sigil::term_sigil"})->[1];
+
+              my $v = $MATCH->{'_tmp'};
+              my $look = Perlito5::Grammar::Scope::lookup_variable($v);
+              # print STDERR "look: " . Dumper($look);
+              my $decl = $look && $look->{_decl} ? $look->{_decl} : 'global';
+              if ($decl ne 'global') {
+                  # auto-insert a "declarator" (my, our, state)
+                  $v->{_id} = $Perlito5::ID++;
+                  $v->{_decl} = $decl;
+                  # use Data::Dumper;
+                  # print STDERR "variable: " . Dumper($v);
+                  $MATCH->{'_tmp'} = Perlito5::AST::Decl->new(
+                      decl => $decl,
+                      var  => $v,
+                  );
+              }
+
+            }
         ]
         <.Perlito5::Grammar::Space::opt_ws> 
             '(' <Perlito5::Grammar::Expression::paren_parse>   ')' <block> <opt_continue_block>
