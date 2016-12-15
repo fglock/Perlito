@@ -80,3 +80,21 @@ say '1..17';
 # $ perl -e ' for my $v (1..3) { $v++ } '
 # (no error)
 
+# TODO - add test
+# $ perl -e ' sub x { print "$v\n" } for $v (1..3) { x() } '
+# 1
+# 2
+# 3
+
+# TODO - add test
+# $ perl -e ' my $v; sub x { print "$v\n" } for $v (1..3) { x() } '
+# 
+# 
+# 
+
+# TODO - add test
+# $ perl -e ' our $v; sub x { print "$v\n" } for $v (1..3) { x() } '
+# 1
+# 2
+# 3
+
