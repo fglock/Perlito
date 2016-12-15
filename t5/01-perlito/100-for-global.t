@@ -76,3 +76,7 @@ say '1..17';
 # $ perl -e ' for my $v (1,2,3) { $v++ } '
 # Modification of a read-only value attempted at -e line 1.
 
+# TODO - add test
+# $ perl -e ' for my $v (1..3) { $v++ } '
+# (no error)
+
