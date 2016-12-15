@@ -21581,11 +21581,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($arg->isa('Perlito5::AST::Var') && $arg->sigil() eq '&') {
                 my $name = $arg->{'name'};
                 my $namespace = $arg->{'namespace'} || $Perlito5::PKG_NAME;
-                return 'p5pkg[' . Perlito5::Java::escape_string($namespace) . '].hasOwnProperty(' . Perlito5::Java::escape_string($name) . ')'
+                return 'new PlBool(PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_coderef())'
             }
             if ($arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'prefix:<&>') {
                 my $arg2 = $arg->{'arguments'}->[0];
-                return 'p5sub_exists(' . Perlito5::Java::to_str($arg2) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
+                return 'new PlBool(PlV.cget(' . Perlito5::Java::to_native_str($arg2) . ').is_coderef())'
             }
         }, 'prototype' => sub {
             my($self, $level, $wantarray) = @_;
