@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..32';
+say '1..34';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -175,7 +175,7 @@ print "ok 27 - unique_elements $v\n";
 
 {
     $a = undef;
-    # $ perl -e ' use Data::Dumper;  $$a[0]; '
+    # $ perl -e ' use Data::Dumper;  $$a[0]; print Dumper $a; '
     $$a[0];
     if (ref($a) ne 'ARRAY') {
         print 'not '
@@ -207,5 +207,28 @@ print "ok 27 - unique_elements $v\n";
         print 'not '
     }
     say "ok 32 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
+
+    {
+    no strict;
+    # $ perl -e ' use Data::Dumper;  @$a; print Dumper $a; '
+    $a = undef;
+    my @x = @$a;
+    if (ref($a) eq 'ARRAY') {
+        print 'not '
+    }
+    say 'ok 33 - deref array is lazy';
+    }
+
+    {
+    # $ perl -e ' use Data::Dumper;  @$a; print Dumper $a; '
+    local $@;
+    $a = undef;
+    eval { my @x = @$a; };
+    if (substr($@,0,20) ne substr("Can't use an undefined value as an ARRAY reference",0,20)) {
+        print 'not '
+    }
+    say 'ok 34 - deref array is forbidden';
+    }
+
 }
 
