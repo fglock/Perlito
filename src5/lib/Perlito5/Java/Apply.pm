@@ -409,48 +409,48 @@ package Perlito5::AST::Apply;
             if ($wantarray eq 'void') {
                 return
                   Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PlCx.UNDEF';
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF';
             }
             # and1(x) ? y : and3()
             'PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PerlOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
                   Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PlCx.UNDEF';
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF';
             }
             # and1(x) ? y : and3()
             'PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ' : PerlOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
                   Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
-                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
+                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
             'PerlOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ''
         },
         'infix:<or>' => sub {
             my ($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
                 return
                   Perlito5::Java::to_bool($self->{arguments}->[0], $level) . ' ? '
-                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, 'scalar');
+                . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
             'PerlOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ''
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ''
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
