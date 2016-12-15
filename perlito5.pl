@@ -22607,6 +22607,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             else {
                 $s = $arg->emit_java($level, 'scalar')
             }
+            if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                return $self->{'obj'}->{'arguments'}->[0]->emit_java($level + 1) . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+            }
             return $self->emit_java_container($level) . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         sub Perlito5::AST::Index::emit_java_set_list {

@@ -1633,6 +1633,19 @@ package Perlito5::AST::Index;
         else {
             $s = $arg->emit_java($level, 'scalar');
         }
+
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # ${"Exporter::Cache"}[2]
+            # $$a[0] ==> $a->[0]
+            return $self->{obj}->{arguments}[0]->emit_java($level+1) . '.aset('
+                    . $s . ', '
+                    . Perlito5::Java::to_scalar([$arguments], $level+1)
+                . ')';
+        }
+
         return $self->emit_java_container($level) . '.aset(' 
                     . $s . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
