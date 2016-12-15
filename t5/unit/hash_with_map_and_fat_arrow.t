@@ -1,15 +1,16 @@
 #!./perl -w
 
-BEGIN {
-    chdir 't' if -d 't';
-    @INC = '../lib';
-    require './test.pl';
-}
-
-plan( tests => 3 );
+use feature 'say';
+print "1..3\n";
 
 my %x = (map { $_ => 1 } qw(one two three));
 
-is ($x{'one'} , 1, "map+fatarrow x{one}");
-is ($x{'three'}, 1, "map+fatarrow: x{three}");
-ok (!exists($x{'four'}), "x{four} does not exist");
+print "not " if $x{'one'} != 1;
+say "ok 1 - map+fatarrow x{one}";
+
+print "not " if $x{'three'} != 1;
+say "ok 2 - map+fatarrow: x{three}";
+
+print "not " if exists($x{'four'});
+say "ok 3 - x{four} does not exist";
+
