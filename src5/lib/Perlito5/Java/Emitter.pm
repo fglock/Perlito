@@ -2622,7 +2622,7 @@ package Perlito5::AST::For;
         my $cond = ref( $self->{cond} ) eq 'ARRAY'
                    ? $self->{cond}
                    : [ $self->{cond} ];
-        for my $expr ( @$cond, $self->{topic} ) {
+        for my $expr ( @$cond ) {
             if ($expr) {
                 my @var_decl = $expr->emit_java_get_decl();
                 for my $arg (@var_decl) {
@@ -2674,9 +2674,12 @@ package Perlito5::AST::For;
             my $namespace = $v->{namespace} || $v->{_namespace} || $Perlito5::PKG_NAME;
             my $s;
             if ($decl eq 'my' || $decl eq 'state' || $decl eq 'our') {
+                # TODO - use PlObject for topic, because:
+                #   - less memory
+                #   - arguments are r/o when needed
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ $v->emit_java($level + 1) . ".set($local_label);",
+                          [ 'PlLvalue ' . $v->emit_java($level + 1) . " = new PlLvalue().set($local_label);",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},

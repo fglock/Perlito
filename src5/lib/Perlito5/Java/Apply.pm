@@ -1553,18 +1553,18 @@ package Perlito5::AST::Apply;
               && $arg->{code} eq 'p5:m'
             ) {
                 # first argument of split() is a regex
-                push @js, 'new RegExp('
+                push @js, 'new PlRegex('
                         . $arg->{arguments}->[0]->emit_java() . ', '
                         . Perlito5::Java::escape_string($arg->{arguments}->[1]->{buf})
                     . ')';
                 shift @{ $self->{arguments} };
             }
-            return 'CORE.split('
-                . '[' . join( ', ',
+            return 'PlCORE.split('
+                . join( ', ',
+                    Perlito5::Java::to_context($wantarray),
                     @js,
-                    map( $_->emit_java, @{ $self->{arguments} } ) )
-                . '], '
-                . Perlito5::Java::to_context($wantarray)
+                    map( $_->emit_java, @{ $self->{arguments} } )
+                  )
             . ')';
         },
     );

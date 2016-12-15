@@ -21604,10 +21604,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @js;
             my $arg = $self->{'arguments'}->[0];
             if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
-                push(@js, 'new RegExp(' . $arg->{'arguments'}->[0]->emit_java() . ', ' . Perlito5::Java::escape_string($arg->{'arguments'}->[1]->{'buf'}) . ')');
+                push(@js, 'new PlRegex(' . $arg->{'arguments'}->[0]->emit_java() . ', ' . Perlito5::Java::escape_string($arg->{'arguments'}->[1]->{'buf'}) . ')');
                 shift(@{$self->{'arguments'}})
             }
-            return 'CORE.split(' . '[' . join(', ', @js, map($_->emit_java(), @{$self->{'arguments'}})) . '], ' . Perlito5::Java::to_context($wantarray) . ')'
+            return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java(), @{$self->{'arguments'}})) . ')'
         });
         sub Perlito5::AST::Apply::emit_java {
             my($self, $level, $wantarray) = @_;
@@ -23243,7 +23243,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
             my @str;
             my $cond = ref($self->{'cond'}) eq 'ARRAY' ? $self->{'cond'} : [$self->{'cond'}];
-            for my $expr (@{$cond}, $self->{'topic'}) {
+            for my $expr (@{$cond}) {
                 if ($expr) {
                     my @var_decl = $expr->emit_java_get_decl();
                     for my $arg (@var_decl) {
@@ -23276,7 +23276,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
                 my $s;
                 if ($decl eq 'my' || $decl eq 'state' || $decl eq 'our') {
-                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', [$v->emit_java($level + 1) . '.set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
+                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', ['PlLvalue ' . $v->emit_java($level + 1) . ' = new PlLvalue().set(' . $local_label . ');', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                 }
                 else {
                     my $local_label2 = Perlito5::Java::get_label();
