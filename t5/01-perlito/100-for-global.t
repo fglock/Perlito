@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say '1..14';
+say '1..17';
 
 {
     my $v;
@@ -56,4 +56,15 @@ say '1..14';
     print "ok 14 - capture # " . $subs[0]->() . ", " . $subs[1]->() . "\n";
 }
 
+{
+    my $v;
+    $v = 7;
+    my @a = ( 14, 15 );
+    for my $v (@a) {
+        $v++;
+        say 'ok ' . $v . ' - loop';
+    }
+    print "not " if $a[0] != 15 || $a[1] != 16;
+    print "ok 17 - leave loop # @a\n";
+}
 
