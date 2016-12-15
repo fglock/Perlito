@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..29';
+say '1..32';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -171,5 +171,41 @@ print "ok 27 - unique_elements $v\n";
         print 'not '
     }
     say 'ok 29 - array in a scalar var, alternate syntax # ', $v->[2];
+}
+
+{
+    $a = undef;
+    # $ perl -e ' use Data::Dumper;  $$a[0]; '
+    $$a[0];
+    if (ref($a) ne 'ARRAY') {
+        print 'not '
+    }
+    say 'ok 30 - deref to array autovivifies';
+
+    # $ perl -e ' use Data::Dumper; $$a[0,2] = (3,5); print Dumper $a; '
+    # $VAR1 = [
+    #           undef,
+    #           undef,
+    #           5
+    #         ];
+    $a = undef;
+    $$a[0,2] = (3,5);
+    if ( defined($a->[0]) || defined($a->[1]) || $a->[2] != 5 ) {
+        print 'not '
+    }
+    say "ok 31 - look-like-slice set in scalar context # " . scalar(@$a) . " - " . join(",", @$a);
+
+    # $ perl -e ' use Data::Dumper; @$a[0,2] = (3,5); print Dumper $a; '
+    # $VAR1 = [
+    #           3,
+    #           undef,
+    #           5
+    #         ];
+    $a = undef;
+    @$a[0,2] = (3,5);
+    if ( $a->[0] != 3 || defined($a->[1]) || $a->[2] != 5 ) {
+        print 'not '
+    }
+    say "ok 32 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
 }
 
