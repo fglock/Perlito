@@ -2673,7 +2673,7 @@ package Perlito5::AST::For;
             }
             my $namespace = $v->{namespace} || $v->{_namespace} || $Perlito5::PKG_NAME;
             my $s;
-            if ($decl eq 'my' || $decl eq 'state') {
+            if ($decl eq 'my' || $decl eq 'state' || $decl eq 'our') {
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
                           [ $v->emit_java($level + 1) . ".set($local_label);",
