@@ -23005,7 +23005,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $autovivification_type eq 'array' && ($method = 'aget_arrayref');
                 $autovivification_type eq 'hash' && ($method = 'aget_hashref');
                 $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
-                return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.' . $method . '(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ')'
+                return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.' . $method . '(' . Perlito5::Java::to_scalar([$self->{'arguments'}], $level + 1) . ')'
             }
             if ($meth eq 'postcircumfix:<{ }>') {
                 my $method = $autovivification_type || 'hget';
@@ -26680,6 +26680,9 @@ class PlObject {
             return ((PlArray)this).aget_list_of_aliases(want, a);
         }
         return PlCORE.die("Not an ARRAY");
+    }
+    public PlObject aget_lvalue(PlObject i) {
+        return this.aget_lvalue(i.to_int());
     }
     public PlObject aget_lvalue(int pos) {
         return PlCORE.die("Not an ARRAY reference");

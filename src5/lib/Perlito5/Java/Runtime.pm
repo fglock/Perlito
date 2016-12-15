@@ -1530,6 +1530,9 @@ EOT
         }
         return PlCORE.die("Not an ARRAY");
     }
+    public PlObject aget_lvalue(PlObject i) {
+        return this.aget_lvalue(i.to_int());
+    }
     public PlObject aget_lvalue(int pos) {
         return PlCORE.die("Not an ARRAY reference");
     }

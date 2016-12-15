@@ -2235,7 +2235,7 @@ package Perlito5::AST::Call;
             $method = 'aget_hashref'   if $autovivification_type eq 'hash';
             $method = 'aget_lvalue'    if $autovivification_type eq 'lvalue';
             return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                . '.' . $method . '(' . Perlito5::Java::to_num($self->{arguments}, $level+1)
+                . '.' . $method . '(' . Perlito5::Java::to_scalar([$self->{arguments}], $level+1)
                 . ')';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
