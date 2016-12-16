@@ -22126,7 +22126,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return 'new PlArray()'
             }
             my $item = $items->[0];
-            if ($item->isa('Perlito5::AST::Var') && ($item->sigil() eq '@')) {
+            if (@{$items} == 1 && $item->isa('Perlito5::AST::Var') && ($item->sigil() eq '@')) {
                 return $item->emit_java($level, 'list')
             }
             return 'new PlArray(' . join(', ', map($_->emit_java($level, 'list'), @{$items})) . ')'

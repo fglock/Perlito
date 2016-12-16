@@ -731,7 +731,7 @@ package Perlito5::Java;
         }
 
         my $item = $items->[0];
-        if ( $item->isa('Perlito5::AST::Var') && ( $item->sigil eq '@' ) ) {
+        if ( @$items == 1 && $item->isa('Perlito5::AST::Var') && ( $item->sigil eq '@' ) ) {
             return $item->emit_java($level, 'list');
         }
 
