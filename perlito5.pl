@@ -27096,7 +27096,10 @@ class PlReference extends PlObject {
         return true;
     }
     public String toString() {
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.hashCode()) + ")";
+        if ( this.bless != null ) {
+            return this.bless.overload_toString(this);
+        }
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
     }
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
@@ -27225,9 +27228,10 @@ class PlLvalueRef extends PlReference {
             return this.bless.className();
         }
     }
-    public String toString() {
+    public PlInt refaddr() {
+        // Scalar::Util::refaddr()
         int id = System.identityHashCode(this.o);
-        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
+        return new PlInt(id);
     }
     public PlLvalueRef(PlLvalue o) {
         this.o = o;
@@ -27252,10 +27256,6 @@ class PlArrayRef extends PlArray {
     public static final PlString REF = new PlString("ARRAY");
     public PlClass bless;
 
-    public String toString() {
-        int id = System.identityHashCode(this.a);
-        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
-    }
     public PlArrayRef() {
         this.each_iterator = 0;
         this.a = new ArrayList<PlObject>();
@@ -27309,6 +27309,12 @@ class PlArrayRef extends PlArray {
     public PlClass blessed_class() {
         return this.bless;
     }
+    public String toString() {
+        if ( this.bless != null ) {
+            return this.bless.overload_toString(this);
+        }
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
+    }
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -27339,10 +27345,6 @@ class PlHashRef extends PlHash {
     public static final PlString REF = new PlString("HASH");
     public PlClass bless;
 
-    public String toString() {
-        int id = System.identityHashCode(this.h);
-        return this.ref().toString() + "(0x" + Integer.toHexString(id) + ")";
-    }
     public PlHashRef() {
         this.h = new HashMap<String, PlObject>();
         this.each_iterator = null;
@@ -27395,6 +27397,12 @@ class PlHashRef extends PlHash {
     }
     public PlClass blessed_class() {
         return this.bless;
+    }
+    public String toString() {
+        if ( this.bless != null ) {
+            return this.bless.overload_toString(this);
+        }
+        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
     }
     public PlString ref() {
         if ( this.bless == null ) {
@@ -27459,6 +27467,13 @@ class PlClass {
         return methodCode;
     }
 
+    public String overload_toString(PlObject o) {
+        PlObject methodCode = this.method_lookup("(\\"\\"");  //  ("" method
+        if (!methodCode.is_undef()) {
+            return methodCode.apply(PlCx.SCALAR, new PlArray(o)).toString();
+        }
+        return o.ref().toString() + "(0x" + Integer.toHexString(o.refaddr().to_int()) + ")";
+    }
 }
 class PlLvalue extends PlObject {
     private PlObject o;
