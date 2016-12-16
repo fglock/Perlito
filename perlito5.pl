@@ -21537,7 +21537,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @in = @{$self->{'arguments'}};
             my $ref = shift(@in);
             my $class = shift(@in);
-            return $ref->emit_java($level, 'scalar') . '.bless(' . $class->emit_java($level, 'scalar') . ')'
+            if ($class) {
+                $class = Perlito5::Java::to_native_str($class)
+            }
+            else {
+                $class = Perlito5::Java::escape_string($Perlito5::PKG_NAME)
+            }
+            return $ref->emit_java($level, 'scalar') . '.bless(' . $class . ')'
         }, 'sort' => sub {
             my($self, $level, $wantarray) = @_;
             my @in = @{$self->{'arguments'}};
@@ -27027,7 +27033,7 @@ class PlObject {
         PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
         return this;
     }
-    public PlObject bless(PlObject className) {
+    public PlObject bless(String className) {
         PlCORE.die("Can' . chr(39) . 't bless non-reference value");
         return this;
     }
@@ -27083,7 +27089,7 @@ class PlReference extends PlObject {
     public boolean is_ref() {
         return true;
     }
-    public PlReference bless(PlObject className) {
+    public PlReference bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -27310,7 +27316,7 @@ class PlArrayRef extends PlArray {
     public PlObject scalar() {
         return this;
     }
-    public PlArrayRef bless(PlObject className) {
+    public PlArrayRef bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -27397,7 +27403,7 @@ class PlHashRef extends PlHash {
     public boolean to_bool() {
         return true;
     }
-    public PlHashRef bless(PlObject className) {
+    public PlHashRef bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -27791,11 +27797,8 @@ class PlLvalue extends PlObject {
     public PlObject scalar() {
         return this.o;
     }
-    public PlObject bless(PlString className) {
+    public PlObject bless(String className) {
         return this.o.bless(className);
-    }
-    public PlObject bless(PlObject className) {
-        return this.o.bless(new PlString(className.toString()));
     }
     public PlClass blessed_class() {
         return this.o.blessed_class();
@@ -27868,11 +27871,7 @@ class PlROvalue extends PlLvalue {
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }
-    public PlObject bless(PlString className) {
-        PlCORE.die("Modification of a read-only value attempted");
-        return this;
-    }
-    public PlObject bless(PlObject className) {
+    public PlObject bless(String className) {
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }

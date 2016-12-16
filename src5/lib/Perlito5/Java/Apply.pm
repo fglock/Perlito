@@ -1445,9 +1445,15 @@ package Perlito5::AST::Apply;
             my @in  = @{$self->{arguments}};
             my $ref = shift @in;
             my $class = shift @in;
+            if ($class) {
+                $class = Perlito5::Java::to_native_str($class);
+            }
+            else {
+                $class = Perlito5::Java::escape_string($Perlito5::PKG_NAME);
+            }
 
             return $ref->emit_java( $level, "scalar" )
-                . '.bless(' . $class->emit_java( $level, "scalar" ) . ')';
+                . '.bless(' . $class . ')';
         },
         'sort' => sub {
             my ($self, $level, $wantarray) = @_;

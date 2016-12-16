@@ -1865,7 +1865,7 @@ EOT
         PlCORE.die("TODO substr EXPR,OFFSET,LENGTH,REPLACEMENT");
         return this;
     }
-    public PlObject bless(PlObject className) {
+    public PlObject bless(String className) {
         PlCORE.die("Can't bless non-reference value");
         return this;
     }
@@ -1929,7 +1929,7 @@ class PlReference extends PlObject {
     public boolean is_ref() {
         return true;
     }
-    public PlReference bless(PlObject className) {
+    public PlReference bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -2156,7 +2156,7 @@ class PlArrayRef extends PlArray {
     public PlObject scalar() {
         return this;
     }
-    public PlArrayRef bless(PlObject className) {
+    public PlArrayRef bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -2243,7 +2243,7 @@ class PlHashRef extends PlHash {
     public boolean to_bool() {
         return true;
     }
-    public PlHashRef bless(PlObject className) {
+    public PlHashRef bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
     }
@@ -2644,11 +2644,8 @@ EOT
     public PlObject scalar() {
         return this.o;
     }
-    public PlObject bless(PlString className) {
+    public PlObject bless(String className) {
         return this.o.bless(className);
-    }
-    public PlObject bless(PlObject className) {
-        return this.o.bless(new PlString(className.toString()));
     }
     public PlClass blessed_class() {
         return this.o.blessed_class();
@@ -2731,11 +2728,7 @@ class PlROvalue extends PlLvalue {
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }
-    public PlObject bless(PlString className) {
-        PlCORE.die("Modification of a read-only value attempted");
-        return this;
-    }
-    public PlObject bless(PlObject className) {
+    public PlObject bless(String className) {
         PlCORE.die("Modification of a read-only value attempted");
         return this;
     }
