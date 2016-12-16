@@ -1935,12 +1935,34 @@ class PlReference extends PlObject {
     public boolean to_bool() {
         return true;
     }
+
+    // overload
     public String toString() {
         if ( this.bless != null ) {
             return this.bless.overload_toString(this);
         }
         return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
     }
+    public int to_int() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_int();
+        }
+        return this.refaddr().to_int();
+    }
+    public long to_long() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_long();
+        }
+        return this.refaddr().to_long();
+    }
+    public PlObject add(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    public PlObject add2(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    // end overload
+
     public PlInt refaddr() {
         // Scalar::Util::refaddr()
         return new PlInt(this.hashCode());
@@ -2149,12 +2171,34 @@ class PlArrayRef extends PlArray {
     public PlClass blessed_class() {
         return this.bless;
     }
+
+    // overload
     public String toString() {
         if ( this.bless != null ) {
             return this.bless.overload_toString(this);
         }
         return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
     }
+    public int to_int() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_int();
+        }
+        return this.refaddr().to_int();
+    }
+    public long to_long() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_long();
+        }
+        return this.refaddr().to_long();
+    }
+    public PlObject add(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    public PlObject add2(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    // end overload
+
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -2238,12 +2282,34 @@ class PlHashRef extends PlHash {
     public PlClass blessed_class() {
         return this.bless;
     }
+
+    // overload
     public String toString() {
         if ( this.bless != null ) {
             return this.bless.overload_toString(this);
         }
         return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
     }
+    public int to_int() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_int();
+        }
+        return this.refaddr().to_int();
+    }
+    public long to_long() {
+        if ( this.bless != null ) {
+            return this.bless.overload_to_number(this).to_long();
+        }
+        return this.refaddr().to_long();
+    }
+    public PlObject add(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    public PlObject add2(PlObject s) {
+        return s.add(new PlInt(this.to_long()));
+    }
+    // end overload
+
     public PlString ref() {
         if ( this.bless == null ) {
             return REF;
@@ -2314,6 +2380,14 @@ class PlClass {
         }
         return o.ref().toString() + "(0x" + Integer.toHexString(o.refaddr().to_int()) + ")";
     }
+    public PlObject overload_to_number(PlObject o) {
+        PlObject methodCode = this.method_lookup("(0+");  //  (0+ method
+        if (!methodCode.is_undef()) {
+            return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+        }
+        return o.add(PlCx.INT0);
+    }
+
 }
 class PlLvalue extends PlObject {
     private PlObject o;
