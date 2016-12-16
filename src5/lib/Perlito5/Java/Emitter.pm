@@ -1031,12 +1031,15 @@ package Perlito5::Java::LexicalBlock;
 
             if    (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
-                  || $last_statement->isa( 'Perlito5::AST::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Use' )
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void') . ';';
                 push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+            }
+            elsif ( $last_statement->isa( 'Perlito5::AST::Block' ) ) {
+                # "block" returns a value
+                push @str, $last_statement->emit_java($level, 'runtime') . '';
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
                 # "if" returns a value
