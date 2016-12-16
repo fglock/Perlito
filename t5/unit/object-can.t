@@ -1,12 +1,8 @@
 #!./perl -w
 
-BEGIN {
-    chdir 't' if -d 't';
-    @INC = '../lib';
-    require './test.pl';
-}
+use feature 'say';
 
-plan( tests => 2 );
+say "1..2";
 
 package Class;
 
@@ -37,8 +33,11 @@ package main;
     my $obj1 = Class->new;
 
     # TEST
-    is ($obj1->can('plus_one')->($obj1, 'foo'), 25, "->can works");
+    print "not " if ($obj1->can('plus_one')->($obj1, 'foo') != 25);
+    say ("ok 1 - can works");
 
     # TEST
-    is ($obj1->can('times_three')->($obj1, 'bar'), 300, "->can works (#2)");
+    print "not " if ($obj1->can('times_three')->($obj1, 'bar') != 300);
+    say ("ok 2 - can works (#2)");
 }
+
