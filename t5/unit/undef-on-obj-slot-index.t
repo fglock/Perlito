@@ -1,12 +1,8 @@
 #!./perl -w
 
-BEGIN {
-    chdir 't' if -d 't';
-    @INC = '../lib';
-    require './test.pl';
-}
+use feature 'say';
 
-plan( tests => 2 );
+say "1..2";
 
 package Class;
 
@@ -29,7 +25,8 @@ package main;
     $obj1->foo->[1] = undef();
 
     # TEST
-    ok (!defined($obj1->{'foo'}->[1]), "undef on dereference is working.");
+    print "not " if (defined($obj1->{'foo'}->[1]));
+    say ("ok 1 - undef on dereference is working.");
 }
 
 {
@@ -38,5 +35,6 @@ package main;
     undef ($obj2->foo->[1]);
 
     # TEST
-    ok (!defined($obj2->{'foo'}->[1]), "undef(\$obj->x) on dereference is working.");
+    print "not " if (defined($obj2->{'foo'}->[1]));
+    say ("ok 2 - undef(\$obj->x) on dereference is working.");
 }
