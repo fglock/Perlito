@@ -25674,18 +25674,11 @@ class PerlOp {
                 + "\\" on unblessed reference" );
             return PlCx.UNDEF;
         }
-        String className = pClass.className().toString();
 
-        PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.cget(className + "::" + method);
-        }
-        else {
-            // fully qualified method name
-            methodCode = PlV.cget(method);
-        }
+        PlObject methodCode = pClass.method_lookup(method);
 
         if (methodCode.is_undef()) {
+            String className = pClass.className().toString();
             PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
                 + "\\" via package \\"" + className
                 + "\\" (perhaps you forgot to load \\"" + className + "\\"?" );
@@ -25702,14 +25695,7 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.cget(invocant + "::" + method);
-        }
-        else {
-            // fully qualified method name
-            methodCode = PlV.cget(method);
-        }
+        PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method);
 
         if (methodCode.is_undef()) {
             PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
@@ -27460,6 +27446,19 @@ class PlClass {
     public boolean is_undef() {
         return this.className == null;
     }
+
+    public PlObject method_lookup(String method) {
+        PlObject methodCode;
+        if (method.indexOf("::") == -1) {
+            methodCode = PlV.cget(className + "::" + method);
+        }
+        else {
+            // fully qualified method name
+            methodCode = PlV.cget(method);
+        }
+        return methodCode;
+    }
+
 }
 class PlLvalue extends PlObject {
     private PlObject o;
