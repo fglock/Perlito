@@ -27083,12 +27083,8 @@ class PlReference extends PlObject {
     public boolean is_ref() {
         return true;
     }
-    public PlReference bless(PlString className) {
-        this.bless = new PlClass(className);
-        return this;
-    }
     public PlReference bless(PlObject className) {
-        this.bless = new PlClass(new PlString(className.toString()));
+        this.bless = PlClass.getInstance(className);
         return this;
     }
     public PlClass blessed_class() {
@@ -27314,12 +27310,8 @@ class PlArrayRef extends PlArray {
     public PlObject scalar() {
         return this;
     }
-    public PlArrayRef bless(PlString className) {
-        this.bless = new PlClass(className);
-        return this;
-    }
     public PlArrayRef bless(PlObject className) {
-        this.bless = new PlClass(new PlString(className.toString()));
+        this.bless = PlClass.getInstance(className);
         return this;
     }
     public PlClass blessed_class() {
@@ -27405,12 +27397,8 @@ class PlHashRef extends PlHash {
     public boolean to_bool() {
         return true;
     }
-    public PlHashRef bless(PlString className) {
-        this.bless = new PlClass(className);
-        return this;
-    }
     public PlHashRef bless(PlObject className) {
-        this.bless = new PlClass(new PlString(className.toString()));
+        this.bless = PlClass.getInstance(className);
         return this;
     }
     public PlClass blessed_class() {
@@ -27443,14 +27431,22 @@ class PlHashRef extends PlHash {
     }
 }
 class PlClass {
-    public static PlHash classes = new PlHash();
+    public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();
     public PlString className;
 
-    public PlClass (PlString blessing) {
-        this.className = blessing;
-        if (classes.exists(className) == null) {
-            classes.hset(className, className);
+    protected PlClass(PlString s) {
+        this.className = s;
+    }
+    public static PlClass getInstance(PlObject s) {
+        return PlClass.getInstance(s.toString());
+    }
+    public static PlClass getInstance(String s) {
+        if (!classes.containsKey(s)) {
+            PlClass c = new PlClass(new PlString(s));
+            classes.put(s, c);
+            return c;
         }
+        return classes.get(s);
     }
     public PlString className() {
         return this.className;

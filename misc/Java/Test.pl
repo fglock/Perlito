@@ -8,6 +8,9 @@
 #   one liner:
 #   $ touch Main.class ; rm Main.class ; perl perlito5.pl -Isrc5/lib -I. -It -Cjava misc/Java/Test.pl > Main.java ; javac Main.java ; java Main
 #
+
+use feature 'say';
+
 print "1..105\n";
 print "ok 1 - print() works\n";
 say   "ok 2 - say() works";
