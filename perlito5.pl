@@ -25449,6 +25449,10 @@ class PlCx {
     public static final PlString EMPTY  = new PlString("");
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);
+    public static final String OVERLOAD_STRING   = "(\\"\\"";  // (""
+    public static final String OVERLOAD_NUM      = "(0+";
+    public static final String OVERLOAD_ADD      = "(+";
+    public static final String OVERLOAD_SUBTRACT = "(-";
 
 ' . '    ' . join('
     ', map {
@@ -27098,28 +27102,25 @@ class PlReference extends PlObject {
 
     // overload
     public String toString() {
-        if ( this.bless != null ) {
-            return this.bless.overload_toString(this);
-        }
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
+        return PlClass.overload_to_string(this).toString();
     }
     public int to_int() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_int();
-        }
-        return this.refaddr().to_int();
+        return PlClass.overload_to_number(this).to_int();
     }
     public long to_long() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_long();
-        }
-        return this.refaddr().to_long();
+        return PlClass.overload_to_number(this).to_long();
     }
     public PlObject add(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.UNDEF);
     }
     public PlObject add2(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.INT1);
+    }
+    public PlObject sub(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
+    }
+    public PlObject sub2(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
     // end overload
 
@@ -27334,28 +27335,25 @@ class PlArrayRef extends PlArray {
 
     // overload
     public String toString() {
-        if ( this.bless != null ) {
-            return this.bless.overload_toString(this);
-        }
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
+        return PlClass.overload_to_string(this).toString();
     }
     public int to_int() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_int();
-        }
-        return this.refaddr().to_int();
+        return PlClass.overload_to_number(this).to_int();
     }
     public long to_long() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_long();
-        }
-        return this.refaddr().to_long();
+        return PlClass.overload_to_number(this).to_long();
     }
     public PlObject add(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.UNDEF);
     }
     public PlObject add2(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.INT1);
+    }
+    public PlObject sub(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
+    }
+    public PlObject sub2(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
     // end overload
 
@@ -27445,28 +27443,25 @@ class PlHashRef extends PlHash {
 
     // overload
     public String toString() {
-        if ( this.bless != null ) {
-            return this.bless.overload_toString(this);
-        }
-        return this.ref().toString() + "(0x" + Integer.toHexString(this.refaddr().to_int()) + ")";
+        return PlClass.overload_to_string(this).toString();
     }
     public int to_int() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_int();
-        }
-        return this.refaddr().to_int();
+        return PlClass.overload_to_number(this).to_int();
     }
     public long to_long() {
-        if ( this.bless != null ) {
-            return this.bless.overload_to_number(this).to_long();
-        }
-        return this.refaddr().to_long();
+        return PlClass.overload_to_number(this).to_long();
     }
     public PlObject add(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.UNDEF);
     }
     public PlObject add2(PlObject s) {
-        return s.add(new PlInt(this.to_long()));
+        return PlClass.overload_add(this, s, PlCx.INT1);
+    }
+    public PlObject sub(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
+    }
+    public PlObject sub2(PlObject s) {
+        return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
     // end overload
 
@@ -27533,19 +27528,66 @@ class PlClass {
         return methodCode;
     }
 
-    public String overload_toString(PlObject o) {
-        PlObject methodCode = this.method_lookup("(\\"\\"");  //  ("" method
-        if (!methodCode.is_undef()) {
-            return methodCode.apply(PlCx.SCALAR, new PlArray(o)).toString();
+    // overload
+    public static PlObject overload_to_string(PlObject o) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            }
+            // fallback
+            methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            }
         }
-        return o.ref().toString() + "(0x" + Integer.toHexString(o.refaddr().to_int()) + ")";
+        return new PlString(o.ref().toString() + "(0x" + Integer.toHexString(o.refaddr().to_int()) + ")");
     }
-    public PlObject overload_to_number(PlObject o) {
-        PlObject methodCode = this.method_lookup("(0+");  //  (0+ method
-        if (!methodCode.is_undef()) {
-            return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+    public static PlObject overload_to_number(PlObject o) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            }
+            // fallback
+            methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            }
         }
-        return o.add(PlCx.INT0);
+        return o.refaddr();
+    }
+    public static PlObject overload_add(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_ADD);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            }
+            // fallback
+            o = PlClass.overload_to_number(o);
+        }
+        if (swap.to_bool()) {
+            return other.add(o);
+        }
+        return o.add(other);
+    }
+    public static PlObject overload_subtract(PlObject o, PlObject other, PlObject swap) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUBTRACT);
+            if (methodCode.is_coderef()) {
+                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
+            }
+            // fallback
+            o = PlClass.overload_to_number(o);
+        }
+        if (swap.to_bool()) {
+            return other.sub(o);
+        }
+        return o.sub(other);
     }
 
 }
