@@ -1404,6 +1404,21 @@ class PlEnv {
         PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
         PlV.fset("main::STDOUT", PlCx.STDOUT);
         PlV.fset("main::STDERR", PlCx.STDERR);
+
+        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+            public PlObject apply(int want, PlArray List__) {
+                PlObject self = List__.shift();
+                String method_name = List__.shift().toString();
+                PlClass bless = self.blessed_class();
+                if ( bless != null ) {
+                    PlObject methodCode = bless.method_lookup(method_name);
+                    if (methodCode.is_coderef()) {
+                        return methodCode;
+                    }
+                }
+                return PlCx.UNDEF;
+            }
+        });
     }
 }
 class PlObject {
@@ -2358,12 +2373,18 @@ class PlClass {
 
     public PlObject method_lookup(String method) {
         PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.cget(className + "::" + method);
-        }
-        else {
+        if (method.indexOf("::") != -1) {
             // fully qualified method name
-            methodCode = PlV.cget(method);
+            return PlV.cget(method);
+        }
+        methodCode = PlV.cget(className + "::" + method);
+        if (methodCode.is_undef()) {
+            // method not found
+
+            // TODO - lookup in @ISA
+
+            // lookup in UNIVERSAL
+            methodCode = PlV.cget("UNIVERSAL::" + method);
         }
         return methodCode;
     }

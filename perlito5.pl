@@ -4476,7 +4476,7 @@ use feature 'say';
     undef();
     undef();
     undef();
-    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper');
+    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL');
     sub Perlito5::Grammar::Use::register_internal_module {
         my($module, $real_name) = @_;
         $Perlito_internal_module{$module} = $real_name
@@ -26581,6 +26581,21 @@ class PlEnv {
         PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
         PlV.fset("main::STDOUT", PlCx.STDOUT);
         PlV.fset("main::STDERR", PlCx.STDERR);
+
+        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+            public PlObject apply(int want, PlArray List__) {
+                PlObject self = List__.shift();
+                String method_name = List__.shift().toString();
+                PlClass bless = self.blessed_class();
+                if ( bless != null ) {
+                    PlObject methodCode = bless.method_lookup(method_name);
+                    if (methodCode.is_coderef()) {
+                        return methodCode;
+                    }
+                }
+                return PlCx.UNDEF;
+            }
+        });
     }
 }
 class PlObject {
@@ -27519,12 +27534,18 @@ class PlClass {
 
     public PlObject method_lookup(String method) {
         PlObject methodCode;
-        if (method.indexOf("::") == -1) {
-            methodCode = PlV.cget(className + "::" + method);
-        }
-        else {
+        if (method.indexOf("::") != -1) {
             // fully qualified method name
-            methodCode = PlV.cget(method);
+            return PlV.cget(method);
+        }
+        methodCode = PlV.cget(className + "::" + method);
+        if (methodCode.is_undef()) {
+            // method not found
+
+            // TODO - lookup in @ISA
+
+            // lookup in UNIVERSAL
+            methodCode = PlV.cget("UNIVERSAL::" + method);
         }
         return methodCode;
     }
