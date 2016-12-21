@@ -1419,6 +1419,18 @@ class PlEnv {
                 return PlCx.UNDEF;
             }
         });
+        PlV.cset("UNIVERSAL::isa", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+            public PlObject apply(int want, PlArray List__) {
+                PlObject self = List__.shift();
+                String class_name = List__.shift().toString();
+                PlClass bless = self.blessed_class();
+                if ( bless != null ) {
+                    return bless.isa(class_name);
+                }
+                return PlCx.UNDEF;
+            }
+        });
+
     }
 }
 class PlObject {
@@ -2387,6 +2399,19 @@ class PlClass {
             methodCode = PlV.cget("UNIVERSAL::" + method);
         }
         return methodCode;
+    }
+    public PlObject isa(String s) {
+        if (className.equals(s)) {
+            return PlCx.INT1;
+        }
+
+        // TODO - lookup in @ISA
+
+        // lookup in UNIVERSAL
+        if (s.equals("UNIVERSAL")) {
+            return PlCx.INT1;
+        }
+        return PlCx.UNDEF;
     }
 
     // overload
