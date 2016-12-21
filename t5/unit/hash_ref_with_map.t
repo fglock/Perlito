@@ -1,15 +1,14 @@
 #!./perl -w
 
-BEGIN {
-    chdir 't' if -d 't';
-    @INC = '../lib';
-    require './test.pl';
-}
-
-plan( tests => 2 );
+use feature 'say';
+say( "1..2" );
 
 my $foo = [5,200];
 my $x = { (map { $_, ($_*2) } @$foo)};
 
-is ($x->{5} , 10, "map+hashref: x->5");
-is ($x->{200}, 400, "map+hashref: x->200");
+print "not " if ($x->{5} != 10);
+say ("ok 1 - map+hashref: x->5");
+
+print "not " if ($x->{200} != 400);
+say ("ok 2 - map+hashref: x->200");
+
