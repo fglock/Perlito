@@ -1436,6 +1436,11 @@ class PlEnv {
                     return bless.isa(class_name);
                 }
 
+                // reftype == "ARRAY"
+                if (self.reftype().toString().equals(class_name)) {
+                    return PlCx.INT1;
+                }
+
                 // calling isa() as a class method
                 bless = PlClass.getInstance(self);
                 if ( bless != null ) {

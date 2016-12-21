@@ -32,12 +32,13 @@ package main;
 {
     my $obj1 = Class->new;
 
-    # TEST
     print "not " if ($obj1->can('plus_one')->($obj1, 'foo') != 25);
     say ("ok 1 - can works");
 
-    # TEST
     print "not " if ($obj1->can('times_three')->($obj1, 'bar') != 300);
     say ("ok 2 - can works (#2)");
+
+    print "not " if (Class->can('times_three')->($obj1, 'bar') != 300);
+    say ("ok 3 - class-method can works");
 }
 
