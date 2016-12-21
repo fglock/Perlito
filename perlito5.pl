@@ -26592,7 +26592,15 @@ class PlEnv {
                     if (methodCode.is_coderef()) {
                         return methodCode;
                     }
+                    return PlCx.UNDEF;
                 }
+
+                // calling can() as a class method
+                PlObject methodCode = PlClass.getInstance(self).method_lookup(method_name);
+                if (methodCode.is_coderef()) {
+                    return methodCode;
+                }
+
                 return PlCx.UNDEF;
             }
         });
@@ -26604,6 +26612,13 @@ class PlEnv {
                 if ( bless != null ) {
                     return bless.isa(class_name);
                 }
+
+                // calling isa() as a class method
+                bless = PlClass.getInstance(self);
+                if ( bless != null ) {
+                    return bless.isa(class_name);
+                }
+
                 return PlCx.UNDEF;
             }
         });
