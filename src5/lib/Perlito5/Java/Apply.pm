@@ -941,6 +941,10 @@ package Perlito5::AST::Apply;
             if ($arg->isa( "Perlito5::AST::Block" )) {
                 # eval BLOCK
                 # rewrite to:   sub {...}->()
+
+                # TODO - optimization - examine the block and set THROW conditionally
+                $Perlito5::THROW = 1;
+
                 my $ast = Perlito5::AST::Call->new(
                     'method' => 'postcircumfix:<( )>',
                     'invocant' => Perlito5::AST::Sub->new(

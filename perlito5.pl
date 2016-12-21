@@ -21214,6 +21214,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $arg = $self->{'arguments'}->[0];
             my $eval;
             if ($arg->isa('Perlito5::AST::Block')) {
+                $Perlito5::THROW = 1;
                 my $ast = Perlito5::AST::Call::->new('method' => 'postcircumfix:<( )>', 'invocant' => Perlito5::AST::Sub::->new('block' => $arg, 'attributes' => [], '_eval_block' => 1), 'arguments' => [Perlito5::AST::Var::LIST_ARG()]);
                 return $ast->emit_java($level + 1, $wantarray)
             }
