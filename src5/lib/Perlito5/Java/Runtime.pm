@@ -309,7 +309,13 @@ class PerlRangeString implements Iterator<PlObject> {
     }
     public PlObject next() {
         PlString ret = v_start;
-        v_start = (PlString)v_start._incr();
+        PlObject incr = v_start._incr();
+        if (incr.is_string()) {
+            v_start = (PlString)incr;
+        }
+        else {
+            v_start = new PlString(incr.toString());
+        }
         return ret;
     }
     public boolean hasNext() {
