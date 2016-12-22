@@ -2587,6 +2587,9 @@ class PlLvalue extends PlObject {
         }
         return this.o.aget_arrayref(i);
     }
+    public PlObject aget_lvalue(int pos) {
+        return this.o.aget_lvalue(pos);
+    }
     public PlObject aget_hashref(PlObject i) {
         if (this.o.is_undef()) {
             this.o = new PlArrayRef();
