@@ -1,11 +1,13 @@
 
 use feature 'say';
+# use strict;
 
 say "1..6";
 
 sub x { $_[0] = 3 }
 
 my $v;
+my $a;
 $v = $$a;
 print "not " if defined $v; say "ok 1 - $v";
 $v = $a;
