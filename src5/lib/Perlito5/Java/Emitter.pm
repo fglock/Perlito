@@ -1825,6 +1825,18 @@ package Perlito5::AST::Lookup;
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
         }
+
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # $$a{x} ==> $a->{x}
+            return $self->{obj}->{arguments}[0]->emit_java($level+1) . '.hset('
+                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::Java::to_scalar([$arguments], $level+1)
+                . ')';
+        }
+
         return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)

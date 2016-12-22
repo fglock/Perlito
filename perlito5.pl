@@ -22710,6 +22710,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($localize) {
                 return $self->emit_java_container($level) . '.hget_lvalue_local(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ').set(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
+            if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                return $self->{'obj'}->{'arguments'}->[0]->emit_java($level + 1) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+            }
             return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         sub Perlito5::AST::Lookup::emit_java_set_list {
