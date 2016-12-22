@@ -2,7 +2,7 @@
 
 use feature 'say';
 
-say "1..2";
+say "1..3";
 
 package Class;
 
