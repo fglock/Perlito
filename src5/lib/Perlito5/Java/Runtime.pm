@@ -2642,9 +2642,15 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject hset(PlObject s, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hset(s, v);
     }
     public PlObject hset(String s, PlObject v) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hset(s, v);
     }
 
