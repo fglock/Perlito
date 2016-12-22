@@ -27776,6 +27776,12 @@ class PlLvalue extends PlObject {
     public PlObject hget(String i) {
         return this.o.hget(i);
     }
+    public PlObject hget_lvalue(PlObject i) {
+        return this.o.hget_lvalue(i);
+    }
+    public PlObject hget_lvalue(String i) {
+        return this.o.hget_lvalue(i);
+    }
 
     public PlObject hget_scalarref(PlObject i) {
         if (this.o.is_undef()) {
