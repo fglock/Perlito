@@ -22626,7 +22626,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $s = $arg->emit_java($level, 'scalar')
             }
             if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-                return $self->{'obj'}->{'arguments'}->[0]->emit_java($level + 1) . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+                my $obj = Perlito5::Java::emit_java_autovivify($self->{'obj'}->{'arguments'}->[0], $level + 1, 'array');
+                return $obj . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
             return $self->emit_java_container($level) . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
@@ -22711,7 +22712,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $self->emit_java_container($level) . '.hget_lvalue_local(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ').set(' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
             if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
-                return $self->{'obj'}->{'arguments'}->[0]->emit_java($level + 1) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+                my $obj = Perlito5::Java::emit_java_autovivify($self->{'obj'}->{'arguments'}->[0], $level + 1, 'hash');
+                return $obj . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
             return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
@@ -26752,8 +26754,7 @@ class PlObject {
         return PlCORE.die("Not an ARRAY reference");
     }
     public PlObject aget_scalarref(PlObject i) {
-        PlCORE.die("Not a SCALAR reference");
-        return this;
+        return this.aget_scalarref(i.to_int());
     }
     public PlObject aget_scalarref(int i) {
         PlCORE.die("Not a SCALAR reference");
@@ -26787,16 +26788,14 @@ class PlObject {
     }
 
     public PlObject aget_arrayref(PlObject i) {
-        PlCORE.die("Not an ARRAY reference");
-        return this;
+        return this.aget_arrayref(i.to_int());
     }
     public PlObject aget_arrayref(int i) {
         PlCORE.die("Not an ARRAY reference");
         return this;
     }
     public PlObject aget_hashref(PlObject i) {
-        PlCORE.die("Not an ARRAY reference");
-        return this;
+        return this.aget_hashref(i.to_int());
     }
     public PlObject aget_hashref(int i) {
         PlCORE.die("Not an ARRAY reference");
@@ -27739,13 +27738,13 @@ class PlLvalue extends PlObject {
         return this.o.aget(i);
     }
 
-    public PlObject aget_scalarref(PlObject i) {
+    public PlObject aget_scalarref(int i) {
         if (this.o.is_undef()) {
             this.o = new PlArrayRef();
         }
         return this.o.aget_scalarref(i);
     }
-    public PlObject aget_arrayref(PlObject i) {
+    public PlObject aget_arrayref(int i) {
         if (this.o.is_undef()) {
             this.o = new PlArrayRef();
         }
@@ -27754,7 +27753,7 @@ class PlLvalue extends PlObject {
     public PlObject aget_lvalue(int pos) {
         return this.o.aget_lvalue(pos);
     }
-    public PlObject aget_hashref(PlObject i) {
+    public PlObject aget_hashref(int i) {
         if (this.o.is_undef()) {
             this.o = new PlArrayRef();
         }
