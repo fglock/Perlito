@@ -1519,7 +1519,7 @@ package Perlito5::AST::Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    return $v->emit_java($level, $wantarray) . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
+                    return $v->emit_java($level, 'array') . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
                 }
                 return $v->emit_java($level, $wantarray, 'array') . '.exists(' . $arg->{index_exp}->emit_java($level) . ')';
             }

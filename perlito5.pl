@@ -21581,7 +21581,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($arg->isa('Perlito5::AST::Index')) {
                 my $v = $arg->obj();
                 if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                    return $v->emit_java($level, $wantarray) . '.exists(' . $arg->{'index_exp'}->emit_java($level) . ')'
+                    return $v->emit_java($level, 'array') . '.exists(' . $arg->{'index_exp'}->emit_java($level) . ')'
                 }
                 return $v->emit_java($level, $wantarray, 'array') . '.exists(' . $arg->{'index_exp'}->emit_java($level) . ')'
             }
