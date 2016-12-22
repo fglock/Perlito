@@ -27659,6 +27659,72 @@ class PlClass {
     }
 
 }
+class PlLazyLvalue extends PlLvalue {
+    private PlLvalue lv;    // $lv
+    private PlLvalue llv;   // $$lv
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv;
+    }
+
+    public PlLazyLvalue(PlLvalue lv) {
+        this.lv = lv;
+    }
+    public PlLvalue set(PlObject o) {
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlObject get() {
+        if (llv == null) {
+            return PlCx.UNDEF;
+        }
+        return llv.get();
+    }
+    public PlObject get_scalarref() {
+        if (llv == null) {
+            return new PlLvalueRef(new PlLazyLvalue(this));
+        }
+        return llv.get_scalarref();
+    }
+
+
+
+    public PlObject pre_decr() {
+        // --$x
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.pre_decr();
+    }
+    public PlObject post_decr() {
+        // $x--
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.post_decr();
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.pre_incr();
+    }
+    public PlObject post_incr() {
+        // $x++
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.post_incr();
+    }
+
+}
 class PlLvalue extends PlObject {
     private PlObject o;
     public Integer pos;
@@ -27681,6 +27747,20 @@ class PlLvalue extends PlObject {
         // $a = %x
         this.o = o.scalar();
     }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        if (this.o.is_undef()) {
+            PlLvalue llv = new PlLvalue();
+            this.o = new PlLvalueRef(llv);
+            return llv;
+        }
+        else if (this.o.is_scalarref()) {
+            return (PlLvalue)this.o.scalar_deref();
+        }
+        return (PlLvalue)PlCORE.die("Not a SCALAR reference");
+    }
+
     public PlObject get() {
         return this.o;
     }
@@ -27830,8 +27910,7 @@ class PlLvalue extends PlObject {
 
     public PlObject scalar_deref() {
         if (this.o.is_undef()) {
-            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
-            this.o = ar;
+            return new PlLazyLvalue(this);
         }
         return this.o.scalar_deref();
     }

@@ -1,7 +1,7 @@
 
 use feature 'say';
 
-say "1..4";
+say "1..6";
 
 sub x { $_[0] = 3 }
 
@@ -16,4 +16,13 @@ $v = $$a;
 print "not " if $v != 3; say "ok 3 - $v";
 $v = $a;
 print "not " if !ref($v); say "ok 4 - $v " . ref($v);
+
+sub z { $_[0]++ }
+
+$a = undef;
+z($$a);
+$v = $$a;
+print "not " if $v != 1; say "ok 5 - $v";
+$v = $a;
+print "not " if !ref($v); say "ok 6 - $v " . ref($v);
 
