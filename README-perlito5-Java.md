@@ -962,7 +962,7 @@ $ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
 String replace:
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' my $x = "123"; $x =~ s/(2)/$1/e; print "$x\n" ' > Main.java ; javac Main.java
-    MacBookingcom:Perlito flavioglock$ java Main
+    $ java Main
     Exception in thread "main" java.lang.ClassCastException: PlUndef cannot be cast to PlRegexResult
 
     TODO: create a closure unless the replacement is a constant ($1 is not a constant)
