@@ -2493,9 +2493,47 @@ class PlClass {
     }
 
 }
+class PlLazyIndex extends PlLazyLvalue {
+    private PlArray la;    // @la
+    private int i;         // $la[$i]
+
+    public PlLazyIndex(PlArray la, int i) {
+        this.la = la;
+        this.i  = i;
+    }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        if (llv == null) {
+            // TODO - PlArray.create_scalar(i)
+            // llv = la.create_scalar(i);
+        }
+        return llv;
+    }
+
+}
+class PlLazyLookup extends PlLazyLvalue {
+    private PlHash la;    // %la
+    private String i;     // $la{$i}
+
+    public PlLazyLookup(PlHash la, String i) {
+        this.la = la;
+        this.i  = i;
+    }
+
+    // internal lazy api
+    public PlLvalue create_scalar() {
+        if (llv == null) {
+            // TODO - PlHash.create_scalar(i)
+            // llv = la.create_scalar(i);
+        }
+        return llv;
+    }
+
+}
 class PlLazyLvalue extends PlLvalue {
     private PlLvalue lv;    // $lv
-    private PlLvalue llv;   // $$lv
+    public  PlLvalue llv;   // $$lv
 
     // internal lazy api
     public PlLvalue create_scalar() {
@@ -2505,12 +2543,14 @@ class PlLazyLvalue extends PlLvalue {
         return llv;
     }
 
+    public PlLazyLvalue() {
+    }
     public PlLazyLvalue(PlLvalue lv) {
         this.lv = lv;
     }
     public PlLvalue set(PlObject o) {
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.set(o);
     }
@@ -2532,28 +2572,28 @@ class PlLazyLvalue extends PlLvalue {
     public PlObject pre_decr() {
         // --$x
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.pre_decr();
     }
     public PlObject post_decr() {
         // $x--
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.post_decr();
     }
     public PlObject pre_incr() {
         // ++$x
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.pre_incr();
     }
     public PlObject post_incr() {
         // $x++
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.post_incr();
     }
@@ -2568,7 +2608,7 @@ class PlLazyLvalue extends PlLvalue {
     }
     public PlObject bless(String className) {
         if (llv == null) {
-            llv = lv.create_scalar();
+            create_scalar();
         }
         return llv.bless(className);
     }
