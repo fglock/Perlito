@@ -27693,7 +27693,7 @@ class PlLazyLvalue extends PlLvalue {
         return llv.get_scalarref();
     }
 
-
+    // TODO - missing methods
 
     public PlObject pre_decr() {
         // --$x
@@ -27723,8 +27723,49 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.post_incr();
     }
-
-}
+    public PlObject neg() {
+        return this.get().neg();
+    }
+    public PlObject abs() {
+        return this.get().abs();
+    }
+    public PlObject scalar() {
+        return this.get();
+    }
+    public PlObject bless(String className) {
+        if (llv == null) {
+            llv = lv.create_scalar();
+        }
+        return llv.bless(className);
+    }
+    public PlClass blessed_class() {
+        return this.get().blessed_class();
+    }
+    public PlObject blessed() {
+        return this.get().blessed();
+    }
+    public PlString ref() {
+        return this.get().ref();
+    }
+    public PlObject refaddr() {
+        // Scalar::Util::refaddr()
+        return this.get().refaddr();
+    }
+    public PlObject reftype() {
+        // Scalar::Util::reftype()
+        return this.get().reftype();
+    }
+' . join('', (map {
+            my $class = $java_classes{$_};
+            my $java_class_name = $class->{'java_type'};
+            my $perl_to_java = $class->{'perl_to_java'};
+            $class->{'import'} || $class->{'extends'} || $class->{'implements'} ? '    public ' . $java_class_name . ' ' . $perl_to_java . '() {
+        return this.get().' . $perl_to_java . '();
+    }
+' : ()
+        } sort {
+            $a cmp $b
+        } keys(%java_classes))) . '}
 class PlLvalue extends PlObject {
     private PlObject o;
     public Integer pos;
