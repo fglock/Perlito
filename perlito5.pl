@@ -20958,8 +20958,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             'p5pkg["CORE"]["select"]([' . ($self->{'arguments'}->[0]->{'bareword'} ? Perlito5::Java::to_str($self->{'arguments'}->[0]) : $self->{'arguments'}->[0]->emit_java($level, 'scalar')) . '])'
         }, 'prefix:<$>' => sub {
-            my($self, $level, $wantarray) = @_;
+            my($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg = $self->{'arguments'}->[0];
+            if ($autovivification_type eq 'lvalue') {
+                return $arg->emit_java($level) . '.scalar_deref_lvalue()'
+            }
             return $arg->emit_java($level) . '.scalar_deref()'
         }, 'prefix:<@>' => sub {
             my($self, $level, $wantarray) = @_;
@@ -21617,7 +21620,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java(), @{$self->{'arguments'}})) . ')'
         });
         sub Perlito5::AST::Apply::emit_java {
-            my($self, $level, $wantarray) = @_;
+            my($self, $level, $wantarray, $autovivification_type) = @_;
             my $apply = $self->op_assign();
             if ($apply) {
                 return $apply->emit_java($level)
@@ -21633,7 +21636,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     for @{$self->{'arguments'}};
                 return $self->{'code'}->emit_java($level) . '.apply(' . join(',', @args) . ')'
             }
-            exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray);
+            exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type);
             if (exists($Perlito5::Java::op_prefix_js_str{$code})) {
                 return $Perlito5::Java::op_prefix_js_str{$code} . '(' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ')'
             }
@@ -28010,6 +28013,13 @@ class PlLvalue extends PlObject {
     public PlObject scalar_deref() {
         if (this.o.is_undef()) {
             return new PlLazyScalarref(this);
+        }
+        return this.o.scalar_deref();
+    }
+    public PlObject scalar_deref_lvalue() {
+        if (this.o.is_undef()) {
+            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
+            this.o = ar;
         }
         return this.o.scalar_deref();
     }

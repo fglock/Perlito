@@ -542,8 +542,12 @@ package Perlito5::AST::Apply;
             . '])';
         },
         'prefix:<$>' => sub {
-            my ($self, $level, $wantarray) = @_;
+            # my ($self, $level, $wantarray) = @_;
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg  = $self->{arguments}->[0];
+            if ($autovivification_type eq 'lvalue') {
+                return $arg->emit_java( $level ) . '.scalar_deref_lvalue()';
+            }
             return $arg->emit_java( $level ) . '.scalar_deref()'
         },
         'prefix:<@>' => sub {
@@ -1580,7 +1584,7 @@ package Perlito5::AST::Apply;
     );
 
     sub emit_java {
-        my ($self, $level, $wantarray) = @_;
+        my ($self, $level, $wantarray, $autovivification_type) = @_;
 
         my $apply = $self->op_assign();
         if ($apply) {
@@ -1600,7 +1604,7 @@ package Perlito5::AST::Apply;
             return $self->{code}->emit_java( $level ) . '.apply(' . join(',', @args) . ')';
         }
 
-        return $emit_js{$code}->($self, $level, $wantarray)
+        return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type)
             if exists $emit_js{$code};
 
         if (exists $Perlito5::Java::op_prefix_js_str{$code}) {
