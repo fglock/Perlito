@@ -1558,6 +1558,10 @@ EOT
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
+    public PlObject scalar_deref_lvalue() {
+        PlCORE.die("Not a SCALAR reference");
+        return this;
+    }
     public PlObject scalar_deref() {
         PlCORE.die("Not a SCALAR reference");
         return this;
@@ -2144,6 +2148,9 @@ class PlLvalueRef extends PlReference {
     }
     public PlLvalueRef(PlObject o) {
         this.o = o;
+    }
+    public PlObject scalar_deref_lvalue() {
+        return this.o;
     }
     public PlObject scalar_deref() {
         return this.o;
@@ -4572,6 +4579,9 @@ class PlString extends PlObject {
     }
     public PlString(char s) {
         this.s = "" + s;
+    }
+    public PlObject scalar_deref_lvalue() {
+        return this.scalar_deref();
     }
     public PlObject scalar_deref() {
         if (s.length() == 1) {
