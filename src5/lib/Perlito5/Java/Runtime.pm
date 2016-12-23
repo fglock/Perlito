@@ -2556,14 +2556,10 @@ class PlLazyLvalue extends PlLvalue {
     public PlLvalue create_scalar() {
         return (PlLvalue)PlCORE.die("internal error: called PlLazyLvalue.create_scalar()");
     }
+
     public PlLazyLvalue() {
     }
-    public PlLvalue set(PlObject o) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.set(o);
-    }
+
     public PlObject get() {
         if (llv == null) {
             return PlCx.UNDEF;
@@ -2577,7 +2573,55 @@ class PlLazyLvalue extends PlLvalue {
         return llv.get_scalarref();
     }
 
-    // TODO - missing methods
+    public PlObject get_arrayref() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.get_arrayref();
+    }
+    public PlObject get_hashref() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.get_hashref();
+    }
+    public PlObject aget(PlObject i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget(i);
+    }
+    public PlObject aget(int i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget(i);
+    }
+
+    public PlObject aget_scalarref(int i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget_scalarref(i);
+    }
+    public PlObject aget_arrayref(int i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget_arrayref(i);
+    }
+    public PlObject aget_lvalue(int pos) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget_lvalue(pos);
+    }
+    public PlObject aget_hashref(int i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aget_hashref(i);
+    }
 
     public PlObject aset(int i, PlObject v) {
         if (llv == null) {
@@ -2591,8 +2635,246 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.aset(i, v);
     }
+    public PlObject hget(PlObject i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget(i);
+    }
+    public PlObject hget(String i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget(i);
+    }
+    public PlObject hget_lvalue(PlObject i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_lvalue(i);
+    }
+    public PlObject hget_lvalue(String i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_lvalue(i);
+    }
 
-    // TODO - missing methods
+    public PlObject hget_scalarref(String i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_scalarref(i);
+    }
+    public PlObject hget_arrayref(String i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_arrayref(i);
+    }
+    public PlObject hget_arrayref(PlObject i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_arrayref(i);
+    }
+    public PlObject hget_hashref(String i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_hashref(i);
+    }
+    public PlObject hget_hashref(PlObject i) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hget_hashref(i);
+    }
+
+    public PlObject hset(PlObject s, PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hset(s, v);
+    }
+    public PlObject hset(String s, PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hset(s, v);
+    }
+
+    public PlObject scalar_deref() {
+        return new PlLazyScalarref(this);
+    }
+    public PlObject scalar_deref_lvalue() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.scalar_deref_lvalue();
+    }
+    public PlObject scalar_deref_set(PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.scalar_deref_set(v);
+    }
+
+
+    public PlArray array_deref() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.array_deref();
+    }
+    public PlObject array_deref_set(PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.array_deref_set(v);
+    }
+
+    public PlObject hash_deref() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hash_deref();
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.hash_deref_set(v);
+    }
+    public PlObject apply(int want, PlArray List__) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.apply(want, List__);
+    }
+
+    // Note: several versions of set()
+    public PlLvalue set(PlObject o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlLvalue set(PlString o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlLvalue set(PlInt o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlLvalue set(PlLvalue o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlLvalue set(PlArray o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+    public PlLvalue set(PlHash o) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(o);
+    }
+EOT
+    . ( join('', map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+            $native && $perl ? 
+"    public PlLvalue set($native s) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.set(s);
+    }
+" : ()
+            }
+            sort keys %native_to_perl ))
+
+    . <<'EOT'
+    public PlObject exists(PlObject a) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.exists(a);
+    }
+    public PlObject delete(PlObject a) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.delete(a);
+    }
+    public String toString() {
+        return this.get().toString();
+    }
+    public long to_long() {
+        return this.get().to_long();
+    }
+    public double to_double() {
+        return this.get().to_double();
+    }
+    public boolean to_bool() {
+        return this.get().to_bool();
+    }
+    public PlObject num_cmp(PlObject b) {
+        return this.get().num_cmp(b);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        return b.num_cmp(this.get());
+    }
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl}{op};
+"    public PlObject ${perl}(PlObject s) {
+        return this.get().${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.get());
+    }
+"
+            }
+            sort keys %number_binop ))
+
+    . <<'EOT'
+    public boolean is_int() {
+        return this.get().is_int();
+    }
+    public boolean is_num() {
+        return this.get().is_num();
+    }
+    public boolean is_string() {
+        return this.get().is_string();
+    }
+    public boolean is_bool() {
+        return this.get().is_bool();
+    }
+    public boolean is_undef() {
+        return this.get().is_undef();
+    }
+    public boolean is_lvalue() {
+        return true;
+    }
+    public boolean is_coderef() {
+        return this.get().is_coderef();
+    }
+    public boolean is_filehandle() {
+        return this.get().is_filehandle();
+    }
 
     public PlObject pre_decr() {
         // --$x
@@ -2809,12 +3091,6 @@ class PlLvalue extends PlObject {
     }
 
     public PlObject hget_scalarref(String i) {
-        if (this.o.is_undef()) {
-            this.o = new PlHashRef();
-        }
-        return this.o.hget_scalarref(i);
-    }
-    public PlObject hget_scalarref(PlObject i) {
         if (this.o.is_undef()) {
             this.o = new PlHashRef();
         }
@@ -3489,24 +3765,10 @@ EOT
         // return PlCORE.die("Not an SCALAR reference");
         return o;
     }
-    public PlObject aget_scalarref(PlObject i) {
-        PlObject o = this.aget(i);
-        if (o.is_undef()) {
-            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
-            this.aset(i, ar);
-            return ar;
-        }
-        else if (o.is_scalarref()) {
-            return o;
-        }
-        return PlCORE.die("Not a SCALAR reference");
-    }
     public PlObject aget_scalarref(int i) {
         PlObject o = this.aget(i);
         if (o.is_undef()) {
-            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
-            this.aset(i, ar);
-            return ar;
+            return new PlLvalueRef(new PlLazyIndex(this, i));
         }
         else if (o.is_scalarref()) {
             return o;
@@ -4125,19 +4387,6 @@ class PlHash extends PlObject {
         return o;
     }
 
-    public PlObject hget_scalarref(PlObject i) {
-        PlObject o = this.hget(i);
-        if (o.is_undef()) {
-            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
-            this.hset(i, ar);
-            return ar;
-        }
-        else if (o.is_scalarref()) {
-            return o;
-        }
-        // Modification of a read-only value attempted
-        return o;
-    }
     public PlObject hget_scalarref(String i) {
         PlObject o = this.hget(i);
         if (o.is_undef()) {
