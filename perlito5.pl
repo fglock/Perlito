@@ -22701,7 +22701,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
                 return $v->emit_java($level) . '.hget_hash_list_of_aliases(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
             }
-            return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ')'
+            my $index = Perlito5::AST::Lookup::->autoquote($self->{'index_exp'});
+            return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::to_native_str($index, $level) . ')'
         }
         sub Perlito5::AST::Lookup::emit_java_set {
             my($self, $arguments, $level, $wantarray, $localize) = @_;
@@ -22718,7 +22719,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $obj = Perlito5::Java::emit_java_autovivify($self->{'obj'}->{'arguments'}->[0], $level + 1, 'hash');
                 return $obj . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
             }
-            return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
+            my $index = Perlito5::AST::Lookup::->autoquote($self->{'index_exp'});
+            return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::to_native_str($index, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
         sub Perlito5::AST::Lookup::emit_java_set_list {
             my($self, $level, $list) = @_;

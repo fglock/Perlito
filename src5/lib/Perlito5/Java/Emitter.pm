@@ -1787,8 +1787,9 @@ package Perlito5::AST::Lookup;
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')'
         }
+        my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
         return $self->emit_java_container($level) . '.' . $method . '('
-                . Perlito5::Java::autoquote($self->{index_exp}, $level)
+                . Perlito5::Java::to_native_str($index, $level)
             . ')';
     }
     sub emit_java_set {
@@ -1841,8 +1842,9 @@ package Perlito5::AST::Lookup;
                 . ')';
         }
 
+        my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
         return $self->emit_java_container($level) . '.hset('
-                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
+                    . Perlito5::Java::to_native_str($index, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
             . ')';
     }
