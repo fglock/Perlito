@@ -3146,7 +3146,7 @@ class PlLvalue extends PlObject {
             this.o = new PlLvalueRef(lv);
             return lv;
         }
-        return this.o.scalar_deref();
+        return this.o.scalar_deref_lvalue();
     }
     public PlObject scalar_deref_set(PlObject v) {
         if (this.o.is_undef()) {
