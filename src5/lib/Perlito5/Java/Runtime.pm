@@ -2505,8 +2505,7 @@ class PlLazyIndex extends PlLazyLvalue {
     // internal lazy api
     public PlLvalue create_scalar() {
         if (llv == null) {
-            // TODO - PlArray.create_scalar(i)
-            // llv = la.create_scalar(i);
+            llv = la.create_scalar(i);
         }
         return llv;
     }
@@ -2524,16 +2523,18 @@ class PlLazyLookup extends PlLazyLvalue {
     // internal lazy api
     public PlLvalue create_scalar() {
         if (llv == null) {
-            // TODO - PlHash.create_scalar(i)
-            // llv = la.create_scalar(i);
+            llv = la.create_scalar(i);
         }
         return llv;
     }
 
 }
-class PlLazyLvalue extends PlLvalue {
+class PlLazyScalarref extends PlLazyLvalue {
     private PlLvalue lv;    // $lv
-    public  PlLvalue llv;   // $$lv
+
+    public PlLazyScalarref(PlLvalue lv) {
+        this.lv = lv;
+    }
 
     // internal lazy api
     public PlLvalue create_scalar() {
@@ -2542,11 +2543,13 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv;
     }
-
-    public PlLazyLvalue() {
+}
+class PlLazyLvalue extends PlLvalue {
+    public  PlLvalue llv;   // $$lv
+    public PlLvalue create_scalar() {
+        return (PlLvalue)PlCORE.die("internal error: called PlLazyLvalue.create_scalar()");
     }
-    public PlLazyLvalue(PlLvalue lv) {
-        this.lv = lv;
+    public PlLazyLvalue() {
     }
     public PlLvalue set(PlObject o) {
         if (llv == null) {
@@ -2562,9 +2565,24 @@ class PlLazyLvalue extends PlLvalue {
     }
     public PlObject get_scalarref() {
         if (llv == null) {
-            return new PlLvalueRef(new PlLazyLvalue(this));
+            return new PlLvalueRef(new PlLazyScalarref(this));
         }
         return llv.get_scalarref();
+    }
+
+    // TODO - missing methods
+
+    public PlObject aset(int i, PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aset(i, v);
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.aset(i, v);
     }
 
     // TODO - missing methods
@@ -2835,7 +2853,7 @@ class PlLvalue extends PlObject {
 
     public PlObject scalar_deref() {
         if (this.o.is_undef()) {
-            return new PlLazyLvalue(this);
+            return new PlLazyScalarref(this);
         }
         return this.o.scalar_deref();
     }
@@ -3166,6 +3184,35 @@ class PlArray extends PlObject {
         this.each_iterator = 0;
         this.a = aa;
     }
+
+    // internal lazy api
+    public PlLvalue create_scalar(int i) {
+        int size = this.a.size();
+        int pos  = i;
+        if (pos < 0) {
+            return (PlLvalue)PlCORE.die("internal error: negative index on PlArray.create_scalar()");
+        }
+        if (size <= pos) {
+            while (size < pos) {
+                this.a.add( PlCx.UNDEF );
+                size++;
+            }
+            PlLvalue v = new PlLvalue();
+            this.a.add(v);
+            return v;
+        }
+        PlObject old = this.a.get(pos);
+        if (old.is_lvalue()) {
+            return (PlLvalue)old;
+        }
+        if (old.is_undef()) {
+            PlLvalue v = new PlLvalue();
+            this.a.set(pos, v);
+            return v;
+        }
+        return (PlLvalue)PlCORE.die("Not a SCALAR reference");
+    }
+
     public static PlArray construct_list_of_aliases(PlObject... args) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (PlObject s : args) {
@@ -3364,21 +3411,13 @@ EOT
             pos = size + pos;
         }
         if (size <= pos) {
-            while (size < pos) {
-                this.a.add( PlCx.UNDEF );
-                size++;
-            }
-            PlLvalue a = new PlLvalue();
-            this.a.add(a);
-            return a;
+            return new PlLazyIndex(this, pos);
         }
         PlObject o = this.a.get(pos);
         if (o == null) {
-            PlLvalue a = new PlLvalue();
-            this.a.set(pos, a);
-            return a;
+            return new PlLazyIndex(this, pos);
         }
-        else if (o.is_lvalue()) {
+        if (o.is_lvalue()) {
             return o;
         }
         PlLvalue a = new PlLvalue(o);
@@ -3870,6 +3909,26 @@ class PlHash extends PlObject {
     private HashMap<String, PlObject> to_HashMap() {
         return this.h;
     }
+
+    // internal lazy api
+    public PlLvalue create_scalar(String i) {
+        PlObject o = this.h.get(i);
+        if (o == null) {
+            PlLvalue a = new PlLvalue();
+            this.h.put(i, a);
+            return a;
+        }
+        if (o.is_lvalue()) {
+            return (PlLvalue)o;
+        }
+        if (o.is_undef()) {
+            PlLvalue a = new PlLvalue();
+            this.h.put(i, a);
+            return a;
+        }
+        return (PlLvalue)PlCORE.die("Not a SCALAR reference");
+    }
+
     public PlObject set(PlObject s) {
         this.h.clear();
         if (s.is_hash()) {
@@ -4008,9 +4067,7 @@ class PlHash extends PlObject {
     public PlObject hget_lvalue(PlObject i) {
         PlObject o = this.h.get(i.toString());
         if (o == null) {
-            PlLvalue a = new PlLvalue();
-            this.h.put(i.toString(), a);
-            return a;
+            return new PlLazyLookup(this, i.toString());
         }
         else if (o.is_lvalue()) {
             return o;
@@ -4022,9 +4079,7 @@ class PlHash extends PlObject {
     public PlObject hget_lvalue(String i) {
         PlObject o = this.h.get(i);
         if (o == null) {
-            PlLvalue a = new PlLvalue();
-            this.h.put(i, a);
-            return a;
+            return new PlLazyLookup(this, i);
         }
         else if (o.is_lvalue()) {
             return o;
