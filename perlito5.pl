@@ -27716,10 +27716,12 @@ class PlLazyScalarref extends PlLazyLvalue {
 
     // internal lazy api
     public PlLvalue create_scalar() {
-        if (llv == null) {
-            llv = lv.create_scalar();
+        if (this.llv == null) {
+            PlLvalue s = new PlLvalue();
+            lv.create_scalar().set(new PlLvalueRef(s));
+            this.llv = s;
         }
-        return llv;
+        return this.llv;
     }
 }
 class PlLazyLvalue extends PlLvalue {
