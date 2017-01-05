@@ -4393,9 +4393,7 @@ class PlHash extends PlObject {
     public PlObject hget_scalarref(String i) {
         PlObject o = this.hget(i);
         if (o.is_undef()) {
-            PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
-            this.hset(i, ar);
-            return ar;
+            return new PlLvalueRef(new PlLazyScalarref(new PlLazyLookup(this, i)));
         }
         else if (o.is_scalarref()) {
             return o;
