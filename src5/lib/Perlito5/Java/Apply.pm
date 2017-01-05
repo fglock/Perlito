@@ -1567,10 +1567,7 @@ package Perlito5::AST::Apply;
               && $arg->{code} eq 'p5:m'
             ) {
                 # first argument of split() is a regex
-                push @js, 'new PlRegex('
-                        . $arg->{arguments}->[0]->emit_java() . ', '
-                        . Perlito5::Java::escape_string($arg->{arguments}->[1]->{buf})
-                    . ')';
+                push @js, emit_qr_java( $arg->{arguments}->[0], $arg->{arguments}->[1]->{buf} );
                 shift @{ $self->{arguments} };
             }
             return 'PlCORE.split('

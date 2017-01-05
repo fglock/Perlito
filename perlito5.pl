@@ -21614,7 +21614,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @js;
             my $arg = $self->{'arguments'}->[0];
             if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
-                push(@js, 'new PlRegex(' . $arg->{'arguments'}->[0]->emit_java() . ', ' . Perlito5::Java::escape_string($arg->{'arguments'}->[1]->{'buf'}) . ')');
+                push(@js, emit_qr_java($arg->{'arguments'}->[0], $arg->{'arguments'}->[1]->{'buf'}));
                 shift(@{$self->{'arguments'}})
             }
             return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java(), @{$self->{'arguments'}})) . ')'
