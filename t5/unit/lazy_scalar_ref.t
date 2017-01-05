@@ -2,7 +2,7 @@
 use feature 'say';
 # use strict;
 
-say "1..7";
+say "1..8";
 
 sub x { $_[0] = 3 }
 
@@ -34,4 +34,11 @@ $a = undef;
 t($$a);
 $v = $a;
 print "not " if !defined $v; say "ok 7 - $v " . ref($v);
+
+sub u { $_[0] }
+
+$a = undef;
+u($$a);
+$v = $a;
+print "not " if !defined $v; say "ok 8 - $v " . ref($v);
 
