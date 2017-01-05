@@ -3315,6 +3315,15 @@ EOT
     public boolean is_filehandle() {
         return this.o.is_filehandle();
     }
+    public boolean is_scalarref() {
+        return this.o.is_scalarref();
+    }
+    public boolean is_arrayref() {
+        return this.o.is_arrayref();
+    }
+    public boolean is_hashref() {
+        return this.o.is_hashref();
+    }
 
     public PlObject pre_decr() {
         // --$x
@@ -3771,7 +3780,7 @@ EOT
     public PlObject aget_scalarref(int i) {
         PlObject o = this.aget(i);
         if (o.is_undef()) {
-            return new PlLvalueRef(new PlLazyIndex(this, i));
+            return new PlLvalueRef(new PlLazyScalarref(new PlLazyIndex(this, i)));
         }
         else if (o.is_scalarref()) {
             return o;
