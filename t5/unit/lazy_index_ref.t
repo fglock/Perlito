@@ -2,7 +2,7 @@
 use feature 'say';
 # use strict;
 
-say "1..6";
+say "1..8";
 
 sub x { $_[0] = 3 }
 
@@ -27,4 +27,13 @@ $v = ${$a[2]};
 print "not " if $v != 1; say "ok 5 - $v";
 $v = $a[2];
 print "not " if !ref($v); say "ok 6 - $v " . ref($v);
+
+sub t { $_[0] }
+
+@a = ();
+t(${$a[2]});
+$v = ${$a[2]};
+print "not " if defined $v; say "ok 7 - $v";
+$v = $a[2];
+print "not " if !ref($v); say "ok 8 - $v " . ref($v);
 
