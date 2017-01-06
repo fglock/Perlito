@@ -2,7 +2,7 @@
 use feature 'say';
 # use strict;
 
-say "1..8";
+say "1..14";
 
 sub x { $_[0] = 3 }
 
@@ -36,4 +36,23 @@ $v = ${$a{hh}};
 print "not " if defined $v; say "ok 7 - $v";
 $v = $a{hh};
 print "not " if !ref($v); say "ok 8 - $v " . ref($v);
+
+# 2-level deref
+
+%a = ();
+t(${$a{gg}{hh}});
+$v = ${$a{gg}{hh}};
+print "not " if defined $v; say "ok 9 - $v";
+$v = $a{gg}{hh};
+print "not " if !ref($v); say "ok 10 - $v " . ref($v);
+$v = $a{gg};
+print "not " if !ref($v); say "ok 11 - $v " . ref($v);
+
+%a = ();
+$v = ${$a{gg}{hh}};
+print "not " if defined $v; say "ok 12 - $v";
+$v = $a{gg}{hh};
+print "not " if defined $v; say "ok 13 - $v";
+$v = $a{gg};
+print "not " if !ref($v); say "ok 14 - $v " . ref($v);
 
