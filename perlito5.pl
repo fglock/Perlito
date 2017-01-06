@@ -27296,9 +27296,13 @@ class PlClosure extends PlReference implements Runnable {
 class PlLvalueRef extends PlReference {
     private PlObject o;
     public static final PlString REF = new PlString("SCALAR");
+    public static final PlString REF_REF = new PlString("REF");
 
     public PlString ref() {
         if ( this.bless == null ) {
+            if ( this.o.is_ref() ) {
+                return REF_REF;
+            }
             return REF;
         }
         else {
@@ -28031,6 +28035,9 @@ class PlLazyLvalue extends PlLvalue {
     public boolean is_lvalue() {
         return true;
     }
+    public boolean is_ref() {
+        return this.get().is_ref();
+    }
     public boolean is_coderef() {
         return this.get().is_coderef();
     }
@@ -28460,6 +28467,9 @@ class PlLvalue extends PlObject {
     }
     public boolean is_lvalue() {
         return true;
+    }
+    public boolean is_ref() {
+        return this.o.is_ref();
     }
     public boolean is_coderef() {
         return this.o.is_coderef();
