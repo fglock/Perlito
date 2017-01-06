@@ -2877,6 +2877,15 @@ EOT
     public boolean is_filehandle() {
         return this.get().is_filehandle();
     }
+    public boolean is_scalarref() {
+        return this.get().is_scalarref();
+    }
+    public boolean is_arrayref() {
+        return this.get().is_arrayref();
+    }
+    public boolean is_hashref() {
+        return this.get().is_hashref();
+    }
 
     public PlObject pre_decr() {
         // --$x
