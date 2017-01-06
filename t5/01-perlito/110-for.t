@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..13';
+say '1..14';
 my @a = ( 1, 2 );
 for my $v (@a) {
     say 'ok ' . $v . ' - loop';
@@ -39,3 +39,11 @@ $a[0] = 12;
 $a[1] = 13;
 say "ok $_ - default variable in statement modifier"
     for @a;
+
+@a = ( 1, 2 );
+for my $v (@a) {
+    $v++;
+}
+print "not " if $a[0] != 2 || $a[1] != 3;
+say "ok 14 - loop variable is alias";
+
