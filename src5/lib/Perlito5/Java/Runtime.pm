@@ -3096,15 +3096,27 @@ class PlLvalue extends PlObject {
         return this.o.aset(i, v);
     }
     public PlObject hget(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hget(i);
     }
     public PlObject hget(String i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hget(i);
     }
     public PlObject hget_lvalue(PlObject i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hget_lvalue(i);
     }
     public PlObject hget_lvalue(String i) {
+        if (this.o.is_undef()) {
+            this.o = new PlHashRef();
+        }
         return this.o.hget_lvalue(i);
     }
 
