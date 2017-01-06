@@ -21603,7 +21603,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             if ($arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'prefix:<&>') {
                 my $arg2 = $arg->{'arguments'}->[0];
-                return 'new PlBool(PlV.cget(' . Perlito5::Java::to_native_str($arg2) . ').is_coderef())'
+                return 'new PlBool(' . 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg2->emit_java($level) . ')' . '.is_coderef())'
             }
         }, 'prototype' => sub {
             my($self, $level, $wantarray) = @_;

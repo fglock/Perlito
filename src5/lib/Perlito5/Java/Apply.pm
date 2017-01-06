@@ -1549,7 +1549,9 @@ package Perlito5::AST::Apply;
                )
             {
                 my $arg2 = $arg->{arguments}->[0];
-                return 'new PlBool(PlV.cget(' . Perlito5::Java::to_native_str($arg2) . ').is_coderef())';
+                return 'new PlBool('
+                    .   'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')'
+                    . '.is_coderef())';
             }
         },
 
