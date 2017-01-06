@@ -546,7 +546,7 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg  = $self->{arguments}->[0];
             if ($autovivification_type eq 'lvalue') {
-                return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref_lvalue()';
+                return $arg->emit_java( $level, 'scalar', 'lvalue' ) . '.scalar_deref_lvalue()';
             }
             return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref()'
         },
