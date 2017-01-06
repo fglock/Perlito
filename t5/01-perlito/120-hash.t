@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..19';
+say '1..21';
 my %a;
 say 'ok 1 - create hash';
 $a{abc} = 3;
@@ -83,4 +83,22 @@ my $key = delete($delete_with_val{'d'});
 print 'not ' if ($key ne '24'); say "ok 18 - delete returns the key";
 my $key2 = $delete_with_val{'d'};
 print 'not ' if defined($key2); say "ok 19 - delete deletes the key.";
+
+{
+    $a = undef;
+    # $ perl -e ' use Data::Dumper;  $$a[0]; print Dumper $a; '
+    $$a{aa};
+    if (ref($a) ne 'HASH') {
+        print 'not '
+    }
+    say 'ok 20 - deref to hash autovivifies';
+
+    $a = undef;
+    # $ perl -e ' use Data::Dumper;  $a->{aa}; print Dumper $a; '
+    $a->{aa};
+    if (ref($a) ne 'HASH') {
+        print 'not '
+    }
+    say 'ok 21 - deref to hash autovivifies';
+}
 
