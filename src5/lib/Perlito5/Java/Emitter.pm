@@ -845,14 +845,14 @@ package Perlito5::Java;
             return $obj->emit_java($level, 0, $type);
         }
 
-        if ( $obj->isa( 'Perlito5::AST::Apply' ) && $obj->code eq 'prefix:<$>' ) {
-            my $arg  = $obj->{arguments}->[0];
-            return 'get_scalarref(' 
-                    . $arg->emit_java( $level ) . ', '
-                    . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
-                    . Perlito5::Java::escape_string($type)      # autovivification type
-                    . ')';
-        }
+        # if ( $obj->isa( 'Perlito5::AST::Apply' ) && $obj->code eq 'prefix:<$>' ) {
+        #     my $arg  = $obj->{arguments}->[0];
+        #     return 'get_scalarref(' 
+        #             . $arg->emit_java( $level ) . ', '
+        #             . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', '
+        #             . Perlito5::Java::escape_string($type)      # autovivification type
+        #             . ')';
+        # }
 
         $obj->emit_java($level)
     }

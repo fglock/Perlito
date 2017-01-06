@@ -22199,10 +22199,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($obj->isa('Perlito5::AST::Index') || $obj->isa('Perlito5::AST::Lookup') || $obj->isa('Perlito5::AST::Call')) {
                 return $obj->emit_java($level, 0, $type)
             }
-            if ($obj->isa('Perlito5::AST::Apply') && $obj->code() eq 'prefix:<$>') {
-                my $arg = $obj->{'arguments'}->[0];
-                return 'get_scalarref(' . $arg->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . Perlito5::Java::escape_string($type) . ')'
-            }
             $obj->emit_java($level)
         }
         sub Perlito5::Java::emit_java_list_with_tabs {
