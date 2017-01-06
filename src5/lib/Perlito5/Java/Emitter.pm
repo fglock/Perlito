@@ -2127,21 +2127,21 @@ package Perlito5::AST::Var;
             if ($type ne 'PlLvalue') {
                 # set a typed variable - there is no .set() method
                 # the arguments are not boxed
-                return $self->emit_java() . ' = ' . Perlito5::Java::to_native_args([$arguments]);
+                return $self->emit_java($level) . ' = ' . Perlito5::Java::to_native_args([$arguments]);
             }
-            return $self->emit_java() . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
+            return $self->emit_java($level) . '.set(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '@' ) {
 
             if ($self->{sigil} eq '$#') {
                 $self->{sigil} = '@';
-                return $open . $self->emit_java() . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' . $close
+                return $open . $self->emit_java($level) . '.set_end_of_array_index(' . Perlito5::Java::to_scalar([$arguments], $level+1) . ')' . $close
             }
 
-            return $self->emit_java() . '.set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
+            return $self->emit_java($level) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1) . ')'
         }
         if ( $sigil eq '%' ) {
-            return $self->emit_java() . '.set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
+            return $self->emit_java($level) . '.set(' . Perlito5::Java::to_list([$arguments], $level+1, 'hash') . ')'
         }
         if ( $sigil eq '*' ) {
             my $namespace = $self->{namespace} || $self->{_namespace};
@@ -2158,17 +2158,17 @@ package Perlito5::AST::Var;
         my ($self, $level, $list) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         if ( $sigil eq '$' ) {
-            return $self->emit_java() . '.set(' . $list  . '.shift())'
+            return $self->emit_java($level) . '.set(' . $list  . '.shift())'
         }
         if ( $sigil eq '@' ) {
             return join( ";\n" . Perlito5::Java::tab($level),
-                $self->emit_java() . ' = ' . $list,
+                $self->emit_java($level) . ' = ' . $list,
                 $list . ' = new PlArray()'
             );
         }
         if ( $sigil eq '%' ) {
             return join( ";\n" . Perlito5::Java::tab($level),
-                $self->emit_java() . ' = new PlHash(' . $list  . ')',
+                $self->emit_java($level) . ' = new PlHash(' . $list  . ')',
                 $list . ' = new PlArray()'
             );
         }
@@ -2210,31 +2210,31 @@ package Perlito5::AST::Decl;
         }
         if ($self->{decl} eq 'my' || $self->{decl} eq 'state') {
             if ($self->{var}->sigil eq '%') {
-                return 'PlHash ' . $self->{var}->emit_java() . ' = new PlHash();';
+                return 'PlHash ' . $self->{var}->emit_java($level) . ' = new PlHash();';
             }
             elsif ($self->{var}->sigil eq '@') {
-                return 'PlArray ' . $self->{var}->emit_java() . ' = new PlArray();';
+                return 'PlArray ' . $self->{var}->emit_java($level) . ' = new PlArray();';
             }
             else {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 my $java_type = $Java_class->{$type}{java_type} || 'PlLvalue';
                 if( $java_type eq 'PlLvalue' ) {
-                    return "${java_type} " . $self->{var}->emit_java() . " = new ${java_type}();";
+                    return "${java_type} " . $self->{var}->emit_java($level) . " = new ${java_type}();";
                 } else {
-                    return "${java_type} " . $self->{var}->emit_java() . ";";
+                    return "${java_type} " . $self->{var}->emit_java($level) . ";";
                 }
             }
         }
         elsif ($self->{decl} eq 'our') {
             my $v = Perlito5::AST::Var->new( %{$self->{var}}, _decl => 'my' );
             if ($self->{var}->sigil eq '%') {
-                return 'PlHash ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
+                return 'PlHash ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
             elsif ($self->{var}->sigil eq '@') {
-                return 'PlArray ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
+                return 'PlArray ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
             else {
-                return 'PlLvalue ' . $v->emit_java() . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
+                return 'PlLvalue ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ";";
             }
         }
         else {
@@ -2904,7 +2904,7 @@ Perlito5::Java::Emit - Code generator for Perlito Perl5-in-Java
 
 =head1 SYNOPSIS
 
-    $program->emit_java()  # generated Perl5 code
+    $program->emit_java($level)  # generated Perl5 code
 
 =head1 DESCRIPTION
 
