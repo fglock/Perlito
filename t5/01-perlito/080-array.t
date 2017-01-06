@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..34';
+say '1..35';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -182,6 +182,15 @@ print "ok 27 - unique_elements $v\n";
     }
     say 'ok 30 - deref to array autovivifies';
 
+    $a = undef;
+    # $ perl -e ' use Data::Dumper;  $a->[0]; print Dumper $a; '
+    $a->[0];
+    if (ref($a) ne 'ARRAY') {
+        print 'not '
+    }
+    say 'ok 31 - deref to array autovivifies';
+
+
     # $ perl -e ' use Data::Dumper; $$a[0,2] = (3,5); print Dumper $a; '
     # $VAR1 = [
     #           undef,
@@ -193,7 +202,7 @@ print "ok 27 - unique_elements $v\n";
     if ( defined($a->[0]) || defined($a->[1]) || $a->[2] != 5 ) {
         print 'not '
     }
-    say "ok 31 - look-like-slice set in scalar context # " . scalar(@$a) . " - " . join(",", @$a);
+    say "ok 32 - look-like-slice set in scalar context # " . scalar(@$a) . " - " . join(",", @$a);
 
     # $ perl -e ' use Data::Dumper; @$a[0,2] = (3,5); print Dumper $a; '
     # $VAR1 = [
@@ -206,7 +215,7 @@ print "ok 27 - unique_elements $v\n";
     if ( $a->[0] != 3 || defined($a->[1]) || $a->[2] != 5 ) {
         print 'not '
     }
-    say "ok 32 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
+    say "ok 33 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
 
     {
     no strict;
@@ -216,7 +225,7 @@ print "ok 27 - unique_elements $v\n";
     if (ref($a) eq 'ARRAY') {
         print 'not '
     }
-    say 'ok 33 - deref array is lazy';
+    say 'ok 34 - deref array is lazy';
     }
 
     {
@@ -227,7 +236,7 @@ print "ok 27 - unique_elements $v\n";
     if (substr($@,0,20) ne substr("Can't use an undefined value as an ARRAY reference",0,20)) {
         print 'not '
     }
-    say 'ok 34 - deref array is forbidden';
+    say 'ok 35 - deref array is forbidden';
     }
 
 }
