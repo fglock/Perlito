@@ -1581,6 +1581,17 @@ package Perlito5::AST::Index;
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')';
         }
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # $$a[0] ==> $a->[0]
+            return Perlito5::AST::Call->new(
+                'method' => 'postcircumfix:<[ ]>',
+                'invocant' => $self->{obj}->{arguments}[0],
+                'arguments' => $self->{index_exp},
+            )->emit_java($level);
+        }
         my $arg = $self->{index_exp};
         my $s;
         if ($arg->isa('Perlito5::AST::Int')) {
@@ -1786,6 +1797,17 @@ package Perlito5::AST::Lookup;
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')'
+        }
+        if (  $self->{obj}->isa('Perlito5::AST::Apply')
+           && $self->{obj}->{code} eq 'prefix:<$>'
+           )
+        {
+            # $$a{aa} ==> $a->{aa}
+            return Perlito5::AST::Call->new(
+                'method' => 'postcircumfix:<{ }>',
+                'invocant' => $self->{obj}->{arguments}[0],
+                'arguments' => $self->{index_exp},
+            )->emit_java($level);
         }
         my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
         return $self->emit_java_container($level) . '.' . $method . '('

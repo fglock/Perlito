@@ -22595,6 +22595,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $obj->{'code'} eq 'prefix:<%>' && ($obj->{'code'} = 'prefix:<@>');
                 return $self->{'obj'}->emit_java($level) . '.aget_hash_list_of_aliases(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
             }
+            if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                return Perlito5::AST::Call::->new('method' => 'postcircumfix:<[ ]>', 'invocant' => $self->{'obj'}->{'arguments'}->[0], 'arguments' => $self->{'index_exp'})->emit_java($level)
+            }
             my $arg = $self->{'index_exp'};
             my $s;
             if ($arg->isa('Perlito5::AST::Int')) {
@@ -22696,6 +22699,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
                 return $v->emit_java($level) . '.hget_hash_list_of_aliases(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
+            }
+            if ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<$>') {
+                return Perlito5::AST::Call::->new('method' => 'postcircumfix:<{ }>', 'invocant' => $self->{'obj'}->{'arguments'}->[0], 'arguments' => $self->{'index_exp'})->emit_java($level)
             }
             my $index = Perlito5::AST::Lookup::->autoquote($self->{'index_exp'});
             return $self->emit_java_container($level) . '.' . $method . '(' . Perlito5::Java::to_native_str($index, $level) . ')'
