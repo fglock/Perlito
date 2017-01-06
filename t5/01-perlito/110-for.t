@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..14';
+say '1..15';
 my @a = ( 1, 2 );
 for my $v (@a) {
     say 'ok ' . $v . ' - loop';
@@ -46,4 +46,14 @@ for my $v (@a) {
 }
 print "not " if $a[0] != 2 || $a[1] != 3;
 say "ok 14 - loop variable is alias";
+
+eval {
+    @a = ( 1, 2 );
+    for my $v ( @a, 3, 4 ) {
+        $v++;
+    }
+    1;
+}
+  and print "not ";
+say "ok 15 - Modification of a read-only value attempted: $@";
 
