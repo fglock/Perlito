@@ -706,7 +706,8 @@ package Perlito5::Java;
     }
 
     sub to_param_list {
-        my ($items, $level) = @_;
+        my $items = to_list_preprocess( $_[0] );
+        my $level = $_[1];
 
         if (@$items == 0) {
             return "new PlArray()";
