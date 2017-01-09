@@ -65,7 +65,7 @@ say '1..17';
         say 'ok ' . $v . ' - loop';
     }
     print "not " if $a[0] != 15 || $a[1] != 16;
-    print "ok 17 - leave loop # @a\n";
+    print "ok 17 - aliasing # @a\n";
 }
 
 # TODO - add test
