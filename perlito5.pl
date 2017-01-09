@@ -25555,6 +25555,48 @@ class PerlRange implements Iterable<PlObject> {
     }
     public final Iterator<PlObject> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
+
+            PlObject num_start = ((PlString)this.v_start).parse();
+            if (num_start.is_num() || (num_start.is_int() && num_start.to_int() != 0)) {
+                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+            }
+            PlObject num_end = ((PlString)this.v_end).parse();
+            if (num_end.is_num() || (num_end.is_int() && num_end.to_int() != 0)) {
+                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+            }
+
+            // If the initial value specified isn' . chr(39) . 't part of a magical increment sequence
+            // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\\z/ ),
+            // only the initial value will be returned.
+            boolean is_incrementable = true;
+            boolean is_number = true;
+            String s = v_start.toString();
+            final int length = s.length();
+            if (length == 0) {
+                is_incrementable = false;
+                is_number = false;
+            }
+            else {
+                for (int offset = 0; offset < length; offset++) {
+                    final int c = s.codePointAt(offset);
+                    if (c >= ' . chr(39) . '0' . chr(39) . ' && c <= ' . chr(39) . '9' . chr(39) . ') {
+                        // good
+                    }
+                    else if ((c >= ' . chr(39) . 'A' . chr(39) . ' && c <= ' . chr(39) . 'Z' . chr(39) . ') || (c >= ' . chr(39) . 'a' . chr(39) . ' && c <= ' . chr(39) . 'z' . chr(39) . ')) {
+                        is_number = false;
+                    }
+                    else {
+                        is_incrementable = false;
+                        is_number = false;
+                        offset = length;  // exit loop
+                    }
+                }
+            }
+            if (!is_incrementable) {
+                // PlCORE.say("not incrementable");
+                return new PerlRangeString(new PlString(this.v_start.toString()), "");
+            }
+
             return new PerlRangeString(new PlString(this.v_start.toString()), this.v_end.toString());
         }
         return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
