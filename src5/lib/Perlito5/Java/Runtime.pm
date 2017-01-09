@@ -3562,8 +3562,11 @@ class PlArray extends PlObject {
                     aa.add(s.aget_lvalue(i));
                 }
             }
-            else {
+            else if (s.is_lvalue()) {
                 aa.add(s);  // store lvalue as-is
+            }
+            else {
+                aa.add(new PlROvalue(s));  // store "read only"
             }
         }
         PlArray result = new PlArray();
