@@ -339,6 +339,20 @@ class PerlRangeInt implements Iterator<PlObject> {
         return v_start <= v_end;
     }
 }
+class PerlRangeString1 implements Iterator<PlObject> {
+    public PlString v_start;
+    public PerlRangeString1(PlString v_start) {
+        this.v_start = v_start;
+    }
+    public PlObject next() {
+        PlString ret = v_start;
+        v_start = null;
+        return ret;
+    }
+    public boolean hasNext() {
+        return (v_start != null);
+    }
+}
 class PerlRange implements Iterable<PlObject> {
     public PlObject v_start;
     public PlObject v_end;
@@ -387,8 +401,7 @@ class PerlRange implements Iterable<PlObject> {
                 }
             }
             if (!is_incrementable) {
-                // PlCORE.say("not incrementable");
-                return new PerlRangeString(new PlString(this.v_start.toString()), "");
+                return new PerlRangeString1(new PlString(this.v_start.toString()));
             }
 
             return new PerlRangeString(new PlString(this.v_start.toString()), this.v_end.toString());
