@@ -22468,7 +22468,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
             }
-            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res.a) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
+            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
 ';
             return $str
         }
@@ -23299,7 +23299,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     $cond = 'new PerlRange(' . $cond->{'arguments'}->[0]->emit_java($level + 1) . ', ' . $cond->{'arguments'}->[1]->emit_java($level + 1) . ')'
                 }
                 else {
-                    $cond = Perlito5::Java::to_param_list([$cond], $level + 1) . '.a'
+                    $cond = Perlito5::Java::to_param_list([$cond], $level + 1)
                 }
                 my $topic = $self->{'topic'};
                 my $local_label = Perlito5::Java::get_label();
@@ -28635,9 +28635,14 @@ class PlROvalue extends PlLvalue {
         return this;
     }
 }
-class PlArray extends PlObject {
+class PlArray extends PlObject implements Iterable<PlObject> {
     public ArrayList<PlObject> a;
     public int each_iterator;
+
+    public final Iterator<PlObject> iterator() {
+        return this.a.iterator(); 
+    }
+
     public PlArray( ArrayList<PlObject> a ) {
         this.each_iterator = 0;
         this.a = a;

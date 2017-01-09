@@ -3479,9 +3479,14 @@ class PlROvalue extends PlLvalue {
         return this;
     }
 }
-class PlArray extends PlObject {
+class PlArray extends PlObject implements Iterable<PlObject> {
     public ArrayList<PlObject> a;
     public int each_iterator;
+
+    public final Iterator<PlObject> iterator() {
+        return this.a.iterator(); 
+    }
+
     public PlArray( ArrayList<PlObject> a ) {
         this.each_iterator = 0;
         this.a = a;

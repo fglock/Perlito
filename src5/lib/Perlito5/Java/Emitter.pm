@@ -1400,7 +1400,7 @@ package Perlito5::AST::CompUnit;
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
-                     "for (PlObject s : res.a) {",
+                     "for (PlObject s : res) {",
                          [ "out[i++] = s;",
                          ],
                      "}",
@@ -1415,7 +1415,7 @@ package Perlito5::AST::CompUnit;
                      "PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);",
                      "PlObject[] out = new PlObject[res.to_int()];",
                      "int i = 0;",
-                     "for (PlObject s : res.a) {",
+                     "for (PlObject s : res) {",
                          [ "out[i++] = s;",
                          ],
                      "}",
@@ -2721,7 +2721,7 @@ package Perlito5::AST::For;
             }
             else {
                 # TODO - optimization - use to_list() when the topic doesn't need to mutate
-                $cond = Perlito5::Java::to_param_list([$cond], $level + 1) . '.a';
+                $cond = Perlito5::Java::to_param_list([$cond], $level + 1);
             }
 
             my $topic = $self->{topic};
