@@ -28587,27 +28587,25 @@ class PlLvalue extends PlObject {
         } sort {
             $a cmp $b
         } keys(%java_classes))) . '}
-class PlROvalue extends PlLvalue {
-    private PlObject o;
-    public Integer pos;
+class PlROvalue extends PlLazyLvalue {
 
     // Note: several versions of PlROvalue()
     public PlROvalue() {
-        this.o = PlCx.UNDEF;
+        this.llv = new PlLvalue(PlCx.UNDEF);
     }
     public PlROvalue(PlObject o) {
-        this.o = o;
+        this.llv = new PlLvalue(o);
     }
     public PlROvalue(PlLvalue o) {
-        this.o = o.get();
+        this.llv = new PlLvalue(o.get());
     }
     public PlROvalue(PlArray o) {
         // $a = @x
-        this.o = o.scalar();
+        this.llv = new PlLvalue(o.scalar());
     }
     public PlROvalue(PlHash o) {
         // $a = %x
-        this.o = o.scalar();
+        this.llv = new PlLvalue(o.scalar());
     }
 
     public PlLvalue set(Object o) {
