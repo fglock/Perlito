@@ -3552,8 +3552,11 @@ class PlArray extends PlObject {
             if (s.is_hash()) {
                 // ( %x );
                 s = ((PlHash)s).to_list_of_aliases();
+                for (int i = 0; i < s.to_long(); i++) {
+                    aa.add(s.aget_lvalue(i));
+                }
             }
-            if (s.is_array()) {
+            else if (s.is_array()) {
                 // ( @x, @y );
                 for (int i = 0; i < s.to_long(); i++) {
                     aa.add(s.aget_lvalue(i));
