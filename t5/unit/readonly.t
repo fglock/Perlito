@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..7';
+say '1..8';
 my @a;
 
 @a = ( 1, 2 );
@@ -41,9 +41,16 @@ print "not " if $h{aa} != 124;
 say "ok 6 - parameter hash value is alias";
 
 eval {
+    change(4..6);
+    1;
+}
+  or print "not ";
+say "ok 7 - parameter range is copy";
+
+eval {
     change(3);
     1;
 }
   and print "not ";
-say "ok 7 - parameter: Modification of a read-only value attempted: $@";
+say "ok 8 - parameter: Modification of a read-only value attempted: $@";
 
