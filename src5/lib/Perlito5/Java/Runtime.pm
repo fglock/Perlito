@@ -316,7 +316,7 @@ class PerlRangeString implements Iterator<PlObject> {
         else {
             v_start = new PlString(incr.toString());
         }
-        return ret;
+        return new PlLvalue(ret);
     }
     public boolean hasNext() {
         return (  (v_start.int_length() < v_end.length())
@@ -333,7 +333,7 @@ class PerlRangeInt implements Iterator<PlObject> {
     public PlObject next() {
         PlInt ret = new PlInt(v_start);
         v_start++;
-        return ret;
+        return new PlLvalue(ret);
     }
     public boolean hasNext() {
         return v_start <= v_end;
@@ -357,7 +357,7 @@ class PerlRange implements Iterable<PlObject> {
         if (want == PlCx.LIST) {
             PlArray ret = new PlArray();
             for (PlObject i : this) {
-                ret.push(i);
+                ret.a.add(i);
             }
             return ret;
         }
