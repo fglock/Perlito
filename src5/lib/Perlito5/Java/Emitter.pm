@@ -2083,6 +2083,25 @@ package Perlito5::AST::Var;
         die "don't know how to assign to variable ", $sigil, $self->name;
     }
 
+    sub emit_java_global_set_alias {
+        my ($self, $arguments, $level, $wantarray, $localize) = @_;
+        die "can't localize emit_java_global_set_alias()" if $localize;
+        my $str_name = $self->{name};
+        my $sigil = $self->{_real_sigil} || $self->{sigil};
+        my $namespace = $self->{namespace} || $self->{_namespace};
+        if ($sigil ne '$') {
+            die "can't emit_java_global_set_alias() for sigil '$sigil'";
+        }
+        if ($sigil eq '$' && $self->{name} > 0) {
+            # TODO - for $1 (...) {} is valid perl
+            die "not implemented emit_java_global_set_alias() for regex capture";
+        }
+        my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
+        $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
+            if ref($arguments);
+        return "PlV.sset_alias(" . $index . ', ' . $arguments . ")";
+    }
+
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
@@ -2741,7 +2760,7 @@ package Perlito5::AST::For;
                 push @str, $v->emit_java_global($level + 1, 'scalar', 1) . ";";
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ $v->emit_java($level + 1) . " = (PlLvalue)$local_label;",
+                          [ $v->emit_java_global_set_alias( "(PlLvalue)$local_label", $level + 1 ) . ";",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},

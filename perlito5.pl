@@ -22862,6 +22862,22 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($sigil eq '&') {}
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
         }
+        sub Perlito5::AST::Var::emit_java_global_set_alias {
+            my($self, $arguments, $level, $wantarray, $localize) = @_;
+            $localize && die('can' . chr(39) . 't localize emit_java_global_set_alias()');
+            my $str_name = $self->{'name'};
+            my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
+            my $namespace = $self->{'namespace'} || $self->{'_namespace'};
+            if ($sigil ne '$') {
+                die('can' . chr(39) . 't emit_java_global_set_alias() for sigil ' . chr(39) . $sigil . chr(39))
+            }
+            if ($sigil eq '$' && $self->{'name'} > 0) {
+                die('not implemented emit_java_global_set_alias() for regex capture')
+            }
+            my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
+            ref($arguments) && ($arguments = Perlito5::Java::to_scalar([$arguments], $level + 1));
+            return 'PlV.sset_alias(' . $index . ', ' . $arguments . ')'
+        }
         sub Perlito5::AST::Var::emit_java {
             my($self, $level, $wantarray) = @_;
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
@@ -23305,7 +23321,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     my $local_label2 = Perlito5::Java::get_label();
                     push(@str, 'int ' . $local_label2 . ' = PerlOp.local_length();');
                     push(@str, $v->emit_java_global($level + 1, 'scalar', 1) . ';');
-                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', [$v->emit_java($level + 1) . ' = (PlLvalue)' . $local_label . ';', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
+                    push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', [$v->emit_java_global_set_alias('(PlLvalue)' . $local_label, $level + 1) . ';', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}');
                     push(@str, 'PerlOp.cleanup_local(' . $local_label2 . ', PlCx.UNDEF);')
                 }
             }
