@@ -2700,7 +2700,8 @@ package Perlito5::AST::For;
                         . ')';
             }
             else {
-                $cond = Perlito5::Java::to_list([$cond], $level + 1) . '.a';
+                # TODO - optimization - use to_list() when the topic doesn't need to mutate
+                $cond = Perlito5::Java::to_param_list([$cond], $level + 1) . '.a';
             }
 
             my $topic = $self->{topic};
@@ -2722,7 +2723,7 @@ package Perlito5::AST::For;
                 #   - arguments are r/o when needed
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ 'PlLvalue ' . $v->emit_java($level + 1) . " = new PlLvalue().set($local_label);",
+                          [ 'PlLvalue ' . $v->emit_java($level + 1) . " = (PlLvalue)$local_label;",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},
@@ -2739,7 +2740,7 @@ package Perlito5::AST::For;
                 push @str, $v->emit_java_global($level + 1, 'scalar', 1) . ";";
                 push @str,
                         'for (PlObject ' . $local_label . ' : ' . $cond . ') {',
-                          [ $v->emit_java($level + 1) . ".set($local_label);",
+                          [ $v->emit_java($level + 1) . " = (PlLvalue)$local_label;",
                             Perlito5::Java::LexicalBlock->new(
                                 block => $body,
                                 block_label => $self->{label},

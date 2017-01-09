@@ -1,6 +1,6 @@
 use feature 'say';
 
-say '1..8';
+say '1..9';
 my @a;
 
 @a = ( 1, 2 );
@@ -20,15 +20,15 @@ eval {
   and print "not ";
 say "ok 2 - loop: Modification of a read-only value attempted: $@";
 
-sub change { $_[0]++ }
+sub change  { $_[0]++ }
 sub change1 { $_[1]++ }
 
-@a = (1, 2);
+@a = ( 1, 2 );
 change(@a);
 print "not " if $a[0] != 2;
 say "ok 3 - parameter is rw alias";
 
-change($a[1]);
+change( $a[1] );
 print "not " if $a[1] != 3;
 say "ok 4 - parameter is rw alias";
 
@@ -41,16 +41,23 @@ print "not " if $h{aa} != 124;
 say "ok 6 - parameter hash value is alias";
 
 eval {
-    change(4..6);
+    change1( 4, ( 5, 6 ) );
+    1;
+}
+  and print "not ";
+say "ok 7 - parameter sub-list is alias";
+
+eval {
+    change( 4 .. 6 );
     1;
 }
   or print "not ";
-say "ok 7 - parameter range is copy";
+say "ok 8 - parameter range is copy";
 
 eval {
     change(3);
     1;
 }
   and print "not ";
-say "ok 8 - parameter: Modification of a read-only value attempted: $@";
+say "ok 9 - parameter: Modification of a read-only value attempted: $@";
 
