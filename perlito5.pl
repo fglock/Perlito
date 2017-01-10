@@ -25616,10 +25616,7 @@ class PerlRange implements Iterable<PlObject> {
             }
         }
 
-        if (this.v_start.num_gt(new PlInt(Long.MAX_VALUE)).to_bool()
-           || this.v_end.num_gt(new PlInt(Long.MAX_VALUE)).to_bool()
-        )
-        {
+        if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
             PlCORE.die("Range iterator outside integer range");
         }
 
@@ -27147,6 +27144,9 @@ class PlObject {
     public boolean is_filehandle() {
         return false;
     }
+    public boolean is_integer_range() {
+        return new PlDouble(this.to_double()).is_integer_range();
+    }
     public PlString ref() {
         return REF;
     }
@@ -28260,6 +28260,9 @@ class PlLazyLvalue extends PlLvalue {
     public boolean is_hashref() {
         return this.get().is_hashref();
     }
+    public boolean is_integer_range() {
+        return this.get().is_integer_range();
+    }
 
     public PlObject pre_decr() {
         // --$x
@@ -28704,6 +28707,9 @@ class PlLvalue extends PlObject {
     }
     public boolean is_hashref() {
         return this.o.is_hashref();
+    }
+    public boolean is_integer_range() {
+        return this.o.is_integer_range();
     }
 
     public PlObject pre_decr() {
@@ -30101,6 +30107,9 @@ class PlInt extends PlObject {
     public boolean is_int() {
         return true;
     }
+    public boolean is_integer_range() {
+        return true;
+    }
     public PlObject _decr() {
         // --$x
         return new PlInt(i-1);
@@ -30186,6 +30195,9 @@ class PlDouble extends PlObject {
             $a cmp $b
         } keys(%number_binop))) . '    public boolean is_num() {
         return true;
+    }
+    public boolean is_integer_range() {
+        return !Double.isNaN(i) && i <= Long.MAX_VALUE && i >= Long.MIN_VALUE;
     }
 }
 class PlString extends PlObject {
@@ -30487,6 +30499,9 @@ class PlString extends PlObject {
     }
     public PlObject num_cmp2(PlObject b) {
         return b.num_cmp2(this.parse());
+    }
+    public boolean is_integer_range() {
+        return this.parse().is_integer_range();
     }
 ' . (join('', map {
             my $perl = $_;
