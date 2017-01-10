@@ -364,15 +364,6 @@ class PerlRange implements Iterable<PlObject> {
     public final Iterator<PlObject> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
 
-            PlObject num_start = ((PlString)this.v_start).parse();
-            if (num_start.is_num() || (num_start.is_int() && num_start.to_int() != 0)) {
-                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
-            }
-            PlObject num_end = ((PlString)this.v_end).parse();
-            if (num_end.is_num() || (num_end.is_int() && num_end.to_int() != 0)) {
-                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
-            }
-
             // If the initial value specified isn't part of a magical increment sequence
             // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\z/ ),
             // only the initial value will be returned.
@@ -401,6 +392,16 @@ class PerlRange implements Iterable<PlObject> {
                 }
             }
             if (!is_incrementable) {
+
+                boolean is_num_start = PerlOp.looks_like_number(this.v_start.toString());
+                boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
+                // if (is_num_start || is_num_end) {
+                //     return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+                // }
+                if (is_num_start && is_num_end) {
+                    return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+                }
+
                 return new PerlRangeString1(new PlString(this.v_start.toString()));
             }
 
@@ -1251,9 +1252,6 @@ class PerlOp {
                     return false;
             }
         }
-        if (offset == 1) {
-            // TODO - test for string is "."
-        }
         return true;
     }
     private static boolean _parse_int(String s, int length, int offset) {
@@ -1295,7 +1293,16 @@ class PerlOp {
             case 'n': case 'N':
                         return s.substring(offset, offset+3).equalsIgnoreCase("nan");
             case '.':
-                        return _parse_dot(s, length, offset+1);
+                        offset++;
+                        if (offset >= length) {
+                            return false;
+                        }
+                        final int c3 = s.codePointAt(offset);
+                        switch (c3) {
+                            case '0': case '1': case '2': case '3': case '4':
+                            case '5': case '6': case '7': case '8': case '9':
+                                return _parse_dot(s, length, offset+1);
+                        }
             case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                         return _parse_int(s, length, offset+1);
         }
