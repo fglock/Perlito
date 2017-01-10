@@ -3,7 +3,7 @@ use strict;
 use feature 'say';
 
 package Main;
-say '1..66';
+say '1..70';
 
 my $test = 1;
 
@@ -165,6 +165,28 @@ eval {
 }
   and print "not ";
 print "ok $test - 'Inf'\n";
+$test++;
+print "not " if substr($@,0,6) ne "Range "; print "ok $test - error message # $@\n";
+$test++;
+print "not " if $last ne "???"; print "ok $test - last value # $last\n";
+$test++;
+print "not " if $count != 0; print "ok $test - count # $count\n";
+$test++;
+
+$last = "???";
+$count = 0;
+local $@ = "";
+eval {
+    for ( "900" .. "Nan" ) {
+        # print "# '$_'\n";
+        $last = $_;
+        $count++;
+        last if $_ > 1010;
+    }
+    1;
+}
+  and print "not ";
+print "ok $test - 'Nan'\n";
 $test++;
 print "not " if substr($@,0,6) ne "Range "; print "ok $test - error message # $@\n";
 $test++;
