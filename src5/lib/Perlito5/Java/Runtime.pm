@@ -1201,6 +1201,108 @@ class PerlOp {
         return new PlInt(modified);
     }
 
+
+    // looks_like_number
+
+    private static int _parse_space(String s, int length, int offset) {
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' ': case '\t': case '\n': case '\r':
+                    break;
+                default:
+                    return offset;
+            }
+        }
+        return offset;
+    }
+    private static boolean _parse_exp(String s, int length, int offset) {
+        // 123.45E^^^
+        final int c = s.codePointAt(offset);
+        if (c == '+' || c == '-') {
+            offset++;
+            if (offset >= length) {
+                return false;
+            }
+        }
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    private static boolean _parse_dot(String s, int length, int offset) {
+        // 123.^^^
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                case 'E': case 'e':
+                    return _parse_exp(s, length, offset+1);
+                default:
+                    return false;
+            }
+        }
+        if (offset == 1) {
+            // TODO - test for string is "."
+        }
+        return true;
+    }
+    private static boolean _parse_int(String s, int length, int offset) {
+        // 123
+        offset++;
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    break;
+                case '.':
+                    return _parse_dot(s, length, offset+1);
+                case 'E': case 'e':
+                    return _parse_exp(s, length, offset+1);
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    public static boolean looks_like_number(String s) {
+        final int length = s.length();
+        int offset = _parse_space(s, length, 0);
+        if (offset >= length) {
+            return false;
+        }
+        int c = s.codePointAt(offset);
+        if (c == '+' || c == '-') {
+            offset++;
+            if (offset >= length) {
+                return false;
+            }
+            c = s.codePointAt(offset);
+        }
+        switch (c) {
+            case 'i': case 'I':
+                        return s.substring(offset, offset+3).equalsIgnoreCase("inf");
+            case 'n': case 'N':
+                        return s.substring(offset, offset+3).equalsIgnoreCase("nan");
+            case '.':
+                        return _parse_dot(s, length, offset+1);
+            case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+                        return _parse_int(s, length, offset+1);
+        }
+        return false;
+    }
+
+
 }
 class PlV {
     // PlV implements namespaces and global variables

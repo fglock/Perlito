@@ -26410,6 +26410,108 @@ class PerlOp {
         return new PlInt(modified);
     }
 
+
+    // looks_like_number
+
+    private static int _parse_space(String s, int length, int offset) {
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' . chr(39) . ' ' . chr(39) . ': case ' . chr(39) . '\\t' . chr(39) . ': case ' . chr(39) . '\\n' . chr(39) . ': case ' . chr(39) . '\\r' . chr(39) . ':
+                    break;
+                default:
+                    return offset;
+            }
+        }
+        return offset;
+    }
+    private static boolean _parse_exp(String s, int length, int offset) {
+        // 123.45E^^^
+        final int c = s.codePointAt(offset);
+        if (c == ' . chr(39) . '+' . chr(39) . ' || c == ' . chr(39) . '-' . chr(39) . ') {
+            offset++;
+            if (offset >= length) {
+                return false;
+            }
+        }
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    private static boolean _parse_dot(String s, int length, int offset) {
+        // 123.^^^
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':
+                    return _parse_exp(s, length, offset+1);
+                default:
+                    return false;
+            }
+        }
+        if (offset == 1) {
+            // TODO - test for string is "."
+        }
+        return true;
+    }
+    private static boolean _parse_int(String s, int length, int offset) {
+        // 123
+        offset++;
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
+                case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                    break;
+                case ' . chr(39) . '.' . chr(39) . ':
+                    return _parse_dot(s, length, offset+1);
+                case ' . chr(39) . 'E' . chr(39) . ': case ' . chr(39) . 'e' . chr(39) . ':
+                    return _parse_exp(s, length, offset+1);
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+    public static boolean looks_like_number(String s) {
+        final int length = s.length();
+        int offset = _parse_space(s, length, 0);
+        if (offset >= length) {
+            return false;
+        }
+        int c = s.codePointAt(offset);
+        if (c == ' . chr(39) . '+' . chr(39) . ' || c == ' . chr(39) . '-' . chr(39) . ') {
+            offset++;
+            if (offset >= length) {
+                return false;
+            }
+            c = s.codePointAt(offset);
+        }
+        switch (c) {
+            case ' . chr(39) . 'i' . chr(39) . ': case ' . chr(39) . 'I' . chr(39) . ':
+                        return s.substring(offset, offset+3).equalsIgnoreCase("inf");
+            case ' . chr(39) . 'n' . chr(39) . ': case ' . chr(39) . 'N' . chr(39) . ':
+                        return s.substring(offset, offset+3).equalsIgnoreCase("nan");
+            case ' . chr(39) . '.' . chr(39) . ':
+                        return _parse_dot(s, length, offset+1);
+            case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ': case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
+                        return _parse_int(s, length, offset+1);
+        }
+        return false;
+    }
+
+
 }
 class PlV {
     // PlV implements namespaces and global variables
