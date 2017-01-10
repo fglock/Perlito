@@ -13003,6 +13003,9 @@ var p5range = function(a, b, p5want, id, three_dots) {
         if (typeof a === "number" || typeof b === "number") {
             a = p5num(a);
             b = p5num(b);
+            if (a == Infinity || b == Infinity) {
+                p5pkg.CORE.die(["Range iterator outside integer range"]);
+            }
             while (a <= b) {
                 tmp.push(a);
                 a++;
