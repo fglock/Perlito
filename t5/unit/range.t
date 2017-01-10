@@ -3,7 +3,7 @@ use strict;
 use feature 'say';
 
 package Main;
-say '1..64';
+say '1..66';
 
 my $test = 1;
 
@@ -124,6 +124,10 @@ is_last( \@v, 0 );
 @v = ( 2.18 .. 3.14 );
 is_count( \@v, 2 );
 is_last( \@v, 3 );
+
+@v = "+3" .. "+8";
+is_count( \@v, 6 );
+is_last( \@v, 8 );
 
 my $last = "???";
 my $count = 0;
