@@ -353,6 +353,16 @@ class PerlRangeString1 implements Iterator<PlObject> {
         return (v_start != null);
     }
 }
+class PerlRange0 implements Iterator<PlObject> {
+    public PerlRange0() {
+    }
+    public PlObject next() {
+        return new PlObject();
+    }
+    public boolean hasNext() {
+        return false;
+    }
+}
 class PerlRange implements Iterable<PlObject> {
     public PlObject v_start;
     public PlObject v_end;
@@ -389,6 +399,9 @@ class PerlRange implements Iterable<PlObject> {
                 boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
                 if (is_num_start && is_num_end) {
                     return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+                }
+                if (length > this.v_end.toString().length()) {
+                    return new PerlRange0();
                 }
                 return new PerlRangeString1(new PlString(s));
             }

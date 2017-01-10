@@ -3,7 +3,7 @@ use strict;
 use feature 'say';
 
 package Main;
-say '1..74';
+say '1..75';
 
 my $test = 1;
 
@@ -81,6 +81,9 @@ is_count( \@v, 0 );
 @v = "A-1" .. "A-9";
 is_count( \@v, 1 );
 is_last( \@v, "A-1" );
+
+@v = "A-1" .. "A-";
+is_count( \@v, 0 );
 
 @v = "1-1" .. "1-9";
 is_count( \@v, 1 );
