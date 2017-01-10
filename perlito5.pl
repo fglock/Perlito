@@ -25603,26 +25603,17 @@ class PerlRange implements Iterable<PlObject> {
                     }
                 }
             }
-            if (!is_incrementable) {
-                boolean is_num_start = PerlOp.looks_like_number(s);
-                boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
-                if (is_num_start && is_num_end) {
-
-                    if (this.v_start.num_gt(new PlInt(Long.MAX_VALUE)).to_bool()
-                       || this.v_end.num_gt(new PlInt(Long.MAX_VALUE)).to_bool()
-                    )
-                    {
-                        PlCORE.die("Range iterator outside integer range");
-                    }
-
-                    return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
-                }
+            if (is_incrementable) {
+                return new PerlRangeString(new PlString(s), this.v_end.toString());
+            }
+            boolean is_num_start = PerlOp.looks_like_number(s);
+            boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
+            if (!is_num_start || !is_num_end) {
                 if (length > this.v_end.toString().length()) {
                     return new PerlRange0();
                 }
                 return new PerlRangeString1(new PlString(s));
             }
-            return new PerlRangeString(new PlString(s), this.v_end.toString());
         }
 
         if (this.v_start.num_gt(new PlInt(Long.MAX_VALUE)).to_bool()
