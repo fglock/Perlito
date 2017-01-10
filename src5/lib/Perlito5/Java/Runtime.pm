@@ -1216,6 +1216,18 @@ class PerlOp {
         }
         return offset;
     }
+    private static boolean _parse_space_to_end(String s, int length, int offset) {
+        for ( ; offset < length; offset++ ) {
+            final int c3 = s.codePointAt(offset);
+            switch (c3) {
+                case ' ': case '\t': case '\n': case '\r':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
     private static boolean _parse_exp(String s, int length, int offset) {
         // 123.45E^^^
         final int c = s.codePointAt(offset);
@@ -1232,7 +1244,7 @@ class PerlOp {
                 case '5': case '6': case '7': case '8': case '9':
                     break;
                 default:
-                    return false;
+                    return _parse_space_to_end(s, length, offset);
             }
         }
         return true;
@@ -1248,7 +1260,7 @@ class PerlOp {
                 case 'E': case 'e':
                     return _parse_exp(s, length, offset+1);
                 default:
-                    return false;
+                    return _parse_space_to_end(s, length, offset);
             }
         }
         return true;
@@ -1266,7 +1278,7 @@ class PerlOp {
                 case 'E': case 'e':
                     return _parse_exp(s, length, offset+1);
                 default:
-                    return false;
+                    return _parse_space_to_end(s, length, offset);
             }
         }
         return true;
