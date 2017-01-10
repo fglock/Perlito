@@ -25582,11 +25582,19 @@ class PerlRange implements Iterable<PlObject> {
     }
     public final Iterator<PlObject> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
+            String s = v_start.toString();
+            boolean is_num_start = PerlOp.looks_like_number(s);
+            boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
+            if (is_num_start && is_num_end) {
+                if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
+                    PlCORE.die("Range iterator outside integer range");
+                }
+                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+            }
             // If the initial value specified isn' . chr(39) . 't part of a magical increment sequence
             // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\\z/ ),
             // only the initial value will be returned.
             boolean is_incrementable = true;
-            String s = v_start.toString();
             final int length = s.length();
             if (length == 0) {
                 is_incrementable = false;
@@ -25606,20 +25614,15 @@ class PerlRange implements Iterable<PlObject> {
             if (is_incrementable) {
                 return new PerlRangeString(new PlString(s), this.v_end.toString());
             }
-            boolean is_num_start = PerlOp.looks_like_number(s);
-            boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
-            if (!is_num_start || !is_num_end) {
-                if (length > this.v_end.toString().length()) {
-                    return new PerlRange0();
-                }
-                return new PerlRangeString1(new PlString(s));
+            if (length > this.v_end.toString().length()) {
+                return new PerlRange0();
             }
+            return new PerlRangeString1(new PlString(s));
         }
 
         if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
             PlCORE.die("Range iterator outside integer range");
         }
-
         return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
     }
     public final PlObject range(int want, String id, int three_dots) {
