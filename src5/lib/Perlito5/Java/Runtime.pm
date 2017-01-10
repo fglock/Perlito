@@ -347,7 +347,7 @@ class PerlRangeString1 implements Iterator<PlObject> {
     public PlObject next() {
         PlString ret = v_start;
         v_start = null;
-        return ret;
+        return new PlLvalue(ret);
     }
     public boolean hasNext() {
         return (v_start != null);
@@ -374,36 +374,41 @@ class PerlRange implements Iterable<PlObject> {
     public final Iterator<PlObject> iterator() {
         if (this.v_start.is_string() && this.v_end.is_string()) {
             String s = v_start.toString();
-            boolean is_num_start = PerlOp.looks_like_number(s);
-            boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
-            if (is_num_start && is_num_end) {
-                if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
-                    PlCORE.die("Range iterator outside integer range");
-                }
-                return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
-            }
-            // If the initial value specified isn't part of a magical increment sequence
-            // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\z/ ),
-            // only the initial value will be returned.
-            boolean is_incrementable = true;
             final int length = s.length();
-            if (length == 0) {
-                is_incrementable = false;
-            }
-            else {
+            if (length > 0) {
+                boolean is_num_start = PerlOp.looks_like_number(s);
+                boolean is_num_end = PerlOp.looks_like_number(this.v_end.toString());
+                if (is_num_start && is_num_end && s.codePointAt(0) != '0') {
+                    if (!this.v_start.is_integer_range() || !this.v_end.is_integer_range()) {
+                        PlCORE.die("Range iterator outside integer range");
+                    }
+                    return new PerlRangeInt(this.v_start.to_long(), this.v_end.to_long());
+                }
+                // If the initial value specified isn't part of a magical increment sequence
+                // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\z/ ),
+                // only the initial value will be returned.
+                boolean is_incrementable = true;
                 for (int offset = 0; offset < length; offset++) {
-                    final int c = s.codePointAt(offset);
-                    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                    int c = s.codePointAt(offset);
+                    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
                         // good
                     }
                     else {
-                        is_incrementable = false;
-                        offset = length;  // exit loop
+                        for ( ; offset < length; offset++) {
+                            c = s.codePointAt(offset);
+                            if (c >= '0' && c <= '9') {
+                                // good
+                            }
+                            else {
+                                is_incrementable = false;
+                                offset = length;  // exit loop
+                            }
+                        }
                     }
                 }
-            }
-            if (is_incrementable) {
-                return new PerlRangeString(new PlString(s), this.v_end.toString());
+                if (is_incrementable) {
+                    return new PerlRangeString(new PlString(s), this.v_end.toString());
+                }
             }
             if (length > this.v_end.toString().length()) {
                 return new PerlRange0();
