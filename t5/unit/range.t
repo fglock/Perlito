@@ -3,7 +3,7 @@ use strict;
 use feature 'say';
 
 package Main;
-say '1..42';
+say '1..48';
 
 my $test = 1;
 
@@ -58,7 +58,6 @@ is_count(\@v, 1);
 is_last(\@v, "0");
 
 @v = "A"..10;
-  #  012345678910
 is_count(\@v, 11);
 is_last(\@v, "10");
 
@@ -67,43 +66,47 @@ is_count(\@v, 0);
 
 
 @v = "5.3"..100;
-  #  012345678910
 is_count(\@v, 96);
 is_last(\@v, "100");
 
 @v = "5.3".."100";
-  #  012345678910
 is_count(\@v, 96);
 is_last(\@v, "100");
 
 @v = "5.3".."zzz";
-  #  012345678910
 is_count(\@v, 1);
 is_last(\@v, "5.3");
 
 @v = "5.3".."100.0";
-  #  012345678910
 is_count(\@v, 96);
 is_last(\@v, "100");
 
 @v = "5.3".."0";
-  #  012345678910
 is_count(\@v, 0);
 
 @v = "A-1".."A-9";
-  #  012345678910
 is_count(\@v, 1);
 is_last(\@v, "A-1");
 
 @v = "1-1".."1-9";
-  #  012345678910
 is_count(\@v, 1);
 is_last(\@v, "1-1");
 
 @v = " 1".." 9";
-  #  012345678910
 is_count(\@v, 9);
 is_last(\@v, "9");
+
+@v = "1 ".."9 ";
+is_count(\@v, 9);
+is_last(\@v, "9");
+
+@v = " 1 ".." 9 ";
+is_count(\@v, 9);
+is_last(\@v, "9");
+
+@v = "1 A".."9 A";
+is_count(\@v, 1);
+is_last(\@v, "1 A");
 
 @v = -3..3;
 is_count(\@v, 7);
