@@ -26464,7 +26464,6 @@ class PerlOp {
     }
     private static boolean _parse_int(String s, int length, int offset) {
         // 123
-        offset++;
         for ( ; offset < length; offset++ ) {
             final int c3 = s.codePointAt(offset);
             switch (c3) {
