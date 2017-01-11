@@ -1926,8 +1926,13 @@ EOT
         return this;
     }
     public PlObject get() {
-        PlCORE.die("error .get!");
-        return this;
+        return PlCORE.die("error .get!");
+    }
+    public PlObject to_num() {
+        return PlCORE.die("error .to_num!");
+    }
+    public PlObject mod(PlObject o) {
+        return this.to_num().mod(o);
     }
     public boolean is_int() {
         return false;
@@ -3066,6 +3071,9 @@ EOT
             sort keys %number_binop ))
 
     . <<'EOT'
+    public PlObject to_num() {
+        return this.get().to_num();
+    }
     public boolean is_int() {
         return this.get().is_int();
     }
@@ -3531,6 +3539,9 @@ EOT
             sort keys %number_binop ))
 
     . <<'EOT'
+    public PlObject to_num() {
+        return this.o.to_num();
+    }
     public boolean is_int() {
         return this.o.is_int();
     }
@@ -4380,6 +4391,9 @@ EOT
     public boolean to_bool() {
         return (this.a.size() > 0);
     }
+    public PlObject to_num() {
+        return this.scalar();
+    }
     public boolean is_int() {
         return false;
     }
@@ -4860,6 +4874,9 @@ EOT
         }
         return false;
     }
+    public PlObject to_num() {
+        return this.scalar();
+    }
     public boolean is_int() {
         return false;
     }
@@ -4991,6 +5008,9 @@ class PlInt extends PlObject {
     public boolean to_bool() {
         return this.i != 0;
     }
+    public PlObject to_num() {
+        return this;
+    }
     public boolean is_int() {
         return true;
     }
@@ -5083,6 +5103,9 @@ EOT
             sort keys %number_binop ))
 
     . <<'EOT'
+    public PlObject to_num() {
+        return this;
+    }
     public boolean is_num() {
         return true;
     }
@@ -5130,6 +5153,9 @@ class PlString extends PlObject {
         return PlV.hset(s, v);
     }
 
+    public PlObject to_num() {
+        return this.parse();
+    }
     public PlObject parse() {
         if (numericValue == null) {
             numericValue = this._parse();

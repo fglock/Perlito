@@ -27141,8 +27141,13 @@ class PlObject {
         return this;
     }
     public PlObject get() {
-        PlCORE.die("error .get!");
-        return this;
+        return PlCORE.die("error .get!");
+    }
+    public PlObject to_num() {
+        return PlCORE.die("error .to_num!");
+    }
+    public PlObject mod(PlObject o) {
+        return this.to_num().mod(o);
     }
     public boolean is_int() {
         return false;
@@ -28266,7 +28271,10 @@ class PlLazyLvalue extends PlLvalue {
 '
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '    public boolean is_int() {
+        } keys(%number_binop))) . '    public PlObject to_num() {
+        return this.get().to_num();
+    }
+    public boolean is_int() {
         return this.get().is_int();
     }
     public boolean is_num() {
@@ -28714,7 +28722,10 @@ class PlLvalue extends PlObject {
 '
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '    public boolean is_int() {
+        } keys(%number_binop))) . '    public PlObject to_num() {
+        return this.o.to_num();
+    }
+    public boolean is_int() {
         return this.o.is_int();
     }
     public boolean is_num() {
@@ -29539,6 +29550,9 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public boolean to_bool() {
         return (this.a.size() > 0);
     }
+    public PlObject to_num() {
+        return this.scalar();
+    }
     public boolean is_int() {
         return false;
     }
@@ -30015,6 +30029,9 @@ class PlHash extends PlObject {
         }
         return false;
     }
+    public PlObject to_num() {
+        return this.scalar();
+    }
     public boolean is_int() {
         return false;
     }
@@ -30146,6 +30163,9 @@ class PlInt extends PlObject {
     public boolean to_bool() {
         return this.i != 0;
     }
+    public PlObject to_num() {
+        return this;
+    }
     public boolean is_int() {
         return true;
     }
@@ -30235,7 +30255,10 @@ class PlDouble extends PlObject {
 '
         } sort {
             $a cmp $b
-        } keys(%number_binop))) . '    public boolean is_num() {
+        } keys(%number_binop))) . '    public PlObject to_num() {
+        return this;
+    }
+    public boolean is_num() {
         return true;
     }
     public boolean is_integer_range() {
@@ -30282,6 +30305,9 @@ class PlString extends PlObject {
         return PlV.hset(s, v);
     }
 
+    public PlObject to_num() {
+        return this.parse();
+    }
     public PlObject parse() {
         if (numericValue == null) {
             numericValue = this._parse();
