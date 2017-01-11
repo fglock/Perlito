@@ -4034,8 +4034,8 @@ EOT
     }
     public PlObject aget_hash_list_of_aliases(int want, PlArray a) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
-        for (int i = 0; i < a.to_int(); i++) {
-            aa.add( new PlInt(i) );
+        for (PlObject i : a) {
+            aa.add( i );
             aa.add( this.aget_lvalue(i) );
         }
         PlArray result = new PlArray();
