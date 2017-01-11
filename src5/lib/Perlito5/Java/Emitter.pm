@@ -1439,11 +1439,12 @@ package Perlito5::AST::Int;
         my $v = $self->{int};
         if ( $v > 2**62 ) {
             # this is near numeric precision overflow, use string compare
-            $v = sprintf("0.0f", $v);
+            $v = sprintf("%0.0f", $v);
             my $max_value = "9223372036854775806";  # 2**63 - 1
             if ( length($v) > length($max_value) || $v gt $max_value ) {
                 return "new PlDouble(" . $v . ".0)";
             }
+            return "new PlInt(" . $v . "L)";
         }
         if ( $v >= -2 && $v < 0) {
             return "PlCx.MIN" . abs($v);
