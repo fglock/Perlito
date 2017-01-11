@@ -884,7 +884,7 @@ class PerlOp {
     public static PlObject prototype(PlObject arg, String packageName) {
         if (arg.is_coderef()) {
             if (arg.is_lvalue()) {
-                return ((PlClosure)arg.get()).prototype();
+                arg = arg.get();
             }
             return ((PlClosure)arg).prototype();
         }

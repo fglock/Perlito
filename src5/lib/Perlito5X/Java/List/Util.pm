@@ -24,6 +24,9 @@ sub reduce (&@) {
     Java::inline '
         // PlClosure c, PlArray a
         PlObject arg = List__.shift();
+        if (arg.is_lvalue()) {
+            arg = arg.get();
+        }
         PlClosure c = (PlClosure)arg;
         String pkg = c.pkg_name;
         PlObject ret = PlCx.UNDEF;
@@ -58,6 +61,9 @@ sub pairgrep (&@) {
     Java::inline '
         // PlClosure c, PlArray a
         PlObject arg = List__.shift();
+        if (arg.is_lvalue()) {
+            arg = arg.get();
+        }
         PlClosure c = (PlClosure)arg;
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
@@ -89,6 +95,9 @@ sub pairmap (&@) {
     Java::inline '
         // PlClosure c, PlArray a
         PlObject arg = List__.shift();
+        if (arg.is_lvalue()) {
+            arg = arg.get();
+        }
         PlClosure c = (PlClosure)arg;
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
@@ -117,6 +126,9 @@ sub pairfirst (&@) {
     Java::inline '
         // PlClosure c, PlArray a
         PlObject arg = List__.shift();
+        if (arg.is_lvalue()) {
+            arg = arg.get();
+        }
         PlClosure c = (PlClosure)arg;
         String pkg = c.pkg_name;
         PlArray ret = new PlArray();
