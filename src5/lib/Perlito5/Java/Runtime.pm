@@ -1814,6 +1814,10 @@ EOT
         return this;
     }
 
+    public PlArray array_deref_lvalue() {
+        PlCORE.die("Not an ARRAY reference");
+        return (PlArray)this;
+    }
     public PlArray array_deref() {
         PlCORE.die("Not an ARRAY reference");
         return (PlArray)this;
@@ -2427,6 +2431,11 @@ class PlArrayRef extends PlArray {
         o.a = this.a;
         return o;
     }
+    public PlArray array_deref_lvalue() {
+        PlArray o = new PlArray();
+        o.a = this.a;
+        return o;
+    }
     public PlArray array_deref() {
         PlArray o = new PlArray();
         o.a = this.a;
@@ -2959,6 +2968,12 @@ class PlLazyLvalue extends PlLvalue {
     }
 
 
+    public PlArray array_deref_lvalue() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.array_deref_lvalue();
+    }
     public PlArray array_deref() {
         if (llv == null) {
             create_scalar();
@@ -3428,6 +3443,17 @@ class PlLvalue extends PlObject {
         // @$x doesn't autovivify
         if (this.o.is_undef()) {
             return new PlArray();
+        }
+        else if (this.o.is_arrayref()) {
+            return (PlArray)(this.o.get());
+        }
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
+    }
+    public PlArray array_deref_lvalue() {
+        if (this.o.is_undef()) {
+            PlArray ar = new PlArrayRef();
+            this.o = ar;
+            return ar;
         }
         else if (this.o.is_arrayref()) {
             return (PlArray)(this.o.get());
@@ -4022,8 +4048,8 @@ EOT
 
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
-        for (int i = 0; i < a.to_int(); i++) {
-            aa.add( this.aget_lvalue(a.aget(i)) );
+        for (PlObject i : a) {
+            aa.add( this.aget_lvalue(i) );
         }
         PlArray result = new PlArray();
         result.a = aa;
@@ -5163,6 +5189,9 @@ class PlString extends PlObject {
     }
     public PlObject scalar_deref_set(PlObject v) {
         return PlV.sset(s, v);
+    }
+    public PlArray array_deref_lvalue() {
+        return PlV.array_get(s);
     }
     public PlArray array_deref() {
         return PlV.array_get(s);

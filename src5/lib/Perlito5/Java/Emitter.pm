@@ -1560,9 +1560,8 @@ package Perlito5::AST::Index;
            )
         {
             # @a[10, 20]
-            # @$a[0, 2] ==> @{$a}[0,2]
             # (4,5,6)[0,2]
-            return $self->{obj}->emit_java($level, 'list') . '.aget_list_of_aliases('
+            return $self->{obj}->emit_java($level, 'list', 'lvalue') . '.aget_list_of_aliases('
                         . Perlito5::Java::to_context($wantarray) . ', '
                         . Perlito5::Java::to_list([$self->{index_exp}], $level)
                    . ')'

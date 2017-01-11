@@ -542,7 +542,6 @@ package Perlito5::AST::Apply;
             . '])';
         },
         'prefix:<$>' => sub {
-            # my ($self, $level, $wantarray) = @_;
             my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg  = $self->{arguments}->[0];
             if ($autovivification_type eq 'lvalue') {
@@ -551,9 +550,15 @@ package Perlito5::AST::Apply;
             return $arg->emit_java( $level, 'scalar', 'scalar' ) . '.scalar_deref()'
         },
         'prefix:<@>' => sub {
-            my ($self, $level, $wantarray) = @_;
+            my ($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg   = $self->{arguments}->[0];
-            my $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
+            my $s;
+            if ($autovivification_type eq 'lvalue') {
+                $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref_lvalue()';
+            }
+            else {
+                $s = Perlito5::Java::emit_java_autovivify( $arg, $level, 'array' ) . '.array_deref()';
+            }
             return $wantarray eq 'scalar'
                 ? "$s.scalar()"
                 : $s;

@@ -20968,9 +20968,15 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             return $arg->emit_java($level, 'scalar', 'scalar') . '.scalar_deref()'
         }, 'prefix:<@>' => sub {
-            my($self, $level, $wantarray) = @_;
+            my($self, $level, $wantarray, $autovivification_type) = @_;
             my $arg = $self->{'arguments'}->[0];
-            my $s = Perlito5::Java::emit_java_autovivify($arg, $level, 'array') . '.array_deref()';
+            my $s;
+            if ($autovivification_type eq 'lvalue') {
+                $s = Perlito5::Java::emit_java_autovivify($arg, $level, 'array') . '.array_deref_lvalue()'
+            }
+            else {
+                $s = Perlito5::Java::emit_java_autovivify($arg, $level, 'array') . '.array_deref()'
+            }
             return $wantarray eq 'scalar' ? $s . '.scalar()' : $s
         }, 'prefix:<$#>' => sub {
             my($self, $level, $wantarray) = @_;
@@ -22599,7 +22605,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             $autovivification_type eq 'lvalue' && ($method = 'aget_lvalue');
             $autovivification_type eq 'local' && ($method = 'aget_lvalue_local');
             if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@') || ($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->code() eq 'circumfix:<( )>')) {
-                return $self->{'obj'}->emit_java($level, 'list') . '.aget_list_of_aliases(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
+                return $self->{'obj'}->emit_java($level, 'list', 'lvalue') . '.aget_list_of_aliases(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ')'
             }
             if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<%>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '%')) {
                 my $obj = $self->{'obj'};
@@ -27035,6 +27041,10 @@ class PlObject {
         return this;
     }
 
+    public PlArray array_deref_lvalue() {
+        PlCORE.die("Not an ARRAY reference");
+        return (PlArray)this;
+    }
     public PlArray array_deref() {
         PlCORE.die("Not an ARRAY reference");
         return (PlArray)this;
@@ -27640,6 +27650,11 @@ class PlArrayRef extends PlArray {
         o.a = this.a;
         return o;
     }
+    public PlArray array_deref_lvalue() {
+        PlArray o = new PlArray();
+        o.a = this.a;
+        return o;
+    }
     public PlArray array_deref() {
         PlArray o = new PlArray();
         o.a = this.a;
@@ -28172,6 +28187,12 @@ class PlLazyLvalue extends PlLvalue {
     }
 
 
+    public PlArray array_deref_lvalue() {
+        if (llv == null) {
+            create_scalar();
+        }
+        return llv.array_deref_lvalue();
+    }
     public PlArray array_deref() {
         if (llv == null) {
             create_scalar();
@@ -28624,6 +28645,17 @@ class PlLvalue extends PlObject {
         // @$x doesn' . chr(39) . 't autovivify
         if (this.o.is_undef()) {
             return new PlArray();
+        }
+        else if (this.o.is_arrayref()) {
+            return (PlArray)(this.o.get());
+        }
+        return (PlArray)PlCORE.die("Not an ARRAY reference");
+    }
+    public PlArray array_deref_lvalue() {
+        if (this.o.is_undef()) {
+            PlArray ar = new PlArrayRef();
+            this.o = ar;
+            return ar;
         }
         else if (this.o.is_arrayref()) {
             return (PlArray)(this.o.get());
@@ -29191,8 +29223,8 @@ class PlArray extends PlObject implements Iterable<PlObject> {
 
     public PlObject aget_list_of_aliases(int want, PlArray a) {
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
-        for (int i = 0; i < a.to_int(); i++) {
-            aa.add( this.aget_lvalue(a.aget(i)) );
+        for (PlObject i : a) {
+            aa.add( this.aget_lvalue(i) );
         }
         PlArray result = new PlArray();
         result.a = aa;
@@ -30321,6 +30353,9 @@ class PlString extends PlObject {
     }
     public PlObject scalar_deref_set(PlObject v) {
         return PlV.sset(s, v);
+    }
+    public PlArray array_deref_lvalue() {
+        return PlV.array_get(s);
     }
     public PlArray array_deref() {
         return PlV.array_get(s);
