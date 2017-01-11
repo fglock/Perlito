@@ -1437,8 +1437,13 @@ package Perlito5::AST::Int;
     sub emit_java {
         my ($self, $level, $wantarray) = @_;
         my $v = $self->{int};
-        if ( $v > (2**63-1) ) {
-            return "new PlDouble(" . $v . ".0)";
+        if ( $v > 2**62 ) {
+            # this is near numeric precision overflow, use string compare
+            $v = sprintf("0.0f", $v);
+            my $max_value = "9223372036854775806";  # 2**63 - 1
+            if ( length($v) > length($max_value) || $v gt $max_value ) {
+                return "new PlDouble(" . $v . ".0)";
+            }
         }
         if ( $v >= -2 && $v < 0) {
             return "PlCx.MIN" . abs($v);

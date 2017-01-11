@@ -22487,8 +22487,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Int::emit_java {
             my($self, $level, $wantarray) = @_;
             my $v = $self->{'int'};
-            if ($v > (2**63 - 1)) {
-                return 'new PlDouble(' . $v . '.0)'
+            if ($v > 2**62) {
+                $v = sprintf('0.0f', $v);
+                my $max_value = 9223372036854775806;
+                if (length($v) > length($max_value) || $v gt $max_value) {
+                    return 'new PlDouble(' . $v . '.0)'
+                }
             }
             if ($v >= -2 && $v < 0) {
                 return 'PlCx.MIN' . abs($v)
