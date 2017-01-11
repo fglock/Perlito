@@ -22463,7 +22463,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @main;
             for my $comp_unit (@{$comp_units}) {
                 my @str = $comp_unit->emit_java($level + 1, $wantarray);
-                @str && ($str[-1] .= ';
+                @str && !ref($str[-1]) && ($str[-1] .= ';
 ');
                 push(@main, @str)
             }
