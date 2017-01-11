@@ -273,8 +273,8 @@ package Perlito5::AST::Apply;
         ),
         'infix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long() % '
+              'PerlOp.mod('
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long(), '
             . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.to_long())'
         },
         'infix:<>>>' => sub {

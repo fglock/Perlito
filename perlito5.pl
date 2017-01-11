@@ -20809,7 +20809,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             })
         } 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log'), 'infix:<%>' => sub {
             my($self, $level, $wantarray) = @_;
-            'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long() % ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_long())'
+            'PerlOp.mod(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long(), ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_long())'
         }, 'infix:<>>>' => sub {
             my($self, $level, $wantarray) = @_;
             'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long() >>> ' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.to_long())'
@@ -25943,6 +25943,21 @@ class PerlOp {
         // A StackTraceElement has getClassName(), getFileName(), getLineNumber() and getMethodName().
 
         return null;
+    }
+
+    public static final PlObject mod(long a, long b) {
+        long res = Math.abs(a) % Math.abs(b);
+        // PlCORE.say("mod " + a + " % " + b + " = " + res);
+        if (a < 0 && b > 0) {
+            return new PlInt(b - res);
+        }
+        if (a > 0 && b < 0) {
+            return new PlInt(b + res);
+        }
+        if (a < 0 && b < 0) {
+            return new PlInt(- res);
+        }
+        return new PlInt(res);
     }
 
     public static final PlObject srand() {

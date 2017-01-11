@@ -723,6 +723,21 @@ class PerlOp {
         return null;
     }
 
+    public static final PlObject mod(long a, long b) {
+        long res = Math.abs(a) % Math.abs(b);
+        // PlCORE.say("mod " + a + " % " + b + " = " + res);
+        if (a < 0 && b > 0) {
+            return new PlInt(b - res);
+        }
+        if (a > 0 && b < 0) {
+            return new PlInt(b + res);
+        }
+        if (a < 0 && b < 0) {
+            return new PlInt(- res);
+        }
+        return new PlInt(res);
+    }
+
     public static final PlObject srand() {
         random = new Random();
         return PlCx.UNDEF;
