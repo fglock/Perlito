@@ -35,11 +35,7 @@ sub isweak {
 }
 
 sub looks_like_number {
-    # TODO - "looks_like_number" needs some work
-    # TODO - '123A' => false
-       (0 + $_[0])
-    || ($_[0] eq '0')
-    || ($_[0] eq '0E0')
+    Java::inline("new PlBool(PerlOp.looks_like_number(List__.aget(0)))");
 }
 
 sub dualvar       { ... }

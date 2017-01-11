@@ -26539,7 +26539,12 @@ class PerlOp {
         }
         return false;
     }
-
+    public static boolean looks_like_number(PlObject arg) {
+        if (arg.is_num() || arg.is_int()) {
+            return true;
+        }
+        return looks_like_number(arg.toString());
+    }
 
 }
 class PlV {
