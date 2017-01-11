@@ -723,7 +723,9 @@ class PerlOp {
         return null;
     }
 
-    public static final PlObject mod(long a, long b) {
+    public static final PlObject mod(PlInt aa, PlObject bb) {
+        long a = aa.to_long();
+        long b = bb.to_long();
         long res = Math.abs(a) % Math.abs(b);
         // PlCORE.say("mod " + a + " % " + b + " = " + res);
         if (a < 0 && b > 0) {
@@ -736,6 +738,22 @@ class PerlOp {
             return new PlInt(- res);
         }
         return new PlInt(res);
+    }
+    public static final PlObject mod(PlDouble aa, PlObject bb) {
+        double a = aa.to_double();
+        double b = bb.to_double();
+        double res = Math.abs(a) % Math.abs(b);
+        // PlCORE.say("mod " + a + " % " + b + " = " + res);
+        if (a < 0.0 && b > 0.0) {
+            return new PlDouble(b - res);
+        }
+        if (a > 0.0 && b < 0.0) {
+            return new PlDouble(b + res);
+        }
+        if (a < 0.0 && b < 0.0) {
+            return new PlDouble(- res);
+        }
+        return new PlDouble(res);
     }
 
     public static final PlObject srand() {
@@ -5011,6 +5029,9 @@ class PlInt extends PlObject {
     public PlObject to_num() {
         return this;
     }
+    public PlObject mod(PlObject o) {
+        return PerlOp.mod(this, o);
+    }
     public boolean is_int() {
         return true;
     }
@@ -5105,6 +5126,9 @@ EOT
     . <<'EOT'
     public PlObject to_num() {
         return this;
+    }
+    public PlObject mod(PlObject o) {
+        return PerlOp.mod(this, o);
     }
     public boolean is_num() {
         return true;
