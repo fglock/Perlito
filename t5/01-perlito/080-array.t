@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..36';
+say '1..37';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -253,4 +253,11 @@ print "ok 27 - unique_elements $v\n";
     }
 
 }
+
+    $a = undef;
+    $a->[0,2] = (3,5);
+    if ( defined($a->[0]) || defined($a->[1]) || $a->[2] != 5 ) {
+        print 'not '
+    }
+    say "ok 37 - slice set # " . scalar(@$a) . " - " . join(",", @$a);
 
