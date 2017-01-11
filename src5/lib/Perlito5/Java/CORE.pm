@@ -284,6 +284,9 @@ EOT
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject require(int want, PlObject file, boolean is_bareword) {
+        return PlCORE.die("TODO - not implemented: require(file)");
+    }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {
             Path file = Paths.get(List__.aget(0).toString());
@@ -402,6 +405,12 @@ EOT
             return PlCx.UNDEF;
         }
         return res.aget(-1);
+    }
+    public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
+        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
+    }
+    public static final PlObject split(int want, PlObject reg, PlObject arg) {
+        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
         int size = List__.to_int();

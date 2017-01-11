@@ -20956,7 +20956,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($arg->{'is_version_string'}) {
                 return 'p5pkg["Perlito5"]["test_perl_version"]([' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . '], ' . Perlito5::Java::to_context($wantarray) . ')'
             }
-            'p5pkg["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ', ' . ($self->{'arguments'}->[0]->{'bareword'} ? 1 : 0) . '], ' . Perlito5::Java::to_context($wantarray) . ')'
+            'PlCORE.require(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_str($self->{'arguments'}->[0]) . ', ' . ($self->{'arguments'}->[0]->{'bareword'} ? 'true' : 'false') . ')'
         }, 'select' => sub {
             my($self, $level, $wantarray) = @_;
             'p5pkg["CORE"]["select"]([' . ($self->{'arguments'}->[0]->{'bareword'} ? Perlito5::Java::to_str($self->{'arguments'}->[0]) : $self->{'arguments'}->[0]->emit_java($level, 'scalar')) . '])'
@@ -23693,6 +23693,9 @@ class PlCORE {
         }
         return PlCx.UNDEF;
     }
+    public static final PlObject require(int want, PlObject file, boolean is_bareword) {
+        return PlCORE.die("TODO - not implemented: require(file)");
+    }
     public static final PlObject rmdir(int want, PlArray List__) {
         try {
             Path file = Paths.get(List__.aget(0).toString());
@@ -23811,6 +23814,12 @@ class PlCORE {
             return PlCx.UNDEF;
         }
         return res.aget(-1);
+    }
+    public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
+        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
+    }
+    public static final PlObject split(int want, PlObject reg, PlObject arg) {
+        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
         int size = List__.to_int();

@@ -528,10 +528,11 @@ package Perlito5::AST::Apply;
                     . '], ' . Perlito5::Java::to_context($wantarray) . ')';
             }
             # require FILE
-            'p5pkg["Perlito5::Grammar::Use"]["require"]([' 
+            'PlCORE.require('
+                . Perlito5::Java::to_context($wantarray) . ', '
                 . Perlito5::Java::to_str( $self->{arguments}[0] ) . ', ' 
-                . ($self->{arguments}[0]{bareword} ? 1 : 0) 
-            . '], ' . Perlito5::Java::to_context($wantarray) . ')';
+                . ($self->{arguments}[0]{bareword} ? 'true' : 'false') 
+            . ')';
         },
         'select' => sub {
             my ($self, $level, $wantarray) = @_;
