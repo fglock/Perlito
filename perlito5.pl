@@ -22000,6 +22000,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return to_native_bool($cond->{'arguments'}->[0], $level, $wantarray)
             }
             elsif ($cond->isa('Perlito5::AST::Int')) {
+                if ($cond->{'int'} == 0) {
+                    return 'false'
+                }
                 return '(' . $cond->{'int'} . ' != 0)'
             }
             elsif ($cond->isa('Perlito5::AST::Num')) {
@@ -23261,6 +23264,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             else {
                 $expression = Perlito5::Java::to_bool($cond, $level + 1)
+            }
+            if ($expression eq 'false') {
+                return 'PerlOp.statement();'
             }
             if (ref($self->{'body'}) eq 'Perlito5::AST::Apply' && $self->{'body'}->{'code'} eq 'do') {
                 push(@str, 'do {', [Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->{'arguments'}->[0]->{'stmts'}, 'not_a_loop' => 1)->emit_java($level + 2, $wantarray)], '}', 'while (' . $expression . ');')

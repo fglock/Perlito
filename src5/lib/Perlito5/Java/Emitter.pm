@@ -516,6 +516,9 @@ package Perlito5::Java;
                 return to_native_bool( $cond->{arguments}[0], $level, $wantarray )
             }
             elsif ($cond->isa( 'Perlito5::AST::Int' )) {
+                if ($cond->{int} == 0) {
+                    return 'false';
+                }
                 return '(' . $cond->{int} . ' != 0)';
             }
             elsif ($cond->isa( 'Perlito5::AST::Num' )) {
@@ -2633,6 +2636,10 @@ package Perlito5::AST::While;
         }
         else {
             $expression =  Perlito5::Java::to_bool($cond, $level + 1);    
+        }
+        if ($expression eq 'false') {
+            # no-op
+            return 'PerlOp.statement();';
         }
 
         if ( ref($self->{body}) eq 'Perlito5::AST::Apply' && $self->{body}{code} eq 'do' ) {
