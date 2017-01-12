@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..8";
+say "1..9";
 
 {
     package A;
@@ -72,4 +72,17 @@ say "1..8";
     print "not " if !$x;
     say "ok 8 - code-deref calls AUTOLOAD # $x ";
 }
+
+{
+    package G;
+    our $AUTOLOAD;
+    sub AUTOLOAD {
+        print "not ";
+        return wantarray ? ( 6, 7 ) : 456;
+    }
+    my $x = exists &{"a"};
+    print "not " if $x;
+    say "ok 9 - exists() doesn't call AUTOLOAD # $x ";
+}
+
 
