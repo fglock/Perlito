@@ -2801,7 +2801,7 @@ package Perlito5::AST::Sub;
             return $node->emit_java($level, $wantarray);
         }
         local $Perlito5::THROW;
-        local $Perlito5::THROW_RETURN;
+        local $Perlito5::THROW_RETURN if !$self->{_do_block};
         my $prototype = defined($self->{sig}) 
                         ? 'new PlString(' . Perlito5::Java::escape_string($self->{sig}) . ')'
                         : 'PlCx.UNDEF';

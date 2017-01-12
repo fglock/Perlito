@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..2';
+say '1..3';
 
 # stackoverflow.com/questions/161872/hidden-features-of-perl
 #
@@ -35,4 +35,24 @@ $something = 0;
         say "ok 2";
     }
 }
+
+# interaction between do() and last()
+
+sub skip_do {
+    no warnings "exiting";
+    do { last SKIP2 };
+    return;
+}
+
+$something = 1;
+
+{
+  SKIP2: {
+        say "ok 3";
+        skip_do() if $something;
+
+        say "not ok 3";
+    }
+}
+
 
