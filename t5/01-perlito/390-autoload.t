@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..5";
+say "1..6";
 
 {
 
@@ -45,5 +45,21 @@ say "1..5";
         print "not " if $v == 456;
         say "ok 5 # bareword doesn't call AUTOLOAD";
     }
+}
+
+{
+
+    package D;
+
+    our $AUTOLOAD;
+
+    sub AUTOLOAD {
+        print "not ";
+        return wantarray ? ( 6, 7 ) : 456;
+    }
+
+    my $x = prototype("a");
+    print "not " if $x;
+    say "ok 6 - prototype() doesn't call AUTOLOAD # $x ";
 }
 
