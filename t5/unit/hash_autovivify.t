@@ -37,5 +37,5 @@ modify( $b->{x} );
 if (! $b->{x}) {
     print 'not ';
 }
-say 'ok 8 - vivify through $_[0] aliasing # TODO';
+say 'ok 8 - vivify through $_[0] aliasing';
 
