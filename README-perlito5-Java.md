@@ -26,6 +26,8 @@ Perlito5-Java platform differences
   - no eval-string (because not-yet-bootstrapped)
       - also no: "do FILE", "require" (because these depend on eval-string)
 
+  - runtime error messages do not include the line number in the Perl code
+
   - any other differences are not-yet-implemented or bugs.
 
 
@@ -746,6 +748,8 @@ primitive Java types
 Autovivification of aliased parameters
 --------------------------------------
 
+(DONE)
+
 ~~~bash
     $ perl -e ' use Data::Dumper; my %z; my $s; my @w; sub x {$_[0] = 3} x($z{d}, $s, $w[3]); print Dumper [\%z, $s, \@w] '
     $VAR1 = [
@@ -856,7 +860,7 @@ Object-related
         isa
         DOES
     AUTOLOAD
-    Scalar::blessed
+    (DONE) Scalar::blessed
 
     TODO - unit tests
     TODO - method dispatch (current impl doesn't look up classes in @INC)
@@ -878,8 +882,8 @@ Perl features
     return (list)
     assignment to splice
     (DONE) rw @_ in subroutines
-    rw $_ in loops
-    sprintf
+    (DONE) rw $_ in loops
+    (DONE) sprintf
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
     pack
@@ -1025,6 +1029,4 @@ Optimizations
   - investigate performance of "proxy" lvalues;
     when taking an lvalue out of an array or hash, return a proxy
     with a reference to the container and index.
-    Note: there is a working, partial implementation in PerlOp.push_local()
-
 

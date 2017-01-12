@@ -86,6 +86,8 @@ Perlito5-in-JavaScript differences from "perl"
 
 - String increment partially implemented - array and hash lookups; not in scalars.
 
+- runtime error messages do not include the line number in the Perl code
+
 
 Internals
 =========
