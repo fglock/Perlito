@@ -2074,6 +2074,46 @@ use feature 'say';
         })));
         $tmp ? $MATCH : 0
     }
+    sub Perlito5::Grammar::Expression::term_pos {
+        my $str = $_[0];
+        my $pos = $_[1];
+        my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
+        my $tmp = ((('pos' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+            my $pos1 = $MATCH->{'to'};
+            (do {
+                ((do {
+                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && (do {
+                    my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{'to'});
+                    if ($m2) {
+                        $MATCH->{'to'} = $m2->{'to'};
+                        $MATCH->{'Perlito5::Grammar::var_ident'} = $m2;
+                        1
+                    }
+                    else {
+                        0
+                    }
+                }) && (do {
+                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'pos', 'arguments' => [$MATCH->{'Perlito5::Grammar::var_ident'}->{'capture'}])];
+                    1
+                }))
+            }) || (do {
+                $MATCH->{'to'} = $pos1;
+                (do {
+                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'pos', 'arguments' => [Perlito5::AST::Var::SCALAR_ARG()])];
+                    1
+                })
+            })
+        })));
+        $tmp ? $MATCH : 0
+    }
     sub Perlito5::Grammar::Expression::declarator {
         my $str = $_[0];
         my $pos = $_[1];
@@ -2471,6 +2511,7 @@ use feature 'say';
     Perlito5::Grammar::Precedence::add_term('local' => \&term_local);
     Perlito5::Grammar::Precedence::add_term('return' => \&term_return);
     Perlito5::Grammar::Precedence::add_term('not' => \&term_not);
+    Perlito5::Grammar::Precedence::add_term('pos' => \&term_pos);
     1
 }
 {

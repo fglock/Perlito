@@ -409,6 +409,29 @@ token term_curly {
     ]
 };
 
+token term_pos {
+    'pos' 
+    [
+        <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::var_ident>   # pos $variable
+        {
+            $MATCH->{capture} = [ 'term',
+                Perlito5::AST::Apply->new(
+                    code => 'pos',
+                    arguments => [ $MATCH->{"Perlito5::Grammar::var_ident"}{capture} ],
+                )
+            ];
+        }
+    |
+        {
+            $MATCH->{capture} = [ 'term',
+                Perlito5::AST::Apply->new(
+                    code => 'pos',
+                    arguments => [ Perlito5::AST::Var::SCALAR_ARG() ],
+                )
+            ];
+        }
+    ]
+};
 
 token declarator {
      'my' | 'state' | 'our' 
@@ -800,6 +823,7 @@ Perlito5::Grammar::Precedence::add_term( 'state' => \&term_declarator );
 Perlito5::Grammar::Precedence::add_term( 'local' => \&term_local );
 Perlito5::Grammar::Precedence::add_term( 'return' => \&term_return );
 Perlito5::Grammar::Precedence::add_term( 'not'   => \&term_not );
+Perlito5::Grammar::Precedence::add_term( 'pos'   => \&term_pos );
 
 
 1;
