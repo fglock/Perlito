@@ -1,6 +1,6 @@
 use strict;
 
-print "1..4\n";
+print "1..8\n";
 my $v = 123;
 
 {
@@ -29,5 +29,33 @@ my $v = 123;
     ${ $$foo[1] }[2] = $v;
     print "not " unless $foo->[1][2] == $v;
     print "ok 4\n";
+}
+
+{
+    my $foo;
+    $foo->[1] = $v;
+    print "not " unless $foo->[1] == $v;
+    print "ok 5\n";
+}
+
+{
+    my $foo;
+    $foo->{bar} = $v;
+    print "not " unless $foo->{bar} == $v;
+    print "ok 6\n";
+}
+
+{
+    my $foo;
+    $foo->[1]->[2] = $v;
+    print "not " unless $foo->[1]->[2] == $v;
+    print "ok 7\n";
+}
+
+{
+    my $foo;
+    $foo->[1]->[2] = $v;
+    print "not " unless $foo->[1][2] == $v;
+    print "ok 8\n";
 }
 
