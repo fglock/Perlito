@@ -1011,18 +1011,22 @@ class PerlOp {
     // ****** pos()
     // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
 
-    public static final PlObject pos(PlObject var) {
+    public static final PlObject pos(PlObject vv) {
         // TODO - check that var is lvalue
-        Integer pos = ((PlLvalue)var).pos;
+        PlLvalue var = (PlLvalue)vv;
+        Integer pos = var.pos;
         if (pos == null) {
             return PlCx.UNDEF;
         }
         return new PlInt(pos);
     }
-    public static final PlObject set_pos(PlObject var, PlObject value, PlRegexResult matcher, String str) {
+    public static final PlObject set_pos(PlObject vv, PlObject value, PlRegexResult matcher, String str) {
         // TODO - check that var is lvalue
+        PlLvalue var = (PlLvalue)vv;
+
         if (value.is_undef()) {
-            ((PlLvalue)var).pos = null;
+            var.pos = null;
+            var.regex_zero_length_flag = false;
             return value;
         }
 
@@ -1033,7 +1037,7 @@ class PerlOp {
 
         if (old_pos == pos) {
             // PlCORE.say("zero length match");
-            if (matcher.regex_zero_length_flag) {
+            if (var.regex_zero_length_flag) {
                 if (matcher.matcher.find()) {
                     matcher.regex_string = str;
                     pos = matcher.matcher.end();
@@ -1043,22 +1047,22 @@ class PerlOp {
                     // String cap = str.substring(matcher.start(), matcher.end());
                     // PlCORE.say("zero length match [true]: [" + cap + "] ["+ cap1+"] pos=" + pos + " start="+matcher.start() + " end="+matcher.end());
 
-                    matcher.regex_zero_length_flag = false;
+                    var.regex_zero_length_flag = false;
                 }
                 else {
                     reset_match();
-                    ((PlLvalue)var).pos = null;
+                    var.pos = null;
                     return PlCx.UNDEF;
                 }
             }
             else {
-                matcher.regex_zero_length_flag = true;
+                var.regex_zero_length_flag = true;
             }
         }
 
         // TODO - test that pos < string length
         value = new PlInt(pos);
-        ((PlLvalue)var).pos = pos;
+        var.pos = pos;
         return value;
     }
 
@@ -1078,13 +1082,11 @@ class PerlOp {
         PlRegexResult match = new PlRegexResult();
         match.matcher = m;
         match.regex_string = s;
-        match.regex_zero_length_flag = false;
         regex_var.hset("__match__", match);
         return match;
     }
     public static final void reset_match() {
         PlRegexResult match = new PlRegexResult();
-        match.regex_zero_length_flag = false;
         regex_var.hset("__match__", match);
     }
     public static final PlObject regex_var(int var_number) {
@@ -2342,7 +2344,6 @@ class PlRegex extends PlReference {
 class PlRegexResult extends PlObject {
     public static Matcher matcher;      // regex captures
     public static String  regex_string; // last string used in a regex
-    public static boolean regex_zero_length_flag;
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
@@ -3248,6 +3249,7 @@ EOT
 class PlLvalue extends PlObject {
     private PlObject o;
     public Integer pos;
+    public boolean regex_zero_length_flag;
 
     // Note: several versions of PlLvalue()
     public PlLvalue() {
