@@ -410,9 +410,9 @@ token term_curly {
 };
 
 token term_pos {
-    'pos' 
+    'pos' <.Perlito5::Grammar::Space::opt_ws>
     [
-        <.Perlito5::Grammar::Space::opt_ws> <Perlito5::Grammar::var_ident>   # pos $variable
+        <Perlito5::Grammar::var_ident>   # pos $variable
         {
             $MATCH->{capture} = [ 'term',
                 Perlito5::AST::Apply->new(
@@ -422,6 +422,7 @@ token term_pos {
             ];
         }
     |
+        <!before '(' >
         {
             $MATCH->{capture} = [ 'term',
                 Perlito5::AST::Apply->new(

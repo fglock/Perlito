@@ -2079,18 +2079,18 @@ use feature 'say';
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
         my $tmp = ((('pos' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                1
+            }
+            else {
+                0
+            }
+        }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {
                 ((do {
-                    my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
-                    if ($m2) {
-                        $MATCH->{'to'} = $m2->{'to'};
-                        1
-                    }
-                    else {
-                        0
-                    }
-                }) && (do {
                     my $m2 = Perlito5::Grammar::var_ident($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2106,10 +2106,16 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (do {
+                ((do {
+                    my $tmp = $MATCH;
+                    $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                    my $res = ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    $MATCH = $tmp;
+                    $res ? 0 : 1
+                }) && (do {
                     $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'pos', 'arguments' => [Perlito5::AST::Var::SCALAR_ARG()])];
                     1
-                })
+                }))
             })
         })));
         $tmp ? $MATCH : 0
