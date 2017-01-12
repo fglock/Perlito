@@ -1599,7 +1599,7 @@ package Perlito5::AST::Index;
                 'method' => 'postcircumfix:<[ ]>',
                 'invocant' => $self->{obj}->{arguments}[0],
                 'arguments' => $self->{index_exp},
-            )->emit_java($level);
+            )->emit_java($level, $wantarray, $autovivification_type);
         }
         my $arg = $self->{index_exp};
         my $s;
@@ -1816,7 +1816,7 @@ package Perlito5::AST::Lookup;
                 'method' => 'postcircumfix:<{ }>',
                 'invocant' => $self->{obj}->{arguments}[0],
                 'arguments' => $self->{index_exp},
-            )->emit_java($level);
+            )->emit_java($level, $wantarray, $autovivification_type);
         }
         my $index = Perlito5::AST::Lookup->autoquote($self->{index_exp});
         return $self->emit_java_container($level) . '.' . $method . '('
