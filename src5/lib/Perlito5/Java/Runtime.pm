@@ -962,6 +962,12 @@ class PerlOp {
         return offset3;
     }
 
+    // escape rules:
+    //
+    // \[       as-is
+    // [xx xx]  becomes: [xx\ xx] - this will make sure space is a token, even when /x modifier is set
+    // \120     becomes: \0120 - Java requires octal sequences to start with zero
+    //
     public static String character_class_escape(String s) {
         // escape spaces in character classes
         final int length = s.length();
@@ -974,6 +980,17 @@ class PerlOp {
                             if (offset < length) {
                                 offset++;
                                 int c2 = s.codePointAt(offset);
+                                if (c2 >= '1' && c2 <= '3') {
+                                    if (offset < length+1) {
+                                        int off = offset;
+                                        int c3 = s.codePointAt(off++);
+                                        int c4 = s.codePointAt(off++);
+                                        if ((c3 >= '0' && c3 <= '7') && (c4 >= '0' && c4 <= '7')) {
+                                            // a \000 octal sequence
+                                            sb.append('0');
+                                        }
+                                    }
+                                }
                                 sb.append(Character.toChars(c2));
                             }
                             break;
