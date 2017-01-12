@@ -2809,7 +2809,7 @@ package Perlito5::AST::Sub;
         my $sub_ref = Perlito5::Java::get_label();
         local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
         local $Perlito5::Java::is_inside_subroutine = 1;
-        my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts} );
+        my $block = Perlito5::Java::LexicalBlock->new( block => $self->{block}{stmts}, not_a_loop => 1 );
 
         # get list of captured variables, including inner blocks
         my @captured;

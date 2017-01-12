@@ -23370,7 +23370,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $sub_ref = Perlito5::Java::get_label();
             local $Perlito5::AST::Sub::SUB_REF = $sub_ref;
             local $Perlito5::Java::is_inside_subroutine = 1;
-            my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'});
+            my $block = Perlito5::Java::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'}, 'not_a_loop' => 1);
             my @captured;
             for my $stmt (@{$self->{'block'}->{'stmts'}}) {
                 push(@captured, $stmt->get_captures())
