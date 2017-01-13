@@ -1,5 +1,5 @@
 
-    print "1..9\n";
+    print "1..6\n";
 
     if ( defined $1 ) {
         print "not ";
@@ -35,21 +35,4 @@
     }
     print "ok 6  # ", $1, "\n";
 
-    {
-        if ( $1 ne 'a' ) {
-            print "not ";
-        }
-        print "ok 7 - inside block  # ", $1, "\n";
-
-        $_ =~ m/(\w)/g;
-        if ( $1 ne 'r' ) {
-            print "not ";
-        }
-        print "ok 8  # ", $1, "\n";
-
-    }
-    if ( $1 ne 'a' ) {
-        print "not ";
-    }
-    print "ok 9 - out of block retrieves previous value # ", $1, "\n";
 
