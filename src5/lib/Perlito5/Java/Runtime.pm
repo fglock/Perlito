@@ -1068,8 +1068,8 @@ class PerlOp {
 
     // ****** regex variables
     // class PlRegexResult extends PlObject {
-    //     public static Matcher matcher;      // regex captures
-    //     public static String  regex_string; // last string used in a regex
+    //     public Matcher matcher;      // regex captures
+    //     public String  regex_string; // last string used in a regex
     public static final PlHash regex_var = new PlHash();
 
     public static final PlRegexResult get_match() {
@@ -2343,8 +2343,8 @@ class PlRegex extends PlReference {
     }
 }
 class PlRegexResult extends PlObject {
-    public static Matcher matcher;      // regex captures
-    public static String  regex_string; // last string used in a regex
+    public Matcher matcher;      // regex captures
+    public String  regex_string; // last string used in a regex
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
