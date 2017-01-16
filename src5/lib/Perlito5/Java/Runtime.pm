@@ -1076,8 +1076,12 @@ class PerlOp {
         return (PlRegexResult)regex_var.hget_lvalue("__match__").get();
     }
     public static final void local_match() {
+        PlRegexResult old = get_match();
         regex_var.hget_lvalue_local("__match__");
         reset_match();
+        PlRegexResult match = get_match();
+        match.matcher = old.matcher;
+        match.regex_string = old.regex_string;
     }
     public static final PlRegexResult set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
@@ -1700,7 +1704,7 @@ class PlEnv {
                 return PlCx.UNDEF;
             }
         });
-
+        PerlOp.reset_match();
     }
 }
 class PlObject {
