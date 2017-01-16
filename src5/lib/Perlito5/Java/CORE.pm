@@ -535,8 +535,9 @@ EOT
         try {
             return new PlInt(Long.parseLong(s, 16));
         } catch (java.lang.NumberFormatException e) {
-            return new PlInt(0);
+            // result = e.getMessage();
         }
+        return new PlInt(0);
     }
     public static final PlObject oct(int want, PlObject List__) {
         String s = List__.toString();
