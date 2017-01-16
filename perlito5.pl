@@ -26424,7 +26424,7 @@ class PerlOp {
                     return PlCx.TRUE;
                 }
                 else {
-                    reset_match();
+                    // reset_match();
                     set_pos(input, PlCx.UNDEF, null, null);
                     return PlCx.FALSE;
                 }
@@ -26436,7 +26436,7 @@ class PerlOp {
                     return PlCx.TRUE;
                 }
                 else {
-                    reset_match();
+                    // reset_match();
                     return PlCx.FALSE;
                 }
             }
@@ -26463,7 +26463,7 @@ class PerlOp {
                 set_match(matcher, str);
             }
             else {
-                reset_match();
+                // reset_match();
             }
             set_pos(input, PlCx.UNDEF, null, null);
             return ret;
@@ -26483,7 +26483,7 @@ class PerlOp {
                 }
             }
             else {
-                reset_match();
+                // reset_match();
             }
             return ret;
         }
