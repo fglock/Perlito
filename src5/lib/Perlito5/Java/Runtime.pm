@@ -2013,6 +2013,9 @@ EOT
     public boolean is_hashref() {
         return false;
     }
+    public boolean is_regex() {
+        return false;
+    }
     public boolean is_coderef() {
         return false;
     }
@@ -2341,6 +2344,9 @@ class PlRegex extends PlReference {
     public String toString() {
         // TODO - show flags
         return this.original_string;
+    }
+    public boolean is_regex() {
+        return true;
     }
 }
 class PlRegexResult extends PlObject {
@@ -3148,6 +3154,9 @@ EOT
     public boolean is_ref() {
         return this.get().is_ref();
     }
+    public boolean is_regex() {
+        return this.get().is_regex();
+    }
     public boolean is_coderef() {
         return this.get().is_coderef();
     }
@@ -3627,6 +3636,9 @@ EOT
     }
     public boolean is_ref() {
         return this.o.is_ref();
+    }
+    public boolean is_regex() {
+        return this.o.is_regex();
     }
     public boolean is_coderef() {
         return this.o.is_coderef();
