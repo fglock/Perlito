@@ -26360,10 +26360,7 @@ class PerlOp {
     public static final void local_match() {
         PlRegexResult old = get_match();
         regex_var.hget_lvalue_local("__match__");
-        reset_match();
-        PlRegexResult match = get_match();
-        match.matcher = old.matcher;
-        match.regex_string = old.regex_string;
+        set_match(old.matcher, old.regex_string);
     }
     public static final PlRegexResult set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
