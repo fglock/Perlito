@@ -23998,9 +23998,13 @@ class PlCORE {
 
     public static final PlObject hex(int want, PlObject List__) {
         String s = List__.toString();
-        if(s.startsWith("0x") || s.startsWith("0X")) {
+        if (s.startsWith("0x") || s.startsWith("0X")) {
             s = s.substring(2);
         }
+        else if (s.startsWith("x") || s.startsWith("X")) {
+            s = s.substring(1);
+        }
+        s = s.replace("_","");
         try {
             return new PlInt(Long.parseLong(s, 16));
         } catch (java.lang.NumberFormatException e) {
@@ -24008,14 +24012,23 @@ class PlCORE {
         }
     }
     public static final PlObject oct(int want, PlObject List__) {
-        String valueTobeCoverted = List__.toString();
+        String s = List__.toString();
         try {
-            if (valueTobeCoverted.startsWith("0x") || valueTobeCoverted.startsWith("0X")) {
-                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 16));
-            } else if (valueTobeCoverted.startsWith("0b") || valueTobeCoverted.startsWith("0B")) {
-                return new PlInt(Long.parseLong(valueTobeCoverted.substring(2), 2));
+            if (s.startsWith("0x") || s.startsWith("0X")) {
+                s = s.replace("_","");
+                return new PlInt(Long.parseLong(s.substring(2), 16));
+            } else if (s.startsWith("x") || s.startsWith("X")) {
+                s = s.replace("_","");
+                return new PlInt(Long.parseLong(s.substring(1), 16));
+            } else if (s.startsWith("0b") || s.startsWith("0B")) {
+                s = s.replace("_","");
+                return new PlInt(Long.parseLong(s.substring(2), 2));
+            } else if (s.startsWith("b") || s.startsWith("B")) {
+                s = s.replace("_","");
+                return new PlInt(Long.parseLong(s.substring(1), 2));
             } else {
-                return new PlInt(Long.parseLong(valueTobeCoverted, 8));
+                s = s.replace("_","");
+                return new PlInt(Long.parseLong(s, 8));
             }
         } catch (NumberFormatException n) {
             
