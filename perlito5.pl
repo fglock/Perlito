@@ -26567,8 +26567,11 @@ class PerlOp {
         return s;
     }
     public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
+        if (!s.is_lvalue()) {
+            PlCORE.die("Can' . chr(39) . 't modify constant item in substitution (s///)");
+        }
         // TODO - cache the compiled pattern
-        return replace(s, new PlRegex(pat, 0), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, String rep, int want, boolean global) {
@@ -26580,8 +26583,11 @@ class PerlOp {
         return s;
     }
     public static final PlObject replace(PlObject s, PlObject pat, String rep, int want, boolean global) {
+        if (!s.is_lvalue()) {
+            PlCORE.die("Can' . chr(39) . 't modify constant item in substitution (s///)");
+        }
         // TODO - cache the compiled pattern
-        return replace(s, new PlRegex(pat, 0), rep, want, global);
+        return replace((PlLvalue)s, new PlRegex(pat, 0), rep, want, global);
     }
 
     // $v =~ tr/xyz/abc/i
