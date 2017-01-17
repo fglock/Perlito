@@ -21669,13 +21669,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{'arguments'}};
             if (@arguments < 1) {
-                push(@arguments, Perlito5::AST::Buf('buf' => ' '))
+                push(@arguments, Perlito5::AST::Buf::->new('buf' => ' '))
             }
             if (@arguments < 2) {
                 push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
             }
             if (@arguments < 3) {
-                push(@arguments, Perlito5::AST::Int('int' => 0))
+                push(@arguments, Perlito5::AST::Int::->new('int' => 0))
             }
             my @js;
             my $arg = $arguments[0];
@@ -23889,7 +23889,43 @@ class PlCORE {
         }
         return res.aget(-1);
     }
-    public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
+    public static final PlObject split(int want, PlObject plReg, PlObject plArg, PlObject plCount) {
+        PlArray res = new PlArray();
+        if (plReg.is_lvalue()) {
+            plReg = plReg.get();
+        }
+
+        int count = plCount.to_int();
+        String arg = plArg.toString();
+
+        if (count == 0) {
+            // rtrim
+            int i = arg.length()-1;
+            while (i >= 0 && Character.isWhitespace(arg.charAt(i))) {
+                i--;
+            }
+            arg = arg.substring(0,i+1);
+        }
+
+        if (plReg.is_string()) {
+            String regs = plReg.toString();
+            if (regs.equals(" ")) {
+
+                // ltrim
+                int i = 0;
+                while (i < arg.length() && Character.isWhitespace(arg.charAt(i))) {
+                    i++;
+                }
+                if (i > 0) {
+                    arg = arg.substring(i);
+                }
+
+                for (String s : PlCx.SPLIT_SPACE.split(arg, count)) {
+                    res.push(s);
+                }
+                return res;
+            }
+        }
         return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
@@ -25580,7 +25616,7 @@ class PlCx {
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_ADD      = "(+";
     public static final String OVERLOAD_SUBTRACT = "(-";
-
+    public static final Pattern SPLIT_SPACE      = Pattern.compile("\\\\s+");
 ' . '    ' . join('
     ', map {
             'public static final PlInt ' . ($_ < 0 ? 'MIN' : 'INT') . abs($_) . ' = new PlInt(' . $_ . ');'

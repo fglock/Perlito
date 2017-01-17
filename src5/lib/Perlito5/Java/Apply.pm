@@ -1569,13 +1569,13 @@ package Perlito5::AST::Apply;
             my ($self, $level, $wantarray) = @_;
             my @arguments = @{$self->{arguments}};
             if (@arguments < 1) {
-                push @arguments, Perlito5::AST::Buf(buf => " ");
+                push @arguments, Perlito5::AST::Buf->new(buf => " ");
             }
             if (@arguments < 2) {
                 push @arguments, Perlito5::AST::Var::SCALAR_ARG();
             }
             if (@arguments < 3) {
-                push @arguments, Perlito5::AST::Int(int => 0);
+                push @arguments, Perlito5::AST::Int->new(int => 0);
             }
             my @js;
             my $arg = $arguments[0];

@@ -406,7 +406,43 @@ EOT
         }
         return res.aget(-1);
     }
-    public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
+    public static final PlObject split(int want, PlObject plReg, PlObject plArg, PlObject plCount) {
+        PlArray res = new PlArray();
+        if (plReg.is_lvalue()) {
+            plReg = plReg.get();
+        }
+
+        int count = plCount.to_int();
+        String arg = plArg.toString();
+
+        if (count == 0) {
+            // rtrim
+            int i = arg.length()-1;
+            while (i >= 0 && Character.isWhitespace(arg.charAt(i))) {
+                i--;
+            }
+            arg = arg.substring(0,i+1);
+        }
+
+        if (plReg.is_string()) {
+            String regs = plReg.toString();
+            if (regs.equals(" ")) {
+
+                // ltrim
+                int i = 0;
+                while (i < arg.length() && Character.isWhitespace(arg.charAt(i))) {
+                    i++;
+                }
+                if (i > 0) {
+                    arg = arg.substring(i);
+                }
+
+                for (String s : PlCx.SPLIT_SPACE.split(arg, count)) {
+                    res.push(s);
+                }
+                return res;
+            }
+        }
         return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
