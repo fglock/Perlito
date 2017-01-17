@@ -45,20 +45,22 @@ package Perlito5::AST::Apply;
             my $replace = $regex_args->[1];
             my $modifier = $regex_args->[2]->{buf};
             my $replace_java;
-            if (ref($replace) eq 'Perlito5::AST::Block') {
-                $replace_java = Perlito5::AST::Apply->new(
-                            code => 'do',
-                            arguments => [$replace]
-                        )->emit_java($level);
-                $modifier =~ s/e//g;
-            }
-            elsif (ref($replace) eq 'Perlito5::AST::Buf') {
+            if (ref($replace) eq 'Perlito5::AST::Buf') {
                 $replace_java = $replace->{buf};
                 $replace_java =~ s{\\}{\\\\}g;
                 $replace_java = Perlito5::Java::escape_string($replace_java);
             }
             else {
-                $replace_java = $replace->emit_java($level);
+                if (ref($replace) ne 'Perlito5::AST::Block') {
+                    $replace = Perlito5::AST::Block->new(
+                        stmts => [ $replace ],
+                    );
+                }
+                $replace_java = Perlito5::AST::Apply->new(
+                            code => 'do',
+                            arguments => [$replace]
+                        )->emit_java($level);
+                $modifier =~ s/e//g;
             }
             if ($modifier =~ /g/) {
                 $modifier_global = 'true';
