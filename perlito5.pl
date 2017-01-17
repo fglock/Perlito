@@ -21667,13 +21667,23 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             return 'PerlOp.prototype(' . $arg->emit_java($level) . ', ' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ')'
         }, 'split' => sub {
             my($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{'arguments'}};
+            if (@arguments < 1) {
+                push(@arguments, Perlito5::AST::Buf('buf' => ' '))
+            }
+            if (@arguments < 2) {
+                push(@arguments, Perlito5::AST::Var::SCALAR_ARG())
+            }
+            if (@arguments < 3) {
+                push(@arguments, Perlito5::AST::Int('int' => 0))
+            }
             my @js;
-            my $arg = $self->{'arguments'}->[0];
+            my $arg = $arguments[0];
             if ($arg && $arg->isa('Perlito5::AST::Apply') && $arg->{'code'} eq 'p5:m') {
                 push(@js, emit_qr_java($arg->{'arguments'}->[0], $arg->{'arguments'}->[1]->{'buf'}));
-                shift(@{$self->{'arguments'}})
+                shift(@arguments)
             }
-            return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java($level), @{$self->{'arguments'}})) . ')'
+            return 'PlCORE.split(' . join(', ', Perlito5::Java::to_context($wantarray), @js, map($_->emit_java($level), @arguments)) . ')'
         });
         sub Perlito5::AST::Apply::emit_java {
             my($self, $level, $wantarray, $autovivification_type) = @_;
@@ -23880,9 +23890,6 @@ class PlCORE {
         return res.aget(-1);
     }
     public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
-        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
-    }
-    public static final PlObject split(int want, PlObject reg, PlObject arg) {
         return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {

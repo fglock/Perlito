@@ -409,9 +409,6 @@ EOT
     public static final PlObject split(int want, PlObject reg, PlObject arg, PlObject count) {
         return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
     }
-    public static final PlObject split(int want, PlObject reg, PlObject arg) {
-        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
-    }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
         int size = List__.to_int();
         int pos  = offset.to_int();

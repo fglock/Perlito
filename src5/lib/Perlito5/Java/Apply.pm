@@ -1567,21 +1567,31 @@ package Perlito5::AST::Apply;
         },
         'split' => sub {
             my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            if (@arguments < 1) {
+                push @arguments, Perlito5::AST::Buf(buf => " ");
+            }
+            if (@arguments < 2) {
+                push @arguments, Perlito5::AST::Var::SCALAR_ARG();
+            }
+            if (@arguments < 3) {
+                push @arguments, Perlito5::AST::Int(int => 0);
+            }
             my @js;
-            my $arg = $self->{arguments}->[0];
+            my $arg = $arguments[0];
             if ( $arg
               && $arg->isa('Perlito5::AST::Apply')
               && $arg->{code} eq 'p5:m'
             ) {
                 # first argument of split() is a regex
                 push @js, emit_qr_java( $arg->{arguments}->[0], $arg->{arguments}->[1]->{buf} );
-                shift @{ $self->{arguments} };
+                shift @arguments;
             }
             return 'PlCORE.split('
                 . join( ', ',
                     Perlito5::Java::to_context($wantarray),
                     @js,
-                    map( $_->emit_java($level), @{ $self->{arguments} } )
+                    map( $_->emit_java($level), @arguments )
                   )
             . ')';
         },
