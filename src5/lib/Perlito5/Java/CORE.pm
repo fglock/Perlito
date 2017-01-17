@@ -424,7 +424,7 @@ EOT
             arg = arg.substring(0,i+1);
         }
 
-        if (plReg.is_string()) {
+        if (!plReg.is_regex()) {
             String regs = plReg.toString();
             if (regs.equals(" ")) {
 
@@ -437,13 +437,18 @@ EOT
                     arg = arg.substring(i);
                 }
 
-                for (String s : PlCx.SPLIT_SPACE.split(arg, count)) {
-                    res.push(s);
-                }
-                return res;
+                plReg = PlCx.SPLIT_SPACE;
+            }
+            else {
+                plReg = new PlRegex(regs, 0);
             }
         }
-        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
+
+        Pattern pat = ((PlRegex)plReg).p;
+        for (String s : pat.split(arg, count)) {
+            res.push(s);
+        }
+        return res;
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
         int size = List__.to_int();

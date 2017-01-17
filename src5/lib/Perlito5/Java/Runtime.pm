@@ -272,7 +272,7 @@ class PlCx {
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_ADD      = "(+";
     public static final String OVERLOAD_SUBTRACT = "(-";
-    public static final Pattern SPLIT_SPACE      = Pattern.compile("\\s+");
+    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", 0);
 EOT
     . "    " . join("\n    ",
         map { "public static final PlInt " . ($_ < 0 ? "MIN" : "INT") . abs($_) . " = new PlInt($_);" }

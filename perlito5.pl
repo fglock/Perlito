@@ -23907,7 +23907,7 @@ class PlCORE {
             arg = arg.substring(0,i+1);
         }
 
-        if (plReg.is_string()) {
+        if (!plReg.is_regex()) {
             String regs = plReg.toString();
             if (regs.equals(" ")) {
 
@@ -23920,13 +23920,18 @@ class PlCORE {
                     arg = arg.substring(i);
                 }
 
-                for (String s : PlCx.SPLIT_SPACE.split(arg, count)) {
-                    res.push(s);
-                }
-                return res;
+                plReg = PlCx.SPLIT_SPACE;
+            }
+            else {
+                plReg = new PlRegex(regs, 0);
             }
         }
-        return PlCORE.die("TODO - not implemented: split(regex, arg, count)");
+
+        Pattern pat = ((PlRegex)plReg).p;
+        for (String s : pat.split(arg, count)) {
+            res.push(s);
+        }
+        return res;
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
         int size = List__.to_int();
@@ -25616,7 +25621,7 @@ class PlCx {
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_ADD      = "(+";
     public static final String OVERLOAD_SUBTRACT = "(-";
-    public static final Pattern SPLIT_SPACE      = Pattern.compile("\\\\s+");
+    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\\\s+", 0);
 ' . '    ' . join('
     ', map {
             'public static final PlInt ' . ($_ < 0 ? 'MIN' : 'INT') . abs($_) . ' = new PlInt(' . $_ . ');'
