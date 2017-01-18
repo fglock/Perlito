@@ -301,13 +301,17 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{code} eq 'p5:s') {
+            my $replace0 = $self->{arguments}->[0]->{buf};
+            $replace0 =~ s{\\}{\\\\}g;
+            my $replace1 = $self->{arguments}->[1]->{buf};
+            $replace1 =~ s{\\}{\\\\}g;
             my $q = emit_perl5_choose_regex_quote(
-                        $self->{arguments}->[0]->{buf}, 
-                        $self->{arguments}->[1]->{buf}, 
+                        $replace0, 
+                        $replace1,
                         $self->{arguments}->[2]->{buf}, 
                     );
-            return 's' . $q . $self->{arguments}->[0]->{buf}   # emit_perl5() 
-                 .       $q . $self->{arguments}->[1]->{buf}   # emit_perl5()
+            return 's' . $q . $replace0                        # emit_perl5() 
+                 .       $q . $replace1                        # emit_perl5()
                  .       $q . $self->{arguments}->[2]->{buf};
 
         }
