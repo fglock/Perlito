@@ -244,6 +244,23 @@ package Perlito5::AST::Apply;
         }
         return "_";
     }
+    sub emit_perl5_regex_expression {
+        my $ast = $_[0];
+        if ($ast->isa('Perlito5::AST::Buf')) {
+            my $replace = $ast->{buf};
+            # $replace =~ s{\\}{\\\\}g;
+            return $replace;
+        }
+        if ($ast->isa('Perlito5::AST::Apply') && $ast->{code} eq 'list:<.>') {
+            # concatenate arguments
+            my $s = "";
+            for my $a (@{$ast->{arguments}}) {
+                $s .= emit_perl5_regex_expression($a);
+            }
+            return $s;
+        }
+        return $ast->emit_perl5();  # variable name
+    }
     sub emit_perl5 {
         my $self = $_[0];   
         if (ref $self->{code}) {
@@ -301,9 +318,9 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{code} eq 'p5:s') {
-            my $replace0 = $self->{arguments}->[0]->{buf};
+            my $replace0 = emit_perl5_regex_expression($self->{arguments}->[0]);
+            my $replace1 = emit_perl5_regex_expression($self->{arguments}->[1]);
             $replace0 =~ s{\\}{\\\\}g;
-            my $replace1 = $self->{arguments}->[1]->{buf};
             $replace1 =~ s{\\}{\\\\}g;
             my $q = emit_perl5_choose_regex_quote(
                         $replace0, 
@@ -316,34 +333,22 @@ package Perlito5::AST::Apply;
 
         }
         if ($self->{code} eq 'p5:m') {
-            my $s;
-            if ($self->{arguments}->[0]->isa('Perlito5::AST::Buf')) {
-                $s = $self->{arguments}->[0]->{buf}
-            }
-            else {
-                for my $ast (@{$self->{arguments}[0]{arguments}}) {
-                    if ($ast->isa('Perlito5::AST::Buf')) {
-                        $s .= $ast->{buf}
-                    }
-                    else {
-                        $s .= $ast->emit_perl5();  # variable name
-                    }
-                }
-            }
-
+            my $replace0 = emit_perl5_regex_expression($self->{arguments}->[0]);
             my $q = emit_perl5_choose_regex_quote(
-                        $s,
+                        $replace0,
                         $self->{arguments}->[1]->{buf}, 
                     );
-            return 'm' . $q . $s . $q . $self->{arguments}->[1]->{buf};
+            return 'm' . $q . $replace0 . $q . $self->{arguments}->[1]->{buf};
         }
         if ($self->{code} eq 'p5:tr') {
+            my $replace0 = emit_perl5_regex_expression($self->{arguments}->[0]);
+            my $replace1 = emit_perl5_regex_expression($self->{arguments}->[1]);
             my $q = emit_perl5_choose_regex_quote(
-                        $self->{arguments}->[0]->{buf}, 
-                        $self->{arguments}->[1]->{buf}, 
+                        $replace0, 
+                        $replace1,
                     );
-            return 'tr' . $q . $self->{arguments}->[0]->{buf}   # emit_perl5() 
-                 .        $q . $self->{arguments}->[1]->{buf}   # emit_perl5()
+            return 'tr' . $q . $replace0                        # emit_perl5() 
+                 .        $q . $replace1                        # emit_perl5()
                  .        $q;
         }
 

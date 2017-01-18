@@ -548,6 +548,9 @@ Perl5 backend
 
 - fix regex delimiters, or escape the regexes
 
+    test case:
+
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cperl5 -e ' s/\$a$a/b$b/g; tr/\$c$c/d$d/; m/\$e$e/; ' 
 
 
 Compile-time execution environment
