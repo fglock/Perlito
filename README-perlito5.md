@@ -276,13 +276,13 @@ Parser
     $ perl -e ' $c (f) '
     syntax error at -e line 1, near "$c ("
 
-    $ perl -e ' my @things= map {  no warnings; 123 } @list; '
-    "no" not allowed in expression
-
     string interpolation with nested quotes of the same type:
 
         $ perl -e ' " $x{"x"} " '
         String found where operator expected at -e line 1, near "x"} ""
+
+        In perl5.22.0:
+        Missing right curly or square bracket at -e line 1, within string
 
 
 Add tests for fixed bugs
@@ -466,7 +466,8 @@ Add tests for fixed bugs
     '  $step++ < $steps '
     Can't find string terminator '>' anywhere before EOF
 
--- from moritz, Schwern and others at
+    ---
+    -- from moritz, Schwern and others at
     http://stackoverflow.com/questions/161872/hidden-features-of-perl
 
     - you can use letters as delimiters
@@ -478,6 +479,11 @@ Add tests for fixed bugs
 
     m xabcx
     # same as m/abc/
+
+    ---
+    $ perl -e ' my @things= map {  no warnings; 123 } @list; '
+    "no" not allowed in expression
+    (DONE) no longer a bug, this now works in perl5.22.0
 
 
 
