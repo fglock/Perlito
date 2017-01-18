@@ -143,12 +143,6 @@ Libraries
 Parser
 ------
 
--- parse error in string interpolation in regex
-
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cast -e ' s/a$a/b$b/g; tr/c$c/d$d/; m/e$e/; ' 
-
-    'a$a' and 'c$c' are returning a string instead of an expression
-
 -- lexical variables in BEGIN blocks
 
     my $v = 123;

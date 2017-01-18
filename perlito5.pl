@@ -3872,7 +3872,7 @@ use feature 'say';
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
         my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
         $part1 || return $part1;
-        my $str_regex = Perlito5::AST::Buf::->new('buf' => substr($str, $pos, $part1->{'to'} - $pos - 1));
+        my $str_regex = Perlito5::Match::flat($part1);
         my $part2;
         my $m;
         my $p = $part1->{'to'};

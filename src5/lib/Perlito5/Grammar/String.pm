@@ -155,7 +155,7 @@ sub s_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::Match::flat($part1); #Perlito5::AST::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+    my $str_regex = Perlito5::Match::flat($part1);
 
     my $part2;
     my $m;
@@ -403,7 +403,7 @@ sub tr_quote_parse {
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
-    my $str_regex = Perlito5::AST::Buf->new( buf => substr( $str, $pos, $part1->{to} - $pos - 1 ) );
+    my $str_regex = Perlito5::Match::flat($part1);
 
     my $part2;
     my $m;
