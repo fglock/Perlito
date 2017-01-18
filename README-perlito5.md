@@ -153,7 +153,7 @@ Parser
 
     my $v = 123;
     BEGIN {
-        # $v is not initialized
+        # $v is not seen
     }
 
 -- test that "use" checks the return value of modules (the "1;" thing)
