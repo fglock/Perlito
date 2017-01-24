@@ -173,11 +173,13 @@ sub s_quote_parse {
         # warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+        $interpolate = 2;
+        $interpolate = 3 if $delimiter eq "'";
+        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
         return $part2 unless $part2;
     }
     else {
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
         return $part2 unless $part2;
     }
 

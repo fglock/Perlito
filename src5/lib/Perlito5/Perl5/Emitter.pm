@@ -320,8 +320,6 @@ package Perlito5::AST::Apply;
         if ($self->{code} eq 'p5:s') {
             my $replace0 = emit_perl5_regex_expression($self->{arguments}->[0]);
             my $replace1 = emit_perl5_regex_expression($self->{arguments}->[1]);
-            # $replace0 =~ s{\\}{\\\\}g;
-            $replace1 =~ s{\\}{\\\\}g;
             my $q = emit_perl5_choose_regex_quote(
                         $replace0, 
                         $replace1,
