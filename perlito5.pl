@@ -3744,7 +3744,9 @@ use feature 'say';
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-        my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
+        my $interpolate = 2;
+        $delimiter eq chr(39) && ($interpolate = 3);
+        my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = Perlito5::Match::flat($part1);
         my $part2;
@@ -18731,8 +18733,7 @@ CORE.printf = function(List__) {
             if ($self->{'code'} eq 'p5:s') {
                 my $replace0 = emit_perl5_regex_expression($self->{'arguments'}->[0]);
                 my $replace1 = emit_perl5_regex_expression($self->{'arguments'}->[1]);
-                $replace0 =~ s!\\!\\\\!g;
-                $replace1 =~ s!\\!\\\\!g;
+                $replace1 =~ s!\\!\\!g;
                 my $q = emit_perl5_choose_regex_quote($replace0, $replace1, $self->{'arguments'}->[2]->{'buf'});
                 return 's' . $q . $replace0 . $q . $replace1 . $q . $self->{'arguments'}->[2]->{'buf'}
             }
@@ -20722,7 +20723,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $replace_java;
                 if (ref($replace) eq 'Perlito5::AST::Buf') {
                     $replace_java = $replace->{'buf'};
-                    $replace_java =~ s!\\!\\\\!g;
+                    $replace_java =~ s!\\!\\!g;
                     $replace_java = Perlito5::Java::escape_string($replace_java)
                 }
                 else {
