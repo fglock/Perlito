@@ -404,7 +404,10 @@ sub tr_quote_parse {
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
+
+    my $interpolate = 2;
+    $interpolate = 3 if $delimiter eq "'";
+    my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
@@ -423,11 +426,14 @@ sub tr_quote_parse {
         # warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+
+        $interpolate = 2;
+        $interpolate = 3 if $delimiter eq "'";
+        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
         return $part2 unless $part2;
     }
     else {
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
         return $part2 unless $part2;
     }
 

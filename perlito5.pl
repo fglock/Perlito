@@ -3874,7 +3874,9 @@ use feature 'say';
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-        my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
+        my $interpolate = 2;
+        $delimiter eq chr(39) && ($interpolate = 3);
+        my $part1 = string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, $interpolate);
         $part1 || return $part1;
         my $str_regex = Perlito5::Match::flat($part1);
         my $part2;
@@ -3888,11 +3890,13 @@ use feature 'say';
             $p++;
             $closing_delimiter = $delimiter;
             exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+            $interpolate = 2;
+            $delimiter eq chr(39) && ($interpolate = 3);
+            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
             $part2 || return $part2
         }
         else {
-            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
+            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
             $part2 || return $part2
         }
         $p = $part2->{'to'};
