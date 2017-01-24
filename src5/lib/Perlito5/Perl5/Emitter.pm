@@ -236,6 +236,9 @@ package Perlito5::AST::Apply;
         return map { $_->emit_perl5() } @{$self->{arguments}};
     }
     sub emit_perl5_choose_regex_quote {
+        if (! grep { $_ =~ /\// } @_) {
+            return "/";
+        }
         if (! grep { $_ =~ /!/ } @_) {
             return "!";
         }

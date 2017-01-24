@@ -874,7 +874,7 @@ use feature 'say';
         my @out;
         my $tmp = '';
         $s eq '' && return chr(39) . chr(39);
-        (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
+        (0 + $s) eq $s && $s =~ m/[0-9]/ && return 0 + $s;
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if ($c eq '\\') {
@@ -3776,7 +3776,7 @@ use feature 'say';
             $modifiers = Perlito5::Match::flat($m)
         }
         my $replace;
-        if ($modifiers =~ m!e!) {
+        if ($modifiers =~ m/e/) {
             delete($part2->{'capture'});
             $replace = Perlito5::Match::flat($part2);
             $replace = substr($replace, 0, -1);
@@ -3786,7 +3786,7 @@ use feature 'say';
                 Perlito5::Compiler::error('syntax error')
             }
             $replace = Perlito5::Match::flat($m);
-            if ($modifiers =~ m!ee!) {
+            if ($modifiers =~ m/ee/) {
                 $replace = Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply::->new('code' => 'eval', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace])], 'bareword' => '', 'namespace' => '')])
             }
         }
@@ -5022,7 +5022,7 @@ use feature 'say';
     sub Perlito5::Grammar::Scope::compile_time_glob_set {
         my($glob, $value, $namespace) = @_;
         if (!ref($glob)) {
-            if ($glob !~ m!::!) {
+            if ($glob !~ m/::/) {
                 $glob = $namespace . '::' . $glob
             }
             my @parts = split('::', $glob);
@@ -6883,7 +6883,7 @@ use feature 'say';
     Perlito5::Grammar::Precedence::add_term($_ => \&term_digit)
         for '.', 0 .. 9;
     sub Perlito5::Grammar::Number::digit {
-        substr($_[0], $_[1], 1) =~ m!\d! ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
+        substr($_[0], $_[1], 1) =~ m/\d/ ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
     }
     sub Perlito5::Grammar::Number::exponent {
         my $str = $_[0];
@@ -7134,7 +7134,7 @@ use feature 'say';
             })
         }) && (do {
             my $s = Perlito5::Match::flat($MATCH);
-            $s =~ s!_!!g;
+            $s =~ s/_//g;
             $MATCH->{'capture'} = Perlito5::AST::Num::->new('num' => $s);
             1
         })));
@@ -7371,7 +7371,7 @@ use feature 'say';
             }
         }) && (do {
             my $s = Perlito5::Match::flat($MATCH);
-            $s =~ s!_!!g;
+            $s =~ s/_//g;
             $MATCH->{'capture'} = Perlito5::AST::Int::->new('int' => $s);
             1
         })));
@@ -7512,10 +7512,10 @@ use feature 'say';
     undef();
     undef();
     sub Perlito5::Grammar::word {
-        substr($_[0], $_[1], 1) =~ m!\w! ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
+        substr($_[0], $_[1], 1) =~ m/\w/ ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
     }
     sub Perlito5::Grammar::ident {
-        substr($_[0], $_[1], 256) !~ m!^([a-zA-Z_]\w*)! && return;
+        substr($_[0], $_[1], 256) !~ m/^([a-zA-Z_]\w*)/ && return;
         length($1) > 251 && die('Identifier too long');
         return {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + length($1)}
     }
@@ -7987,9 +7987,9 @@ use feature 'say';
     our $CORE_PROTO = {'CORE::shutdown' => '*$', 'CORE::chop' => '_', 'CORE::lstat' => '*', 'CORE::rename' => '$$', 'CORE::lock' => '\\$', 'CORE::rand' => ';$', 'CORE::gmtime' => ';$', 'CORE::gethostbyname' => '$', 'CORE::each' => '+', 'CORE::ref' => '_', 'CORE::syswrite' => '*$;$$', 'CORE::msgctl' => '$$$', 'CORE::getnetbyname' => '$', 'CORE::write' => ';*', 'CORE::alarm' => '_', 'CORE::print' => undef, 'CORE::getnetent' => '', 'CORE::semget' => '$$$', 'CORE::use' => undef, 'CORE::abs' => '_', 'CORE::break' => '', 'CORE::undef' => ';$', 'CORE::no' => undef, 'CORE::eval' => '_', 'CORE::split' => undef, 'CORE::localtime' => ';$', 'CORE::sort' => undef, 'CORE::chown' => '@', 'CORE::endpwent' => '', 'CORE::getpwent' => '', 'CORE::pos' => undef, 'CORE::lcfirst' => '_', 'CORE::kill' => '@', 'CORE::send' => '*$$;$', 'CORE::endprotoent' => '', 'CORE::semctl' => '$$$$', 'CORE::waitpid' => '$$', 'CORE::utime' => '@', 'CORE::dbmclose' => '\\%', 'CORE::getpwnam' => '$', 'CORE::substr' => '$$;$$', 'CORE::listen' => '*$', 'CORE::getprotoent' => '', 'CORE::shmget' => '$$$', 'CORE::our' => undef, 'CORE::readlink' => '_', 'CORE::shmwrite' => '$$$$', 'CORE::times' => '', 'CORE::package' => undef, 'CORE::map' => undef, 'CORE::join' => '$@', 'CORE::rmdir' => '_', 'CORE::shmread' => '$$$$', 'CORE::uc' => '_', 'CORE::bless' => '$;$', 'CORE::closedir' => '*', 'CORE::getppid' => '', 'CORE::tie' => '\\[$@%]$;@', 'CORE::readdir' => '*', 'CORE::gethostent' => '', 'CORE::getlogin' => '', 'CORE::last' => undef, 'CORE::gethostbyaddr' => '$$', 'CORE::accept' => '**', 'CORE::log' => '_', 'CORE::tell' => ';*', 'CORE::readline' => ';*', 'CORE::tied' => undef, 'CORE::socket' => '*$$$', 'CORE::umask' => ';$', 'CORE::sysread' => '*\\$$;$', 'CORE::syscall' => '$@', 'CORE::quotemeta' => '_', 'CORE::dump' => '', 'CORE::opendir' => '*$', 'CORE::untie' => undef, 'CORE::truncate' => '$$', 'CORE::select' => ';*', 'CORE::sleep' => ';$', 'CORE::seek' => '*$$', 'CORE::read' => '*\\$$;$', 'CORE::rewinddir' => '*', 'CORE::scalar' => undef, 'CORE::wantarray' => '', 'CORE::oct' => '_', 'CORE::bind' => '*$', 'CORE::stat' => '*', 'CORE::sqrt' => '_', 'CORE::getc' => ';*', 'CORE::fileno' => '*', 'CORE::getpeername' => '*', 'CORE::sin' => '_', 'CORE::getnetbyaddr' => '$$', 'CORE::grep' => undef, 'CORE::setservent' => '$', 'CORE::sub' => undef, 'CORE::shmctl' => '$$$', 'CORE::study' => undef, 'CORE::msgrcv' => '$$$$$', 'CORE::setsockopt' => '*$$$', 'CORE::int' => '_', 'CORE::pop' => ';+', 'CORE::link' => '$$', 'CORE::exec' => undef, 'CORE::setpwent' => '', 'CORE::mkdir' => '_;$', 'CORE::sysseek' => '*$$', 'CORE::endservent' => '', 'CORE::chr' => '_', 'CORE::when' => undef, 'CORE::getpwuid' => '$', 'CORE::setprotoent' => '$', 'CORE::reverse' => '@', 'CORE::say' => undef, 'CORE::goto' => undef, 'CORE::getgrent' => '', 'CORE::endnetent' => '', 'CORE::hex' => '_', 'CORE::binmode' => '*;$', 'CORE::formline' => '$@', 'CORE::getgrnam' => '$', 'CORE::ucfirst' => '_', 'CORE::chdir' => ';$', 'CORE::setnetent' => '$', 'CORE::splice' => '+;$$@', 'CORE::unlink' => '@', 'CORE::time' => '', 'CORE::push' => '+@', 'CORE::exit' => ';$', 'CORE::endgrent' => '', 'CORE::unshift' => '+@', 'CORE::local' => undef, 'CORE::my' => undef, 'CORE::cos' => '_', 'CORE::redo' => undef, 'CORE::warn' => '@', 'CORE::getsockname' => '*', 'CORE::pipe' => '**', 'CORE::sprintf' => '$@', 'CORE::open' => '*;$@', 'CORE::setpgrp' => ';$$', 'CORE::exp' => '_', 'CORE::seekdir' => '*$', 'CORE::getservbyport' => '$$', 'CORE::given' => undef, 'CORE::pack' => '$@', 'CORE::msgget' => '$$', 'CORE::rindex' => '$$;$', 'CORE::srand' => ';$', 'CORE::telldir' => '*', 'CORE::connect' => '*$', 'CORE::getprotobyname' => '$', 'CORE::msgsnd' => '$$$', 'CORE::length' => '_', 'CORE::state' => undef, 'CORE::die' => '@', 'CORE::delete' => undef, 'CORE::getservent' => '', 'CORE::getservbyname' => '$$', 'CORE::setpriority' => '$$$', 'CORE::lc' => '_', 'CORE::fc' => '_', 'CORE::pack' => '$@', 'CORE::fcntl' => '*$$', 'CORE::chroot' => '_', 'CORE::recv' => '*\\$$$', 'CORE::dbmopen' => '\\%$$', 'CORE::socketpair' => '**$$$', 'CORE::vec' => '$$$', 'CORE::system' => undef, 'CORE::defined' => '_', 'CORE::index' => '$$;$', 'CORE::caller' => ';$', 'CORE::close' => ';*', 'CORE::atan2' => '$$', 'CORE::semop' => '$$', 'CORE::unpack' => '$;$', 'CORE::ord' => '_', 'CORE::chmod' => '@', 'CORE::prototype' => undef, 'CORE::getprotobynumber' => '$', 'CORE::values' => '+', 'CORE::chomp' => '_', 'CORE::ioctl' => '*$$', 'CORE::eof' => ';*', 'CORE::crypt' => '$$', 'CORE::do' => undef, 'CORE::flock' => '*$', 'CORE::wait' => '', 'CORE::sethostent' => '$', 'CORE::return' => undef, 'CORE::getsockopt' => '*$$', 'CORE::fork' => '', 'CORE::require' => undef, 'CORE::format' => undef, 'CORE::readpipe' => '_', 'CORE::endhostent' => '', 'CORE::getpgrp' => ';$', 'CORE::setgrent' => '', 'CORE::keys' => '+', 'CORE::glob' => undef, 'CORE::getpriority' => '$$', 'CORE::reset' => ';$', 'CORE::sysopen' => '*$$;$', 'CORE::continue' => '', 'CORE::next' => undef, 'CORE::getgrgid' => '$', 'CORE::default' => undef, 'CORE::shift' => ';+', 'CORE::symlink' => '$$', 'CORE::exists' => '$', 'CORE::printf' => '$@', 'CORE::m' => undef, 'CORE::q' => undef, 'CORE::qq' => undef, 'CORE::qw' => undef, 'CORE::qx' => undef, 'CORE::qr' => undef, 'CORE::s' => undef, 'CORE::tr' => undef, 'CORE::y' => undef, 'CORE::if' => undef, 'CORE::unless' => undef, 'CORE::when' => undef, 'CORE::for' => undef, 'CORE::foreach' => undef, 'CORE::while' => undef, 'CORE::given' => undef, 'CORE::and' => undef, 'CORE::or' => undef, 'CORE::xor' => undef, 'CORE::not' => undef, 'CORE::cmp' => undef, 'CORE::__FILE__' => '', 'CORE::__LINE__' => ''};
     sub Perlito5::test_perl_version {
         my $version = shift;
-        $version =~ s!^v!!;
+        $version =~ s/^v//;
         if ($version && ord(substr($version, 0, 1)) < 10) {
-            my @v = split(m!!, $version);
+            my @v = split(m//, $version);
             push(@v, chr(0))
                 while @v < 3;
             $version = sprintf('%d.%03d%03d', map {
@@ -7997,7 +7997,7 @@ use feature 'say';
             } @v)
         }
         else {
-            my @v = split(m!\.!, $version);
+            my @v = split(m/\./, $version);
             $v[1] = $v[1] . 0
                 while length($v[1]) < 3;
             $version = join('.', @v)
@@ -10059,7 +10059,7 @@ use feature 'say';
         elsif ($ref eq 'CODE') {
             return '{ "_type": "CODE", "value": "DUMMY" }'
         }
-        $ref =~ s!^Perlito5::AST::!!;
+        $ref =~ s/^Perlito5::AST:://;
         my @out;
         $ref ne 'HASH' && push(@out, '"_type": "' . $ref . '"');
         for my $i (sort {
@@ -10076,7 +10076,7 @@ use feature 'say';
         my $s = shift;
         my @out;
         $s eq '' && return '""';
-        (0 + $s) eq $s && $s =~ m![0-9]! && return 0 + $s;
+        (0 + $s) eq $s && $s =~ m/[0-9]/ && return 0 + $s;
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if ($c eq '\\' || $c eq '"') {
@@ -10226,7 +10226,7 @@ use feature 'say';
                         my $k = shift(@in);
                         my $v = shift(@in);
                         $k = $k->emit_javascript2($level, 0);
-                        $k =~ m![ \[]! && ($printable = 0);
+                        $k =~ m/[ \[]/ && ($printable = 0);
                         $v = $v ? $v->emit_javascript2($level, 0) : 'null';
                         push(@out, $k . ' : ' . $v)
                     }
@@ -11002,7 +11002,7 @@ use feature 'say';
                 if (ref($replace) eq 'Perlito5::AST::Block') {
                     $replace = Perlito5::AST::Sub::->new('block' => $replace);
                     $fun = $replace->emit_javascript2($level + 2, $wantarray);
-                    $modifier =~ s!e!!g
+                    $modifier =~ s/e//g
                 }
                 else {
                     $fun = Perlito5::JavaScript2::emit_function_javascript2($level + 2, $wantarray, $replace)
@@ -15370,7 +15370,7 @@ CORE.sprintf = function(List__) {
                         my $k = shift(@in);
                         my $v = shift(@in);
                         $k = $k->emit_javascript3($level, 0);
-                        $k =~ m![ \[]! && ($printable = 0);
+                        $k =~ m/[ \[]/ && ($printable = 0);
                         $v = to_value($v, $level, $wantarray);
                         push(@out, $k . ' : ' . $v)
                     }
@@ -18674,12 +18674,17 @@ CORE.printf = function(List__) {
         }
         sub Perlito5::AST::Apply::emit_perl5_choose_regex_quote {
             if (!(grep {
-                $_ =~ m%!%
+                $_ =~ m!\/!
+            } @_)) {
+                return '/'
+            }
+            if (!(grep {
+                $_ =~ m/!/
             } @_)) {
                 return '!'
             }
             if (!(grep {
-                $_ =~ m!%!
+                $_ =~ m/%/
             } @_)) {
                 return '%'
             }
@@ -18726,7 +18731,7 @@ CORE.printf = function(List__) {
                         return ['op' => $code, $arg->emit_perl5()]
                     }
                 }
-                $code =~ m!<([^>]+)>!;
+                $code =~ m/<([^>]+)>/;
                 my $cap = $1;
                 return ['apply' => '{', $cap, $arg->emit_perl5()]
             }
@@ -20699,7 +20704,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my %flags = map {
                 $_ => 1
-            } split(m!!, $modifier);
+            } split(m//, $modifier);
             my $flag_string = join(' | ', ($flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : ()), ($flags{'x'} ? 'Pattern.COMMENTS' : ()), ($flags{'m'} ? 'Pattern.MULTILINE' : ()), ($flags{'s'} ? 'Pattern.DOTALL' : ())) || 0;
             my $s = 'new PlRegex(' . Perlito5::Java::to_str($regex) . ', ' . $flag_string . ')';
             if (ref($regex) eq 'Perlito5::AST::Buf') {
@@ -20728,7 +20733,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $replace_java;
                 if (ref($replace) eq 'Perlito5::AST::Buf') {
                     $replace_java = $replace->{'buf'};
-                    $replace_java =~ s!\\!\\\\!g;
+                    $replace_java =~ s/\\/\\\\/g;
                     $replace_java = Perlito5::Java::escape_string($replace_java)
                 }
                 else {
@@ -20736,19 +20741,19 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         $replace = Perlito5::AST::Block::->new('stmts' => [$replace])
                     }
                     $replace_java = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace])->emit_java($level);
-                    $modifier =~ s!e!!g
+                    $modifier =~ s/e//g
                 }
-                if ($modifier =~ m!g!) {
+                if ($modifier =~ m/g/) {
                     $modifier_global = 'true';
-                    $modifier =~ s!g!!g
+                    $modifier =~ s/g//g
                 }
                 $str = 'PerlOp.replace(' . $var->emit_java($level) . ', ' . emit_qr_java($regex_args->[0], $modifier, $level) . ', ' . $replace_java . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . $modifier_global . ')'
             }
             elsif ($code eq 'p5:m') {
                 my $modifier = $regex_args->[1]->{'buf'};
-                if ($modifier =~ m!g!) {
+                if ($modifier =~ m/g/) {
                     $modifier_global = 'true';
-                    $modifier =~ s!g!!g
+                    $modifier =~ s/g//g
                 }
                 $str = 'PerlOp.match(' . $var->emit_java($level) . ', ' . emit_qr_java($regex_args->[0], $modifier, $level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . $modifier_global . ')'
             }
@@ -21889,12 +21894,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::Java::set_java_class_defaults {
             my($perl_package, $java_import) = @_;
             my $Java_class = Perlito5::Java::get_java_class_info();
-            my @parts = split(m!\.!, $java_import);
+            my @parts = split(m/\./, $java_import);
             $Java_class->{$perl_package}->{'java_type'} //= $parts[-1];
             $Java_class->{$perl_package}->{'java_native_to_perl'} //= 'p' . $Java_class->{$perl_package}->{'java_type'};
-            $Java_class->{$perl_package}->{'java_native_to_perl'} =~ s![<>]!_!g;
+            $Java_class->{$perl_package}->{'java_native_to_perl'} =~ s/[<>]/_/g;
             my $perl_to_java = $perl_package;
-            $perl_to_java =~ s!::!!g;
+            $perl_to_java =~ s/:://g;
             $Java_class->{$perl_package}->{'perl_to_java'} //= 'to_' . $perl_to_java;
             $Java_class->{$perl_package}->{'perl_package'} = $perl_package
         }
@@ -21976,7 +21981,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     return 1
                 }
                 my $meth = $self->{'method'};
-                if ($meth =~ m!^to!) {
+                if ($meth =~ m/^to/) {
                     my $Java_class = Perlito5::Java::get_java_class_info();
                     for my $info (values(%{$Java_class})) {
                         if ($meth eq $info->{'perl_to_java'}) {
@@ -22507,7 +22512,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     die('cannot extend class ' . chr(39) . $Java_class->{$class}->{'extends'} . chr(39) . ' because it was not declared')
                 }
                 my $perl_to_java = $class;
-                $perl_to_java =~ s!::!!g;
+                $perl_to_java =~ s/:://g;
                 Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
             }
             elsif ($Java_class->{$class}->{'implements'}) {
@@ -22519,7 +22524,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     die('cannot implement class ' . chr(39) . $Java_class->{$class}->{'implements'} . chr(39) . ' because it was not declared')
                 }
                 my $perl_to_java = $class;
-                $perl_to_java =~ s!::!!g;
+                $perl_to_java =~ s/:://g;
                 Perlito5::Java::set_java_class_defaults($class, $perl_to_java)
             }
             else {
@@ -23208,7 +23213,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     return $invocant . '.' . $meth . '(' . Perlito5::Java::to_native_args($self->{'arguments'}) . ')'
                 }
             }
-            if ($meth =~ m!^to!) {
+            if ($meth =~ m/^to/) {
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 for my $info (values(%{$Java_class})) {
                     if ($meth eq $info->{'perl_to_java'}) {
