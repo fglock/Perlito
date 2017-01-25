@@ -56,10 +56,11 @@ package Perlito5::AST::Apply;
                         stmts => [ $replace ],
                     );
                 }
-                $replace_java = Perlito5::AST::Apply->new(
-                            code => 'do',
-                            arguments => [$replace]
-                        )->emit_java($level);
+                $replace_java = Perlito5::AST::Sub->new(
+                    'block' => $replace,
+                    'attributes' => [],
+                    _do_block => 1,
+                )->emit_java($level);
                 $modifier =~ s/e//g;
             }
             if ($modifier =~ /g/) {

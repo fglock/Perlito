@@ -20740,7 +20740,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     if (ref($replace) ne 'Perlito5::AST::Block') {
                         $replace = Perlito5::AST::Block::->new('stmts' => [$replace])
                     }
-                    $replace_java = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace])->emit_java($level);
+                    $replace_java = Perlito5::AST::Sub::->new('block' => $replace, 'attributes' => [], '_do_block' => 1)->emit_java($level);
                     $modifier =~ s/e//g
                 }
                 if ($modifier =~ m/g/) {
@@ -26577,6 +26577,39 @@ class PerlOp {
         return match(s, new PlRegex(pat, 0), want, global);
     }
 
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
+        String str = s.toString();
+        if (want != PlCx.LIST) {
+            if (global) {
+                PlCORE.die("not implemented string replace global with expression");
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+            }
+            else {
+                Matcher matcher = pat.p.matcher(str);
+                if (matcher.find()) {
+                    set_match(matcher, str);
+                    int start = matcher.start();
+                    int end   = matcher.end();
+                    String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                    final StringBuilder buf = new StringBuilder(str.length() + replace.length());
+                    if (start > 0) {
+                        buf.append( str.substring(0, start) );
+                    }
+                    buf.append( replace );
+                    if (end <= str.length()) {
+                        buf.append( str.substring(end) );
+                    }
+                    return s.set(new PlString(buf.toString()));
+                }
+                else {
+                    // no match
+                    return s;
+                }
+            }
+        }
+        PlCORE.die("not implemented string replace in list context");
+        return s;
+    }
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
         if (want != PlCx.LIST) {
             if (global) {

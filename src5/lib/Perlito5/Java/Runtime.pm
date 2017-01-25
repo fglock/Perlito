@@ -1214,6 +1214,39 @@ class PerlOp {
         return match(s, new PlRegex(pat, 0), want, global);
     }
 
+    public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
+        String str = s.toString();
+        if (want != PlCx.LIST) {
+            if (global) {
+                PlCORE.die("not implemented string replace global with expression");
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+            }
+            else {
+                Matcher matcher = pat.p.matcher(str);
+                if (matcher.find()) {
+                    set_match(matcher, str);
+                    int start = matcher.start();
+                    int end   = matcher.end();
+                    String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                    final StringBuilder buf = new StringBuilder(str.length() + replace.length());
+                    if (start > 0) {
+                        buf.append( str.substring(0, start) );
+                    }
+                    buf.append( replace );
+                    if (end <= str.length()) {
+                        buf.append( str.substring(end) );
+                    }
+                    return s.set(new PlString(buf.toString()));
+                }
+                else {
+                    // no match
+                    return s;
+                }
+            }
+        }
+        PlCORE.die("not implemented string replace in list context");
+        return s;
+    }
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
         if (want != PlCx.LIST) {
             if (global) {
