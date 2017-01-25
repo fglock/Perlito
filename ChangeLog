@@ -16,6 +16,7 @@
 -- unpack (a,A,Z with number working)
 -- splice()
 -- optimize "for (0..1000000)"
+-- s///e, tr//
 
 0.047 cpan:v6  2016-07-28
 - hide internal classes from CPAN index
