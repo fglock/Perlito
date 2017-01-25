@@ -4170,6 +4170,10 @@ EOT
         return this.aget_lvalue_local(i.to_int());
     }
     public PlObject aget_lvalue_local(int i) {
+        PlObject o = this.a.get(i);
+        if (o == null) {
+            this.a.set(i, PlCx.UNDEF);
+        }
         return PerlOp.push_local(this, i);
     }
 
@@ -4781,6 +4785,10 @@ class PlHash extends PlObject {
         return a;
     }
     public PlObject hget_lvalue_local(String i) {
+        PlObject o = this.h.get(i);
+        if (o == null) {
+            this.h.put(i, PlCx.UNDEF);
+        }
         return PerlOp.push_local(this, i);
     }
 
