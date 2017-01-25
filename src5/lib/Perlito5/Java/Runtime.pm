@@ -4225,18 +4225,6 @@ EOT
         return PlCORE.die("Not a SCALAR reference");
     }
 
-    public PlObject aget_arrayref(PlObject i) {
-        PlObject o = this.aget(i);
-        if (o.is_undef()) {
-            PlArrayRef ar = new PlArrayRef();
-            this.aset(i, ar);
-            return ar;
-        }
-        else if (o.is_arrayref()) {
-            return o;
-        }
-        return PlCORE.die("Not an ARRAY reference");
-    }
     public PlObject aget_arrayref(int i) {
         PlObject o = this.aget(i);
         if (o.is_undef()) {
@@ -4250,18 +4238,6 @@ EOT
         return PlCORE.die("Not an ARRAY reference");
     }
 
-    public PlObject aget_hashref(PlObject i) {
-        PlObject o = this.aget(i);
-        if (o.is_undef()) {
-            PlHashRef hr = new PlHashRef();
-            this.aset(i, hr);
-            return hr;
-        }
-        else if (o.is_hashref()) {
-            return o;
-        }
-        return PlCORE.die("Not a HASH reference");
-    }
     public PlObject aget_hashref(int i) {
         PlObject o = this.aget(i);
         if (o.is_undef()) {
