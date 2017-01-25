@@ -2003,8 +2003,7 @@ EOT
         return this;
     }
     public PlObject hget_lvalue(PlObject i) {
-        PlCORE.die("Not a HASH reference");
-        return this;
+        return this.hget_lvalue(i.toString());
     }
     public PlObject hget_lvalue(String i) {
         PlCORE.die("Not a HASH reference");
@@ -3027,12 +3026,6 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.hget(i);
     }
-    public PlObject hget_lvalue(PlObject i) {
-        if (llv == null) {
-            create_scalar();
-        }
-        return llv.hget_lvalue(i);
-    }
     public PlObject hget_lvalue(String i) {
         if (llv == null) {
             create_scalar();
@@ -3496,12 +3489,6 @@ class PlLvalue extends PlObject {
             this.o = new PlHashRef();
         }
         return this.o.hget(i);
-    }
-    public PlObject hget_lvalue(PlObject i) {
-        if (this.o.is_undef()) {
-            this.o = new PlHashRef();
-        }
-        return this.o.hget_lvalue(i);
     }
     public PlObject hget_lvalue(String i) {
         if (this.o.is_undef()) {
@@ -4805,18 +4792,6 @@ class PlHash extends PlObject {
         return result.pop();
     }
 
-    public PlObject hget_lvalue(PlObject i) {
-        PlObject o = this.h.get(i.toString());
-        if (o == null) {
-            return new PlLazyLookup(this, i.toString());
-        }
-        else if (o.is_lvalue()) {
-            return o;
-        }
-        PlLvalue a = new PlLvalue(o);
-        this.h.put(i.toString(), a);
-        return a;
-    }
     public PlObject hget_lvalue(String i) {
         PlObject o = this.h.get(i);
         if (o == null) {
@@ -4828,9 +4803,6 @@ class PlHash extends PlObject {
         PlLvalue a = new PlLvalue(o);
         this.h.put(i, a);
         return a;
-    }
-    public PlObject hget_lvalue_local(PlObject i) {
-        return this.hget_lvalue_local(i.toString());
     }
     public PlObject hget_lvalue_local(String i) {
         return PerlOp.push_local(this, i);
