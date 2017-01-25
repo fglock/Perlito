@@ -991,6 +991,10 @@ class PerlOp {
                                         }
                                     }
                                 }
+                                else if (c2 == '0') {
+                                    // rewrite \0 to \00
+                                    sb.append('0');
+                                }
                                 sb.append(Character.toChars(c2));
                             }
                             break;

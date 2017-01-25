@@ -26354,6 +26354,10 @@ class PerlOp {
                                         }
                                     }
                                 }
+                                else if (c2 == ' . chr(39) . '0' . chr(39) . ') {
+                                    // rewrite \\0 to \\00
+                                    sb.append(' . chr(39) . '0' . chr(39) . ');
+                                }
                                 sb.append(Character.toChars(c2));
                             }
                             break;
