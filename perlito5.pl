@@ -26578,9 +26578,13 @@ class PerlOp {
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
-        // TODO - use "global" flag
         if (want != PlCx.LIST) {
-            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+            if (global) {
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+            }
+            else {
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceFirst(double_escape(rep.toString()))));
+            }
         }
         PlCORE.die("not implemented string replace in list context");
         return s;
@@ -26594,9 +26598,13 @@ class PerlOp {
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, String rep, int want, boolean global) {
-        // TODO - use "global" flag
         if (want != PlCx.LIST) {
-            return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep)));
+            if (global) {
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(rep)));
+            }
+            else {
+                return s.set(new PlString(pat.p.matcher(s.toString()).replaceFirst(rep)));
+            }
         }
         PlCORE.die("not implemented string replace in list context");
         return s;
