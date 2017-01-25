@@ -26580,12 +26580,33 @@ class PerlOp {
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
         String str = s.toString();
         if (want != PlCx.LIST) {
+            Matcher matcher = pat.p.matcher(str);
             if (global) {
-                PlCORE.die("not implemented string replace global with expression");
-                return s.set(new PlString(pat.p.matcher(s.toString()).replaceAll(double_escape(rep.toString()))));
+                boolean found = false;
+                final StringBuilder buf = new StringBuilder(str.length() + 256);
+                int pos = 0;
+                while (matcher.find()) {
+                    found = true;
+                    set_match(matcher, str);
+                    int start = matcher.start();
+                    int end   = matcher.end();
+                    String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                    if (start > pos) {
+                        buf.append( str.substring(pos, start) );
+                    }
+                    if (replace.length() > 0) {
+                        buf.append( replace );
+                    }
+                    pos = end;
+                }
+                if (found) {
+                    if (pos <= str.length()) {
+                        buf.append( str.substring(pos) );
+                    }
+                    return s.set(new PlString(buf.toString()));
+                }
             }
             else {
-                Matcher matcher = pat.p.matcher(str);
                 if (matcher.find()) {
                     set_match(matcher, str);
                     int start = matcher.start();
@@ -26595,17 +26616,17 @@ class PerlOp {
                     if (start > 0) {
                         buf.append( str.substring(0, start) );
                     }
-                    buf.append( replace );
+                    if (replace.length() > 0) {
+                        buf.append( replace );
+                    }
                     if (end <= str.length()) {
                         buf.append( str.substring(end) );
                     }
                     return s.set(new PlString(buf.toString()));
                 }
-                else {
-                    // no match
-                    return s;
-                }
             }
+            // no match
+            return s;
         }
         PlCORE.die("not implemented string replace in list context");
         return s;
