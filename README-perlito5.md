@@ -110,9 +110,10 @@ Command-line options
 
 - shebang processing:
 
+~~~perl
     #!/usr/bin/perl -pi.orig
     s/foo/bar/;
-
+~~~
 
 Libraries
 ---------
@@ -487,15 +488,17 @@ Perl6 backend
 
 - Running the tests using perl6:
 
+~~~sh
     # TODO - this is not implemented yet
     . util-perl6/setup-perlito5-perl6.sh
     find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
-
+~~~
 
 
 - keep comments
 
 - context: wantarray, return-comma
+
         sub x { return 7, 8 }
     vs. sub x { return (7, 8) }
 
@@ -514,16 +517,19 @@ Perl6 backend
 - "given" statement not implemented
 
 - refactoring sub arguments
+
     my $x = $_[0];
     my ($x, $y, @rest) = @_;    # check if @_ is unused elsewhere in the sub
 
 - placeholder
+
     my ($a, $, $c) = 1..3;
     ($a, *, $c) = 1..3;
 
 - __PACKAGE__
 
 - specialized refactoring for packages that introduce syntax
+
     Try::Tiny
     List::MoreUtils
     Moose
@@ -561,28 +567,29 @@ Compile-time execution environment
 
 - test case:
 
-# captured lexical is not emitted:
-
-$ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
-Main.java:6307: error: cannot find symbol
-            PlV.glob_set("Perlito5::Dumper::escape_string", new PlArray(new PlClosure(PlCx.UNDEF, new PlObject[]{ Hash_safe_char_119 } ) {
-  symbol:   variable Hash_safe_char_119
-
-
-# captured lexical is not initialized:
-
-$ cat > X.pm
-my %safe = (a=>1); sub dump { $safe{a} }
-1;
-$ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
-*main::dump = do {
-    package main;
-    my $safe = undef;   # TODO - initialize captured lexical
-    sub {
-        $safe{'a'}
-    }
-};
-
+~~~sh
+    # captured lexical is not emitted:
+    
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
+    Main.java:6307: error: cannot find symbol
+                PlV.glob_set("Perlito5::Dumper::escape_string", new PlArray(new PlClosure(PlCx.UNDEF, new PlObject[]{ Hash_safe_char_119 } ) {
+      symbol:   variable Hash_safe_char_119
+    
+    
+    # captured lexical is not initialized:
+    
+    $ cat > X.pm
+    my %safe = (a=>1); sub dump { $safe{a} }
+    1;
+    $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
+    *main::dump = do {
+        package main;
+        my $safe = undef;   # TODO - initialize captured lexical
+        sub {
+            $safe{'a'}
+        }
+    };
+~~~
 
 - compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"
@@ -596,6 +603,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
     $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
 
     TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
+
           $main::ccc2 = $main::ccc;
         instead of:
           *main::ccc2 = \$main::ccc;
@@ -603,6 +611,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
     - lexicals and closures are not dumped
 
     TODO - lexicals are not shared
+
          - maybe save lexical variable AST. This will help identify shared lexicals
 
 
@@ -641,6 +650,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
 
 - special backend option "_comp" dumps the compile-time execution environment:
 
+~~~sh
     $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
     {
         'block' => [
@@ -661,7 +671,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e ' local (undef, undef, @_) ; { 123 } sub x { 456; { my $x = 3 } } local $y; INIT { 123 } BEGIN { $Perlito5::SCOPE->{block}[-1]{xxx} = 3 }'
         change the environment using a BEGIN block
-
+~~~
 
 Nice to Have
 ------------
@@ -698,6 +708,7 @@ Nice to Have
     (DONE in java)
 
 - local(*{$caller."::a"}) = \my $a;
+
 - *{$pkg . "::foo"} = \&bar;
 
 - local $SIG{__WARN__};
