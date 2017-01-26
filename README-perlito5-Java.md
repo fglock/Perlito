@@ -8,8 +8,11 @@ Requirements
 
 Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
 
-Java 7 is required for named groups in regex, like: (?<name>X).
+Java 7 is required for named groups in regex, like:
 
+~~~
+    (?<name>X).
+~~~
 
 Perlito5-Java platform differences
 -------------------------------------------
