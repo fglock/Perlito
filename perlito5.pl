@@ -27792,6 +27792,9 @@ class PlFileHandle extends PlReference {
         }
         return PlCx.UNDEF;
     }
+    public PlObject hset(String s, PlObject v) {
+        return PlCORE.die("Can' . chr(39) . 't modify glob elem in scalar assignment");
+    }
 }
 class PlRegex extends PlReference {
     public Pattern p;
