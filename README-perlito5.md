@@ -1,9 +1,9 @@
 "Perlito5" Perl 5 compiler
 ==========================
 
-    This is Perlito5, a compiler that implements a subset of Perl 5.
-    
-    Perlito5 translates Perl to Java, and Perl to JavaScript.
+This is Perlito5, a compiler that implements a subset of Perl 5.
+
+Perlito5 translates Perl to Java, and Perl to JavaScript.
 
 Build using make
 ----------------
@@ -17,7 +17,7 @@ Build using make
     make build-5browser
         - builds html/perlito5.js (which runs in the browser)
 
--- See [Makefile](Makefile) for more options
+- See [Makefile](Makefile) for more options
 
 
 Running the tests using "node.js"
@@ -36,11 +36,11 @@ Running the tests using "node.js"
 Compile the compiler to JavaScript into perlito5.js
 ---------------------------------------------------
 
--- using perl and perlito5.pl:
+- using perl and perlito5.pl:
 
     perl perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
--- using node.js and perlito5.js:
+- using node.js and perlito5.js:
 
     node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js
 
@@ -106,9 +106,9 @@ CPAN distribution
 Command-line options
 --------------------
 
--- implement -i switch and ARGVOUT
+- implement -i switch and ARGVOUT
 
--- shebang processing:
+- shebang processing:
 
     #!/usr/bin/perl -pi.orig
     s/foo/bar/;
@@ -117,13 +117,14 @@ Command-line options
 Libraries
 ---------
 
--- these should go into namespace Perlito5X::*
+- these should go into namespace Perlito5X::*
 
--- Test (implemented as Perlito5::Test)
+- Test (implemented as Perlito5::Test)
 
--- Data::Dumper (implemented as Perlito5X::Dumper)
+- Data::Dumper (implemented as Perlito5X::Dumper)
 
--- create perlito5-specific libs for:
+- create perlito5-specific libs for:
+
     feature.pm
     Config.pm
     overload.pm
@@ -143,16 +144,16 @@ Libraries
 Parser
 ------
 
--- lexical variables in BEGIN blocks
+- lexical variables in BEGIN blocks
 
     my $v = 123;
     BEGIN {
         # $v is not seen
     }
 
--- test that "use" checks the return value of modules (the "1;" thing)
+- test that "use" checks the return value of modules (the "1;" thing)
 
--- parse example in http://www.perlmonks.org/?node_id=663393
+- parse example in http://www.perlmonks.org/?node_id=663393
 
     $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
         whatever(m! 25 ; # !);
@@ -162,28 +163,28 @@ Parser
     $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
         this dies! at -e line 1.
 
--- tailcalls
+- tailcalls
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
--- "'" meaning "::"
+- "'" meaning "::"
     $'m  # $::m
     $m'  # String found where operator expected
 
     package X'Y  # X::Y
     package X'   # Invalid version format (non-numeric data)
 
--- attributes
+- attributes
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
 
--- create __DATA__
+- create __DATA__
     %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
--- parse the regexes
+- parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
     create an AST for regexes
 
--- prototypes (signatures)
+- prototypes (signatures)
     http://perldoc.perl.org/perlsub.html#Prototypes
 
     check that undeclared barewords give the right error
@@ -193,7 +194,7 @@ Parser
 
     '&@' - See Try::Tiny
 
--- block vs. hash
+- block vs. hash
 
     $ perl -e ' print {  1, 2 } '
     HASH(0x7fdf3b005450)
@@ -217,7 +218,7 @@ Parser
     $ perl -e ' sub x { { 1; } }  print x() , "\n" '
     1
 
--- "namespace" parsing
+- "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
     $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
@@ -251,7 +252,7 @@ Parser
     $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
     $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
 
--- CORE:: namespace can be used with operators:
+- CORE:: namespace can be used with operators:
 
     $ perl -MO=Deparse -e ' $x CORE::and $v '
     $v if $x;
@@ -263,9 +264,9 @@ Parser
     CORE:: is not a keyword
 
 
--- strict and warnings: create options like 'subs', 'refs'
+- strict and warnings: create options like 'subs', 'refs'
 
--- things that work in perlito5, but which are errors in 'perl'
+- things that work in perlito5, but which are errors in 'perl'
 
     $ perl -e ' $c (f) '
     syntax error at -e line 1, near "$c ("
@@ -484,7 +485,7 @@ Add tests for fixed bugs
 Perl6 backend
 -------------
 
--- Running the tests using perl6:
+- Running the tests using perl6:
 
     # TODO - this is not implemented yet
     . util-perl6/setup-perlito5-perl6.sh
@@ -492,9 +493,9 @@ Perl6 backend
 
 
 
--- keep comments
+- keep comments
 
--- context: wantarray, return-comma
+- context: wantarray, return-comma
         sub x { return 7, 8 }
     vs. sub x { return (7, 8) }
 
@@ -502,48 +503,48 @@ Perl6 backend
     $v = x( :scalar )   # 8
     $v = x( :list   )   # 2
 
--- <> is lines()
+- <> is lines()
 
--- 0..$#num to @num.keys
+- 0..$#num to @num.keys
 
--- choose @*ARGS or @_ in shift() and pop()
+- choose @*ARGS or @_ in shift() and pop()
 
--- typeglob assignment
+- typeglob assignment
 
--- "given" statement not implemented
+- "given" statement not implemented
 
--- refactoring sub arguments
+- refactoring sub arguments
     my $x = $_[0];
     my ($x, $y, @rest) = @_;    # check if @_ is unused elsewhere in the sub
 
--- placeholder
+- placeholder
     my ($a, $, $c) = 1..3;
     ($a, *, $c) = 1..3;
 
--- __PACKAGE__
+- __PACKAGE__
 
--- specialized refactoring for packages that introduce syntax
+- specialized refactoring for packages that introduce syntax
     Try::Tiny
     List::MoreUtils
     Moose
 
--- no strict
+- no strict
 
--- bless
+- bless
 
--- tests
+- tests
 
 
 
 Perl5 backend
 -------------
 
--- "given" statement not implemented
--- "default" statement not implemented
+- "given" statement not implemented
+- "default" statement not implemented
 
--- ${^NAME} needs curly-escaping
+- ${^NAME} needs curly-escaping
 
--- ${^GLOBAL_PHASE} is not writeable
+- ${^GLOBAL_PHASE} is not writeable
     workaround in set_global_phase()
 
 - fix regex delimiters, or escape the regexes
@@ -556,9 +557,9 @@ Perl5 backend
 Compile-time execution environment
 ----------------------------------
 
--- work in progress
+- work in progress
 
--- test case:
+- test case:
 
 # captured lexical is not emitted:
 
@@ -583,14 +584,14 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
 };
 
 
--- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
+- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
     see README-perlito5-js near "Compile-time / Run-time interleaving"
 
     my $v;
     BEGIN { $v = "123" }
     use Module $v;  # $v is not accessible at compile-time
 
--- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
+- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
 
     $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
 
@@ -605,7 +606,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
          - maybe save lexical variable AST. This will help identify shared lexicals
 
 
--- current implementation
+- current implementation
 
     disable Java special case:
 
@@ -638,7 +639,7 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
                                      };
 ~~~
 
--- special backend option "_comp" dumps the compile-time execution environment:
+- special backend option "_comp" dumps the compile-time execution environment:
 
     $ perl perlito5.pl -Isrc5/lib -I. -It -C_comp -e '  (0, undef, undef, @_)[1, 2] ; { 123 } sub x { 456; { 3 } }'
     {
@@ -665,42 +666,43 @@ $ perl perlito5.pl -I. -Isrc5/lib -Cperl5 -e ' use X; '
 Nice to Have
 ------------
 
--- keep comments in AST
+- keep comments in AST
 
--- debugging symbols
--- line numbers in error messages
+- debugging symbols
+- line numbers in error messages
 
--- caller()
--- "when"
+- caller()
+- "when"
 
--- run more of the "perl" test suite
+- run more of the "perl" test suite
 
--- proper "use strict" and "use warnings"
--- use the same error messages and warnings as 'perl'
+- proper "use strict" and "use warnings"
+- use the same error messages and warnings as 'perl'
 
     $ perl -e ' my @x = $x %x '
     Operator or semicolon missing before %x at -e line 1.
     Ambiguous use of % resolved as operator % at -e line 1.
     Illegal modulus zero at -e line 1.
 
--- no warnings 'redefine';
+- no warnings 'redefine';
 
--- __LINE__, __FILE__
+- __LINE__, __FILE__
 
--- INIT{}, END{}
+- INIT{}, END{}
    look at the implementation in perlito6-in-Go
 
--- source code - remove Perl 6 code such as "token"
+- source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
 
--- *{ $name }{CODE}->();
+- *{ $name }{CODE}->();
+    (DONE in java)
 
--- local(*{$caller."::a"}) = \my $a;
--- *{$pkg . "::foo"} = \&bar;
+- local(*{$caller."::a"}) = \my $a;
+- *{$pkg . "::foo"} = \&bar;
 
--- local $SIG{__WARN__};
+- local $SIG{__WARN__};
 
--- bug https://github.com/fglock/Perlito/issues/10
+- bug https://github.com/fglock/Perlito/issues/10
     "Perlito 5 JS has syntax errors"
 
     Tried
@@ -716,7 +718,7 @@ Nice to Have
 Oddities
 --------
 
--- from moritz, Schwern and others at
+- from moritz, Schwern and others at
     http://stackoverflow.com/questions/161872/hidden-features-of-perl
 
     - you can give subs numeric names if you use symbolic references
@@ -728,7 +730,7 @@ Oddities
     Undefined subroutine &main::1 called at -e line 1.
     123
 
--- return value of continue-block
+- return value of continue-block
 
     $ perl -e ' sub x {  { 456 } continue { 789 } } print "@{[ x() ]}\n" '
     456 789
@@ -736,7 +738,7 @@ Oddities
 Deprecate
 ---------
 
--- Interpreter backend
+- Interpreter backend
    this is not being maintained; the code is still in src5/lib/Perlito5/Eval.pm just in case
 
    alternately, use the interpreter to compute constant foldings

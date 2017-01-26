@@ -384,7 +384,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         }
 ~~~
 
--- Java import
+- Java import
 
 ~~~perl
     package Sample {
@@ -413,7 +413,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         - only tested in "main" program
 
 
--- Typed variables
+- Typed variables
 
     my TYPE VARLIST
         - See also: http://perldoc.perl.org/functions/my.html
@@ -555,7 +555,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
         if ($typed || $typed) ...
         if ($typed && $typed) ...
 
--- interoperation between native expressions and perl expressions
+- interoperation between native expressions and perl expressions
 
     method calls on typed variables call Java methods,
     method calls on untyped variables call Perl methods
@@ -585,7 +585,7 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
     everything at the right side of ...->to_JavaThing()->... is native-call
 
 
--- native expressions TODO
+- native expressions TODO
 
 ~~~perl
     $x++         # autoincrement
@@ -688,7 +688,7 @@ primitive Java types
         See http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html arguments
 
 
--- mixing Java containers, Perl, and Java::inline
+- mixing Java containers, Perl, and Java::inline
     See: misc/Java/TypedIterator.pl
 
 ~~~perl
@@ -722,7 +722,7 @@ primitive Java types
         }
 ~~~
 
--- coercing method naming rules
+- coercing method naming rules
 
     - rule: remove '::', add 'to_'
         example:  my::Sample  =>  to_mySample()
@@ -733,7 +733,7 @@ primitive Java types
     $x->to_mySample()
 ~~~
 
--- autobox as-needed
+- autobox as-needed
 
     runtime methods should accept String, int, double, boolean types
     and maybe other types of number (byte, ...)
@@ -912,7 +912,7 @@ Perl features
         in main
         called from main
 
--- Add tests
+- Add tests
 
     NaN, Inf, -0
 
