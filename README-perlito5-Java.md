@@ -6,7 +6,9 @@ Perlito5 Java backend
 Requirements
 ------------
 
-Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 1.7.
+Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
+
+Java 7 is required for named groups in regex, like: (?<name>X).
 
 
 Perlito5-Java platform differences
@@ -47,6 +49,16 @@ Some differences between the regex engines will show up:
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
   - regex comments with "(?#text)" are not implemented in Java
+
+  - regex modifiers /ismxg work the same as Perl; other modifiers are not yet implemented.
+
+  - capturing in zero-length-match has problems. Failing tests:
+
+~~~
+    t5/unit/regex_zero_length_match_capture.t
+    t5/unit/regex_zero_length_match_match.t
+    t5/unit/regex_zero_length_replace.t
+~~~
 
 See also:
 
@@ -937,7 +949,7 @@ Modifiers:
 
 Quotemeta: \Q
 
-Modifiers are not serialized yet
+Modifiers are not serialized yet (DONE)
 
 ~~~java
 public String toString() {
