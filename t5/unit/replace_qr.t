@@ -1,12 +1,20 @@
 
-print "1..1\n";
+print "1..2\n";
 
 my $qr = qr/A/i;
 
-$_ = 'bar';
+$_ = 'barbAr';
 s/$qr/x/;
 
-print "not " if $_ ne 'bxr';
-print "ok 1  # $_ \n";
+print "not " if $_ ne 'bxrbAr';
+print "ok 1  # $_ /$qr/ \n";
+
+my $qr = qr/A/;
+
+$_ = 'barbAr';
+s/$qr/x/;
+
+print "not " if $_ ne 'barbxr';
+print "ok 2  # $_ /$qr/ \n";
 
 

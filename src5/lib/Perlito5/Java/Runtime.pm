@@ -2444,15 +2444,50 @@ class PlRegex extends PlReference {
     public static final PlString REF = new PlString("Regexp");
 
     public PlRegex(String p, int flags) {
-        this.original_string = p;
-        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+        this.p = Pattern.compile(PerlOp.character_class_escape(p), flags);
     }
     public PlRegex(PlObject p, int flags) {
-        this.original_string = p.toString();
-        this.p = Pattern.compile(PerlOp.character_class_escape(this.original_string), flags);
+        this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
     }
     public String toString() {
-        // TODO - show flags
+        if (original_string == null) {
+
+            int flags = p.flags();
+            StringBuilder sb = new StringBuilder();
+            sb.append("(?");
+
+            if ((flags & Pattern.CASE_INSENSITIVE) != 0)
+                sb.append("i");
+            if ((flags & Pattern.COMMENTS) != 0)
+                sb.append("x");
+            if ((flags & Pattern.DOTALL) != 0)
+                sb.append("s");
+            if ((flags & Pattern.MULTILINE) != 0)
+                sb.append("m");
+
+            sb.append("-");
+
+            if ((flags & Pattern.CASE_INSENSITIVE) == 0)
+                sb.append("i");
+            if ((flags & Pattern.COMMENTS) == 0)
+                sb.append("x");
+            if ((flags & Pattern.DOTALL) == 0)
+                sb.append("s");
+            if ((flags & Pattern.MULTILINE) == 0)
+                sb.append("m");
+
+            sb.append(":");
+            sb.append(p.toString());
+            sb.append(")");
+            original_string = sb.toString();
+ 
+            // TODO - show flags
+            // Pattern.CANON_EQ
+            // Pattern.LITERAL
+            // Pattern.UNICODE_CASE
+            // Pattern.UNICODE_CHARACTER_CLASS
+            // Pattern.UNIX_LINES
+        }
         return this.original_string;
     }
     public boolean is_regex() {
