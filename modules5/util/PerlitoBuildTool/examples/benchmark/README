@@ -1,0 +1,13 @@
+Run with:
+
+(1) On Java runtime:
+
+    cd $perlito_root_folder/modules5/util/PerlitoBuildTool
+
+    ./pbt_run benchmark Main org/perlito/benchmark $perlito_root_folder
+
+(2) On Perl runtime:
+
+    cd $perlito_root_folder/modules5/util/PerlitoBuildTool
+
+    perl examples/benchmark/main.pl
