@@ -3630,7 +3630,7 @@ class PlLvalue extends PlObject {
         else if (this.o.is_arrayref()) {
             return (PlArray)(this.o.get());
         }
-        return (PlArray)PlCORE.die("Not an ARRAY reference");
+        return this.o.array_deref();
     }
     public PlArray array_deref_lvalue() {
         if (this.o.is_undef()) {
@@ -3641,7 +3641,7 @@ class PlLvalue extends PlObject {
         else if (this.o.is_arrayref()) {
             return (PlArray)(this.o.get());
         }
-        return (PlArray)PlCORE.die("Not an ARRAY reference");
+        return this.o.array_deref();
     }
     public PlObject array_deref_set(PlObject v) {
         // @$x = ...
@@ -3652,7 +3652,7 @@ class PlLvalue extends PlObject {
         else if (this.o.is_arrayref()) {
             return this.o.array_deref_set(v);
         }
-        return PlCORE.die("Not an ARRAY reference");
+        return this.o.array_deref_set(v);
     }
 
     public PlObject hash_deref() {
@@ -3663,7 +3663,7 @@ class PlLvalue extends PlObject {
         else if (this.o.is_hashref()) {
             return this.o.get();
         }
-        return PlCORE.die("Not a HASH reference");
+        return this.o.hash_deref();
     }
     public PlObject hash_deref_set(PlObject v) {
         // %$x = ...
@@ -3674,7 +3674,7 @@ class PlLvalue extends PlObject {
         else if (this.o.is_hashref()) {
             return this.o.hash_deref_set(v);
         }
-        return PlCORE.die("Not a HASH reference");
+        return this.o.hash_deref_set(v);
     }
     public PlObject apply(int want, PlArray List__) {
         return this.o.apply(want, List__);
