@@ -2436,6 +2436,15 @@ class PlFileHandle extends PlReference {
     public boolean is_filehandle() {
         return true;
     }
+
+    public PlObject hget(String i) {
+        // *{ $name }{CODE}->()
+
+        if (i.equals("CODE")) {
+            return PlV.cget(typeglob_name);
+        }
+        return PlCx.UNDEF;
+    }
 }
 class PlRegex extends PlReference {
     public Pattern p;
