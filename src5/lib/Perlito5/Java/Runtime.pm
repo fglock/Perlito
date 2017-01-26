@@ -1914,15 +1914,15 @@ EOT
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
-    public PlObject scalar_deref_lvalue() {
+    public PlObject scalar_deref_lvalue(String namespace) {
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
-    public PlObject scalar_deref() {
+    public PlObject scalar_deref(String namespace) {
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
-    public PlObject scalar_deref_set(PlObject v) {
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
         PlCORE.die("Not a SCALAR reference");
         return this;
     }
@@ -2580,13 +2580,13 @@ class PlLvalueRef extends PlReference {
     public PlLvalueRef(PlObject o) {
         this.o = o;
     }
-    public PlObject scalar_deref_lvalue() {
+    public PlObject scalar_deref_lvalue(String namespace) {
         return this.o;
     }
-    public PlObject scalar_deref() {
+    public PlObject scalar_deref(String namespace) {
         return this.o;
     }
-    public PlObject scalar_deref_set(PlObject v) {
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
         return this.o.set(v);
     }
     public boolean is_scalarref() {
@@ -3136,20 +3136,20 @@ class PlLazyLvalue extends PlLvalue {
         return llv.hset(s, v);
     }
 
-    public PlObject scalar_deref() {
+    public PlObject scalar_deref(String namespace) {
         return new PlLazyScalarref(this);
     }
-    public PlObject scalar_deref_lvalue() {
+    public PlObject scalar_deref_lvalue(String namespace) {
         if (llv == null) {
             create_scalar();
         }
-        return llv.scalar_deref_lvalue();
+        return llv.scalar_deref_lvalue(namespace);
     }
-    public PlObject scalar_deref_set(PlObject v) {
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (llv == null) {
             create_scalar();
         }
-        return llv.scalar_deref_set(v);
+        return llv.scalar_deref_set(namespace, v);
     }
 
 
@@ -3448,7 +3448,7 @@ class PlLvalue extends PlObject {
             return llv;
         }
         else if (this.o.is_scalarref()) {
-            return (PlLvalue)this.o.scalar_deref();
+            return (PlLvalue)this.o.scalar_deref("main");
         }
         return (PlLvalue)PlCORE.die("Not a SCALAR reference");
     }
@@ -3600,26 +3600,26 @@ class PlLvalue extends PlObject {
         return this.o.hset(s, v);
     }
 
-    public PlObject scalar_deref() {
+    public PlObject scalar_deref(String namespace) {
         if (this.o.is_undef()) {
             return new PlLazyScalarref(this);
         }
-        return this.o.scalar_deref();
+        return this.o.scalar_deref(namespace);
     }
-    public PlObject scalar_deref_lvalue() {
+    public PlObject scalar_deref_lvalue(String namespace) {
         if (this.o.is_undef()) {
             PlLvalue lv = new PlLvalue();
             this.o = new PlLvalueRef(lv);
             return lv;
         }
-        return this.o.scalar_deref_lvalue();
+        return this.o.scalar_deref_lvalue(namespace);
     }
-    public PlObject scalar_deref_set(PlObject v) {
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
         if (this.o.is_undef()) {
             PlLvalueRef ar = new PlLvalueRef(new PlLvalue());
             this.o = ar;
         }
-        return this.o.scalar_deref_set(v);
+        return this.o.scalar_deref_set(namespace, v);
     }
 
     public PlArray array_deref() {
@@ -5328,10 +5328,10 @@ class PlString extends PlObject {
     public PlString(char s) {
         this.s = "" + s;
     }
-    public PlObject scalar_deref_lvalue() {
-        return this.scalar_deref();
+    public PlObject scalar_deref_lvalue(String namespace) {
+        return this.scalar_deref(namespace);
     }
-    public PlObject scalar_deref() {
+    public PlObject scalar_deref(String namespace) {
         if (s.length() == 1) {
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
@@ -5340,9 +5340,12 @@ class PlString extends PlObject {
                 return PerlOp.regex_var(s);
             }
         }
+        if (s.indexOf("::") == -1) {
+            s = namespace + "::" + s;
+        }
         return PlV.sget(s);
     }
-    public PlObject scalar_deref_set(PlObject v) {
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
         return PlV.sset(s, v);
     }
     public PlArray array_deref_lvalue() {
