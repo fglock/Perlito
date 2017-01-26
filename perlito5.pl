@@ -27794,7 +27794,15 @@ class PlRegex extends PlReference {
         this.p = Pattern.compile(PerlOp.character_class_escape(p), flags);
     }
     public PlRegex(PlObject p, int flags) {
-        this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
+        if (p.is_lvalue()) {
+            p = p.get();
+        }
+        if (p.is_regex()) {
+            this.p = ((PlRegex)p).p;    // reuse compiled regex; ignore any difference in flags
+        }
+        else {
+            this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
+        }
     }
     public String toString() {
         if (original_string == null) {
