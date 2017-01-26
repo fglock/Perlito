@@ -156,6 +156,7 @@ Parser
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
+~~~sh
     $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
         whatever(m! 25 ; # !);
         die('this dies!')
@@ -163,22 +164,27 @@ Parser
         'whatever' / 25;
     $ perl -e ' print whatever  / 25 ; # / ; die "this dies!"; '
         this dies! at -e line 1.
+~~~
 
 - tailcalls
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
 - "'" meaning "::"
+
+~~~perl
     $'m  # $::m
     $m'  # String found where operator expected
 
     package X'Y  # X::Y
     package X'   # Invalid version format (non-numeric data)
+~~~
 
 - attributes
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
 
 - create __DATA__
+
     %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
 - parse the regexes
@@ -197,6 +203,7 @@ Parser
 
 - block vs. hash
 
+~~~sh
     $ perl -e ' print {  1, 2 } '
     HASH(0x7fdf3b005450)
     $ perl -e ' print {  1, 2; } '
@@ -218,10 +225,12 @@ Parser
     HASH(0x7f8b13805450)
     $ perl -e ' sub x { { 1; } }  print x() , "\n" '
     1
+~~~
 
 - "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
+~~~sh
     $ perl -e ' { package X; sub print { CORE::print(">$_[1]<\n") } } my $x = bless {}, "X"; print $x "xxx" '
     Not a GLOB reference at -e line 1.
 
@@ -252,9 +261,11 @@ Parser
     $ perl -e ' $::X::::X = 3; print $main::X::main::X '    # empty
     $ perl -e ' $::X::::X = 3; print $main::X::X '          # empty
     $ perl -e ' $::X::::X = 3; print $::::X::::X '          # empty
+~~~
 
 - CORE:: namespace can be used with operators:
 
+~~~perl
     $ perl -MO=Deparse -e ' $x CORE::and $v '
     $v if $x;
 
@@ -263,12 +274,13 @@ Parser
 
     $ perl -MO=Deparse -e ' $x CORE::+ $v '
     CORE:: is not a keyword
-
+~~~
 
 - strict and warnings: create options like 'subs', 'refs'
 
 - things that work in perlito5, but which are errors in 'perl'
 
+~~~sh
     $ perl -e ' $c (f) '
     syntax error at -e line 1, near "$c ("
 
@@ -279,7 +291,7 @@ Parser
 
         In perl5.22.0:
         Missing right curly or square bracket at -e line 1, within string
-
+~~~
 
 Add tests for fixed bugs
 ------------------------
@@ -301,6 +313,7 @@ Add tests for fixed bugs
 
     Allowed:
 
+~~~sh
     $ perl -e ' ${ for (1,2,3) {} } '
     $ perl -e ' @{ for (1,2,3) {} } '
     $ perl -e ' %{ for (1,2,3) {} } '
@@ -311,9 +324,11 @@ Add tests for fixed bugs
     3
     $ perl -e ' $} = 3; print ${ } } '
     3
+~~~
 
     Not allowed:
 
+~~~sh
     $ perl -e ' \{ for (1,2,3) {} } '
     syntax error at -e line 1, near "{ for "
     Execution of -e aborted due to compilation errors.
@@ -332,6 +347,7 @@ Add tests for fixed bugs
 
     $ perl  -e ' use Data::Dumper;  ${ x ->{s} } = 4;  print Dumper \%x '
     #  { 's' => \4 }
+~~~
 
     ---
     wrong precedence in keys()
