@@ -18,11 +18,11 @@ Perlito5-Java platform differences
 -------------------------------------------
 
 
-  - no timely destruction (DESTROY) (because Java)
+  - no timely destruction (DESTROY) (because we use Java memory management)
       - files don't "auto-close" at the end of a block
       - Try::Tiny "finally" doesn't work
 
-  - no XS (because Java)
+  - no XS (because we use Java instead of C)
 
   - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
       - "import" also doesn't work when doing precompilation
@@ -32,6 +32,12 @@ Perlito5-Java platform differences
       - also no: "do FILE", "require" (because these depend on eval-string)
 
   - runtime error messages do not include the line number in the Perl code
+      - also caller() is only partially implemented
+
+  - no "goto LABEL"
+      - "goto &code" works, bit it doesn't do a tail-call
+
+  - file permissions for setuid, setgid, and sticky bit are not implemented
 
   - any other differences are not-yet-implemented or bugs.
 
@@ -58,9 +64,9 @@ Some differences between the regex engines will show up:
   - capturing in zero-length-match has problems. Failing tests:
 
 ~~~
-    t5/unit/regex_zero_length_match_capture.t
-    t5/unit/regex_zero_length_match_match.t
-    t5/unit/regex_zero_length_replace.t
+        t5/unit/regex_zero_length_match_capture.t
+        t5/unit/regex_zero_length_match_match.t
+        t5/unit/regex_zero_length_replace.t
 ~~~
 
 See also:
