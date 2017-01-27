@@ -19,7 +19,6 @@ Java 7 is also required for named groups in regex, like:
 Perlito5-Java platform differences
 -------------------------------------------
 
-
   - no timely destruction (DESTROY) (because we use Java memory management)
       - files don't "auto-close" at the end of a block
       - Try::Tiny "finally" doesn't work
@@ -51,14 +50,12 @@ Perlito5-Java platform differences
 Regex differences
 -----------------
 
-Perlito5 compiles Perl regexes into Java regexes with some wrapping code.
-Some differences between the regex engines will show up:
+  - regex modifiers /ismxge work the same as Perl; other modifiers are not yet implemented.
+
+  - regex variables $1, $2, ... and $& work; other variables are not yet implemented.
 
   - named captures cannot contain an underline in the name.
-
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
-
-  - regex modifiers /ismxg work the same as Perl; other modifiers are not yet implemented.
 
   - capturing in zero-length-match has problems. Failing tests:
 
@@ -67,15 +64,6 @@ Some differences between the regex engines will show up:
         t5/unit/regex_zero_length_match_match.t
         t5/unit/regex_zero_length_replace.t
 ~~~
-
-See also:
-
-    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#jcc
-
-    http://www.regular-expressions.info/reference.html
-
-    Discussion about alternative implementations:
-    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
 Perlito5-Java extensibility
 ===========================
@@ -940,28 +928,11 @@ Regex
 
 regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
-Regex variables: $1, $2 and named captures
-
-Modifiers:
-
-    /g (DONE in match, TODO in substitution)
-
-    /x (DONE)
-
-    /e (TODO)
+Regex variables: $1, $2 and named captures (TODO - add tests)
 
 Quotemeta: \Q
 
 Modifiers are not serialized yet (DONE)
-
-~~~java
-public String toString() {
-   // TODO - show flags
-   return this.original_string;
-}
-~~~
-
-that is:
 
 ~~~bash
 $ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
@@ -989,6 +960,12 @@ See also:
     Mini-language with fast regex, Artistic License
     http://jint.sourceforge.net
 
+    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#jcc
+
+    http://www.regular-expressions.info/reference.html
+
+    Discussion about alternative implementations:
+    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
 Threads
 -------
@@ -1021,7 +998,7 @@ Optimizations
 
   - do-block and eval-block in void-context don't need a subroutine wrapper
 
-  - don't pre-expand ranges in loops
+  - don't pre-expand ranges in loops (DONE)
 
   - replace regex with index
 
