@@ -26,7 +26,11 @@ Perlito5-Java platform differences
 
   - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
       - "import" also doesn't work when doing precompilation
-      - subroutines need to be declared before use
+      - subroutines need to be declared before use. Failing tests:
+
+~~~
+        t5/unit/sub_defined_later.t
+~~~
 
   - no eval-string (because not-yet-bootstrapped)
       - also no: "do FILE", "require" (because these depend on eval-string)
