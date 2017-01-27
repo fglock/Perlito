@@ -52,7 +52,7 @@ Regex differences
 Perlito5 compiles Perl regexes into Java regexes with some wrapping code.
 Some differences between the regex engines will show up:
 
-  - named captures
+  - named captures cannot contain an underline in the name.
 
     Java 7 is required for named groups in regex, like: (?<name>X).
     Discussion about alternative implementations:
