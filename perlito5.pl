@@ -26583,117 +26583,109 @@ class PerlOp {
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
         String str = s.toString();
-        if (want != PlCx.LIST) {
-            int count = 0;
-            Matcher matcher = pat.p.matcher(str);
-            if (global) {
-                final StringBuilder buf = new StringBuilder(str.length() + 256);
-                int pos = 0;
-                while (matcher.find()) {
-                    count++;
-                    set_match(matcher, str);
-                    int start = matcher.start();
-                    int end   = matcher.end();
-                    String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
-                    if (start > pos) {
-                        buf.append( str.substring(pos, start) );
-                    }
-                    if (replace.length() > 0) {
-                        buf.append( replace );
-                    }
-                    pos = end;
+        int count = 0;
+        Matcher matcher = pat.p.matcher(str);
+        if (global) {
+            final StringBuilder buf = new StringBuilder(str.length() + 256);
+            int pos = 0;
+            while (matcher.find()) {
+                count++;
+                set_match(matcher, str);
+                int start = matcher.start();
+                int end   = matcher.end();
+                String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                if (start > pos) {
+                    buf.append( str.substring(pos, start) );
                 }
-                if (count > 0) {
-                    if (pos <= str.length()) {
-                        buf.append( str.substring(pos) );
-                    }
-                    s.set(new PlString(buf.toString()));
+                if (replace.length() > 0) {
+                    buf.append( replace );
                 }
+                pos = end;
             }
-            else {
-                if (matcher.find()) {
-                    count++;
-                    set_match(matcher, str);
-                    int start = matcher.start();
-                    int end   = matcher.end();
-                    String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
-                    final StringBuilder buf = new StringBuilder(str.length() + replace.length());
-                    if (start > 0) {
-                        buf.append( str.substring(0, start) );
-                    }
-                    if (replace.length() > 0) {
-                        buf.append( replace );
-                    }
-                    if (end <= str.length()) {
-                        buf.append( str.substring(end) );
-                    }
-                    s.set(new PlString(buf.toString()));
+            if (count > 0) {
+                if (pos <= str.length()) {
+                    buf.append( str.substring(pos) );
                 }
+                s.set(new PlString(buf.toString()));
             }
-            if (count == 0) {
-                // no match
-                return PlCx.FALSE;
-            }
-            return new PlInt(count);
         }
-        PlCORE.die("not implemented string replace in list context");
-        return s;
+        else {
+            if (matcher.find()) {
+                count++;
+                set_match(matcher, str);
+                int start = matcher.start();
+                int end   = matcher.end();
+                String replace = rep.apply(PlCx.SCALAR, new PlArray()).toString();
+                final StringBuilder buf = new StringBuilder(str.length() + replace.length());
+                if (start > 0) {
+                    buf.append( str.substring(0, start) );
+                }
+                if (replace.length() > 0) {
+                    buf.append( replace );
+                }
+                if (end <= str.length()) {
+                    buf.append( str.substring(end) );
+                }
+                s.set(new PlString(buf.toString()));
+            }
+        }
+        if (count == 0) {
+            // no match
+            return PlCx.FALSE;
+        }
+        return new PlInt(count);
     }
     public static final PlObject replace(PlLvalue s, PlRegex pat, String replace, int want, boolean global) {
         String str = s.toString();
-        if (want != PlCx.LIST) {
-            int count = 0;
-            Matcher matcher = pat.p.matcher(str);
-            if (global) {
-                final StringBuilder buf = new StringBuilder(str.length() + 256);
-                int pos = 0;
-                while (matcher.find()) {
-                    count++;
-                    set_match(matcher, str);
-                    int start = matcher.start();
-                    int end   = matcher.end();
-                    if (start > pos) {
-                        buf.append( str.substring(pos, start) );
-                    }
-                    if (replace.length() > 0) {
-                        buf.append( replace );
-                    }
-                    pos = end;
+        int count = 0;
+        Matcher matcher = pat.p.matcher(str);
+        if (global) {
+            final StringBuilder buf = new StringBuilder(str.length() + 256);
+            int pos = 0;
+            while (matcher.find()) {
+                count++;
+                set_match(matcher, str);
+                int start = matcher.start();
+                int end   = matcher.end();
+                if (start > pos) {
+                    buf.append( str.substring(pos, start) );
                 }
-                if (count > 0) {
-                    if (pos <= str.length()) {
-                        buf.append( str.substring(pos) );
-                    }
-                    s.set(new PlString(buf.toString()));
+                if (replace.length() > 0) {
+                    buf.append( replace );
                 }
+                pos = end;
             }
-            else {
-                if (matcher.find()) {
-                    count++;
-                    set_match(matcher, str);
-                    int start = matcher.start();
-                    int end   = matcher.end();
-                    final StringBuilder buf = new StringBuilder(str.length() + replace.length());
-                    if (start > 0) {
-                        buf.append( str.substring(0, start) );
-                    }
-                    if (replace.length() > 0) {
-                        buf.append( replace );
-                    }
-                    if (end <= str.length()) {
-                        buf.append( str.substring(end) );
-                    }
-                    s.set(new PlString(buf.toString()));
+            if (count > 0) {
+                if (pos <= str.length()) {
+                    buf.append( str.substring(pos) );
                 }
+                s.set(new PlString(buf.toString()));
             }
-            if (count == 0) {
-                // no match
-                return PlCx.FALSE;
-            }
-            return new PlInt(count);
         }
-        PlCORE.die("not implemented string replace in list context");
-        return s;
+        else {
+            if (matcher.find()) {
+                count++;
+                set_match(matcher, str);
+                int start = matcher.start();
+                int end   = matcher.end();
+                final StringBuilder buf = new StringBuilder(str.length() + replace.length());
+                if (start > 0) {
+                    buf.append( str.substring(0, start) );
+                }
+                if (replace.length() > 0) {
+                    buf.append( replace );
+                }
+                if (end <= str.length()) {
+                    buf.append( str.substring(end) );
+                }
+                s.set(new PlString(buf.toString()));
+            }
+        }
+        if (count == 0) {
+            // no match
+            return PlCx.FALSE;
+        }
+        return new PlInt(count);
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
