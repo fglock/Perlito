@@ -941,7 +941,7 @@ class PerlOp {
         return s.replace("\\", "\\\\");
     }
 
-    private static int _character_class_escape(int offset, String s, StringBuilder sb, int length) {
+    private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {
         // [ ... ]
         int offset3 = offset;
         for ( ; offset3 < length; ) {
@@ -985,16 +985,17 @@ class PerlOp {
     // \[       as-is
     // [xx xx]  becomes: [xx\ xx] - this will make sure space is a token, even when /x modifier is set
     // \120     becomes: \0120 - Java requires octal sequences to start with zero
+    // \0       becomes: \00 - Java requires the extra zero
     // (?#...)  inline comment is removed
     //
-    public static String character_class_escape(String s) {
+    public static String regex_escape(String s) {
         // escape spaces in character classes
         final int length = s.length();
         StringBuilder sb = new StringBuilder();
         for (int offset = 0; offset < length; ) {
             final int c = s.codePointAt(offset);
             switch (c) {
-                case '\\':  // escape - \[
+                case '\\':  // escape - \[ \120
                             sb.append(Character.toChars(c));
                             if (offset < length) {
                                 offset++;
@@ -1020,7 +1021,7 @@ class PerlOp {
                 case '[':   // character class
                             sb.append(Character.toChars(c));
                             offset++;
-                            offset = _character_class_escape(offset, s, sb, length);
+                            offset = _regex_character_class_escape(offset, s, sb, length);
                             break;
                 case '(':   // comment (?# ... )
                             if (offset < length - 2) {
@@ -2482,7 +2483,7 @@ class PlRegex extends PlReference {
     public static final PlString REF = new PlString("Regexp");
 
     public PlRegex(String p, int flags) {
-        this.p = Pattern.compile(PerlOp.character_class_escape(p), flags);
+        this.p = Pattern.compile(PerlOp.regex_escape(p), flags);
     }
     public PlRegex(PlObject p, int flags) {
         if (p.is_lvalue()) {
@@ -2492,7 +2493,7 @@ class PlRegex extends PlReference {
             this.p = ((PlRegex)p).p;    // reuse compiled regex; ignore any difference in flags
         }
         else {
-            this.p = Pattern.compile(PerlOp.character_class_escape(p.toString()), flags);
+            this.p = Pattern.compile(PerlOp.regex_escape(p.toString()), flags);
         }
     }
     public String toString() {
