@@ -6,9 +6,11 @@ Perlito5 Java backend
 Requirements
 ------------
 
+- Java 7
+
 Perlito5 runtime uses "java.nio.file.Files", which was introduced in Java 7.
 
-Java 7 is required for named groups in regex, like:
+Java 7 is also required for named groups in regex, like:
 
 ~~~
     (?<name>X).
@@ -54,11 +56,6 @@ Some differences between the regex engines will show up:
 
   - named captures cannot contain an underline in the name.
 
-    Java 7 is required for named groups in regex, like: (?<name>X).
-    Discussion about alternative implementations:
-    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
-
-    Named captures in Java cannot have an underline in the name.
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
   - regex modifiers /ismxg work the same as Perl; other modifiers are not yet implemented.
@@ -77,6 +74,8 @@ See also:
 
     http://www.regular-expressions.info/reference.html
 
+    Discussion about alternative implementations:
+    http://stackoverflow.com/questions/415580/regex-named-groups-in-java
 
 Perlito5-Java extensibility
 ===========================
@@ -843,16 +842,6 @@ Variables
 
       - See: PlArray.construct_list_of_aliases()
 
-Symbolic references
--------------------
-
-~~~bash
-    $ perl -e ' $a = 123; my $z; $z = "a"; print $$z '
-    123
-    $ perl -e ' my $a = 123; my $z; $z = "a"; print $$z '
-    ''
-~~~
-
 Overflow from int to double
 ---------------------------
 
@@ -885,9 +874,12 @@ Object-related
     AUTOLOAD
     (DONE) Scalar::blessed
 
-    TODO - unit tests
+    TODO - unit tests (work in progress)
+
     TODO - method dispatch (current impl doesn't look up classes in @INC)
+
     TODO - method cache
+
     TODO - invalidate method cache when subroutine changes or @INC changes
 
 Perl features
@@ -985,16 +977,6 @@ $ perl -le ' my $x = qr/ (\w) /; my $z = qr/$x/x; print $z '
 $ perl -le ' my $x = qr/ (\w) /; my $z = qr/before $x after/x; print $z '
 (?^x:before (?^: (\w) ) after)
 ~~~
-
-String replace:
-
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' my $x = "123"; $x =~ s/(2)/$1/e; print "$x\n" ' > Main.java ; javac Main.java
-    $ java Main
-    Exception in thread "main" java.lang.ClassCastException: PlUndef cannot be cast to PlRegexResult
-
-    TODO: create a closure unless the replacement is a constant ($1 is not a constant)
-
-    TODO: make PerlOp.replace() accept a closure
 
 See also:
 
