@@ -18,6 +18,7 @@
 -- optimize "for (0..1000000)"
 -- s///e, tr//
 -- glob deref - *{ $name }{CODE}->()
+-- regex comments with "(?#text)"
 
 0.047 cpan:v6  2016-07-28
 - hide internal classes from CPAN index

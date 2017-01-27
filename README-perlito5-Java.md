@@ -61,8 +61,6 @@ Some differences between the regex engines will show up:
     Named captures in Java cannot have an underline in the name.
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
-  - regex comments with "(?#text)" are not implemented in Java
-
   - regex modifiers /ismxg work the same as Perl; other modifiers are not yet implemented.
 
   - capturing in zero-length-match has problems. Failing tests:

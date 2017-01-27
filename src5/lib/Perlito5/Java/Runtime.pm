@@ -961,12 +961,31 @@ class PerlOp {
         }
         return offset3;
     }
+    private static int _regex_skip_comment(int offset, String s, int length) {
+        // [ ... ]
+        int offset3 = offset;
+        for ( ; offset3 < length; ) {
+            final int c3 = s.codePointAt(offset3);
+            switch (c3) {
+                case ')':
+                    return offset3;
+                case '\\':
+                    offset3++;
+                    break;
+                default:
+                    break;
+            }
+            offset3++;
+        }
+        return offset;  // possible error - end of comment not found
+    }
 
-    // escape rules:
+    // regex escape rules:
     //
     // \[       as-is
     // [xx xx]  becomes: [xx\ xx] - this will make sure space is a token, even when /x modifier is set
     // \120     becomes: \0120 - Java requires octal sequences to start with zero
+    // (?#...)  inline comment is removed
     //
     public static String character_class_escape(String s) {
         // escape spaces in character classes
@@ -1002,6 +1021,21 @@ class PerlOp {
                             sb.append(Character.toChars(c));
                             offset++;
                             offset = _character_class_escape(offset, s, sb, length);
+                            break;
+                case '(':   // comment (?# ... )
+                            if (offset < length - 2) {
+                                int c2 = s.codePointAt(offset+1);
+                                int c3 = s.codePointAt(offset+2);
+                                if (c2 == '?' && c3 == '#') {
+                                    offset = _regex_skip_comment(offset, s, length);
+                                }
+                                else {
+                                    sb.append(Character.toChars(c));
+                                }
+                            }
+                            else {
+                                sb.append(Character.toChars(c));
+                            }
                             break;
                 default:    // normal char
                             sb.append(Character.toChars(c));
