@@ -11,6 +11,7 @@ languages:
 
   - Perl 5 to Perl 5
   - Perl 5 to JavaScript
+  - Perl 5 to Java 7
   - Perl 6 to Perl 5
   - Perl 6 to JavaScript
   - Perl 6 to Python 2.6
@@ -19,7 +20,6 @@ The following compilers are work in progress - some tests pass, some tests fail.
 Check the Changelog file for details:
 
   - Perl 5 to Perl 6
-  - Perl 5 to Java 6
   - Perl 6 to Ruby 1.9
   - Perl 6 to Go
   - Perl 6 to Common Lisp (SBCL)
