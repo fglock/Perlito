@@ -31,6 +31,9 @@ Perlito5-Java platform differences
 
 ~~~
         t5/unit/sub_defined_later.t
+        t5/unit/phase_begin_my.t
+        t5/unit/phase_init.t
+        t5/unit/phase_init_my.t
 ~~~
 
   - no eval-string (because not-yet-bootstrapped)
