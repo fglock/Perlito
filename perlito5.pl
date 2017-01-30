@@ -27666,7 +27666,7 @@ class PlObject {
     }
     public PlObject str_cmp(PlObject b) {
         int c = this.toString().compareTo(b.toString());
-        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp(PlObject b) {
         return b.num_cmp2(this);
@@ -27674,7 +27674,7 @@ class PlObject {
     public PlObject num_cmp2(PlObject b) {
         Long blong = new Long(b.to_long());
         int c = blong.compareTo(this.to_long());
-        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 ' . (join('', map {
             my $perl = $_;
@@ -30603,11 +30603,11 @@ class PlDouble extends PlObject {
     }
     public PlObject num_cmp(PlObject b) {
         int c = new Double(this.i).compareTo(b.to_double());
-        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
     public PlObject num_cmp2(PlObject b) {
         int c = new Double(b.to_double()).compareTo(this.i);
-        return new PlInt(c == 0 ? c : c < 0 ? -1 : 1);
+        return (c == 0 ? PlCx.INT0 : c < 0 ? PlCx.MIN1 : PlCx.INT1);
     }
 ' . (join('', map {
             my $perl = $_;
