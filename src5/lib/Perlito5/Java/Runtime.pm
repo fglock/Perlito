@@ -289,15 +289,17 @@ class PerlCompare implements Comparator<PlObject> {
     public PlClosure sorter;
     public PlLvalue v_a;
     public PlLvalue v_b;
-    public PerlCompare (PlClosure sorter, PlLvalue a, PlLvalue b) {
+    public PlArray  list__;
+    public PerlCompare (PlClosure sorter, PlLvalue a, PlLvalue b, PlArray list__) {
         this.sorter = sorter;
         this.v_a = a;
         this.v_b = b;
+        this.list__ = list__;
     }
     public int compare (PlObject a, PlObject b) {
         v_a.set(a);
         v_b.set(b);
-        return this.sorter.apply( PlCx.SCALAR, new PlArray() ).to_int();
+        return this.sorter.apply( PlCx.SCALAR, list__ ).to_int();
     }
 }
 class PerlRangeString implements Iterator<PlObject> {
@@ -871,7 +873,7 @@ class PerlOp {
         }
         return (wantarray == PlCx.LIST ) ? a : a.length_of_array();
     }
-    public static final PlObject grep(PlClosure c, PlArray a, int wantarray) {
+    public static final PlObject grep(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         PlArray ret = new PlArray();
         int size = a.to_int();
         PlLvalue v__ref = (PlLvalue)PlV.sget("main::_");
@@ -880,7 +882,7 @@ class PerlOp {
             boolean result;
             PlObject temp = a.aget(i);
             v__ref.set(temp);
-            result = c.apply(PlCx.SCALAR, new PlArray()).to_bool();
+            result = c.apply(PlCx.SCALAR, list__).to_bool();
             if (result) {
                 ret.push(temp);
             }
@@ -888,7 +890,7 @@ class PerlOp {
         v__ref.set(v__val);
         return (wantarray == PlCx.LIST ) ? ret : ret.length_of_array();
     }
-    public static final PlObject map(PlClosure c, PlArray a, int wantarray) {
+    public static final PlObject map(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         if (wantarray == PlCx.LIST ) {
             PlArray ret = new PlArray();
             int size = a.to_int();
@@ -896,7 +898,7 @@ class PerlOp {
             PlObject v__val = v__ref.get();
             for (int i = 0; i < size; i++) {
                 v__ref.set(a.aget(i));
-                ret.push(c.apply(PlCx.LIST, new PlArray()));
+                ret.push(c.apply(PlCx.LIST, list__));
             }
             v__ref.set(v__val);
             return ret;
@@ -914,13 +916,12 @@ class PerlOp {
             return new PlInt(ret);
         }
     }
-    public static final PlObject sort(PlClosure c, PlArray a, int wantarray) {
-        // TODO - pass @_ to the closure
+    public static final PlObject sort(PlClosure c, PlArray a, PlArray list__, int wantarray) {
         String pkg = c.pkg_name;
         PlArray ret = new PlArray(a);
         PlLvalue v_a_ref = (PlLvalue)PlV.sget(pkg + "::a");
         PlLvalue v_b_ref = (PlLvalue)PlV.sget(pkg + "::b");
-        PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref);
+        PerlCompare comp = new PerlCompare(c, v_a_ref, v_b_ref, list__);
         PlObject v_a_val = v_a_ref.get();
         PlObject v_b_val = v_b_ref.get();
         Collections.sort(ret.a, comp);

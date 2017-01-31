@@ -1431,6 +1431,7 @@ package Perlito5::AST::Apply;
 
             'PerlOp.map(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
+                . 'List__, '
                 . Perlito5::Java::to_context($wantarray) . ')';
         },
         'grep' => sub {
@@ -1459,6 +1460,7 @@ package Perlito5::AST::Apply;
 
             'PerlOp.grep(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
+                . 'List__, '
                 . Perlito5::Java::to_context($wantarray) . ')';
         },
         'bless' => sub {
@@ -1506,6 +1508,7 @@ package Perlito5::AST::Apply;
 
             'PerlOp.sort(' . $sub->emit_java( $level + 1 ) . ', '
                 . $list . ', '
+                . 'List__, '
                 . Perlito5::Java::to_context($wantarray)
             . ')';
         },
