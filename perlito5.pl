@@ -26501,7 +26501,7 @@ class PerlOp {
     }
     public static final PlObject regex_var(int var_number) {
         if (var_number == 0) {
-            PlCORE.die("$0 not implemented");
+            return PlV.sget("main::0");
         }
         Matcher matcher = PlV.regex_result.matcher;
         if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
