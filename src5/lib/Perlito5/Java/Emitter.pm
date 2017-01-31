@@ -970,7 +970,7 @@ package Perlito5::Java::LexicalBlock;
         if ( $has_local ) {
             push @pre, 'int ' . $local_label . ' = PerlOp.local_length();';
             if ($has_regex) {
-                push @pre, 'PerlOp.local_match();'
+                push @pre, 'PerlOp.push_local_regex_result();'
             }
         }
 

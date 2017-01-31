@@ -627,19 +627,34 @@ class PerlOp {
         container.aset_alias(index, empty);
         return empty;
     }
+    public static final void push_local_regex_result() {
+        PlRegexResult match = PlV.regex_result;
+        local_stack.a.add(match);
+        PlRegexResult new_match = new PlRegexResult();
+        new_match.matcher = match.matcher;
+        new_match.regex_string = match.regex_string;
+        PlV.regex_result = new_match;
+    }
+
     public static final int local_length() {
         return local_stack.to_int();
     }
     public static final PlObject cleanup_local(int pos, PlObject ret) {
         while (local_stack.to_int() > pos) {
-            PlLvalue lvalue    = (PlLvalue)local_stack.pop();
-            PlObject index     = local_stack.pop();
-            PlObject container = local_stack.pop();
-            if (container.is_array()) {
-                ((PlArray)container).aset_alias(index.to_int(), lvalue);
+            PlObject v = local_stack.pop();
+            if (v.is_regex_result()) {
+                PlV.regex_result = (PlRegexResult)v;
             }
             else {
-                ((PlHash)container).hset_alias(index.toString(), lvalue);
+                PlLvalue lvalue    = (PlLvalue)v;
+                PlObject index     = local_stack.pop();
+                PlObject container = local_stack.pop();
+                if (container.is_array()) {
+                    ((PlArray)container).aset_alias(index.to_int(), lvalue);
+                }
+                else {
+                    ((PlHash)container).hset_alias(index.toString(), lvalue);
+                }
             }
         }
         return ret;
@@ -1109,26 +1124,19 @@ class PerlOp {
     // class PlRegexResult extends PlObject {
     //     public Matcher matcher;      // regex captures
     //     public String  regex_string; // last string used in a regex
-    public static final PlHash regex_var = new PlHash();
 
     public static final PlRegexResult get_match() {
-        return (PlRegexResult)regex_var.hget_lvalue("__match__").get();
-    }
-    public static final void local_match() {
-        PlRegexResult old = get_match();
-        regex_var.hget_lvalue_local("__match__");
-        set_match(old.matcher, old.regex_string);
+        return PlV.regex_result;
     }
     public static final PlRegexResult set_match(Matcher m, String s) {
         PlRegexResult match = new PlRegexResult();
         match.matcher = m;
         match.regex_string = s;
-        regex_var.hset("__match__", match);
+        PlV.regex_result = match;
         return match;
     }
     public static final void reset_match() {
-        PlRegexResult match = new PlRegexResult();
-        regex_var.hset("__match__", match);
+        PlV.regex_result = new PlRegexResult();
     }
     public static final PlObject regex_var(int var_number) {
         if (var_number == 0) {
@@ -1541,6 +1549,8 @@ class PlV {
     public static final PlHash avar = new PlHash(); // array
     public static final PlHash hvar = new PlHash(); // hash
     public static final PlHash fvar = new PlHash(); // file
+
+    public static PlRegexResult regex_result = new PlRegexResult();
 
     // scalar
     public static final PlLvalue sget(String name) {
@@ -2153,6 +2163,9 @@ EOT
     public boolean is_regex() {
         return false;
     }
+    public boolean is_regex_result() {
+        return false;
+    }
     public boolean is_coderef() {
         return false;
     }
@@ -2544,6 +2557,10 @@ class PlRegex extends PlReference {
 class PlRegexResult extends PlObject {
     public Matcher matcher;      // regex captures
     public String  regex_string; // last string used in a regex
+
+    public boolean is_regex_result() {
+        return true;
+    }
 }
 class PlClosure extends PlReference implements Runnable {
     public PlObject[] env;       // new PlObject[]{ v1, v2, v3 }
