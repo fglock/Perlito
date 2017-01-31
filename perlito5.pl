@@ -26521,10 +26521,14 @@ class PerlOp {
         if (matcher == null || str == null) {
             return PlCx.UNDEF;
         }
-        if (var_name.equals("&")) {
-            // $&
-            String cap = str.substring(matcher.start(), matcher.end());
-            return new PlString(cap);
+        if (var_name.equals("&")) {    // $&
+            return new PlString( str.substring(matcher.start(), matcher.end()) );
+        }
+        if (var_name.equals("`")) {    // $`
+            return new PlString( str.substring(0, matcher.start()) );
+        }
+        if (var_name.equals("' . chr(39) . '")) {    // $' . chr(39) . '
+            return new PlString( str.substring(matcher.end()) );
         }
         return PlCx.UNDEF;
     }
@@ -30671,7 +30675,7 @@ class PlString extends PlObject {
             if (this._looks_like_non_negative_integer()) {
                 return PerlOp.regex_var(this.to_int());
             }
-            if (s.equals("&")) {
+            if (s.equals("&") || s.equals("`") || s.equals("' . chr(39) . '")) {
                 return PerlOp.regex_var(s);
             }
         }
