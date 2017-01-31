@@ -929,13 +929,11 @@ Perl features
 Regex
 -----
 
-regex reference: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
-
-Regex variables: $1, $2 and named captures (TODO - add tests)
+Regex variables: named captures (TODO - add tests)
 
 Quotemeta: \Q
 
-Modifiers are not serialized yet (DONE)
+Modifiers are not serialized yet (DONE - add tests)
 
 ~~~bash
 $ perl -e ' my $user_agent_regexp = "123";  my $regexp = qr/$user_agent_regexp/x; print $regexp; '
@@ -963,7 +961,8 @@ See also:
     Mini-language with fast regex, Artistic License
     http://jint.sourceforge.net
 
-    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#jcc
+    regex reference:
+    http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
     http://www.regular-expressions.info/reference.html
 
@@ -989,7 +988,7 @@ Threads
 
     closure can use that thread id to get/set the value from globals hash.
 
-    per-thread "local" stack
+    TODO - per-thread "local" stack and "boolean" stack
 
 Optimizations
 -------------
