@@ -1987,7 +1987,7 @@ package Perlito5::AST::Var;
                 # regex captures
                 return 'PerlOp.regex_var(' . (0 + $self->{name}) . ')'
             }
-            if ($self->{name} eq '&') {
+            if ($self->{name} eq '&' || $self->{name} eq '`' || $self->{name} eq "'") {
                 # regex match $&
                 return 'PerlOp.regex_var(' . Perlito5::Java::escape_string($self->{name}) . ')'
             }

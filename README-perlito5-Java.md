@@ -55,7 +55,7 @@ Regex differences
 
   - regex modifiers /ismxge work the same as Perl; other modifiers are not yet implemented.
 
-  - regex variables $1, $2, ... and $& work; other variables are not yet implemented.
+  - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
   - named captures cannot contain an underline in the name.
     Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.

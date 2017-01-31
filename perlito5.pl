@@ -9086,7 +9086,13 @@ use feature 'say';
             }
             $name eq '@main::ARGV' && next;
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-                my $value = eval($name);
+                my $value;
+                if ($name eq '$main::`') {
+                    $value = ${'`'}
+                }
+                else {
+                    $value = eval($name)
+                }
                 my $dump = _dumper($value, '  ', $dumper_seen, $name);
                 $dump eq 'undef' && next;
                 push(@{$vars}, $name . ' = ' . $dump . ';')
@@ -22877,7 +22883,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 if ($self->{'name'} > 0) {
                     return 'PerlOp.regex_var(' . (0 + $self->{'name'}) . ')'
                 }
-                if ($self->{'name'} eq '&') {
+                if ($self->{'name'} eq '&' || $self->{'name'} eq '`' || $self->{'name'} eq chr(39)) {
                     return 'PerlOp.regex_var(' . Perlito5::Java::escape_string($self->{'name'}) . ')'
                 }
                 if ($self->{'name'} eq '$') {

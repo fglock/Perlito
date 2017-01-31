@@ -849,7 +849,13 @@ sub emit_globals_after_BEGIN {
         }
         next if $name eq '@main::ARGV';
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-            my $value = eval($name);
+            my $value;
+            if ($name eq '$main::`') {
+                $value = $`;    # perl doesn't like $main::`
+            }
+            else {
+                $value = eval($name);
+            }
             my $dump = _dumper( $value, "  ", $dumper_seen, $name );
             next if $dump eq 'undef';
             push @$vars, "$name = " . $dump . ";";
