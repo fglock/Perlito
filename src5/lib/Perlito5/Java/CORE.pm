@@ -310,6 +310,9 @@ EOT
         return PlCx.UNDEF;
     }
     public static final PlObject warn(int want, PlArray List__) {
+        if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
+            // TODO - execute $SIG{__WARN__}
+        }
         for (int i = 0; i < List__.to_int(); i++) {
             PlCx.STDERR.outputStream.print(List__.aget(i).toString());
         }
@@ -317,6 +320,9 @@ EOT
         return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
+        if (PlV.hash_get("main::SIG").hget("__DIE__").is_coderef()) {
+            // TODO - execute $SIG{__DIE__}
+        }
         PlObject arg = List__.aget(0);
         if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
             throw new PlDieException(PlCx.DIED);
