@@ -22562,7 +22562,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $Java_class = Perlito5::Java::get_java_class_info();
                 $str .= Perlito5::Java::Runtime::->emit_java('java_classes' => $Java_class, 'java_constants' => \@Perlito5::Java::Java_constants)
             }
-            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlEnv.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
+            $str .= Perlito5::Java::emit_wrap_java(-1, 'class Main {', ['public static void main(String[] args) {', ['PlV.init(args);', 'int want = PlCx.VOID;', 'PlArray List__ = new PlArray();', 'try {', [@Perlito5::Java::Java_init, @main], '}', 'catch(PlReturnException e) {', ['PlCORE.die("Can' . chr(39) . 't return outside a subroutine");'], '}', 'catch(PlNextException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"next\\" outside a loop block");'], '}', 'catch(PlLastException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"last\\" outside a loop block");'], '}', 'catch(PlRedoException e) {', ['PlCORE.die("Can' . chr(39) . 't \\"redo\\" outside a loop block");'], '}'], '}'], ['public static void init() {', ['main(new String[]{});'], '}'], ['public static PlObject[] apply(String functionName, String... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], ['public static PlObject[] apply(String functionName, PlObject... args) {', ['PlArray list = new PlArray(args);', 'PlObject result = PlV.cget(functionName).apply(PlCx.LIST, list);', 'PlArray res = result instanceof PlArray ? (PlArray) result : new PlArray(result);', 'PlObject[] out = new PlObject[res.to_int()];', 'int i = 0;', 'for (PlObject s : res) {', ['out[i++] = s;'], '}', 'return out;'], '}'], '}') . '
 ';
             return $str
         }
@@ -26924,6 +26924,75 @@ class PlV {
 
     public static PlRegexResult regex_result = new PlRegexResult();
 
+    public static final void init(String[] args) {
+        PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
+        PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
+        PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
+        PlV.sset("main::/", new PlString("\\n"));                  // $/ = "\\n"
+
+        PlCx.STDIN.inputStream   = System.in;
+        PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
+        PlCx.STDIN.eof           = false;
+        PlCx.STDIN.typeglob_name = "main::STDIN";
+
+        PlCx.STDOUT.outputStream = System.out;
+        PlCx.STDOUT.typeglob_name = "main::STDOUT";
+
+        PlCx.STDERR.outputStream = System.err;
+        PlCx.STDERR.typeglob_name = "main::STDERR";
+
+        PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
+        PlV.fset("main::STDOUT", PlCx.STDOUT);
+        PlV.fset("main::STDERR", PlCx.STDERR);
+
+        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+            public PlObject apply(int want, PlArray List__) {
+                PlObject self = List__.shift();
+                String method_name = List__.shift().toString();
+                PlClass bless = self.blessed_class();
+                if ( bless != null ) {
+                    PlObject methodCode = bless.method_lookup(method_name);
+                    if (methodCode.is_coderef()) {
+                        return methodCode;
+                    }
+                    return PlCx.UNDEF;
+                }
+
+                // calling can() as a class method
+                PlObject methodCode = PlClass.getInstance(self).method_lookup(method_name);
+                if (methodCode.is_coderef()) {
+                    return methodCode;
+                }
+
+                return PlCx.UNDEF;
+            }
+        });
+        PlV.cset("UNIVERSAL::isa", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
+            public PlObject apply(int want, PlArray List__) {
+                PlObject self = List__.shift();
+                String class_name = List__.shift().toString();
+                PlClass bless = self.blessed_class();
+                if ( bless != null ) {
+                    return bless.isa(class_name);
+                }
+
+                // reftype == "ARRAY"
+                if (self.reftype().toString().equals(class_name)) {
+                    return PlCx.INT1;
+                }
+
+                // calling isa() as a class method
+                bless = PlClass.getInstance(self);
+                if ( bless != null ) {
+                    return bless.isa(class_name);
+                }
+
+                return PlCx.UNDEF;
+            }
+        });
+        PerlOp.reset_match();
+    }
+
     // scalar
     public static final PlLvalue sget(String name) {
         return (PlLvalue)svar.hget_lvalue(name);
@@ -27153,76 +27222,6 @@ class PlV {
         return value;
     }
 
-}
-class PlEnv {
-    public static final void init(String[] args) {
-        PlV.array_set("main::ARGV", new PlArray(args));               // args is String[]
-        PlV.hash_set("main::ENV",   new PlArray(System.getenv()));    // env  is Map<String, String>
-        PlV.sset("main::" + (char)34, new PlString(" "));         // $" = " "
-        PlV.sset("main::/", new PlString("\\n"));                  // $/ = "\\n"
-
-        PlCx.STDIN.inputStream   = System.in;
-        PlCx.STDIN.reader        = new BufferedReader(new InputStreamReader(System.in));
-        PlCx.STDIN.eof           = false;
-        PlCx.STDIN.typeglob_name = "main::STDIN";
-
-        PlCx.STDOUT.outputStream = System.out;
-        PlCx.STDOUT.typeglob_name = "main::STDOUT";
-
-        PlCx.STDERR.outputStream = System.err;
-        PlCx.STDERR.typeglob_name = "main::STDERR";
-
-        PlV.fset("main::STDIN",  PlCx.STDIN);                             // "GLOB"
-        PlV.fset("main::STDOUT", PlCx.STDOUT);
-        PlV.fset("main::STDERR", PlCx.STDERR);
-
-        PlV.cset("UNIVERSAL::can", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
-            public PlObject apply(int want, PlArray List__) {
-                PlObject self = List__.shift();
-                String method_name = List__.shift().toString();
-                PlClass bless = self.blessed_class();
-                if ( bless != null ) {
-                    PlObject methodCode = bless.method_lookup(method_name);
-                    if (methodCode.is_coderef()) {
-                        return methodCode;
-                    }
-                    return PlCx.UNDEF;
-                }
-
-                // calling can() as a class method
-                PlObject methodCode = PlClass.getInstance(self).method_lookup(method_name);
-                if (methodCode.is_coderef()) {
-                    return methodCode;
-                }
-
-                return PlCx.UNDEF;
-            }
-        });
-        PlV.cset("UNIVERSAL::isa", new PlClosure(PlCx.UNDEF, new PlObject[]{  }, "UNIVERSAL") {
-            public PlObject apply(int want, PlArray List__) {
-                PlObject self = List__.shift();
-                String class_name = List__.shift().toString();
-                PlClass bless = self.blessed_class();
-                if ( bless != null ) {
-                    return bless.isa(class_name);
-                }
-
-                // reftype == "ARRAY"
-                if (self.reftype().toString().equals(class_name)) {
-                    return PlCx.INT1;
-                }
-
-                // calling isa() as a class method
-                bless = PlClass.getInstance(self);
-                if ( bless != null ) {
-                    return bless.isa(class_name);
-                }
-
-                return PlCx.UNDEF;
-            }
-        });
-        PerlOp.reset_match();
-    }
 }
 class PlObject {
     public static final PlString REF = new PlString("");
