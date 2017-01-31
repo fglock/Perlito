@@ -26488,9 +26488,6 @@ class PerlOp {
     //     public Matcher matcher;      // regex captures
     //     public String  regex_string; // last string used in a regex
 
-    public static final PlRegexResult get_match() {
-        return PlV.regex_result;
-    }
     public static final PlRegexResult set_match(Matcher m, String s) {
         PlRegexResult match = PlV.regex_result;
         match.matcher = m;
@@ -26506,7 +26503,7 @@ class PerlOp {
         if (var_number == 0) {
             PlCORE.die("$0 not implemented");
         }
-        Matcher matcher = get_match().matcher;
+        Matcher matcher = PlV.regex_result.matcher;
         if (matcher == null || var_number > matcher.groupCount() || var_number < 1) {
             return PlCx.UNDEF;
         }
@@ -26517,7 +26514,7 @@ class PerlOp {
         return new PlString(cap);
     }
     public static final PlObject regex_var(String var_name) {
-        PlRegexResult match = get_match();
+        PlRegexResult match = PlV.regex_result;
         Matcher matcher = match.matcher;
         String str = match.regex_string;
         if (matcher == null || str == null) {
