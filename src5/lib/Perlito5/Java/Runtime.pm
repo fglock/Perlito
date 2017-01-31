@@ -1129,14 +1129,15 @@ class PerlOp {
         return PlV.regex_result;
     }
     public static final PlRegexResult set_match(Matcher m, String s) {
-        PlRegexResult match = new PlRegexResult();
+        PlRegexResult match = PlV.regex_result;
         match.matcher = m;
         match.regex_string = s;
-        PlV.regex_result = match;
         return match;
     }
     public static final void reset_match() {
-        PlV.regex_result = new PlRegexResult();
+        PlRegexResult match = PlV.regex_result;
+        match.matcher = null;
+        match.regex_string = null;
     }
     public static final PlObject regex_var(int var_number) {
         if (var_number == 0) {
