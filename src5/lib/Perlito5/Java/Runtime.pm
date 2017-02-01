@@ -264,7 +264,6 @@ class PlCx {
     public static final PlFileHandle STDOUT = new PlFileHandle();
     public static final PlFileHandle STDERR = new PlFileHandle();
     public static final Charset UTF8        = Charset.forName("UTF-8");
-    public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);

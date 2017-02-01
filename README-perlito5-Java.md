@@ -47,6 +47,8 @@ Perlito5-Java platform differences
 
   - file permissions for setuid, setgid, and sticky bit are not implemented
 
+  - signals $SIG{__WARN__} and $SIG{__DIE__} are implemented; other signals are not yet implemented.
+
   - any other differences are not-yet-implemented or bugs.
 
 

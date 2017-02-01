@@ -23820,43 +23820,54 @@ class PlCORE {
     public static final PlObject warn(int want, PlArray List__) {
         int arg_count = List__.length_of_array_int();
         if (arg_count == 0) {
-            List__.push("Warning: something' . chr(39) . 's wrong\\n");
-        }
-        if (arg_count > 1) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < List__.to_int(); i++) {
-                String item = List__.aget(i).toString();
-                sb.append(item);
-            }
-            List__.set(new PlArray(new PlString(sb.toString())));
+            List__.push("Warning: something' . chr(39) . 's wrong");
         }
         if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
             // execute $SIG{__WARN__}
-            // TODO - localize $SIG{__WARN__} during the call
-            PlV.hash_get("main::SIG").hget("__WARN__").apply(want, List__);
+            // localize $SIG{__WARN__} during the call
+            if (arg_count != 1) {
+                String s = List__.toString();
+                List__.set(new PlArray(new PlString(s)));
+            }
+            int tmp = PerlOp.local_length();
+            PlObject c = PlV.hash_get("main::SIG").hget("__WARN__");
+            PlV.hash_get("main::SIG").hget_lvalue_local("__WARN__");
+            c.apply(want, List__);
+            PerlOp.cleanup_local(tmp, PlCx.UNDEF);
         }
         else {
-            PlCx.STDERR.outputStream.println(List__.aget(0).toString());
+            String s = List__.toString();
+            PlCx.STDERR.outputStream.println(s);
         }
         return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
+        int arg_count = List__.length_of_array_int();
+        if (arg_count == 0) {
+            List__.push("Died");
+        }
         if (PlV.hash_get("main::SIG").hget("__DIE__").is_coderef()) {
-            // TODO - execute $SIG{__DIE__}
+            // execute $SIG{__DIE__}
+            // localize $SIG{__DIE__} during the call
+            if (arg_count != 1) {
+                String s = List__.toString();
+                List__.set(new PlArray(new PlString(s)));
+            }
+            int tmp = PerlOp.local_length();
+            PlObject c = PlV.hash_get("main::SIG").hget("__DIE__");
+            PlV.hash_get("main::SIG").hget_lvalue_local("__DIE__");
+            c.apply(want, List__);
+            PerlOp.cleanup_local(tmp, PlCx.UNDEF);
         }
-        PlObject arg = List__.aget(0);
-        if (arg.is_undef() || (arg.is_string() && arg.toString() == "")) {
-            throw new PlDieException(PlCx.DIED);
-        }
-        if (List__.to_int() == 1) {
+        else {
+            PlObject arg = List__.aget(0);
+            if (arg_count != 1) {
+                String s = List__.toString();
+                arg = new PlString(s);
+            }
             throw new PlDieException(arg);
         }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < List__.to_int(); i++) {
-            String item = List__.aget(i).toString();
-            sb.append(item);
-        }
-        throw new PlDieException(new PlString(sb.toString()));
+        return PlCx.INT1;
     }
     public static final PlObject die(String s) {
         // die() shortcut
@@ -25657,7 +25668,6 @@ class PlCx {
     public static final PlFileHandle STDOUT = new PlFileHandle();
     public static final PlFileHandle STDERR = new PlFileHandle();
     public static final Charset UTF8        = Charset.forName("UTF-8");
-    public static final PlString DIED   = new PlString("Died");
     public static final PlString EMPTY  = new PlString("");
     public static final PlNextException NEXT = new PlNextException(0);
     public static final PlLastException LAST = new PlLastException(0);
