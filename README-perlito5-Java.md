@@ -25,6 +25,14 @@ Perlito5-Java platform differences
 
   - no XS (because we use Java instead of C)
 
+  - some system features are not readily available in Java, such as:
+      - file permissions for setuid, setgid, and sticky bit are not implemented
+      - some signals are not available in Java.
+
+
+Perlito5-Java work-in-progress
+------------------------------
+
   - limited BEGIN blocks side-effects (because unfinished Perlito5 impl)
       - "import" also doesn't work when doing precompilation
       - subroutines need to be declared before use. Failing tests:
@@ -45,11 +53,13 @@ Perlito5-Java platform differences
   - no "goto LABEL"
       - "goto &code" works, bit it doesn't do a tail-call
 
-  - file permissions for setuid, setgid, and sticky bit are not implemented
-
   - signals $SIG{__WARN__} and $SIG{__DIE__} are implemented; other signals are not yet implemented.
 
-  - any other differences are not-yet-implemented or bugs.
+  - method resolution order, method caching, AUTOLOAD are partially implemented
+
+  - tied variables are partially implemented
+
+  - overload is partially implemented
 
 
 Regex differences
