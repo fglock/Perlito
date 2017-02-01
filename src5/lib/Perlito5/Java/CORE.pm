@@ -310,13 +310,26 @@ EOT
         return PlCx.UNDEF;
     }
     public static final PlObject warn(int want, PlArray List__) {
+        int arg_count = List__.length_of_array_int();
+        if (arg_count == 0) {
+            List__.push("Warning: something's wrong\n");
+        }
+        if (arg_count > 1) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < List__.to_int(); i++) {
+                String item = List__.aget(i).toString();
+                sb.append(item);
+            }
+            List__.set(new PlArray(new PlString(sb.toString())));
+        }
         if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
-            // TODO - execute $SIG{__WARN__}
+            // execute $SIG{__WARN__}
+            // TODO - localize $SIG{__WARN__} during the call
+            PlV.hash_get("main::SIG").hget("__WARN__").apply(want, List__);
         }
-        for (int i = 0; i < List__.to_int(); i++) {
-            PlCx.STDERR.outputStream.print(List__.aget(i).toString());
+        else {
+            PlCx.STDERR.outputStream.println(List__.aget(0).toString());
         }
-        PlCx.STDERR.outputStream.println("");
         return PlCx.INT1;
     }
     public static final PlObject die(int want, PlArray List__) {
