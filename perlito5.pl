@@ -23822,13 +23822,21 @@ class PlCORE {
         if (arg_count == 0) {
             List__.push("Warning: something' . chr(39) . 's wrong");
         }
+        if (arg_count != 1 || !List__.aget(0).is_ref()) {
+            String s = List__.toString();
+            int s_length = s.length();
+            if (s_length > 0 && (s.charAt(s_length-1) == ' . chr(39) . '\\n' . chr(39) . ' || s.charAt(s_length-1) == ' . chr(39) . '\\r' . chr(39) . ')) {
+                // don' . chr(39) . 't add file+line
+            }
+            else {
+                // TODO - add module name, line number
+                s = s + " at " + PlV.sget("main::0") + "\\n";
+            }
+            List__.set(new PlArray(new PlString(s)));
+        }
         if (PlV.hash_get("main::SIG").hget("__WARN__").is_coderef()) {
             // execute $SIG{__WARN__}
             // localize $SIG{__WARN__} during the call
-            if (arg_count != 1) {
-                String s = List__.toString();
-                List__.set(new PlArray(new PlString(s)));
-            }
             int tmp = PerlOp.local_length();
             PlObject c = PlV.hash_get("main::SIG").hget("__WARN__");
             PlV.hash_get("main::SIG").hget_lvalue_local("__WARN__");
@@ -23846,28 +23854,29 @@ class PlCORE {
         if (arg_count == 0) {
             List__.push("Died");
         }
+        if (arg_count != 1 || !List__.aget(0).is_ref()) {
+            String s = List__.toString();
+            int s_length = s.length();
+            if (s_length > 0 && (s.charAt(s_length-1) == ' . chr(39) . '\\n' . chr(39) . ' || s.charAt(s_length-1) == ' . chr(39) . '\\r' . chr(39) . ')) {
+                // don' . chr(39) . 't add file+line
+            }
+            else {
+                // TODO - add module name, line number
+                s = s + " at " + PlV.sget("main::0") + "\\n";
+            }
+            List__.set(new PlArray(new PlString(s)));
+        }
         if (PlV.hash_get("main::SIG").hget("__DIE__").is_coderef()) {
             // execute $SIG{__DIE__}
             // localize $SIG{__DIE__} during the call
-            if (arg_count != 1) {
-                String s = List__.toString();
-                List__.set(new PlArray(new PlString(s)));
-            }
             int tmp = PerlOp.local_length();
             PlObject c = PlV.hash_get("main::SIG").hget("__DIE__");
             PlV.hash_get("main::SIG").hget_lvalue_local("__DIE__");
             c.apply(want, List__);
             PerlOp.cleanup_local(tmp, PlCx.UNDEF);
         }
-        else {
-            PlObject arg = List__.aget(0);
-            if (arg_count != 1) {
-                String s = List__.toString();
-                arg = new PlString(s);
-            }
-            throw new PlDieException(arg);
-        }
-        return PlCx.INT1;
+        PlObject arg = List__.aget(0);
+        throw new PlDieException(arg);
     }
     public static final PlObject die(String s) {
         // die() shortcut
