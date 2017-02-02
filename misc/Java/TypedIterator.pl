@@ -11,14 +11,12 @@ sub foo {
 
     my $x;
 
-    Java::inline '
-        ArrayList<String> listA = new ArrayList<String>();
-        listA.add("element 1");
-        listA.add("element 2");
-        listA.add("element 3");
-    ';
+    my ArrayList::Of::String $listA = ArrayList::Of::String->new();
+    $listA->add("element 1");
+    $listA->add("element 2");
+    $listA->add("element 3");
 
-    $x = Java::inline "listA";
+    $x = $listA;
     return $x;
 }
 
