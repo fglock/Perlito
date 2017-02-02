@@ -251,9 +251,6 @@ Parser
 - things that work in perlito5, but which are errors in 'perl'
 
 ~~~sh
-    $ perl -e ' $c (f) '
-    syntax error at -e line 1, near "$c ("
-
     string interpolation with nested quotes of the same type:
 
         $ perl -e ' " $x{"x"} " '
@@ -277,6 +274,13 @@ Add tests for fixed bugs
     aliasing of subroutine parameters
 
     prototypes
+
+- things that work in perlito5, but which are errors in 'perl'
+
+~~~sh
+    $ perl -e ' $c (f) '
+    syntax error at -e line 1, near "$c ("
+~~~
 
     ---
     sigils in blocks
