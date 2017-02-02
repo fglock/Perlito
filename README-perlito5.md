@@ -201,32 +201,6 @@ Parser
 
     '&@' - See Try::Tiny
 
-- block vs. hash
-
-~~~sh
-    $ perl -e ' print {  1, 2 } '
-    HASH(0x7fdf3b005450)
-    $ perl -e ' print {  1, 2; } '
-    syntax error at -e line 1, near "; }"
-    Execution of -e aborted due to compilation errors.
-    $ perl -e ' sub x { { 1, 2}; }  print x() '
-    HASH(0x7fb033805450)
-    $ perl -e ' sub x { {; 1, 2} }  print x() , "\n" '
-    12
-    $ perl -e ' sub x { { 1, 2} }  print x() , "\n" '
-    HASH(0x7fad8b805450)
-    $ perl -e ' sub x { { 1, 2;} }  print x() , "\n" '
-    syntax error at -e line 1, near ";}"
-    syntax error at -e line 1, near "} }"
-    Execution of -e aborted due to compilation errors.
-    $ perl -e ' sub x { { 1 } }  print x() , "\n" '
-    1
-    $ perl -e ' sub x { { 1, } }  print x() , "\n" '
-    HASH(0x7f8b13805450)
-    $ perl -e ' sub x { { 1; } }  print x() , "\n" '
-    1
-~~~
-
 - "namespace" parsing
     tests: t5/01-perlito/26-syntax-namespace.t
 
