@@ -821,6 +821,16 @@ sub emit_globals_after_BEGIN {
     my $dumper_seen = {};
     my $tab = "";
 
+    # inject $0 (script name) in the scope, if it is not there already
+    $scope->{'$main::0'} //= {
+        'ast' => Perlito5::AST::Var->new(
+            'name'      => '0',
+            'sigil'     => '$',
+            '_decl'     => 'global',
+            'namespace' => 'main',
+        ),
+    };
+
     for my $name (sort keys %$scope) {
         my $sigil = substr($name, 0, 1);
         my $item = $scope->{$name};
