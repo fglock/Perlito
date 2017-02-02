@@ -180,10 +180,6 @@ Parser
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
 
-- parse the regexes
-    Note: implemented in Perlito5::Grammar::Regex5
-    create an AST for regexes
-
 - prototypes (signatures)
     http://perldoc.perl.org/perlsub.html#Prototypes
 
@@ -711,6 +707,10 @@ Nice to Have
     http://closure-compiler.appspot.com/home
 
     Both failed with syntax errors.
+
+- parse the regexes
+    Note: implemented in Perlito5::Grammar::Regex5
+    create an AST for regexes
 
 
 Oddities
