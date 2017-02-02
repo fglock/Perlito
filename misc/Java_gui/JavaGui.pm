@@ -1,11 +1,6 @@
 package JavaGui;
  
-# Example GUI application using JavaFX
-#
-# $ perl perlito5.pl -Isrc5/lib -Cjava misc/Java/GuiHelloWorld2.pl > MainGui.java
-# $ javac MainGui.java
-# $ java MainGui
-#
+# Example wrapper for JavaFX
 
 package  Application  { import => "javafx.application.Application" }
 package  ActionEvent  { import => "javafx.event.ActionEvent" }
@@ -33,7 +28,7 @@ package MainGui {
             decl => [ "public" ],               # public method
             args => [ "Stage" ],                # 1 argument of type 'Stage'
             return => "void",                   # return void
-            code => "main::action",             # implemented in Perl, see below
+            code => "main::action",             # implemented in Perl, calls main::action()
         },
     ]
 }
