@@ -1000,7 +1000,7 @@ Threads
 
     closure can use that thread id to get/set the value from globals hash.
 
-    TODO - per-thread "local" stack and "boolean" stack
+    TODO - per-thread: "local" stack, "boolean" stack, regex_result
 
 Optimizations
 -------------
