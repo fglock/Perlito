@@ -22,6 +22,7 @@ Perlito5-Java platform differences
   - no timely destruction (DESTROY) (because we use Java memory management)
       - files don't "auto-close" at the end of a block
       - Try::Tiny "finally" doesn't work
+      - weaken() is a no-op
 
   - no XS (because we use Java instead of C)
       - many CPAN modules which use C libraries don't work
@@ -66,7 +67,15 @@ Perlito5-Java work-in-progress
 
   - "my sub x {...}"
 
-  - lvalue $#a and other expressions
+  - lvalue $#a and other expressions: substr, ternary, chop, keys, pos
+
+  - CORE::GLOBAL namespace
+
+  - "local @_" doesn't work yet, because @_ is special
+
+  - "~~" operator not implemented; also "when" and "given" not implemented.
+
+  - incomplete implementations for sprintf(), pack(), unpack()
 
 
 Regex differences
