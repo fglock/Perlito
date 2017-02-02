@@ -183,10 +183,6 @@ Parser
     http://perldoc.perl.org/attributes.html
     missing MODIFY_CODE_ATTRIBUTES handlers
 
-- create __DATA__
-
-    %Perlito5::DATA_SECTION contains the __DATA__ for each package
-
 - parse the regexes
     Note: implemented in Perlito5::Grammar::Regex5
     create an AST for regexes

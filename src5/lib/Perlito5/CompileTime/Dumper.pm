@@ -831,6 +831,30 @@ sub emit_globals_after_BEGIN {
         ),
     };
 
+    # TODO - END blocks
+    #
+    # # dump __END__ blocks
+    # $scope->{'@Perlito5::END_BLOCK'} //= {
+    #     'ast' => Perlito5::AST::Var->new(
+    #         'namespace' => 'Perlito5',
+    #         'name'      => 'END_BLOCK',
+    #         'sigil'     => '@',
+    #         '_decl'     => 'global',
+    #     ),
+    #     value => \@Perlito5::END_BLOCK,
+    # };
+
+    # dump __DATA__ contents
+    $scope->{'%Perlito5::DATA_SECTION'} //= {
+        'ast' => Perlito5::AST::Var->new(
+            'namespace' => 'Perlito5',
+            'name'      => 'DATA_SECTION',
+            'sigil'     => '%',
+            '_decl'     => 'global',
+        ),
+        value => \%Perlito5::DATA_SECTION,
+    };
+
     for my $name (sort keys %$scope) {
         my $sigil = substr($name, 0, 1);
         my $item = $scope->{$name};

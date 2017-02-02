@@ -596,6 +596,10 @@ Performance
 Features
 --------
 
+- create __DATA__
+
+    %Perlito5::DATA_SECTION contains the __DATA__ for each package
+
 - DESTROY
     Try::Tiny uses DESTROY to implement finally() - and it doesn't execute in js:
 

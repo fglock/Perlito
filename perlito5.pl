@@ -9068,6 +9068,7 @@ use feature 'say';
         my $dumper_seen = {};
         my $tab = '';
         $scope->{'$main::0'} //= {'ast' => Perlito5::AST::Var::->new('name' => 0, 'sigil' => '$', '_decl' => 'global', 'namespace' => 'main')};
+        $scope->{'%Perlito5::DATA_SECTION'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'DATA_SECTION', 'sigil' => '%', '_decl' => 'global'), 'value' => \%Perlito5::DATA_SECTION};
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {

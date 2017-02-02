@@ -62,6 +62,8 @@ Perlito5-Java work-in-progress
 
   - overload is partially implemented
 
+  - __DATA__ sections
+
 
 Regex differences
 -----------------
@@ -908,6 +910,11 @@ Perl features
         called from main
         in main
         called from main
+
+
+    __DATA__ sections
+
+        %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
 - Add tests
 
