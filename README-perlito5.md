@@ -166,9 +166,6 @@ Parser
         this dies! at -e line 1.
 ~~~
 
-- tailcalls
-    same-subroutine tailcalls could execute a "redo" in the current subroutine.
-
 - "'" meaning "::"
 
 ~~~perl

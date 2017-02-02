@@ -418,6 +418,9 @@ Tail call (TODO)
 - alternately, the loop can be run at the subroutine itself, but this creates other problems
 
 
+- tailcalls
+    same-subroutine tailcalls could execute a "redo" in the current subroutine.
+
 
 "js3" virtual machine
 --------------

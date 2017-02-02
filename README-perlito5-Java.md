@@ -872,6 +872,9 @@ Tail-call
     callee pushes the call to a stack
     caller pops from the stack and call the closures in order
 
+- tailcalls
+    same-subroutine tailcalls could execute a "redo" in the current subroutine.
+
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
