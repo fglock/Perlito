@@ -776,6 +776,8 @@ Features
     replaces the value in $@; i.e., as if "$@ = eval {
     $@->PROPAGATE(__FILE__, __LINE__) };" were called.
 
+- "my sub x {...}"
+
 
 Implemented but missing more tests
 ----------------------------------

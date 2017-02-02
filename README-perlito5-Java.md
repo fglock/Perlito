@@ -64,6 +64,10 @@ Perlito5-Java work-in-progress
 
   - __DATA__ sections
 
+  - "my sub x {...}"
+
+  - lvalue $#a and other expressions
+
 
 Regex differences
 -----------------
