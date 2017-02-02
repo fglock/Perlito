@@ -24,6 +24,7 @@ Perlito5-Java platform differences
       - Try::Tiny "finally" doesn't work
 
   - no XS (because we use Java instead of C)
+      - many CPAN modules which use C libraries don't work
 
   - some system features are not readily available in Java, such as:
       - file permissions for setuid, setgid, and sticky bit are not implemented
@@ -258,7 +259,7 @@ Thread safety
 -------------
 
 Perl global variables are shared between threads.
-This includes for example: $_, $a, $b, $/, @INC.
+This includes for example: $_, $a, $b, $/, @INC, %SIG, $0, $1, $&, $".
 Perl variable @_ (the parameter list) is not shared.
 
 "local" stack is shared.
@@ -833,17 +834,10 @@ Slices
 Variables
 ---------
 
-    (DONE) 'state'
-
     delete local EXPR
 
     subroutine lookups could also be "our"-like (also method lookups)
 
-    (DONE) subroutine parameter lists should be list-of-aliases
-
-      - create a special PlArray constructor that stores lvalues
-
-      - See: PlArray.construct_list_of_aliases()
 
 Overflow from int to double
 ---------------------------
@@ -855,7 +849,6 @@ Overflow from int to double
         $i + subr();  # subr() returns pObject instead of pInt
     this needs more tests
 
-    internal code should use "long" instead of "int" (DONE)
 
 Tail-call
 ---------
@@ -899,26 +892,12 @@ Perl features
     subroutine signatures
     return (list)
     assignment to splice
-    (DONE) rw @_ in subroutines
-    (DONE) rw $_ in loops
     (DONE) sprintf
         http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String,%20java.lang.Object...)
         http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html
     pack
     unpack
-    (DONE) file operations
-        TODO - some permissions not implemented:
 
-~~~java
-        public static final Set<PosixFilePermission> MaskToPermissions(int mask) {
-            final Set<PosixFilePermission> perm = new HashSet<PosixFilePermission>();
-            // TODO - provide a workaround
-            // if ((mask & 04000)==0) PlCORE.die("setuid bit not implemented");
-            // if ((mask & 02000)==0) PlCORE.die("setgid bit not implemented");
-            // if ((mask & 01000)==0) PlCORE.die("sticky bit not implemented");
-~~~
-
-    (DONE) pos()
     typeglob operations
         TODO - add tests
 
