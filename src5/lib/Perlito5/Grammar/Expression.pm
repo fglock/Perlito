@@ -159,7 +159,7 @@ sub reduce_postfix {
         # $c[0]()   ok
         # &$c()     ok
         # &c()      ok
-        if ( ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} eq '$' ) {
+        if ( ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} ne '&' ) {
             Perlito5::Compiler::error "syntax error";
         }
         $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );

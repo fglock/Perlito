@@ -1605,7 +1605,7 @@ use feature 'say';
                 $value->{'arguments'} = $param_list;
                 return $value
             }
-            if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} eq '$') {
+            if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} ne '&') {
                 Perlito5::Compiler::error('syntax error')
             }
             $v = Perlito5::AST::Call::->new('invocant' => $value, 'method' => 'postcircumfix:<( )>', 'arguments' => $param_list);
