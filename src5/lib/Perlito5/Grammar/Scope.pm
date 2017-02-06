@@ -148,7 +148,7 @@ sub check_variable_declarations {
                       ($var->{_real_sigil} || $var->{sigil})
                     . ($var->{namespace} || $var->{_namespace} || "C_")
                     . "::" . $var->{name}
-                    . ($var->{_decl} eq "global" ? "" : "_" . $var->{_id});
+                    . ($var->{_decl} eq "global" ? "" : $var->{_id} ? "_" . $var->{_id} : "");
                 $Perlito5::GLOBAL->{$compiletime_name} = { value => undef, ast => $var };
             }
 
