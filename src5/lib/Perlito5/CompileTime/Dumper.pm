@@ -833,18 +833,27 @@ sub emit_globals_after_BEGIN {
         ),
     };
 
-    # TODO - END blocks
-    #
-    # # dump __END__ blocks
-    # $scope->{'@Perlito5::END_BLOCK'} //= {
-    #     'ast' => Perlito5::AST::Var->new(
-    #         'namespace' => 'Perlito5',
-    #         'name'      => 'END_BLOCK',
-    #         'sigil'     => '@',
-    #         '_decl'     => 'global',
-    #     ),
-    #     value => \@Perlito5::END_BLOCK,
-    # };
+    # dump __END__ blocks
+    $scope->{'@Perlito5::END_BLOCK'} //= {
+        'ast' => Perlito5::AST::Var->new(
+            'namespace' => 'Perlito5',
+            'name'      => 'END_BLOCK',
+            'sigil'     => '@',
+            '_decl'     => 'global',
+        ),
+        value => \@Perlito5::END_BLOCK,
+    };
+
+    # dump __INIT__ blocks
+    $scope->{'@Perlito5::INIT_BLOCK'} //= {
+        'ast' => Perlito5::AST::Var->new(
+            'namespace' => 'Perlito5',
+            'name'      => 'INIT_BLOCK',
+            'sigil'     => '@',
+            '_decl'     => 'global',
+        ),
+        value => \@Perlito5::INIT_BLOCK,
+    };
 
     # dump __DATA__ contents
     $scope->{'%Perlito5::DATA_SECTION'} //= {

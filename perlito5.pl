@@ -5157,17 +5157,8 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Block::eval_end_block {
         my($block, $phase) = @_;
-        local ${'@'};
-        my @data = $block->emit_perl5();
-        my $out = [];
-        Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $code = 'package ' . $Perlito5::PKG_NAME . ';
-' . 'sub ' . join('', @{$out}) . '
-';
-        eval(Perlito5::CompileTime::Dumper::generate_eval_string($code));
-        if (${'@'}) {
-            Perlito5::Compiler::error('Error in ' . $phase . ' block: ' . ${'@'})
-        }
+        $block = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef);
+        return Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN')
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
         my $block = shift;
@@ -9073,6 +9064,8 @@ use feature 'say';
         my $dumper_seen = {};
         my $tab = '';
         $scope->{'$main::0'} //= {'ast' => Perlito5::AST::Var::->new('name' => 0, 'sigil' => '$', '_decl' => 'global', 'namespace' => 'main')};
+        $scope->{'@Perlito5::END_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'END_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::END_BLOCK};
+        $scope->{'@Perlito5::INIT_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'INIT_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::INIT_BLOCK};
         $scope->{'%Perlito5::DATA_SECTION'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'DATA_SECTION', 'sigil' => '%', '_decl' => 'global'), 'value' => \%Perlito5::DATA_SECTION};
         for my $name (sort {
             $a cmp $b

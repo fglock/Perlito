@@ -53,20 +53,31 @@ sub eval_end_block {
     # without access to compile-time lexical variables.
     # compile-time globals are still a problem.
     my ($block, $phase) = @_;
-    local $@;
-    my @data = $block->emit_perl5();
-    my $out = [];
-    Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-    my $code = "package $Perlito5::PKG_NAME;\n"
-             . "sub " . join( '', @$out ) . "\n";
-    # say "END block: $code";
 
-    # we add some extra information to the data, to make things more "dumpable"
-    eval Perlito5::CompileTime::Dumper::generate_eval_string( $code );
-    # eval "{ $code }; 1"
-    if ($@) {
-        Perlito5::Compiler::error "Error in $phase block: " . $@;
-    }
+    $block = 
+        Perlito5::AST::Sub->new(
+            'attributes' => [],
+            'block' => $block,
+            'name' => undef,
+            'namespace' => $Perlito5::PKG_NAME,
+            'sig' => undef,
+        );
+    return Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
+
+    # local $@;
+    # my @data = $block->emit_perl5();
+    # my $out = [];
+    # Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
+    # my $code = "package $Perlito5::PKG_NAME;\n"
+    #          . "sub " . join( '', @$out ) . "\n";
+    # # say "END block: $code";
+
+    # # we add some extra information to the data, to make things more "dumpable"
+    # eval Perlito5::CompileTime::Dumper::generate_eval_string( $code );
+    # # eval "{ $code }; 1"
+    # if ($@) {
+    #     Perlito5::Compiler::error "Error in $phase block: " . $@;
+    # }
 }
 
 sub eval_begin_block {
