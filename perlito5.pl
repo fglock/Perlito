@@ -31462,7 +31462,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
                     }
                     if (!$bootstrapping) {
                         my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                        my $m = Perlito5::Grammar::exp_stmts($s . ' $_->() for @Perlito5::INIT_BLOCK; ', 0);
                         unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];

@@ -436,9 +436,13 @@ if ($backend) {
                 }
 
                 if (!$bootstrapping) {
-                    # emit BEGIN-block side-effects
+                    # emit BEGIN-block side-effects, INIT blocks
                     my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                    my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                    my $m = Perlito5::Grammar::exp_stmts(
+                        $s
+                        . ' $_->() for @Perlito5::INIT_BLOCK; ',    # execute INIT blocks
+                        0,
+                    );
                     unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
                 }
 
