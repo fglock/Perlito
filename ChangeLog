@@ -10,6 +10,7 @@
 -- "Encode.pm" encode_utf8, decode_utf8
 -- "Scalar::Util", "List::Util" ports.
 -- BEGIN block fixes - "Exporter" works.
+-- INIT and END blocks
 -- "$$" variable (process id)
 -- mkdir(), rmdir()
 -- pack (a..X, @ and . with number working)
