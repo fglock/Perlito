@@ -8941,8 +8941,11 @@ use feature 'say';
                 }
                 else {
                     my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    if ($var_ast->{'_decl'} ne 'our') {
-                        my $sigil = ($var_ast->{'_real_sigil'} || $var_ast->{'sigil'});
+                    my $sigil = ($var_ast->{'_real_sigil'} || $var_ast->{'sigil'});
+                    if ($var_ast->{'_decl'} eq 'our') {
+                        push(@vars, 'our ' . $sigil . $var_ast->{'name'} . '; ')
+                    }
+                    else {
                         push(@vars, 'my ' . $sigil . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
                     }
                 }
