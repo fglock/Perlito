@@ -442,6 +442,7 @@ if ($backend) {
                         $s
                         . '{ '
                         .   'local $@; '
+                        .   'local ${^GLOBAL_PHASE}; '
                         .   'eval { ${^GLOBAL_PHASE} = "INIT" }; '      # GLOBAL_PHASE is r/o in perl5
                         .   '$_->() for @Perlito5::INIT_BLOCK; '        # execute INIT blocks
                         . '} ',
