@@ -41,8 +41,7 @@ Perlito5-Java work-in-progress
 
 ~~~
         t5/unit/sub_defined_later.t
-        t5/unit/phase_begin_my.t
-        t5/unit/phase_init.t
+        t5/unit/begin_lexical_var.t
         t5/unit/phase_init_my.t
 ~~~
 
