@@ -206,14 +206,32 @@ Other value types can be imported:
 Native array variables can not be created directly.
 As a workaround, see "Java::inline".
 
+Perl arrays can be assigned a native array:
+
 ~~~perl
-    # Not implemented:
+    my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
+    print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
+~~~
+
+~~~perl
+    # Not implemented: import a native array Class
     #
     #  package Java::Array::Of::String {
     #       import => "java.lang.String",
     #       java_type => "String[]",
     #   }
 ~~~
+
+~~~perl
+    # Not implemented: assign native array to Perl scalar
+    #
+    # my $arr3 = Java::inline ' new String[]{ "a", "b" } ';
+    # print "arr3[1] $arr3->[0]\n";
+    # print "arr3[1] $arr3->[1]\n";
+~~~
+
+Conversion from Perl scalar to native array is not implemented.
+
 
 - Constants
 
