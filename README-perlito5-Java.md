@@ -670,25 +670,41 @@ Character
 
     Perlito can't represent native "Character" values (only String)
 
+    package Character { };
+    my Character $b = "a";
+    # error: incompatible types: String cannot be converted to Character
+
+  - workaround:
+
+    package Character { };
+    package String { };
+    my Character $b = String->new("a")->charAt(0);
+
 Long
 
     Perlito can't represent native "Long" values (only Int):
 
+    package Long {};
     my Long $b = 100;
+    # error: incompatible types: int cannot be converted to Long
 
-    Main.java:3341: incompatible types
-    found   : int
-    required: java.lang.Long
+  - workaround:
+
+    package Long {};
+    my Long $b = Long->new(100.0);
 
 Float
 
     Perlito can't represent native "Float" values (only Double):
 
+    package Float {};
     my Float $b = 100.0;
+    # error: incompatible types: double cannot be converted to Float
 
-    Main.java:3282: incompatible types
-    found   : double
-    required: java.lang.Float
+  - workaround:
+
+    package Float {};
+    my Float $b = Float->new(100.0);
 
 primitive Java types
 
