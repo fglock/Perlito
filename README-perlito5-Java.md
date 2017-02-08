@@ -203,36 +203,19 @@ Other value types can be imported:
 
 - native arrays
 
+Perl arrays can be assigned a native array:
+
+    package Byte { };
+    @perl_array = JavaCall->toBytes();
+
 Native array variables can not be created directly.
 As a workaround, see "Java::inline".
-
-Perl arrays can be assigned a native array:
 
 ~~~perl
     package String { };
     my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
     print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
 ~~~
-
-~~~perl
-    # Not implemented: import a native array Class
-    #
-    #  package Java::Array::Of::String {
-    #       import => "java.lang.String",
-    #       java_type => "String[]",
-    #   }
-~~~
-
-~~~perl
-    # Not implemented: assign native array to Perl scalar
-    #
-    # my $arr3 = Java::inline ' new String[]{ "a", "b" } ';
-    # print "arr3[1] $arr3->[0]\n";
-    # print "arr3[1] $arr3->[1]\n";
-~~~
-
-Conversion from Perl scalar to native array is not implemented.
-
 
 - Constants
 
@@ -755,13 +738,50 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 Value types
 ---------------
 
-primitive Java types
+Conversion from Perl scalar to native array is not implemented.
+
+Native array variables can not be created directly.
+
+~~~perl
+    # Possible implementation for creating native array variables
+    #
+    # my byte @bytes;
+    # $#bytes = 9;      # indexes 0..9 (10 elements)
+~~~
+
+~~~perl
+    # Not implemented: import a native array Class
+    #
+    #  package Java::Array::Of::String {
+    #       import => "java.lang.String",
+    #       java_type => "String[]",
+    #   }
+~~~
+
+~~~perl
+    # Not implemented: assign native array to Perl scalar
+    #   (assign to Perl array works, see above)
+    #
+    # my $arr3 = Java::inline ' new String[]{ "a", "b" } ';
+    # print "arr3[1] $arr3->[0]\n";
+    # print "arr3[1] $arr3->[1]\n";
+~~~
 
 Conversion from Perl scalar to native array is not implemented.
 
-Possible implementation:
-
-    $arrayref->toStringArray()
+~~~perl
+    # TODO - Not implemented: Perl scalar to native array
+    # using auto-generated methods
+    #
+    # package String { };
+    # $arrayref->toStringArray()
+    #
+    # package int { };
+    # $arrayref->to_intArray()
+    #
+    # package Java::Date   { import => "java.util.Date" };
+    # $arrayref->to_JavaDateArray()
+~~~
 
     See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
 
@@ -769,8 +789,13 @@ in Perl:
 
     char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
 
-    @perl_array = JavaCall->toBytes();  (DONE - autobox Java array into a Perl array)
-
+~~~perl
+    # alternate implementation:
+    #
+    # package String { };
+    # my String::Array = String::Array->new(@array)
+~~~
+ 
 ~~~bash
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' package byte::Array { type => 'byte[]' } my byte::Array $x = byte::Array->new("A","B","C");'
 ~~~
