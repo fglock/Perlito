@@ -312,6 +312,10 @@ Add tests for fixed bugs
     syntax error in hashref subscript - parses 's' as s///:
     ${x->{s}}
     $x->{s}
+~~~
+
+~~~sh
+    dereferencing a bareword in block assumes a global variable:
 
     $ perl  -e ' use Data::Dumper;        ${ x ->{s} } = 4;  print Dumper \%x '
     #  { 's' => \4 }
