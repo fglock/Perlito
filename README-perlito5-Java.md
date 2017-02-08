@@ -757,7 +757,16 @@ Value types
 
 primitive Java types
 
-    in Perl:
+Conversion from Perl scalar to native array is not implemented.
+
+Possible implementation:
+
+    $arrayref->toStringArray()
+
+    See: toArray(T[] a) in https://docs.oracle.com/javase/7/docs/api/java/util/ArrayList.html
+
+in Perl:
+
     char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
 
     @perl_array = JavaCall->toBytes();  (DONE - autobox Java array into a Perl array)
