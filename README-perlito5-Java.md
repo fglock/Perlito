@@ -194,10 +194,14 @@ Other value types can be imported:
         java_type => "ArrayList<String>",
     }
 
+    my Java::Object $obj = Java::Object->new();
+
     my Java::Array::Of::String $arr = Java::Array::Of::String->new();
     $arr->add("123");
     $arr->add($p->toString());
 ~~~
+
+- native arrays
 
 Native array variables can not be created directly.
 As a workaround, see "Java::inline".
@@ -210,6 +214,52 @@ As a workaround, see "Java::inline".
     #       java_type => "String[]",
     #   }
 ~~~
+
+- Constants
+
+  - Character
+
+    Perlito can't represent native "Character" values (only String)
+
+    package Character { };
+    my Character $b = "a";
+    # error: incompatible types: String cannot be converted to Character
+
+    workaround:
+
+    package Character { };
+    package String { };
+    my Character $b = String->new("a")->charAt(0);
+    my Character $b = $v->to_char();
+
+  - Long
+
+    Perlito can't represent native "Long" values (only Int):
+
+    package Long {};
+    my Long $b = 100;
+    # error: incompatible types: int cannot be converted to Long
+
+  - workaround:
+
+    package Long {};
+    my Long $b = Long->new(100.0);
+    my Long $b = $v->to_long();
+
+  - Float
+
+    Perlito can't represent native "Float" values (only Double):
+
+    package Float {};
+    my Float $b = 100.0;
+    # error: incompatible types: double cannot be converted to Float
+
+    workaround:
+
+    package Float {};
+    my Float $b = Float->new(100.0);
+    my Float $b = $v->to_float();
+
 
 Using typed variables
 ---------------------
@@ -678,53 +728,6 @@ This documentation should be copied to file Perlito5::Java, in the CPAN distribu
 
 Value types
 ---------------
-
-Object
-
-  - "java.lang.Object" can be imported using the standard import syntax:
-
-    package Java::Object { import => "java.lang.Object" };
-    my Java::Object $obj = Java::Object->new();
-
-Character
-
-    Perlito can't represent native "Character" values (only String)
-
-    package Character { };
-    my Character $b = "a";
-    # error: incompatible types: String cannot be converted to Character
-
-  - workaround:
-
-    package Character { };
-    package String { };
-    my Character $b = String->new("a")->charAt(0);
-
-Long
-
-    Perlito can't represent native "Long" values (only Int):
-
-    package Long {};
-    my Long $b = 100;
-    # error: incompatible types: int cannot be converted to Long
-
-  - workaround:
-
-    package Long {};
-    my Long $b = Long->new(100.0);
-
-Float
-
-    Perlito can't represent native "Float" values (only Double):
-
-    package Float {};
-    my Float $b = 100.0;
-    # error: incompatible types: double cannot be converted to Float
-
-  - workaround:
-
-    package Float {};
-    my Float $b = Float->new(100.0);
 
 primitive Java types
 
