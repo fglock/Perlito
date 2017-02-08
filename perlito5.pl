@@ -9100,7 +9100,8 @@ use feature 'say';
             }
             my $ast = $item->{'ast'};
             if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
-                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'};
+                $scope->{$name} && next
             }
             $name eq '@main::ARGV' && next;
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {

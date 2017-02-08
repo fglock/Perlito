@@ -895,6 +895,7 @@ sub emit_globals_after_BEGIN {
                   ($ast->{_real_sigil} || $ast->{sigil})
                 . ($ast->{namespace} || $ast->{_namespace} || "C_")
                 . "::" . $ast->{name};
+            next if $scope->{$name};    # skip if we've seen this before
         }
         next if $name eq '@main::ARGV';
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
