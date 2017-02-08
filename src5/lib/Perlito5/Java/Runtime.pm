@@ -1918,7 +1918,7 @@ EOT
         return false;
     }
     public char to_char() {
-        return '\u0000';
+        return (char)(this.to_int());
     }
     public PlObject end_of_array_index() {
         return PlCORE.die("Not an ARRAY reference");
@@ -5579,6 +5579,12 @@ class PlString extends PlObject {
     }
     public boolean to_boolean() {
         return !( this.s.equals("") || this.s.equals("0") );
+    }
+    public char to_char() {
+        if (this.s.length() == 0) {
+            return '\u0000';
+        }
+        return this.s.charAt(0);
     }
     public boolean is_string() {
         return true;
