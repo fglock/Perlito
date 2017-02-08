@@ -240,44 +240,56 @@ Conversion from Perl scalar to native array is not implemented.
 
     Perlito can't represent native "Character" values (only String)
 
+~~~perl
     package Character { };
     my Character $b = "a";
     # error: incompatible types: String cannot be converted to Character
+~~~
 
     workaround:
 
+~~~perl
     package Character { };
     package String { };
     my Character $b = String->new("a")->charAt(0);
     my Character $b = $v->to_char();
+~~~
 
   - Long
 
     Perlito can't represent native "Long" values (only Int):
 
+~~~perl
     package Long {};
     my Long $b = 100;
     # error: incompatible types: int cannot be converted to Long
+~~~
 
   - workaround:
 
+~~~perl
     package Long {};
     my Long $b = Long->new(100.0);
     my Long $b = $v->to_long();
+~~~
 
   - Float
 
     Perlito can't represent native "Float" values (only Double):
 
+~~~perl
     package Float {};
     my Float $b = 100.0;
     # error: incompatible types: double cannot be converted to Float
+~~~
 
     workaround:
 
+~~~perl
     package Float {};
     my Float $b = Float->new(100.0);
     my Float $b = $v->to_float();
+~~~
 
 
 Using typed variables
