@@ -21938,11 +21938,15 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             $Java_class->{'Byte'} = {'java_type' => 'Byte', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_byte', 'perl_package' => 'Byte'};
             $Java_class->{'Short'} = {'java_type' => 'Short', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_short', 'perl_package' => 'Short'};
             $Java_class->{'Float'} = {'java_type' => 'Float', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_float', 'perl_package' => 'Float'};
-            $Java_class->{'Character'} = {'java_type' => 'Character', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'to_character', 'perl_package' => 'Character'};
+            $Java_class->{'Character'} = {'java_type' => 'Character', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'to_char', 'perl_package' => 'Character'};
             $Java_class->{'long'} = {'java_type' => 'long', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'long'};
             $Java_class->{'int'} = {'java_type' => 'int', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_int', 'perl_package' => 'int'};
             $Java_class->{'short'} = {'java_type' => 'short', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'short'};
-            $Java_class->{'byte'} = {'java_type' => 'byte', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'byte'}
+            $Java_class->{'byte'} = {'java_type' => 'byte', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'byte'};
+            $Java_class->{'boolean'} = {'java_type' => 'boolean', 'java_native_to_perl' => 'PlBool', 'perl_to_java' => 'to_boolean', 'perl_package' => 'boolean'};
+            $Java_class->{'double'} = {'java_type' => 'double', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_double', 'perl_package' => 'double'};
+            $Java_class->{'float'} = {'java_type' => 'float', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_float', 'perl_package' => 'float'};
+            $Java_class->{'char'} = {'java_type' => 'char', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'to_char', 'perl_package' => 'char'}
         }
         our %Java_loop_label;
         sub Perlito5::Java::get_java_loop_label {

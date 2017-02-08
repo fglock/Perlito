@@ -124,7 +124,7 @@ package Perlito5::Java;
         $Java_class->{Character} = {
             java_type           => 'Character',
             java_native_to_perl => 'PlString',
-            perl_to_java        => 'to_character',
+            perl_to_java        => 'to_char',
             perl_package        => 'Character',
         };
         $Java_class->{long} = {
@@ -150,6 +150,30 @@ package Perlito5::Java;
             java_native_to_perl => 'PlInt',
             perl_to_java        => 'to_long',
             perl_package        => 'byte',
+        };
+        $Java_class->{boolean} = {
+            java_type           => 'boolean',
+            java_native_to_perl => 'PlBool',
+            perl_to_java        => 'to_boolean',
+            perl_package        => 'boolean',
+        };
+        $Java_class->{double} = {
+            java_type           => 'double',
+            java_native_to_perl => 'PlDouble',
+            perl_to_java        => 'to_double',
+            perl_package        => 'double',
+        };
+        $Java_class->{float} = {
+            java_type           => 'float',
+            java_native_to_perl => 'PlDouble',
+            perl_to_java        => 'to_float',
+            perl_package        => 'float',
+        };
+        $Java_class->{char} = {
+            java_type           => 'char',
+            java_native_to_perl => 'PlString',
+            perl_to_java        => 'to_char',
+            perl_package        => 'char',
         };
     }
 

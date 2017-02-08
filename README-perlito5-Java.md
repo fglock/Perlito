@@ -171,13 +171,17 @@ Java value types don't need to be imported, but there must exist a Perl package:
     print "$v\n";   # 1
 ~~~
 
-These primitive data type declarations are supported:
+All primitive data type declarations are supported:
 
 ~~~perl
     package long      { }
     package int       { }
     package short     { }
     package byte      { }
+    package float     { }
+    package double    { }
+    package boolean   { }
+    package char      { }
 ~~~
 
 Other value types can be imported:
@@ -361,27 +365,6 @@ use "make clean" to get rid of all those .class files
 
 Perlito5 Java backend TODO list
 ===============================
-
-Primitive data types
-------------
-
-implemented:
-
-~~~perl
-    package long      { }
-    package int       { }
-    package short     { }
-    package byte      { }
-
-    TODO:
-
-    float
-    double
-    boolean
-    char
-~~~
-
-other primitive types are missing.
 
 
 CPAN distribution
@@ -745,10 +728,8 @@ Float
 
 primitive Java types
 
-    char, boolean, float, long, short, int, byte
-
     in Perl:
-    char::Array, boolean::Array, float::Array, long::Array, short::Array, int::Array, byte::Array
+    char::Array, boolean::Array, float::Array, double::Array, long::Array, short::Array, int::Array, byte::Array
 
     @perl_array = JavaCall->toBytes();  (DONE - autobox Java array into a Perl array)
 
