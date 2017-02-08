@@ -664,7 +664,10 @@ Value types
 
 Object
 
-    Not implemented; there is a commented-out patch in Perlito5::Java::Emitter
+  - "java.lang.Object" can be imported using the standard import syntax:
+
+    package Java::Object { import => "java.lang.Object" };
+    my Java::Object $obj = Java::Object->new();
 
 Character
 

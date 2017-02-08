@@ -109,13 +109,18 @@ package Perlito5::Java;
             perl_to_java        => 'to_float',
             perl_package        => 'Float',
         };
-        # TODO
-        # $Java_class->{Object} = {
-        #     java_type           => 'Object',
-        #     java_native_to_perl => 'PlObject',
-        #     perl_to_java        => 'to_object',
-        #     perl_package        => 'Object',
-        # };
+        # # $Java_class->{Object} = {
+        # #     java_type           => 'Object',
+        # #     java_native_to_perl => 'PlObject',
+        # #     perl_to_java        => 'to_object',
+        # #     perl_package        => 'Object',
+        # # };
+        #
+        #  - "java.lang.Object" can be imported using the standard import syntax:
+        #
+        #    package Java::Object { import => "java.lang.Object" }; 
+        #    my Java::Object $obj = Java::Object->new();
+        #
         $Java_class->{Character} = {
             java_type           => 'Character',
             java_native_to_perl => 'PlString',
