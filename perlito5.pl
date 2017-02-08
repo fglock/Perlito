@@ -7446,6 +7446,21 @@ use feature 'say';
                 0
             }
         }) && (do {
+            my $tmp = $MATCH;
+            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+            my $res = ((do {
+                my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                if ($m2) {
+                    $MATCH->{'to'} = $m2->{'to'};
+                    1
+                }
+                else {
+                    0
+                }
+            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})));
+            $MATCH = $tmp;
+            $res ? 0 : 1
+        }) && (do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{'to'};

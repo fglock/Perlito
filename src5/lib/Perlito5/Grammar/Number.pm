@@ -88,7 +88,9 @@ token val_vstring {
 };
 
 token val_version {
-    'v' <val_int> [ '.' <digits_underscore> ]*
+    'v' <val_int> 
+        <!before  <.Perlito5::Grammar::Space::opt_ws> \(  >
+        [ '.' <digits_underscore> ]*
     {
         my @parts = map { Perlito5::Match::flat($_) }
                         @{ $MATCH->{digits_underscore} };
