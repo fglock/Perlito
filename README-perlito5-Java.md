@@ -466,11 +466,6 @@ Java-specific command line options
 
     specify what we want to return: PlObject vs. array of strings, etc
   
-  - TODO: fix: module compilation requires the "bootstrapping" switch
-
-    remove the need for --bootstrapping
-
-    perl perlito5.pl -I src5/lib --bootstrapping -Cjava -e ' use Data::Dumper; print Data::Dumper::Dumper [ 123 , { 4 => 4 } ]'
 
 Add 'eval string' support
 -------------------------
