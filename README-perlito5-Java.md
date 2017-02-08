@@ -191,6 +191,8 @@ Other value types can be imported:
     }
 
     my Java::Array::Of::String $arr = Java::Array::Of::String->new();
+    $arr->add("123");
+    $arr->add($p->toString());
 ~~~
 
 
