@@ -1393,7 +1393,9 @@ package Perlito5::AST::CompUnit;
                      "}",
                      # emit error messages
                      'if (ee != null) {',
-                         [ 'PlCORE.warn(PlCx.VOID, new PlArray(new PlString(ee.getMessage())));' ],
+                         [ # 'PlCORE.warn(PlCx.VOID, new PlArray(new PlString(ee.getMessage())));'
+                           'ee.printStackTrace(System.err);',
+                         ],
                      '}',
                      # execute END blocks
                      'for (PlObject code : PlV.array_get("Perlito5::END_BLOCK")) {',
