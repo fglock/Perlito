@@ -195,6 +195,17 @@ Other value types can be imported:
     $arr->add($p->toString());
 ~~~
 
+Native array variables can not be created directly.
+As a workaround, see "Java::inline".
+
+~~~perl
+    # Not implemented:
+    #
+    #  package Java::Array::Of::String {
+    #       import => "java.lang.String",
+    #       java_type => "String[]",
+    #   }
+~~~
 
 Using typed variables
 ---------------------
@@ -361,6 +372,13 @@ implemented:
     package int       { }
     package short     { }
     package byte      { }
+
+    TODO:
+
+    float
+    double
+    boolean
+    char
 ~~~
 
 other primitive types are missing.

@@ -1903,22 +1903,25 @@ EOT
     }
     public float to_float() {
         double v = this.to_double();
+        if (v > Float.MAX_VALUE || v < Float.MIN_VALUE) {
+            PlCORE.die("numeric overflow converting to float");
+        }
         return (float)v;
     }
     public long to_long() {
-        PlCORE.die("error .to_long!");
         return 0;
     }
-    public PlObject end_of_array_index() {
-        return PlCORE.die("Not an ARRAY reference");
-    }
     public double to_double() {
-        PlCORE.die("error .to_double!");
         return 0.0;
     }
     public boolean to_bool() {
-        PlCORE.die("error .to_bool!");
-        return true;
+        return false;
+    }
+    public char to_char() {
+        return '\u0000';
+    }
+    public PlObject end_of_array_index() {
+        return PlCORE.die("Not an ARRAY reference");
     }
     public boolean is_undef() {
         return false;
