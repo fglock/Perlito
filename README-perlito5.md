@@ -313,8 +313,11 @@ Add tests for fixed bugs
     ${x->{s}}
     $x->{s}
 
-    $ perl  -e ' use Data::Dumper;  ${ x ->{s} } = 4;  print Dumper \%x '
+    $ perl  -e ' use Data::Dumper;        ${ x ->{s} } = 4;  print Dumper \%x '
     #  { 's' => \4 }
+
+    $ perl  -e ' use Data::Dumper; my %x; ${ x ->{s} } = 4;  print Dumper \%x '
+    #  {}
 ~~~
 
     ---
