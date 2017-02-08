@@ -152,7 +152,8 @@ Parser
         # $v is not seen
     }
 
-- test that "use" checks the return value of modules (the "1;" thing)
+    t5/unit/begin_lexical_var.t
+    t5/unit/phase_init_my.t
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
@@ -464,6 +465,7 @@ Add tests for fixed bugs
     "no" not allowed in expression
     (DONE) no longer a bug, this now works in perl5.22.0
 
+- test that "use" checks the return value of modules (the "1;" thing)
 
 
 Perl6 backend
@@ -553,12 +555,18 @@ Compile-time execution environment
 ~~~sh
     # captured lexical is not emitted:
     
-    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
-    Main.java:6307: error: cannot find symbol
-                PlV.glob_set("Perlito5::Dumper::escape_string", new PlArray(new PlClosure(PlCx.UNDEF, new PlObject[]{ Hash_safe_char_119 } ) {
-      symbol:   variable Hash_safe_char_119
+    $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4, ";)"); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
+    $VAR1 = [
+        2,
+        3,
+        4,
+        chr(59) . chr(41),
+    ];
+
+    Subroutine "Perlito5::Dumper::escape_string" is not capturing the lexical hash "%safe_char".
+~~~    
     
-    
+~~~sh
     # captured lexical is not initialized:
     
     $ cat > X.pm
@@ -597,39 +605,6 @@ Compile-time execution environment
 
          - maybe save lexical variable AST. This will help identify shared lexicals
 
-
-- current implementation
-
-    disable Java special case:
-
-    re-add Java headers (see EXPAND_USE in Use.pm; Java headers in src5/lib/Perlito5/Java/Emitter.pm)
-
-~~~perl
-                 $Perlito5::EXPAND_USE = 0
-    -                if $bootstrapping
-    -                || ($backend eq 'java');
-    +                if $bootstrapping;
-    +                # || ($backend eq 'java');
-~~~
-
-    force adding @END blocks:
-
-~~~perl
-    sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
-        my $scope = shift() // $Perlito5::GLOBAL;
-        my $vars = [];
-        my $seen = {};
-        my $dumper_seen = {};
-        my $tab = '';
-        $scope->{'@Perlito5::END_BLOCK'} = {
-                                       'ast' => bless( {
-                                                         'namespace' => 'Perlito5',
-                                                         'name' => 'END_BLOCK',
-                                                         'sigil' => '@'
-                                                       }, 'Perlito5::AST::Var' ),
-                                       'value' => \@Perlito5::END_BLOCK,
-                                     };
-~~~
 
 - special backend option "_comp" dumps the compile-time execution environment:
 
