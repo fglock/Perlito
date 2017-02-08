@@ -82,7 +82,7 @@ package Perlito5::Java;
         $Java_class->{Boolean} = {
             java_type           => 'Boolean',
             java_native_to_perl => 'PlBool',
-            perl_to_java        => 'to_bool',
+            perl_to_java        => 'to_boolean',
             perl_package        => 'Boolean',
         };
         $Java_class->{Double} = {
@@ -185,7 +185,7 @@ package Perlito5::Java;
         'infix:<gt>' => ' > ',
     );
     # these operators always return "bool"
-    our %op_to_bool = map +($_ => 1), qw(
+    our %op_to_boolean = map +($_ => 1), qw(
         prefix:<!>
         infix:<!=>
         infix:<==>
@@ -251,7 +251,7 @@ package Perlito5::Java;
         prefix:<-->     1 
     ); 
     # these operators will generate native Java code when possible; return "boolean"
-    our %native_op_to_bool = qw(
+    our %native_op_to_boolean = qw(
         infix:<!=>  !=
         infix:<==>  ==
         infix:<<=>  <=
@@ -405,7 +405,7 @@ package Perlito5::Java;
             return 1;
         }
         my $is_apply = $self->isa( 'Perlito5::AST::Apply' ) && $self->{arguments} && @{$self->{arguments}};
-        if ($is_apply && exists $native_op_to_bool{ $self->{code} } && is_native_args($self->{arguments})) {
+        if ($is_apply && exists $native_op_to_boolean{ $self->{code} } && is_native_args($self->{arguments})) {
             return 1;
         }
         return 0;
@@ -622,7 +622,7 @@ package Perlito5::Java;
                 return 'new PlDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())';
             }
     }
-    sub to_bool {
+    sub to_boolean {
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
@@ -631,7 +631,7 @@ package Perlito5::Java;
                && $cond->{arguments} && @{$cond->{arguments}}
                ) 
             {
-                return to_bool( $cond->{arguments}[0], $level )
+                return to_boolean( $cond->{arguments}[0], $level )
             }
 
             # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
@@ -641,8 +641,8 @@ package Perlito5::Java;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{arguments}->[0], $level) . ' && '
-                           . to_bool($cond->{arguments}->[1], $level) . ')'
+                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' && '
+                           . to_boolean($cond->{arguments}->[1], $level) . ')'
             }
             if (  $cond->isa( 'Perlito5::AST::Apply' ) 
                && (  $cond->code eq 'infix:<||>'
@@ -650,8 +650,8 @@ package Perlito5::Java;
                   )
                ) 
             {
-                return '(' . to_bool($cond->{arguments}->[0], $level) . ' || '
-                           . to_bool($cond->{arguments}->[1], $level) . ')'
+                return '(' . to_boolean($cond->{arguments}->[0], $level) . ' || '
+                           . to_boolean($cond->{arguments}->[1], $level) . ')'
             }
             if (  $cond->isa( 'Perlito5::AST::Apply' ) 
                && (  $cond->code eq 'prefix:<!>'
@@ -660,7 +660,7 @@ package Perlito5::Java;
                ) 
             {
                 if (@{$cond->{arguments}} == 1) {
-                    return '!' . to_bool($cond->{arguments}->[0], $level)
+                    return '!' . to_boolean($cond->{arguments}->[0], $level)
                 }
             }
             if (  $cond->isa( 'Perlito5::AST::Apply' ) 
@@ -680,13 +680,13 @@ package Perlito5::Java;
 
             if  (  ($cond->isa( 'Perlito5::AST::Int' ))
                 || ($cond->isa( 'Perlito5::AST::Num' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_boolean{ $cond->code })
                 )
             {
-                return $cond->emit_java($level, $wantarray) . '.to_bool()';
+                return $cond->emit_java($level, $wantarray) . '.to_boolean()';
             }
             else {
-                return $cond->emit_java($level, $wantarray) . '.to_bool()';
+                return $cond->emit_java($level, $wantarray) . '.to_boolean()';
             }
     }
 
@@ -699,7 +699,7 @@ package Perlito5::Java;
          || ($_[0]->isa( 'Perlito5::AST::Apply' ) 
             && (  exists($op_to_str{ $_[0]->{code} })
                || exists($op_to_num{ $_[0]->{code} })
-               || exists($op_to_bool{ $_[0]->{code} })
+               || exists($op_to_boolean{ $_[0]->{code} })
                #  || $_[0]->{code} eq 'prefix:<\\>'    -- \(@a) is a list
                )
             )
@@ -2553,7 +2553,7 @@ package Perlito5::AST::If;
             ? Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, not_a_loop => 1 )
             : Perlito5::Java::LexicalBlock->new( block => $self->{otherwise}->stmts, create_context => 1, not_a_loop => 1 );
  
-        push @str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
+        push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
         if ($body) {
             push @str, [ $body->emit_java( $level + 1, $wantarray ) ];
         }
@@ -2622,7 +2622,7 @@ package Perlito5::AST::When;
             : Perlito5::Java::LexicalBlock->new( block => $self->{body}->stmts, create_context => 1, not_a_loop => 1 );
         push @{ $body->{block} }, $next; 
 
-        push @str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {';
+        push @str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {';
         if ($body) {
             push @str, [ $body->emit_java( $level + 1, $wantarray ) ];
         }
@@ -2657,7 +2657,7 @@ package Perlito5::AST::While;
             $expression = Perlito5::Java::to_native_bool($cond, $level + 1);
         }
         else {
-            $expression =  Perlito5::Java::to_bool($cond, $level + 1);    
+            $expression =  Perlito5::Java::to_boolean($cond, $level + 1);    
         }
         if ($expression eq 'false') {
             # no-op
@@ -2737,7 +2737,7 @@ package Perlito5::AST::For;
             push @str,
                 'for ( '
                     . ( $self->{cond}[0] ? $self->{cond}[0]->emit_java($level + 1) . '; '  : '; ' )
-                    . ( $self->{cond}[1] ? Perlito5::Java::to_bool($self->{cond}[1], $level + 1) . '; '  : '; ' )
+                    . ( $self->{cond}[1] ? Perlito5::Java::to_boolean($self->{cond}[1], $level + 1) . '; '  : '; ' )
                     . ( $self->{cond}[2] ? $self->{cond}[2]->emit_java($level + 1) . ' '   : ''  )
                   . ') {',
                       [
@@ -2907,7 +2907,7 @@ package Perlito5::AST::Sub;
         if ( $self->{name} ) {
             my $idx  = Perlito5::JavaScript2::get_label();
             return Perlito5::Java::emit_wrap_java($level,
-                   'if (!PlV.sget("main::init_' . $idx . '").to_bool()) {',
+                   'if (!PlV.sget("main::init_' . $idx . '").to_boolean()) {',
                      [  'PlV.sset("main::init_' . $idx . '", (PlCx.INT1));',
                         'PlV.cset('
                           . Perlito5::Java::escape_string($self->{namespace} . '::' . $self->{name} ) . ", "

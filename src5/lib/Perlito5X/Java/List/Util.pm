@@ -77,7 +77,7 @@ sub pairgrep (&@) {
         while (i < size) {
             v_a_ref.set(List__.aget(i++));
             v_b_ref.set(List__.aget(i++));
-            boolean result = c.apply(PlCx.SCALAR, empty_args).to_bool();
+            boolean result = c.apply(PlCx.SCALAR, empty_args).to_boolean();
             if (result) {
                 ret.push(new PlArray(v_a_ref, v_b_ref));
             }
@@ -142,7 +142,7 @@ sub pairfirst (&@) {
         while (i < size) {
             v_a_ref.set(List__.aget(i++));
             v_b_ref.set(List__.aget(i++));
-            boolean result = c.apply(PlCx.SCALAR, empty_args).to_bool();
+            boolean result = c.apply(PlCx.SCALAR, empty_args).to_boolean();
             if (result) {
                 ret.push(new PlArray(v_a_ref, v_b_ref));
                 return (want == PlCx.LIST ) ? ret : ret.length_of_array();

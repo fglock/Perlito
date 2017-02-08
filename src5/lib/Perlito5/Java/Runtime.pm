@@ -434,7 +434,7 @@ class PerlRange implements Iterable<PlObject> {
         Integer v = flip_flop.get(id);
         if (v != null && v != 0) {
             v++;
-            if (v_end.to_bool()) {
+            if (v_end.to_boolean()) {
                 flip_flop.put(id, 0);
                 return new PlString("" + v + "E0");
             }
@@ -444,13 +444,13 @@ class PerlRange implements Iterable<PlObject> {
             }
         }
         else {
-            if (v_start.to_bool()) {
+            if (v_start.to_boolean()) {
                 v = 1;
             }
             else {
                 v = 0;
             }
-            if (v != 0 && three_dots == 0 && v_end.to_bool()) {
+            if (v != 0 && three_dots == 0 && v_end.to_boolean()) {
                 flip_flop.put(id, 0);
                 return new PlString("" + v + "E0");
             }
@@ -803,7 +803,7 @@ class PerlOp {
 
     // and1(x) ? y : and3()
     public static final boolean and1(PlObject arg1) {
-        if (arg1.to_bool()) {
+        if (arg1.to_boolean()) {
             return true;
         }
         else {
@@ -817,7 +817,7 @@ class PerlOp {
 
     // or1(x) ? or2() : y
     public static final boolean or1(PlObject arg1) {
-        if (arg1.to_bool()) {
+        if (arg1.to_boolean()) {
             boolean_stack.add(0, arg1);
             return true;
         }
@@ -881,7 +881,7 @@ class PerlOp {
             boolean result;
             PlObject temp = a.aget(i);
             v__ref.set(temp);
-            result = c.apply(PlCx.SCALAR, list__).to_bool();
+            result = c.apply(PlCx.SCALAR, list__).to_boolean();
             if (result) {
                 ret.push(temp);
             }
@@ -1914,7 +1914,7 @@ EOT
     public double to_double() {
         return 0.0;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return false;
     }
     public char to_char() {
@@ -2397,7 +2397,7 @@ class PlReference extends PlObject {
         }
     }
 
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
 
@@ -2693,7 +2693,7 @@ class PlArrayRef extends PlArray {
     public boolean is_arrayref() {
         return true;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
     public PlObject scalar() {
@@ -2804,7 +2804,7 @@ class PlHashRef extends PlHash {
     public PlObject scalar() {
         return this;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
     public PlHashRef bless(String className) {
@@ -2962,7 +2962,7 @@ class PlClass {
             // fallback
             o = PlClass.overload_to_number(o);
         }
-        if (swap.to_bool()) {
+        if (swap.to_boolean()) {
             return other.add(o);
         }
         return o.add(other);
@@ -2977,7 +2977,7 @@ class PlClass {
             // fallback
             o = PlClass.overload_to_number(o);
         }
-        if (swap.to_bool()) {
+        if (swap.to_boolean()) {
             return other.sub(o);
         }
         return o.sub(other);
@@ -3313,8 +3313,8 @@ EOT
     public double to_double() {
         return this.get().to_double();
     }
-    public boolean to_bool() {
-        return this.get().to_bool();
+    public boolean to_boolean() {
+        return this.get().to_boolean();
     }
     public PlObject num_cmp(PlObject b) {
         return this.get().num_cmp(b);
@@ -3790,8 +3790,8 @@ EOT
     public double to_double() {
         return this.o.to_double();
     }
-    public boolean to_bool() {
-        return this.o.to_bool();
+    public boolean to_boolean() {
+        return this.o.to_boolean();
     }
     public PlObject num_cmp(PlObject b) {
         return this.o.num_cmp(b);
@@ -4646,7 +4646,7 @@ EOT
     public double to_double() {
         return 0.0 + this.to_long();
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return (this.a.size() > 0);
     }
     public PlObject to_num() {
@@ -5115,7 +5115,7 @@ EOT
     public double to_double() {
         return 0.0 + this.to_long();
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             return true;
         }
@@ -5163,7 +5163,7 @@ class PlUndef extends PlObject {
     public String toString() {
         return "";
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return false;
     }
     public boolean is_bool() {
@@ -5202,7 +5202,7 @@ class PlBool extends PlObject {
             return "";
         }
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i;
     }
     public boolean is_bool() {
@@ -5252,7 +5252,7 @@ class PlInt extends PlObject {
     public String toString() {
         return "" + this.i;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i != 0;
     }
     public PlObject to_num() {
@@ -5310,7 +5310,7 @@ class PlDouble extends PlObject {
         }
         return s;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i != 0.0;
     }
     public PlObject _decr() {
@@ -5577,7 +5577,7 @@ class PlString extends PlObject {
     public String toString() {
         return this.s;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return !( this.s.equals("") || this.s.equals("0") );
     }
     public boolean is_string() {

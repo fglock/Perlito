@@ -20972,30 +20972,30 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'infix:<&&>' => sub {
             my($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
-                return Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
+                return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
             }
             'PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
         }, 'infix:<and>' => sub {
             my($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
-                return Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
+                return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
             }
             'PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
         }, 'infix:<||>' => sub {
             my($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
-                return Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
+                return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
             }
             'PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ''
         }, 'infix:<or>' => sub {
             my($self, $level, $wantarray) = @_;
             if ($wantarray eq 'void') {
-                return Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
+                return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
             }
             'PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ''
         }, 'infix:<xor>' => sub {
             my($self, $level, $wantarray) = @_;
-            '( ' . Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? new PlBool(!' . Perlito5::Java::to_bool($self->{'arguments'}->[1], $level) . ') : ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ')'
+            '( ' . Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? new PlBool(!' . Perlito5::Java::to_boolean($self->{'arguments'}->[1], $level) . ') : ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ')'
         }, 'infix:<=>>' => sub {
             my($self, $level, $wantarray) = @_;
             Perlito5::AST::Lookup::->autoquote($self->{'arguments'}->[0])->emit_java($level) . ', ' . $self->{'arguments'}->[1]->emit_java($level)
@@ -21014,7 +21014,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'prefix:<!>' => sub {
             my $self = shift;
             my $level = shift;
-            'new PlBool(!(' . Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . '))'
+            'new PlBool(!(' . Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . '))'
         }, 'prefix:<not>' => sub {
             my $self = shift;
             my $level = shift;
@@ -21022,7 +21022,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if (!$arg) {
                 return 'PlCx.TRUE'
             }
-            'new PlBool(!( ' . Perlito5::Java::to_bool($arg, $level) . '))'
+            'new PlBool(!( ' . Perlito5::Java::to_boolean($arg, $level) . '))'
         }, 'prefix:<~>' => sub {
             my $self = $_[0];
             'new PlInt(~' . Perlito5::Java::to_num($self->{'arguments'}->[0]) . '.to_long())'
@@ -21232,7 +21232,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1)
         }, 'ternary:<? :>' => sub {
             my($self, $level, $wantarray) = @_;
-            '( ' . Perlito5::Java::to_bool($self->{'arguments'}->[0], $level) . ' ? ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_java($level, $wantarray) . ')'
+            '( ' . Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_java($level, $wantarray) . ')'
         }, 'my' => sub {
             my($self, $level, $wantarray) = @_;
             'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
@@ -21933,7 +21933,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             $Java_class->{'String'} = {'java_type' => 'String', 'java_native_to_perl' => 'PlString', 'perl_to_java' => 'toString', 'perl_package' => 'String'};
             $Java_class->{'Long'} = {'java_type' => 'Long', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_long', 'perl_package' => 'Long'};
             $Java_class->{'Integer'} = {'java_type' => 'Integer', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_int', 'perl_package' => 'Integer'};
-            $Java_class->{'Boolean'} = {'java_type' => 'Boolean', 'java_native_to_perl' => 'PlBool', 'perl_to_java' => 'to_bool', 'perl_package' => 'Boolean'};
+            $Java_class->{'Boolean'} = {'java_type' => 'Boolean', 'java_native_to_perl' => 'PlBool', 'perl_to_java' => 'to_boolean', 'perl_package' => 'Boolean'};
             $Java_class->{'Double'} = {'java_type' => 'Double', 'java_native_to_perl' => 'PlDouble', 'perl_to_java' => 'to_double', 'perl_package' => 'Double'};
             $Java_class->{'Byte'} = {'java_type' => 'Byte', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_byte', 'perl_package' => 'Byte'};
             $Java_class->{'Short'} = {'java_type' => 'Short', 'java_native_to_perl' => 'PlInt', 'perl_to_java' => 'to_short', 'perl_package' => 'Short'};
@@ -21955,12 +21955,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size');
         our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
-        our %op_to_bool = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
+        our %op_to_boolean = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
         our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
         our %op_to_num = map(+($_ => 1), 'length', 'index', 'rindex', 'ord', 'oct', 'infix:<->', 'infix:<+>', 'infix:<*>', 'infix:</>', 'infix:<%>', 'infix:<**>', 'infix:<|>', 'infix:<&>');
         our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
         our %native_op_unary = ('postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
-        our %native_op_to_bool = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
+        our %native_op_to_boolean = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
         our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
         my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
         sub Perlito5::Java::escape_string {
@@ -22023,7 +22023,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return 1
             }
             my $is_apply = $self->isa('Perlito5::AST::Apply') && $self->{'arguments'} && @{$self->{'arguments'}};
-            if ($is_apply && exists($native_op_to_bool{$self->{'code'}}) && is_native_args($self->{'arguments'})) {
+            if ($is_apply && exists($native_op_to_boolean{$self->{'code'}}) && is_native_args($self->{'arguments'})) {
                 return 1
             }
             return 0
@@ -22185,22 +22185,22 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return 'new PlDouble(' . $cond->emit_java($level, $wantarray) . '.to_double())'
             }
         }
-        sub Perlito5::Java::to_bool {
+        sub Perlito5::Java::to_boolean {
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
             if ($cond->isa('Perlito5::AST::Apply') && $cond->code() eq 'circumfix:<( )>' && $cond->{'arguments'} && @{$cond->{'arguments'}}) {
-                return to_bool($cond->{'arguments'}->[0], $level)
+                return to_boolean($cond->{'arguments'}->[0], $level)
             }
             if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'infix:<&&>' || $cond->code() eq 'infix:<and>')) {
-                return '(' . to_bool($cond->{'arguments'}->[0], $level) . ' && ' . to_bool($cond->{'arguments'}->[1], $level) . ')'
+                return '(' . to_boolean($cond->{'arguments'}->[0], $level) . ' && ' . to_boolean($cond->{'arguments'}->[1], $level) . ')'
             }
             if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'infix:<||>' || $cond->code() eq 'infix:<or>')) {
-                return '(' . to_bool($cond->{'arguments'}->[0], $level) . ' || ' . to_bool($cond->{'arguments'}->[1], $level) . ')'
+                return '(' . to_boolean($cond->{'arguments'}->[0], $level) . ' || ' . to_boolean($cond->{'arguments'}->[1], $level) . ')'
             }
             if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'prefix:<!>' || $cond->code() eq 'prefix:<not>')) {
                 if (@{$cond->{'arguments'}} == 1) {
-                    return '!' . to_bool($cond->{'arguments'}->[0], $level)
+                    return '!' . to_boolean($cond->{'arguments'}->[0], $level)
                 }
             }
             if ($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'defined')) {
@@ -22211,15 +22211,15 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     }
                 }
             }
-            if (($cond->isa('Perlito5::AST::Int')) || ($cond->isa('Perlito5::AST::Num')) || ($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))) {
-                return $cond->emit_java($level, $wantarray) . '.to_bool()'
+            if (($cond->isa('Perlito5::AST::Int')) || ($cond->isa('Perlito5::AST::Num')) || ($cond->isa('Perlito5::AST::Apply') && exists($op_to_boolean{$cond->code()}))) {
+                return $cond->emit_java($level, $wantarray) . '.to_boolean()'
             }
             else {
-                return $cond->emit_java($level, $wantarray) . '.to_bool()'
+                return $cond->emit_java($level, $wantarray) . '.to_boolean()'
             }
         }
         sub Perlito5::Java::is_scalar {
-            $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || Perlito5::AST::Sub::is_anon_sub($_[0]) || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_bool{$_[0]->{'code'}})))
+            $_[0]->isa('Perlito5::AST::Int') || $_[0]->isa('Perlito5::AST::Num') || $_[0]->isa('Perlito5::AST::Buf') || Perlito5::AST::Sub::is_anon_sub($_[0]) || ($_[0]->isa('Perlito5::AST::Var') && $_[0]->{'sigil'} eq '$') || ($_[0]->isa('Perlito5::AST::Apply') && (exists($op_to_str{$_[0]->{'code'}}) || exists($op_to_num{$_[0]->{'code'}}) || exists($op_to_boolean{$_[0]->{'code'}})))
         }
         sub Perlito5::Java::to_filehandle {
             my($item, $level) = @_;
@@ -23297,7 +23297,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? $self->{'body'} : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'not_a_loop' => 1) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1, 'not_a_loop' => 1);
             my $otherwise = ref($self->{'otherwise'}) ne 'Perlito5::AST::Block' ? $self->{'otherwise'} : (!@{$self->{'otherwise'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'not_a_loop' => 1) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'otherwise'}->stmts(), 'create_context' => 1, 'not_a_loop' => 1);
-            push(@str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {');
+            push(@str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {');
             if ($body) {
                 push(@str, [$body->emit_java($level + 1, $wantarray)])
             }
@@ -23337,7 +23337,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $next = Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => 'next', 'namespace' => '');
             my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? Perlito5::Java::LexicalBlock::->new('block' => [$self->{'body'}], 'not_a_loop' => 1) : (!@{$self->{'body'}->stmts()}) ? undef : $wantarray ne 'void' ? Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'not_a_loop' => 1) : Perlito5::Java::LexicalBlock::->new('block' => $self->{'body'}->stmts(), 'create_context' => 1, 'not_a_loop' => 1);
             push(@{$body->{'block'}}, $next);
-            push(@str, 'if (' . Perlito5::Java::to_bool($cond, $level + 1) . ') {');
+            push(@str, 'if (' . Perlito5::Java::to_boolean($cond, $level + 1) . ') {');
             if ($body) {
                 push(@str, [$body->emit_java($level + 1, $wantarray)])
             }
@@ -23370,7 +23370,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $expression = Perlito5::Java::to_native_bool($cond, $level + 1)
             }
             else {
-                $expression = Perlito5::Java::to_bool($cond, $level + 1)
+                $expression = Perlito5::Java::to_boolean($cond, $level + 1)
             }
             if ($expression eq 'false') {
                 return 'PerlOp.statement();'
@@ -23412,7 +23412,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             if (ref($self->{'cond'}) eq 'ARRAY') {
-                push(@str, 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_java($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Java::to_bool($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_java($level + 1) . ' ' : '') . ') {', [(Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
+                push(@str, 'for ( ' . ($self->{'cond'}->[0] ? $self->{'cond'}->[0]->emit_java($level + 1) . '; ' : '; ') . ($self->{'cond'}->[1] ? Perlito5::Java::to_boolean($self->{'cond'}->[1], $level + 1) . '; ' : '; ') . ($self->{'cond'}->[2] ? $self->{'cond'}->[2]->emit_java($level + 1) . ' ' : '') . ') {', [(Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}))->emit_java($level + 2, $wantarray)], '}')
             }
             else {
                 my $cond = $self->{'cond'};
@@ -23525,7 +23525,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::JavaScript2::get_label();
-                return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.sget("main::init_' . $idx . '").to_bool()) {', ['PlV.sset("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.cset(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
+                return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.sget("main::init_' . $idx . '").to_boolean()) {', ['PlV.sset("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.cset(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
             }
             else {
                 return '' . Perlito5::Java::emit_wrap_java($level, @s)
@@ -25861,7 +25861,7 @@ class PerlRange implements Iterable<PlObject> {
         Integer v = flip_flop.get(id);
         if (v != null && v != 0) {
             v++;
-            if (v_end.to_bool()) {
+            if (v_end.to_boolean()) {
                 flip_flop.put(id, 0);
                 return new PlString("" + v + "E0");
             }
@@ -25871,13 +25871,13 @@ class PerlRange implements Iterable<PlObject> {
             }
         }
         else {
-            if (v_start.to_bool()) {
+            if (v_start.to_boolean()) {
                 v = 1;
             }
             else {
                 v = 0;
             }
-            if (v != 0 && three_dots == 0 && v_end.to_bool()) {
+            if (v != 0 && three_dots == 0 && v_end.to_boolean()) {
                 flip_flop.put(id, 0);
                 return new PlString("" + v + "E0");
             }
@@ -26230,7 +26230,7 @@ class PerlOp {
 
     // and1(x) ? y : and3()
     public static final boolean and1(PlObject arg1) {
-        if (arg1.to_bool()) {
+        if (arg1.to_boolean()) {
             return true;
         }
         else {
@@ -26244,7 +26244,7 @@ class PerlOp {
 
     // or1(x) ? or2() : y
     public static final boolean or1(PlObject arg1) {
-        if (arg1.to_bool()) {
+        if (arg1.to_boolean()) {
             boolean_stack.add(0, arg1);
             return true;
         }
@@ -26308,7 +26308,7 @@ class PerlOp {
             boolean result;
             PlObject temp = a.aget(i);
             v__ref.set(temp);
-            result = c.apply(PlCx.SCALAR, list__).to_bool();
+            result = c.apply(PlCx.SCALAR, list__).to_boolean();
             if (result) {
                 ret.push(temp);
             }
@@ -27333,7 +27333,7 @@ class PlObject {
     public double to_double() {
         return 0.0;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return false;
     }
     public char to_char() {
@@ -27808,7 +27808,7 @@ class PlReference extends PlObject {
         }
     }
 
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
 
@@ -28104,7 +28104,7 @@ class PlArrayRef extends PlArray {
     public boolean is_arrayref() {
         return true;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
     public PlObject scalar() {
@@ -28215,7 +28215,7 @@ class PlHashRef extends PlHash {
     public PlObject scalar() {
         return this;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return true;
     }
     public PlHashRef bless(String className) {
@@ -28373,7 +28373,7 @@ class PlClass {
             // fallback
             o = PlClass.overload_to_number(o);
         }
-        if (swap.to_bool()) {
+        if (swap.to_boolean()) {
             return other.add(o);
         }
         return o.add(other);
@@ -28388,7 +28388,7 @@ class PlClass {
             // fallback
             o = PlClass.overload_to_number(o);
         }
-        if (swap.to_bool()) {
+        if (swap.to_boolean()) {
             return other.sub(o);
         }
         return o.sub(other);
@@ -28720,8 +28720,8 @@ class PlLazyLvalue extends PlLvalue {
     public double to_double() {
         return this.get().to_double();
     }
-    public boolean to_bool() {
-        return this.get().to_bool();
+    public boolean to_boolean() {
+        return this.get().to_boolean();
     }
     public PlObject num_cmp(PlObject b) {
         return this.get().num_cmp(b);
@@ -29180,8 +29180,8 @@ class PlLvalue extends PlObject {
     public double to_double() {
         return this.o.to_double();
     }
-    public boolean to_bool() {
-        return this.o.to_bool();
+    public boolean to_boolean() {
+        return this.o.to_boolean();
     }
     public PlObject num_cmp(PlObject b) {
         return this.o.num_cmp(b);
@@ -30009,7 +30009,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     public double to_double() {
         return 0.0 + this.to_long();
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return (this.a.size() > 0);
     }
     public PlObject to_num() {
@@ -30474,7 +30474,7 @@ class PlHash extends PlObject {
     public double to_double() {
         return 0.0 + this.to_long();
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         for (Map.Entry<String, PlObject> entry : this.h.entrySet()) {
             return true;
         }
@@ -30522,7 +30522,7 @@ class PlUndef extends PlObject {
     public String toString() {
         return "";
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return false;
     }
     public boolean is_bool() {
@@ -30561,7 +30561,7 @@ class PlBool extends PlObject {
             return "";
         }
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i;
     }
     public boolean is_bool() {
@@ -30611,7 +30611,7 @@ class PlInt extends PlObject {
     public String toString() {
         return "" + this.i;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i != 0;
     }
     public PlObject to_num() {
@@ -30669,7 +30669,7 @@ class PlDouble extends PlObject {
         }
         return s;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return this.i != 0.0;
     }
     public PlObject _decr() {
@@ -30933,7 +30933,7 @@ class PlString extends PlObject {
     public String toString() {
         return this.s;
     }
-    public boolean to_bool() {
+    public boolean to_boolean() {
         return !( this.s.equals("") || this.s.equals("0") );
     }
     public boolean is_string() {
