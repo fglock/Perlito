@@ -209,6 +209,7 @@ As a workaround, see "Java::inline".
 Perl arrays can be assigned a native array:
 
 ~~~perl
+    package String { };
     my @arr2 = Java::inline ' new String[]{ "a", "b" } ';
     print "arr2[0] $arr2[0], arr2[1] $arr2[1]\n";
 ~~~
