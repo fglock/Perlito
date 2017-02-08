@@ -163,7 +163,7 @@ Java value types don't need to be imported, but there must exist a Perl package:
     package Double    { }
     package Float     { }
     package Character { }
-    
+
     my String $x  = "abc";
     my Integer $y = 123;
     # assigning a Java value to a Perl variable
@@ -179,6 +179,20 @@ These primitive data type declarations are supported:
     package short     { }
     package byte      { }
 ~~~
+
+Other value types can be imported:
+
+~~~perl
+    package Java::Object { import => "java.lang.Object" };
+    package Java::Date   { import => "java.util.Date" };
+    package Java::Array::Of::String {
+        import => "java.util.ArrayList",
+        java_type => "ArrayList<String>",
+    }
+
+    my Java::Array::Of::String $arr = Java::Array::Of::String->new();
+~~~
+
 
 Using typed variables
 ---------------------
@@ -216,11 +230,11 @@ Extending a Java class with Perl
     package header { java_path => 'org.perlito.udfs' };
 
     # import the original Java class
-    package J::Date   { import => "java.util.Date" };
+    package Java::Date   { import => "java.util.Date" };
     
     # create and import the extended class
     package My::Date {
-        extends => 'J::Date',
+        extends => 'Java::Date',
         decl => [ "public", "final" ],              # public final class
         'Java::inline' => " // ... Java code ... \n",
         methods => [
@@ -242,7 +256,7 @@ Extending a Java class with Perl
         return "Hello";
     }
     
-    my J::Date $j_date = J::Date->new();
+    my Java::Date $j_date = Java::Date->new();
     my $s1 = $j_date->toString();   # original class
     my My::Date $date = My::Date->new();
     my $s2 = $date->toString();     # extended class
