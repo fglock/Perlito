@@ -1067,8 +1067,17 @@ package Perlito5::Java::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::Use' )
                   )
             {
-                push @str, $last_statement->emit_java($level, 'void') . ';';
-                push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+                push @str, $last_statement->emit_java($level, 'void');
+
+                if ( $last_statement->isa( 'Perlito5::AST::While' )
+                    && $last_statement->{cond}->isa('Perlito5::AST::Int')
+                    && $last_statement->{cond}{int} ) {
+                    # do not emit "return" after while(1){...} because "unreachable statement"
+                }
+                else {
+                    $str[-1] .= ";";
+                    push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+                }
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::Block' ) ) {
                 # "block" returns a value

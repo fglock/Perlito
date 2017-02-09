@@ -22453,8 +22453,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
                 if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::Use')) {
-                    push(@str, $last_statement->emit_java($level, 'void') . ';');
-                    push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
+                    push(@str, $last_statement->emit_java($level, 'void'));
+                    if ($last_statement->isa('Perlito5::AST::While') && $last_statement->{'cond'}->isa('Perlito5::AST::Int') && $last_statement->{'cond'}->{'int'}) {}
+                    else {
+                        $str[-1] .= ';';
+                        push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
+                    }
                 }
                 elsif ($last_statement->isa('Perlito5::AST::Block')) {
                     push(@str, $last_statement->emit_java($level, 'runtime') . '')
