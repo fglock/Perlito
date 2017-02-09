@@ -12,6 +12,17 @@ sub encode_json {
     Perlito5::JSON::ast_dumper($_[0]);
 }
 
+sub decode_json {
+    die "TODO";
+    while ($_[0] =~ / /g) {};  # skip spaces
+    if ($_[0] =~ /\[/g) {
+        # array
+    }
+    elsif ($_[0] =~ /{/g) {
+        # hash
+    }
+}
+
 1;
 
 __END__
