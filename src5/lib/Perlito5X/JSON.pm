@@ -95,8 +95,8 @@ sub decode_json {
                 # end-object
                 return \%r;
             }
-            elsif ($_[0] =~ /\G\,/gc) {
-                # comma
+            elsif ($_[0] =~ /\G\,[ \t\r\n]*/gc) {
+                # comma + spaces
             }
             else {
                 die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
