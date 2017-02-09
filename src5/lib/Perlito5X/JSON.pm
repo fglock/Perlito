@@ -84,8 +84,8 @@ sub decode_json {
             # string
             my $index = $1 . &_string_loop;
 
-            $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
-            if ($_[0] !~ /\G\:/gc) {
+            # skip spaces, colon
+            if ($_[0] !~ /\G[ \t\r\n]*:/gc) {
                 # not colon
                 die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
             }
@@ -94,6 +94,12 @@ sub decode_json {
             if ($_[0] =~ /\G\}/gc) {
                 # end-object
                 return \%r;
+            }
+            elsif ($_[0] =~ /\G\,/gc) {
+                # comma
+            }
+            else {
+                die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
             }
         }
     }
