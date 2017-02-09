@@ -5,6 +5,7 @@ sub import {
     my $pkg     = shift;
     my $callpkg = caller(0);
     *{ $callpkg . "::encode_json" } = \&encode_json;
+    *{ $callpkg . "::decode_json" } = \&decode_json;
     return;
 }
 
@@ -13,13 +14,34 @@ sub encode_json {
 }
 
 sub decode_json {
-    die "TODO";
-    while ($_[0] =~ /\G /g) {};  # skip spaces
-    if ($_[0] =~ /\G\[/g) {
+    while ($_[0] =~ /\G /gc) {};  # skip spaces
+    if ($_[0] =~ /\G\[/gc) {
         # array
     }
-    elsif ($_[0] =~ /\G{/g) {
-        # hash
+    elsif ($_[0] =~ /\G\{/gc) {
+        # object
+    }
+    elsif ($_[0] =~ /\G"/gc) {
+        # string
+    }
+    elsif ($_[0] =~ /\G(\d+)/gc) {
+        # number
+        return $1;  # TODO
+    }
+    elsif ($_[0] =~ /\Gfalse/gc) {
+        # false
+        return 0;   # TODO
+    }
+    elsif ($_[0] =~ /\Gtrue/gc) {
+        # true
+        return 1;   # TODO
+    }
+    elsif ($_[0] =~ /\Gnull/gc) {
+        # null
+        return undef;
+    }
+    else {
+        die "malformed JSON string, neither tag, array, object, number, string or atom, at character offset " . pos($_[0]);
     }
 }
 

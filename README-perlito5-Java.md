@@ -95,6 +95,10 @@ Regex differences
         t5/unit/regex_zero_length_replace.t
 ~~~
 
+  - TODO - check this error message, this may need to be implemented for compatibility:
+    Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
+
+
 Perlito5-Java extensibility
 ===========================
 
