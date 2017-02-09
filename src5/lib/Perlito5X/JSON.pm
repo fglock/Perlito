@@ -13,6 +13,32 @@ sub encode_json {
     Perlito5::JSON::ast_dumper($_[0]);
 }
 
+sub _string_loop {
+    while (1) {
+        if ($_[0] =~ /\G"/gc) {
+            # end-string
+            return $s;
+        }
+        elsif ($_[0] =~ /\G\\([trnfbu\\\/])/gc) {
+            # escape
+            if ($1 eq 't') { $s .= "\t" }
+            elsif ($1 eq 'r') { $s .= "\r" }
+            elsif ($1 eq 'n') { $s .= "\n" }
+            elsif ($1 eq 'f') { $s .= "\f" }
+            elsif ($1 eq 'b') { $s .= "\b" }
+            elsif ($1 eq '\\') { $s .= "\\" }
+            elsif ($1 eq '/') { $s .= "/" }
+            elsif ($1 eq 'u') { die "TODO \\u0000" }
+        }
+        else {
+            die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
+        }
+        if ($_[0] =~ /\G([^"\\]+)/gc) {
+            $s .= $1;
+        }
+    }
+} 
+
 sub decode_json {
     $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
     if ($_[0] =~ /\G\[/gc) {
@@ -47,7 +73,13 @@ sub decode_json {
             return \%r;
         }
         while (1) {
-            my $index = &decode_json;
+            if ($_[0] !~ /\G"([^"\\]*)/gc) {
+                # not string
+                die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
+            }
+            # string
+            my $index = $1 . &_string_loop;
+
             $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
             if ($_[0] !~ /\G\:/gc) {
                 # not colon
@@ -63,30 +95,7 @@ sub decode_json {
     }
     elsif ($_[0] =~ /\G"([^"\\]*)/gc) {
         # string
-        my $s = $1;
-        while (1) {
-            if ($_[0] =~ /\G"/gc) {
-                # end-string
-                return $s;
-            }
-            elsif ($_[0] =~ /\G\\([trnfbu\\\/])/gc) {
-                # escape
-                if ($1 eq 't') { $s .= "\t" }
-                elsif ($1 eq 'r') { $s .= "\r" }
-                elsif ($1 eq 'n') { $s .= "\n" }
-                elsif ($1 eq 'f') { $s .= "\f" }
-                elsif ($1 eq 'b') { $s .= "\b" }
-                elsif ($1 eq '\\') { $s .= "\\" }
-                elsif ($1 eq '/') { $s .= "/" }
-                elsif ($1 eq 'u') { die "TODO \\u0000" }
-            }
-            else {
-                die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
-            }
-            if ($_[0] =~ /\G([^"\\]+)/gc) {
-                $s .= $1;
-            }
-        }
+        return $1 . &_string_loop;
     }
     elsif ($_[0] =~ /\G(\d+)/gc) {
         # number
