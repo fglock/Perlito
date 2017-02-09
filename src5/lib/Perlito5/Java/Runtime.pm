@@ -5487,7 +5487,7 @@ class PlString extends PlObject {
             final int c = s.codePointAt(offset);
             switch (c) {
                 case 'i': case 'I':
-                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
+                            if (length > 2 && this.s.substring(offset, offset+3).equalsIgnoreCase("inf")) {
                                 if (signal < 0) {
                                     return new PlDouble(Double.NEGATIVE_INFINITY);
                                 }
@@ -5497,7 +5497,7 @@ class PlString extends PlObject {
                             }
                             return PlCx.INT0;
                 case 'n': case 'N':
-                            if (this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
+                            if (length > 2 && this.s.substring(offset, offset+3).equalsIgnoreCase("nan")) {
                                 return new PlDouble(Double.NaN);
                             }
                             return PlCx.INT0;

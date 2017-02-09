@@ -1,5 +1,6 @@
 package JSON;
 use Perlito5::JSON;
+# use strict;
 
 sub import {
     my $pkg     = shift;
@@ -14,6 +15,7 @@ sub encode_json {
 }
 
 sub _string_loop {
+    my $s = "";
     while (1) {
         if ($_[0] =~ /\G"/gc) {
             # end-string
