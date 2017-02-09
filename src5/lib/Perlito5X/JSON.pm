@@ -28,7 +28,11 @@ sub _string_loop {
             elsif ($1 eq 'b') { $s .= "\b" }
             elsif ($1 eq '\\') { $s .= "\\" }
             elsif ($1 eq '/') { $s .= "/" }
-            elsif ($1 eq 'u') { die "TODO \\u0000" }
+            elsif ($1 eq 'u') {
+                $_[0] =~ /\G([0-9a-fA-F]{4})/gc
+                  or die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
+                die "TODO \\u0000" 
+            }
         }
         else {
             die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
