@@ -427,7 +427,10 @@ sub _insert_return_in_block {
                         );
     }
     else {
-        # TODO
+        my $last_statement = $body->{stmts}[0];
+        if ($last_statement->isa('Perlito5::AST::If')) {
+            Perlito5::Macro::insert_return_in_if($last_statement);
+        }
     }
     $self->{$tag} = $body;
 }

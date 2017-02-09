@@ -1193,6 +1193,12 @@ use feature 'say';
         elsif (@{$body->{'stmts'}} == 0) {
             push(@{$body->{'stmts'}}, Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => ''))
         }
+        else {
+            my $last_statement = $body->{'stmts'}->[0];
+            if ($last_statement->isa('Perlito5::AST::If')) {
+                Perlito5::Macro::insert_return_in_if($last_statement)
+            }
+        }
         $self->{$tag} = $body
     }
     sub Perlito5::Macro::insert_return_in_if {
