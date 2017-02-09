@@ -14,12 +14,33 @@ sub encode_json {
 }
 
 sub decode_json {
-    while ($_[0] =~ /\G /gc) {};  # skip spaces
+    $_[0] =~ /\G[ \t\r\n]*/gc;  # skip spaces
     if ($_[0] =~ /\G\[/gc) {
         # array
+        my @r;
+        $_[0] =~ /\G[ \t\r\n]*/gc;  # skip spaces
+        if ($_[0] =~ /\G\]/gc) {
+            # end-array
+            return \@r;
+        }
+        while (1) {
+            push @r, &decode_json;
+            $_[0] =~ /\G[ \t\r\n]*/gc;  # skip spaces
+            if ($_[0] =~ /\G\]/gc) {
+                # end-array
+                return \@r;
+            }
+            elsif ($_[0] =~ /\G\,/gc) {
+                # comma
+            }
+            else {
+                die ", or ] expected while parsing array, at character offset " . pos($_[0]);
+            }
+        }
     }
     elsif ($_[0] =~ /\G\{/gc) {
         # object
+        $_[0] =~ /\G[ \t\r\n]*/gc;  # skip spaces
     }
     elsif ($_[0] =~ /\G"/gc) {
         # string
