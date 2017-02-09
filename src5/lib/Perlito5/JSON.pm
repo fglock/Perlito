@@ -3,7 +3,7 @@ package Perlito5::JSON;
 sub ast_dumper {
     my $seen  = {};
     my $level = '';
-    my $pos   = '[TODO - recursive structure in AST is not supported]';
+    my $pos   = '[TODO - recursive structure is not supported]';
     return _dumper( $_[0], $level, $seen, $pos );
 }
 

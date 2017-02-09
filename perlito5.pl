@@ -4534,7 +4534,7 @@ use feature 'say';
     undef();
     undef();
     undef();
-    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL');
+    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL', 'JSON' => 'Perlito5X::JSON');
     sub Perlito5::Grammar::Use::register_internal_module {
         my($module, $real_name) = @_;
         $Perlito_internal_module{$module} = $real_name
@@ -10054,7 +10054,7 @@ use feature 'say';
     sub Perlito5::JSON::ast_dumper {
         my $seen = {};
         my $level = '';
-        my $pos = '[TODO - recursive structure in AST is not supported]';
+        my $pos = '[TODO - recursive structure is not supported]';
         return _dumper($_[0], $level, $seen, $pos)
     }
     sub Perlito5::JSON::_dumper {
