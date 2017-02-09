@@ -80,7 +80,7 @@ Perlito5-Java work-in-progress
 Regex differences
 -----------------
 
-  - regex modifiers /ismxge work the same as Perl; other modifiers are not yet implemented.
+  - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 

@@ -1171,7 +1171,9 @@ class PerlOp {
 
     // ****** end regex variables
 
-    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
+    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global, boolean c_flag) {
+        // 'c_flag'  c  - keep the current position during repeated matching
+        // 'global'  g  - globally match the pattern repeatedly in the string
         String str = input.toString();
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
@@ -1192,7 +1194,9 @@ class PerlOp {
                 }
                 else {
                     // reset_match();
-                    set_pos(input, PlCx.UNDEF, null, null);
+                    if (!c_flag) {
+                        set_pos(input, PlCx.UNDEF, null, null);
+                    }
                     return PlCx.FALSE;
                 }
             }

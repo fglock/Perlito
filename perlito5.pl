@@ -20780,7 +20780,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     $modifier_global = 'true';
                     $modifier =~ s/g//g
                 }
-                $str = 'PerlOp.match(' . $var->emit_java($level) . ', ' . emit_qr_java($regex_args->[0], $modifier, $level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . $modifier_global . ')'
+                my $modifier_c = 'false';
+                if ($modifier =~ m/c/) {
+                    $modifier_c = 'true';
+                    $modifier =~ s/c//g
+                }
+                $str = 'PerlOp.match(' . $var->emit_java($level) . ', ' . emit_qr_java($regex_args->[0], $modifier, $level) . ', ' . Perlito5::Java::to_context($wantarray) . ', ' . $modifier_global . ', ' . $modifier_c . ')'
             }
             elsif ($code eq 'p5:tr') {
                 $str = 'PerlOp.tr(' . $var->emit_java($level) . ', ' . $regex_args->[0]->emit_java($level) . ', ' . $regex_args->[1]->emit_java($level) . ', ' . Perlito5::Java::escape_string($regex_args->[2]->{'buf'}) . ', ' . Perlito5::Java::to_context($wantarray) . ')'
@@ -26602,7 +26607,9 @@ class PerlOp {
 
     // ****** end regex variables
 
-    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global) {
+    public static final PlObject match(PlObject input, PlRegex pat, int want, boolean global, boolean c_flag) {
+        // ' . chr(39) . 'c_flag' . chr(39) . '  c  - keep the current position during repeated matching
+        // ' . chr(39) . 'global' . chr(39) . '  g  - globally match the pattern repeatedly in the string
         String str = input.toString();
         if (want != PlCx.LIST) {
             Matcher matcher = pat.p.matcher(str);
@@ -26623,7 +26630,9 @@ class PerlOp {
                 }
                 else {
                     // reset_match();
-                    set_pos(input, PlCx.UNDEF, null, null);
+                    if (!c_flag) {
+                        set_pos(input, PlCx.UNDEF, null, null);
+                    }
                     return PlCx.FALSE;
                 }
             }

@@ -81,11 +81,17 @@ package Perlito5::AST::Apply;
                 $modifier_global = 'true';
                 $modifier =~ s/g//g;
             }
+            my $modifier_c = 'false';
+            if ($modifier =~ /c/) {
+                $modifier_c = 'true';
+                $modifier =~ s/c//g;
+            }
             $str = 'PerlOp.match('
                     . $var->emit_java($level) . ', '
                     . emit_qr_java( $regex_args->[0], $modifier, $level ) . ', '
                     . Perlito5::Java::to_context($wantarray) . ', '
-                    . $modifier_global
+                    . $modifier_global . ', '
+                    . $modifier_c
                   . ")";
         }
         elsif ($code eq 'p5:tr') {

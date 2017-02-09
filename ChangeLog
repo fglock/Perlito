@@ -20,6 +20,7 @@
 -- s///e, tr//
 -- glob deref - *{ $name }{CODE}->()
 -- regex comments with "(?#text)"
+-- regex modifiers /e /g /c
 -- support for all primitive data types
 
 0.047 cpan:v6  2016-07-28
