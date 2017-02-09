@@ -14,11 +14,11 @@ sub encode_json {
 
 sub decode_json {
     die "TODO";
-    while ($_[0] =~ / /g) {};  # skip spaces
-    if ($_[0] =~ /\[/g) {
+    while ($_[0] =~ /\G /g) {};  # skip spaces
+    if ($_[0] =~ /\G\[/g) {
         # array
     }
-    elsif ($_[0] =~ /{/g) {
+    elsif ($_[0] =~ /\G{/g) {
         # hash
     }
 }
