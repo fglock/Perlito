@@ -61,8 +61,32 @@ sub decode_json {
             }
         }
     }
-    elsif ($_[0] =~ /\G"/gc) {
+    elsif ($_[0] =~ /\G"([^"\\]*)/gc) {
         # string
+        my $s = $1;
+        while (1) {
+            if ($_[0] =~ /\G"/gc) {
+                # end-string
+                return $s;
+            }
+            elsif ($_[0] =~ /\G\\([trnfbu\\\/])/gc) {
+                # escape
+                if ($1 eq 't') { $s .= "\t" }
+                elsif ($1 eq 'r') { $s .= "\r" }
+                elsif ($1 eq 'n') { $s .= "\n" }
+                elsif ($1 eq 'f') { $s .= "\f" }
+                elsif ($1 eq 'b') { $s .= "\b" }
+                elsif ($1 eq '\\') { $s .= "\\" }
+                elsif ($1 eq '/') { $s .= "/" }
+                elsif ($1 eq 'u') { die "TODO \\u0000" }
+            }
+            else {
+                die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
+            }
+            if ($_[0] =~ /\G([^"\\]+)/gc) {
+                $s .= $1;
+            }
+        }
     }
     elsif ($_[0] =~ /\G(\d+)/gc) {
         # number
