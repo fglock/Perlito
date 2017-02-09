@@ -97,9 +97,9 @@ sub decode_json {
         # string
         return $1 . &_string_loop;
     }
-    elsif ($_[0] =~ /\G(\d+)/gc) {
+    elsif ($_[0] =~ /\G(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)/gc) {
         # number
-        return $1;  # TODO
+        return 0+$1;
     }
     elsif ($_[0] =~ /\Gfalse/gc) {
         # false
