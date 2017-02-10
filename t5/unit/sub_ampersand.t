@@ -1,7 +1,7 @@
 use feature 'say';
 use strict;
 
-say "1..27";
+say "1..28";
 
 my $v = 0;
 my $r = 0;
@@ -149,7 +149,7 @@ print "ok 20 - with_proto $r\n";
     print "ok 22 - ampersand string - $r\n";
 }
 
-# ampersand string
+# ampersand string, return sub
 
 {
     no strict;
@@ -158,15 +158,21 @@ print "not " if $r != 11;
 print "ok 23 - with_proto_return_sub # $r\n";
 }
 
+# ampersand, return sub
+
+$r = &with_proto_return_sub->(4);
+print "not " if $r != 11;
+print "ok 24 - with_proto_return_sub # $r\n";
+
 # ampersand, default to @_
 
 $v = 3;
 @_ = (4);
 $r = &with_proto;
 print "not " if $v != 7;
-print "ok 24 - with_proto $v\n";
+print "ok 25 - with_proto $v\n";
 print "not " if $r != 7;
-print "ok 25 - with_proto $r\n";
+print "ok 26 - with_proto $r\n";
 
 # sanity test with proto attribute
 
@@ -182,8 +188,8 @@ sub with_proto_attr :prototype() {
 $v = 3;
 $r = with_proto_attr + 4;
 print "not " if $v != 11;
-print "ok 26 - with_proto_attr $v\n";
+print "ok 27 - with_proto_attr $v\n";
 print "not " if $r != 15;
-print "ok 27 - with_proto_attr $r\n";
+print "ok 28 - with_proto_attr $r\n";
 
 
