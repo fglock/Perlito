@@ -20894,7 +20894,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             'PerlOp.ord(' . Perlito5::Java::to_str($self->{'arguments'}->[0], $level) . ')'
         }, 'chr' => sub {
             my($self, $level, $wantarray) = @_;
-            'new PlString((char)' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long())'
+            'new PlString(new String(Character.toChars(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int())))'
         }, 'int' => sub {
             my($self, $level, $wantarray) = @_;
             'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long())'

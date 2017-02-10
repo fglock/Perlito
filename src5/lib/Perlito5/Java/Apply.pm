@@ -245,8 +245,8 @@ package Perlito5::AST::Apply;
         },
         'chr' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlString((char)'
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long())'
+              'new PlString(new String(Character.toChars('
+            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())))'
         },
         'int' => sub {
             my ($self, $level, $wantarray) = @_;
