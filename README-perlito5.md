@@ -155,6 +155,15 @@ Parser
     $ perl perlito5.pl -Isrc5/lib -Cast -e ' &{"with_proto"}(4); &{"with_proto"}->(4) '
 ~~~
 
+    The first variant should generate a 'Perlito5::AST::Apply',
+    maybe adding a "ignore prototype" flag.
+
+    This parses correctly:
+
+~~~sh
+    $ perl perlito5.pl -Isrc5/lib -Cast -e ' sub x { sub { 123 } } x; x->(); '
+~~~
+
     Failing test: t5/unit/sub_ampersand.t 
 
 
