@@ -2395,14 +2395,22 @@ package Perlito5::AST::Call;
                )
             {
                 my $arg   = $self->{invocant}{arguments}->[0];
-                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
+                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')'
+                # . '.apply('
+                #     . Perlito5::Java::to_context('scalar') . ', '
+                #     . 'List__'
+                # . ')'
             }
             elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '&'
                )
             {
                 my $namespace = $self->{invocant}{namespace} || $Perlito5::PKG_NAME;
-                $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')';
+                $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')'
+                # . '.apply('
+                #     . Perlito5::Java::to_context('scalar') . ', '
+                #     . 'List__'
+                # . ')'
             }
             elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '::'

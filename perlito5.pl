@@ -21092,7 +21092,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'prefix:<&>' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
-            'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')([])'
+            'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . 'List__' . ')'
         }, 'prefix:<*>' => sub {
             my($self, $level, $wantarray) = @_;
             my $arg = $self->{'arguments'}->[0];
