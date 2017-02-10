@@ -41,8 +41,6 @@ sub _string_loop {
                     my $hi = $uni;
                     my $lo = hex($1);
                     $uni = 0x10000 + ($hi - 0xD800) * 0x400 + ($lo - 0xDC00);
-print "pair $hi $lo = $uni \n";
-print "ord ", ord(chr($uni)), "\n";
                 }
                 $s .= chr($uni);
             }
