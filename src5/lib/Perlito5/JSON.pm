@@ -39,7 +39,7 @@ sub _dumper {
         my $here = $pos . '{' . $i . '}';
         push @out, $tab1 . qq{"$i": } . _dumper( $obj->{$i}, $tab1, $seen, $here );
     }
-    return "{ " . join( ",\n", @out ) . "\n" . $tab . "}";
+    return "{\n" . join( ",\n", @out ) . "\n" . $tab . "}";
 }
 
 sub escape_string {

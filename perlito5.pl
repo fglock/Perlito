@@ -10099,7 +10099,8 @@ use feature 'say';
             my $here = $pos . '{' . $i . '}';
             push(@out, $tab1 . '"' . $i . '": ' . _dumper($obj->{$i}, $tab1, $seen, $here))
         }
-        return '{ ' . join(',
+        return '{
+' . join(',
 ', @out) . '
 ' . $tab . '}'
     }
