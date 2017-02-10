@@ -9,22 +9,21 @@ my $e = '';
 
 sub with_proto () {
     if (@_) {
-        $v += $_[0]
+        $v += $_[0];
     }
     else {
-        $v += 8
+        $v += 8;
     }
 }
 
 sub no_proto {
     if (@_) {
-        $v += $_[0]
+        $v += $_[0];
     }
     else {
-        $v += 8
+        $v += 8;
     }
 }
-
 
 # syntax with proto
 
@@ -55,9 +54,8 @@ $e = $@;
 print "not " if !$e;
 print "ok 5  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
 
-
 # ampersand string, no strict
-    
+
 {
     no strict;
     $v = 3;
@@ -66,9 +64,9 @@ print "ok 5  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # T
     print "not " if $e;
     print "ok 6  - not syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' \n";
 }
-    
+
 # ampersand string, no strict
-    
+
 {
     no strict;
     $v = 3;
@@ -85,5 +83,4 @@ eval ' $r = &{"with_proto"}->(4) ';
 $e = $@;
 print "not " if !$e;
 print "ok 8  - syntax error - '" . ( $e ? substr( $e, 0, 30 ) : '' ) . "...' # TODO\n";
-
 

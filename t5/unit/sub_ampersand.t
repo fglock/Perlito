@@ -9,19 +9,19 @@ my $e = '';
 
 sub with_proto () {
     if (@_) {
-        $v += $_[0]
+        $v += $_[0];
     }
     else {
-        $v += 8
+        $v += 8;
     }
 }
 
 sub no_proto {
     if (@_) {
-        $v += $_[0]
+        $v += $_[0];
     }
     else {
-        $v += 8
+        $v += 8;
     }
 }
 
@@ -41,12 +41,11 @@ print "ok 2 - with_proto $r\n";
 # sanity test without proto
 
 $v = 3;
-$r = no_proto + 4;
+$r = no_proto +4;
 print "not " if $v != 7;
 print "ok 3 - no_proto $v\n";
 print "not " if $r != 7;
 print "ok 4 - no_proto $r\n";
-
 
 # ampersand with proto
 
@@ -66,7 +65,6 @@ print "ok 7 - no_proto $v\n";
 print "not " if $r != 15;
 print "ok 8 - no_proto $r\n";
 
-
 # ampersand with proto, parenthesis
 
 $v = 3;
@@ -84,8 +82,6 @@ print "not " if $v != 7;
 print "ok 11 - no_proto $v\n";
 print "not " if $r != 7;
 print "ok 12 - no_proto $r\n";
-
-
 
 # ampersand reference
 
@@ -107,7 +103,6 @@ print "ok 15 - with_proto $v\n";
 print "not " if $r != 11;
 print "ok 16 - with_proto $r\n";
 
-
 # ampersand reference, call with arrow
 
 $v = 3;
@@ -128,9 +123,8 @@ print "ok 19 - with_proto $v\n";
 print "not " if $r != 7;
 print "ok 20 - with_proto $r\n";
 
-
 # ampersand string, no strict
-    
+
 {
     no strict;
     $v = 3;
@@ -138,9 +132,9 @@ print "ok 20 - with_proto $r\n";
     print "not " if $r != 7;
     print "ok 21 - ampersand string - $r\n";
 }
-    
+
 # ampersand string, no strict
-    
+
 {
     no strict;
     $v = 3;
@@ -153,9 +147,9 @@ print "ok 20 - with_proto $r\n";
 
 {
     no strict;
-$r = &{"with_proto_return_sub"}->(4);
-print "not " if $r != 11;
-print "ok 23 - with_proto_return_sub # $r\n";
+    $r = &{"with_proto_return_sub"}->(4);
+    print "not " if $r != 11;
+    print "ok 23 - with_proto_return_sub # $r\n";
 }
 
 # ampersand, return sub
@@ -176,20 +170,19 @@ print "ok 26 - with_proto $r\n";
 
 # sanity test with proto attribute
 
-sub with_proto_attr :prototype() {
+sub with_proto_attr : prototype() {
     if (@_) {
-        $v += $_[0]
+        $v += $_[0];
     }
     else {
-        $v += 8
+        $v += 8;
     }
 }
 
 $v = 3;
-$r = with_proto_attr + 4;
+$r = with_proto_attr +4;
 print "not " if $v != 11;
 print "ok 27 - with_proto_attr $v\n";
 print "not " if $r != 15;
 print "ok 28 - with_proto_attr $r\n";
-
 
