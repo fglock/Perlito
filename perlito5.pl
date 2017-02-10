@@ -30817,12 +30817,13 @@ class PlString extends PlObject {
     private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
         int offset3 = next;
+        final int sig = s.codePointAt(offset3);
+        if (sig == ' . chr(39) . '+' . chr(39) . ' || sig == ' . chr(39) . '-' . chr(39) . ') {
+            offset3++;
+        }
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case ' . chr(39) . '+' . chr(39) . ': case ' . chr(39) . '-' . chr(39) . ':
-                    // TODO
-                    break;
                 case ' . chr(39) . '0' . chr(39) . ': case ' . chr(39) . '1' . chr(39) . ': case ' . chr(39) . '2' . chr(39) . ': case ' . chr(39) . '3' . chr(39) . ': case ' . chr(39) . '4' . chr(39) . ':
                 case ' . chr(39) . '5' . chr(39) . ': case ' . chr(39) . '6' . chr(39) . ': case ' . chr(39) . '7' . chr(39) . ': case ' . chr(39) . '8' . chr(39) . ': case ' . chr(39) . '9' . chr(39) . ':
                     break;

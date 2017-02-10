@@ -5442,12 +5442,13 @@ class PlString extends PlObject {
     private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
         int offset3 = next;
+        final int sig = s.codePointAt(offset3);
+        if (sig == '+' || sig == '-') {
+            offset3++;
+        }
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);
             switch (c3) {
-                case '+': case '-':
-                    // TODO
-                    break;
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     break;
