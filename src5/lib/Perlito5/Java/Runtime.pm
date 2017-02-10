@@ -5441,10 +5441,22 @@ class PlString extends PlObject {
     }
     private PlObject _parse_exp(int length, int signal, int offset, int next) {
         // 123.45E^^^
+        int offset_orig = next;
         int offset3 = next;
+        if (offset3 >= length) {
+            return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
+        }
         final int sig = s.codePointAt(offset3);
         if (sig == '+' || sig == '-') {
             offset3++;
+            if (offset3 >= length) {
+                return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
+            }
+        }
+        final int num = s.codePointAt(offset3);
+        if (num < '0' || num > '9') {
+            // illegal exp
+            return new PlDouble(Double.parseDouble(this.s.substring(0, offset_orig - 1)));
         }
         for ( ; offset3 < length; ) {
             final int c3 = s.codePointAt(offset3);

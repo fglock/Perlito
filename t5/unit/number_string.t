@@ -1,6 +1,6 @@
 use feature 'say';
 
-say  "1..15";
+say  "1..17";
 
 print "not " if "1" != 1;
 say  "ok 1 - Integer";
@@ -40,4 +40,10 @@ say  "ok 14 - start with 0 + noise";
 
 print "not " if "033e4054-1652-4" != "Inf";
 say  "ok 15 - overflow to Inf";
+
+print "not " if "547137e" != 547137;
+say  "ok 16 - malformed exponent";
+print "not " if "547137e-x" != 547137;
+say  "ok 17 - malformed exponent";
+
 
