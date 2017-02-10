@@ -158,6 +158,8 @@ Parser
     The first variant should generate a 'Perlito5::AST::Apply',
     maybe adding a "ignore prototype" flag.
 
+    See: src5/lib/Perlito5/Grammar/Expression.pm:165
+
     This parses correctly:
 
 ~~~sh
@@ -290,6 +292,10 @@ Add tests for fixed bugs
     aliasing of subroutine parameters
 
     prototypes
+
+- postfix-dereferencing with @*
+
+    See: http://www.effectiveperlprogramming.com/2014/09/use-postfix-dereferencing/
 
 - things that work in perlito5, but which are errors in 'perl'
 
