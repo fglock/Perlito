@@ -17,8 +17,8 @@ sub encode_json {
 sub _string_loop {
     my $s = "";
     while (1) {
-        if ($_[0] =~ /\G"/gc) {
-            # end-string
+        if ($_[0] =~ /\G"[ \t\r\n]*/gc) {
+            # end-string + spaces
             return $s;
         }
         elsif ($_[0] =~ /\G\\([trnfbu\\\/])/gc) {
@@ -46,47 +46,43 @@ sub _string_loop {
 } 
 
 sub decode_json {
-    pos($_[0]) = 0;
+    $_[0] =~ /^[ \t\r\n]*/g;  # skip spaces + reset pos()
     &_decode_json;
 }
 sub _decode_json {
-    $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
     if ($_[0] =~ /\G"([^"\\]*)/gc) {
         # string
         return $1 . &_string_loop;
     }
-    elsif ($_[0] =~ /\G(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)/gc) {
-        # number
+    elsif ($_[0] =~ /\G(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)[ \t\r\n]*/gc) {
+        # number + spaces
         return 0+$1;
     }
-    elsif ($_[0] =~ /\G\[/gc) {
+    elsif ($_[0] =~ /\G\[[ \t\r\n]*/gc) {
         # array
         my @r;
-        $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
-        if ($_[0] =~ /\G\]/gc) {
-            # end-array
+        if ($_[0] =~ /\G\][ \t\r\n]*/gc) {
+            # end-array + spaces
             return \@r;
         }
         while (1) {
             push @r, &_decode_json;
-            $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
-            if ($_[0] =~ /\G\]/gc) {
-                # end-array
+            if ($_[0] =~ /\G\][ \t\r\n]*/gc) {
+                # end-array + spaces
                 return \@r;
             }
-            elsif ($_[0] =~ /\G\,/gc) {
-                # comma
+            elsif ($_[0] =~ /\G\,[ \t\r\n]*/gc) {
+                # comma + spaces
             }
             else {
                 die ", or ] expected while parsing array, at character offset " . pos($_[0]);
             }
         }
     }
-    elsif ($_[0] =~ /\G\{/gc) {
+    elsif ($_[0] =~ /\G\{[ \t\r\n]*/gc) {
         # object
-        $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
         my %r;
-        if ($_[0] =~ /\G\}/gc) {
+        if ($_[0] =~ /\G\}[ \t\r\n]*/gc) {
             # end-object
             return \%r;
         }
@@ -98,14 +94,13 @@ sub _decode_json {
             # string
             my $index = $1 . &_string_loop;
 
-            # skip spaces, colon
-            if ($_[0] !~ /\G[ \t\r\n]*:/gc) {
+            # skip colon + spaces
+            if ($_[0] !~ /\G:[ \t\r\n]*/gc) {
                 # not colon
                 die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
             }
             $r{$index} = &_decode_json;
-            $_[0] =~ /\G[ \t\r\n]+/gc;  # skip spaces
-            if ($_[0] =~ /\G\}/gc) {
+            if ($_[0] =~ /\G\}[ \t\r\n]*/gc) {
                 # end-object
                 return \%r;
             }
@@ -117,15 +112,15 @@ sub _decode_json {
             }
         }
     }
-    elsif ($_[0] =~ /\Gfalse/gc) {
+    elsif ($_[0] =~ /\Gfalse[ \t\r\n]*/gc) {
         # false
         return 0;   # TODO
     }
-    elsif ($_[0] =~ /\Gtrue/gc) {
+    elsif ($_[0] =~ /\Gtrue[ \t\r\n]*/gc) {
         # true
         return 1;   # TODO
     }
-    elsif ($_[0] =~ /\Gnull/gc) {
+    elsif ($_[0] =~ /\Gnull[ \t\r\n]*/gc) {
         # null
         return undef;
     }
