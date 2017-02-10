@@ -1074,6 +1074,17 @@ class PerlOp {
         }
         return new PlInt(pos);
     }
+    public static final PlObject set_pos(PlObject vv, PlObject value) {
+        PlLvalue var = (PlLvalue)vv;
+        var.regex_zero_length_flag = false;
+        if (value.is_undef()) {
+            var.pos = null;
+        }
+        else {
+            var.pos = value.to_int();
+        }
+        return value;
+    }
     public static final PlObject set_pos(PlObject vv, PlObject value, PlRegexResult matcher, String str) {
         // TODO - check that var is lvalue
         PlLvalue var = (PlLvalue)vv;
