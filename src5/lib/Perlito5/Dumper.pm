@@ -83,7 +83,7 @@ sub _dumper {
     return join('', "bless({\n", @out, $tab, "}, '$ref')");
 }
 
-my %safe_char = (
+our %safe_char = (
     ' ' => 1,
     '!' => 1,
     '"' => 1,
