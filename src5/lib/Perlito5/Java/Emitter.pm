@@ -2401,7 +2401,8 @@ package Perlito5::AST::Call;
                && $self->{invocant}{sigil} eq '&'
                )
             {
-                $invocant = 'p5pkg[' . Perlito5::Java::escape_string(($self->{invocant}{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::Java::escape_string($self->{invocant}{name} ) . ']';
+                my $namespace = $self->{invocant}{namespace} || $Perlito5::PKG_NAME;
+                $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')';
             }
             elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '::'

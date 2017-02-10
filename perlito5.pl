@@ -23211,7 +23211,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')'
                 }
                 elsif (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
-                    $invocant = 'p5pkg[' . Perlito5::Java::escape_string(($self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME)) . '][' . Perlito5::Java::escape_string($self->{'invocant'}->{'name'}) . ']'
+                    my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
+                    $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')'
                 }
                 elsif (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && $self->{'invocant'}->{'namespace'} eq '__SUB__') {
                     $invocant = 'this'
