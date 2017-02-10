@@ -33,7 +33,18 @@ sub _string_loop {
             elsif ($1 eq 'u') {
                 $_[0] =~ /\G([0-9a-fA-F]{4})/gc
                   or die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
-                die "TODO \\u0000" 
+                my $uni = hex($1);
+                if ($uni >= 0xD800 && $uni < 0xDC00) {
+                    # surrogate pair
+                    $_[0] =~ /\G\\u([0-9a-fA-F]{4})/gc
+                      or die "unexpected end of string while parsing JSON string, at character offset " . pos($_[0]);
+                    my $hi = $uni;
+                    my $lo = hex($1);
+                    $uni = 0x10000 + ($hi - 0xD800) * 0x400 + ($lo - 0xDC00);
+print "pair $hi $lo = $uni \n";
+print "ord ", ord(chr($uni)), "\n";
+                }
+                $s .= chr($uni);
             }
         }
         else {
