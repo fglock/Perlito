@@ -26717,12 +26717,12 @@ class PerlOp {
             return ret;
         }
     }
-    public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global) {
-        return match(s, pat.get(), want, global);
+    public static final PlObject match(PlObject s, PlLvalue pat, int want, boolean global, boolean c_flag) {
+        return match(s, pat.get(), want, global, c_flag);
     }
-    public static final PlObject match(PlObject s, PlObject pat, int want, boolean global) {
+    public static final PlObject match(PlObject s, PlObject pat, int want, boolean global, boolean c_flag) {
         // TODO - cache the compiled pattern
-        return match(s, new PlRegex(pat, 0), want, global);
+        return match(s, new PlRegex(pat, 0), want, global, c_flag);
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlClosure rep, int want, boolean global) {
