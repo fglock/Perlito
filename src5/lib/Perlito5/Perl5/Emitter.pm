@@ -378,9 +378,6 @@ package Perlito5::AST::Apply;
             return [ paren => '<', $self->emit_perl5_args() ];
         }
 
-        $code = "&" . $code
-            if $self->{ignore_proto};
-
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
             return [ bareword => $code ];
         }

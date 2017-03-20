@@ -2802,9 +2802,6 @@ package Perlito5::AST::Apply;
                 if (exists $self->{proto});
         }
 
-        $sig = ""
-            if $self->{ignore_proto};
-
         if ($sig) {
             # warn "sig $effective_name $sig\n";
             my @out = ();
