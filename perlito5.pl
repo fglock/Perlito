@@ -11784,6 +11784,7 @@ use feature 'say';
                 }
                 (exists($self->{'proto'})) && ($sig = $self->{'proto'})
             }
+            $self->{'ignore_proto'} && ($sig = '');
             if ($sig) {
                 my @out = ();
                 my @in = @{$self->{'arguments'} || []};
@@ -18807,6 +18808,7 @@ CORE.printf = function(List__) {
             if ($code eq 'readline') {
                 return ['paren' => '<', $self->emit_perl5_args()]
             }
+            $self->{'ignore_proto'} && ($code = '&' . $code);
             if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
                 return ['bareword' => $code]
             }
@@ -21807,6 +21809,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 (exists($self->{'proto'})) && ($sig = $self->{'proto'})
             }
+            $self->{'ignore_proto'} && ($sig = '');
             if ($sig) {
                 my @out = ();
                 my @in = @{$self->{'arguments'} || []};
