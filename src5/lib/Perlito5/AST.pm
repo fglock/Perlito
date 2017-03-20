@@ -191,6 +191,7 @@ sub code        { $_[0]->{code}        }    # print
 sub special_arg { $_[0]->{special_arg} }    # STDOUT
 sub arguments   { $_[0]->{arguments}   }    # 1,2,3
 sub namespace   { $_[0]->{namespace}   }    # CORE
+# ignore_proto                              # &mysub
 
 sub PUSH {
     my ($var, $value) = @_;

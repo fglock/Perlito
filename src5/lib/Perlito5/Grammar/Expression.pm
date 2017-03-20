@@ -154,6 +154,17 @@ sub reduce_postfix {
             $value->{arguments} = $param_list;
             return $value;
         }
+        if ( ref($value) eq 'Perlito5::AST::Var' && $value->sigil eq "&") {
+            # &c()
+            $v = Perlito5::AST::Apply->new(
+                ignore_proto => 1,
+                code         => $value->{name},
+                namespace    => $value->{namespace},
+                arguments    => $param_list,
+                proto        => undef,
+            );
+            return $v;
+        }
         
         # $c()      syntax error
         # $c[0]()   ok
@@ -181,6 +192,18 @@ sub reduce_postfix {
     }
     if ($v->[1] eq '.( )') {
         my $param_list = expand_list($v->[2]);
+
+        if ( ref($value) eq 'Perlito5::AST::Var' && $value->sigil eq "&") {
+            # &c->() means: &c()->()
+            $value = Perlito5::AST::Apply->new(
+                ignore_proto => 1,
+                code         => $value->{name},
+                namespace    => $value->{namespace},
+                arguments    => [],
+                proto        => undef,
+            );
+        }
+
         $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
         return $v;
     }

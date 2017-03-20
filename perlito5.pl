@@ -1611,6 +1611,10 @@ use feature 'say';
                 $value->{'arguments'} = $param_list;
                 return $value
             }
+            if (ref($value) eq 'Perlito5::AST::Var' && $value->sigil() eq '&') {
+                $v = Perlito5::AST::Apply::->new('ignore_proto' => 1, 'code' => $value->{'name'}, 'namespace' => $value->{'namespace'}, 'arguments' => $param_list, 'proto' => undef);
+                return $v
+            }
             if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} ne '&') {
                 Perlito5::Compiler::error('syntax error')
             }
@@ -1633,6 +1637,9 @@ use feature 'say';
         }
         if ($v->[1] eq '.( )') {
             my $param_list = expand_list($v->[2]);
+            if (ref($value) eq 'Perlito5::AST::Var' && $value->sigil() eq '&') {
+                $value = Perlito5::AST::Apply::->new('ignore_proto' => 1, 'code' => $value->{'name'}, 'namespace' => $value->{'namespace'}, 'arguments' => [], 'proto' => undef)
+            }
             $v = Perlito5::AST::Call::->new('invocant' => $value, 'method' => 'postcircumfix:<( )>', 'arguments' => $param_list);
             return $v
         }
@@ -11784,6 +11791,7 @@ use feature 'say';
                 }
                 (exists($self->{'proto'})) && ($sig = $self->{'proto'})
             }
+            $self->{'ignore_proto'} && ($sig = '');
             if ($sig) {
                 my @out = ();
                 my @in = @{$self->{'arguments'} || []};
@@ -18807,6 +18815,7 @@ CORE.printf = function(List__) {
             if ($code eq 'readline') {
                 return ['paren' => '<', $self->emit_perl5_args()]
             }
+            $self->{'ignore_proto'} && ($code = '&' . $code);
             if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
                 return ['bareword' => $code]
             }
@@ -21807,6 +21816,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 (exists($self->{'proto'})) && ($sig = $self->{'proto'})
             }
+            $self->{'ignore_proto'} && ($sig = '');
             if ($sig) {
                 my @out = ();
                 my @in = @{$self->{'arguments'} || []};
