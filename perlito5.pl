@@ -1611,6 +1611,10 @@ use feature 'say';
                 $value->{'arguments'} = $param_list;
                 return $value
             }
+            if (ref($value) eq 'Perlito5::AST::Var' && $value->sigil() eq '&') {
+                $v = Perlito5::AST::Apply::->new('ignore_proto' => 1, 'code' => $value->{'name'}, 'namespace' => $value->{'namespace'}, 'arguments' => $param_list, 'proto' => undef);
+                return $v
+            }
             if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} ne '&') {
                 Perlito5::Compiler::error('syntax error')
             }
