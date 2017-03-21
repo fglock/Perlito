@@ -43,6 +43,10 @@ foreach $line (@tests) {
     @leave = split(' ',$leave);
     @x = (0,1,2,3,4,5,6,7);
     if (defined $len) {
+
+    print "# list [$list] \n";
+    print "# splice [@x] [$pos] [$len] [@list] \n";
+
 	@got = splice(@x, $pos, $len, @list);
     }
     else {
