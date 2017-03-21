@@ -23219,20 +23219,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.' . $method . '(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ')'
             }
             if ($meth eq 'postcircumfix:<( )>') {
-                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
-                    my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
-                    return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')' . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list($self->{'arguments'}) . ')'
-                }
                 my $invocant;
-                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>') {
-                    my $arg = $self->{'invocant'}->{'arguments'}->[0];
-                    $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')'
-                }
-                elsif (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') {
-                    my $namespace = $self->{'invocant'}->{'namespace'} || $Perlito5::PKG_NAME;
-                    $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{'invocant'}->{'name'}) . ')'
-                }
-                elsif (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && $self->{'invocant'}->{'namespace'} eq '__SUB__') {
+                if (ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '::' && $self->{'invocant'}->{'namespace'} eq '__SUB__') {
                     $invocant = 'this'
                 }
                 else {

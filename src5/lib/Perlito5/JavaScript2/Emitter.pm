@@ -1385,25 +1385,7 @@ package Perlito5::AST::Call;
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
-
-            my $invocant;
-            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Apply' 
-               && $self->{invocant}{code} eq 'prefix:<&>'
-               )
-            {
-                my $arg   = $self->{invocant}{arguments}->[0];
-                $invocant = 'p5code_lookup_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_javascript2($level) . ')';
-            }
-            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
-               && $self->{invocant}{sigil} eq '&'
-               )
-            {
-                $invocant = 'p5pkg[' . Perlito5::JavaScript2::escape_string(($self->{invocant}{namespace} || $Perlito5::PKG_NAME) ) . '][' . Perlito5::JavaScript2::escape_string($self->{invocant}{name} ) . ']';
-            }
-            else {
-                $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
-            }
-
+            my $invocant = $self->{invocant}->emit_javascript2($level, 'scalar');
             return '(' . $invocant . ')(' . Perlito5::JavaScript2::to_list($self->{arguments}) . ', '
                         . Perlito5::JavaScript2::to_context($wantarray)
                     . ')';

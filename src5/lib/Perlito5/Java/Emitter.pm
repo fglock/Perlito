@@ -2376,43 +2376,10 @@ package Perlito5::AST::Call;
                 . ')';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
-            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var'
-               && $self->{invocant}{sigil} eq '&'
-               )
-            {
-                # &x()
-                my $namespace = $self->{invocant}{namespace} || $Perlito5::PKG_NAME;
-                return 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')'
-                    . '.apply('
-                        . Perlito5::Java::to_context($wantarray) . ', '
-                        . Perlito5::Java::to_list($self->{arguments})
-                    . ')';
-            }
             # $x->()
             my $invocant;
-            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Apply' 
-               && $self->{invocant}{code} eq 'prefix:<&>'
-               )
-            {
-                my $arg   = $self->{invocant}{arguments}->[0];
-                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')'
-                # . '.apply('
-                #     . Perlito5::Java::to_context('scalar') . ', '
-                #     . 'List__'
-                # . ')'
-            }
-            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
-               && $self->{invocant}{sigil} eq '&'
-               )
-            {
-                my $namespace = $self->{invocant}{namespace} || $Perlito5::PKG_NAME;
-                $invocant = 'PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $self->{invocant}{name} ) . ')'
-                # . '.apply('
-                #     . Perlito5::Java::to_context('scalar') . ', '
-                #     . 'List__'
-                # . ')'
-            }
-            elsif (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
+
+            if (  ref( $self->{invocant} ) eq 'Perlito5::AST::Var' 
                && $self->{invocant}{sigil} eq '::'
                && $self->{invocant}{namespace} eq '__SUB__'
                )
