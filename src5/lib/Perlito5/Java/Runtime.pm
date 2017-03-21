@@ -4550,6 +4550,7 @@ EOT
         return this.length_of_array();
     }
     public PlObject unshift(PlArray args) {
+        args = new PlArray(args);   // allow "unshift @x, @x" - TODO: optimize
         int size = args.a.size();
         for (int i = size - 1; i >= 0; i--) {
             PlObject s = args.aget(i);
