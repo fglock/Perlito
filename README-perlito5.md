@@ -145,30 +145,6 @@ Libraries
 Parser
 ------
 
-- BUG - TODO
-
-    These expressions, with and without an arrow, return the same AST:
-
-~~~sh
-    $ perl perlito5.pl -Isrc5/lib -Cast -e ' &with_proto(4); &with_proto->(4) '
-
-    $ perl perlito5.pl -Isrc5/lib -Cast -e ' &{"with_proto"}(4); &{"with_proto"}->(4) '
-~~~
-
-    The first variant should generate a 'Perlito5::AST::Apply',
-    maybe adding a "ignore prototype" flag.
-
-    See: src5/lib/Perlito5/Grammar/Expression.pm:165
-
-    This parses correctly:
-
-~~~sh
-    $ perl perlito5.pl -Isrc5/lib -Cast -e ' sub x { sub { 123 } } x; x->(); '
-~~~
-
-    Failing test: t5/unit/sub_ampersand.t 
-
-
 - lexical variables in BEGIN blocks
 
     my $v = 123;
