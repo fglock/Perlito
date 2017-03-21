@@ -1615,7 +1615,11 @@ use feature 'say';
                 $v = Perlito5::AST::Apply::->new('ignore_proto' => 1, 'code' => $value->{'name'}, 'namespace' => $value->{'namespace'}, 'arguments' => $param_list, 'proto' => undef);
                 return $v
             }
-            if (ref($value) eq 'Perlito5::AST::Var' && $value->{'sigil'} ne '&') {
+            if (ref($value) eq 'Perlito5::AST::Apply' && $value->code() eq 'prefix:<&>') {
+                $v = Perlito5::AST::Apply::->new('ignore_proto' => 1, 'code' => $value, 'namespace' => '', 'arguments' => $param_list, 'proto' => undef);
+                return $v
+            }
+            if (ref($value) eq 'Perlito5::AST::Var') {
                 Perlito5::Compiler::error('syntax error')
             }
             $v = Perlito5::AST::Call::->new('invocant' => $value, 'method' => 'postcircumfix:<( )>', 'arguments' => $param_list);
@@ -11727,7 +11731,12 @@ use feature 'say';
                 my @args = ();
                 push(@args, $_->emit_javascript2())
                     for @{$self->{'arguments'}};
-                return '(' . $self->{'code'}->emit_javascript2($level) . ')(' . join(',', @args) . ')'
+                if (ref($code) eq 'Perlito5::AST::Apply' && $code->code() eq 'prefix:<&>') {
+                    my $arg = $self->{'code'}->{'arguments'}->[0];
+                    $code = 'p5code_lookup_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_javascript2($level) . ')';
+                    return $code . '([' . join(',', @args) . '])'
+                }
+                return '(' . $self->{'code'}->emit_javascript2($level) . ')([' . join(',', @args) . '])'
             }
             exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray);
             if (exists($Perlito5::JavaScript2::op_infix_js_str{$code})) {
@@ -18680,11 +18689,6 @@ CORE.printf = function(List__) {
             }
             my $meth = $self->{'method'};
             if ($meth eq 'postcircumfix:<( )>') {
-                if ((ref($self->{'invocant'}) eq 'Perlito5::AST::Var' && $self->{'invocant'}->{'sigil'} eq '&') || (ref($self->{'invocant'}) eq 'Perlito5::AST::Apply' && $self->{'invocant'}->{'code'} eq 'prefix:<&>')) {
-                    return ['apply' => '(', $invocant, map {
-                        $_->emit_perl5()
-                    } @{$self->{'arguments'}}]
-                }
                 $meth = ''
             }
             if (ref($meth) eq 'Perlito5::AST::Var') {
@@ -18745,6 +18749,10 @@ CORE.printf = function(List__) {
         sub Perlito5::AST::Apply::emit_perl5 {
             my $self = $_[0];
             if (ref($self->{'code'})) {
+                my $code = $self->{'code'};
+                if (ref($code) eq 'Perlito5::AST::Apply' && $code->code() eq 'prefix:<&>') {
+                    return ['apply' => '(', $code->emit_perl5(), $self->emit_perl5_args()]
+                }
                 return ['op' => 'infix:<->>', $self->{'code'}->emit_perl5(), $self->emit_perl5_args()]
             }
             if ($self->{'code'} eq 'infix:<=>>') {
@@ -21759,10 +21767,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $code = $self->{'code'};
             if (ref($code) ne '') {
-                my @args = ();
-                push(@args, $_->emit_java())
-                    for @{$self->{'arguments'}};
-                return $self->{'code'}->emit_java($level) . '.apply(' . join(',', @args) . ')'
+                my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
+                if (ref($code) eq 'Perlito5::AST::Apply' && $code->code() eq 'prefix:<&>') {
+                    my $arg = $code->{'arguments'}->[0];
+                    $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')';
+                    return $invocant . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
+                }
+                return $self->{'code'}->emit_java($level) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
             }
             exists($emit_js{$code}) && return $emit_js{$code}->($self, $level, $wantarray, $autovivification_type);
             if (exists($Perlito5::Java::op_prefix_js_str{$code})) {

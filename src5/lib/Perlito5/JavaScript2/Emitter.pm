@@ -2717,7 +2717,17 @@ package Perlito5::AST::Apply;
             my @args = ();
             push @args, $_->emit_javascript2
                 for @{$self->{arguments}};
-            return '(' . $self->{code}->emit_javascript2( $level ) . ')(' . join(',', @args) . ')';
+
+            if ( ref($code) eq 'Perlito5::AST::Apply' && $code->code eq "prefix:<&>") {
+                # &$c()
+
+                my $arg   = $self->{code}{arguments}->[0];
+                $code = 'p5code_lookup_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_javascript2($level) . ')';
+
+                return $code . '([' . join(',', @args) . '])';
+            }
+
+            return '(' . $self->{code}->emit_javascript2( $level ) . ')([' . join(',', @args) . '])';
         }
 
         return $emit_js{$code}->($self, $level, $wantarray)

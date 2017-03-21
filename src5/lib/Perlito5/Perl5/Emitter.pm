@@ -205,17 +205,6 @@ package Perlito5::AST::Call;
         }
         my $meth = $self->{method};
         if  ($meth eq 'postcircumfix:<( )>')  {
-            if (  (  ref($self->{invocant}) eq 'Perlito5::AST::Var'
-                  && $self->{invocant}{sigil} eq '&'
-                  )
-               || (  ref($self->{invocant}) eq 'Perlito5::AST::Apply'
-                  && $self->{invocant}{code} eq 'prefix:<&>'
-                  )
-               ) 
-            {
-                #  &subr(args)
-                return [ apply => '(', $invocant, map { $_->emit_perl5() } @{$self->{arguments}} ];
-            }
             $meth = '';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
@@ -267,6 +256,13 @@ package Perlito5::AST::Apply;
     sub emit_perl5 {
         my $self = $_[0];   
         if (ref $self->{code}) {
+
+            my $code = $self->{code};
+            if ( ref($code) eq 'Perlito5::AST::Apply' && $code->code eq "prefix:<&>") {
+                # &$c()
+                return [ apply => '(', $code->emit_perl5(), $self->emit_perl5_args() ];
+            }
+
             return [ op => 'infix:<->>', $self->{code}->emit_perl5(), $self->emit_perl5_args() ];
         }
         if ($self->{code} eq 'infix:<=>>')  { 

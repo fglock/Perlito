@@ -165,12 +165,21 @@ sub reduce_postfix {
             );
             return $v;
         }
-        
+        if ( ref($value) eq 'Perlito5::AST::Apply' && $value->code eq "prefix:<&>") {
+            # &$c()
+            $v = Perlito5::AST::Apply->new(
+                ignore_proto => 1,
+                code         => $value,
+                namespace    => '',
+                arguments    => $param_list,
+                proto        => undef,
+            );
+            return $v;
+        }
+       
         # $c()      syntax error
         # $c[0]()   ok
-        # &$c()     ok
-        # &c()      ok
-        if ( ref($value) eq 'Perlito5::AST::Var' && $value->{sigil} ne '&' ) {
+        if ( ref($value) eq 'Perlito5::AST::Var' ) {
             Perlito5::Compiler::error "syntax error";
         }
         $v = Perlito5::AST::Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
