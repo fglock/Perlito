@@ -4520,7 +4520,7 @@ EOT
         return this.length_of_array();
     }
     public PlObject push(PlArray args) {
-        int size = this.a.size();
+        int size = args.a.size();
         for (int i = 0; i < size; i++) {
             PlObject s = args.aget(i);
             if (s.is_hash()) {
@@ -4550,7 +4550,7 @@ EOT
         return this.length_of_array();
     }
     public PlObject unshift(PlArray args) {
-        int size = this.a.size();
+        int size = args.a.size();
         for (int i = size - 1; i >= 0; i--) {
             PlObject s = args.aget(i);
             if (s.is_hash()) {
