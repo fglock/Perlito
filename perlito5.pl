@@ -29503,14 +29503,19 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 s.set(src);
                 src = new PlArray();
             }
-            else {
+            else if (s.is_lvalue()) {
                 PlObject o = src.shift();
                 s.set(o);
             }
-            // TODO - undef
+            else if (s.is_undef()) {
+                src.shift();   // skip
+            }
+            else {
+                PlCORE.die("Can' . chr(39) . 't modify constant item in list assignment");
+            }
         }
         if (want == PlCx.LIST) {
-            return src;     // TODO
+            return PlArray.construct_list_of_aliases(args);
         }
         return new PlInt(size);
     }
