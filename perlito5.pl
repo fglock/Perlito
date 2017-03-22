@@ -29489,6 +29489,31 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         result.a = aa;
         return result;
     }
+    public static PlObject list_set(int want, PlObject src, PlObject... args) {
+        src = new PlArray(src);
+        int size = src.to_int();
+        for (PlObject s : args) {
+            if (s.is_hash()) {
+                // ( %x );
+                s.set(src);
+                src = new PlArray();
+            }
+            else if (s.is_array()) {
+                // ( @x );
+                s.set(src);
+                src = new PlArray();
+            }
+            else {
+                PlObject o = src.shift();
+                s.set(o);
+            }
+            // TODO - undef
+        }
+        if (want == PlCx.LIST) {
+            return src;     // TODO
+        }
+        return new PlInt(size);
+    }
     public PlObject list_set(int want, PlArray s) {
         // @x[3,4] = ( @x, @y );
         for (int i = 0; i < this.to_long(); i++) {
@@ -29930,7 +29955,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return this.length_of_array();
     }
     public PlObject unshift(PlArray args) {
-        args = new PlArray(args);   // unshift @x, @x
+        args = new PlArray(args);   // allow "unshift @x, @x" - TODO: optimize
         int size = args.a.size();
         for (int i = size - 1; i >= 0; i--) {
             PlObject s = args.aget(i);
