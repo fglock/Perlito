@@ -21269,7 +21269,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $parameters = $self->{'arguments'}->[0];
             my $arguments = $self->{'arguments'}->[1];
             if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'state' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
-                return Perlito5::Java::to_param_list($parameters->{'arguments'}, $level + 1) . '.list_set(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_list([$arguments], $level) . ')'
+                return 'PlArray.list_set(' . join(', ', Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, 'list', 'lvalue'), @{$parameters->{'arguments'}})) . ')'
             }
             return $parameters->emit_java_set($arguments, $level + 1, $wantarray)
         }, 'break' => sub {
