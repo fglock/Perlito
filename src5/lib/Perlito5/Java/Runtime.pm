@@ -2158,6 +2158,9 @@ EOT
     public boolean is_hash() {
         return false;
     }
+    public boolean is_slice() {
+        return false;
+    }
     public boolean is_array() {
         return false;
     }
@@ -3996,6 +3999,11 @@ class PlROvalue extends PlLazyLvalue {
         return this;
     }
 }
+class PlSlice extends PlArray {
+    public boolean is_slice() {
+        return true;
+    }
+}
 class PlArray extends PlObject implements Iterable<PlObject> {
     public ArrayList<PlObject> a;
     public int each_iterator;
@@ -4104,8 +4112,15 @@ class PlArray extends PlObject implements Iterable<PlObject> {
                 s.set(src);
                 src = new PlArray();
             }
+            else if (s.is_slice()) {
+                // ( @x[3,4] ); - "slice" is not "slurpy"
+                int s_size = s.to_int();
+                for (int i = 0; i < s_size; i++) {
+                    s.aset(i, src.shift());
+                }
+            }
             else if (s.is_array()) {
-                // ( @x );
+                // ( @x ); - "array" is "slurpy"
                 s.set(src);
                 src = new PlArray();
             }
