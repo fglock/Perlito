@@ -1365,6 +1365,7 @@ EOT
             TimeUnit.MILLISECONDS.sleep(s);
         } catch (InterruptedException e) {
             //Handle exception
+            PlCORE.die("interrupted");
         }
         return new PlDouble(s / 1000.0);
     }
