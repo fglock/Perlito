@@ -1,7 +1,7 @@
 use feature "say";
 use strict;
 
-say "1..4";
+say "1..7";
 
 # See also: http://www.perlmonks.org/?node_id=790129
 #   "Mini-Tutorial: Scalar vs List Assignment Operator"
@@ -26,4 +26,16 @@ say "1..4";
     print "not " if scalar(@world) != 7;
     say "ok 4 # ", scalar(@world);
 }
+
+{
+    my @there = ( 31 .. 35 );
+    my @list = ( ( my $hello, @there[0,2], my @world ) = ( 7 .. 15 ) );
+    print "not " if scalar(@world) != 6;
+    say "ok 5 # ", scalar(@world);
+    print "not " if scalar(@there) != 5;
+    say "ok 6 # ", scalar(@there);
+    print "not " if "@there" ne "8 32 9 34 35";
+    say "ok 7 # ", "@there";
+}
+
 
