@@ -20815,6 +20815,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Apply::emit_java_set {
             my($self, $arguments, $level, $wantarray) = @_;
             my $code = $self->{'code'};
+            if ($code eq 'my' || $code eq 'state' || $code eq 'local' || $code eq 'circumfix:<( )>') {
+                return 'PlArray.list_set(' . join(', ', Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, 'list', 'lvalue'), @{$self->{'arguments'}})) . ')'
+            }
             if ($code eq 'pos') {
                 my @lvalue = @{$self->{'arguments'}};
                 if (!@lvalue) {
@@ -21268,9 +21271,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my($self, $level, $wantarray) = @_;
             my $parameters = $self->{'arguments'}->[0];
             my $arguments = $self->{'arguments'}->[1];
-            if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'state' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
-                return 'PlArray.list_set(' . join(', ', Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, 'list', 'lvalue'), @{$parameters->{'arguments'}})) . ')'
-            }
             return $parameters->emit_java_set($arguments, $level + 1, $wantarray)
         }, 'break' => sub {
             my($self, $level, $wantarray) = @_;
