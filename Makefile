@@ -187,6 +187,7 @@ clean ::
 	-rm *.py
 	-rm *.pyc
 	-rm misc/Java/*.class
+	-rm *.[0-9][0-9]
 
 # :set tabstop=4
 # :set noexpandtab	  " Use tabs, not spaces
