@@ -29729,11 +29729,12 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
 
     public PlObject aget_list_of_aliases(int want, PlArray a) {
+        // @a[LIST]
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (PlObject i : a) {
             aa.add( this.aget_lvalue(i) );
         }
-        PlArray result = new PlArray();
+        PlSlice result = new PlSlice();
         result.a = aa;
         if (want == PlCx.LIST) {
             return result;
@@ -29741,12 +29742,13 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         return result.pop();
     }
     public PlObject aget_hash_list_of_aliases(int want, PlArray a) {
+        // %a[LIST]
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (PlObject i : a) {
             aa.add( i );
             aa.add( this.aget_lvalue(i) );
         }
-        PlArray result = new PlArray();
+        PlSlice result = new PlSlice();
         result.a = aa;
         if (want == PlCx.LIST) {
             return result;
@@ -30249,7 +30251,7 @@ class PlHash extends PlObject {
                 aa.add(a);
             }
         }
-        PlArray result = new PlArray();
+        PlSlice result = new PlSlice();
         result.a = aa;
         return result;
     }
@@ -30269,6 +30271,7 @@ class PlHash extends PlObject {
         return o;
     }
     public PlObject hget_list_of_aliases(int want, PlArray a) {
+        // @a{LIST}
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
@@ -30287,7 +30290,7 @@ class PlHash extends PlObject {
                 aa.add(v);
             }
         }
-        PlArray result = new PlArray();
+        PlSlice result = new PlSlice();
         result.a = aa;
         if (want == PlCx.LIST) {
             return result;
@@ -30295,6 +30298,7 @@ class PlHash extends PlObject {
         return result.pop();
     }
     public PlObject hget_hash_list_of_aliases(int want, PlArray a) {
+        // %a{LIST}
         ArrayList<PlObject> aa = new ArrayList<PlObject>();
         for (int i = 0; i < a.to_int(); i++) {
             String key = a.aget(i).toString();
