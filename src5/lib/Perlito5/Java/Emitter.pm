@@ -1516,9 +1516,6 @@ package Perlito5::AST::Int;
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
     }
-    sub emit_java_set_list {
-        die "Can't modify constant item in list assignment";
-    }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
 }
@@ -1532,9 +1529,6 @@ package Perlito5::AST::Num;
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
     }
-    sub emit_java_set_list {
-        die "Can't modify constant item in list assignment";
-    }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
 }
@@ -1547,9 +1541,6 @@ package Perlito5::AST::Buf;
     }
     sub emit_java_set {
         die "Can't modify constant item in scalar assignment";
-    }
-    sub emit_java_set_list {
-        die "Can't modify constant item in list assignment";
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
@@ -1733,46 +1724,6 @@ package Perlito5::AST::Index;
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
                 . ')';
     }
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        my $wantarray = 'list';
-        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
-              && $self->{obj}->{code} eq 'prefix:<@>'
-              )
-           || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
-              )
-           )
-        {
-            # @a[10, 20]
-            # @$a[0, 2] ==> @{$a}[0,2]
-            return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = new PlArray();',
-                    'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
-                    'var out=' . Perlito5::Java::emit_java_autovivify( $self->{obj}, $level, 'array' ) . ";",
-                    'var tmp' . ";",
-                    'for (var i=0, l=v.length; i<l; ++i) {',
-                          [ 'tmp = ' . $list . '.shift();',
-                            'out.aset(v[i], tmp);',
-                            'a.push(tmp)',
-                          ],
-                    '}',
-                    'return a',
-            )
-        }
-        my $arg = $self->{index_exp};
-        my $s;
-        if ($arg->isa('Perlito5::AST::Int')) {
-            $s = $arg->{int};
-        }
-        else {
-            $s = $arg->emit_java($level, 'scalar');
-        }
-        return $self->emit_java_container($level) . '.aset(' 
-                    . $s . ', '
-                    . $list . '.shift()'
-                . ')';
-    }
     sub emit_java_container {
         my $self = shift;
         my $level = shift;
@@ -1933,43 +1884,6 @@ package Perlito5::AST::Lookup;
         return $self->emit_java_container($level) . '.hset('
                     . Perlito5::Java::to_native_str($index, $level) . ', '
                     . Perlito5::Java::to_scalar([$arguments], $level+1)
-            . ')';
-    }
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        my $wantarray = 'list';
-        if (  (  $self->{obj}->isa('Perlito5::AST::Apply')
-              && $self->{obj}->{code} eq 'prefix:<@>'
-              )
-           || (  $self->{obj}->isa('Perlito5::AST::Var')
-              && $self->{obj}->sigil eq '@'
-              )
-           )
-        {
-            # @a{ 'x', 'y' }
-            # @$a{ 'x', 'y' }  ==> @{$a}{ 'x', 'y' }
-            my $v;
-            $v = $self->{obj}
-                if $self->{obj}->isa('Perlito5::AST::Var');
-            $v = Perlito5::AST::Apply->new( code => 'prefix:<%>', namespace => $self->{obj}->namespace, arguments => $self->{obj}->arguments )
-                if $self->{obj}->isa('Perlito5::AST::Apply');
-            return Perlito5::Java::emit_wrap_java($level, 
-                    'var a = new PlArray();',
-                    'var v = ' . Perlito5::Java::to_list([$self->{index_exp}], $level) . ';',
-                    'var out=' . $v->emit_java($level) . ";",
-                    'var tmp' . ";",
-                    'for (var i=0, l=v.length; i<l; ++i)' . '{',
-                          [ 'tmp = ' . $list . '.shift();',
-                            'out.hset(v[i], tmp);',
-                            'a.push(tmp)',
-                          ],
-                    '}',
-                    'return a',
-            )
-        }
-        return $self->emit_java_container($level) . '.hset('
-                    . Perlito5::Java::autoquote($self->{index_exp}, $level) . ', '
-                    . $list . '.shift()'
             . ')';
     }
     sub emit_java_container {
@@ -2238,27 +2152,6 @@ package Perlito5::AST::Var;
         die "don't know how to assign to variable ", $sigil, $self->name;
     }
 
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        my $sigil = $self->{_real_sigil} || $self->{sigil};
-        if ( $sigil eq '$' ) {
-            return $self->emit_java($level) . '.set(' . $list  . '.shift())'
-        }
-        if ( $sigil eq '@' ) {
-            return join( ";\n" . Perlito5::Java::tab($level),
-                $self->emit_java($level) . ' = ' . $list,
-                $list . ' = new PlArray()'
-            );
-        }
-        if ( $sigil eq '%' ) {
-            return join( ";\n" . Perlito5::Java::tab($level),
-                $self->emit_java($level) . ' = new PlHash(' . $list  . ')',
-                $list . ' = new PlArray()'
-            );
-        }
-        die "don't know how to assign to variable ", $sigil, $self->name;
-    }
-
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }
 }
@@ -2336,10 +2229,6 @@ package Perlito5::AST::Decl;
             }
         }
         $var->emit_java_set($arguments, $level, $wantarray, $localize);
-    }
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        $self->var->emit_java_set_list($level, $list);
     }
     sub emit_java_get_decl {
         my $self = shift;
@@ -2501,24 +2390,6 @@ package Perlito5::AST::Call;
                     . '.hset(' 
                         . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
                         . Perlito5::Java::to_scalar([$arguments], $level+1)
-                    . ')';
-        }
-        die "don't know how to assign to method ", $self->{method};
-    }
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        if ( $self->{method} eq 'postcircumfix:<[ ]>' ) {
-            return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'array' )
-                    . '.aset(' 
-                        . Perlito5::Java::to_num($self->{arguments}, $level+1) . ', ' 
-                        . $list  . '.shift()'
-                    . ')';
-        }
-        if ( $self->{method} eq 'postcircumfix:<{ }>' ) {
-            return Perlito5::Java::emit_java_autovivify( $self->{invocant}, $level, 'hash' )
-                    . '.hset(' 
-                        . Perlito5::Java::autoquote($self->{arguments}, $level+1, 'list') . ', '
-                        . $list  . '.shift()'
                     . ')';
         }
         die "don't know how to assign to method ", $self->{method};

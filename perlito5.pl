@@ -21870,16 +21870,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
             $code . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
         }
-        sub Perlito5::AST::Apply::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            if ($self->code() eq 'undef') {
-                return $list . '.shift()'
-            }
-            if ($self->code() eq 'prefix:<$>') {
-                return Perlito5::Java::emit_java_autovivify($self->{'arguments'}->[0], $level + 1, 'scalar') . '.scalar_deref_set(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $list->emit_java($level + 1, 'scalar') . ')'
-            }
-            die('not implemented: assign to ', $self->code())
-        }
         sub Perlito5::AST::Apply::emit_java_get_decl {
             my $self = shift;
             my $code = $self->{'code'};
@@ -22644,9 +22634,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Int::emit_java_set {
             die('Can' . chr(39) . 't modify constant item in scalar assignment')
         }
-        sub Perlito5::AST::Int::emit_java_set_list {
-            die('Can' . chr(39) . 't modify constant item in list assignment')
-        }
         sub Perlito5::AST::Int::emit_java_get_decl {
             ()
         }
@@ -22663,9 +22650,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Num::emit_java_set {
             die('Can' . chr(39) . 't modify constant item in scalar assignment')
         }
-        sub Perlito5::AST::Num::emit_java_set_list {
-            die('Can' . chr(39) . 't modify constant item in list assignment')
-        }
         sub Perlito5::AST::Num::emit_java_get_decl {
             ()
         }
@@ -22681,9 +22665,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }
         sub Perlito5::AST::Buf::emit_java_set {
             die('Can' . chr(39) . 't modify constant item in scalar assignment')
-        }
-        sub Perlito5::AST::Buf::emit_java_set_list {
-            die('Can' . chr(39) . 't modify constant item in list assignment')
         }
         sub Perlito5::AST::Buf::emit_java_get_decl {
             ()
@@ -22780,22 +22761,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             return $self->emit_java_container($level) . '.aset(' . $s . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
         }
-        sub Perlito5::AST::Index::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            my $wantarray = 'list';
-            if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
-                return Perlito5::Java::emit_wrap_java($level, 'var a = new PlArray();', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var out=' . Perlito5::Java::emit_java_autovivify($self->{'obj'}, $level, 'array') . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i) {', ['tmp = ' . $list . '.shift();', 'out.aset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
-            }
-            my $arg = $self->{'index_exp'};
-            my $s;
-            if ($arg->isa('Perlito5::AST::Int')) {
-                $s = $arg->{'int'}
-            }
-            else {
-                $s = $arg->emit_java($level, 'scalar')
-            }
-            return $self->emit_java_container($level) . '.aset(' . $s . ', ' . $list . '.shift()' . ')'
-        }
         sub Perlito5::AST::Index::emit_java_container {
             my $self = shift;
             my $level = shift;
@@ -22870,17 +22835,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             my $index = Perlito5::AST::Lookup::->autoquote($self->{'index_exp'});
             return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::to_native_str($index, $level) . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
-        }
-        sub Perlito5::AST::Lookup::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            my $wantarray = 'list';
-            if (($self->{'obj'}->isa('Perlito5::AST::Apply') && $self->{'obj'}->{'code'} eq 'prefix:<@>') || ($self->{'obj'}->isa('Perlito5::AST::Var') && $self->{'obj'}->sigil() eq '@')) {
-                my $v;
-                $self->{'obj'}->isa('Perlito5::AST::Var') && ($v = $self->{'obj'});
-                $self->{'obj'}->isa('Perlito5::AST::Apply') && ($v = Perlito5::AST::Apply::->new('code' => 'prefix:<%>', 'namespace' => $self->{'obj'}->namespace(), 'arguments' => $self->{'obj'}->arguments()));
-                return Perlito5::Java::emit_wrap_java($level, 'var a = new PlArray();', 'var v = ' . Perlito5::Java::to_list([$self->{'index_exp'}], $level) . ';', 'var out=' . $v->emit_java($level) . ';', 'var tmp' . ';', 'for (var i=0, l=v.length; i<l; ++i)' . '{', ['tmp = ' . $list . '.shift();', 'out.hset(v[i], tmp);', 'a.push(tmp)'], '}', 'return a')
-            }
-            return $self->emit_java_container($level) . '.hset(' . Perlito5::Java::autoquote($self->{'index_exp'}, $level) . ', ' . $list . '.shift()' . ')'
         }
         sub Perlito5::AST::Lookup::emit_java_container {
             my $self = shift;
@@ -23080,22 +23034,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
         }
-        sub Perlito5::AST::Var::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
-            if ($sigil eq '$') {
-                return $self->emit_java($level) . '.set(' . $list . '.shift())'
-            }
-            if ($sigil eq '@') {
-                return join(';
-' . Perlito5::Java::tab($level), $self->emit_java($level) . ' = ' . $list, $list . ' = new PlArray()')
-            }
-            if ($sigil eq '%') {
-                return join(';
-' . Perlito5::Java::tab($level), $self->emit_java($level) . ' = new PlHash(' . $list . ')', $list . ' = new PlArray()')
-            }
-            die('don' . chr(39) . 't know how to assign to variable ', $sigil, $self->name())
-        }
         sub Perlito5::AST::Var::emit_java_get_decl {
             ()
         }
@@ -23174,10 +23112,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
             }
             $var->emit_java_set($arguments, $level, $wantarray, $localize)
-        }
-        sub Perlito5::AST::Decl::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            $self->var()->emit_java_set_list($level, $list)
         }
         sub Perlito5::AST::Decl::emit_java_get_decl {
             my $self = shift;
@@ -23278,16 +23212,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             if ($self->{'method'} eq 'postcircumfix:<{ }>') {
                 return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.hset(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ', ' . Perlito5::Java::to_scalar([$arguments], $level + 1) . ')'
-            }
-            die('don' . chr(39) . 't know how to assign to method ', $self->{'method'})
-        }
-        sub Perlito5::AST::Call::emit_java_set_list {
-            my($self, $level, $list) = @_;
-            if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
-                return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'array') . '.aset(' . Perlito5::Java::to_num($self->{'arguments'}, $level + 1) . ', ' . $list . '.shift()' . ')'
-            }
-            if ($self->{'method'} eq 'postcircumfix:<{ }>') {
-                return Perlito5::Java::emit_java_autovivify($self->{'invocant'}, $level, 'hash') . '.hset(' . Perlito5::Java::autoquote($self->{'arguments'}, $level + 1, 'list') . ', ' . $list . '.shift()' . ')'
             }
             die('don' . chr(39) . 't know how to assign to method ', $self->{'method'})
         }

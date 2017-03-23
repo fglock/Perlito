@@ -1821,20 +1821,6 @@ package Perlito5::AST::Apply;
 
     }
 
-    sub emit_java_set_list {
-        my ($self, $level, $list) = @_;
-        if ( $self->code eq 'undef' ) {
-            return $list . '.shift()' 
-        }
-        if ( $self->code eq 'prefix:<$>' ) {
-            return Perlito5::Java::emit_java_autovivify( $self->{arguments}->[0], $level+1, 'scalar' ) . '.scalar_deref_set('
-                . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', '
-                . $list->emit_java( $level + 1, 'scalar' )
-                . ')';
-        }
-        die "not implemented: assign to ", $self->code;
-    }
-
     sub emit_java_get_decl {
         my $self      = shift;
         my $code = $self->{code};
