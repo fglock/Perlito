@@ -1,3 +1,5 @@
+use strict;
+
 print "1..6\n";
 
 sub subr {
