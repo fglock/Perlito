@@ -1,12 +1,12 @@
-print "1..3\n";
+print "1..6\n";
 
 sub subr {
-    my $count = $_[0];
+    my ($count, $series) = @_;
     my $x;
 
     print "# at count [$count] value is [$x]\n";
 
-    if ( $count == 1 ) {
+    if ( $count == 1 && $series == 0 ) {
         if ( !$x || $x ne "compile-time" ) {
             print "not ";
         }
@@ -16,11 +16,11 @@ sub subr {
             print "not ";
         }
     }
-    print "ok $count\n";
+    print "ok ", ($count + $series), "\n";
 
     if ( $count < 3 ) {
 
-        subr( $count + 1 );
+        subr( $count + 1, $series );
 
     }
 
@@ -29,5 +29,6 @@ sub subr {
     BEGIN { $x = "compile-time"; }
 }
 
-subr(1);
+subr(1, 0);
+subr(1, 3);
 
