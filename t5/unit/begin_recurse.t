@@ -1,0 +1,33 @@
+print "1..3\n";
+
+sub subr {
+    my $count = $_[0];
+    my $x;
+
+    print "# at count [$count] value is [$x]\n";
+
+    if ( $count == 1 ) {
+        if ( !$x || $x ne "compile-time" ) {
+            print "not ";
+        }
+    }
+    else {
+        if ($x) {
+            print "not ";
+        }
+    }
+    print "ok $count\n";
+
+    if ( $count < 3 ) {
+
+        subr( $count + 1 );
+
+    }
+
+    print "# done [$count]\n";
+
+    BEGIN { $x = "compile-time"; }
+}
+
+subr(1);
+
