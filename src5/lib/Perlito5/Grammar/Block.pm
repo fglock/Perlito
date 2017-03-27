@@ -3,6 +3,7 @@ package Perlito5::Grammar::Block;
 
 use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Scope;
+use Perlito5::AST::BeginScratchpad;
 use strict;
 
 our %Named_block = (
@@ -111,10 +112,8 @@ sub eval_begin_block {
     # )
     %Perlito5::BEGIN_SCRATCHPAD = ( %Perlito5::BEGIN_SCRATCHPAD, %capture );
 
-
-
-
-
+    # use lexicals from BEGIN scratchpad
+    $block = $block->emit_begin_scratchpad();
 
     # emit_compile_time() adds instrumentation to inspect captured variables
     $block = $block->emit_compile_time();

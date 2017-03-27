@@ -429,6 +429,11 @@ if ($backend) {
                     }
                 }
 
+                for (0 .. $#Perlito5::COMP_UNIT) {
+                    # use lexicals from BEGIN scratchpad
+                    $Perlito5::COMP_UNIT[$_] = $Perlito5::COMP_UNIT[$_]->emit_begin_scratchpad();
+                }
+
                 {
                     local ${^GLOBAL_PHASE};
                     Perlito5::set_global_phase("CHECK");

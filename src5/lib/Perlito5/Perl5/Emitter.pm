@@ -163,11 +163,6 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = "\\'" if $str_name eq "'";     # escape $'
 
-        if (!$self->{namespace} && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
-            $self->{namespace} = "Perlito5::BEGIN";
-            $self->{name}      = "_" . $self->{_id} . "_" . $self->{name};
-        }
-
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
@@ -516,10 +511,6 @@ package Perlito5::AST::Decl;
 {
     sub emit_perl5 {
         my $self = $_[0];
-
-        if (!$self->{var}{namespace}  && $Perlito5::BEGIN_SCRATCHPAD{ $self->{var}{_id} || "" }) {
-            return $self->{var}->emit_perl5()
-        }
 
         return [ op => 'prefix:<' . $self->{decl} . '>', 
                  ($self->{type} ? $self->{type} : ()),
