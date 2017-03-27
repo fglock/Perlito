@@ -5137,7 +5137,504 @@ use feature 'say';
 }
 {
     package main;
+    undef();
+    package Perlito5::AST::CompUnit;
+    sub Perlito5::AST::CompUnit::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::CompUnit::name {
+        $_[0]->{'name'}
+    }
+    sub Perlito5::AST::CompUnit::body {
+        $_[0]->{'body'}
+    }
+    package Perlito5::AST::Int;
+    sub Perlito5::AST::Int::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Int::int {
+        $_[0]->{'int'}
+    }
+    package Perlito5::AST::Num;
+    sub Perlito5::AST::Num::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Num::num {
+        $_[0]->{'num'}
+    }
+    package Perlito5::AST::Buf;
+    sub Perlito5::AST::Buf::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Buf::buf {
+        $_[0]->{'buf'}
+    }
+    package Perlito5::AST::Block;
+    sub Perlito5::AST::Block::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Block::sig {
+        $_[0]->{'sig'}
+    }
+    sub Perlito5::AST::Block::stmts {
+        $_[0]->{'stmts'}
+    }
+    package Perlito5::AST::Index;
+    sub Perlito5::AST::Index::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Index::obj {
+        $_[0]->{'obj'}
+    }
+    sub Perlito5::AST::Index::index_exp {
+        $_[0]->{'index_exp'}
+    }
+    sub Perlito5::AST::Index::INDEX {
+        my($term, $index) = @_;
+        if (ref($term) eq 'Perlito5::AST::Var' && $term->{'sigil'} eq '@') {
+            return Perlito5::AST::Index::->new('obj' => Perlito5::AST::Var::->new(%{$term}, '_real_sigil' => $term->{'sigil'}, 'sigil' => '$'), 'index_exp' => $index)
+        }
+        return Perlito5::AST::Call::->new('method' => 'postcircumfix:<[ ]>', 'invocant' => $term, 'arguments' => $index)
+    }
+    package Perlito5::AST::Lookup;
+    sub Perlito5::AST::Lookup::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Lookup::obj {
+        $_[0]->{'obj'}
+    }
+    sub Perlito5::AST::Lookup::index_exp {
+        $_[0]->{'index_exp'}
+    }
+    sub Perlito5::AST::Lookup::autoquote {
+        my $self = shift;
+        my $index = shift;
+        if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
+            my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
+            if (!exists($Perlito5::PROTO->{$full_name})) {
+                return Perlito5::AST::Buf::->new('buf' => $full_name)
+            }
+        }
+        elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'prefix:<->' || $index->code() eq 'prefix:<+>')) {
+            my $arg = $index->arguments()->[0];
+            $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
+        }
+        elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
+            my $obj = $self->obj();
+            if ($obj->sigil() eq '@') {
+                return $index
+            }
+            my $args = $index->arguments();
+            return Perlito5::AST::Apply::->new('code' => 'join', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('name' => ';', 'namespace' => '', 'sigil' => '$'), map {
+                defined($_) ? $_ : Perlito5::AST::Buf::->new('buf' => '')
+            } @{$args}])
+        }
+        $index
+    }
+    sub Perlito5::AST::Lookup::LOOKUP {
+        my($term, $index) = @_;
+        if (ref($term) eq 'Perlito5::AST::Var' && $term->{'sigil'} eq '%') {
+            return Perlito5::AST::Lookup::->new('obj' => Perlito5::AST::Var::->new(%{$term}, '_real_sigil' => $term->{'sigil'}, 'sigil' => '$'), 'index_exp' => $index)
+        }
+        return Perlito5::AST::Call::->new('method' => 'postcircumfix:<{ }>', 'invocant' => $term, 'arguments' => $index)
+    }
+    package Perlito5::AST::Var;
+    sub Perlito5::AST::Var::new {
+        my($class, %args) = @_;
+        my $var = bless(\%args, $class);
+        push(@Perlito5::SCOPE_STMT, $var);
+        return $var
+    }
+    sub Perlito5::AST::Var::sigil {
+        $_[0]->{'sigil'}
+    }
+    sub Perlito5::AST::Var::namespace {
+        $_[0]->{'namespace'}
+    }
+    sub Perlito5::AST::Var::name {
+        $_[0]->{'name'}
+    }
+    sub Perlito5::AST::Var::plain_name {
+        my $self = shift;
+        if ($self->namespace()) {
+            return $self->namespace() . '::' . $self->name()
+        }
+        return $self->name()
+    }
+    sub Perlito5::AST::Var::SCALAR_ARG {
+        Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_', '_decl' => 'global', '_namespace' => 'main')
+    }
+    sub Perlito5::AST::Var::LIST_ARG {
+        Perlito5::AST::Var::->new('sigil' => '@', 'namespace' => '', 'name' => '_', '_decl' => 'global', '_namespace' => 'main')
+    }
+    sub Perlito5::AST::Var::LIST_ARG_INDEX {
+        my $index = shift;
+        Perlito5::AST::Index::INDEX(LIST_ARG(), Perlito5::AST::Int::->new('int' => $index))
+    }
+    package Perlito5::AST::Call;
+    sub Perlito5::AST::Call::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Call::invocant {
+        $_[0]->{'invocant'}
+    }
+    sub Perlito5::AST::Call::method {
+        $_[0]->{'method'}
+    }
+    sub Perlito5::AST::Call::arguments {
+        $_[0]->{'arguments'}
+    }
+    package Perlito5::AST::Apply;
+    sub Perlito5::AST::Apply::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Apply::code {
+        $_[0]->{'code'}
+    }
+    sub Perlito5::AST::Apply::special_arg {
+        $_[0]->{'special_arg'}
+    }
+    sub Perlito5::AST::Apply::arguments {
+        $_[0]->{'arguments'}
+    }
+    sub Perlito5::AST::Apply::namespace {
+        $_[0]->{'namespace'}
+    }
+    sub Perlito5::AST::Apply::PUSH {
+        my($var, $value) = @_;
+        if (ref($var) eq 'Perlito5::AST::Var' && $var->{'sigil'} eq '@') {
+            return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [$var, $value])
+        }
+        return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'prefix:<@>', 'arguments' => [$var]), $value])
+    }
+    package Perlito5::AST::If;
+    sub Perlito5::AST::If::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::If::cond {
+        $_[0]->{'cond'}
+    }
+    sub Perlito5::AST::If::body {
+        $_[0]->{'body'}
+    }
+    sub Perlito5::AST::If::otherwise {
+        $_[0]->{'otherwise'}
+    }
+    package Perlito5::AST::When;
+    sub Perlito5::AST::When::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::When::cond {
+        $_[0]->{'cond'}
+    }
+    sub Perlito5::AST::When::body {
+        $_[0]->{'body'}
+    }
+    package Perlito5::AST::While;
+    sub Perlito5::AST::While::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::While::init {
+        $_[0]->{'init'}
+    }
+    sub Perlito5::AST::While::cond {
+        $_[0]->{'cond'}
+    }
+    sub Perlito5::AST::While::continue {
+        $_[0]->{'continue'}
+    }
+    sub Perlito5::AST::While::body {
+        $_[0]->{'body'}
+    }
+    package Perlito5::AST::For;
+    sub Perlito5::AST::For::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::For::cond {
+        $_[0]->{'cond'}
+    }
+    sub Perlito5::AST::For::continue {
+        $_[0]->{'continue'}
+    }
+    sub Perlito5::AST::For::body {
+        $_[0]->{'body'}
+    }
+    sub Perlito5::AST::For::topic {
+        $_[0]->{'topic'}
+    }
+    package Perlito5::AST::Given;
+    sub Perlito5::AST::Given::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Given::cond {
+        $_[0]->{'cond'}
+    }
+    sub Perlito5::AST::Given::body {
+        $_[0]->{'body'}
+    }
+    package Perlito5::AST::Decl;
+    sub Perlito5::AST::Decl::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Decl::decl {
+        $_[0]->{'decl'}
+    }
+    sub Perlito5::AST::Decl::type {
+        $_[0]->{'type'}
+    }
+    sub Perlito5::AST::Decl::var {
+        $_[0]->{'var'}
+    }
+    sub Perlito5::AST::Decl::attributes {
+        $_[0]->{'attributes'}
+    }
+    package Perlito5::AST::Sub;
+    sub Perlito5::AST::Sub::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Sub::name {
+        $_[0]->{'name'}
+    }
+    sub Perlito5::AST::Sub::sig {
+        $_[0]->{'sig'}
+    }
+    sub Perlito5::AST::Sub::block {
+        $_[0]->{'block'}
+    }
+    sub Perlito5::AST::Sub::attributes {
+        $_[0]->{'attributes'}
+    }
+    sub Perlito5::AST::Sub::is_named_sub {
+        my $self = shift;
+        $self->isa('Perlito5::AST::Sub') && $self->{'name'}
+    }
+    sub Perlito5::AST::Sub::is_anon_sub {
+        my $self = shift;
+        $self->isa('Perlito5::AST::Sub') && !$self->{'name'}
+    }
+    package Perlito5::AST::Use;
+    sub Perlito5::AST::Use::new {
+        my $class = shift;
+        bless({@_}, $class)
+    }
+    sub Perlito5::AST::Use::mod {
+        $_[0]->{'mod'}
+    }
+    sub Perlito5::AST::Use::code {
+        $_[0]->{'code'}
+    }
+    1
+}
+{
+    package main;
+    undef();
+    undef();
+    undef();
+    package Perlito5::AST::CompUnit;
+    {
+        sub Perlito5::AST::CompUnit::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'body' => [map {
+                defined($_) && $_->emit_begin_scratchpad()
+            } @{$self->{'body'}}])
+        }
+    }
+    package Perlito5::AST::Int;
+    {
+        sub Perlito5::AST::Int::emit_begin_scratchpad {
+            return $_[0]
+        }
+    }
+    package Perlito5::AST::Num;
+    {
+        sub Perlito5::AST::Num::emit_begin_scratchpad {
+            return $_[0]
+        }
+    }
+    package Perlito5::AST::Buf;
+    {
+        sub Perlito5::AST::Buf::emit_begin_scratchpad {
+            return $_[0]
+        }
+    }
+    package Perlito5::AST::Block;
+    {
+        sub Perlito5::AST::Block::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'stmts' => [map {
+                defined($_) && $_->emit_begin_scratchpad()
+            } @{$self->{'stmts'}}], ($self->{'continue'} ? ('continue' => $self->{'continue'}->emit_begin_scratchpad()) : ()))
+        }
+    }
+    package Perlito5::AST::Index;
+    {
+        sub Perlito5::AST::Index::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'obj' => $self->{'obj'}->emit_begin_scratchpad(), 'index_exp' => $self->{'index_exp'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::Lookup;
+    {
+        sub Perlito5::AST::Lookup::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'obj' => $self->{'obj'}->emit_begin_scratchpad(), 'index_exp' => $self->{'index_exp'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::Var;
+    {
+        sub Perlito5::AST::Var::emit_begin_scratchpad {
+            my $self = $_[0];
+            if (!$self->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'_id'} || ''}) {
+                return __PACKAGE__->new(%{$self}, '_decl' => 'global', 'namespace' => 'Perlito5::BEGIN', 'name' => '_' . $self->{'_id'} . '_' . $self->{'name'})
+            }
+            return $self
+        }
+    }
+    package Perlito5::AST::Call;
+    {
+        sub Perlito5::AST::Call::emit_begin_scratchpad {
+            my $self = $_[0];
+            my $invocant = $self->{'invocant'}->emit_begin_scratchpad();
+            my $arguments;
+            if ($self->{'method'} eq 'postcircumfix:<[ ]>') {
+                $arguments = $self->{'arguments'}->emit_begin_scratchpad()
+            }
+            elsif ($self->{'method'} eq 'postcircumfix:<{ }>') {
+                $arguments = $self->{'arguments'}->emit_begin_scratchpad()
+            }
+            else {
+                $arguments = [map {
+                    $_->emit_begin_scratchpad()
+                } @{$self->{'arguments'}}]
+            }
+            my $meth = $self->{'method'};
+            if (ref($meth) eq 'Perlito5::AST::Var') {
+                $meth = $meth->emit_begin_scratchpad()
+            }
+            return __PACKAGE__->new(%{$self}, 'method' => $meth, 'invocant' => $invocant, 'arguments' => $arguments)
+        }
+    }
+    package Perlito5::AST::Apply;
+    {
+        sub Perlito5::AST::Apply::emit_begin_scratchpad_args {
+            my $self = $_[0];
+            !$self->{'arguments'} && return ();
+            return map {
+                $_->emit_begin_scratchpad()
+            } @{$self->{'arguments'}}
+        }
+        sub Perlito5::AST::Apply::emit_begin_scratchpad {
+            my $self = $_[0];
+            my $code;
+            if (ref($self->{'code'})) {
+                $code = $self->{'code'}->emit_begin_scratchpad()
+            }
+            else {
+                $code = $self->{'code'}
+            }
+            my $arguments;
+            if (ref($self->{'arguments'})) {
+                $arguments = [map {
+                    $_->emit_begin_scratchpad()
+                } @{$self->{'arguments'}}]
+            }
+            else {
+                $arguments = $self->{'arguments'}
+            }
+            return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
+        }
+    }
+    package Perlito5::AST::If;
+    {
+        sub Perlito5::AST::If::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'cond' => $self->{'cond'}->emit_begin_scratchpad(), 'body' => $self->{'body'}->emit_begin_scratchpad(), 'otherwise' => $self->{'otherwise'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::When;
+    {
+        sub Perlito5::AST::When::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'cond' => $self->{'cond'}->emit_begin_scratchpad(), 'body' => $self->{'body'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::While;
+    {
+        sub Perlito5::AST::While::emit_begin_scratchpad {
+            my $self = $_[0];
+            return __PACKAGE__->new(%{$self}, 'cond' => $self->{'cond'}->emit_begin_scratchpad(), 'body' => $self->{'body'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::For;
+    {
+        sub Perlito5::AST::For::emit_begin_scratchpad {
+            my $self = $_[0];
+            my $cond;
+            if (ref($self->{'cond'}) eq 'ARRAY') {
+                $cond = [map {
+                    $_->emit_begin_scratchpad()
+                } @{$self->{'cond'}}]
+            }
+            else {
+                $cond = $self->{'cond'}->emit_begin_scratchpad()
+            }
+            return __PACKAGE__->new(%{$self}, 'cond' => $cond, 'body' => $self->{'body'}->emit_begin_scratchpad(), ($self->{'continue'} ? ('continue' => $self->{'continue'}->emit_begin_scratchpad()) : ()))
+        }
+    }
+    package Perlito5::AST::Decl;
+    {
+        sub Perlito5::AST::Decl::emit_begin_scratchpad {
+            my $self = $_[0];
+            if (!$self->{'var'}->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'var'}->{'_id'} || ''}) {
+                return $self->{'var'}->emit_begin_scratchpad()
+            }
+            return __PACKAGE__->new(%{$self}, 'var' => $self->{'var'}->emit_begin_scratchpad())
+        }
+    }
+    package Perlito5::AST::Sub;
+    {
+        sub Perlito5::AST::Sub::emit_begin_scratchpad {
+            my $self = $_[0];
+            my @stmts;
+            if (defined($self->{'block'})) {
+                @stmts = @{$self->{'block'}->{'stmts'}};
+                @stmts = map {
+                    $_->emit_begin_scratchpad()
+                } @stmts;
+                $self = __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
+            }
+            return $self
+        }
+    }
+    package Perlito5::AST::Use;
+    {
+        sub Perlito5::AST::Use::emit_begin_scratchpad {
+            my $self = shift;
+            return $self
+        }
+    }
+    1
+}
+{
+    package main;
     package Perlito5::Grammar::Block;
+    undef();
     undef();
     undef();
     undef();
@@ -5189,6 +5686,7 @@ use feature 'say';
             $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
         } @captured;
         %Perlito5::BEGIN_SCRATCHPAD = (%Perlito5::BEGIN_SCRATCHPAD, %capture);
+        $block = $block->emit_begin_scratchpad();
         $block = $block->emit_compile_time();
         local ${'@'};
         my $result = Perlito5::Perl5::Runtime::eval_ast($block);
@@ -8043,312 +8541,6 @@ use feature 'say';
     }
     sub Perlito5::get_label {
         'tmp' . $Perlito5::ID++
-    }
-    1
-}
-{
-    package main;
-    undef();
-    package Perlito5::AST::CompUnit;
-    sub Perlito5::AST::CompUnit::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::CompUnit::name {
-        $_[0]->{'name'}
-    }
-    sub Perlito5::AST::CompUnit::body {
-        $_[0]->{'body'}
-    }
-    package Perlito5::AST::Int;
-    sub Perlito5::AST::Int::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Int::int {
-        $_[0]->{'int'}
-    }
-    package Perlito5::AST::Num;
-    sub Perlito5::AST::Num::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Num::num {
-        $_[0]->{'num'}
-    }
-    package Perlito5::AST::Buf;
-    sub Perlito5::AST::Buf::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Buf::buf {
-        $_[0]->{'buf'}
-    }
-    package Perlito5::AST::Block;
-    sub Perlito5::AST::Block::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Block::sig {
-        $_[0]->{'sig'}
-    }
-    sub Perlito5::AST::Block::stmts {
-        $_[0]->{'stmts'}
-    }
-    package Perlito5::AST::Index;
-    sub Perlito5::AST::Index::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Index::obj {
-        $_[0]->{'obj'}
-    }
-    sub Perlito5::AST::Index::index_exp {
-        $_[0]->{'index_exp'}
-    }
-    sub Perlito5::AST::Index::INDEX {
-        my($term, $index) = @_;
-        if (ref($term) eq 'Perlito5::AST::Var' && $term->{'sigil'} eq '@') {
-            return Perlito5::AST::Index::->new('obj' => Perlito5::AST::Var::->new(%{$term}, '_real_sigil' => $term->{'sigil'}, 'sigil' => '$'), 'index_exp' => $index)
-        }
-        return Perlito5::AST::Call::->new('method' => 'postcircumfix:<[ ]>', 'invocant' => $term, 'arguments' => $index)
-    }
-    package Perlito5::AST::Lookup;
-    sub Perlito5::AST::Lookup::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Lookup::obj {
-        $_[0]->{'obj'}
-    }
-    sub Perlito5::AST::Lookup::index_exp {
-        $_[0]->{'index_exp'}
-    }
-    sub Perlito5::AST::Lookup::autoquote {
-        my $self = shift;
-        my $index = shift;
-        if ($index->isa('Perlito5::AST::Apply') && $index->{'bareword'}) {
-            my $full_name = ($index->{'namespace'} ? $index->{'namespace'} . '::' : '') . $index->{'code'};
-            if (!exists($Perlito5::PROTO->{$full_name})) {
-                return Perlito5::AST::Buf::->new('buf' => $full_name)
-            }
-        }
-        elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'prefix:<->' || $index->code() eq 'prefix:<+>')) {
-            my $arg = $index->arguments()->[0];
-            $arg && return Perlito5::AST::Apply::->new('code' => $index->code(), 'namespace' => $index->namespace(), 'arguments' => [$self->autoquote($arg)])
-        }
-        elsif ($index->isa('Perlito5::AST::Apply') && ($index->code() eq 'list:<,>')) {
-            my $obj = $self->obj();
-            if ($obj->sigil() eq '@') {
-                return $index
-            }
-            my $args = $index->arguments();
-            return Perlito5::AST::Apply::->new('code' => 'join', 'namespace' => '', 'arguments' => [Perlito5::AST::Var::->new('name' => ';', 'namespace' => '', 'sigil' => '$'), map {
-                defined($_) ? $_ : Perlito5::AST::Buf::->new('buf' => '')
-            } @{$args}])
-        }
-        $index
-    }
-    sub Perlito5::AST::Lookup::LOOKUP {
-        my($term, $index) = @_;
-        if (ref($term) eq 'Perlito5::AST::Var' && $term->{'sigil'} eq '%') {
-            return Perlito5::AST::Lookup::->new('obj' => Perlito5::AST::Var::->new(%{$term}, '_real_sigil' => $term->{'sigil'}, 'sigil' => '$'), 'index_exp' => $index)
-        }
-        return Perlito5::AST::Call::->new('method' => 'postcircumfix:<{ }>', 'invocant' => $term, 'arguments' => $index)
-    }
-    package Perlito5::AST::Var;
-    sub Perlito5::AST::Var::new {
-        my($class, %args) = @_;
-        my $var = bless(\%args, $class);
-        push(@Perlito5::SCOPE_STMT, $var);
-        return $var
-    }
-    sub Perlito5::AST::Var::sigil {
-        $_[0]->{'sigil'}
-    }
-    sub Perlito5::AST::Var::namespace {
-        $_[0]->{'namespace'}
-    }
-    sub Perlito5::AST::Var::name {
-        $_[0]->{'name'}
-    }
-    sub Perlito5::AST::Var::plain_name {
-        my $self = shift;
-        if ($self->namespace()) {
-            return $self->namespace() . '::' . $self->name()
-        }
-        return $self->name()
-    }
-    sub Perlito5::AST::Var::SCALAR_ARG {
-        Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_', '_decl' => 'global', '_namespace' => 'main')
-    }
-    sub Perlito5::AST::Var::LIST_ARG {
-        Perlito5::AST::Var::->new('sigil' => '@', 'namespace' => '', 'name' => '_', '_decl' => 'global', '_namespace' => 'main')
-    }
-    sub Perlito5::AST::Var::LIST_ARG_INDEX {
-        my $index = shift;
-        Perlito5::AST::Index::INDEX(LIST_ARG(), Perlito5::AST::Int::->new('int' => $index))
-    }
-    package Perlito5::AST::Call;
-    sub Perlito5::AST::Call::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Call::invocant {
-        $_[0]->{'invocant'}
-    }
-    sub Perlito5::AST::Call::method {
-        $_[0]->{'method'}
-    }
-    sub Perlito5::AST::Call::arguments {
-        $_[0]->{'arguments'}
-    }
-    package Perlito5::AST::Apply;
-    sub Perlito5::AST::Apply::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Apply::code {
-        $_[0]->{'code'}
-    }
-    sub Perlito5::AST::Apply::special_arg {
-        $_[0]->{'special_arg'}
-    }
-    sub Perlito5::AST::Apply::arguments {
-        $_[0]->{'arguments'}
-    }
-    sub Perlito5::AST::Apply::namespace {
-        $_[0]->{'namespace'}
-    }
-    sub Perlito5::AST::Apply::PUSH {
-        my($var, $value) = @_;
-        if (ref($var) eq 'Perlito5::AST::Var' && $var->{'sigil'} eq '@') {
-            return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [$var, $value])
-        }
-        return Perlito5::AST::Apply::->new('code' => 'push', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'prefix:<@>', 'arguments' => [$var]), $value])
-    }
-    package Perlito5::AST::If;
-    sub Perlito5::AST::If::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::If::cond {
-        $_[0]->{'cond'}
-    }
-    sub Perlito5::AST::If::body {
-        $_[0]->{'body'}
-    }
-    sub Perlito5::AST::If::otherwise {
-        $_[0]->{'otherwise'}
-    }
-    package Perlito5::AST::When;
-    sub Perlito5::AST::When::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::When::cond {
-        $_[0]->{'cond'}
-    }
-    sub Perlito5::AST::When::body {
-        $_[0]->{'body'}
-    }
-    package Perlito5::AST::While;
-    sub Perlito5::AST::While::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::While::init {
-        $_[0]->{'init'}
-    }
-    sub Perlito5::AST::While::cond {
-        $_[0]->{'cond'}
-    }
-    sub Perlito5::AST::While::continue {
-        $_[0]->{'continue'}
-    }
-    sub Perlito5::AST::While::body {
-        $_[0]->{'body'}
-    }
-    package Perlito5::AST::For;
-    sub Perlito5::AST::For::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::For::cond {
-        $_[0]->{'cond'}
-    }
-    sub Perlito5::AST::For::continue {
-        $_[0]->{'continue'}
-    }
-    sub Perlito5::AST::For::body {
-        $_[0]->{'body'}
-    }
-    sub Perlito5::AST::For::topic {
-        $_[0]->{'topic'}
-    }
-    package Perlito5::AST::Given;
-    sub Perlito5::AST::Given::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Given::cond {
-        $_[0]->{'cond'}
-    }
-    sub Perlito5::AST::Given::body {
-        $_[0]->{'body'}
-    }
-    package Perlito5::AST::Decl;
-    sub Perlito5::AST::Decl::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Decl::decl {
-        $_[0]->{'decl'}
-    }
-    sub Perlito5::AST::Decl::type {
-        $_[0]->{'type'}
-    }
-    sub Perlito5::AST::Decl::var {
-        $_[0]->{'var'}
-    }
-    sub Perlito5::AST::Decl::attributes {
-        $_[0]->{'attributes'}
-    }
-    package Perlito5::AST::Sub;
-    sub Perlito5::AST::Sub::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Sub::name {
-        $_[0]->{'name'}
-    }
-    sub Perlito5::AST::Sub::sig {
-        $_[0]->{'sig'}
-    }
-    sub Perlito5::AST::Sub::block {
-        $_[0]->{'block'}
-    }
-    sub Perlito5::AST::Sub::attributes {
-        $_[0]->{'attributes'}
-    }
-    sub Perlito5::AST::Sub::is_named_sub {
-        my $self = shift;
-        $self->isa('Perlito5::AST::Sub') && $self->{'name'}
-    }
-    sub Perlito5::AST::Sub::is_anon_sub {
-        my $self = shift;
-        $self->isa('Perlito5::AST::Sub') && !$self->{'name'}
-    }
-    package Perlito5::AST::Use;
-    sub Perlito5::AST::Use::new {
-        my $class = shift;
-        bless({@_}, $class)
-    }
-    sub Perlito5::AST::Use::mod {
-        $_[0]->{'mod'}
-    }
-    sub Perlito5::AST::Use::code {
-        $_[0]->{'code'}
     }
     1
 }
@@ -18679,10 +18871,6 @@ CORE.printf = function(List__) {
             my $str_name = $self->{'name'};
             $str_name eq '\\' && ($str_name = '\\\\');
             $str_name eq chr(39) && ($str_name = '\\' . chr(39));
-            if (!$self->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'_id'} || ''}) {
-                $self->{'namespace'} = 'Perlito5::BEGIN';
-                $self->{'name'} = '_' . $self->{'_id'} . '_' . $self->{'name'}
-            }
             my $ns = '';
             if ($self->{'namespace'}) {
                 $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';
@@ -18928,9 +19116,6 @@ CORE.printf = function(List__) {
     {
         sub Perlito5::AST::Decl::emit_perl5 {
             my $self = $_[0];
-            if (!$self->{'var'}->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'var'}->{'_id'} || ''}) {
-                return $self->{'var'}->emit_perl5()
-            }
             return ['op' => 'prefix:<' . $self->{'decl'} . '>', ($self->{'type'} ? $self->{'type'} : ()), $self->{'var'}->emit_perl5()]
         }
     }
@@ -31540,6 +31725,9 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
                     }
                     else {
                         push(@Perlito5::COMP_UNIT, Perlito5::Match::flat($m))
+                    }
+                    for $_ (0 .. $#Perlito5::COMP_UNIT) {
+                        $Perlito5::COMP_UNIT[$_] = $Perlito5::COMP_UNIT[$_]->emit_begin_scratchpad()
                     }
                     {
                         local ${chr(7) . 'LOBAL_PHASE'};
