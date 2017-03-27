@@ -9114,8 +9114,11 @@ use feature 'say';
         for my $id (keys(%Perlito5::BEGIN_SCRATCHPAD)) {
             my $ast = $Perlito5::BEGIN_SCRATCHPAD{$id};
             my $sigil = $ast->{'_real_sigil'} || $ast->{'sigil'};
-            my $name = '_' . $id . '_' . $ast->{'name'};
-            my $fullname = 'Perlito5::BEGIN::' . $name;
+            if (!$ast->{'namespace'}) {
+                $ast->{'namespace'} = 'Perlito5::BEGIN';
+                $ast->{'name'} = '_' . $id . '_' . $ast->{'name'}
+            }
+            my $fullname = $ast->{'namespace'} . '::' . $ast->{'name'};
             if ($sigil eq '$') {
                 $scope->{$sigil . $fullname} //= {'ast' => $ast, 'value' => \${$fullname}}
             }
@@ -18676,6 +18679,10 @@ CORE.printf = function(List__) {
             my $str_name = $self->{'name'};
             $str_name eq '\\' && ($str_name = '\\\\');
             $str_name eq chr(39) && ($str_name = '\\' . chr(39));
+            if (!$self->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'_id'} || ''}) {
+                $self->{'namespace'} = 'Perlito5::BEGIN';
+                $self->{'name'} = '_' . $self->{'_id'} . '_' . $self->{'name'}
+            }
             my $ns = '';
             if ($self->{'namespace'}) {
                 $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';
@@ -18685,9 +18692,6 @@ CORE.printf = function(List__) {
                 else {
                     $ns = $self->{'namespace'} . '::'
                 }
-            }
-            if (!$ns && $Perlito5::BEGIN_SCRATCHPAD{$self->{'_id'} || ''}) {
-                $ns = 'Perlito5::BEGIN::_' . $self->{'_id'} . '_'
             }
             my $c = substr($self->{'name'}, 0, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/' || $self->{'name'} eq '&') || ((0 + $self->{'name'}) eq $self->{'name'})) {

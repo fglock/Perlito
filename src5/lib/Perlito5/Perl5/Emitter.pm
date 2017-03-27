@@ -163,6 +163,11 @@ package Perlito5::AST::Var;
         $str_name = '\\\\' if $str_name eq '\\';   # escape $\
         $str_name = "\\'" if $str_name eq "'";     # escape $'
 
+        if (!$self->{namespace} && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
+            $self->{namespace} = "Perlito5::BEGIN";
+            $self->{name}      = "_" . $self->{_id} . "_" . $self->{name};
+        }
+
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
@@ -175,10 +180,6 @@ package Perlito5::AST::Var;
             else {
                 $ns = $self->{namespace} . '::';
             }
-        }
-
-        if (!$ns && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
-            $ns = "Perlito5::BEGIN::_" . $self->{_id} . "_";
         }
 
         my $c = substr($self->{name}, 0, 1);

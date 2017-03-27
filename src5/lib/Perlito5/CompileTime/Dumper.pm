@@ -874,8 +874,11 @@ sub emit_globals_after_BEGIN {
         # BEGIN side-effects
         my $ast = $Perlito5::BEGIN_SCRATCHPAD{$id};
         my $sigil = $ast->{_real_sigil} || $ast->{sigil};
-        my $name = "_" . $id . "_" . $ast->{name};
-        my $fullname = "Perlito5::BEGIN::$name";
+        if (!$ast->{namespace}) {
+            $ast->{namespace} = "Perlito5::BEGIN";
+            $ast->{name} = "_" . $id . "_" . $ast->{name};
+        }
+        my $fullname = "$ast->{namespace}::$ast->{name}";
 
         # print STDERR "BEGIN SIDE EFECT: $sigil $fullname\n";
 
