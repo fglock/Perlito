@@ -5675,10 +5675,7 @@ use feature 'say';
         my $block = shift;
         local ${chr(7) . 'LOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
-        my @captured;
-        for my $stmt (@{$block->{'stmts'} || []}) {
-            push(@captured, $stmt->get_captures())
-        }
+        my @captured = $block->get_captures();
         my %dont_capture = map {
             $_->{'dont'} ? ($_->{'dont'} => 1) : ()
         } @captured;

@@ -88,15 +88,8 @@ sub eval_begin_block {
     local ${^GLOBAL_PHASE};
     Perlito5::set_global_phase("BEGIN");
 
-
-
-
-
     # get list of captured variables, including inner blocks
-    my @captured;
-    for my $stmt (@{$block->{stmts} || []}) {
-        push @captured, $stmt->get_captures();
-    }
+    my @captured = $block->get_captures();
     my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
     my %capture = map { $_->{dont} ? ()
                       : $dont_capture{ $_->{_id} } ? ()

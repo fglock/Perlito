@@ -147,10 +147,14 @@ Parser
 
 - lexical variables in BEGIN blocks
 
+    This is partially fixed, see BEGIN_SCRATCHPAD in src5/
+
+~~~perl
     my $v = 123;
     BEGIN {
         # $v is not seen
     }
+~~~
 
     t5/unit/begin_lexical_var.t
     t5/unit/phase_init_my.t
