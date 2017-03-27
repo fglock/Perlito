@@ -350,7 +350,11 @@ if ($backend) {
             package main;
             $init;
             Perlito5::set_global_phase("INIT");
-            \$_->() for \@Perlito5::INIT_BLOCK;
+            eval {
+                \$_->() for \@Perlito5::INIT_BLOCK;
+                1;
+            }
+            or die "\$@\nINIT failed--call queue aborted.\n";
             Perlito5::set_global_phase("RUN");
             $source;
             \$@ = undef
@@ -448,12 +452,37 @@ if ($backend) {
                         . '{ '
                         .   'local $@; '
                         .   'local ${^GLOBAL_PHASE}; '
-                        .   'eval { ${^GLOBAL_PHASE} = "INIT" }; '      # GLOBAL_PHASE is r/o in perl5
-                        .   '$_->() for @Perlito5::INIT_BLOCK; '        # execute INIT blocks
+                        .   'eval { ${^GLOBAL_PHASE} = "INIT" }; '    # GLOBAL_PHASE is r/o in perl5
+                        .   'eval { '
+                        .       '$_->() for @Perlito5::INIT_BLOCK; '  # execute INIT blocks
+                        .       '1; '
+                        .   '} '
+                        .   'or die "$@\nINIT failed--call queue aborted.\n"; '
                         . '} ',
                         0,
                     );
                     unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
+
+
+                    # TODO - insert END block executor
+
+                    # my $error;
+                    # eval {
+                    #   ... whole program
+                    #   1;
+                    # }
+                    # or $error = $@;
+                    # warn $error if $error;
+                    # Perlito5::set_global_phase("END");
+                    # eval {
+                    #     $_->() for @Perlito5::END_BLOCK;
+                    #     1;
+                    # }
+                    # or warn "$@\nEND failed--call queue aborted.\n"
+                    # if ( $error ) {
+                    #     exit(255);
+                    # }
+
                 }
 
                 my $comp_units = [ @Perlito5::COMP_UNIT ];
