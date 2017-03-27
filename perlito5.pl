@@ -5178,9 +5178,14 @@ use feature 'say';
         my $block = shift;
         local ${chr(7) . 'LOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
+        $block = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)]);
         $block = $block->emit_compile_time();
         local ${'@'};
-        my $result = Perlito5::Perl5::Runtime::eval_ast($block);
+        my $subr = Perlito5::Perl5::Runtime::eval_ast($block);
+        if (${'@'}) {
+            Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
+        }
+        my $result = $subr->();
         if (${'@'}) {
             Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
         }

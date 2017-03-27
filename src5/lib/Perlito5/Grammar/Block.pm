@@ -54,14 +54,13 @@ sub eval_end_block {
     # compile-time globals are still a problem.
     my ($block, $phase) = @_;
 
-    $block = 
-        Perlito5::AST::Sub->new(
-            'attributes' => [],
-            'block' => $block,
-            'name' => undef,
-            'namespace' => $Perlito5::PKG_NAME,
-            'sig' => undef,
-        );
+    $block = Perlito5::AST::Sub->new(
+        'attributes' => [],
+        'block'      => $block,
+        'name'       => undef,
+        'namespace'  => $Perlito5::PKG_NAME,
+        'sig'        => undef,
+    );
     return Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
 
     # local $@;
@@ -87,26 +86,38 @@ sub eval_begin_block {
     my $block = shift;
     local ${^GLOBAL_PHASE};
     Perlito5::set_global_phase("BEGIN");
+
+    $block = Perlito5::AST::Block->new(
+        stmts => [
+            Perlito5::AST::Sub->new(
+                'attributes' => [],
+                'block'      => $block,
+                'name'       => undef,
+                'namespace'  => $Perlito5::PKG_NAME,
+                'sig'        => undef,
+            ),
+        ]
+    );
+
+    # emit_compile_time() adds instrumentation to inspect captured variables
     $block = $block->emit_compile_time();
 
     local $@;
-    # my @data = $block->emit_perl5();
-    # my $out = [];
-    # Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-    # my $code = "package $Perlito5::PKG_NAME;\n"
-    #          . join( '', @$out ) . "; 1\n";
-    # say STDERR "BEGIN Block::eval_begin_block: $code";
-
-    # eval-string inside BEGIN block
-    # we add some extra information to the data, to make things more "dumpable"
-    # my $instrumented_code = Perlito5::CompileTime::Dumper::generate_eval_string( $code );
-    # say "BEGIN Block::eval_begin_block: [[ $instrumented_code ]]";
-    # eval $instrumented_code
-    # eval "{ $code }; 1"
-    my $result = Perlito5::eval_ast($block);
+    my $subr = Perlito5::eval_ast($block);
     if ($@) {
         Perlito5::Compiler::error "Error in BEGIN block: " . $@;
     }
+    my $result = $subr->();
+    if ($@) {
+        Perlito5::Compiler::error "Error in BEGIN block: " . $@;
+    }
+
+    ## ## TODO - store BEGIN block side-effects
+    ## # get the closed variables - see 'Sub' in Perl5 emitter
+    ## my $closure_flag = bless {}, "Perlito5::dump";
+    ## my $captures = $subr->($closure_flag) // {};
+    ## print "Side-effects: ", Data::Dumper::Dumper($captures);
+
     # "use MODULE" wants a true return value
     return $result;
 }
