@@ -190,7 +190,7 @@ package Perlito5::AST::For;
         my $cond;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
-            $cond = [ map { $_->emit_begin_scratchpad() } @{$self->{cond}} ];
+            $cond = [ map { defined ? $_->emit_begin_scratchpad() : $_ } @{$self->{cond}} ];
         }
         else {
             $cond = $self->{cond}->emit_begin_scratchpad(),

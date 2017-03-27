@@ -5588,7 +5588,7 @@ use feature 'say';
             my $cond;
             if (ref($self->{'cond'}) eq 'ARRAY') {
                 $cond = [map {
-                    $_->emit_begin_scratchpad()
+                    defined($_) ? $_->emit_begin_scratchpad() : $_
                 } @{$self->{'cond'}}]
             }
             else {
@@ -8697,7 +8697,7 @@ use feature 'say';
             my $cond;
             if (ref($self->{'cond'}) eq 'ARRAY') {
                 $cond = [map {
-                    $_->emit_compile_time()
+                    defined($_) ? $_->emit_compile_time() : $_
                 } @{$self->{'cond'}}]
             }
             else {

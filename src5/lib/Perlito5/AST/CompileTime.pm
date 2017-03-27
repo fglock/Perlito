@@ -215,7 +215,7 @@ package Perlito5::AST::For;
         my $cond;
         if (ref($self->{cond}) eq 'ARRAY') {
             # C-style for
-            $cond = [ map { $_->emit_compile_time() } @{$self->{cond}} ];
+            $cond = [ map { defined ? $_->emit_compile_time() : $_ } @{$self->{cond}} ];
         }
         else {
             $cond = $self->{cond}->emit_compile_time(),
