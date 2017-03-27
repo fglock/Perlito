@@ -5668,7 +5668,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Block::eval_end_block {
         my($block, $phase) = @_;
-        $block = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef);
+        $block = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)]);
         return Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN')
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
