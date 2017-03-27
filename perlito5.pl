@@ -4795,6 +4795,7 @@ use feature 'say';
                         $list = undef
                     }
                     else {
+                        Perlito5::Grammar::Scope::check_variable_declarations();
                         my $m = $MATCH->{'Perlito5::Grammar::Expression::list_parse'};
                         my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [Perlito5::Match::flat($m)])]);
                         $list = Perlito5::Grammar::Block::eval_begin_block($ast)

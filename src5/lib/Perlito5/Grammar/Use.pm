@@ -93,6 +93,7 @@ token stmt_use {
             }
             else {
                 # evaluate the parameter list in a BEGIN-block context
+                Perlito5::Grammar::Scope::check_variable_declarations();
                 my $m = $MATCH->{"Perlito5::Grammar::Expression::list_parse"};
                 my $ast = Perlito5::AST::Block::->new(
                     'stmts' => [
