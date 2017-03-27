@@ -149,15 +149,17 @@ Parser
 
     This is partially fixed, see BEGIN_SCRATCHPAD in src5/
 
-~~~perl
-    my $v = 123;
-    BEGIN {
-        # $v is not seen
-    }
+~~~sh
+    t5/unit/begin_closure.t ..................... ok   
+    t5/unit/begin_global.t ...................... ok   
+    t5/unit/begin_global_special_var.t .......... Failed 1/2 subtests 
+    t5/unit/begin_lexical_var.t ................. ok   
+    t5/unit/begin_loop.t ........................ Failed 2/3 subtests 
+    t5/unit/begin_our_var.t ..................... ok   
+    t5/unit/begin_recurse.t ..................... Failed 5/6 subtests 
+    t5/unit/block.t ............................. ok   
+    t5/unit/block_local.t ....................... ok   
 ~~~
-
-    t5/unit/begin_lexical_var.t
-    t5/unit/phase_init_my.t
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
@@ -603,6 +605,21 @@ Compile-time execution environment
     my $v;
     BEGIN { $v = "123" }
     use Module $v;  # $v is not accessible at compile-time
+
+
+    Test case:
+
+    $ cat > X.pm
+    package X;
+    sub import { print "args [ @_ ]\n" }
+    1;
+
+    $ perl perlito5.pl -I src5/lib -I . -Cperl5 -e ' my $v; BEGIN { $v = "xxx" } use X $v; '
+    # args [ X  ]
+
+    expected result:
+    # args [ X xxx ]
+
 
 - work in progress: "-C_globals" compiler switch to test BEGIN time serialization
 
