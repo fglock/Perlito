@@ -9299,7 +9299,10 @@ use feature 'say';
         my $seen = {};
         my $dumper_seen = {};
         my $tab = '';
-        $scope->{'$main::0'} //= {'ast' => Perlito5::AST::Var::->new('name' => 0, 'sigil' => '$', '_decl' => 'global', 'namespace' => 'main')};
+        for my $v ('$main::0', '$main::a', '$main::b', '$main::_') {
+            my($sigil, $namespace, $name) = $v =~ m/^([$@%])(\w+)::(.*)$/;
+            $scope->{$v} //= {'ast' => Perlito5::AST::Var::->new('name' => $name, 'sigil' => $sigil, '_decl' => 'global', 'namespace' => $namespace)}
+        }
         $scope->{'@Perlito5::END_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'END_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::END_BLOCK};
         $scope->{'@Perlito5::INIT_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'INIT_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::INIT_BLOCK};
         $scope->{'%Perlito5::DATA_SECTION'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'DATA_SECTION', 'sigil' => '%', '_decl' => 'global'), 'value' => \%Perlito5::DATA_SECTION};

@@ -827,15 +827,18 @@ sub emit_globals_after_BEGIN {
     my $dumper_seen = {};
     my $tab = "";
 
-    # inject $0 (script name) in the scope, if it is not there already
-    $scope->{'$main::0'} //= {
-        'ast' => Perlito5::AST::Var->new(
-            'name'      => '0',
-            'sigil'     => '$',
-            '_decl'     => 'global',
-            'namespace' => 'main',
-        ),
-    };
+    for my $v ( '$main::0', '$main::a', '$main::b', '$main::_' ) {
+        # inject special variables like $0 (script name) in the scope, if it is not there already
+        my ($sigil, $namespace, $name) = $v =~ /^([$@%])(\w+)::(.*)$/;
+        $scope->{$v} //= {
+            'ast' => Perlito5::AST::Var->new(
+                'name'      => $name,
+                'sigil'     => $sigil,
+                '_decl'     => 'global',
+                'namespace' => $namespace,
+            ),
+        };
+    }
 
     # dump __END__ blocks
     $scope->{'@Perlito5::END_BLOCK'} //= {
