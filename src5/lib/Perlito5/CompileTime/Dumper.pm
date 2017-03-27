@@ -870,6 +870,36 @@ sub emit_globals_after_BEGIN {
         value => \%Perlito5::DATA_SECTION,
     };
 
+    for my $id (keys %Perlito5::BEGIN_SCRATCHPAD) {
+        # BEGIN side-effects
+        my $ast = $Perlito5::BEGIN_SCRATCHPAD{$id};
+        my $sigil = $ast->{_real_sigil} || $ast->{sigil};
+        my $name = "_" . $id . "_" . $ast->{name};
+        my $fullname = "Perlito5::BEGIN::$name";
+
+        # print STDERR "BEGIN SIDE EFECT: $sigil $fullname\n";
+
+        if ($sigil eq '$') {
+            $scope->{$sigil . $fullname} //= {
+                ast   => $ast,
+                value => \${$fullname},
+            };
+        }
+        elsif ($sigil eq '@') {
+            $scope->{$sigil . $fullname} //= {
+                ast   => $ast,
+                value => \@{$fullname},
+            };
+        }
+        elsif ($sigil eq '%') {
+            $scope->{$sigil . $fullname} //= {
+                ast   => $ast,
+                value => \%{$fullname},
+            };
+        }
+    }
+
+
     for my $name (sort keys %$scope) {
         my $sigil = substr($name, 0, 1);
         my $item = $scope->{$name};

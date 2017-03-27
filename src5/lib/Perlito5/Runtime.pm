@@ -39,6 +39,7 @@ our @END_BLOCK       = ();    # END block LIFO - array of subs
 our @INIT_BLOCK      = ();    # INIT block FIFO - array of subs
 our @CHECK_BLOCK     = ();    # CHECK block LIFO - array of subs
 our @UNITCHECK_BLOCK = ();    # UNITCHECK block LIFO - array of subs
+our %BEGIN_SCRATCHPAD = (); # list of "my" variables captured in BEGIN blocks
 our $PROTO           = {};
 
 # the Perl-to-Java compiler uses this syntax for "annotations":

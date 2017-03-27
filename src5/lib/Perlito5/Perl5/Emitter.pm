@@ -176,6 +176,11 @@ package Perlito5::AST::Var;
                 $ns = $self->{namespace} . '::';
             }
         }
+
+        if (!$ns && $Perlito5::BEGIN_SCRATCHPAD{ $self->{_id} || "" }) {
+            $ns = "Perlito5::BEGIN::_" . $self->{_id} . "_";
+        }
+
         my $c = substr($self->{name}, 0, 1);
         if (  ($c ge 'a' && $c le 'z')
            || ($c ge 'A' && $c le 'Z')
@@ -510,6 +515,11 @@ package Perlito5::AST::Decl;
 {
     sub emit_perl5 {
         my $self = $_[0];
+
+        if (!$self->{var}{namespace}  && $Perlito5::BEGIN_SCRATCHPAD{ $self->{var}{_id} || "" }) {
+            return $self->{var}->emit_perl5()
+        }
+
         return [ op => 'prefix:<' . $self->{decl} . '>', 
                  ($self->{type} ? $self->{type} : ()),
                  $self->{var}->emit_perl5()

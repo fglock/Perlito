@@ -87,36 +87,43 @@ sub eval_begin_block {
     local ${^GLOBAL_PHASE};
     Perlito5::set_global_phase("BEGIN");
 
-    $block = Perlito5::AST::Block->new(
-        stmts => [
-            Perlito5::AST::Sub->new(
-                'attributes' => [],
-                'block'      => $block,
-                'name'       => undef,
-                'namespace'  => $Perlito5::PKG_NAME,
-                'sig'        => undef,
-            ),
-        ]
-    );
+
+
+
+
+    # get list of captured variables, including inner blocks
+    my @captured;
+    for my $stmt (@{$block->{stmts} || []}) {
+        push @captured, $stmt->get_captures();
+    }
+    my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
+    my %capture = map { $_->{dont} ? ()
+                      : $dont_capture{ $_->{_id} } ? ()
+                      : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
+                      : ( $_->{_id} => $_ )
+                      } @captured;
+
+    # print STDERR "CAPTURES ", Data::Dumper::Dumper(\%capture);
+
+    # %capture == (
+    #     '100' => ...,
+    #     '101' => ...,,
+    # )
+    %Perlito5::BEGIN_SCRATCHPAD = ( %Perlito5::BEGIN_SCRATCHPAD, %capture );
+
+
+
+
+
 
     # emit_compile_time() adds instrumentation to inspect captured variables
     $block = $block->emit_compile_time();
 
     local $@;
-    my $subr = Perlito5::eval_ast($block);
+    my $result = Perlito5::eval_ast($block);
     if ($@) {
         Perlito5::Compiler::error "Error in BEGIN block: " . $@;
     }
-    my $result = $subr->();
-    if ($@) {
-        Perlito5::Compiler::error "Error in BEGIN block: " . $@;
-    }
-
-    ## ## TODO - store BEGIN block side-effects
-    ## # get the closed variables - see 'Sub' in Perl5 emitter
-    ## my $closure_flag = bless {}, "Perlito5::dump";
-    ## my $captures = $subr->($closure_flag) // {};
-    ## print "Side-effects: ", Data::Dumper::Dumper($captures);
 
     # "use MODULE" wants a true return value
     return $result;

@@ -5178,14 +5178,20 @@ use feature 'say';
         my $block = shift;
         local ${chr(7) . 'LOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
-        $block = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => undef, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)]);
+        my @captured;
+        for my $stmt (@{$block->{'stmts'} || []}) {
+            push(@captured, $stmt->get_captures())
+        }
+        my %dont_capture = map {
+            $_->{'dont'} ? ($_->{'dont'} => 1) : ()
+        } @captured;
+        my %capture = map {
+            $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
+        } @captured;
+        %Perlito5::BEGIN_SCRATCHPAD = (%Perlito5::BEGIN_SCRATCHPAD, %capture);
         $block = $block->emit_compile_time();
         local ${'@'};
-        my $subr = Perlito5::Perl5::Runtime::eval_ast($block);
-        if (${'@'}) {
-            Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
-        }
-        my $result = $subr->();
+        my $result = Perlito5::Perl5::Runtime::eval_ast($block);
         if (${'@'}) {
             Perlito5::Compiler::error('Error in BEGIN block: ' . ${'@'})
         }
@@ -7997,6 +8003,7 @@ use feature 'say';
     our @INIT_BLOCK = ();
     our @CHECK_BLOCK = ();
     our @UNITCHECK_BLOCK = ();
+    our %BEGIN_SCRATCHPAD = ();
     our $PROTO = {};
     our @ANNOTATION;
     sub Perlito5::set_global_phase {
@@ -9104,6 +9111,21 @@ use feature 'say';
         $scope->{'@Perlito5::END_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'END_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::END_BLOCK};
         $scope->{'@Perlito5::INIT_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'INIT_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::INIT_BLOCK};
         $scope->{'%Perlito5::DATA_SECTION'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'DATA_SECTION', 'sigil' => '%', '_decl' => 'global'), 'value' => \%Perlito5::DATA_SECTION};
+        for my $id (keys(%Perlito5::BEGIN_SCRATCHPAD)) {
+            my $ast = $Perlito5::BEGIN_SCRATCHPAD{$id};
+            my $sigil = $ast->{'_real_sigil'} || $ast->{'sigil'};
+            my $name = '_' . $id . '_' . $ast->{'name'};
+            my $fullname = 'Perlito5::BEGIN::' . $name;
+            if ($sigil eq '$') {
+                $scope->{$sigil . $fullname} //= {'ast' => $ast, 'value' => \${$fullname}}
+            }
+            elsif ($sigil eq '@') {
+                $scope->{$sigil . $fullname} //= {'ast' => $ast, 'value' => \@{$fullname}}
+            }
+            elsif ($sigil eq '%') {
+                $scope->{$sigil . $fullname} //= {'ast' => $ast, 'value' => \%{$fullname}}
+            }
+        }
         for my $name (sort {
             $a cmp $b
         } keys(%{$scope})) {
@@ -18664,6 +18686,9 @@ CORE.printf = function(List__) {
                     $ns = $self->{'namespace'} . '::'
                 }
             }
+            if (!$ns && $Perlito5::BEGIN_SCRATCHPAD{$self->{'_id'} || ''}) {
+                $ns = 'Perlito5::BEGIN::_' . $self->{'_id'} . '_'
+            }
             my $c = substr($self->{'name'}, 0, 1);
             if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/' || $self->{'name'} eq '&') || ((0 + $self->{'name'}) eq $self->{'name'})) {
                 return $self->{'sigil'} . $ns . $self->{'name'}
@@ -18899,6 +18924,9 @@ CORE.printf = function(List__) {
     {
         sub Perlito5::AST::Decl::emit_perl5 {
             my $self = $_[0];
+            if (!$self->{'var'}->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'var'}->{'_id'} || ''}) {
+                return $self->{'var'}->emit_perl5()
+            }
             return ['op' => 'prefix:<' . $self->{'decl'} . '>', ($self->{'type'} ? $self->{'type'} : ()), $self->{'var'}->emit_perl5()]
         }
     }
