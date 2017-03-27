@@ -4796,10 +4796,8 @@ use feature 'say';
                     }
                     else {
                         my $m = $MATCH->{'Perlito5::Grammar::Expression::list_parse'};
-                        my $list_code = 'package ' . $Perlito5::PKG_NAME . ';
-' . substr($str, $m->{'from'}, $m->{'to'} - $m->{'from'});
-                        my @list = eval($list_code);
-                        $list = \@list
+                        my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [Perlito5::Match::flat($m)])]);
+                        $list = Perlito5::Grammar::Block::eval_begin_block($ast)
                     }
                     my $full_ident = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
                     $Perlito5::PACKAGES->{$full_ident} = 1;
