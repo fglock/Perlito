@@ -67,21 +67,6 @@ sub eval_end_block {
         ]
     );
     return Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
-
-    # local $@;
-    # my @data = $block->emit_perl5();
-    # my $out = [];
-    # Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-    # my $code = "package $Perlito5::PKG_NAME;\n"
-    #          . "sub " . join( '', @$out ) . "\n";
-    # # say "END block: $code";
-
-    # # we add some extra information to the data, to make things more "dumpable"
-    # eval Perlito5::CompileTime::Dumper::generate_eval_string( $code );
-    # # eval "{ $code }; 1"
-    # if ($@) {
-    #     Perlito5::Compiler::error "Error in $phase block: " . $@;
-    # }
 }
 
 sub eval_begin_block {
@@ -310,21 +295,32 @@ token named_sub_def {
             attributes => $attributes,
         );
 
-        if ($ENV{PERLITO5DEV}) {
-            if ($name) {
-                # add named sub to SCOPE
-                my $full_name = "${namespace}::$name";
-                $Perlito5::GLOBAL->{$full_name} = $sub;
-                # runtime effect of subroutine declaration is "undef"
-                $sub = Perlito5::AST::Apply->new(
-                    code      => 'undef',
-                    namespace => '',
-                    arguments => []
-                );
-            }
-        }
+        if ( $Perlito5::EXPAND_USE ) {
+            # normal compiler (not "bootstrapping")
 
-        $MATCH->{capture} = $sub;
+            # TODO - evaluate the sub definition in a BEGIN block
+
+            if ($ENV{PERLITO5DEV}) {
+                if ($name) {
+                    # add named sub to SCOPE
+                    my $full_name = "${namespace}::$name";
+                    $Perlito5::GLOBAL->{$full_name} = $sub;
+                    # runtime effect of subroutine declaration is "undef"
+                    $sub = Perlito5::AST::Apply->new(
+                        code      => 'undef',
+                        namespace => '',
+                        arguments => []
+                    );
+                }
+            }
+
+            $MATCH->{capture} = $sub;
+        }
+        else {
+            # bootstrapping mode
+            # the subroutine AST is directly added to the global AST
+            $MATCH->{capture} = $sub;
+        }
     }
 };
 

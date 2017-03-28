@@ -5933,14 +5933,19 @@ use feature 'say';
                 }
             }
             my $sub = Perlito5::AST::Sub::->new('name' => $name, 'namespace' => $namespace, 'sig' => $sig, 'block' => $MATCH->{'_tmp'}, 'attributes' => $attributes);
-            if ($ENV{'PERLITO5DEV'}) {
-                if ($name) {
-                    my $full_name = $namespace . '::' . $name;
-                    $Perlito5::GLOBAL->{$full_name} = $sub;
-                    $sub = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+            if ($Perlito5::EXPAND_USE) {
+                if ($ENV{'PERLITO5DEV'}) {
+                    if ($name) {
+                        my $full_name = $namespace . '::' . $name;
+                        $Perlito5::GLOBAL->{$full_name} = $sub;
+                        $sub = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                    }
                 }
+                $MATCH->{'capture'} = $sub
             }
-            $MATCH->{'capture'} = $sub;
+            else {
+                $MATCH->{'capture'} = $sub
+            }
             1
         })));
         $tmp ? $MATCH : 0
