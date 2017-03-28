@@ -145,20 +145,16 @@ Libraries
 Parser
 ------
 
-- lexical variables in BEGIN blocks
+- Loops containing: BEGIN blocks, "use" statements, or named subroutines
 
-    This is partially fixed, see BEGIN_SCRATCHPAD in src5/
+    lexical variables inside loops don't behave properly if they are captured at compile-time
+
+    See BEGIN_SCRATCHPAD in src5/
 
 ~~~sh
-    t5/unit/begin_closure.t ..................... ok   
-    t5/unit/begin_global.t ...................... ok   
     t5/unit/begin_global_special_var.t .......... Failed 1/2 subtests 
-    t5/unit/begin_lexical_var.t ................. ok   
     t5/unit/begin_loop.t ........................ Failed 2/3 subtests 
-    t5/unit/begin_our_var.t ..................... ok   
     t5/unit/begin_recurse.t ..................... Failed 5/6 subtests 
-    t5/unit/block.t ............................. ok   
-    t5/unit/block_local.t ....................... ok   
 ~~~
 
 - parse example in http://www.perlmonks.org/?node_id=663393
