@@ -145,7 +145,7 @@ Libraries
 Parser
 ------
 
-- Loops containing: BEGIN blocks, "use" statements, or named subroutines
+- Loops containing: BEGIN/INIT/END blocks, "use" statements, or named subroutines
 
     lexical variables inside loops don't behave properly if they are captured at compile-time
 
