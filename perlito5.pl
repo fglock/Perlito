@@ -5934,12 +5934,12 @@ use feature 'say';
             }
             my $sub = Perlito5::AST::Sub::->new('name' => $name, 'namespace' => $namespace, 'sig' => $sig, 'block' => $MATCH->{'_tmp'}, 'attributes' => $attributes);
             if ($Perlito5::EXPAND_USE) {
-                if ($ENV{'PERLITO5DEV'}) {
-                    if ($name) {
-                        my $full_name = $namespace . '::' . $name;
-                        $Perlito5::GLOBAL->{$full_name} = $sub;
-                        $sub = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
-                    }
+                my $block = Perlito5::AST::Block::->new('stmts' => [$sub]);
+                Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');
+                if ($name) {
+                    my $full_name = $namespace . '::' . $name;
+                    $Perlito5::GLOBAL->{$full_name} = $sub;
+                    $sub = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
                 }
                 $MATCH->{'capture'} = $sub
             }
@@ -20944,7 +20944,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
     package Perlito5::AST::Sub;
     {
         sub Perlito5::AST::Sub::get_captures {
-            $_[0]->{'block'}->get_captures()
+            my $self = shift;
+            !$self->{'block'} && return;
+            return $self->{'block'}->get_captures()
         }
     }
     package Perlito5::AST::Use;
