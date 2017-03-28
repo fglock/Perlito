@@ -465,6 +465,7 @@ if ($backend) {
 
 
                     # TODO - insert END block executor
+                    # NOTE - END blocks are currently processed by P::Java::Emitter instead
 
                     # my $error;
                     # eval {
