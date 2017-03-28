@@ -36,6 +36,9 @@ sub perl5_to_js {
                          ) ],
               );
 
+    # use lexicals from BEGIN scratchpad
+    $ast = $ast->emit_begin_scratchpad();
+
     # say "ast: [" . ast . "]";
     my $js_code = $ast->emit_javascript2(0, $want);
     # say "js-source: [" . $js_code . "]";

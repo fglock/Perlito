@@ -12385,6 +12385,7 @@ use feature 'say';
             die('Syntax error in eval near pos ', $match->{'to'})
         }
         my $ast = Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => $match->{'capture'})]);
+        $ast = $ast->emit_begin_scratchpad();
         my $js_code = $ast->emit_javascript2(0, $want);
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
