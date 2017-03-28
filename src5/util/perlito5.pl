@@ -441,7 +441,7 @@ if ($backend) {
                     # emit BEGIN-block side-effects, INIT blocks
                     my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
                     my $m = Perlito5::Grammar::exp_stmts(
-                        $s
+                        $s . "\n"
                         . '{ '
                         .   'local $@; '
                         .   'local ${^GLOBAL_PHASE}; '
