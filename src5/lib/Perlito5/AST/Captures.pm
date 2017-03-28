@@ -175,7 +175,9 @@ package Perlito5::AST::For;
 package Perlito5::AST::Sub;
 {
     sub get_captures {
-        $_[0]->{block}->get_captures()
+        my $self      = shift;
+        return if !$self->{block};  # predeclaration
+        return $self->{block}->get_captures()
     }
 }
 
