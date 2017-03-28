@@ -4948,10 +4948,6 @@ use feature 'say';
 ');
             Perlito5::Compiler::error('Syntax Error')
         }
-        if ($ENV{'PERLITO5DEV'}) {
-            push(@Perlito5::COMP_UNIT, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
-            return
-        }
         add_comp_unit(Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
         return
     }
@@ -5108,10 +5104,8 @@ use feature 'say';
                     $var->{'_decl'} = 'global';
                     $var->{'_namespace'} = $Perlito5::PKG_NAME
                 }
-                if (1 || $ENV{'PERLITO5DEV'}) {
-                    my $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . ($var->{'namespace'} || $var->{'_namespace'} || 'C_') . '::' . $var->{'name'} . ($var->{'_decl'} eq 'global' ? '' : $var->{'_id'} ? '_' . $var->{'_id'} : '');
-                    $Perlito5::GLOBAL->{$compiletime_name} = {'value' => undef, 'ast' => $var}
-                }
+                my $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . ($var->{'namespace'} || $var->{'_namespace'} || 'C_') . '::' . $var->{'name'} . ($var->{'_decl'} eq 'global' ? '' : $var->{'_id'} ? '_' . $var->{'_id'} : '');
+                $Perlito5::GLOBAL->{$compiletime_name} = {'value' => undef, 'ast' => $var}
             }
         }
         push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT);
@@ -31720,10 +31714,7 @@ INIT failed--call queue aborted.
                     exit(255)
                 }
                 else {
-                    if ($ENV{'PERLITO5DEV'}) {
-                        push(@Perlito5::COMP_UNIT, Perlito5::Match::flat($m))
-                    }
-                    elsif ($expand_use) {
+                    if ($expand_use) {
                         my $ok;
                         eval {
                             Perlito5::Grammar::Use::add_comp_unit(Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));

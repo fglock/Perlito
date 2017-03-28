@@ -404,33 +404,26 @@ if ($backend) {
                 exit(255);
             }
             else {
-                if ($ENV{PERLITO5DEV}) {
-                    # "new BEGIN"
-                    push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
+                if ($expand_use) {
+                    my $ok;
+                    eval {
+                        Perlito5::Grammar::Use::add_comp_unit(
+                            Perlito5::AST::CompUnit->new(
+                                name => 'main',
+                                body => Perlito5::Match::flat($m),
+                            ),
+                        );
+                        $ok = 1;
+                    };
+                    if ( !$ok ) {
+                        my $error = $@
+                            || "Unknown error loading a module";
+                        warn $error;
+                        exit(255);
+                    }
                 }
                 else {
-                    # "old BEGIN"
-                    if ($expand_use) {
-                        my $ok;
-                        eval {
-                            Perlito5::Grammar::Use::add_comp_unit(
-                                Perlito5::AST::CompUnit->new(
-                                    name => 'main',
-                                    body => Perlito5::Match::flat($m),
-                                ),
-                            );
-                            $ok = 1;
-                        };
-                        if ( !$ok ) {
-                            my $error = $@
-                                || "Unknown error loading a module";
-                            warn $error;
-                            exit(255);
-                        }
-                    }
-                    else {
-                        push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
-                    }
+                    push @Perlito5::COMP_UNIT, Perlito5::Match::flat($m);
                 }
 
                 for (0 .. $#Perlito5::COMP_UNIT) {

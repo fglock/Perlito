@@ -325,17 +325,6 @@ sub expand_use {
         Perlito5::Compiler::error 'Syntax Error';
     }
 
-    if ($ENV{PERLITO5DEV}) {
-        # "new BEGIN"
-        push @Perlito5::COMP_UNIT,
-            Perlito5::AST::CompUnit->new(
-                name => 'main',
-                body => Perlito5::Match::flat($m),
-            );
-        return;
-    }
-
-    # "old BEGIN"
     add_comp_unit(
         Perlito5::AST::CompUnit->new(
             name => 'main',
