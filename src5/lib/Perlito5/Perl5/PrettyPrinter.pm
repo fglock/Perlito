@@ -389,7 +389,12 @@ sub block {
         push @$out, "{}";
         return;
     }
-    push @$out, '{', "\n";
+    if ( @$data == 2 ) {
+        push @$out, '{;', "\n";     # disambiguate { $x, $y } block vs. hash
+    }
+    else {
+        push @$out, '{', "\n";
+    }
     $level++;
     for my $line ( 1 .. $#$data ) {
         my $d = $data->[$line];

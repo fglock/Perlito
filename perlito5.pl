@@ -19387,8 +19387,14 @@ CORE.printf = function(List__) {
             push(@{$out}, '{}');
             return
         }
-        push(@{$out}, '{', '
-');
+        if (@{$data} == 2) {
+            push(@{$out}, '{;', '
+')
+        }
+        else {
+            push(@{$out}, '{', '
+')
+        }
         $level++;
         for my $line (1 .. $#{$data}) {
             my $d = $data->[$line];
