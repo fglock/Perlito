@@ -31672,8 +31672,9 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         }
         $backend eq 'java' && Perlito5::Java::Lib::init();
         ($backend eq 'js' || ${chr(15)} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
+        $Perlito5::EXPAND_USE = 1;
+        $bootstrapping && ($Perlito5::EXPAND_USE = 0);
         if ($execute) {
-            $Perlito5::EXPAND_USE = 1;
             local ${'@'};
             my $init = join('; ', @Use);
             eval('
@@ -31705,7 +31706,6 @@ INIT failed--call queue aborted.
         else {
             eval {
                 %INC = ();
-                $bootstrapping && ($Perlito5::EXPAND_USE = 0);
                 @Perlito5::COMP_UNIT = ();
                 undef();
                 my $m;

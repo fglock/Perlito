@@ -340,8 +340,13 @@ if ($backend) {
     Perlito5::JavaScript2::Lib::init()
         if $backend eq 'js' || $^O eq 'node.js';
 
+    $Perlito5::EXPAND_USE = 1;
+    # partially disable "use":
+    # force "use" code to be inlined instead of eval-ed
+    $Perlito5::EXPAND_USE = 0
+        if $bootstrapping;
+
     if ( $execute ) { 
-        $Perlito5::EXPAND_USE = 1;
         local $@;
         my $init = join("; ", @Use);
         eval qq{
@@ -374,11 +379,6 @@ if ($backend) {
             # since we are generating code that will run from scratch,
             # we need to start with an empty %INC so that all modules are "used"
             %INC = ();
-
-            # partially disable "use":
-            # force "use" code to be inlined instead of eval-ed
-            $Perlito5::EXPAND_USE = 0
-                if $bootstrapping;
 
             @Perlito5::COMP_UNIT = ();
 
