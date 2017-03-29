@@ -6,6 +6,11 @@
 
 	utf8 support (Java)
 
+	BEGIN blocks (parser)
+
+- Parser:
+-- Implemented compile-time scratchpad, used in BEGIN blocks.
+
 - Java:
 -- "Encode.pm" encode_utf8, decode_utf8
 -- "Scalar::Util", "List::Util" ports.
