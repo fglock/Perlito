@@ -12083,11 +12083,17 @@ use feature 'say';
         }
         sub Perlito5::AST::Apply::emit_javascript2_set_list {
             my($self, $level, $list) = @_;
+            my $code = $self->{'code'};
             if ($self->code() eq 'undef') {;
                 return $list . '.shift()'
             }
             if ($self->code() eq 'prefix:<$>') {;
                 return 'p5scalar_deref_set(' . Perlito5::JavaScript2::emit_javascript2_autovivify($self->{'arguments'}->[0], $level + 1, 'scalar') . ', ' . $list . '.shift()' . ', ' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ')'
+            }
+            if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {;
+                return join('; ', map {;
+                    $_->emit_javascript2_set_list($level, $list)
+                } @{$self->{'arguments'}})
             }
             die('not implemented: assign to ', $self->code())
         }

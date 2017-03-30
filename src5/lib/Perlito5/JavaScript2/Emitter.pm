@@ -2923,6 +2923,7 @@ package Perlito5::AST::Apply;
 
     sub emit_javascript2_set_list {
         my ($self, $level, $list) = @_;
+        my $code = $self->{code};
         if ( $self->code eq 'undef' ) {
             return $list . '.shift()' 
         }
@@ -2932,6 +2933,12 @@ package Perlito5::AST::Apply;
                 . $list . '.shift()'  . ', '
                 . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME)
                 . ')';
+        }
+        if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
+            return join( '; ',
+                     map { $_->emit_javascript2_set_list( $level, $list ) }
+                         @{ $self->{arguments} }
+                   );
         }
         die "not implemented: assign to ", $self->code;
     }
