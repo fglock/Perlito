@@ -30984,6 +30984,9 @@ class PlString extends PlObject {
             if (s.equals("&") || s.equals("`") || s.equals("' . chr(39) . '")) {
                 return PerlOp.regex_var(s);
             }
+            if (s.equals("$")) {
+                return PerlOp.getPID();
+            }
         }
         if (s.indexOf("::") == -1) {
             s = namespace + "::" + s;
