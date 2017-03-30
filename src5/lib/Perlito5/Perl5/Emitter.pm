@@ -284,6 +284,11 @@ package Perlito5::AST::Apply;
         }
         my $code = $ns . $self->{code};
 
+        if ($code eq 'circumfix:<{ }>' && @{ $self->{'arguments'} } == 1) {
+            # disambiguate block {1} from hash {"1"=>undef}
+            return ['op', $code, $self->{'arguments'}->[0]->emit_perl5(), "" ];
+        }
+
         if (  $code eq 'prefix:<$>'
            || $code eq 'prefix:<@>'
            || $code eq 'prefix:<%>'
