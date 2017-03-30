@@ -5550,6 +5550,18 @@ use feature 'say';
             else {;
                 $arguments = $self->{'arguments'}
             }
+            if ($code eq 'our' || $code eq 'my') {
+                my @arg;
+                for my $var (@{$arguments}) {
+                    if ($var->{'namespace'} && $var->{'namespace'} eq 'Perlito5::BEGIN') {;
+                        push(@arg, $var)
+                    }
+                    else {;
+                        push(@arg, __PACKAGE__->new('code' => $code, 'arguments' => [$var]))
+                    }
+                }
+                return __PACKAGE__->new('code' => 'circumfix:<( )>', 'arguments' => \@arg)
+            }
             return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
         }
     }
@@ -5594,10 +5606,11 @@ use feature 'say';
     {;
         sub Perlito5::AST::Decl::emit_begin_scratchpad {
             my $self = $_[0];
-            if (!$self->{'var'}->{'namespace'} && $Perlito5::BEGIN_SCRATCHPAD{$self->{'var'}->{'_id'} || ''}) {;
-                return $self->{'var'}->emit_begin_scratchpad()
+            my $var = $self->{'var'}->emit_begin_scratchpad();
+            if ($var->{'namespace'} && $var->{'namespace'} eq 'Perlito5::BEGIN') {;
+                return $var
             }
-            return __PACKAGE__->new(%{$self}, 'var' => $self->{'var'}->emit_begin_scratchpad())
+            return __PACKAGE__->new(%{$self}, 'var' => $var)
         }
     }
     package Perlito5::AST::Sub;
