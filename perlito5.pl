@@ -22668,7 +22668,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 if (!($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my' || $decl->decl() eq 'our'))) {
                     if (($decl->isa('Perlito5::AST::Int')) || ($decl->isa('Perlito5::AST::Num')) || ($decl->isa('Perlito5::AST::Buf'))) {}
                     elsif ($decl->isa('Perlito5::AST::Apply') && !($decl->{'namespace'} eq 'Java' && $decl->{'code'} eq 'inline') && !($Perlito5::Java::valid_java_statement{$decl->{'code'}})) {;
-                        push(@str, 'PerlOp.statement(' . $decl->emit_java($level, 'void') . ');')
+                        push(@str, 'PerlOp.statement(' . $decl->emit_java($level + 1, 'void') . ');')
                     }
                     elsif ($decl->isa('Perlito5::AST::CompUnit') || $decl->isa('Perlito5::AST::For') || $decl->isa('Perlito5::AST::While') || $decl->isa('Perlito5::AST::If') || $decl->isa('Perlito5::AST::Block')) {;
                         push(@str, $decl->emit_java($level, 'void'))

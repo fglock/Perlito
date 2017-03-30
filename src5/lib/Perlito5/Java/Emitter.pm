@@ -1038,7 +1038,7 @@ package Perlito5::Java::LexicalBlock;
                   )
                 {
                     # workaround for "Error: not a statement"
-                    push @str, 'PerlOp.statement(' . $decl->emit_java( $level, 'void' ) . ');';
+                    push @str, 'PerlOp.statement(' . $decl->emit_java( $level+1, 'void' ) . ');';
                 }
                 elsif ( $decl->isa('Perlito5::AST::CompUnit')
                       || $decl->isa('Perlito5::AST::For' )
