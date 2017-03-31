@@ -82,7 +82,7 @@ sub eval_begin_block {
     my %dont_capture = map { $_->{dont} ? ( $_->{dont} => 1 ) : () } @captured;
     my %capture = map { $_->{dont} ? ()
                       : $dont_capture{ $_->{_id} } ? ()
-                      : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq '') ? ()
+                      : ($_->{_decl} eq 'local' || $_->{_decl} eq 'global' || $_->{_decl} eq 'our' || $_->{_decl} eq '') ? ()
                       : ( $_->{_id} => $_ )
                       } @captured;
 

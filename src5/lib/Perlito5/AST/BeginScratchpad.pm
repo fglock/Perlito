@@ -137,7 +137,7 @@ package Perlito5::AST::Apply;
             $arguments = $self->{arguments};
         }
 
-        if ($code eq 'our' || $code eq 'my') {
+        if ($code eq 'my') {
             my @arg;
             for my $var (@$arguments) {
                 if ($var->{namespace} && $var->{namespace} eq 'Perlito5::BEGIN') {
