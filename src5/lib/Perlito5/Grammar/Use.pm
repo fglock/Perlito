@@ -217,7 +217,8 @@ sub parse_time_eval {
         if (!$skip_import) {
             # call import/unimport
             if ($use_or_not eq 'use') {
-                if (defined &{$module_name . '::import'}) {
+                my $code = $module_name->can('import');
+                if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
                     eval "package $current_module_name;\n"
@@ -227,7 +228,8 @@ sub parse_time_eval {
                 }
             }
             elsif ($use_or_not eq 'no') {
-                if (defined &{$module_name . '::unimport'}) {
+                my $code = $module_name->can('unimport');
+                if (defined($code)) {
                     # make sure that caller() points to the current module under compilation
                     unshift @{ $Perlito5::CALLER }, [ $current_module_name ];
                     eval "package $current_module_name;\n"

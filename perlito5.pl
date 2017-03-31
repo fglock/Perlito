@@ -4872,16 +4872,18 @@ use feature 'say';
             my $filename = modulename_to_filename($module_name);
             Perlito5::Grammar::Use::require($filename);
             if (!$skip_import) {
-                if ($use_or_not eq 'use') {;
-                    if (defined(&{$module_name . '::import'})) {
+                if ($use_or_not eq 'use') {
+                    my $code = $module_name->can('import');
+                    if (defined($code)) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
                         eval('package ' . $current_module_name . ';
 ' . '$module_name->import(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
                         shift(@{$Perlito5::CALLER})
                     }
                 }
-                elsif ($use_or_not eq 'no') {;
-                    if (defined(&{$module_name . '::unimport'})) {
+                elsif ($use_or_not eq 'no') {
+                    my $code = $module_name->can('unimport');
+                    if (defined($code)) {
                         unshift(@{$Perlito5::CALLER}, [$current_module_name]);
                         eval('package ' . $current_module_name . ';
 ' . '$module_name->unimport(@$arguments); 1') or ${'@'}->Perlito5::Compiler::error();
