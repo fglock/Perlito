@@ -12460,6 +12460,9 @@ if (typeof p5pkg !== "object") {
     p5pkg.UNIVERSAL.can = function (List__) {
         var o = List__[0];
         var s = List__[1];
+        if (typeof o === "string") {
+            return p5method_lookup(s, o, {})
+        }
         if ( s.indexOf("::") == -1 ) {
             return p5method_lookup(s, o._class_._ref_, {})
         }
