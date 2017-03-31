@@ -11605,17 +11605,20 @@ use feature 'say';
         }, 'next' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             $Perlito5::THROW = 1;
-            my $label = $self->{'arguments'}->[0]->{'code'} || '';
+            my $label = '';
+            @{$self->{'arguments'}} && ($label = $self->{'arguments'}->[0]->{'code'} || '');
             Perlito5::JavaScript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(new p5_error("next", ' . Perlito5::JavaScript2::escape_string($label) . '))')
         }, 'last' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             $Perlito5::THROW = 1;
-            my $label = $self->{'arguments'}->[0]->{'code'} || '';
+            my $label = '';
+            @{$self->{'arguments'}} && ($label = $self->{'arguments'}->[0]->{'code'} || '');
             Perlito5::JavaScript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(new p5_error("last", ' . Perlito5::JavaScript2::escape_string($label) . '))')
         }, 'redo' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             $Perlito5::THROW = 1;
-            my $label = $self->{'arguments'}->[0]->{'code'} || '';
+            my $label = '';
+            @{$self->{'arguments'}} && ($label = $self->{'arguments'}->[0]->{'code'} || '');
             Perlito5::JavaScript2::emit_wrap_statement_javascript2($level, $wantarray, 'throw(new p5_error("redo", ' . Perlito5::JavaScript2::escape_string($label) . '))')
         }, 'return' => sub {
             (my($self), my($level), my($wantarray)) = @_;

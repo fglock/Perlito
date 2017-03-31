@@ -2094,7 +2094,8 @@ package Perlito5::AST::Apply;
         'next' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
+            my $label = '';
+            $label = $self->{arguments}[0]{code} || "" if @{$self->{arguments}};
             Perlito5::JavaScript2::emit_wrap_statement_javascript2(
                 $level,
                 $wantarray, 
@@ -2104,7 +2105,8 @@ package Perlito5::AST::Apply;
         'last' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
+            my $label = '';
+            $label = $self->{arguments}[0]{code} || "" if @{$self->{arguments}};
             Perlito5::JavaScript2::emit_wrap_statement_javascript2(
                 $level,
                 $wantarray, 
@@ -2114,7 +2116,8 @@ package Perlito5::AST::Apply;
         'redo' => sub {
             my ($self, $level, $wantarray) = @_;
             $Perlito5::THROW = 1;
-            my $label =  $self->{arguments}[0]{code} || "";
+            my $label = '';
+            $label = $self->{arguments}[0]{code} || "" if @{$self->{arguments}};
             Perlito5::JavaScript2::emit_wrap_statement_javascript2(
                 $level,
                 $wantarray, 
