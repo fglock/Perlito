@@ -31773,8 +31773,11 @@ INIT failed--call queue aborted.
                     }
                     if (!$bootstrapping) {
                         my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                        my $m = Perlito5::Grammar::exp_stmts($s . '
-' . '{ ' . 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} ', 0);
+                        if (@Perlito5::INIT_BLOCK) {;
+                            $s = $s . '
+' . '{ ' . 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} '
+                        }
+                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
                         unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];
