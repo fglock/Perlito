@@ -827,6 +827,9 @@ sub emit_globals_after_BEGIN {
     my $dumper_seen = {};
     my $tab = "";
 
+    # exclude %ENV
+    delete $scope->{'%main::ENV'};
+
     for my $v ( '$main::0', '$main::a', '$main::b', '$main::_' ) {
         # inject special variables like $0 (script name) in the scope, if it is not there already
         my ($sigil, $namespace, $name) = $v =~ /^([$@%])(\w+)::(.*)$/;
