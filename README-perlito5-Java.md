@@ -1026,6 +1026,9 @@ Perl features
 
         %Perlito5::DATA_SECTION contains the __DATA__ for each package
 
+    add test:
+    ' print " ${\__PACKAGE__} \n" '
+
 - Add tests
 
     NaN, Inf, -0
