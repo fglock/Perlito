@@ -160,8 +160,8 @@ package Perlito5::AST::Var;
         my $self = $_[0];
 
         my $str_name = $self->{name};
-        $str_name = '\\\\' if $str_name eq '\\';   # escape $\
-        $str_name = "\\'" if $str_name eq "'";     # escape $'
+        #$str_name = '\\\\' if $str_name eq '\\';   # escape $\
+        #$str_name = "\\'" if $str_name eq "'";     # escape $'
 
         # Normalize the sigil
         my $ns = '';
