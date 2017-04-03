@@ -194,16 +194,10 @@ sub parse_time_eval {
     $arguments = [] unless defined $arguments;
 
     # the first time the module is seen,
-    # load the module source code
-    # and create a syntax tree
-    # TODO: the module should run in a new scope
-    #   without access to the current lexical variables
+    # load the module source code and create a syntax tree.
+    # the module runs in a new scope without access to the current lexical variables
 
     local $Perlito5::STRICT = 0;
-    if ( !$Perlito5::EXPAND_USE ) {
-        expand_use($ast);
-    }
-
     if ( $Perlito5::EXPAND_USE ) {
         # normal "use" is not disabled, go for it:
         #   - require the module (evaluate the source code)
@@ -244,6 +238,10 @@ sub parse_time_eval {
                 }
             }
         }
+    }
+    else {
+        # force "use" code to be inlined instead of eval-ed
+        bootstrapping_use($ast);
     }
 
     return Perlito5::AST::Apply->new(
@@ -292,7 +290,8 @@ sub filename_lookup {
     Perlito5::Compiler::error "Can't locate $filename in \@INC ".'(@INC contains '.join(" ",@INC).').';
 }
 
-sub expand_use {
+sub bootstrapping_use {
+    # force "use" code to be inlined instead of eval-ed
     my $stmt = shift;
 
     my $module_name = $stmt->{mod};

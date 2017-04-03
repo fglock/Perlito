@@ -4861,9 +4861,6 @@ use feature 'say';
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
         local $Perlito5::STRICT = 0;
-        if (!$Perlito5::EXPAND_USE) {;
-            expand_use($ast)
-        }
         if ($Perlito5::EXPAND_USE) {
             my $current_module_name = $Perlito5::PKG_NAME;
             my $filename = modulename_to_filename($module_name);
@@ -4888,6 +4885,9 @@ use feature 'say';
                     }
                 }
             }
+        }
+        else {;
+            bootstrapping_use($ast)
         }
         return Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
     }
@@ -4923,7 +4923,7 @@ use feature 'say';
         }
         Perlito5::Compiler::error('Can' . chr(39) . 't locate ' . $filename . ' in @INC ' . '(@INC contains ' . join(' ', @INC) . ').')
     }
-    sub Perlito5::Grammar::Use::expand_use {
+    sub Perlito5::Grammar::Use::bootstrapping_use {
         my $stmt = shift;
         my $module_name = $stmt->{'mod'};
         my $filename = modulename_to_filename($module_name);
