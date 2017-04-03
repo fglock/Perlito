@@ -31401,7 +31401,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         }
         return $s
     }
-    push(@Use, 'no warnings');
+    my $use_warnings = '';
     push(@Use, 'no strict');
     ARG_LOOP:
     while (@ARGV && substr($ARGV[0], 0, 1) eq '-') {
@@ -31467,15 +31467,15 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
             shift(@ARGV)
         }
         elsif (substr($ARGV[0], 0, 2) eq '-w') {
-            push(@Use, 'use warnings');
+            $use_warnings = 'w';
             chomp_switch()
         }
         elsif (substr($ARGV[0], 0, 2) eq '-W') {
-            push(@Use, 'use warnings');
+            $use_warnings = 'W';
             chomp_switch()
         }
         elsif (substr($ARGV[0], 0, 2) eq '-X') {
-            push(@Use, 'no warnings');
+            $use_warnings = '';
             chomp_switch()
         }
         elsif (substr($ARGV[0], 0, 2) eq '-n') {
@@ -31579,6 +31579,9 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::PROTO = {};
         Perlito5::set_global_phase('BEGIN');
+        if ($source =~ m/^#![^\n]+-(w|W)/) {;
+            $use_warnings = $1
+        }
         $source = '
 # line 1
 ' . $source;
@@ -31588,6 +31591,10 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
                     ' . $wrapper_end . '
                   '
         }
+        if ($verbose) {;
+            warn('// source [[[ ' . $source . ' ]]]
+')
+        }
         $backend eq 'java' && Perlito5::Java::Lib::init();
         ($backend eq 'js' || ${chr(15)} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
         $Perlito5::EXPAND_USE = 1;
@@ -31595,7 +31602,10 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         if ($execute) {
             local ${'@'};
             my $init = join('; ', @Use);
+            my $warnings = '';
+            $use_warnings && ($warnings = 'use warnings');
             eval('
+            ' . $warnings . ';
             Perlito5::set_global_phase("CHECK");
             $_->() for @Perlito5::CHECK_BLOCK;
             package main;
@@ -31626,6 +31636,8 @@ INIT failed--call queue aborted.
                 %INC = ();
                 @Perlito5::COMP_UNIT = ();
                 undef();
+                $use_warnings && ($source = 'use warnings;
+' . $source);
                 my $m;
                 my $ok;
                 eval {

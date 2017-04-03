@@ -135,7 +135,7 @@ sub get_text_from_switch {
     return $s;
 }
 
-push @Use, "no warnings";
+my $use_warnings = "";
 push @Use, "no strict";
 
 ARG_LOOP:
@@ -203,15 +203,15 @@ while (@ARGV && substr($ARGV[0], 0, 1) eq '-')
         shift @ARGV;
     }
     elsif (substr($ARGV[0], 0, 2) eq '-w') {
-        push @Use, "use warnings";
+        $use_warnings = "w";
         chomp_switch();
     }
     elsif (substr($ARGV[0], 0, 2) eq '-W') {
-        push @Use, "use warnings";
+        $use_warnings = "W";
         chomp_switch();
     }
     elsif (substr($ARGV[0], 0, 2) eq '-X') {
-        push @Use, "no warnings";
+        $use_warnings = "";
         chomp_switch();
     }
     elsif (substr($ARGV[0], 0, 2) eq '-n') {
@@ -320,6 +320,11 @@ if ($backend) {
     $Perlito5::PROTO    = {};
     Perlito5::set_global_phase("BEGIN");
 
+    if ($source =~ /^#![^\n]+-(w|W)/) {
+        #!./perl -w
+        $use_warnings = $1;
+    }
+
     $source = "\n# line 1\n"
             . $source;
 
@@ -328,6 +333,9 @@ if ($backend) {
                     $source;
                     $wrapper_end
                   ";
+    }
+    if ($verbose) {
+        warn "// source [[[ $source ]]]\n";
     }
 
     # TODO - reset information about the current compilation process,
@@ -349,7 +357,10 @@ if ($backend) {
     if ( $execute ) { 
         local $@;
         my $init = join("; ", @Use);
+        my $warnings = '';
+        $warnings = "use warnings" if $use_warnings;
         eval qq{
+            $warnings;
             Perlito5::set_global_phase("CHECK");
             \$_->() for \@Perlito5::CHECK_BLOCK;
             package main;
@@ -384,6 +395,8 @@ if ($backend) {
 
             # start with no-strict
             no strict;
+
+            $source = "use warnings;\n" . $source if $use_warnings;
 
             my $m;
             my $ok;
