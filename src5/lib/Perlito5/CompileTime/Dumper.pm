@@ -302,8 +302,6 @@ sub collect_refs {
         if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
             next;
         }
-        next
-            if substr($name, 1, 2) eq "C_";
         if (substr($name, 7, 1) lt 'A') {
             # encode special variable names like $main::" to ${'main::"'}
             $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'
@@ -313,7 +311,7 @@ sub collect_refs {
             # "our" variables are lexical aliases; we want the original global variable name
             $name =
                   ($ast->{_real_sigil} || $ast->{sigil})
-                . ($ast->{namespace} || $ast->{_namespace} || "C_")
+                . ($ast->{namespace} || $ast->{_namespace})
                 . "::" . $ast->{name};
         }
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
@@ -362,8 +360,6 @@ sub _dump_AST_from_scope {
     }
 
     # TODO - emit lexicals
-    return
-        if substr($name, 1, 2) eq "C_";
 
     if (substr($name, 7, 1) lt 'A') {
         # encode special variable names like $main::" to ${'main::"'}
@@ -374,7 +370,7 @@ sub _dump_AST_from_scope {
         # "our" variables are lexical aliases; we want the original global variable name
         $name =
               ($ast->{_real_sigil} || $ast->{sigil})
-            . ($ast->{namespace} || $ast->{_namespace} || "C_")
+            . ($ast->{namespace} || $ast->{_namespace})
             . "::" . $ast->{name};
     }
     if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
@@ -920,8 +916,6 @@ sub emit_globals_after_BEGIN {
         }
 
         # TODO - emit lexicals
-        next
-            if substr($name, 1, 2) eq "C_";
 
         if (substr($name, 7, 1) lt 'A') {
             # encode special variable names like $main::" to ${'main::"'}
@@ -932,7 +926,7 @@ sub emit_globals_after_BEGIN {
             # "our" variables are lexical aliases; we want the original global variable name
             $name =
                   ($ast->{_real_sigil} || $ast->{sigil})
-                . ($ast->{namespace} || $ast->{_namespace} || "C_")
+                . ($ast->{namespace} || $ast->{_namespace})
                 . "::" . $ast->{name};
             next if $scope->{$name};    # skip if we've seen this before
         }

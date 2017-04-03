@@ -8968,13 +8968,12 @@ use feature 'say';
             if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {;
                 next
             }
-            substr($name, 1, 2) eq 'C_' && next;
             if (substr($name, 7, 1) lt 'A') {;
                 $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
             }
             my $ast = $item->{'ast'};
             if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {;
-                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'}
             }
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
                 my $value = eval($name);
@@ -9015,13 +9014,12 @@ use feature 'say';
             warn('# don' . chr(39) . 't know how to initialize subroutine ' . $name . ' in BEGIN');
             return
         }
-        substr($name, 1, 2) eq 'C_' && return;
         if (substr($name, 7, 1) lt 'A') {;
             $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
         }
         my $ast = $item->{'ast'};
         if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {;
-            $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'}
+            $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'}
         }
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = eval($name);
@@ -9317,13 +9315,12 @@ use feature 'say';
                 push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
                 next
             }
-            substr($name, 1, 2) eq 'C_' && next;
             if (substr($name, 7, 1) lt 'A') {;
                 $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
             }
             my $ast = $item->{'ast'};
             if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
-                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'} || 'C_') . '::' . $ast->{'name'};
+                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'};
                 $scope->{$name} && next
             }
             $name eq '@main::ARGV' && next;
