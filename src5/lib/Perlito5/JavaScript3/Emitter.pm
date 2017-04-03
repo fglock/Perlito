@@ -2128,16 +2128,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Use;
-{
-    sub emit_javascript3 {
-        my $self = shift;
-        my $level = shift;
-        Perlito5::Grammar::Use::emit_time_eval($self);
-        '// ' . $self->{code} . ' ' . $self->{mod} . "\n"
-    }
-}
-
 1;
 
 =begin

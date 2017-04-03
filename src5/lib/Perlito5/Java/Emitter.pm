@@ -1064,7 +1064,6 @@ package Perlito5::Java::LexicalBlock;
 
             if    (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
-                  || $last_statement->isa( 'Perlito5::AST::Use' )
                   )
             {
                 push @str, $last_statement->emit_java($level, 'void');
@@ -2818,22 +2817,6 @@ package Perlito5::AST::Sub;
         # };
         # c.apply( context, args );
 
-    }
-    sub emit_java_get_decl { () }
-    sub emit_java_has_regex { () }
-}
-
-package Perlito5::AST::Use;
-{
-    sub emit_java {
-        my ($self, $level, $wantarray) = @_;
-        Perlito5::Grammar::Use::emit_time_eval($self);
-        if ($wantarray ne 'void') {
-            return 'PlCx.UNDEF';
-        }
-        else {
-            return '// ' . $self->{code} . ' ' . $self->{mod} . "\n";
-        }
     }
     sub emit_java_get_decl { () }
     sub emit_java_has_regex { () }

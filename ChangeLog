@@ -10,6 +10,8 @@
 
 - Parser:
 -- Implemented compile-time scratchpad, used in BEGIN blocks.
+-- "Use" is no longer an AST node, because all "use" statements
+    are executed at compile-time
 
 - Java:
 -- "Encode.pm" encode_utf8, decode_utf8

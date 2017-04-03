@@ -674,18 +674,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Use;
-{
-    sub emit_xs {
-        my $self = shift;
-        my $level = shift;
-        Perlito5::Grammar::Use::emit_time_eval($self);
-
-        return "\n"
-            . Perlito5::XS::tab($level) . "# " . $self->{code} . " " . $self->{mod} . "\n"
-    }
-}
-
 1;
 
 =begin

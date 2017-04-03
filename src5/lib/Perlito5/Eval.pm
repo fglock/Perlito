@@ -226,15 +226,6 @@ sub eval {
 }
 
 
-package Perlito5::AST::Use;
-sub eval {
-    my $self = $_[0];
-    my $env = $_[1];
-
-    warn "Interpreter TODO: Perlito5::AST::Use";
-    'use ' . $self->{mod}
-}
-
 1;
 
 =begin

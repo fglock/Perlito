@@ -181,11 +181,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Use;
-{
-    sub get_captures { () }
-}
-
 1;
 
 =begin

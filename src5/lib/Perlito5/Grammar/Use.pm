@@ -158,16 +158,21 @@ token stmt_use {
                 $MATCH->{capture} = Perlito5::AST::Block->new( stmts => \@ast );
             }
             else {
-                my $ast = Perlito5::AST::Use->new(
-                        code      => $use_decl,
-                        mod       => $full_ident,
-                        arguments => $list
-                    );
                 if ($Perlito5::EMIT_USE) {
-                    $MATCH->{capture} = $ast;
+                    $MATCH->{capture} = Perlito5::AST::Apply->new(
+                        code      => 'undef',
+                        namespace => '',
+                        arguments => []
+                    );
                 }
                 else {
-                    $MATCH->{capture} = parse_time_eval($ast);
+                    $MATCH->{capture} = parse_time_eval(
+                        {
+                            mod       => $full_ident,
+                            code      => $use_decl,
+                            arguments => $list
+                        }
+                    );
                 }
             }
         }
@@ -179,8 +184,8 @@ token stmt_use {
 sub parse_time_eval {
     my $ast = shift;
 
-    my $module_name = $ast->mod;
-    my $use_or_not  = $ast->code;
+    my $module_name = $ast->{mod};
+    my $use_or_not  = $ast->{code};
     my $arguments   = $ast->{arguments};
 
     # test for "empty list" (and don't call import)
@@ -251,11 +256,11 @@ sub parse_time_eval {
 sub emit_time_eval {
     my $ast = shift;
 
-    if ($ast->mod eq 'strict') {
-        if ($ast->code eq 'use') {
+    if ($ast->{mod} eq 'strict') {
+        if ($ast->{code} eq 'use') {
             strict->import();
         }
-        elsif ($ast->code eq 'no') {
+        elsif ($ast->{code} eq 'no') {
             strict->unimport();
         }
     }
@@ -290,7 +295,7 @@ sub filename_lookup {
 sub expand_use {
     my $stmt = shift;
 
-    my $module_name = $stmt->mod;
+    my $module_name = $stmt->{mod};
 
     my $filename = modulename_to_filename($module_name);
 
@@ -341,12 +346,6 @@ sub add_comp_unit {
     my $comp_unit = shift;
 
     # warn "parsed comp_unit: '", $comp_unit->name, "'";
-    for my $stmt (@{ $comp_unit->body }) {
-        if ($stmt->isa('Perlito5::AST::Use')) {
-            local $Perlito5::STRICT = 0;
-            expand_use($stmt);
-        }
-    }
     push @Perlito5::COMP_UNIT, $comp_unit;
     # say "comp_unit done";
 }

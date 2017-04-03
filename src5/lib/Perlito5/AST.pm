@@ -280,11 +280,6 @@ sub is_anon_sub {
 }
 
 
-package Perlito5::AST::Use;
-sub new { my $class = shift; bless {@_}, $class }
-sub mod { $_[0]->{mod} }
-sub code { $_[0]->{code} }
-
 1;
 
 =begin

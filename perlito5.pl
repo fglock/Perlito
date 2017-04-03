@@ -4835,14 +4835,11 @@ use feature 'say';
                         }
                         $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => \@ast)
                     }
-                    else {
-                        my $ast = Perlito5::AST::Use::->new('code' => $use_decl, 'mod' => $full_ident, 'arguments' => $list);
-                        if ($Perlito5::EMIT_USE) {;
-                            $MATCH->{'capture'} = $ast
-                        }
-                        else {;
-                            $MATCH->{'capture'} = parse_time_eval($ast)
-                        }
+                    elsif ($Perlito5::EMIT_USE) {;
+                        $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                    }
+                    else {;
+                        $MATCH->{'capture'} = parse_time_eval({'mod' => $full_ident, 'code' => $use_decl, 'arguments' => $list})
                     }
                     1
                 }))
@@ -4858,8 +4855,8 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::parse_time_eval {
         my $ast = shift;
-        my $module_name = $ast->mod();
-        my $use_or_not = $ast->code();
+        my $module_name = $ast->{'mod'};
+        my $use_or_not = $ast->{'code'};
         my $arguments = $ast->{'arguments'};
         my $skip_import = defined($arguments) && @{$arguments} == 0;
         defined($arguments) || ($arguments = []);
@@ -4896,11 +4893,11 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::emit_time_eval {
         my $ast = shift;
-        if ($ast->mod() eq 'strict') {
-            if ($ast->code() eq 'use') {;
+        if ($ast->{'mod'} eq 'strict') {
+            if ($ast->{'code'} eq 'use') {;
                 strict::->import()
             }
-            elsif ($ast->code() eq 'no') {;
+            elsif ($ast->{'code'} eq 'no') {;
                 strict::->unimport()
             }
         }
@@ -4928,7 +4925,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::expand_use {
         my $stmt = shift;
-        my $module_name = $stmt->mod();
+        my $module_name = $stmt->{'mod'};
         my $filename = modulename_to_filename($module_name);
         filename_lookup($filename) eq 'done' && return;
         local $Perlito5::FILE_NAME = $filename;
@@ -4955,12 +4952,6 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::add_comp_unit {
         my $comp_unit = shift;
-        for my $stmt (@{$comp_unit->body()}) {;
-            if ($stmt->isa('Perlito5::AST::Use')) {
-                local $Perlito5::STRICT = 0;
-                expand_use($stmt)
-            }
-        }
         push(@Perlito5::COMP_UNIT, $comp_unit)
     }
     sub Perlito5::Grammar::Use::require {
@@ -5423,17 +5414,6 @@ use feature 'say';
         my $self = shift;
         $self->isa('Perlito5::AST::Sub') && !$self->{'name'}
     }
-    package Perlito5::AST::Use;
-    sub Perlito5::AST::Use::new {
-        my $class = shift;
-        bless({@_, }, $class)
-    }
-    sub Perlito5::AST::Use::mod {;
-        $_[0]->{'mod'}
-    }
-    sub Perlito5::AST::Use::code {;
-        $_[0]->{'code'}
-    }
     1
 }
 {
@@ -5627,13 +5607,6 @@ use feature 'say';
                 } @stmts;
                 $self = __PACKAGE__->new(%{$self}, ($self->{'block'} ? ('block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts])) : ()))
             }
-            return $self
-        }
-    }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_begin_scratchpad {
-            my $self = shift;
             return $self
         }
     }
@@ -8764,13 +8737,6 @@ use feature 'say';
             return $self
         }
     }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_compile_time {
-            my $self = shift;
-            return $self
-        }
-    }
     1
 }
 {
@@ -10703,7 +10669,7 @@ use feature 'say';
                 if ($last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return' && $self->{'top_level'} && @{$last_statement->{'arguments'}}) {;
                     $last_statement = $last_statement->{'arguments'}->[0]
                 }
-                if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Block') || $last_statement->isa('Perlito5::AST::Use') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto' || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {;
+                if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::If') || $last_statement->isa('Perlito5::AST::Block') || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'goto' || $last_statement->isa('Perlito5::AST::Apply') && $last_statement->code() eq 'return') {;
                     push(@str, $last_statement->emit_javascript2($level, $wantarray))
                 }
                 elsif ($has_local) {;
@@ -12365,26 +12331,6 @@ use feature 'say';
             ()
         }
         sub Perlito5::AST::Sub::emit_javascript2_has_regex {;
-            ()
-        }
-    }
-    package Perlito5::AST::Use;
-    {
-        sub Perlito5::AST::Use::emit_javascript2 {
-            (my($self), my($level), my($wantarray)) = @_;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            if ($wantarray ne 'void') {;
-                return 'p5context([], p5want)'
-            }
-            else {;
-                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
-'
-            }
-        }
-        sub Perlito5::AST::Use::emit_javascript2_get_decl {;
-            ()
-        }
-        sub Perlito5::AST::Use::emit_javascript2_has_regex {;
             ()
         }
     }
@@ -16827,16 +16773,6 @@ CORE.sprintf = function(List__) {
             }
         }
     }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_javascript3 {
-            my $self = shift;
-            my $level = shift;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
-'
-        }
-    }
     1
 }
 {
@@ -19163,19 +19099,6 @@ CORE.printf = function(List__) {
             return ['stmt' => ['keyword' => 'sub'], ['bareword' => $self->{'namespace'} . '::' . $self->{'name'}], @sig, @parts]
         }
     }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_perl5 {
-            my $self = shift;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            if ($Perlito5::EMIT_USE) {;
-                return ['stmt' => ['keyword' => 'use'], ['bareword' => $self->{'mod'}]]
-            }
-            else {;
-                return ['comment' => '# ' . $self->{'code'} . ' ' . $self->{'mod'}]
-            }
-        }
-    }
     1
 }
 {
@@ -20063,14 +19986,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
         }
     }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_perl6 {
-            my $self = shift;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            return ['comment' => '# ' . $self->{'code'} . ' ' . $self->{'mod'}]
-        }
-    }
     1
 }
 {
@@ -20803,17 +20718,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 '
         }
     }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::emit_xs {
-            my $self = shift;
-            my $level = shift;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            return '
-' . Perlito5::XS::tab($level) . '# ' . $self->{'code'} . ' ' . $self->{'mod'} . '
-'
-        }
-    }
     1
 }
 {
@@ -20979,12 +20883,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $self = shift;
             !$self->{'block'} && return;
             return $self->{'block'}->get_captures()
-        }
-    }
-    package Perlito5::AST::Use;
-    {;
-        sub Perlito5::AST::Use::get_captures {;
-            ()
         }
     }
     1
@@ -22711,7 +22609,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 for my $arg (@var_decl) {;
                     push(@str, $arg->emit_java_init($level, $wantarray))
                 }
-                if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While') || $last_statement->isa('Perlito5::AST::Use')) {
+                if ($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) {
                     push(@str, $last_statement->emit_java($level, 'void'));
                     if ($last_statement->isa('Perlito5::AST::While') && $last_statement->{'cond'}->isa('Perlito5::AST::Int') && $last_statement->{'cond'}->{'int'}) {}
                     else {
@@ -23736,26 +23634,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             ()
         }
         sub Perlito5::AST::Sub::emit_java_has_regex {;
-            ()
-        }
-    }
-    package Perlito5::AST::Use;
-    {
-        sub Perlito5::AST::Use::emit_java {
-            (my($self), my($level), my($wantarray)) = @_;
-            Perlito5::Grammar::Use::emit_time_eval($self);
-            if ($wantarray ne 'void') {;
-                return 'PlCx.UNDEF'
-            }
-            else {;
-                return '// ' . $self->{'code'} . ' ' . $self->{'mod'} . '
-'
-            }
-        }
-        sub Perlito5::AST::Use::emit_java_get_decl {;
-            ()
-        }
-        sub Perlito5::AST::Use::emit_java_has_regex {;
             ()
         }
     }

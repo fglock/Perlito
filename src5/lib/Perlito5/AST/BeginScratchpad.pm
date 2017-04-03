@@ -256,14 +256,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Use;
-{
-    sub emit_begin_scratchpad {
-        my $self = shift;
-        return $self;
-    }
-}
-
 1;
 
 =begin

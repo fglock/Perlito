@@ -610,7 +610,6 @@ package Perlito5::JavaScript2::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::If' )
                   || $last_statement->isa( 'Perlito5::AST::Block' )
-                  || $last_statement->isa( 'Perlito5::AST::Use' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
@@ -3361,22 +3360,6 @@ package Perlito5::AST::Sub;
         else {
             my $s = Perlito5::JavaScript2::emit_wrap_javascript2($level, 'scalar', @s);
             return $s;
-        }
-    }
-    sub emit_javascript2_get_decl { () }
-    sub emit_javascript2_has_regex { () }
-}
-
-package Perlito5::AST::Use;
-{
-    sub emit_javascript2 {
-        my ($self, $level, $wantarray) = @_;
-        Perlito5::Grammar::Use::emit_time_eval($self);
-        if ($wantarray ne 'void') {
-            return 'p5context([], p5want)';
-        }
-        else {
-            return '// ' . $self->{code} . ' ' . $self->{mod} . "\n";
         }
     }
     sub emit_javascript2_get_decl { () }

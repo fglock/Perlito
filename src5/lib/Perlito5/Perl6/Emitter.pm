@@ -728,15 +728,6 @@ package Perlito5::AST::Sub;
     }
 }
 
-package Perlito5::AST::Use;
-{
-    sub emit_perl6 {
-        my $self = shift;
-        Perlito5::Grammar::Use::emit_time_eval($self);
-        return [ comment => "# " . $self->{code} . " " . $self->{mod} ];
-    }
-}
-
 1;
 
 =begin
