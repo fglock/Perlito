@@ -2646,6 +2646,9 @@ class PlLvalueRef extends PlReference {
     public PlLvalueRef(PlObject o) {
         this.o = o;
     }
+    public PlLvalueRef(String o) {
+        this.o = new PlString(o);
+    }
     public PlObject scalar_deref_lvalue(String namespace) {
         return this.o;
     }
