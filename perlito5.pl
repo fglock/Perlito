@@ -8717,7 +8717,7 @@ use feature 'say';
                     my %capture = map {;
                         $_->{'dont'} ? () : $dont_capture{$_->{'_id'}} ? () : ($_->{'_decl'} eq 'local' || $_->{'_decl'} eq 'global' || $_->{'_decl'} eq '') ? () : ($_->{'_id'} => $_)
                     } @captured;
-                    my $code = __PACKAGE__->new(%{$self}, 'block' => Perlito5::AST::Block::->new(%{$self->{'block'}}, 'stmts' => [@stmts]));
+                    my $code = __PACKAGE__->new(%{$self});
                     my $id = Perlito5::get_label();
                     $Perlito5::BEGIN_SUBS{$id} = $code;
                     $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_}

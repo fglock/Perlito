@@ -302,10 +302,6 @@ package Perlito5::AST::Sub;
                 # save the unprocessed AST for this sub
                 my $code = __PACKAGE__->new(
                     %$self,
-                    block => Perlito5::AST::Block->new(
-                                %{$self->{block}},
-                                stmts => [ @stmts ],
-                             ),
                 );
                 my $id = Perlito5::get_label();
                 $Perlito5::BEGIN_SUBS{$id} = $code;
