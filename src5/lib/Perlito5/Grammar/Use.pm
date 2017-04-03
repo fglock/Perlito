@@ -332,22 +332,12 @@ sub expand_use {
         Perlito5::Compiler::error 'Syntax Error';
     }
 
-    add_comp_unit(
-        Perlito5::AST::CompUnit->new(
-            name => 'main',
-            body => Perlito5::Match::flat($m),
-        ),
-    );
+    push @Perlito5::COMP_UNIT,
+      Perlito5::AST::CompUnit->new(
+        name => 'main',
+        body => Perlito5::Match::flat($m),
+      );
     return;
-}
-
-sub add_comp_unit {
-    # TODO - this subroutine is obsolete
-    my $comp_unit = shift;
-
-    # warn "parsed comp_unit: '", $comp_unit->name, "'";
-    push @Perlito5::COMP_UNIT, $comp_unit;
-    # say "comp_unit done";
 }
 
 sub require {

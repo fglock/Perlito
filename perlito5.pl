@@ -4947,12 +4947,8 @@ use feature 'say';
 ');
             Perlito5::Compiler::error('Syntax Error')
         }
-        add_comp_unit(Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
+        push(@Perlito5::COMP_UNIT, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
         return
-    }
-    sub Perlito5::Grammar::Use::add_comp_unit {
-        my $comp_unit = shift;
-        push(@Perlito5::COMP_UNIT, $comp_unit)
     }
     sub Perlito5::Grammar::Use::require {
         my $filename = shift;
@@ -31636,7 +31632,7 @@ INIT failed--call queue aborted.
                     if ($expand_use) {
                         my $ok;
                         eval {
-                            Perlito5::Grammar::Use::add_comp_unit(Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
+                            push(@Perlito5::COMP_UNIT, Perlito5::AST::CompUnit::->new('name' => 'main', 'body' => Perlito5::Match::flat($m)));
                             $ok = 1
                         };
                         if (!$ok) {
