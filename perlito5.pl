@@ -8645,6 +8645,9 @@ use feature 'say';
                     return Perlito5::AST::Apply::->new('code' => 'compile_time_glob_set', 'namespace' => 'Perlito5::Grammar::Scope', 'arguments' => [Perlito5::AST::Buf::->new('buf' => ($arg->{'namespace'} || $arg->{'_namespace'}) . '::' . $arg->{'name'}), $self->{'arguments'}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME)])
                 }
             }
+            if ($self->{'code'} eq 'require' && !$self->{'namespace'}) {;
+                return Perlito5::AST::Apply::->new(%{$self}, 'namespace' => 'Perlito5::Grammar::Use')
+            }
             return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
         }
     }

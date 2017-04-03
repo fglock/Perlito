@@ -162,6 +162,14 @@ package Perlito5::AST::Apply;
             }
         }
 
+        # use the compile-time "require" command inside BEGIN blocks
+        if ( $self->{code} eq 'require' && !$self->{namespace} ) {
+            return Perlito5::AST::Apply->new(
+                %$self,
+                namespace => 'Perlito5::Grammar::Use',
+            );
+        }
+
         return __PACKAGE__->new(
             %$self,
             code => $code,
