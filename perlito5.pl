@@ -19198,7 +19198,12 @@ CORE.printf = function(List__) {
         }
         elsif ($spec->{'fix'} eq 'prefix') {
             push(@{$out}, $spec->{'str'});
-            op_render($data->[2], $level, $out, $spec)
+            if ($op eq 'prefix:<not>' && !$data->[2]) {;
+                push(@{$out}, '()')
+            }
+            else {;
+                op_render($data->[2], $level, $out, $spec)
+            }
         }
         elsif ($spec->{'fix'} eq 'postfix') {
             op_render($data->[2], $level, $out, $spec);
