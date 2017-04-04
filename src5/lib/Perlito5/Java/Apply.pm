@@ -1473,7 +1473,8 @@ package Perlito5::AST::Apply;
         },
         'bless' => sub {
             my ($self, $level, $wantarray) = @_;
-            my @in  = @{$self->{arguments}};
+            my $items = Perlito5::Java::to_list_preprocess( $self->{arguments} );
+            my @in  = @$items;
             my $ref = shift @in;
             my $class = shift @in;
             if ($class) {

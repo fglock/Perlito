@@ -21801,7 +21801,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             'PerlOp.grep(' . $sub->emit_java($level + 1) . ', ' . $list . ', ' . 'List__, ' . Perlito5::Java::to_context($wantarray) . ')'
         }, 'bless' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            my @in = @{$self->{'arguments'}};
+            my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
+            my @in = @{$items};
             my $ref = shift(@in);
             my $class = shift(@in);
             if ($class) {;
