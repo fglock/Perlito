@@ -31666,6 +31666,7 @@ INIT failed--call queue aborted.
                             for @Perlito5::CHECK_BLOCK
                     }
                     if (!$bootstrapping) {
+                        $Perlito5::STRICT = 0;
                         my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
                         if (@Perlito5::INIT_BLOCK) {;
                             $s = $s . '
