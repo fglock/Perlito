@@ -82,19 +82,16 @@ token stmt_use {
     |
         <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]?
             [ <.Perlito5::Grammar::Space::ws> <version_string> <.Perlito5::Grammar::Space::opt_ws> ]?
-            <Perlito5::Grammar::Expression::list_parse>
+            [ <Perlito5::Grammar::Expression::exp_parse> | <.Perlito5::Grammar::Space::opt_ws> ]
         {
             # TODO - test the module version
             my $version = $MATCH->{"version_string"}[0]{capture}{buf};
 
-            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::list_parse"});
-            if ($list eq '*undef*') {
-                $list = undef
-            }
-            else {
+            my $list = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Expression::exp_parse"});
+            if ($list) {
                 # evaluate the parameter list in a BEGIN-block context
                 Perlito5::Grammar::Scope::check_variable_declarations();
-                my $m = $MATCH->{"Perlito5::Grammar::Expression::list_parse"};
+                my $m = $MATCH->{"Perlito5::Grammar::Expression::exp_parse"};
                 my $ast = Perlito5::AST::Block::->new(
                     'stmts' => [
                         Perlito5::AST::Apply->new(

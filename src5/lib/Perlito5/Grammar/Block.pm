@@ -273,13 +273,6 @@ token named_sub_def {
             #     if exists $Perlito5::PROTO->{$full_name};
 
             $Perlito5::PROTO->{$full_name} = $sig;  # TODO - cleanup - replace $PROTO with prototype()
-            # if (!exists(&{$full_name})) {
-            #     # make sure the prototype exists at compile-time
-            #     my $sub = defined($sig)
-            #             ? eval "sub ($sig) { }"
-            #             : eval "sub { }";
-            #     *{$full_name} = $sub;
-            # }
 
             if ($MATCH->{_tmp}) {
                 my $block = $Perlito5::SCOPE->{block}[-1];

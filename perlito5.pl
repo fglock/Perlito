@@ -4779,24 +4779,38 @@ use feature 'say';
                     }
                     1
                 }) && (do {
-                    my $m2 = Perlito5::Grammar::Expression::list_parse($str, $MATCH->{'to'});
-                    if ($m2) {
-                        $MATCH->{'to'} = $m2->{'to'};
-                        $MATCH->{'Perlito5::Grammar::Expression::list_parse'} = $m2;
-                        1
-                    }
-                    else {;
-                        0
-                    }
+                    my $pos1 = $MATCH->{'to'};
+                    (do {;
+                        (do {
+                            my $m2 = Perlito5::Grammar::Expression::exp_parse($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                $MATCH->{'Perlito5::Grammar::Expression::exp_parse'} = $m2;
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        })
+                    }) || (do {
+                        $MATCH->{'to'} = $pos1;
+                        (do {
+                            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        })
+                    })
                 }) && (do {
                     my $version = $MATCH->{'version_string'}->[0]->{'capture'}->{'buf'};
-                    my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
-                    if ($list eq '*undef*') {;
-                        $list = undef
-                    }
-                    else {
+                    my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::exp_parse'});
+                    if ($list) {
                         Perlito5::Grammar::Scope::check_variable_declarations();
-                        my $m = $MATCH->{'Perlito5::Grammar::Expression::list_parse'};
+                        my $m = $MATCH->{'Perlito5::Grammar::Expression::exp_parse'};
                         my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [Perlito5::Match::flat($m)])]);
                         $list = Perlito5::Grammar::Block::eval_begin_block($ast)
                     }
