@@ -152,6 +152,23 @@ sub plain_name {
     return $self->name
 }
 
+our %Special_var = (
+    ARGV => 1,
+    INC  => 1,
+    ENV  => 1,
+    SIG  => 1,
+    _    => 1,
+);
+sub is_special_var {
+    #  $1 %ENV $_ $/
+    my $self = shift;
+    my $c = substr($self->{name}, 0, 1);
+    if ( $Special_var{ $self->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
+        return 1;
+    }
+    0;
+}
+
 sub SCALAR_ARG {
     Perlito5::AST::Var->new(
         sigil     => '$',

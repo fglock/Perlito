@@ -5258,6 +5258,15 @@ use feature 'say';
         }
         return $self->name()
     }
+    our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, 'SIG' => 1, '_' => 1);
+    sub Perlito5::AST::Var::is_special_var {
+        my $self = shift;
+        my $c = substr($self->{'name'}, 0, 1);
+        if ($Special_var{$self->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {;
+            return 1
+        }
+        0
+    }
     sub Perlito5::AST::Var::SCALAR_ARG {;
         Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => '_', '_decl' => 'global', '_namespace' => 'main')
     }
@@ -5658,7 +5667,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Block::eval_begin_block {
         my $block = shift;
-        local ${chr(7) . 'LOBAL_PHASE'};
+        local ${'^GLOBAL_PHASE'};
         Perlito5::set_global_phase('BEGIN');
         my @captured = $block->get_captures();
         my %dont_capture = map {;
@@ -8459,7 +8468,7 @@ use feature 'say';
     package Perlito5;
     undef();
     undef();
-    defined(${chr(15)}) || (${chr(15)} = 'perlito5');
+    defined(${'^O'}) || (${'^O'} = 'perlito5');
     defined($/) || ($/ = chr(10));
     defined(${'"'}) || (${'"'} = ' ');
     defined(${','}) || (${','} = undef);
@@ -8467,7 +8476,7 @@ use feature 'say';
     defined(${';'}) || (${';'} = chr(28));
     defined(${'?'}) || (${'?'} = 0);
     ${']'} || (${']'} = '5.020000');
-    defined(${chr(22)}) || (${chr(22)} = bless({'original' => 'v5.20.0', 'qv' => 1, 'version' => [5, 20, 0]}, 'version'));
+    defined(${'^V'}) || (${'^V'} = bless({'original' => 'v5.20.0', 'qv' => 1, 'version' => [5, 20, 0]}, 'version'));
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
     our $STRICT = 0;
@@ -8495,7 +8504,7 @@ use feature 'say';
         my $phase = shift;
         local ${'@'};
         eval {;
-            ${chr(7) . 'LOBAL_PHASE'} = $phase
+            ${'^GLOBAL_PHASE'} = $phase
         }
     }
     our $ID = 100;
@@ -12348,7 +12357,7 @@ use feature 'say';
         (my($source), my($namespace), my($want), my($scope_js)) = @_;
         my $strict_old = $Perlito5::STRICT;
         local $_;
-        local ${chr(7) . 'LOBAL_PHASE'};
+        local ${'^GLOBAL_PHASE'};
         local $Perlito5::BASE_SCOPE = $scope_js->[0];
         local @Perlito5::SCOPE_STMT;
         local $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
@@ -18836,19 +18845,22 @@ CORE.printf = function(List__) {
         sub Perlito5::AST::Var::emit_perl5 {
             my $self = $_[0];
             my $str_name = $self->{'name'};
+            my $c = substr($str_name, 0, 1);
+            if ($c lt ' ') {;
+                $str_name = '^' . chr(ord($c) + ord('A') - 1) . substr($str_name, 1)
+            }
             my $ns = '';
             if ($self->{'namespace'}) {
                 $self->{'sigil'} eq '::' && return $self->{'namespace'} . '::';
-                if ($self->{'namespace'} eq 'main' && substr($self->{'name'}, 0, 1) eq '^') {;
-                    return $self->{'sigil'} . '{' . $self->{'name'} . '}'
+                if ($self->{'namespace'} eq 'main' && substr($str_name, 0, 1) eq '^') {;
+                    return $self->{'sigil'} . '{' . $str_name . '}'
                 }
                 else {;
                     $ns = $self->{'namespace'} . '::'
                 }
             }
-            my $c = substr($self->{'name'}, 0, 1);
-            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($self->{'name'} eq '/' || $self->{'name'} eq '&') || ((0 + $self->{'name'}) eq $self->{'name'})) {;
-                return $self->{'sigil'} . $ns . $self->{'name'}
+            if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c eq '_') || ($str_name eq '/' || $str_name eq '&') || ((0 + $str_name) eq $str_name)) {;
+                return $self->{'sigil'} . $ns . $str_name
             }
             return $self->{'sigil'} . '{' . Perlito5::Perl5::escape_string($ns . $str_name) . '}'
         }
@@ -31326,7 +31338,7 @@ class PlString extends PlObject {
     my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name;
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
     my $source = '';
-    my $backend = ${chr(15)};
+    my $backend = ${'^O'};
     my $compile_only = 0;
     my $execute = 1;
     my $verbose = 0;
@@ -31601,7 +31613,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
 ')
         }
         $backend eq 'java' && Perlito5::Java::Lib::init();
-        ($backend eq 'js' || ${chr(15)} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
+        ($backend eq 'js' || ${'^O'} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
         $Perlito5::EXPAND_USE = 1;
         $bootstrapping && ($Perlito5::EXPAND_USE = 0);
         if ($execute) {
@@ -31674,7 +31686,7 @@ INIT failed--call queue aborted.
                         $Perlito5::COMP_UNIT[$_] = $Perlito5::COMP_UNIT[$_]->emit_begin_scratchpad()
                     }
                     {
-                        local ${chr(7) . 'LOBAL_PHASE'};
+                        local ${'^GLOBAL_PHASE'};
                         Perlito5::set_global_phase('CHECK');
                         $_->()
                             for @Perlito5::CHECK_BLOCK

@@ -160,32 +160,34 @@ package Perlito5::AST::Var;
         my $self = $_[0];
 
         my $str_name = $self->{name};
-        #$str_name = '\\\\' if $str_name eq '\\';   # escape $\
-        #$str_name = "\\'" if $str_name eq "'";     # escape $'
+        my $c = substr($str_name, 0, 1);
+
+        if ($c lt " ") {
+            $str_name = "^" . chr( ord($c) + ord("A") - 1 ) . substr($str_name, 1);
+        }
 
         # Normalize the sigil
         my $ns = '';
         if ($self->{namespace}) {
             return $self->{namespace} . '::'
                 if $self->{sigil} eq '::';
-            if ($self->{namespace} eq 'main' && substr($self->{name}, 0, 1) eq '^') {
+            if ($self->{namespace} eq 'main' && substr($str_name, 0, 1) eq '^') {
                 # don't add the namespace to special variables
-                return $self->{sigil} . '{' . $self->{name} . '}'
+                return $self->{sigil} . '{' . $str_name . '}'
             }
             else {
                 $ns = $self->{namespace} . '::';
             }
         }
 
-        my $c = substr($self->{name}, 0, 1);
         if (  ($c ge 'a' && $c le 'z')
            || ($c ge 'A' && $c le 'Z')
            || ($c eq '_')
-           || ($self->{name} eq '/' || $self->{name} eq '&')
-           || ( (0 + $self->{name}) eq $self->{name} )  # numeric
+           || ($str_name eq '/' || $str_name eq '&')
+           || ( (0 + $str_name) eq $str_name )  # numeric
            ) 
         {
-            return $self->{sigil} . $ns . $self->{name}
+            return $self->{sigil} . $ns . $str_name
         }
         return $self->{sigil} . "{" . Perlito5::Perl5::escape_string( $ns . $str_name ) . "}";
     }
