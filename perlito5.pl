@@ -8984,18 +8984,21 @@ use feature 'say';
             if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {;
                 $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'}
             }
+            my $bareword = substr($name, 1);
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-                my $value = eval($name);
+                my $value = ${$bareword};
                 my $dump = _collect_refs_inner($value, '  ', $dumper_seen, $name);
                 $dump eq 'undef' && next
             }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-                my $value = eval('\\' . $name);
-                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, '\\' . $name);
-                my $bareword = substr($name, 1)
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+                my $value = \@{$bareword};
+                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, '\\' . $name)
+            }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+                my $value = \%{$bareword};
+                my $dump = _collect_refs_inner($value, '  ', $dumper_seen, '\\' . $name)
             }
             elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-                my $bareword = substr($name, 1);
                 if (exists(&{$bareword})) {
                     my $sub = \&{$bareword};
                     my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\&' . $bareword)
@@ -9030,17 +9033,21 @@ use feature 'say';
         if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {;
             $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'}
         }
+        my $bareword = substr($name, 1);
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-            my $value = eval($name);
+            my $value = ${$bareword};
             !defined($value) && return;
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, _dump_to_ast($value, $dumper_seen, $ast)]))
         }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-            my $value = eval('\\' . $name);
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+            my $value = \@{$bareword};
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+            my $value = \%{$bareword};
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-            my $bareword = substr($name, 1);
             if (exists(&{$bareword})) {
                 my $value = \&{$bareword};
                 push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))

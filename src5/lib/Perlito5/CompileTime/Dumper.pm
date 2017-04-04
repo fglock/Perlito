@@ -314,19 +314,22 @@ sub collect_refs {
                 . ($ast->{namespace} || $ast->{_namespace})
                 . "::" . $ast->{name};
         }
+        my $bareword = substr($name, 1);
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-            my $value = eval($name);
+            my $value = ${$bareword};
             my $dump = _collect_refs_inner( $value, "  ", $dumper_seen, $name );
             next if $dump eq 'undef';
         }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-            my $value = eval("\\" . $name);
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+            my $value = \@{$bareword};
             my $dump = _collect_refs_inner( $value, "  ", $dumper_seen, '\\' . $name );
-            my $bareword = substr($name, 1);
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+            my $value = \%{$bareword};
+            my $dump = _collect_refs_inner( $value, "  ", $dumper_seen, '\\' . $name );
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
             # *mysub = sub {...}
-            my $bareword = substr($name, 1);
             if (exists &{$bareword}) {
                 my $sub = \&{$bareword};
                 my $dump = _collect_refs_inner($sub, '  ', $dumper_seen, '\\&' . $bareword);
@@ -373,8 +376,9 @@ sub _dump_AST_from_scope {
             . ($ast->{namespace} || $ast->{_namespace})
             . "::" . $ast->{name};
     }
+    my $bareword = substr($name, 1);
     if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-        my $value = eval($name);
+        my $value = ${$bareword};
         return if !defined($value);
         push @$vars, # "$name = ", $dump;
                 Perlito5::AST::Apply->new(
@@ -385,9 +389,19 @@ sub _dump_AST_from_scope {
                     ],
                 );
     }
-    elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-        my $value = eval("\\" . $name);
-        # my $bareword = substr($name, 1);
+    elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+        my $value = \@{$bareword};
+        push @$vars, # "*$bareword = ", $dump;
+                Perlito5::AST::Apply->new(
+                    code => 'infix:<=>',
+                    arguments => [
+                        Perlito5::AST::Var->new( %$ast, sigil => '*' ),
+                        _dump_to_ast( $value, $dumper_seen, $ast ),  #''\\' . $name ),
+                    ],
+                );
+    }
+    elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+        my $value = \%{$bareword};
         push @$vars, # "*$bareword = ", $dump;
                 Perlito5::AST::Apply->new(
                     code => 'infix:<=>',
@@ -399,8 +413,6 @@ sub _dump_AST_from_scope {
     }
     elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
         # *mysub = sub {...}
-        my $bareword = substr($name, 1);
-
         if (exists &{$bareword}) {
             my $value = \&{$bareword};
             push @$vars, # "*$bareword = ", $dump;
