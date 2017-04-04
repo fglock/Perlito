@@ -1,5 +1,7 @@
 #!./perl
 
+no strict; # preload strict.pm
+
 BEGIN {
     chdir 't' if -d 't';
     @INC = '../lib';
