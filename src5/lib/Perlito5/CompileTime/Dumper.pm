@@ -719,47 +719,6 @@ sub _dumper_deref {
     return join('', "bless({\n", @out, $tab, "}, '$ref')");
 }
 
-sub _dump_global {
-    my ($item, $seen, $dumper_seen, $vars, $tab) = @_;
-
-    if (ref($item) eq 'Perlito5::AST::Sub') {
-        my $n = $item->{namespace} . "::" . $item->{name};
-        if (!$seen->{$n}) {
-            push @$vars, $tab . "sub $n = " . _dumper( $item, "  ", $dumper_seen, $n ) . ";\n";
-            $seen->{$n} = 1;
-        }
-    }
-    elsif (ref($item) eq 'Perlito5::AST::Var') {
-        my $n = $item->{sigil} . $item->{namespace} . "::" . $item->{name};
-        if (!$seen->{$n}) {
-            if ($item->{sigil} eq '$') {
-                push @$vars, $tab . "$n = " . _dumper( eval $n, "  ", $dumper_seen, $n ) . ";\n";
-            }
-            elsif ($item->{sigil} eq '@' || $item->{sigil} eq '%') {
-                my $ref = "\\$n";
-                my $d = _dumper( eval $ref, $tab . "  ", $dumper_seen, $ref );
-                if ($d eq '[]' || $d eq '{}') {
-                    push @$vars, $tab . "$n = ();\n"
-                }
-                else {
-                    push @$vars, $tab . "$n = " . $item->{sigil} . "{" . $d . "};\n";
-                }
-            }
-            elsif ($item->{sigil} eq '*') {
-                # TODO - look for aliasing
-                #   *v1 = \$v2
-                push @$vars, $tab . "# $n\n";
-                for (qw/ $ @ % /) {
-                    local $item->{sigil} = $_;
-                    _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-                }
-            }
-            $seen->{$n} = 1;
-        }
-    }
-}
-
-
 # TODO
 #   - move global variables from SCOPE to GLOBAL
 #   - analyze the list of captures and resolve shared lexicals

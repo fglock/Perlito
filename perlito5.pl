@@ -9236,47 +9236,6 @@ use feature 'say';
         return join('', 'bless({
 ', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
     }
-    sub Perlito5::CompileTime::Dumper::_dump_global {
-        (my($item), my($seen), my($dumper_seen), my($vars), my($tab)) = @_;
-        if (ref($item) eq 'Perlito5::AST::Sub') {
-            my $n = $item->{'namespace'} . '::' . $item->{'name'};
-            if (!$seen->{$n}) {
-                push(@{$vars}, $tab . 'sub ' . $n . ' = ' . _dumper($item, '  ', $dumper_seen, $n) . ';
-');
-                $seen->{$n} = 1
-            }
-        }
-        elsif (ref($item) eq 'Perlito5::AST::Var') {
-            my $n = $item->{'sigil'} . $item->{'namespace'} . '::' . $item->{'name'};
-            if (!$seen->{$n}) {
-                if ($item->{'sigil'} eq '$') {;
-                    push(@{$vars}, $tab . $n . ' = ' . _dumper(eval($n), '  ', $dumper_seen, $n) . ';
-')
-                }
-                elsif ($item->{'sigil'} eq '@' || $item->{'sigil'} eq '%') {
-                    my $ref = '\\' . $n;
-                    my $d = _dumper(eval($ref), $tab . '  ', $dumper_seen, $ref);
-                    if ($d eq '[]' || $d eq '{}') {;
-                        push(@{$vars}, $tab . $n . ' = ();
-')
-                    }
-                    else {;
-                        push(@{$vars}, $tab . $n . ' = ' . $item->{'sigil'} . '{' . $d . '};
-')
-                    }
-                }
-                elsif ($item->{'sigil'} eq '*') {
-                    push(@{$vars}, $tab . '# ' . $n . '
-');
-                    for $_ ('$', '@', '%') {
-                        local $item->{'sigil'} = $_;
-                        _dump_global($item, $seen, $dumper_seen, $vars, $tab)
-                    }
-                }
-                $seen->{$n} = 1
-            }
-        }
-    }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
         if (0) {
             my $ast = dump_to_AST_after_BEGIN(@_);
