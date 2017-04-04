@@ -9333,26 +9333,30 @@ use feature 'say';
                 $scope->{$name} && next
             }
             $name eq '@main::ARGV' && next;
+            my $bareword = substr($name, 1);
             if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
                 my $value;
                 if ($name eq '$main::`') {;
                     $value = ${'`'}
                 }
                 else {;
-                    $value = eval($name)
+                    $value = ${$bareword}
                 }
                 my $dump = _dumper($value, '  ', $dumper_seen, $name);
                 $dump eq 'undef' && next;
                 push(@{$vars}, $name . ' = ' . $dump . ';')
             }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-                my $value = eval('\\' . $name);
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+                my $value = \%{$bareword};
                 my $dump = _dumper($value, '  ', $dumper_seen, '\\' . $name);
-                my $bareword = substr($name, 1);
+                push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
+            }
+            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+                my $value = \@{$bareword};
+                my $dump = _dumper($value, '  ', $dumper_seen, '\\' . $name);
                 push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
             }
             elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-                my $bareword = substr($name, 1);
                 substr($bareword, 0, 2) eq '{' . chr(39) && ($bareword = substr($bareword, 2, -2));
                 if (exists(&{$bareword})) {
                     my $sub = \&{$bareword};

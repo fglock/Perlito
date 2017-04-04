@@ -931,27 +931,31 @@ sub emit_globals_after_BEGIN {
             next if $scope->{$name};    # skip if we've seen this before
         }
         next if $name eq '@main::ARGV';
+        my $bareword = substr($name, 1);
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value;
             if ($name eq '$main::`') {
                 $value = $`;    # perl doesn't like $main::`
             }
             else {
-                $value = eval($name);
+                $value = ${$bareword};
             }
             my $dump = _dumper( $value, "  ", $dumper_seen, $name );
             next if $dump eq 'undef';
             push @$vars, "$name = " . $dump . ";";
         }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && ($sigil eq '@' || $sigil eq '%')) {
-            my $value = eval("\\" . $name);
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
+            my $value = \%{$bareword};
             my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
-            my $bareword = substr($name, 1);
+            push @$vars, "*$bareword = " . $dump . ";";
+        }
+        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+            my $value = \@{$bareword};
+            my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
             push @$vars, "*$bareword = " . $dump . ";";
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
             # *mysub = sub {...}
-            my $bareword = substr($name, 1);
 
             # *{'strict::import'}   ???
             $bareword = substr($bareword, 2, -2) if substr($bareword,0,2) eq "{'";
