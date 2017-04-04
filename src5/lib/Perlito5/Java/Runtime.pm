@@ -1066,7 +1066,9 @@ class PerlOp {
     // TODO - optimize: we are adding "pos" (Integer) to all PlLvalue objects
 
     public static final PlObject pos(PlObject vv) {
-        // TODO - check that var is lvalue
+        if (!vv.is_lvalue()) {
+            return PlCx.UNDEF;
+        }
         PlLvalue var = (PlLvalue)vv;
         Integer pos = var.pos;
         if (pos == null) {
@@ -1086,7 +1088,9 @@ class PerlOp {
         return value;
     }
     public static final PlObject set_pos(PlObject vv, PlObject value, PlRegexResult matcher, String str) {
-        // TODO - check that var is lvalue
+        if (!vv.is_lvalue()) {
+            return value;
+        }
         PlLvalue var = (PlLvalue)vv;
 
         if (value.is_undef()) {
