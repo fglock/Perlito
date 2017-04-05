@@ -79,6 +79,7 @@ token val_vstring {
                         @{ $MATCH->{digits_underscore} };
         return if @parts < 2;
         $MATCH->{capture} = Perlito5::AST::Buf->new(
+                    is_vstring => 1,
                     buf => join( '', map { chr($_) }
                                         $MATCH->{val_int}{capture}{int},
                                         @parts,

@@ -7963,7 +7963,7 @@ use feature 'say';
                 Perlito5::Match::flat($_)
             } @{$MATCH->{'digits_underscore'}};
             @parts < 2 && return;
-            $MATCH->{'capture'} = Perlito5::AST::Buf::->new('buf' => join('', map {;
+            $MATCH->{'capture'} = Perlito5::AST::Buf::->new('is_vstring' => 1, 'buf' => join('', map {;
                 chr($_)
             } $MATCH->{'val_int'}->{'capture'}->{'int'}, @parts));
             1
@@ -18778,6 +18778,11 @@ CORE.printf = function(List__) {
     {;
         sub Perlito5::AST::Buf::emit_perl5 {
             my $self = $_[0];
+            if ($self->{'is_vstring'}) {;
+                return join('.', map {;
+                    ord($_)
+                } split(m//, $self->{'buf'}))
+            }
             Perlito5::Perl5::escape_string($self->{'buf'})
         }
     }

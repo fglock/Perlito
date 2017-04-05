@@ -55,6 +55,9 @@ package Perlito5::AST::Buf;
 {
     sub emit_perl5 {
         my $self  = $_[0];
+        if ($self->{is_vstring}) {
+            return join(".", map { ord($_) } split( //, $self->{buf} ));
+        }
         Perlito5::Perl5::escape_string( $self->{buf} );
     }
 }
