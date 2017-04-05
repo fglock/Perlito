@@ -5810,8 +5810,13 @@ use feature 'say';
             eval_begin_block($block);
             $m->{'capture'} = ast_undef()
         }
-        elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {;
-            $m->{'capture'} = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => $block_name, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef)
+        elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
+            my $sub = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => $block_name, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef);
+            my $block = Perlito5::AST::Block::->new('stmts' => [$sub]);
+            Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');
+            my $full_name = $sub->{'namespace'} . '::' . $sub->{'name'};
+            $Perlito5::GLOBAL->{$full_name} = $sub;
+            $m->{'capture'} = ast_undef()
         }
         else {
             $m->{'capture'} = $block;
@@ -5954,7 +5959,7 @@ use feature 'say';
                 if ($name) {
                     my $full_name = $namespace . '::' . $name;
                     $Perlito5::GLOBAL->{$full_name} = $sub;
-                    $sub = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                    $sub = ast_undef()
                 }
                 $MATCH->{'capture'} = $sub
             }
@@ -8495,8 +8500,8 @@ use feature 'say';
     defined(${'!'}) || (${'!'} = '');
     defined(${';'}) || (${';'} = chr(28));
     defined(${'?'}) || (${'?'} = 0);
-    ${']'} || (${']'} = '5.020000');
-    defined(${'^V'}) || (${'^V'} = bless({'original' => 'v5.20.0', 'qv' => 1, 'version' => [5, 20, 0]}, 'version'));
+    ${']'} || (${']'} = '5.022000');
+    defined(${'^V'}) || (${'^V'} = bless({'original' => 'v5.22.0', 'qv' => 1, 'version' => [5, 22, 0]}, 'version'));
     our $EXPAND_USE = 1;
     our $EMIT_USE = 0;
     our $STRICT = 0;

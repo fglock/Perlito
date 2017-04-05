@@ -208,14 +208,21 @@ sub special_named_block {
         $m->{capture} = ast_undef();
     }
     elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
-        $m->{capture} = 
-            Perlito5::AST::Sub->new(
-                'attributes' => [],
-                'block' => $block,
-                'name' => $block_name,
-                'namespace' => $Perlito5::PKG_NAME,
-                'sig' => undef,
-            );
+        my $sub = Perlito5::AST::Sub->new(
+            'attributes' => [],
+            'block'      => $block,
+            'name'       => $block_name,
+            'namespace'  => $Perlito5::PKG_NAME,
+            'sig'        => undef,
+        );
+        # evaluate the sub definition in a BEGIN block
+        my $block = Perlito5::AST::Block->new( stmts => [$sub] );
+        Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
+        # add named sub to SCOPE
+        my $full_name = $sub->{namespace} . "::" . $sub->{name};
+        $Perlito5::GLOBAL->{$full_name} = $sub;
+        # runtime effect of subroutine declaration is "undef"
+        $m->{capture} = ast_undef();
     }
     else {
         $m->{capture} = $block;
@@ -301,11 +308,7 @@ token named_sub_def {
                 my $full_name = "${namespace}::$name";
                 $Perlito5::GLOBAL->{$full_name} = $sub;
                 # runtime effect of subroutine declaration is "undef"
-                $sub = Perlito5::AST::Apply->new(
-                    code      => 'undef',
-                    namespace => '',
-                    arguments => []
-                );
+                $sub = ast_undef();
             }
 
             $MATCH->{capture} = $sub;
