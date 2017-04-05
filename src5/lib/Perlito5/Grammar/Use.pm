@@ -13,6 +13,7 @@ my %Perlito_internal_module = (
     bytes          => 'Perlito5X::bytes',
     encoding       => 'Perlito5X::encoding',
     Carp           => 'Perlito5X::Carp',
+    Config         => 'Perlito5X::Config',
     Exporter       => 'Perlito5X::Exporter',
     'Data::Dumper' => 'Perlito5X::Dumper',
     UNIVERSAL      => 'Perlito5X::UNIVERSAL',
