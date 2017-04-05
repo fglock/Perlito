@@ -9276,6 +9276,7 @@ use feature 'say';
         my $dumper_seen = {};
         my $tab = '';
         delete($scope->{'%main::ENV'});
+        delete($scope->{'$main::]'});
         for my $v ('$main::0', '$main::a', '$main::b', '$main::_') {
             (my($sigil), my($namespace), my($name)) = $v =~ m/^([$@%])(\w+)::(.*)$/;
             $scope->{$v} //= {'ast' => Perlito5::AST::Var::->new('name' => $name, 'sigil' => $sigil, '_decl' => 'global', 'namespace' => $namespace), }
