@@ -4774,6 +4774,12 @@ use feature 'say';
                         else {;
                             0
                         }
+                    }) && (do {
+                        my $tmp = $MATCH;
+                        $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+                        my $res = (',' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                        $MATCH = $tmp;
+                        $res ? 0 : 1
                     }))) {;
                         $MATCH = $m
                     }

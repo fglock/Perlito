@@ -81,7 +81,7 @@ token stmt_use {
         }
     |
         <Perlito5::Grammar::full_ident>  [ '-' <Perlito5::Grammar::ident> ]?
-            [ <.Perlito5::Grammar::Space::ws> <version_string> <.Perlito5::Grammar::Space::opt_ws> ]?
+            [ <.Perlito5::Grammar::Space::ws> <version_string> <.Perlito5::Grammar::Space::opt_ws> <!before ',' > ]?
             [ <Perlito5::Grammar::Expression::exp_parse> | <.Perlito5::Grammar::Space::opt_ws> ]
         {
             # TODO - test the module version
