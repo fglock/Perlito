@@ -7138,7 +7138,7 @@ use feature 'say';
             }
         }) && (do {
             my $name = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
-            ($Perlito5::CORE_PROTO->{$name} || $Perlito5::CORE_PROTO->{'CORE::' . $name}) && return;
+            (exists($Perlito5::CORE_PROTO->{$name}) || exists($Perlito5::CORE_PROTO->{'CORE::' . $name})) && return;
             1
         })));
         $tmp ? $MATCH : 0
