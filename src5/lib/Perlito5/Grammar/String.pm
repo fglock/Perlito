@@ -168,21 +168,18 @@ sub s_quote_parse {
         $m = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $m->{to};
         $delimiter = substr( $str, $p, 1 );
-        my $open_delimiter = $delimiter;
+        $open_delimiter = $delimiter;
         $p++;
         # warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-        $interpolate = 2;
-        $interpolate = 3 if $delimiter eq "'";
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
-        return $part2 unless $part2;
     }
-    else {
-        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
-        return $part2 unless $part2;
-    }
+    # scan for closing delimiter
+    $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 0);
+    $part2 || return $part2;
+    my $replace = substr( $str, $p, $part2->{to} - $p - 1 );
 
+    # read the modifiers
     $p = $part2->{'to'};
     my $modifiers = '';
     $m = Perlito5::Grammar::ident($str, $p);
@@ -190,12 +187,8 @@ sub s_quote_parse {
         $modifiers = Perlito5::Match::flat($m);
     }
 
-    my $replace;
     if ($modifiers =~ /e/) {
         # $part2 is code
-        delete $part2->{capture};
-        $replace = Perlito5::Match::flat($part2);       # get the original source code
-        $replace = substr($replace, 0, -1);             # remove closing delimiter
         $replace = '{' . $replace . '}';                # make a "block"
         my $m = Perlito5::Grammar::block($replace, 0);  # parse the block
         if (!$m) {
@@ -224,7 +217,16 @@ sub s_quote_parse {
     }
     else {
         # $part2 is string
-        $replace = Perlito5::Match::flat($part2);
+        $replace = $open_delimiter . $replace . $closing_delimiter;
+        if (exists($pair{$delimiter})) {
+            $interpolate = 2;
+            $delimiter eq chr(39) && ($interpolate = 3);
+        }
+        my $m = string_interpolation_parse($replace, 1, $open_delimiter, $closing_delimiter, $interpolate);
+        if (!$m) {;
+            Perlito5::Compiler::error('syntax error')
+        }
+        $replace = Perlito5::Match::flat($m);
     }
 
     if ($m) {

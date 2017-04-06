@@ -3773,30 +3773,21 @@ use feature 'say';
             $m = Perlito5::Grammar::Space::opt_ws($str, $p);
             $p = $m->{'to'};
             $delimiter = substr($str, $p, 1);
-            my $open_delimiter = $delimiter;
+            $open_delimiter = $delimiter;
             $p++;
             $closing_delimiter = $delimiter;
-            exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
-            $interpolate = 2;
-            $delimiter eq chr(39) && ($interpolate = 3);
-            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
-            $part2 || return $part2
+            exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter})
         }
-        else {
-            $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, $interpolate);
-            $part2 || return $part2
-        }
+        $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 0);
+        $part2 || return $part2;
+        my $replace = substr($str, $p, $part2->{'to'} - $p - 1);
         $p = $part2->{'to'};
         my $modifiers = '';
         $m = Perlito5::Grammar::ident($str, $p);
         if ($m) {;
             $modifiers = Perlito5::Match::flat($m)
         }
-        my $replace;
         if ($modifiers =~ m/e/) {
-            delete($part2->{'capture'});
-            $replace = Perlito5::Match::flat($part2);
-            $replace = substr($replace, 0, -1);
             $replace = '{' . $replace . '}';
             my $m = Perlito5::Grammar::block($replace, 0);
             if (!$m) {;
@@ -3807,8 +3798,17 @@ use feature 'say';
                 $replace = Perlito5::AST::Block::->new('sig' => undef, 'stmts' => [Perlito5::AST::Apply::->new('code' => 'eval', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [$replace])], 'bareword' => '', 'namespace' => '')])
             }
         }
-        else {;
-            $replace = Perlito5::Match::flat($part2)
+        else {
+            $replace = $open_delimiter . $replace . $closing_delimiter;
+            if (exists($pair{$delimiter})) {
+                $interpolate = 2;
+                $delimiter eq chr(39) && ($interpolate = 3)
+            }
+            my $m = string_interpolation_parse($replace, 1, $open_delimiter, $closing_delimiter, $interpolate);
+            if (!$m) {;
+                Perlito5::Compiler::error('syntax error')
+            }
+            $replace = Perlito5::Match::flat($m)
         }
         if ($m) {;
             $part2->{'to'} = $m->{'to'}
