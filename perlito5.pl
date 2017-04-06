@@ -12327,9 +12327,8 @@ use feature 'say';
             my $js_block = Perlito5::JavaScript2::LexicalBlock::->new('block' => $self->{'block'}->{'stmts'})->emit_javascript2_subroutine_body($level + 2, 'runtime');
             my @s = ('var ' . $sub_ref . ';', $sub_ref . ' = function (List__, p5want) {', [$js_block], '};', $sub_ref . '._prototype_ = ' . $prototype . ';', 'return ' . $sub_ref);
             if ($self->{'name'}) {
-                my $idx = Perlito5::JavaScript2::get_label();
                 my $s = Perlito5::JavaScript2::emit_wrap_javascript2($level, 'scalar', @s);
-                return 'if (!p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . ']) {' . 'p5pkg.main[' . chr(39) . 'init_' . $idx . chr(39) . '] = 1;' . 'p5typeglob_set(' . Perlito5::JavaScript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::JavaScript2::escape_string($self->{'name'}) . ', ' . $s . ')' . '}'
+                return 'p5typeglob_set(' . Perlito5::JavaScript2::escape_string($self->{'namespace'}) . ', ' . Perlito5::JavaScript2::escape_string($self->{'name'}) . ', ' . $s . ')'
             }
             else {
                 my $s = Perlito5::JavaScript2::emit_wrap_javascript2($level, 'scalar', @s);

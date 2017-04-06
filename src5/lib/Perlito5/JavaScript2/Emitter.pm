@@ -3348,14 +3348,13 @@ package Perlito5::AST::Sub;
         );
 
         if ( $self->{name} ) {
-            # make sure this executes only once
-            my $idx  = Perlito5::JavaScript2::get_label();
             my $s = Perlito5::JavaScript2::emit_wrap_javascript2($level, 'scalar', @s);
             return
-                  "if (!p5pkg.main['init_$idx']) {"
-                .   "p5pkg.main['init_$idx'] = 1;"
-                .   'p5typeglob_set(' . Perlito5::JavaScript2::escape_string($self->{namespace} ) . ', ' . Perlito5::JavaScript2::escape_string($self->{name} ) . ', ' . $s . ')'
-                . "}";
+                'p5typeglob_set('
+                . Perlito5::JavaScript2::escape_string($self->{namespace} ) . ', '
+                . Perlito5::JavaScript2::escape_string($self->{name} ) . ', '
+                . $s
+                . ')'
         }
         else {
             my $s = Perlito5::JavaScript2::emit_wrap_javascript2($level, 'scalar', @s);
