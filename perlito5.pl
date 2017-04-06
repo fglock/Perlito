@@ -8977,20 +8977,10 @@ use feature 'say';
 }
 {
     package main;
-    package Perlito5::CompileTime::Dumper;
+    package Perlito5::DumpToAST;
     undef();
-    sub Perlito5::CompileTime::Dumper::generate_eval_string {
-        (my($source)) = @_;
-        my $m = Perlito5::Grammar::exp_stmts($source, 0);
-        my $block = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
-        my @data = $block->emit_perl5();
-        my $out = [];
-        Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-        my $source_new = join('', @{$out}), ';1
-';
-        return $source_new
-    }
-    sub Perlito5::CompileTime::Dumper::_dump_to_ast {
+    undef();
+    sub Perlito5::DumpToAST::dump_to_ast {
         (my($obj), my($seen), my($pos)) = @_;
         !defined($obj) && return Perlito5::AST::Apply::->new('code' => 'undef', 'arguments' => []);
         my $ref = ref($obj);
@@ -9008,7 +8998,7 @@ use feature 'say';
             my @out;
             for my $i (0 .. $#{$obj}) {
                 my $here = Perlito5::AST::Index::INDEX($pos, Perlito5::AST::Int::->new('int' => $i));
-                push(@out, _dump_to_ast($obj->[$i], $seen, $here))
+                push(@out, dump_to_ast($obj->[$i], $seen, $here))
             }
             return Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => \@out)
         }
@@ -9018,13 +9008,13 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = Perlito5::AST::Lookup::LOOKUP($pos, Perlito5::AST::Buf::->new('buf' => $i));
-                push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), _dump_to_ast($obj->{$i}, $seen, $here)]))
+                push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), dump_to_ast($obj->{$i}, $seen, $here)]))
             }
             return Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => \@out)
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             my $here = Perlito5::AST::Apply::->new('code' => 'prefix:<$>', 'arguments' => [$pos]);
-            return Perlito5::AST::Apply::->new('code' => 'prefix:<\\>', 'arguments' => [_dump_to_ast(${$obj}, $seen, $here)])
+            return Perlito5::AST::Apply::->new('code' => 'prefix:<\\>', 'arguments' => [dump_to_ast(${$obj}, $seen, $here)])
         }
         elsif ($ref eq 'CODE') {
             my $closure_flag = bless({}, 'Perlito5::dump');
@@ -9049,7 +9039,7 @@ use feature 'say';
                 }
                 else {
                     my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => 'my', 'type' => '', 'var' => $var_ast), _dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
+                    push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => 'my', 'type' => '', 'var' => $var_ast), dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
                 }
             }
             return Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => [@vars, $source])])
@@ -9059,20 +9049,20 @@ use feature 'say';
             $a cmp $b
         } keys(%{$obj})) {
             my $here = Perlito5::AST::Lookup::LOOKUP($pos, Perlito5::AST::Buf::->new('buf' => $i));
-            push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), _dump_to_ast($obj->{$i}, $seen, $here)]))
+            push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), dump_to_ast($obj->{$i}, $seen, $here)]))
         }
         return Perlito5::AST::Apply::->new('code' => 'bless', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => \@out), Perlito5::AST::Buf::->new('buf' => $ref)])
     }
-    sub Perlito5::CompileTime::Dumper::_dump_to_ast_deref {
+    sub Perlito5::DumpToAST::dump_to_ast_deref {
         (my($obj), my($seen), my($pos)) = @_;
         my $ref = ref($obj);
-        !$ref && return _dump_to_ast(@_);
+        !$ref && return dump_to_ast(@_);
         if ($ref eq 'ARRAY') {
             @{$obj} || return '()';
             my @out;
             for my $i (0 .. $#{$obj}) {
                 my $here = Perlito5::AST::Index::INDEX($pos, Perlito5::AST::Int::->new('int' => $i));
-                push(@out, _dump_to_ast($obj->[$i], $seen, $here))
+                push(@out, dump_to_ast($obj->[$i], $seen, $here))
             }
             return Perlito5::AST::Apply::->new('code' => 'circumfix:<( )>', 'arguments' => \@out)
         }
@@ -9083,15 +9073,33 @@ use feature 'say';
                 $a cmp $b
             } keys(%{$obj})) {
                 my $here = Perlito5::AST::Lookup::LOOKUP($pos, Perlito5::AST::Buf::->new('buf' => $i));
-                push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), _dump_to_ast($obj->{$i}, $seen, $here)]))
+                push(@out, Perlito5::AST::Apply::->new('code' => 'infix:<=>>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $i), dump_to_ast($obj->{$i}, $seen, $here)]))
             }
             return Perlito5::AST::Apply::->new('code' => 'circumfix:<( )>', 'arguments' => \@out)
         }
         elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
             my $here = Perlito5::AST::Apply::->new('code' => 'prefix:<$>', 'arguments' => [$pos]);
-            return _dump_to_ast(${$obj}, $seen, $here)
+            return dump_to_ast(${$obj}, $seen, $here)
         }
-        return _dump_to_ast($obj, $seen, $pos)
+        return dump_to_ast($obj, $seen, $pos)
+    }
+    1
+}
+{
+    package main;
+    package Perlito5::CompileTime::Dumper;
+    undef();
+    undef();
+    sub Perlito5::CompileTime::Dumper::generate_eval_string {
+        (my($source)) = @_;
+        my $m = Perlito5::Grammar::exp_stmts($source, 0);
+        my $block = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
+        my @data = $block->emit_perl5();
+        my $out = [];
+        Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
+        my $source_new = join('', @{$out}), ';1
+';
+        return $source_new
     }
     sub Perlito5::CompileTime::Dumper::_collect_refs_inner {
         (my($obj), my($tab), my($seen), my($pos)) = @_;
@@ -9230,32 +9238,32 @@ use feature 'say';
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = ${$bareword};
             !defined($value) && return;
-            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, _dump_to_ast($value, $dumper_seen, $ast)]))
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
             my $value = \@{$bareword};
-            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
             my $value = \%{$bareword};
-            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+            push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
             if (exists(&{$bareword})) {
                 my $value = \&{$bareword};
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
             }
             if (defined(${$bareword})) {
                 my $value = \${$bareword};
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
             }
             if (@{$bareword}) {
                 my $value = \@{$bareword};
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
             }
             if (keys(%{$bareword})) {
                 my $value = \%{$bareword};
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), _dump_to_ast($value, $dumper_seen, $ast)]))
+                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
             }
         }
         else {;
