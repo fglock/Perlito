@@ -4,6 +4,7 @@ package Perlito5::Grammar::Block;
 use Perlito5::Grammar::Expression;
 use Perlito5::Grammar::Scope;
 use Perlito5::AST::BeginScratchpad;
+use Perlito5::AST::Captures;
 use strict;
 
 our %Named_block = (

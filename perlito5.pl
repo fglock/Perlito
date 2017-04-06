@@ -5647,7 +5647,175 @@ use feature 'say';
 }
 {
     package main;
+    undef();
+    undef();
+    undef();
+    package Perlito5::AST::CompUnit;
+    {;
+        sub Perlito5::AST::CompUnit::get_captures {;
+            ()
+        }
+    }
+    package Perlito5::AST::Int;
+    {;
+        sub Perlito5::AST::Int::get_captures {;
+            ()
+        }
+    }
+    package Perlito5::AST::Num;
+    {;
+        sub Perlito5::AST::Num::get_captures {;
+            ()
+        }
+    }
+    package Perlito5::AST::Buf;
+    {;
+        sub Perlito5::AST::Buf::get_captures {;
+            ()
+        }
+    }
+    package Perlito5::AST::Block;
+    {;
+        sub Perlito5::AST::Block::get_captures {
+            (my($self)) = @_;
+            my @var;
+            for my $stmt (@{$self->{'stmts'}}) {;
+                push(@var, $stmt->get_captures())
+            }
+            return @var
+        }
+    }
+    package Perlito5::AST::Index;
+    {;
+        sub Perlito5::AST::Index::get_captures {
+            my $self = shift;
+            my @var;
+            push(@var, $self->{'obj'}->get_captures());
+            push(@var, $self->{'index_exp'}->get_captures());
+            return @var
+        }
+    }
+    package Perlito5::AST::Lookup;
+    {;
+        sub Perlito5::AST::Lookup::get_captures {
+            my $self = shift;
+            my @var;
+            push(@var, $self->{'obj'}->get_captures());
+            push(@var, $self->{'index_exp'}->get_captures());
+            return @var
+        }
+    }
+    package Perlito5::AST::Var;
+    {;
+        sub Perlito5::AST::Var::get_captures {
+            my $self = shift;
+            return ($self)
+        }
+    }
+    package Perlito5::AST::Decl;
+    {;
+        sub Perlito5::AST::Decl::get_captures {;
+            return {'dont' => $_[0]->{'var'}->{'_id'}, }
+        }
+    }
+    package Perlito5::AST::Call;
+    {;
+        sub Perlito5::AST::Call::get_captures {
+            my $self = shift;
+            my @var;
+            ref($self->{'method'}) && push(@var, $self->{'method'}->get_captures());
+            push(@var, $self->{'invocant'}->get_captures());
+            my $args = $self->{'arguments'};
+            if ($args) {
+                if (ref($args) eq 'ARRAY') {;
+                    push(@var, map {;
+                        $_->get_captures()
+                    } @{$args})
+                }
+                else {;
+                    push(@var, $args->get_captures())
+                }
+            }
+            return @var
+        }
+    }
+    package Perlito5::AST::Apply;
+    {;
+        sub Perlito5::AST::Apply::get_captures {
+            my $self = shift;
+            my $code = $self->{'code'};
+            my @var;
+            ref($code) && push(@var, $code->get_captures());
+            $self->{'arguments'} && push(@var, map {;
+                $_->get_captures()
+            } @{$self->{'arguments'}});
+            if ($code eq 'my' || $code eq 'our' || $code eq 'state') {;
+                push(@var, (map {;
+                    ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}, }) : ()
+                } @{$self->{'arguments'}}))
+            }
+            return @var
+        }
+    }
+    package Perlito5::AST::If;
+    {;
+        sub Perlito5::AST::If::get_captures {
+            my $self = shift;
+            my @var;
+            push(@var, $self->{'cond'}->get_captures());
+            push(@var, $self->{'body'}->get_captures());
+            push(@var, $self->{'otherwise'}->get_captures());
+            return @var
+        }
+    }
+    package Perlito5::AST::When;
+    {;
+        sub Perlito5::AST::When::get_captures {
+            my $self = shift;
+            my @var;
+            push(@var, $self->{'cond'}->get_captures());
+            push(@var, $self->{'body'}->get_captures());
+            return @var
+        }
+    }
+    package Perlito5::AST::While;
+    {;
+        sub Perlito5::AST::While::get_captures {
+            my $self = shift;
+            my @var;
+            push(@var, $self->{'cond'}->get_captures());
+            push(@var, $self->{'body'}->get_captures());
+            return @var
+        }
+    }
+    package Perlito5::AST::For;
+    {;
+        sub Perlito5::AST::For::get_captures {
+            my $self = shift;
+            my @var;
+            my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
+            push(@var, map {;
+                $_->get_captures()
+            } grep {;
+                defined($_)
+            } @{$body}, $self->{'topic'}, (ref($self->{'cond'}) eq 'ARRAY' ? @{$self->{'cond'}} : $self->{'cond'}));
+            return @var
+        }
+    }
+    package Perlito5::AST::Sub;
+    {;
+        sub Perlito5::AST::Sub::get_captures {
+            my $self = shift;
+            !$self->{'block'} && return;
+            return $self->{'block'}->get_captures()
+        }
+    }
+    1
+}
+{
+    package main;
     package Perlito5::Grammar::Block;
+    undef();
     undef();
     undef();
     undef();
@@ -20744,173 +20912,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 ' . join(';
 ', map(Perlito5::XS::tab($level + 1) . $_->emit_xs($level + 1), @{$self->{'block'}})) . ';
 '
-        }
-    }
-    1
-}
-{
-    package main;
-    undef();
-    undef();
-    undef();
-    package Perlito5::AST::CompUnit;
-    {;
-        sub Perlito5::AST::CompUnit::get_captures {;
-            ()
-        }
-    }
-    package Perlito5::AST::Int;
-    {;
-        sub Perlito5::AST::Int::get_captures {;
-            ()
-        }
-    }
-    package Perlito5::AST::Num;
-    {;
-        sub Perlito5::AST::Num::get_captures {;
-            ()
-        }
-    }
-    package Perlito5::AST::Buf;
-    {;
-        sub Perlito5::AST::Buf::get_captures {;
-            ()
-        }
-    }
-    package Perlito5::AST::Block;
-    {;
-        sub Perlito5::AST::Block::get_captures {
-            (my($self)) = @_;
-            my @var;
-            for my $stmt (@{$self->{'stmts'}}) {;
-                push(@var, $stmt->get_captures())
-            }
-            return @var
-        }
-    }
-    package Perlito5::AST::Index;
-    {;
-        sub Perlito5::AST::Index::get_captures {
-            my $self = shift;
-            my @var;
-            push(@var, $self->{'obj'}->get_captures());
-            push(@var, $self->{'index_exp'}->get_captures());
-            return @var
-        }
-    }
-    package Perlito5::AST::Lookup;
-    {;
-        sub Perlito5::AST::Lookup::get_captures {
-            my $self = shift;
-            my @var;
-            push(@var, $self->{'obj'}->get_captures());
-            push(@var, $self->{'index_exp'}->get_captures());
-            return @var
-        }
-    }
-    package Perlito5::AST::Var;
-    {;
-        sub Perlito5::AST::Var::get_captures {
-            my $self = shift;
-            return ($self)
-        }
-    }
-    package Perlito5::AST::Decl;
-    {;
-        sub Perlito5::AST::Decl::get_captures {;
-            return {'dont' => $_[0]->{'var'}->{'_id'}, }
-        }
-    }
-    package Perlito5::AST::Call;
-    {;
-        sub Perlito5::AST::Call::get_captures {
-            my $self = shift;
-            my @var;
-            ref($self->{'method'}) && push(@var, $self->{'method'}->get_captures());
-            push(@var, $self->{'invocant'}->get_captures());
-            my $args = $self->{'arguments'};
-            if ($args) {
-                if (ref($args) eq 'ARRAY') {;
-                    push(@var, map {;
-                        $_->get_captures()
-                    } @{$args})
-                }
-                else {;
-                    push(@var, $args->get_captures())
-                }
-            }
-            return @var
-        }
-    }
-    package Perlito5::AST::Apply;
-    {;
-        sub Perlito5::AST::Apply::get_captures {
-            my $self = shift;
-            my $code = $self->{'code'};
-            my @var;
-            ref($code) && push(@var, $code->get_captures());
-            $self->{'arguments'} && push(@var, map {;
-                $_->get_captures()
-            } @{$self->{'arguments'}});
-            if ($code eq 'my' || $code eq 'our' || $code eq 'state') {;
-                push(@var, (map {;
-                    ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}, }) : ()
-                } @{$self->{'arguments'}}))
-            }
-            return @var
-        }
-    }
-    package Perlito5::AST::If;
-    {;
-        sub Perlito5::AST::If::get_captures {
-            my $self = shift;
-            my @var;
-            push(@var, $self->{'cond'}->get_captures());
-            push(@var, $self->{'body'}->get_captures());
-            push(@var, $self->{'otherwise'}->get_captures());
-            return @var
-        }
-    }
-    package Perlito5::AST::When;
-    {;
-        sub Perlito5::AST::When::get_captures {
-            my $self = shift;
-            my @var;
-            push(@var, $self->{'cond'}->get_captures());
-            push(@var, $self->{'body'}->get_captures());
-            return @var
-        }
-    }
-    package Perlito5::AST::While;
-    {;
-        sub Perlito5::AST::While::get_captures {
-            my $self = shift;
-            my @var;
-            push(@var, $self->{'cond'}->get_captures());
-            push(@var, $self->{'body'}->get_captures());
-            return @var
-        }
-    }
-    package Perlito5::AST::For;
-    {;
-        sub Perlito5::AST::For::get_captures {
-            my $self = shift;
-            my @var;
-            my $body = ref($self->{'body'}) ne 'Perlito5::AST::Block' ? [$self->{'body'}] : $self->{'body'}->{'stmts'};
-            push(@var, map {;
-                $_->get_captures()
-            } grep {;
-                defined($_)
-            } @{$body}, $self->{'topic'}, (ref($self->{'cond'}) eq 'ARRAY' ? @{$self->{'cond'}} : $self->{'cond'}));
-            return @var
-        }
-    }
-    package Perlito5::AST::Sub;
-    {;
-        sub Perlito5::AST::Sub::get_captures {
-            my $self = shift;
-            !$self->{'block'} && return;
-            return $self->{'block'}->get_captures()
         }
     }
     1
