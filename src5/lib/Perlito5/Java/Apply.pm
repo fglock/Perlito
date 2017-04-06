@@ -1,5 +1,7 @@
 package Perlito5::AST::Apply;
 {
+    use strict;
+
     sub emit_qr_java {
         my ($regex, $modifier, $level) = @_;
         if ( $modifier eq '' && ref( $regex ) eq "Perlito5::AST::Var" && $regex->{sigil} eq '$' ) {
@@ -1638,7 +1640,7 @@ package Perlito5::AST::Apply;
                 # &$c()
 
                 my $arg   = $code->{arguments}->[0];
-                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
+                my $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_java($level) . ')';
 
                 return $invocant . '.apply('
                     . Perlito5::Java::to_context($wantarray) . ', '

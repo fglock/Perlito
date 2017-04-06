@@ -20913,6 +20913,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
     package main;
     package Perlito5::AST::Apply;
     {
+        undef();
         sub Perlito5::AST::Apply::emit_qr_java {
             (my($regex), my($modifier), my($level)) = @_;
             if ($modifier eq '' && ref($regex) eq 'Perlito5::AST::Var' && $regex->{'sigil'} eq '$') {;
@@ -21941,7 +21942,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my $items = Perlito5::Java::to_list_preprocess($self->{'arguments'});
                 if (ref($code) eq 'Perlito5::AST::Apply' && $code->code() eq 'prefix:<&>') {
                     my $arg = $code->{'arguments'}->[0];
-                    $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')';
+                    my $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_java($level) . ')';
                     return $invocant . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
                 }
                 return $self->{'code'}->emit_java($level) . '.apply(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_param_list($items, $level + 1) . ')'
