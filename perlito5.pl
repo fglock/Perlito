@@ -9105,17 +9105,18 @@ use feature 'say';
         (my($name), my($item), my($vars), my($dumper_seen)) = @_;
         @_ = ();
         my $sigil = substr($name, 0, 1);
-        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
-            warn('# don' . chr(39) . 't know how to initialize subroutine ' . $name . ' in BEGIN');
+        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {;
             return
         }
         if (substr($name, 7, 1) lt 'A') {;
             $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
         }
         my $ast = $item->{'ast'};
-        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {;
-            $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'}
+        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
+            $ast = Perlito5::AST::Var::->new(%{$ast}, 'sigil' => $ast->{'_real_sigil'} || $ast->{'sigil'}, 'namespace' => $ast->{'namespace'} || $ast->{'_namespace'});
+            $name = $ast->{'sigil'} . $ast->{'namespace'} . '::' . $ast->{'name'}
         }
+        $name eq '@main::ARGV' && return;
         my $bareword = substr($name, 1);
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = ${$bareword};
@@ -9131,6 +9132,7 @@ use feature 'say';
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
+            substr($bareword, 0, 2) eq '{' . chr(39) && ($bareword = substr($bareword, 2, -2));
             if (exists(&{$bareword})) {
                 my $value = \&{$bareword};
                 push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
@@ -9148,166 +9150,6 @@ use feature 'say';
                 push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
             }
         }
-        else {;
-            warn('# don' . chr(39) . 't know how to initialize variable ' . $name . ' in BEGIN')
-        }
-    }
-    sub Perlito5::CompileTime::Dumper::push_AST_refs {
-        (my($vars), my($array), my($value)) = @_;
-        if (ref($value) eq 'Perlito5::AST::Apply' && $value->{'code'} eq 'circumfix:<[ ]>') {
-            push(@{$vars}, Perlito5::AST::Apply::PUSH($array, Perlito5::AST::Apply::->new(%{$value}, 'arguments' => [])));
-            my $deref = Perlito5::AST::Index::INDEX($array, Perlito5::AST::Int::->new('int' => -1));
-            for my $arg (@{$value->{'arguments'}}) {;
-                push_AST_refs($vars, $deref, $arg)
-            }
-            return
-        }
-        if (ref($value) eq 'Perlito5::AST::Apply' && $value->{'code'} eq 'circumfix:<{ }>') {
-            push(@{$vars}, Perlito5::AST::Apply::PUSH($array, Perlito5::AST::Apply::->new(%{$value}, 'arguments' => [])));
-            for my $arg (@{$value->{'arguments'}}) {
-                my $hash = Perlito5::AST::Lookup::LOOKUP($array, $arg->{'arguments'}->[0]);
-                push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$hash, $arg->{'arguments'}->[1]]))
-            }
-            return
-        }
-        push(@{$vars}, Perlito5::AST::Apply::PUSH($array, $value))
-    }
-    sub Perlito5::CompileTime::Dumper::dump_to_AST_after_BEGIN {
-        my $scope = shift() // $Perlito5::GLOBAL;
-        my $vars = [];
-        my $dumper_seen = {};
-        for my $name (sort {;
-            $a cmp $b
-        } keys(%{$scope})) {
-            my $item = $scope->{$name};
-            _dump_AST_from_scope($name, $item, $vars, $dumper_seen)
-        }
-        return \@{$vars}
-    }
-    sub Perlito5::CompileTime::Dumper::_dumper {
-        (my($obj), my($tab), my($seen), my($pos)) = @_;
-        !defined($obj) && return 'undef';
-        my $ref = ref($obj);
-        !$ref && return Perlito5::Dumper::escape_string($obj);
-        my $as_string = $obj;
-        $seen->{$as_string} && return $seen->{$as_string};
-        $seen->{$as_string} = $pos;
-        my $tab1 = $tab . '    ';
-        if ($ref eq 'ARRAY') {
-            @{$obj} || return '[]';
-            my @out;
-            for my $i (0 .. $#{$obj}) {
-                my $here = $pos . '->[' . $i . ']';
-                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
-')
-            }
-            return join('', '[
-', @out, $tab, ']')
-        }
-        elsif ($ref eq 'HASH') {
-            keys(%{$obj}) || return '{}';
-            my @out;
-            for my $i (sort {;
-                $a cmp $b
-            } keys(%{$obj})) {
-                my $here = $pos . '->{' . $i . '}';
-                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
-')
-            }
-            return join('', '{
-', @out, $tab, '}')
-        }
-        elsif ($ref eq 'SCALAR' || $ref eq 'REF') {;
-            return '\\' . _dumper(${$obj}, $tab1, $seen, $pos)
-        }
-        elsif ($ref eq 'CODE') {
-            my $closure_flag = bless({}, 'Perlito5::dump');
-            my $captures = $obj->($closure_flag) // {};
-            my @vars;
-            my $ast;
-            my $source;
-            my $sub_name;
-            my $package = $captures->{'__PKG__'};
-            $package && push(@vars, 'package ' . $package . ';');
-            for my $var_id (sort {;
-                $a cmp $b
-            } keys(%{$captures})) {
-                $var_id eq '__PKG__' && next;
-                if ($var_id eq '__SUB__') {
-                    my $sub_id = $captures->{$var_id};
-                    $ast = $Perlito5::BEGIN_SUBS{$sub_id};
-                    $ast->{'name'} && ($sub_name = $ast->{'namespace'} . '::' . $ast->{'name'});
-                    my @data = $ast->emit_perl5();
-                    my $out = [];
-                    Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-                    $source = join('', @{$out}) . ';'
-                }
-                else {
-                    my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    my $sigil = ($var_ast->{'_real_sigil'} || $var_ast->{'sigil'});
-                    if ($var_ast->{'_decl'} eq 'our') {;
-                        push(@vars, 'our ' . $sigil . $var_ast->{'name'} . '; ')
-                    }
-                    else {;
-                        push(@vars, 'my ' . $sigil . $var_ast->{'name'} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ')
-                    }
-                }
-            }
-            return join('', 'do { ', @vars, $source, ($sub_name ? '\\&' . $sub_name : ''), '}')
-        }
-        my @out;
-        for my $i (sort {;
-            $a cmp $b
-        } keys(%{$obj})) {
-            my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
-')
-        }
-        return join('', 'bless({
-', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
-    }
-    sub Perlito5::CompileTime::Dumper::_dumper_deref {
-        (my($obj), my($tab), my($seen), my($pos)) = @_;
-        my $ref = ref($obj);
-        !$ref && return _dumper(@_);
-        my $tab1 = $tab . '    ';
-        if ($ref eq 'ARRAY') {
-            @{$obj} || return '()';
-            my @out;
-            for my $i (0 .. $#{$obj}) {
-                my $here = $pos . '->[' . $i . ']';
-                push(@out, $tab1, _dumper($obj->[$i], $tab1, $seen, $here), ',
-')
-            }
-            return join('', '(
-', @out, $tab, ')')
-        }
-        elsif ($ref eq 'HASH') {
-            keys(%{$obj}) || return '()';
-            my @out;
-            for my $i (sort {;
-                $a cmp $b
-            } keys(%{$obj})) {
-                my $here = $pos . '->{' . $i . '}';
-                push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
-')
-            }
-            return join('', '(
-', @out, $tab, ')')
-        }
-        elsif ($ref eq 'SCALAR' || $ref eq 'REF') {;
-            return _dumper(${$obj}, $tab1, $seen, $pos)
-        }
-        my @out;
-        for my $i (sort {;
-            $a cmp $b
-        } keys(%{$obj})) {
-            my $here = $pos . '->{' . $i . '}';
-            push(@out, $tab1, chr(39) . $i . chr(39) . ' => ', _dumper($obj->{$i}, $tab1, $seen, $here), ',
-')
-        }
-        return join('', 'bless({
-', @out, $tab, '}, ' . chr(39) . $ref . chr(39) . ')')
     }
     sub Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN {
         my $scope = shift() // $Perlito5::GLOBAL;
@@ -9342,89 +9184,15 @@ use feature 'say';
                 $scope->{$sigil . $fullname} //= {'ast' => $ast, 'value' => \%{$fullname}}
             }
         }
-        if (0) {
-            my $ast = dump_to_AST_after_BEGIN($scope);
-            print(Data::Dumper::Dumper($ast));
-            my @data = map {;
-                $_->emit_perl5()
-            } @{$ast};
-            my $out = [];
-            Perlito5::Perl5::PrettyPrinter::pretty_print(\@data, 0, $out);
-            my $source_new = join('', @{$out}), ';1
-';
-            print('[[[ ' . $source_new . ' ]]]
-')
-        }
+        my $vars = [];
+        my $dumper_seen = {};
         for my $name (sort {;
             $a cmp $b
         } keys(%{$scope})) {
-            my $sigil = substr($name, 0, 1);
             my $item = $scope->{$name};
-            if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {
-                push(@{$vars}, '# don' . chr(39) . 't know how to initialize subroutine ' . $name);
-                next
-            }
-            if (substr($name, 7, 1) lt 'A') {;
-                $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name, 1)) . '}'
-            }
-            my $ast = $item->{'ast'};
-            if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
-                $name = ($ast->{'_real_sigil'} || $ast->{'sigil'}) . ($ast->{'namespace'} || $ast->{'_namespace'}) . '::' . $ast->{'name'};
-                $scope->{$name} && next
-            }
-            $name eq '@main::ARGV' && next;
-            my $bareword = substr($name, 1);
-            if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-                my $value;
-                if ($name eq '$main::`') {;
-                    $value = ${'`'}
-                }
-                else {;
-                    $value = ${$bareword}
-                }
-                my $dump = _dumper($value, '  ', $dumper_seen, $name);
-                $dump eq 'undef' && next;
-                push(@{$vars}, $name . ' = ' . $dump . ';')
-            }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
-                my $value = \%{$bareword};
-                my $dump = _dumper($value, '  ', $dumper_seen, '\\' . $name);
-                push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-            }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
-                my $value = \@{$bareword};
-                my $dump = _dumper($value, '  ', $dumper_seen, '\\' . $name);
-                push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-            }
-            elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-                substr($bareword, 0, 2) eq '{' . chr(39) && ($bareword = substr($bareword, 2, -2));
-                if (exists(&{$bareword})) {
-                    my $sub = \&{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-                }
-                if (defined(${$bareword})) {
-                    my $sub = \${$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\$' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-                }
-                if (@{$bareword}) {
-                    my $sub = \@{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\@' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-                }
-                if (keys(%{$bareword})) {
-                    my $sub = \%{$bareword};
-                    my $dump = _dumper($sub, '  ', $dumper_seen, '\\%' . $bareword);
-                    push(@{$vars}, '*' . $bareword . ' = ' . $dump . ';')
-                }
-            }
-            else {;
-                push(@{$vars}, '# don' . chr(39) . 't know how to initialize variable ' . $name)
-            }
+            _dump_AST_from_scope($name, $item, $vars, $dumper_seen)
         }
-        return join('
-', @{$vars})
+        return $vars
     }
     1
 }
@@ -19070,8 +18838,14 @@ CORE.printf = function(List__) {
                 return ['paren' => '<', $self->emit_perl5_args()]
             }
             $self->{'ignore_proto'} && ($code = '&' . $code);
-            if ($self->{'bareword'} && !@{$self->{'arguments'}}) {;
-                return ['bareword' => $code]
+            if ($self->{'bareword'} && !@{$self->{'arguments'}}) {
+                my $effective_name = ($self->{'namespace'} || $Perlito5::PKG_NAME) . '::' . $self->{'code'};
+                if (exists($Perlito5::PROTO->{$effective_name})) {;
+                    $code = $effective_name
+                }
+                else {;
+                    return ['bareword' => $code]
+                }
             }
             return ['apply' => '(', $code, $self->emit_perl5_args()]
         }
@@ -23532,7 +23306,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 @js_block = $block->emit_java($level + 3, 'runtime');
                 $Perlito5::THROW_RETURN = $outer_throw
             }
-            my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
+            my @s = ('new PlClosure(' . $prototype . ', ' . 'new PlObject[]{ ' . join(', ', @captures_java) . ' }, ' . Perlito5::Java::pkg() . ') {', ['public PlObject apply(int want, PlArray List__) {', [@js_block], '}'], '}');
             if ($self->{'name'}) {
                 my $idx = Perlito5::JavaScript2::get_label();
                 return Perlito5::Java::emit_wrap_java($level, 'if (!PlV.sget("main::init_' . $idx . '").to_boolean()) {', ['PlV.sset("main::init_' . $idx . '", (PlCx.INT1));', 'PlV.cset(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $self->{'name'}) . ', ' . Perlito5::Java::emit_wrap_java($level + 1, @s) . ');'], '}')
@@ -31231,7 +31005,7 @@ class PlString extends PlObject {
     undef();
     undef();
     undef();
-    my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name;
+    my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name();
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
     my $source = '';
     my $backend = ${'^O'};
@@ -31589,13 +31363,12 @@ INIT failed--call queue aborted.
                     }
                     if (!$bootstrapping) {
                         $Perlito5::STRICT = 0;
-                        my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
-                        if (@Perlito5::INIT_BLOCK) {;
-                            $s = $s . '
-' . '{ ' . 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} '
+                        unshift(@Perlito5::COMP_UNIT, Perlito5::AST::Block::->new('stmts' => Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
+                        if (@Perlito5::INIT_BLOCK) {
+                            $s = '{ ' . 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} ';
+                            my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                            unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                         }
-                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
-                        unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];
                     if ($compile_only) {;
@@ -31654,9 +31427,6 @@ INIT failed--call queue aborted.
                     }
                     elsif ($backend eq '_comp') {;
                         say(Perlito5::Dumper::ast_dumper($Perlito5::SCOPE))
-                    }
-                    elsif ($backend eq '_globals') {;
-                        say(Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL))
                     }
                     else {;
                         die('don' . chr(39) . 't know what to do with backend ' . chr(39) . $backend . chr(39))

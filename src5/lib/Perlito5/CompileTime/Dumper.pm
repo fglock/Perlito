@@ -38,11 +38,9 @@ sub _dump_AST_from_scope {
     if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
         # TODO
         # _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-        warn "# don't know how to initialize subroutine $name in BEGIN";
+        # warn "# don't know how to initialize subroutine $name in BEGIN";
         return;
     }
-
-    # TODO - emit lexicals
 
     if (substr($name, 7, 1) lt 'A') {
         # encode special variable names like $main::" to ${'main::"'}
@@ -51,11 +49,15 @@ sub _dump_AST_from_scope {
     my $ast = $item->{ast};
     if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{_decl} eq "our") {
         # "our" variables are lexical aliases; we want the original global variable name
-        $name =
-              ($ast->{_real_sigil} || $ast->{sigil})
-            . ($ast->{namespace} || $ast->{_namespace})
-            . "::" . $ast->{name};
+        $ast = Perlito5::AST::Var->new(
+            %$ast,
+            sigil => $ast->{'_real_sigil'} || $ast->{'sigil'},
+            namespace => $ast->{'namespace'} || $ast->{'_namespace'},
+        );
+        $name = $ast->{sigil} . $ast->{namespace} . "::" . $ast->{name};
+        # return if $Perlito5::GLOBAL->{$name};    # skip if we've seen this before
     }
+    return if $name eq '@main::ARGV';
     my $bareword = substr($name, 1);
     if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
         my $value = ${$bareword};
@@ -93,6 +95,10 @@ sub _dump_AST_from_scope {
     }
     elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
         # *mysub = sub {...}
+
+        # *{'strict::import'}   ???
+        $bareword = substr($bareword, 2, -2) if substr($bareword,0,2) eq "{'";
+
         if (exists &{$bareword}) {
             my $value = \&{$bareword};
             push @$vars, # "*$bareword = ", $dump;
@@ -140,234 +146,9 @@ sub _dump_AST_from_scope {
 
     }
     else {
-        warn "# don't know how to initialize variable $name in BEGIN";
+        # warn "# don't know how to initialize variable $name in BEGIN";
     }
 
-}
-
-sub push_AST_refs {
-    my ($vars, $array, $value) = @_;
-
-    if (ref($value) eq 'Perlito5::AST::Apply' && $value->{code} eq 'circumfix:<[ ]>') {
-        push @$vars, Perlito5::AST::Apply::PUSH(
-            $array,
-            Perlito5::AST::Apply->new( %$value, arguments => [] ),
-        );
-        my $deref = Perlito5::AST::Index::INDEX($array, Perlito5::AST::Int->new(int => -1));
-        for my $arg (@{$value->{arguments}}) {
-            push_AST_refs($vars, $deref, $arg);
-        }
-        return;
-    }
-
-    if (ref($value) eq 'Perlito5::AST::Apply' && $value->{code} eq 'circumfix:<{ }>') {
-        push @$vars, Perlito5::AST::Apply::PUSH(
-            $array,
-            Perlito5::AST::Apply->new( %$value, arguments => [] ),
-        );
-        for my $arg (@{$value->{arguments}}) {
-            my $hash = Perlito5::AST::Lookup::LOOKUP($array, $arg->{arguments}[0]);
-            push @$vars,
-                Perlito5::AST::Apply->new(
-                    code => 'infix:<=>',
-                    arguments => [
-                        $hash,
-                        $arg->{arguments}[1],
-                    ],
-                );
-        }
-        return;
-    }
-
-    push @$vars, Perlito5::AST::Apply::PUSH(
-        $array,
-        $value,
-    );
-}
-
-sub dump_to_AST_after_BEGIN {
-    # return a structure with the global variable declarations
-    # this is used to initialize the ahead-of-time program
-    my $scope = shift() // $Perlito5::GLOBAL;
-    my $vars = [];
-    my $dumper_seen = {};
-
-    for my $name (sort keys %$scope) {
-        my $item = $scope->{$name};
-        _dump_AST_from_scope($name, $item, $vars, $dumper_seen);
-    }
-    return \@$vars;
-}
-
-sub _dumper {
-    my ($obj, $tab, $seen, $pos) = @_;
-
-    return 'undef' if !defined $obj;
-
-    my $ref = ref($obj);
-    return Perlito5::Dumper::escape_string($obj) if !$ref;
-
-    my $as_string = "$obj";
-    return $seen->{$as_string} if $seen->{$as_string};
-    $seen->{$as_string} = $pos;
-        
-    my $tab1 = $tab . '    ';
-
-    if ($ref eq 'ARRAY') {
-        return '[]' unless @$obj;
-        my @out;
-        for my $i ( 0 .. $#$obj ) {
-            my $here = $pos . '->[' . $i . ']';
-            push @out, 
-                $tab1,
-                _dumper($obj->[$i], $tab1, $seen, $here), 
-                ",\n";
-        }
-        return join('', "[\n", @out, $tab, ']');
-    }
-    elsif ($ref eq 'HASH') {
-        return '{}' unless keys %$obj;
-        my @out;
-        for my $i ( sort keys %$obj ) {
-            my $here = $pos . '->{' . $i . '}';
-            push @out, 
-                $tab1,
-                "'$i' => ",
-                _dumper($obj->{$i}, $tab1, $seen, $here), 
-                ",\n";
-        }
-        return join('', "{\n", @out, $tab, '}');
-    }
-    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-        return "\\" . _dumper($$obj, $tab1, $seen, $pos);
-    }
-    elsif ($ref eq 'CODE') {
-        # TODO
-
-        # get the closed variables - see 'Sub' in Perl5 emitter
-        my $closure_flag = bless {}, "Perlito5::dump";
-        my $captures = $obj->($closure_flag) // {};
-
-        my @vars;
-        my $ast;
-        my $source;
-        my $sub_name;
-        my $package = $captures->{__PKG__};
-        push @vars, "package $package;"
-            if $package;
-        for my $var_id (sort keys %$captures) {
-            next if $var_id eq "__PKG__";
-            if ($var_id eq '__SUB__') {
-                my $sub_id = $captures->{$var_id};
-                $ast = $Perlito5::BEGIN_SUBS{$sub_id};
-
-                $sub_name = $ast->{namespace} . "::" . $ast->{name}
-                    if $ast->{name};;
-
-                my @data = $ast->emit_perl5();
-                my $out = [];
-                Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-                $source = join( '', @$out ) . ";";
-            }
-            else {
-                my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                my $sigil = ($var_ast->{_real_sigil} || $var_ast->{sigil});
-                if ($var_ast->{_decl} eq "our") {
-                    push @vars, 
-                        'our ' . $sigil . $var_ast->{name} . '; ';
-                }
-                else {
-                    push @vars, 
-                        'my ' . $sigil . $var_ast->{name} . ' = ' . _dumper_deref($captures->{$var_id}, $tab1, $seen, $pos) . '; ';
-                }
-            }
-        }
-        # say "_dumper: source [[ $source ]]";
-        return join('',
-            'do { ',
-                @vars,
-                $source,
-                ( $sub_name
-                  ? '\\&' . $sub_name    # return pointer to subroutine
-                  : ''
-                ),
-            '}'
-        );
-    }
-
-    # TODO find out what kind of reference this is (ARRAY, HASH, ...)
-    # local $@;
-    # eval {
-    #     my @data = @$obj;
-    #     say "is array";
-    #     return 'bless(' . "..." . ", '$ref')";
-    # }
-    # or eval {
-    #     $@ = '';
-    #     my %data = %$obj;
-    #     say "is hash";
-    #     return 'bless(' . "..." . ", '$ref')";
-    # };
-    # $@ = '';
-    
-    # assume it's a blessed HASH
-    
-    my @out;
-    for my $i ( sort keys %$obj ) {
-        my $here = $pos . '->{' . $i . '}';
-        push @out, 
-            $tab1,
-            "'$i' => ",
-            _dumper($obj->{$i}, $tab1, $seen, $here), 
-            ",\n";
-    }
-    return join('', "bless({\n", @out, $tab, "}, '$ref')");
-}
-
-sub _dumper_deref {
-    my ($obj, $tab, $seen, $pos) = @_;
-    my $ref = ref($obj);
-    return _dumper(@_) if !$ref;
-    my $tab1 = $tab . '    ';
-    if ($ref eq 'ARRAY') {
-        return '()' unless @$obj;
-        my @out;
-        for my $i ( 0 .. $#$obj ) {
-            my $here = $pos . '->[' . $i . ']';
-            push @out, 
-                $tab1,
-                _dumper($obj->[$i], $tab1, $seen, $here), 
-                ",\n";
-        }
-        return join('', "(\n", @out, $tab, ')');
-    }
-    elsif ($ref eq 'HASH') {
-        return '()' unless keys %$obj;
-        my @out;
-        for my $i ( sort keys %$obj ) {
-            my $here = $pos . '->{' . $i . '}';
-            push @out, 
-                $tab1,
-                "'$i' => ",
-                _dumper($obj->{$i}, $tab1, $seen, $here), 
-                ",\n";
-        }
-        return join('', "(\n", @out, $tab, ')');
-    }
-    elsif ($ref eq 'SCALAR' || $ref eq 'REF') {
-        return _dumper($$obj, $tab1, $seen, $pos);
-    }
-
-    my @out;
-    for my $i ( sort keys %$obj ) {
-        my $here = $pos . '->{' . $i . '}';
-        push @out, 
-            $tab1,
-            "'$i' => ",
-            _dumper($obj->{$i}, $tab1, $seen, $here), 
-            ",\n";
-    }
-    return join('', "bless({\n", @out, $tab, "}, '$ref')");
 }
 
 # TODO
@@ -516,100 +297,14 @@ sub emit_globals_after_BEGIN {
         }
     }
 
-    if (0) {
-        my $ast = dump_to_AST_after_BEGIN($scope);
-        print STDERR Data::Dumper::Dumper($ast);
-
-        my @data = map { $_->emit_perl5 } @$ast;
-        my $out = [];
-        Perlito5::Perl5::PrettyPrinter::pretty_print( \@data, 0, $out );
-        my $source_new = join( '', @$out ), ";1\n";
-        print STDERR "[[[ $source_new ]]]\n";
-    }
-
-
+    # return a structure with the global variable declarations
+    my $vars = [];
+    my $dumper_seen = {};
     for my $name (sort keys %$scope) {
-        my $sigil = substr($name, 0, 1);
         my $item = $scope->{$name};
-        if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
-            # TODO
-            # _dump_global($item, $seen, $dumper_seen, $vars, $tab);
-            push @$vars, "# don't know how to initialize subroutine $name";
-            next;
-        }
-
-        # TODO - emit lexicals
-
-        if (substr($name, 7, 1) lt 'A') {
-            # encode special variable names like $main::" to ${'main::"'}
-            $name = $sigil . '{' . Perlito5::Dumper::escape_string(substr($name,1)) . '}'
-        }
-        my $ast = $item->{ast};
-        if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{_decl} eq "our") {
-            # "our" variables are lexical aliases; we want the original global variable name
-            $name =
-                  ($ast->{_real_sigil} || $ast->{sigil})
-                . ($ast->{namespace} || $ast->{_namespace})
-                . "::" . $ast->{name};
-            next if $scope->{$name};    # skip if we've seen this before
-        }
-        next if $name eq '@main::ARGV';
-        my $bareword = substr($name, 1);
-        if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
-            my $value;
-            if ($name eq '$main::`') {
-                $value = $`;    # perl doesn't like $main::`
-            }
-            else {
-                $value = ${$bareword};
-            }
-            my $dump = _dumper( $value, "  ", $dumper_seen, $name );
-            next if $dump eq 'undef';
-            push @$vars, "$name = " . $dump . ";";
-        }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '%') {
-            my $value = \%{$bareword};
-            my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
-            push @$vars, "*$bareword = " . $dump . ";";
-        }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
-            my $value = \@{$bareword};
-            my $dump = _dumper( $value, "  ", $dumper_seen, '\\' . $name );
-            push @$vars, "*$bareword = " . $dump . ";";
-        }
-        elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '*') {
-            # *mysub = sub {...}
-
-            # *{'strict::import'}   ???
-            $bareword = substr($bareword, 2, -2) if substr($bareword,0,2) eq "{'";
-
-            if (exists &{$bareword}) {
-                my $sub = \&{$bareword};
-                my $dump = _dumper($sub, '  ', $dumper_seen, '\\&' . $bareword);
-                push @$vars, "*$bareword = " . $dump . ';';
-            }
-            if (defined ${$bareword}) {
-                my $sub = \${$bareword};
-                my $dump = _dumper($sub, '  ', $dumper_seen, '\\$' . $bareword);
-                push @$vars, "*$bareword = " . $dump . ';';
-            }
-            if (@{$bareword}) {
-                my $sub = \@{$bareword};
-                my $dump = _dumper($sub, '  ', $dumper_seen, '\\@' . $bareword);
-                push @$vars, "*$bareword = " . $dump . ';';
-            }
-            if (keys %{$bareword}) {
-                my $sub = \%{$bareword};
-                my $dump = _dumper($sub, '  ', $dumper_seen, '\\%' . $bareword);
-                push @$vars, "*$bareword = " . $dump . ';';
-            }
-
-        }
-        else {
-            push @$vars, "# don't know how to initialize variable $name";
-        }
+        _dump_AST_from_scope($name, $item, $vars, $dumper_seen);
     }
-    return join("\n", @$vars);
+    return $vars;
 }
 
 1;

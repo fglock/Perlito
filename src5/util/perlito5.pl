@@ -452,10 +452,13 @@ if ($backend) {
                 if (!$bootstrapping) {
                     # emit BEGIN-block side-effects, INIT blocks
                     $Perlito5::STRICT = 0;
-                    my $s = Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
+                    unshift @Perlito5::COMP_UNIT,
+                        Perlito5::AST::Block->new(
+                            stmts => Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL),
+                        );
                     if (@Perlito5::INIT_BLOCK) {
-                        $s = $s . "\n"
-                        . '{ '
+                        $s = 
+                          '{ '
                         .   'local $@; '
                         .   'local ${^GLOBAL_PHASE}; '
                         .   'eval { ${^GLOBAL_PHASE} = "INIT" }; '    # GLOBAL_PHASE is r/o in perl5
@@ -465,9 +468,9 @@ if ($backend) {
                         .   '} '
                         .   'or die "$@\nINIT failed--call queue aborted.\n"; '
                         . '} ';
+                        my $m = Perlito5::Grammar::exp_stmts($s, 0);
+                        unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
                     }
-                    my $m = Perlito5::Grammar::exp_stmts($s, 0);
-                    unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
 
 
                     # TODO - insert END block executor
@@ -556,10 +559,6 @@ if ($backend) {
                 }
                 elsif ($backend eq '_comp') {
                     say Perlito5::Dumper::ast_dumper( $Perlito5::SCOPE );
-                }
-                elsif ($backend eq '_globals') {
-                    # say Perlito5::CompileTime::Dumper::emit_globals_scope($Perlito5::SCOPE);
-                    say Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL);
                 }
                 else {
                     die "don't know what to do with backend '$backend'";
