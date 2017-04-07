@@ -145,7 +145,9 @@ Libraries
 Parser
 ------
 
-- Loops containing: BEGIN/INIT/END blocks, "use" statements, or named subroutines
+- BEGIN blocks
+
+  - Loops containing: BEGIN/INIT/END blocks, "use" statements, or named subroutines
 
     lexical variables inside loops don't behave properly if they are captured at compile-time
 
@@ -156,6 +158,25 @@ Parser
     t5/unit/begin_loop.t ........................ Failed 2/3 subtests 
     t5/unit/begin_recurse.t ..................... Failed 5/6 subtests 
 ~~~
+
+  - dump-to-AST work in progress - src5/lib/Perlito5/DumpToAST.pm
+
+    - shared captures (shared lexicals) are not shared
+
+    - blessed array/scalar/code is not supported (also in Data::Dumper)
+
+    - prototypes are not set
+
+    - subroutine predeclaration is not supported
+
+    - circular references are not tested
+
+    - test if dump-to-AST interferes with Java extensions
+
+  - eval-string code in src5/lib/Perlito5/Perl5/Emitter.pm
+    should be moved to src5/lib/Perlito5/AST/CompileTime.pm
+
+        if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
 
 - parse example in http://www.perlmonks.org/?node_id=663393
 
