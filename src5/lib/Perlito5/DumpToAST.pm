@@ -89,20 +89,32 @@ sub dump_to_ast {
             }
             else {
                 my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                push @vars, 
-                    # 'my ' . $var . ' = ' . dump_to_ast_deref($captures->{$var_id}, $seen, $pos) . '; ';
-                    Perlito5::AST::Apply->new(
-                        code => 'infix:<=>',
-                        arguments => [
-                            Perlito5::AST::Decl->new(
-                                'attributes' => [],
-                                'decl' => 'my',
-                                'type' => '',
-                                'var' => $var_ast,
-                            ),
-                            dump_to_ast_deref($captures->{$var_id}, $seen, $pos),  # TODO - $pos should be global
-                        ],
-                    );
+                my $decl = $var_ast->{_decl} || 'my';    # our / my
+                if ($decl eq 'our') {
+                    push @vars, 
+                        Perlito5::AST::Decl->new(
+                            'attributes' => [],
+                            'decl' => $decl,
+                            'type' => '',
+                            'var' => $var_ast,
+                        );
+                }
+                else {
+                    push @vars, 
+                        # 'my ' . $var . ' = ' . dump_to_ast_deref($captures->{$var_id}, $seen, $pos) . '; ';
+                        Perlito5::AST::Apply->new(
+                            code => 'infix:<=>',
+                            arguments => [
+                                Perlito5::AST::Decl->new(
+                                    'attributes' => [],
+                                    'decl' => $decl,
+                                    'type' => '',
+                                    'var' => $var_ast,
+                                ),
+                                dump_to_ast_deref($captures->{$var_id}, $seen, $pos),  # TODO - $pos should be global
+                            ],
+                        );
+                }
             }
         }
         # say "dump_to_ast: source [[ $source ]]";

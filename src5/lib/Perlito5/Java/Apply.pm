@@ -1822,7 +1822,7 @@ package Perlito5::AST::Apply;
     sub emit_java_get_decl {
         my $self      = shift;
         my $code = $self->{code};
-        if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {
+        if ($code eq 'my' || $code eq 'state' || $code eq 'local') {
             # $self->{code} = 'circumfix:<( )>';
             return ( map {     ref($_) eq 'Perlito5::AST::Var'
                              ? Perlito5::AST::Decl->new(

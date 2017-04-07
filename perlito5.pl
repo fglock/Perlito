@@ -9027,7 +9027,13 @@ use feature 'say';
                 }
                 else {
                     my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => 'my', 'type' => '', 'var' => $var_ast), dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
+                    my $decl = $var_ast->{'_decl'} || 'my';
+                    if ($decl eq 'our') {;
+                        push(@vars, Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var_ast))
+                    }
+                    else {;
+                        push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var_ast), dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
+                    }
                 }
             }
             return Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => [@vars, $source])])
@@ -21704,7 +21710,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Apply::emit_java_get_decl {
             my $self = shift;
             my $code = $self->{'code'};
-            if ($code eq 'my' || $code eq 'our' || $code eq 'state' || $code eq 'local') {;
+            if ($code eq 'my' || $code eq 'state' || $code eq 'local') {;
                 return (map {;
                     ref($_) eq 'Perlito5::AST::Var' ? Perlito5::AST::Decl::->new('decl' => $code, 'type' => '', 'var' => $_) : ()
                 } @{$self->{'arguments'}})
@@ -22813,7 +22819,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $decl_type = $self->{'_decl'} || 'global';
-            if ($decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our') {;
+            if ($decl_type ne 'my' && $decl_type ne 'state') {;
                 return $self->emit_java_global($level, $wantarray)
             }
             my $str_name = $table->{$sigil} . $self->{'name'} . '_' . $self->{'_id'};
@@ -22834,7 +22840,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         sub Perlito5::AST::Var::emit_java_set {
             (my($self), my($arguments), my($level), my($wantarray)) = @_;
             my $decl_type = $self->{'_decl'} || 'global';
-            if ($decl_type ne 'my' && $decl_type ne 'state' && $decl_type ne 'our') {;
+            if ($decl_type ne 'my' && $decl_type ne 'state') {;
                 return $self->emit_java_global_set($arguments, $level, $wantarray)
             }
             my $open = $wantarray eq 'void' ? '' : '(';
@@ -22895,6 +22901,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($id) {;
                 $Java_var->{$id} = {'id' => $id, 'type' => $type}
             }
+            if ($self->{'decl'} eq 'our') {;
+                return ''
+            }
             if ($self->{'decl'} eq 'local') {;
                 return ''
             }
@@ -22914,18 +22923,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     else {;
                         return $java_type . ' ' . $self->{'var'}->emit_java($level) . ';'
                     }
-                }
-            }
-            elsif ($self->{'decl'} eq 'our') {
-                my $v = Perlito5::AST::Var::->new(%{$self->{'var'}}, '_decl' => 'my');
-                if ($self->{'var'}->sigil() eq '%') {;
-                    return 'PlHash ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ';'
-                }
-                elsif ($self->{'var'}->sigil() eq '@') {;
-                    return 'PlArray ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ';'
-                }
-                else {;
-                    return 'PlLvalue ' . $v->emit_java($level) . ' = ' . Perlito5::AST::Var::emit_java_global($self->{'var'}) . ';'
                 }
             }
             else {;
@@ -23207,7 +23204,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 my $namespace = $v->{'namespace'} || $v->{'_namespace'} || $Perlito5::PKG_NAME;
                 my $s;
-                if ($decl eq 'my' || $decl eq 'state' || $decl eq 'our') {;
+                if ($decl eq 'my' || $decl eq 'state') {;
                     push(@str, 'for (PlObject ' . $local_label . ' : ' . $cond . ') {', ['PlLvalue ' . $v->emit_java($level + 1) . ' = (PlLvalue)' . $local_label . ';', Perlito5::Java::LexicalBlock::->new('block' => $body, 'block_label' => $self->{'label'}, 'continue' => $self->{'continue'})->emit_java($level + 2, $wantarray)], '}')
                 }
                 else {
