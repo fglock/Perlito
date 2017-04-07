@@ -392,7 +392,14 @@ package Perlito5::AST::Apply;
             if $self->{ignore_proto};
 
         if ( $self->{bareword} && !@{$self->{arguments}} ) {
-            return [ bareword => $code ];
+            my $effective_name = ($self->{namespace} || $Perlito5::PKG_NAME) . '::' . $self->{code};
+            if (exists $Perlito5::PROTO->{$effective_name}) {
+                $code = $effective_name;
+            }
+            else {
+                # shift / push / return
+                return ['bareword' => $code]
+            }
         }
         return [ apply => '(', $code, $self->emit_perl5_args() ];
     }
