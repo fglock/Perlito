@@ -88,15 +88,19 @@ sub dump_to_ast {
                 $source = $ast;
             }
             else {
-                my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                my $decl = $var_ast->{_decl} || 'my';    # our / my
+                my $var = $Perlito5::BEGIN_LEXICALS{$var_id};
+                $var = Perlito5::AST::Var->new(
+                    %$var,
+                    sigil => $var->{_real_sigil} || $var->{sigil},
+                );
+                my $decl = $var->{_decl} || 'my';    # our / my
                 if ($decl eq 'our') {
                     push @vars, 
                         Perlito5::AST::Decl->new(
                             'attributes' => [],
                             'decl' => $decl,
                             'type' => '',
-                            'var' => $var_ast,
+                            'var' => $var,
                         );
                 }
                 else {
@@ -109,7 +113,7 @@ sub dump_to_ast {
                                     'attributes' => [],
                                     'decl' => $decl,
                                     'type' => '',
-                                    'var' => $var_ast,
+                                    'var' => $var,
                                 ),
                                 dump_to_ast_deref($captures->{$var_id}, $seen, $pos),  # TODO - $pos should be global
                             ],
