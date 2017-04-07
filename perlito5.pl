@@ -9012,9 +9012,7 @@ use feature 'say';
             my $source;
             my $sub_name;
             my $package = $captures->{'__PKG__'};
-            if ($package) {;
-                push(@vars, Perlito5::AST::Apply::->new('code' => 'package', 'namespace' => $package, 'arguments' => []))
-            }
+            my $current_package = 'main';
             for my $var_id (sort {;
                 $a cmp $b
             } keys(%{$captures})) {
@@ -9026,15 +9024,25 @@ use feature 'say';
                     $source = $ast
                 }
                 else {
-                    my $var_ast = $Perlito5::BEGIN_LEXICALS{$var_id};
-                    my $decl = $var_ast->{'_decl'} || 'my';
-                    if ($decl eq 'our') {;
-                        push(@vars, Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var_ast))
+                    my $var = $Perlito5::BEGIN_LEXICALS{$var_id};
+                    $var = Perlito5::AST::Var::->new(%{$var}, 'sigil' => $var->{'_real_sigil'} || $var->{'sigil'});
+                    my $decl = $var->{'_decl'} || 'my';
+                    if ($decl eq 'our') {
+                        my $var_namespace = $var->{'_namespace'} || $var->{'namespace'};
+                        if ($var_namespace ne $current_package) {
+                            push(@vars, Perlito5::AST::Apply::->new('code' => 'package', 'namespace' => $var_namespace, 'arguments' => []));
+                            $current_package = $var_namespace
+                        }
+                        push(@vars, Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var))
                     }
                     else {;
-                        push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var_ast), dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
+                        push(@vars, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Decl::->new('attributes' => [], 'decl' => $decl, 'type' => '', 'var' => $var), dump_to_ast_deref($captures->{$var_id}, $seen, $pos)]))
                     }
                 }
+            }
+            if ($package ne $current_package) {
+                push(@vars, Perlito5::AST::Apply::->new('code' => 'package', 'namespace' => $package, 'arguments' => []));
+                $current_package = $package
             }
             return Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => [@vars, $source])])
         }
@@ -9106,7 +9114,7 @@ use feature 'say';
         }
         my $ast = $item->{'ast'};
         if (ref($ast) eq 'Perlito5::AST::Var' && $ast->{'_decl'} eq 'our') {
-            $ast = Perlito5::AST::Var::->new(%{$ast}, 'sigil' => $ast->{'_real_sigil'} || $ast->{'sigil'}, 'namespace' => $ast->{'namespace'} || $ast->{'_namespace'});
+            $ast = Perlito5::AST::Var::->new(%{$ast}, 'sigil' => $ast->{'_real_sigil'} || $ast->{'sigil'}, 'namespace' => $ast->{'namespace'} || $ast->{'_namespace'}, 'decl' => 'global');
             $name = $ast->{'sigil'} . $ast->{'namespace'} . '::' . $ast->{'name'}
         }
         my $bareword = substr($name, 1);

@@ -52,6 +52,7 @@ sub _dump_AST_from_scope {
             %$ast,
             sigil => $ast->{'_real_sigil'} || $ast->{'sigil'},
             namespace => $ast->{'namespace'} || $ast->{'_namespace'},
+            decl => 'global',
         );
         $name = $ast->{sigil} . $ast->{namespace} . "::" . $ast->{name};
         # return if $Perlito5::GLOBAL->{$name};    # skip if we've seen this before

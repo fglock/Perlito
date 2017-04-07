@@ -65,14 +65,7 @@ sub dump_to_ast {
         my $source;
         my $sub_name;
         my $package = $captures->{__PKG__};
-        if ($package) {
-            push @vars, # "package $package;"
-                Perlito5::AST::Apply->new(
-                    'code'      => 'package',
-                    'namespace' => $package,
-                    'arguments' => [],
-                );
-        }
+        my $current_package = "main";
         for my $var_id (sort keys %$captures) {
             next if $var_id eq "__PKG__";
             if ($var_id eq '__SUB__') {
@@ -95,6 +88,16 @@ sub dump_to_ast {
                 );
                 my $decl = $var->{_decl} || 'my';    # our / my
                 if ($decl eq 'our') {
+                    my $var_namespace = $var->{_namespace} || $var->{namespace};
+                    if ($var_namespace ne $current_package) {
+                        push @vars, # "package $package;"
+                            Perlito5::AST::Apply->new(
+                                'code'      => 'package',
+                                'namespace' => $var_namespace,
+                                'arguments' => [],
+                            );
+                        $current_package = $var_namespace;
+                    }
                     push @vars, 
                         Perlito5::AST::Decl->new(
                             'attributes' => [],
@@ -121,6 +124,16 @@ sub dump_to_ast {
                 }
             }
         }
+        if ($package ne $current_package) {
+            push @vars, # "package $package;"
+                Perlito5::AST::Apply->new(
+                    'code'      => 'package',
+                    'namespace' => $package,
+                    'arguments' => [],
+                );
+            $current_package = $package;
+        }
+ 
         # say "dump_to_ast: source [[ $source ]]";
         return Perlito5::AST::Apply->new(
             code => 'do',
