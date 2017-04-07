@@ -28112,7 +28112,7 @@ class PlClass {
         return methodCode;
     }
     public PlObject isa(String s) {
-        if (className.equals(s)) {
+        if (className.toString().equals(s)) {
             return PlCx.INT1;
         }
 
