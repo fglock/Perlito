@@ -1,5 +1,5 @@
 package Perlito5::Perl6::TreeGrammar;
-use Data::Dumper;
+use Perlito5::Dumper;
 use strict;
 use Perlito5::TreeGrammar;
 

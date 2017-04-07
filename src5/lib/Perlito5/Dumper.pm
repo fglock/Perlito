@@ -7,7 +7,17 @@ sub ast_dumper {
     return _dumper($_[0], $level, $seen, $pos);
 }
 
-# Note: this is called from Perlito5X/Dumper.pm
+sub Dumper {
+    my $seen  = {};
+    my $level = '    ';
+    my @out;
+    for my $i (0 .. $#_) {
+        my $pos   = '$VAR' . ($i + 1);
+        push @out, "$pos = " . _dumper($_[$i], $level, $seen, $pos) . ";\n";
+    }
+    return join('', @out);
+}
+
 sub _dumper {
     my ($obj, $tab, $seen, $pos) = @_;
 

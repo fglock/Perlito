@@ -806,6 +806,17 @@ use feature 'say';
         my $pos = '[TODO - recursive structure in AST is not supported]';
         return _dumper($_[0], $level, $seen, $pos)
     }
+    sub Perlito5::Dumper::Dumper {
+        my $seen = {};
+        my $level = '    ';
+        my @out;
+        for my $i (0 .. $#_) {
+            my $pos = '$VAR' . ($i + 1);
+            push(@out, $pos . ' = ' . _dumper($_[$i], $level, $seen, $pos) . ';
+')
+        }
+        return join('', @out)
+    }
     sub Perlito5::Dumper::_dumper {
         (my($obj), my($tab), my($seen), my($pos)) = @_;
         !defined($obj) && return 'undef';
@@ -897,29 +908,6 @@ use feature 'say';
     }
     sub Perlito5::Dumper::_identity {;
         $_[0] eq $_[1]
-    }
-    1
-}
-{
-    package main;
-    package Data::Dumper;
-    undef();
-    sub Data::Dumper::import {
-        my $pkg = shift;
-        my $callpkg = caller(0);
-        *{$callpkg . '::Dumper'} = \&Dumper;
-        return
-    }
-    sub Data::Dumper::Dumper {
-        my $seen = {};
-        my $level = '    ';
-        my @out;
-        for my $i (0 .. $#_) {
-            my $pos = '$VAR' . ($i + 1);
-            push(@out, $pos . ' = ' . Perlito5::Dumper::_dumper($_[$i], $level, $seen, $pos) . ';
-')
-        }
-        return join('', @out)
     }
     1
 }
@@ -21621,14 +21609,14 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                     if ($args[0]->isa('Perlito5::AST::Apply') && $args[0]->{'code'} eq 'list:<.>') {
                         @args = @{$args[0]->{'arguments'}};
                         if (@args != 1) {;
-                            die('Java::inline needs a string constant, got:', Data::Dumper::Dumper(\@args))
+                            die('Java::inline needs a string constant, got:', Perlito5::Dumper::Dumper(\@args))
                         }
                     }
                     if ($args[0]->isa('Perlito5::AST::Buf')) {;
                         return $args[0]->{'buf'}
                     }
                     else {;
-                        die('Java::inline needs a string constant, got:', Data::Dumper::Dumper(\@args))
+                        die('Java::inline needs a string constant, got:', Perlito5::Dumper::Dumper(\@args))
                     }
                 }
                 $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{'namespace'} . '::' . $code) . ')'

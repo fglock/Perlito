@@ -9,7 +9,7 @@ package Perlito5::AST::Apply;
             return $regex->emit_java($level);
         }
         my %flags = map { $_ => 1 } split //, $modifier;
-        # warn Data::Dumper::Dumper(\%flags);
+        # warn Perlito5::Dumper::Dumper(\%flags);
         my $flag_string = join( " | ", 
             ( $flags{'i'} ? 'Pattern.CASE_INSENSITIVE' : () ),
             ( $flags{'x'} ? 'Pattern.COMMENTS'         : () ),
@@ -1675,7 +1675,7 @@ package Perlito5::AST::Apply;
                 if ( $args[0]->isa('Perlito5::AST::Apply') && $args[0]{code} eq 'list:<.>') {
                     @args = @{ $args[0]{arguments} };
                     if ( @args != 1 ) {
-                        die "Java::inline needs a string constant, got:", Data::Dumper::Dumper(\@args);
+                        die "Java::inline needs a string constant, got:", Perlito5::Dumper::Dumper(\@args);
                     }
                 }
                 if ( $args[0]->isa('Perlito5::AST::Buf') ) {
@@ -1683,7 +1683,7 @@ package Perlito5::AST::Apply;
                     return $args[0]{buf};
                 }
                 else {
-                    die "Java::inline needs a string constant, got:", Data::Dumper::Dumper(\@args);
+                    die "Java::inline needs a string constant, got:", Perlito5::Dumper::Dumper(\@args);
                 }
             }
             $code = 'PlV.cget(' . Perlito5::Java::escape_string($self->{namespace} . '::' . $code ) . ')'

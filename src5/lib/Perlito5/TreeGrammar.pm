@@ -1,5 +1,5 @@
 package Perlito5::TreeGrammar;
-use Data::Dumper;
+use Perlito5::Dumper;
 use strict;
 
 my %dispatch = (
@@ -33,7 +33,7 @@ my %dispatch = (
 #     [And => [Ref => 'Perlito5::AST::Block']
 #             [Lookup => 'stmts']
 #             [Index => 0]
-#             [Action => sub { say Data::Dumper::Dumper $_[0]; }]]
+#             [Action => sub { say Perlito5::Dumper::Dumper $_[0]; }]]
 #
 # Will dump the first statement of a Block, if it is not empty.
 #
