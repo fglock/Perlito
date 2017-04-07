@@ -28094,7 +28094,17 @@ class PlClass {
         if (methodCode.is_undef()) {
             // method not found
 
-            // TODO - lookup in @ISA
+            // TODO - lookup in AUTOLOAD
+
+            // lookup in @ISA
+            for (PlObject className : PlV.array_get(className + "::ISA")) {
+                // TODO - prevent infinite loop
+                methodCode = PlClass.getInstance(className).method_lookup(method);
+                if (!methodCode.is_undef()) {
+                    // found
+                    return methodCode;
+                }
+            }
 
             // lookup in UNIVERSAL
             methodCode = PlV.cget("UNIVERSAL::" + method);
@@ -28106,7 +28116,14 @@ class PlClass {
             return PlCx.INT1;
         }
 
-        // TODO - lookup in @ISA
+        // lookup in @ISA
+        for (PlObject className : PlV.array_get(className + "::ISA")) {
+            // TODO - prevent infinite loop
+            PlObject is = PlClass.getInstance(className).isa(s);
+            if (is.to_boolean()) {
+                return is;
+            }
+        }
 
         // lookup in UNIVERSAL
         if (s.equals("UNIVERSAL")) {
