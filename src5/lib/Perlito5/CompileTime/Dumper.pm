@@ -32,7 +32,6 @@ sub generate_eval_string {
 
 sub _dump_AST_from_scope {
     my ($name, $item, $vars, $dumper_seen,) = @_;
-    @_ = ();    # don't dump @_
 
     my $sigil = substr($name, 0, 1);
     if (ref($item) eq 'Perlito5::AST::Sub' && $item->{name}) {
@@ -57,7 +56,6 @@ sub _dump_AST_from_scope {
         $name = $ast->{sigil} . $ast->{namespace} . "::" . $ast->{name};
         # return if $Perlito5::GLOBAL->{$name};    # skip if we've seen this before
     }
-    return if $name eq '@main::ARGV';
     my $bareword = substr($name, 1);
     if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
         my $value = ${$bareword};
@@ -218,6 +216,8 @@ sub emit_globals_after_BEGIN {
     # exclude %ENV, $] - these should use whatever is set at runtime
     delete $scope->{'%main::ENV'};
     delete $scope->{'$main::]'};
+    delete $scope->{'$main::ARGV'};
+    delete $scope->{'@main::_'};
 
     for my $v ( '$main::0', '$main::a', '$main::b', '$main::_' ) {
         # inject special variables like $0 (script name) in the scope, if it is not there already

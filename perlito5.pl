@@ -9091,7 +9091,6 @@ use feature 'say';
     }
     sub Perlito5::CompileTime::Dumper::_dump_AST_from_scope {
         (my($name), my($item), my($vars), my($dumper_seen)) = @_;
-        @_ = ();
         my $sigil = substr($name, 0, 1);
         if (ref($item) eq 'Perlito5::AST::Sub' && $item->{'name'}) {;
             return
@@ -9104,7 +9103,6 @@ use feature 'say';
             $ast = Perlito5::AST::Var::->new(%{$ast}, 'sigil' => $ast->{'_real_sigil'} || $ast->{'sigil'}, 'namespace' => $ast->{'namespace'} || $ast->{'_namespace'});
             $name = $ast->{'sigil'} . $ast->{'namespace'} . '::' . $ast->{'name'}
         }
-        $name eq '@main::ARGV' && return;
         my $bareword = substr($name, 1);
         if (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '$') {
             my $value = ${$bareword};
@@ -9147,6 +9145,8 @@ use feature 'say';
         my $tab = '';
         delete($scope->{'%main::ENV'});
         delete($scope->{'$main::]'});
+        delete($scope->{'$main::ARGV'});
+        delete($scope->{'@main::_'});
         for my $v ('$main::0', '$main::a', '$main::b', '$main::_') {
             (my($sigil), my($namespace), my($name)) = $v =~ m/^([$@%])(\w+)::(.*)$/;
             $scope->{$v} //= {'ast' => Perlito5::AST::Var::->new('name' => $name, 'sigil' => $sigil, '_decl' => 'global', 'namespace' => $namespace), }
