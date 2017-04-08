@@ -25763,7 +25763,7 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        PlObject methodCode = pClass.method_lookup(method);
+        PlObject methodCode = pClass.method_lookup(method, 0);
 
         if (methodCode.is_undef()) {
             String className = pClass.className().toString();
@@ -25783,7 +25783,7 @@ class PerlOp {
             return PlCx.UNDEF;
         }
 
-        PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method);
+        PlObject methodCode = PlClass.getInstance(invocant).method_lookup(method, 0);
 
         if (methodCode.is_undef()) {
             PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
@@ -26785,7 +26785,7 @@ class PlV {
                 String method_name = List__.shift().toString();
                 PlClass bless = self.blessed_class();
                 if ( bless != null ) {
-                    PlObject methodCode = bless.method_lookup(method_name);
+                    PlObject methodCode = bless.method_lookup(method_name, 0);
                     if (methodCode.is_coderef()) {
                         return methodCode;
                     }
@@ -26793,7 +26793,7 @@ class PlV {
                 }
 
                 // calling can() as a class method
-                PlObject methodCode = PlClass.getInstance(self).method_lookup(method_name);
+                PlObject methodCode = PlClass.getInstance(self).method_lookup(method_name, 0);
                 if (methodCode.is_coderef()) {
                     return methodCode;
                 }
@@ -26807,7 +26807,7 @@ class PlV {
                 String class_name = List__.shift().toString();
                 PlClass bless = self.blessed_class();
                 if ( bless != null ) {
-                    return bless.isa(class_name);
+                    return bless.isa(class_name, 0);
                 }
 
                 // reftype == "ARRAY"
@@ -26818,7 +26818,7 @@ class PlV {
                 // calling isa() as a class method
                 bless = PlClass.getInstance(self);
                 if ( bless != null ) {
-                    return bless.isa(class_name);
+                    return bless.isa(class_name, 0);
                 }
 
                 return PlCx.UNDEF;
@@ -28084,7 +28084,7 @@ class PlClass {
         return this.className == null;
     }
 
-    public PlObject method_lookup(String method) {
+    public PlObject method_lookup(String method, int level) {
         PlObject methodCode;
         if (method.indexOf("::") != -1) {
             // fully qualified method name
@@ -28098,8 +28098,11 @@ class PlClass {
 
             // lookup in @ISA
             for (PlObject className : PlV.array_get(className + "::ISA")) {
-                // TODO - prevent infinite loop
-                methodCode = PlClass.getInstance(className).method_lookup(method);
+                // prevent infinite loop
+                if (level >= 100) {
+                    PlCORE.die("Recursive inheritance detected in package ' . chr(39) . '" + className.toString() + "' . chr(39) . '");
+                }
+                methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
                     // found
                     return methodCode;
@@ -28111,15 +28114,18 @@ class PlClass {
         }
         return methodCode;
     }
-    public PlObject isa(String s) {
+    public PlObject isa(String s, int level) {
         if (className.toString().equals(s)) {
             return PlCx.INT1;
         }
 
         // lookup in @ISA
         for (PlObject className : PlV.array_get(className + "::ISA")) {
-            // TODO - prevent infinite loop
-            PlObject is = PlClass.getInstance(className).isa(s);
+            // prevent infinite loop
+            if (level >= 100) {
+                PlCORE.die("Recursive inheritance detected in package ' . chr(39) . '" + className.toString() + "' . chr(39) . '");
+            }
+            PlObject is = PlClass.getInstance(className).isa(s, level+1);
             if (is.to_boolean()) {
                 return is;
             }
@@ -28136,12 +28142,12 @@ class PlClass {
     public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
             // fallback
-            methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM);
+            methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
@@ -28151,12 +28157,12 @@ class PlClass {
     public static PlObject overload_to_number(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
             // fallback
-            methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING);
+            methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o));
             }
@@ -28166,7 +28172,7 @@ class PlClass {
     public static PlObject overload_add(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_ADD);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_ADD, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
@@ -28181,7 +28187,7 @@ class PlClass {
     public static PlObject overload_subtract(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUBTRACT);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUBTRACT, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
