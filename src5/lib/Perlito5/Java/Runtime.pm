@@ -2925,7 +2925,12 @@ class PlClass {
         if (methodCode.is_undef()) {
             // method not found
 
-            // TODO - lookup in AUTOLOAD
+            // lookup in AUTOLOAD
+            methodCode = PlV.cget(className + "::AUTOLOAD");
+            if (!methodCode.is_undef()) {
+                PlV.sset(className + "::AUTOLOAD", new PlString(className + "::" + method));
+                return methodCode;
+            }
 
             // lookup in @ISA
             for (PlObject className : PlV.array_get(className + "::ISA")) {
