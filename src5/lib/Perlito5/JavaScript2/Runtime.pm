@@ -254,7 +254,12 @@ function p5call(invocant, method, list, p5want) {
             return p5pkg['Perlito5::IO'][method]( invocant_original, list, p5want);
         }
 
-        if (method.substr(0, 1) != "(" && method != "import" && method != "unimport" && method != "isa") {
+        if (method.substr(0, 1) != "("
+         && method != "import"
+         && method != "unimport"
+         && method != "isa"
+         && method != "can"
+        ) {
             pkg_name = p5get_class_for_method('AUTOLOAD', invocant._class_._ref_, {}) || p5get_class_for_method('AUTOLOAD', "UNIVERSAL", {});
             if (pkg_name) {
                 p5pkg[pkg_name]["v_AUTOLOAD"] = invocant._class_._ref_ + "::" + method;

@@ -2937,6 +2937,7 @@ class PlClass {
                  || method.equals("import")
                  || method.equals("unimport")
                  || method.equals("isa")
+                 || method.equals("can")
                 ) {
                     // overload method - TODO
                 }
