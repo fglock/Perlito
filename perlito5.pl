@@ -25766,7 +25766,7 @@ class PerlOp {
         PlObject methodCode = pClass.method_lookup(method, 0);
 
         if (methodCode.is_undef()) {
-            String className = pClass.className().toString();
+            String className = pClass.className();
             PlCORE.die( "Can' . chr(39) . 't locate object method \\"" + method
                 + "\\" via package \\"" + className
                 + "\\" (perhaps you forgot to load \\"" + className + "\\"?" );
@@ -27584,7 +27584,7 @@ class PlReference extends PlObject {
             return REF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
 
@@ -27626,7 +27626,7 @@ class PlReference extends PlObject {
             return PlCx.UNDEF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlObject reftype() {
@@ -27782,7 +27782,7 @@ class PlClosure extends PlReference implements Runnable {
             return REF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public boolean is_coderef() {
@@ -27805,7 +27805,7 @@ class PlLvalueRef extends PlReference {
             return REF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlInt refaddr() {
@@ -27930,7 +27930,7 @@ class PlArrayRef extends PlArray {
             return REF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlObject refaddr() {
@@ -27943,7 +27943,7 @@ class PlArrayRef extends PlArray {
             return PlCx.UNDEF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlObject reftype() {
@@ -28038,7 +28038,7 @@ class PlHashRef extends PlHash {
             return REF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlObject refaddr() {
@@ -28051,7 +28051,7 @@ class PlHashRef extends PlHash {
             return PlCx.UNDEF;
         }
         else {
-            return this.bless.className();
+            return this.bless.plClassName();
         }
     }
     public PlObject reftype() {
@@ -28061,24 +28061,29 @@ class PlHashRef extends PlHash {
 }
 class PlClass {
     public static HashMap<String, PlClass> classes = new HashMap<String, PlClass>();
-    public PlString className;
+    public String className;
+    public PlString plClassName;
 
-    protected PlClass(PlString s) {
+    protected PlClass(String s) {
         this.className = s;
+        this.plClassName = new PlString(s);
     }
     public static PlClass getInstance(PlObject s) {
         return PlClass.getInstance(s.toString());
     }
     public static PlClass getInstance(String s) {
         if (!classes.containsKey(s)) {
-            PlClass c = new PlClass(new PlString(s));
+            PlClass c = new PlClass(s);
             classes.put(s, c);
             return c;
         }
         return classes.get(s);
     }
-    public PlString className() {
+    public String className() {
         return this.className;
+    }
+    public PlString plClassName() {
+        return this.plClassName;
     }
     public boolean is_undef() {
         return this.className == null;
@@ -28097,15 +28102,20 @@ class PlClass {
             // lookup in AUTOLOAD
             methodCode = PlV.cget(className + "::AUTOLOAD");
             if (!methodCode.is_undef()) {
-                PlV.sset(className + "::AUTOLOAD", new PlString(className + "::" + method));
-                return methodCode;
+                if (method.charAt(0) == ' . chr(39) . '(' . chr(39) . ') {
+                    // overload method - TODO
+                }
+                else {
+                    PlV.sset(className + "::AUTOLOAD", new PlString(className + "::" + method));
+                    return methodCode;
+                }
             }
 
             // lookup in @ISA
             for (PlObject className : PlV.array_get(className + "::ISA")) {
                 // prevent infinite loop
                 if (level >= 100) {
-                    PlCORE.die("Recursive inheritance detected in package ' . chr(39) . '" + className.toString() + "' . chr(39) . '");
+                    PlCORE.die("Recursive inheritance detected in package ' . chr(39) . '" + className + "' . chr(39) . '");
                 }
                 methodCode = PlClass.getInstance(className).method_lookup(method, level+1);
                 if (!methodCode.is_undef()) {
@@ -28120,12 +28130,13 @@ class PlClass {
         return methodCode;
     }
     public PlObject isa(String s, int level) {
-        if (className.toString().equals(s)) {
+        if (className.equals(s)) {
             return PlCx.INT1;
         }
 
         // lookup in @ISA
-        for (PlObject className : PlV.array_get(className + "::ISA")) {
+        for (PlObject isa_item : PlV.array_get(className + "::ISA")) {
+            String className = isa_item.toString();
             // prevent infinite loop
             if (level >= 100) {
                 PlCORE.die("Recursive inheritance detected in package ' . chr(39) . '" + className.toString() + "' . chr(39) . '");
