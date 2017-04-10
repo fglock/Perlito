@@ -65,7 +65,8 @@ token the_object {
             my $next_op = $m ? Perlito5::Match::flat($m)->[1] : '';
             my $is_infix = Perlito5::Grammar::Precedence::is_fixity_type('infix', $next_op);
             # print "is_infix $is_infix '$next_op'\n";
-            return if $is_infix;
+            return if $is_infix
+                   && $next_op ne "<<"; # start HEREDOC
         }
     }
 

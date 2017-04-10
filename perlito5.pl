@@ -6996,7 +6996,7 @@ use feature 'say';
                 my $m = Perlito5::Grammar::Precedence::op_parse($MATCH->{'str'}, $pos, 1);
                 my $next_op = $m ? Perlito5::Match::flat($m)->[1] : '';
                 my $is_infix = Perlito5::Grammar::Precedence::is_fixity_type('infix', $next_op);
-                $is_infix && return
+                $is_infix && $next_op ne '<<' && return
             }
             1
         })));
