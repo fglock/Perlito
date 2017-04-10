@@ -4960,6 +4960,12 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::require {
         my $filename = shift;
+        my $m2 = version_string($filename, 0);
+        if ($m2) {
+            my $version = $m2->{'version_string'}->{'capture'}->{'buf'};
+            Perlito5::test_perl_version($version);
+            return 1
+        }
         filename_lookup($filename) eq 'done' && return;
         my $source = do_file($filename);
         my $m = Perlito5::Grammar::exp_stmts($source, 0);

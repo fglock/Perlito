@@ -339,6 +339,15 @@ sub bootstrapping_use {
 
 sub require {
     my $filename = shift;
+
+    my $m2 = version_string($filename, 0);
+    if ($m2) {
+        # "use v5", "use v5.8" - check perl version
+        my $version = $m2->{"version_string"}{capture}{buf};
+        Perlito5::test_perl_version($version);
+        return 1;
+    }
+
     return 
         if filename_lookup($filename) eq "done";
 
