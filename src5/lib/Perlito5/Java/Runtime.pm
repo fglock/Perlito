@@ -2933,7 +2933,11 @@ class PlClass {
             // lookup in AUTOLOAD
             methodCode = PlV.cget(className + "::AUTOLOAD");
             if (!methodCode.is_undef()) {
-                if (method.charAt(0) == '(') {
+                if (method.charAt(0) == '('     // "overload" methods
+                 || method.equals("import")
+                 || method.equals("unimport")
+                 || method.equals("isa")
+                ) {
                     // overload method - TODO
                 }
                 else {
