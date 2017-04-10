@@ -4808,6 +4808,9 @@ use feature 'say';
                         my $ast = Perlito5::AST::Block::->new('stmts' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<[ ]>', 'arguments' => [Perlito5::Match::flat($m)])]);
                         $list = Perlito5::Grammar::Block::eval_begin_block($ast)
                     }
+                    else {;
+                        $list = undef
+                    }
                     my $full_ident = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'});
                     $Perlito5::PACKAGES->{$full_ident} = 1;
                     my $use_decl = Perlito5::Match::flat($MATCH->{'use_decl'});

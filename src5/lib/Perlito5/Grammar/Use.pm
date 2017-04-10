@@ -103,6 +103,9 @@ token stmt_use {
                 );
                 $list = Perlito5::Grammar::Block::eval_begin_block($ast);
             }
+            else {
+                $list = undef;
+            }
 
             my $full_ident = Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::full_ident"});
             $Perlito5::PACKAGES->{$full_ident} = 1;
