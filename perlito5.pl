@@ -18832,11 +18832,9 @@ CORE.printf = function(List__) {
             if ($self->{'code'} eq 'package') {;
                 return ['stmt' => 'package', ['bareword' => $self->{'namespace'}]]
             }
-            if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {
+            if ($code eq 'map' || $code eq 'grep' || $code eq 'sort' || $code eq 'print') {
                 if ($self->{'special_arg'}) {;
-                    return ['op' => 'prefix:<' . $code . '>', ['block', map {;
-                        $_->emit_perl5()
-                    } @{$self->{'special_arg'}->{'stmts'}}], ['op' => 'list:<,>', $self->emit_perl5_args()]]
+                    return ['op' => 'prefix:<' . $code . '>', $self->{'special_arg'}->emit_perl5(), ['op' => 'list:<,>', $self->emit_perl5_args()]]
                 }
                 return ['apply' => '(', $code, $self->emit_perl5_args()]
             }
@@ -18992,7 +18990,7 @@ CORE.printf = function(List__) {
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'prefix', 'prec' => 8, 'str' => $_ . ' '}
         for '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C';
     $op{'prefix:<' . $_ . '>'} = {'fix' => 'parsed', 'prec' => 15, 'str' => $_}
-        for 'do', 'sub', 'my', 'our', 'state', 'local', 'eval', 'map', 'grep', 'sort';
+        for 'do', 'sub', 'my', 'our', 'state', 'local', 'eval', 'map', 'grep', 'sort', 'print';
     my %tab;
     sub Perlito5::Perl5::PrettyPrinter::tab {
         my $level = $_[0];

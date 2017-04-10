@@ -365,11 +365,15 @@ package Perlito5::AST::Apply;
 
         if ($self->{code} eq 'package')    { return [ stmt => 'package', [ bareword => $self->{namespace} ] ] }
 
-        if ($code eq 'map' || $code eq 'grep' || $code eq 'sort') {    
+        if ( $code eq 'map'
+          || $code eq 'grep'
+          || $code eq 'sort'
+          || $code eq 'print'
+        ) {
             if ( $self->{special_arg} ) {
                 # TODO - test 'special_arg' type (scalar, block, ...)
                 return [ op => 'prefix:<' . $code . '>',
-                         [ 'block', map { $_->emit_perl5() } @{$self->{special_arg}{stmts}} ],
+                         $self->{special_arg}->emit_perl5,
                          [ 'op' => 'list:<,>',  $self->emit_perl5_args() ],
                        ];
             }
