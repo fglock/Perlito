@@ -66,7 +66,9 @@ Perlito5-in-JavaScript differences from "perl"
 
 - utf8 is not implemented yet.
 
-- Regex is missing some features, such as /x modifier.
+- Regex is missing some features:
+  "/x" modifier.
+  "/s" modifier.
   "/e" modifier is supported.
 
 - Control structures are partially implemented;
