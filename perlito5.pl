@@ -9178,13 +9178,6 @@ use feature 'say';
             (my($sigil), my($namespace), my($name)) = $v =~ m/^([$@%])(\w+)::(.*)$/;
             $scope->{$v} //= {'ast' => Perlito5::AST::Var::->new('name' => $name, 'sigil' => $sigil, '_decl' => 'global', 'namespace' => $namespace), }
         }
-        for my $pkg (keys(%{$Perlito5::PACKAGES})) {;
-            if (@{$pkg . '::ISA'}) {
-                print STDERR:: 'Dump ' . $pkg . '
-';
-                $scope->{'@' . $pkg . '::ISA'} //= {'ast' => Perlito5::AST::Var::->new('name' => 'ISA', 'sigil' => '@', '_decl' => 'global', 'namespace' => $pkg), 'value' => \@{$pkg . '::ISA'}}
-            }
-        }
         $scope->{'@Perlito5::END_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'END_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::END_BLOCK};
         $scope->{'@Perlito5::INIT_BLOCK'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'INIT_BLOCK', 'sigil' => '@', '_decl' => 'global'), 'value' => \@Perlito5::INIT_BLOCK};
         $scope->{'%Perlito5::DATA_SECTION'} //= {'ast' => Perlito5::AST::Var::->new('namespace' => 'Perlito5', 'name' => 'DATA_SECTION', 'sigil' => '%', '_decl' => 'global'), 'value' => \%Perlito5::DATA_SECTION};
