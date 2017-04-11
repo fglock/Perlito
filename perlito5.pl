@@ -2118,7 +2118,7 @@ use feature 'say';
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && (do {
-                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'pos', 'arguments' => [Perlito5::AST::Var::SCALAR_ARG()])];
+                    $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'pos', 'arguments' => [Perlito5::AST::Var::SCALAR_ARG()], 'bareword' => 1)];
                     1
                 }))
             })
@@ -6489,7 +6489,7 @@ use feature 'say';
             }
         }
         if ($is_data) {;
-            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = substr($_[0], $p)
+            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $p, 'data' => $_[0]}
         }
         return {'str' => $str, 'from' => $_[1], 'to' => length($_[0]), 'capture' => ['space', ' ']}
     }

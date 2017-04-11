@@ -80,7 +80,7 @@ sub term_end {
         }
     }
     if ($is_data) {
-        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = substr($_[0], $p);
+        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $p, data => $_[0] };
     }
     return { str => $str, from => $_[1], to => length($_[0]), capture => [ 'space',   ' ' ] }
 }

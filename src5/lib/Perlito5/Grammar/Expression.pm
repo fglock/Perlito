@@ -456,7 +456,7 @@ token term_pos {
         {
             $MATCH->{capture} = [ 'term',
                 Perlito5::AST::Apply->new(
-                    code => 'pos',
+                    code      => 'pos',
                     arguments => [ $MATCH->{"Perlito5::Grammar::var_ident"}{capture} ],
                 )
             ];
@@ -466,8 +466,9 @@ token term_pos {
         {
             $MATCH->{capture} = [ 'term',
                 Perlito5::AST::Apply->new(
-                    code => 'pos',
+                    code      => 'pos',
                     arguments => [ Perlito5::AST::Var::SCALAR_ARG() ],
+                    bareword  => 1,
                 )
             ];
         }
