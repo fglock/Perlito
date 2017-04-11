@@ -240,7 +240,6 @@ sub emit_globals_after_BEGIN {
     # dump @ISA
     for my $pkg (keys %{$Perlito5::PACKAGES}) {;
         if (@{ $pkg . "::ISA" }) {
-            print STDERR:: 'Dump ' . $pkg . "\n";
             $scope->{ '@' . $pkg . "::ISA" } //= {
                 'ast' => Perlito5::AST::Var->new(
                     'name'      => "ISA",

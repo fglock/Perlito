@@ -9180,9 +9180,7 @@ use feature 'say';
             $scope->{$v} //= {'ast' => Perlito5::AST::Var::->new('name' => $name, 'sigil' => $sigil, '_decl' => 'global', 'namespace' => $namespace), }
         }
         for my $pkg (keys(%{$Perlito5::PACKAGES})) {;
-            if (@{$pkg . '::ISA'}) {
-                print STDERR:: 'Dump ' . $pkg . '
-';
+            if (@{$pkg . '::ISA'}) {;
                 $scope->{'@' . $pkg . '::ISA'} //= {'ast' => Perlito5::AST::Var::->new('name' => 'ISA', 'sigil' => '@', '_decl' => 'global', 'namespace' => $pkg), 'value' => \@{$pkg . '::ISA'}}
             }
         }
