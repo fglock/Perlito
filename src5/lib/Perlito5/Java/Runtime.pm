@@ -4157,7 +4157,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         result.a = aa;
         return result;
     }
-    public static PlObject list_set(int want, PlObject src, PlObject... args) {
+    public static PlObject static_list_set(int want, PlObject src, PlObject... args) {
         src = new PlArray(src);
         int size = src.to_int();
         for (PlObject s : args) {

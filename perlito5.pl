@@ -20678,7 +20678,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($arguments), my($level), my($wantarray)) = @_;
             my $code = $self->{'code'};
             if ($code eq 'my' || $code eq 'state' || $code eq 'local' || $code eq 'circumfix:<( )>') {;
-                return 'PlArray.list_set(' . join(', ', Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, 'list', 'lvalue'), @{$self->{'arguments'}})) . ')'
+                return 'PlArray.static_list_set(' . join(', ', Perlito5::Java::to_context($wantarray), Perlito5::Java::to_list([$arguments], $level), map($_->emit_java($level, 'list', 'lvalue'), @{$self->{'arguments'}})) . ')'
             }
             if ($code eq 'pos') {
                 my @lvalue = @{$self->{'arguments'}};
@@ -29310,7 +29310,7 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         result.a = aa;
         return result;
     }
-    public static PlObject list_set(int want, PlObject src, PlObject... args) {
+    public static PlObject static_list_set(int want, PlObject src, PlObject... args) {
         src = new PlArray(src);
         int size = src.to_int();
         for (PlObject s : args) {
