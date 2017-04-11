@@ -1778,6 +1778,9 @@ class PlV {
         return glob_set(name.toString(), value, nameSpace);
     }
     public static final PlObject glob_set(String name, PlObject value, String nameSpace) {
+        if (value.is_lvalue()) {
+            value = value.get();
+        }
         if (value.is_coderef()) {
             PlV.cset(name, value);
         }
