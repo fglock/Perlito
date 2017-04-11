@@ -1,14 +1,7 @@
 package Perlito5::Grammar::Scope;
 
+use Perlito5::AST;
 use strict;
-
-our %Special_var = (
-    ARGV => 1,
-    INC  => 1,
-    ENV  => 1,
-    SIG  => 1,
-    _    => 1,
-);
 
 sub new {
     return { block => [] };
@@ -63,8 +56,10 @@ sub lookup_variable {
     my $look = lookup_variable_inner($var, $scope, 0);
     return $look if $look;
 
+    return if ref($var) ne 'Perlito5::AST::Var';
+
     my $c = substr($var->{name}, 0, 1);
-    if ( $Special_var{ $var->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
+    if ( $var->is_special_var() ) {
         # special variable
         $var->{_decl} = 'global';
         $var->{_namespace} = 'main';

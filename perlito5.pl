@@ -5013,137 +5013,6 @@ use feature 'say';
 }
 {
     package main;
-    package Perlito5::Grammar::Scope;
-    undef();
-    our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, 'SIG' => 1, '_' => 1);
-    sub Perlito5::Grammar::Scope::new {;
-        return {'block' => [], }
-    }
-    sub Perlito5::Grammar::Scope::new_base_scope {;
-        return {'block' => [], }
-    }
-    sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
-        my $new_scope = {'block' => [], };
-        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
-        $Perlito5::SCOPE_DEPTH++;
-        $Perlito5::SCOPE = $new_scope
-    }
-    sub Perlito5::Grammar::Scope::end_compile_time_scope {
-        my $pos = 0;
-        $Perlito5::SCOPE_DEPTH--;
-        $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
-        while ($Perlito5::SCOPE_DEPTH > $pos) {
-            $pos++;
-            $Perlito5::SCOPE = $Perlito5::SCOPE->{'block'}->[-1]
-        }
-    }
-    sub Perlito5::Grammar::Scope::compile_time_glob_set {
-        (my($glob), my($value), my($namespace)) = @_;
-        if (!ref($glob)) {
-            if ($glob !~ m/::/) {;
-                $glob = $namespace . '::' . $glob
-            }
-            my @parts = split('::', $glob);
-            my $name = pop(@parts);
-            Perlito5::AST::Var::->new('name' => $name, 'namespace' => join('::', @parts), 'sigil' => '*', '_decl' => 'global')
-        }
-        *{$glob} = $value
-    }
-    sub Perlito5::Grammar::Scope::lookup_variable {
-        my $var = shift;
-        my $scope = shift() // $Perlito5::BASE_SCOPE;
-        $var->{'namespace'} && return $var;
-        $var->{'_decl'} && return $var;
-        my $look = lookup_variable_inner($var, $scope, 0);
-        $look && return $look;
-        my $c = substr($var->{'name'}, 0, 1);
-        if ($Special_var{$var->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
-            $var->{'_decl'} = 'global';
-            $var->{'_namespace'} = 'main';
-            return $var
-        }
-        if ($var->{'sigil'} eq '$' && ($var->{'name'} eq 'a' || $var->{'name'} eq 'b')) {;
-            if (!$var->{'_real_sigil'}) {
-                $var->{'_decl'} = 'global';
-                $var->{'_namespace'} = $Perlito5::PKG_NAME;
-                return $var
-            }
-        }
-        return
-    }
-    sub Perlito5::Grammar::Scope::lookup_variable_inner {
-        (my($var), my($scope), my($depth)) = @_;
-        $depth > $Perlito5::SCOPE_DEPTH && return;
-        my $block = $scope->{'block'};
-        if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
-            my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
-            $look && return $look
-        }
-        for my $item (reverse(@{$block})) {;
-            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'_decl'} ne 'global' && $item->{'name'} eq $var->{'name'}) {
-                my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-                my $item_sigil = $item->{'_real_sigil'} || $item->{'sigil'};
-                if ($sigil eq $item_sigil) {;
-                    return $item
-                }
-            }
-        }
-        return
-    }
-    sub Perlito5::Grammar::Scope::check_variable_declarations {
-        for my $item (@Perlito5::SCOPE_STMT) {;
-            if (ref($item) eq 'Perlito5::AST::Var') {
-                my $var = $item;
-                my $look = lookup_variable($var);
-                if ($look) {
-                    $look->{'_id'} && ($var->{'_id'} = $look->{'_id'});
-                    $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'});
-                    $look->{'_namespace'} && ($var->{'_namespace'} = $look->{'_namespace'})
-                }
-                else {
-                    if ($Perlito5::STRICT) {
-                        my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
-                        if ($sigil ne '*' && $sigil ne '&') {;
-                            Perlito5::Compiler::error('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name')
-                        }
-                    }
-                    $var->{'_decl'} = 'global';
-                    $var->{'_namespace'} = $Perlito5::PKG_NAME
-                }
-                if ($var->{'name'} && ($var->{'namespace'} || $var->{'_namespace'})) {
-                    my $compiletime_name;
-                    if ($var->{'name'} lt 'A' || $var->{'name'} eq '\\') {;
-                        $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . $var->{'name'}
-                    }
-                    else {;
-                        $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . ($var->{'namespace'} || $var->{'_namespace'}) . '::' . $var->{'name'} . ($var->{'_decl'} eq 'global' ? '' : $var->{'_id'} ? '_' . $var->{'_id'} : '')
-                    }
-                    $Perlito5::GLOBAL->{$compiletime_name} = {'value' => undef, 'ast' => $var}
-                }
-            }
-        }
-        push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT);
-        @Perlito5::SCOPE_STMT = ()
-    }
-    sub Perlito5::Grammar::Scope::get_snapshot {
-        my @result;
-        my $scope = shift() // $Perlito5::BASE_SCOPE;
-        my $block = $scope->{'block'};
-        if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
-            my $look = get_snapshot($block->[-1]);
-            unshift(@result, @{$look->{'block'}})
-        }
-        for my $item (@{$block}) {;
-            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'}) {;
-                unshift(@result, $item)
-            }
-        }
-        return {'block' => \@result, }
-    }
-    1
-}
-{
-    package main;
     undef();
     package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::new {
@@ -5276,10 +5145,13 @@ use feature 'say';
         return $self->name()
     }
     our %Special_var = ('ARGV' => 1, 'INC' => 1, 'ENV' => 1, 'SIG' => 1, '_' => 1);
+    our %NonSpecial_var = map {;
+        $_ => 1
+    } ('A' .. 'Z', '_', 'a' .. 'z');
     sub Perlito5::AST::Var::is_special_var {
         my $self = shift;
         my $c = substr($self->{'name'}, 0, 1);
-        if ($Special_var{$self->{'name'}} || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {;
+        if ($Special_var{$self->{'name'}} || !$NonSpecial_var{$c}) {;
             return 1
         }
         0
@@ -5443,6 +5315,138 @@ use feature 'say';
     sub Perlito5::AST::Sub::is_anon_sub {
         my $self = shift;
         $self->isa('Perlito5::AST::Sub') && !$self->{'name'}
+    }
+    1
+}
+{
+    package main;
+    package Perlito5::Grammar::Scope;
+    undef();
+    undef();
+    sub Perlito5::Grammar::Scope::new {;
+        return {'block' => [], }
+    }
+    sub Perlito5::Grammar::Scope::new_base_scope {;
+        return {'block' => [], }
+    }
+    sub Perlito5::Grammar::Scope::create_new_compile_time_scope {
+        my $new_scope = {'block' => [], };
+        push(@{$Perlito5::SCOPE->{'block'}}, $new_scope);
+        $Perlito5::SCOPE_DEPTH++;
+        $Perlito5::SCOPE = $new_scope
+    }
+    sub Perlito5::Grammar::Scope::end_compile_time_scope {
+        my $pos = 0;
+        $Perlito5::SCOPE_DEPTH--;
+        $Perlito5::SCOPE = $Perlito5::BASE_SCOPE;
+        while ($Perlito5::SCOPE_DEPTH > $pos) {
+            $pos++;
+            $Perlito5::SCOPE = $Perlito5::SCOPE->{'block'}->[-1]
+        }
+    }
+    sub Perlito5::Grammar::Scope::compile_time_glob_set {
+        (my($glob), my($value), my($namespace)) = @_;
+        if (!ref($glob)) {
+            if ($glob !~ m/::/) {;
+                $glob = $namespace . '::' . $glob
+            }
+            my @parts = split('::', $glob);
+            my $name = pop(@parts);
+            Perlito5::AST::Var::->new('name' => $name, 'namespace' => join('::', @parts), 'sigil' => '*', '_decl' => 'global')
+        }
+        *{$glob} = $value
+    }
+    sub Perlito5::Grammar::Scope::lookup_variable {
+        my $var = shift;
+        my $scope = shift() // $Perlito5::BASE_SCOPE;
+        $var->{'namespace'} && return $var;
+        $var->{'_decl'} && return $var;
+        my $look = lookup_variable_inner($var, $scope, 0);
+        $look && return $look;
+        ref($var) ne 'Perlito5::AST::Var' && return;
+        my $c = substr($var->{'name'}, 0, 1);
+        if ($var->is_special_var()) {
+            $var->{'_decl'} = 'global';
+            $var->{'_namespace'} = 'main';
+            return $var
+        }
+        if ($var->{'sigil'} eq '$' && ($var->{'name'} eq 'a' || $var->{'name'} eq 'b')) {;
+            if (!$var->{'_real_sigil'}) {
+                $var->{'_decl'} = 'global';
+                $var->{'_namespace'} = $Perlito5::PKG_NAME;
+                return $var
+            }
+        }
+        return
+    }
+    sub Perlito5::Grammar::Scope::lookup_variable_inner {
+        (my($var), my($scope), my($depth)) = @_;
+        $depth > $Perlito5::SCOPE_DEPTH && return;
+        my $block = $scope->{'block'};
+        if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
+            my $look = lookup_variable_inner($var, $block->[-1], $depth + 1);
+            $look && return $look
+        }
+        for my $item (reverse(@{$block})) {;
+            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'} && $item->{'_decl'} ne 'global' && $item->{'name'} eq $var->{'name'}) {
+                my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+                my $item_sigil = $item->{'_real_sigil'} || $item->{'sigil'};
+                if ($sigil eq $item_sigil) {;
+                    return $item
+                }
+            }
+        }
+        return
+    }
+    sub Perlito5::Grammar::Scope::check_variable_declarations {
+        for my $item (@Perlito5::SCOPE_STMT) {;
+            if (ref($item) eq 'Perlito5::AST::Var') {
+                my $var = $item;
+                my $look = lookup_variable($var);
+                if ($look) {
+                    $look->{'_id'} && ($var->{'_id'} = $look->{'_id'});
+                    $look->{'_decl'} && ($var->{'_decl'} = $look->{'_decl'});
+                    $look->{'_namespace'} && ($var->{'_namespace'} = $look->{'_namespace'})
+                }
+                else {
+                    if ($Perlito5::STRICT) {
+                        my $sigil = $var->{'_real_sigil'} || $var->{'sigil'};
+                        if ($sigil ne '*' && $sigil ne '&') {;
+                            Perlito5::Compiler::error('Global symbol "' . $sigil . $var->{'name'} . '"' . ' requires explicit package name')
+                        }
+                    }
+                    $var->{'_decl'} = 'global';
+                    $var->{'_namespace'} = $Perlito5::PKG_NAME
+                }
+                if ($var->{'name'} && ($var->{'namespace'} || $var->{'_namespace'})) {
+                    my $compiletime_name;
+                    if ($var->{'name'} lt 'A' || $var->{'name'} eq '\\') {;
+                        $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . $var->{'name'}
+                    }
+                    else {;
+                        $compiletime_name = ($var->{'_real_sigil'} || $var->{'sigil'}) . ($var->{'namespace'} || $var->{'_namespace'}) . '::' . $var->{'name'} . ($var->{'_decl'} eq 'global' ? '' : $var->{'_id'} ? '_' . $var->{'_id'} : '')
+                    }
+                    $Perlito5::GLOBAL->{$compiletime_name} = {'value' => undef, 'ast' => $var}
+                }
+            }
+        }
+        push(@{$Perlito5::SCOPE->{'block'}}, @Perlito5::SCOPE_STMT);
+        @Perlito5::SCOPE_STMT = ()
+    }
+    sub Perlito5::Grammar::Scope::get_snapshot {
+        my @result;
+        my $scope = shift() // $Perlito5::BASE_SCOPE;
+        my $block = $scope->{'block'};
+        if (@{$block} && ref($block->[-1]) eq 'HASH' && $block->[-1]->{'block'}) {
+            my $look = get_snapshot($block->[-1]);
+            unshift(@result, @{$look->{'block'}})
+        }
+        for my $item (@{$block}) {;
+            if (ref($item) eq 'Perlito5::AST::Var' && $item->{'_decl'}) {;
+                unshift(@result, $item)
+            }
+        }
+        return {'block' => \@result, }
     }
     1
 }

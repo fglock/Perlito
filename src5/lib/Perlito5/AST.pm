@@ -159,11 +159,14 @@ our %Special_var = (
     SIG  => 1,
     _    => 1,
 );
+our %NonSpecial_var = map { $_ => 1 } (
+    'A'..'Z', '_', 'a'..'z'
+);
 sub is_special_var {
     #  $1 %ENV $_ $/
     my $self = shift;
     my $c = substr($self->{name}, 0, 1);
-    if ( $Special_var{ $self->{name} } || $c lt 'A' || ($c gt 'Z' && $c lt 'a') || $c gt 'z') {
+    if ( $Special_var{ $self->{name} } || !$NonSpecial_var{$c} ) {
         return 1;
     }
     0;
