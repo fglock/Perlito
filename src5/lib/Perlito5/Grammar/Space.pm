@@ -81,6 +81,9 @@ sub term_end {
     }
     if ($is_data) {
         $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $p, data => $_[0] };
+        # TODO - leave the DATA filehandle open
+        # open(main::DATA, '<', \$Perlito5::DATA_SECTION{main}{data});
+        # seek(main::DATA, $Perlito5::DATA_SECTION{main}{pos}, 0);
     }
     return { str => $str, from => $_[1], to => length($_[0]), capture => [ 'space',   ' ' ] }
 }
