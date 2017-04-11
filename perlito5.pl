@@ -31417,12 +31417,21 @@ INIT failed--call queue aborted.
                     }
                     if (!$bootstrapping) {
                         $Perlito5::STRICT = 0;
-                        unshift(@Perlito5::COMP_UNIT, Perlito5::AST::Block::->new('stmts' => Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
-                        if (@Perlito5::INIT_BLOCK) {
-                            $s = '{ ' . 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} ';
+                        my @units;
+                        push(@units, Perlito5::AST::Block::->new('stmts' => Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL)));
+                        if (@Perlito5::INIT_BLOCK || keys(%Perlito5::DATA_SECTION)) {
+                            $s = '{ ';
+                            if (keys(%Perlito5::DATA_SECTION)) {;
+                                for my $pkg (keys(%Perlito5::DATA_SECTION)) {
+                                    $s .= 'open ' . $pkg . '::DATA, ' . chr(39) . '<' . chr(39) . ', \\$Perlito5::DATA_SECTION{' . $pkg . '}{data}; ';
+                                    $s .= 'seek(' . $pkg . '::DATA, $Perlito5::DATA_SECTION{' . $pkg . '}{pos}, 0); '
+                                }
+                            }
+                            $s .= 'local $@; ' . 'local ${^GLOBAL_PHASE}; ' . 'eval { ${^GLOBAL_PHASE} = "INIT" }; ' . 'eval { ' . '$_->() for @Perlito5::INIT_BLOCK; ' . '1; ' . '} ' . 'or die "$@\\nINIT failed--call queue aborted.\\n"; ' . '} ';
                             my $m = Perlito5::Grammar::exp_stmts($s, 0);
-                            unshift(@Perlito5::COMP_UNIT, @{Perlito5::Match::flat($m)})
+                            push(@units, @{Perlito5::Match::flat($m)})
                         }
+                        unshift(@Perlito5::COMP_UNIT, @units)
                     }
                     my $comp_units = [@Perlito5::COMP_UNIT];
                     if ($compile_only) {;

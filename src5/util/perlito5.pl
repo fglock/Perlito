@@ -452,14 +452,23 @@ if ($backend) {
                 if (!$bootstrapping) {
                     # emit BEGIN-block side-effects, INIT blocks
                     $Perlito5::STRICT = 0;
-                    unshift @Perlito5::COMP_UNIT,
+                    my @units;
+                    push @units,
                         Perlito5::AST::Block->new(
                             stmts => Perlito5::CompileTime::Dumper::emit_globals_after_BEGIN($Perlito5::GLOBAL),
                         );
-                    if (@Perlito5::INIT_BLOCK) {
-                        $s = 
-                          '{ '
-                        .   'local $@; '
+                    if (@Perlito5::INIT_BLOCK || keys %Perlito5::DATA_SECTION) {
+                        $s = '{ ';
+                        if (keys %Perlito5::DATA_SECTION) {
+                            for my $pkg (keys %Perlito5::DATA_SECTION) {
+                                # open(main::DATA, '<', \$Perlito5::DATA_SECTION{main}{data});
+                                # seek(main::DATA, $Perlito5::DATA_SECTION{main}{pos}, 0);
+                                $s .= q%open % . $pkg . q%::DATA, '<', \$Perlito5::DATA_SECTION{% . $pkg . q%}{data}; %;
+                                $s .= q%seek(% . $pkg . q%::DATA, $Perlito5::DATA_SECTION{% . $pkg . q%}{pos}, 0); %;
+                            }
+                        }
+                        $s .=
+                            'local $@; '
                         .   'local ${^GLOBAL_PHASE}; '
                         .   'eval { ${^GLOBAL_PHASE} = "INIT" }; '    # GLOBAL_PHASE is r/o in perl5
                         .   'eval { '
@@ -469,8 +478,9 @@ if ($backend) {
                         .   'or die "$@\nINIT failed--call queue aborted.\n"; '
                         . '} ';
                         my $m = Perlito5::Grammar::exp_stmts($s, 0);
-                        unshift @Perlito5::COMP_UNIT, @{ Perlito5::Match::flat($m) };
+                        push @units, @{ Perlito5::Match::flat($m) };
                     }
+                    unshift @Perlito5::COMP_UNIT, @units;
 
 
                     # TODO - insert END block executor
