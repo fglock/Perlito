@@ -9137,6 +9137,7 @@ use feature 'say';
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [$ast, Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }
         elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+            substr($bareword, 0, 2) eq '{' . chr(39) && ($bareword = substr($bareword, 2, -2));
             my $value = \@{$bareword};
             push(@{$vars}, Perlito5::AST::Apply::->new('code' => 'infix:<=>', 'arguments' => [Perlito5::AST::Var::->new(%{$ast}, 'sigil' => '*'), Perlito5::DumpToAST::dump_to_ast($value, $dumper_seen, $ast)]))
         }

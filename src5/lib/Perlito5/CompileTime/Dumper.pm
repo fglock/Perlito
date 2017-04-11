@@ -71,6 +71,10 @@ sub _dump_AST_from_scope {
                 );
     }
     elsif (ref($ast) eq 'Perlito5::AST::Var' && $sigil eq '@') {
+
+        # @{'X::ISA'}   ???
+        $bareword = substr($bareword, 2, -2) if substr($bareword,0,2) eq "{'";
+
         my $value = \@{$bareword};
         push @$vars, # "*$bareword = ", $dump;
                 Perlito5::AST::Apply->new(
