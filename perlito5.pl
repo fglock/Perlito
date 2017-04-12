@@ -8626,8 +8626,12 @@ use feature 'say';
     my @PKG;
     sub Perlito5::Grammar::exp_stmts {
         my $str = $_[0];
-        my $pos = $_[1];
+        my $pos = $_[1] // 0;
         push(@PKG, $Perlito5::PKG_NAME);
+        if ($pos == 0) {
+            my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
+            $pos = $m->{'to'}
+        }
         my $has_semicolon;
         my @stmts;
         my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);

@@ -121,9 +121,15 @@ sub opt_continue_block {
 my @PKG;
 sub exp_stmts {
     my $str = $_[0];
-    my $pos = $_[1];
+    my $pos = $_[1] // 0;
     push @PKG, $Perlito5::PKG_NAME;
  
+    if ($pos == 0) {
+        # possible start of POD
+        my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
+        $pos = $m->{to};
+    }
+
     my $has_semicolon;  # TODO - use this to help disambiguate: block vs. hash literal
     my @stmts;
     my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
