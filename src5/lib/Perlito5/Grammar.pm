@@ -126,7 +126,7 @@ sub exp_stmts {
  
     if ($pos == 0) {
         # possible start of POD
-        my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
+        my $m = Perlito5::Grammar::Space::start_of_line($str, $pos);
         $pos = $m->{to};
     }
 

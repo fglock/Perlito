@@ -8629,7 +8629,7 @@ use feature 'say';
         my $pos = $_[1] // 0;
         push(@PKG, $Perlito5::PKG_NAME);
         if ($pos == 0) {
-            my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
+            my $m = Perlito5::Grammar::Space::start_of_line($str, $pos);
             $pos = $m->{'to'}
         }
         my $has_semicolon;
