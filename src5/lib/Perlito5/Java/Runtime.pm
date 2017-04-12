@@ -269,6 +269,7 @@ class PlCx {
     public static final PlLastException LAST = new PlLastException(0);
     public static final String OVERLOAD_STRING   = "(\"\"";  // (""
     public static final String OVERLOAD_NUM      = "(0+";
+    public static final String OVERLOAD_BOOL     = "(bool";
     public static final String OVERLOAD_ADD      = "(+";
     public static final String OVERLOAD_SUBTRACT = "(-";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", 0);
@@ -2425,16 +2426,15 @@ class PlReference extends PlObject {
         }
     }
 
-    public boolean to_boolean() {
-        return true;
-    }
-
     // overload
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
     public int to_int() {
         return PlClass.overload_to_number(this).to_int();
+    }
+    public boolean to_boolean() {
+        return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
@@ -2724,9 +2724,6 @@ class PlArrayRef extends PlArray {
     public boolean is_arrayref() {
         return true;
     }
-    public boolean to_boolean() {
-        return true;
-    }
     public PlObject scalar() {
         return this;
     }
@@ -2744,6 +2741,9 @@ class PlArrayRef extends PlArray {
     }
     public int to_int() {
         return PlClass.overload_to_number(this).to_int();
+    }
+    public boolean to_boolean() {
+        return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
@@ -2835,9 +2835,6 @@ class PlHashRef extends PlHash {
     public PlObject scalar() {
         return this;
     }
-    public boolean to_boolean() {
-        return true;
-    }
     public PlHashRef bless(String className) {
         this.bless = PlClass.getInstance(className);
         return this;
@@ -2852,6 +2849,9 @@ class PlHashRef extends PlHash {
     }
     public int to_int() {
         return PlClass.overload_to_number(this).to_int();
+    }
+    public boolean to_boolean() {
+        return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
@@ -2997,17 +2997,15 @@ class PlClass {
     }
 
     // overload
+    // TODO: test "fallback" flag
     public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING, 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
-            }
-            // fallback
-            methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM, 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            for (String ovl : new String[] { PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_BOOL }) {
+                PlObject methodCode = bless.method_lookup(ovl, 0);
+                if (methodCode.is_coderef()) {
+                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                }
             }
         }
         return new PlString(o.ref().toString() + "(0x" + Integer.toHexString(o.refaddr().to_int()) + ")");
@@ -3015,14 +3013,23 @@ class PlClass {
     public static PlObject overload_to_number(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_NUM, 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+            for (String ovl : new String[] { PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING, PlCx.OVERLOAD_BOOL }) {
+                PlObject methodCode = bless.method_lookup(ovl, 0);
+                if (methodCode.is_coderef()) {
+                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                }
             }
-            // fallback
-            methodCode = bless.method_lookup(PlCx.OVERLOAD_STRING, 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+        }
+        return o.refaddr();
+    }
+    public static PlObject overload_to_boolean(PlObject o) {
+        PlClass bless = o.blessed_class();
+        if ( bless != null ) {
+            for (String ovl : new String[] { PlCx.OVERLOAD_BOOL, PlCx.OVERLOAD_NUM, PlCx.OVERLOAD_STRING }) {
+                PlObject methodCode = bless.method_lookup(ovl, 0);
+                if (methodCode.is_coderef()) {
+                    return methodCode.apply(PlCx.SCALAR, new PlArray(o));
+                }
             }
         }
         return o.refaddr();
@@ -3038,7 +3045,7 @@ class PlClass {
             o = PlClass.overload_to_number(o);
         }
         if (swap.to_boolean()) {
-            return other.add(o);
+            return o.add2(other);
         }
         return o.add(other);
     }
@@ -3053,7 +3060,7 @@ class PlClass {
             o = PlClass.overload_to_number(o);
         }
         if (swap.to_boolean()) {
-            return other.sub(o);
+            return o.sub2(other);
         }
         return o.sub(other);
     }
