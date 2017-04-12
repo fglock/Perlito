@@ -2455,6 +2455,21 @@ class PlReference extends PlObject {
     public PlObject sub2(PlObject s) {
         return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public PlObject $op() {
+        return PlClass.overload_$op(this);
+    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
+    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlInt refaddr() {
@@ -2764,6 +2779,21 @@ class PlArrayRef extends PlArray {
     public PlObject sub2(PlObject s) {
         return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public PlObject $op() {
+        return PlClass.overload_$op(this);
+    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
+    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlString ref() {
@@ -2872,6 +2902,21 @@ class PlHashRef extends PlHash {
     public PlObject sub2(PlObject s) {
         return PlClass.overload_subtract(this, s, PlCx.INT1);
     }
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public PlObject $op() {
+        return PlClass.overload_$op(this);
+    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
+    public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
 
     public PlString ref() {
@@ -3068,6 +3113,21 @@ class PlClass {
         }
         return o.sub(other);
     }
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public static PlObject overload_$op(PlObject o) {
+        return PlCORE.die(\"TODO - overload $op\");
+    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public static PlObject overload_pow(PlObject o, PlObject arg)    { return PlCORE.die("TODO - overload pow"); }
+    public static PlObject overload_atan2(PlObject o, PlObject arg)  { return PlCORE.die("TODO - overload atan2"); }
 
 }
 class PlLazyIndex extends PlLazyLvalue {
