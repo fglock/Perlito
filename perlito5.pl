@@ -6701,6 +6701,18 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
+                        (('over' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                            my $m2 = pod_pod_begin($str, $MATCH->{'to'});
+                            if ($m2) {
+                                $MATCH->{'to'} = $m2->{'to'};
+                                1
+                            }
+                            else {;
+                                0
+                            }
+                        }))
+                    }) || (do {
+                        $MATCH->{'to'} = $pos1;
                         (('begin' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
                             my $m2 = pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
