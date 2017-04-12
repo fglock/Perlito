@@ -262,11 +262,6 @@ package Perlito5::AST::Apply;
               'new PlString(new String(Character.toChars('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())))'
         },
-        'int' => sub {
-            my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_long())'
-        },
         'rand' => sub {
             my ($self, $level, $wantarray) = @_;
               'PerlOp.rand('
@@ -295,6 +290,17 @@ package Perlito5::AST::Apply;
             }
             qw/ abs sqrt cos sin exp log /
         ),
+        ( map {
+                my $op = $_;
+                ( $op => sub {
+                        my ($self, $level, $wantarray) = @_;
+                        $self->{arguments}->[0]->emit_java($level, 'scalar') . '.op_' . $op . '()'
+                      }
+                )
+            }
+            qw/ int /
+        ),
+
         'infix:<%>' => sub {
             my ($self, $level, $wantarray) = @_;
             return $self->{arguments}->[0]->emit_java($level, 'scalar') . '.mod('

@@ -2231,6 +2231,10 @@ EOT
         // ++$x
         return PlCx.INT1;
     }
+
+    public PlObject op_int() {
+        return new PlInt(this.to_long());
+    }
     public PlObject neg() {
         return new PlInt(-this.to_long());
     }
@@ -3493,12 +3497,22 @@ EOT
         }
         return llv.post_incr();
     }
-    public PlObject neg() {
-        return this.get().neg();
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public PlObject $op() {
+        return this.get().$op();
     }
-    public PlObject abs() {
-        return this.get().abs();
-    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
+    public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
+
     public PlObject scalar() {
         return this.get();
     }
@@ -3967,12 +3981,22 @@ EOT
         this.o = this.o._incr();
         return res;
     }
-    public PlObject neg() {
-        return this.o.neg();
+
+EOT
+    . ( join('', map {
+            my $op = $_;
+"    public PlObject $op() {
+        return this.o.$op();
     }
-    public PlObject abs() {
-        return this.o.abs();
-    }
+"
+            }
+            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+
+    . <<'EOT'
+
+    public PlObject pow(PlObject arg)    { return this.o.pow(arg); }
+    public PlObject atan2(PlObject arg)  { return this.o.atan2(arg); }
+
     public PlObject scalar() {
         return this.o;
     }

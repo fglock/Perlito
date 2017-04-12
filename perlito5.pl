@@ -20786,9 +20786,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'chr' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'new PlString(new String(Character.toChars(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_int())))'
-        }, 'int' => sub {
-            (my($self), my($level), my($wantarray)) = @_;
-            'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_long())'
         }, 'rand' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             'PerlOp.rand(' . ($self->{'arguments'}->[0] ? $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.to_double()' : '1.0') . ')'
@@ -20801,7 +20798,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 my($self, $level, $wantarray) = @_;
                 $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.' . $op . '()'
             })
-        } 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log'), 'infix:<%>' => sub {
+        } 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log'), (map {
+            my $op = $_;
+            ($op => sub {
+                my($self, $level, $wantarray) = @_;
+                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.op_' . $op . '()'
+            })
+        } 'int'), 'infix:<%>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             return $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.mod(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ')'
         }, 'infix:<>>>' => sub {
@@ -27448,6 +27451,10 @@ class PlObject {
         // ++$x
         return PlCx.INT1;
     }
+
+    public PlObject op_int() {
+        return new PlInt(this.to_long());
+    }
     public PlObject neg() {
         return new PlInt(-this.to_long());
     }
@@ -28695,12 +28702,19 @@ class PlLazyLvalue extends PlLvalue {
         }
         return llv.post_incr();
     }
-    public PlObject neg() {
-        return this.get().neg();
+
+' . (join('', map {
+            my $op = $_;
+            '    public PlObject ' . $op . '() {
+        return this.get().' . $op . '();
     }
-    public PlObject abs() {
-        return this.get().abs();
-    }
+'
+        } sort {;
+            $a cmp $b
+        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+    public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
+    public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
+
     public PlObject scalar() {
         return this.get();
     }
@@ -29152,12 +29166,19 @@ class PlLvalue extends PlObject {
         this.o = this.o._incr();
         return res;
     }
-    public PlObject neg() {
-        return this.o.neg();
+
+' . (join('', map {
+            my $op = $_;
+            '    public PlObject ' . $op . '() {
+        return this.o.' . $op . '();
     }
-    public PlObject abs() {
-        return this.o.abs();
-    }
+'
+        } sort {;
+            $a cmp $b
+        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+    public PlObject pow(PlObject arg)    { return this.o.pow(arg); }
+    public PlObject atan2(PlObject arg)  { return this.o.atan2(arg); }
+
     public PlObject scalar() {
         return this.o;
     }
