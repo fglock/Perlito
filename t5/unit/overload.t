@@ -7,7 +7,7 @@ say "1..6";
 { package S;
     no strict 'refs';
     *{'S::(""'} = sub { "123" };
-    *{'S::()'} = sub { };
+    *{'S::(('} = sub { };     # sets the overload flag
 }
 
 my $res;
