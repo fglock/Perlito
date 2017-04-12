@@ -28241,7 +28241,7 @@ class PlClass {
                 }
             }
         }
-        return o.refaddr();
+        return PlCx.TRUE;
     }
     public static PlObject overload_add(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
