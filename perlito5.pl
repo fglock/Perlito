@@ -26615,6 +26615,9 @@ class PerlOp {
     }
 
     public static final PlObject replace(PlLvalue s, PlRegex pat, PlObject rep, int want, boolean global) {
+        if (rep.is_coderef()) {
+            return replace(s, pat, (PlClosure)rep, want, global);
+        }
         return replace(s, pat, rep.toString(), want, global);
     }
     public static final PlObject replace(PlObject s, PlObject pat, PlObject rep, int want, boolean global) {
