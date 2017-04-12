@@ -25415,6 +25415,7 @@ class PlCrypt {
     sub Perlito5::Java::Runtime::emit_java {
         (my($self), my(%args)) = @_;
         my %java_classes = %{$args{'java_classes'} // {}};
+        my @number_unary = ('op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log');
         my %number_binop = ('add' => {'op' => '+', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'sub' => {'op' => '-', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'mul' => {'op' => '*', 'returns' => 'PlInt', 'num_returns' => 'PlDouble'}, 'div' => {'op' => '/', 'returns' => 'PlDouble', 'num_returns' => 'PlDouble'}, 'num_eq' => {'op' => '==', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_ne' => {'op' => '!=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_lt' => {'op' => '<', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_le' => {'op' => '<=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_gt' => {'op' => '>', 'returns' => 'PlBool', 'num_returns' => 'PlBool'}, 'num_ge' => {'op' => '>=', 'returns' => 'PlBool', 'num_returns' => 'PlBool'});
         my %string_binop = ('str_eq' => {'op' => '== 0', 'returns' => 'PlBool'}, 'str_ne' => {'op' => '!= 0', 'returns' => 'PlBool'}, 'str_lt' => {'op' => '< 0', 'returns' => 'PlBool'}, 'str_le' => {'op' => '<= 0', 'returns' => 'PlBool'}, 'str_gt' => {'op' => '> 0', 'returns' => 'PlBool'}, 'str_ge' => {'op' => '>= 0', 'returns' => 'PlBool'});
         my %native_to_perl = ('int' => 'PlInt', 'double' => 'PlDouble', 'boolean' => 'PlBool', 'String' => 'PlString');
@@ -25504,7 +25505,7 @@ class PlCx {
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
     public static final String OVERLOAD_ADD      = "(+";
-    public static final String OVERLOAD_SUBTRACT = "(-";
+    public static final String OVERLOAD_SUB      = "(-";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\\\s+", 0);
 ' . '    ' . join('
     ', map {;
@@ -27646,28 +27647,25 @@ class PlReference extends PlObject {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
-    }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
-    }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
 
+' . (join('', map {
+            my $perl = $_;
+            '    public PlObject ' . $perl . '(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.UNDEF);
+    }
+    public PlObject ' . $perl . '2(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.INT1);
+    }
+'
+        } sort {;
+            $a cmp $b
+        } keys(%number_binop))) . '
 ' . (join('', map {
             my $op = $_;
             '    public PlObject ' . $op . '() {
@@ -27676,7 +27674,7 @@ class PlReference extends PlObject {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -27967,28 +27965,25 @@ class PlArrayRef extends PlArray {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
-    }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
-    }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
 
+' . (join('', map {
+            my $perl = $_;
+            '    public PlObject ' . $perl . '(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.UNDEF);
+    }
+    public PlObject ' . $perl . '2(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.INT1);
+    }
+'
+        } sort {;
+            $a cmp $b
+        } keys(%number_binop))) . '
 ' . (join('', map {
             my $op = $_;
             '    public PlObject ' . $op . '() {
@@ -27997,7 +27992,7 @@ class PlArrayRef extends PlArray {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -28087,28 +28082,25 @@ class PlHashRef extends PlHash {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
-    }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
-    }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
 
+' . (join('', map {
+            my $perl = $_;
+            '    public PlObject ' . $perl . '(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.UNDEF);
+    }
+    public PlObject ' . $perl . '2(PlObject s) {
+        return PlClass.overload_' . $perl . '(this, s, PlCx.INT1);
+    }
+'
+        } sort {;
+            $a cmp $b
+        } keys(%number_binop))) . '
 ' . (join('', map {
             my $op = $_;
             '    public PlObject ' . $op . '() {
@@ -28117,7 +28109,7 @@ class PlHashRef extends PlHash {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public PlObject pow(PlObject arg)    { return PlClass.overload_pow(this, arg); }
     public PlObject atan2(PlObject arg)  { return PlClass.overload_atan2(this, arg); }
     // end overload
@@ -28301,10 +28293,10 @@ class PlClass {
         }
         return o.add(other);
     }
-    public static PlObject overload_subtract(PlObject o, PlObject other, PlObject swap) {
+    public static PlObject overload_sub(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUBTRACT, 0);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUB, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
@@ -28317,6 +28309,31 @@ class PlClass {
         return o.sub(other);
     }
 
+    public static PlObject overload_mul(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_div(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_gt(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_le(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_ge(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_lt(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_eq(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_ne(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+
 ' . (join('', map {
             my $op = $_;
             '    public static PlObject overload_' . $op . '(PlObject o) {
@@ -28325,7 +28342,7 @@ class PlClass {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public static PlObject overload_pow(PlObject o, PlObject arg)    { return PlCORE.die("TODO - overload pow"); }
     public static PlObject overload_atan2(PlObject o, PlObject arg)  { return PlCORE.die("TODO - overload atan2"); }
 
@@ -28759,7 +28776,7 @@ class PlLazyLvalue extends PlLvalue {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public PlObject pow(PlObject arg)    { return this.get().pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.get().atan2(arg); }
 
@@ -29223,7 +29240,7 @@ class PlLvalue extends PlObject {
 '
         } sort {;
             $a cmp $b
-        } 'op_int', 'neg', 'abs', 'sqrt', 'cos', 'sin', 'exp', 'log')) . '
+        } @number_unary)) . '
     public PlObject pow(PlObject arg)    { return this.o.pow(arg); }
     public PlObject atan2(PlObject arg)  { return this.o.atan2(arg); }
 

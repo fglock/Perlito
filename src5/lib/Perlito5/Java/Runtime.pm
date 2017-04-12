@@ -139,6 +139,8 @@ sub emit_java {
     my ($self, %args) = @_;
     my %java_classes = %{ $args{java_classes} // {} };
 
+    my @number_unary = qw/ op_int neg abs sqrt cos sin exp log /;
+
     my %number_binop = (
         add    => { op => '+',  returns => 'PlInt',  num_returns => 'PlDouble'}, 
         sub    => { op => '-',  returns => 'PlInt',  num_returns => 'PlDouble'},
@@ -271,7 +273,7 @@ class PlCx {
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
     public static final String OVERLOAD_ADD      = "(+";
-    public static final String OVERLOAD_SUBTRACT = "(-";
+    public static final String OVERLOAD_SUB      = "(-";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\s+", 0);
 EOT
     . "    " . join("\n    ",
@@ -2434,27 +2436,27 @@ class PlReference extends PlObject {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
+
+EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
     }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
+    public PlObject ${perl}2(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
+"
+            }
+            sort keys %number_binop ))
+
+    . <<'EOT'
 
 EOT
     . ( join('', map {
@@ -2464,7 +2466,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
@@ -2758,27 +2760,27 @@ class PlArrayRef extends PlArray {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
+
+EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
     }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
+    public PlObject ${perl}2(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
+"
+            }
+            sort keys %number_binop ))
+
+    . <<'EOT'
 
 EOT
     . ( join('', map {
@@ -2788,7 +2790,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
@@ -2881,27 +2883,27 @@ class PlHashRef extends PlHash {
     public String toString() {
         return PlClass.overload_to_string(this).toString();
     }
-    public int to_int() {
-        return PlClass.overload_to_number(this).to_int();
-    }
     public boolean to_boolean() {
         return PlClass.overload_to_boolean(this).to_boolean();
     }
     public long to_long() {
         return PlClass.overload_to_number(this).to_long();
     }
-    public PlObject add(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.UNDEF);
+
+EOT
+    . ( join('', map {
+            my $perl = $_;
+"    public PlObject ${perl}(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.UNDEF);
     }
-    public PlObject add2(PlObject s) {
-        return PlClass.overload_add(this, s, PlCx.INT1);
+    public PlObject ${perl}2(PlObject s) {
+        return PlClass.overload_${perl}(this, s, PlCx.INT1);
     }
-    public PlObject sub(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.UNDEF);
-    }
-    public PlObject sub2(PlObject s) {
-        return PlClass.overload_subtract(this, s, PlCx.INT1);
-    }
+"
+            }
+            sort keys %number_binop ))
+
+    . <<'EOT'
 
 EOT
     . ( join('', map {
@@ -2911,7 +2913,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
@@ -3098,10 +3100,10 @@ class PlClass {
         }
         return o.add(other);
     }
-    public static PlObject overload_subtract(PlObject o, PlObject other, PlObject swap) {
+    public static PlObject overload_sub(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUBTRACT, 0);
+            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUB, 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
@@ -3114,6 +3116,31 @@ class PlClass {
         return o.sub(other);
     }
 
+    public static PlObject overload_mul(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_div(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_gt(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_le(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_ge(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_lt(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_eq(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+    public static PlObject overload_num_ne(PlObject o, PlObject other, PlObject swap) {
+        return PlCORE.die("TODO - overload");
+    }
+
 EOT
     . ( join('', map {
             my $op = $_;
@@ -3122,7 +3149,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
@@ -3566,7 +3593,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
@@ -4050,7 +4077,7 @@ EOT
     }
 "
             }
-            sort qw/ op_int neg abs sqrt cos sin exp log / ))
+            sort @number_unary ))
 
     . <<'EOT'
 
