@@ -3047,6 +3047,8 @@ class PlClass {
 
     // overload
     // TODO: test "fallback" flag
+    // TODO: "nomethod"
+    // TODO: dispatch on indirect reference (method name instead of coderef); coderef = \&nil - See overload.pm
     public static PlObject overload_to_string(PlObject o) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
