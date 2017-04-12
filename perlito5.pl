@@ -25504,8 +25504,6 @@ class PlCx {
     public static final String OVERLOAD_STRING   = "(\\"\\"";  // (""
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
-    public static final String OVERLOAD_ADD      = "(+";
-    public static final String OVERLOAD_SUB      = "(-";
     public static final PlRegex SPLIT_SPACE      = new PlRegex("\\\\s+", 0);
 ' . '    ' . join('
     ', map {;
@@ -28278,10 +28276,14 @@ class PlClass {
         }
         return PlCx.TRUE;
     }
-    public static PlObject overload_add(PlObject o, PlObject other, PlObject swap) {
+
+' . (join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl}->{'op'};
+            '    public static PlObject overload_' . $perl . '(PlObject o, PlObject other, PlObject swap) {
         PlClass bless = o.blessed_class();
         if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_ADD, 0);
+            PlObject methodCode = bless.method_lookup("(' . $native . '", 0);
             if (methodCode.is_coderef()) {
                 return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
             }
@@ -28289,51 +28291,14 @@ class PlClass {
             o = PlClass.overload_to_number(o);
         }
         if (swap.to_boolean()) {
-            return o.add2(other);
+            return o.' . $perl . '2(other);
         }
-        return o.add(other);
+        return o.' . $perl . '(other);
     }
-    public static PlObject overload_sub(PlObject o, PlObject other, PlObject swap) {
-        PlClass bless = o.blessed_class();
-        if ( bless != null ) {
-            PlObject methodCode = bless.method_lookup(PlCx.OVERLOAD_SUB, 0);
-            if (methodCode.is_coderef()) {
-                return methodCode.apply(PlCx.SCALAR, new PlArray(o, other, swap));
-            }
-            // fallback
-            o = PlClass.overload_to_number(o);
-        }
-        if (swap.to_boolean()) {
-            return o.sub2(other);
-        }
-        return o.sub(other);
-    }
-
-    public static PlObject overload_mul(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_div(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_gt(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_le(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_ge(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_lt(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_eq(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-    public static PlObject overload_num_ne(PlObject o, PlObject other, PlObject swap) {
-        return PlCORE.die("TODO - overload");
-    }
-
+'
+        } sort {;
+            $a cmp $b
+        } keys(%number_binop))) . '
 ' . (join('', map {
             my $op = $_;
             '    public static PlObject overload_' . $op . '(PlObject o) {
