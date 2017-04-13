@@ -21,8 +21,9 @@ Perlito5-Java platform differences
 
   - no timely destruction (DESTROY) (because we use Java memory management)
       - files don't "auto-close" at the end of a block
-      - Try::Tiny "finally" doesn't work
       - weaken() is a no-op
+      - Try::Tiny "finally" doesn't work
+      - Object::InsideOut will not cleanup unused objects
 
   - no XS (because we use Java instead of C)
       - many CPAN modules which use C libraries don't work
@@ -44,19 +45,37 @@ Perlito5-Java work-in-progress
 
   - runtime error messages do not include the line number in the Perl code
       - also caller() is only partially implemented
+      - BEGIN line numbers show the line number at the time of eval - the line number is relative to the start of the BEGIN block
 
   - no "goto LABEL"
-      - "goto &code" works, bit it doesn't do a tail-call
+      - "goto &code" works, but it doesn't do a tail-call
 
-  - signals $SIG{__WARN__} and $SIG{__DIE__} are implemented; other signals are not yet implemented.
+  - signals are partially implemented
+      - $SIG{__WARN__} and $SIG{__DIE__} are implemented
+      - other signals are not yet implemented.
 
-  - method resolution order, method caching, AUTOLOAD are partially implemented
+  - object system is partially implemented
+      - method resolution order is not selectable
+      - AUTOLOAD for subroutine calls is not implemented
+      - method caching is not implemented
 
   - tied variables are partially implemented
+      - tie scalar todo
+      - tie array todo
+      - tie hash todo
+      - tie filehandle todo
 
   - overload is partially implemented
+      - binary operators not implemented
+      - mutators and assignment not implemented
+      - dereferencing, iterators, filetest not implemented
+      - "nomethod" not implemented
+      - "fallback" not implemented; fallback mode behaves as "TRUE"
 
-  - __DATA__ sections
+  - file handles are partially implemented
+      - __DATA__ sections not working - depend on open-scalarref and seek().
+      - open binary mode vs. open utf8 needs more work
+      - files don't "auto-close"
 
   - "my sub x {...}"
 
@@ -70,6 +89,9 @@ Perlito5-Java work-in-progress
 
   - incomplete implementations for sprintf(), pack(), unpack()
 
+  - Perl threads not implemented
+      - Java threads can be used, with some limitations. See: misc/Java/TestConcurrent.pl and misc/Java/TestThread2.pl
+
 
 Regex differences
 -----------------
@@ -79,7 +101,7 @@ Regex differences
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
   - named captures cannot contain an underline in the name.
-    Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
+      Valid names must be composed of characters 'a'-'z', 'A'-'Z', '0'-'9'.
 
   - capturing in zero-length-match has problems. Failing tests:
 
@@ -90,7 +112,7 @@ Regex differences
 ~~~
 
   - TODO - check this error message, this may need to be implemented for compatibility:
-    Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
+      Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\G{ <-- HERE / at (eval 2) line 20.
 
 
 Perlito5-Java extensibility
