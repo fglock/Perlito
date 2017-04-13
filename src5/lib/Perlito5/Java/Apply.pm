@@ -1230,7 +1230,7 @@ package Perlito5::AST::Apply;
             }
             elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '$' ) {
                 $meth = 'scalar';
-                my $tie = 'new PlLvalue()';
+                my $tie = 'PerlOp.untie_scalar((PlTieScalar)' . $v->emit_java( $level ) . ')';
                 if ($v->{_decl} eq 'global') {
                     return $v->emit_java_global_set_alias($tie, $level);
                 }

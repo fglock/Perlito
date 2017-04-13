@@ -21373,7 +21373,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
                 $meth = 'scalar';
-                my $tie = 'new PlLvalue()';
+                my $tie = 'PerlOp.untie_scalar((PlTieScalar)' . $v->emit_java($level) . ')';
                 if ($v->{'_decl'} eq 'global') {;
                     return $v->emit_java_global_set_alias($tie, $level)
                 }
@@ -26207,6 +26207,10 @@ class PerlOp {
         PlObject self = PerlOp.call(class_name.toString(), "TIESCALAR", args, PlCx.VOID);
         v.tied = self;
         return v;
+    }
+    public static final PlLvalue untie_scalar(PlTieScalar v) {
+        PlObject self = PerlOp.call(v.tied, "UNTIE", new PlArray(), PlCx.VOID);
+        return new PlLvalue();
     }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {

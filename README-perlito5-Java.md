@@ -61,6 +61,7 @@ Perlito5-Java work-in-progress
 
   - tied variables are partially implemented
       - tie scalar implemented
+          - DESTROY not used because we use Java memory management
       - tie array todo
       - tie hash todo
       - tie filehandle todo

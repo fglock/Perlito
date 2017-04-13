@@ -964,6 +964,10 @@ class PerlOp {
         v.tied = self;
         return v;
     }
+    public static final PlLvalue untie_scalar(PlTieScalar v) {
+        PlObject self = PerlOp.call(v.tied, "UNTIE", new PlArray(), PlCx.VOID);
+        return new PlLvalue();
+    }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {
         // [ ... ]
