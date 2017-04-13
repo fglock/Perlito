@@ -1243,6 +1243,12 @@ package Perlito5::AST::Apply;
             }
             return 'p5untie_' . $meth . '(' . $v->emit_java( $level ) . ')';
         },
+        'tied' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @arguments = @{$self->{arguments}};
+            my $v = shift @arguments;
+            return $v->emit_java( $level ) . '.tied()';
+        },
         'print' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};

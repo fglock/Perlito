@@ -49,5 +49,11 @@ if ($counter ne 1) {
 };
 say 'ok 2 # FETCH called';
 
+my $t = tied $s;
+if (ref($t) ne "TheScalar") {
+    print 'not '
+};
+say 'ok 3 # tied';
+
 untie $s;
 

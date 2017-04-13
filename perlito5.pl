@@ -21385,6 +21385,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 die('tie ' . chr(39), ref($v), chr(39) . ' not implemented')
             }
             return 'p5untie_' . $meth . '(' . $v->emit_java($level) . ')'
+        }, 'tied' => sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @arguments = @{$self->{'arguments'}};
+            my $v = shift(@arguments);
+            return $v->emit_java($level) . '.tied()'
         }, 'print' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
@@ -27474,6 +27479,9 @@ class PlObject {
         // Scalar::Util::blessed()
         return PlCx.UNDEF;
     }
+    public PlObject tied() {
+        return PlCx.UNDEF;
+    }
     public PlObject _decr() {
         // --$x
         return PlCx.MIN1;
@@ -28481,31 +28489,31 @@ class PlTieScalar extends PlLvalue {
         return new PlLazyScalarref(this);
     }
     public PlObject scalar_deref_lvalue(String namespace) {
-        return tied.scalar_deref_lvalue(namespace);
+        return this.get().scalar_deref_lvalue(namespace);
     }
     public PlObject scalar_deref_set(String namespace, PlObject v) {
-        return tied.scalar_deref_set(namespace, v);
+        return this.get().scalar_deref_set(namespace, v);
     }
 
 
     public PlArray array_deref_lvalue() {
-        return tied.array_deref_lvalue();
+        return this.get().array_deref_lvalue();
     }
     public PlArray array_deref() {
-        return tied.array_deref();
+        return this.get().array_deref();
     }
     public PlObject array_deref_set(PlObject v) {
-        return tied.array_deref_set(v);
+        return this.get().array_deref_set(v);
     }
 
     public PlObject hash_deref() {
-        return tied.hash_deref();
+        return this.get().hash_deref();
     }
     public PlObject hash_deref_set(PlObject v) {
-        return tied.hash_deref_set(v);
+        return this.get().hash_deref_set(v);
     }
     public PlObject apply(int want, PlArray List__) {
-        return tied.apply(want, List__);
+        return this.get().apply(want, List__);
     }
 
     // Note: several versions of set()
@@ -28603,7 +28611,10 @@ class PlTieScalar extends PlLvalue {
     }
 
     public PlObject bless(String className) {
-        return tied.bless(className);
+        return this.get().bless(className);
+    }
+    public PlObject tied() {
+        return tied;
     }
 }
 class PlLazyLvalue extends PlLvalue {
