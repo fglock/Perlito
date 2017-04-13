@@ -3179,6 +3179,192 @@ class PlLazyScalarref extends PlLazyLvalue {
         return this.llv;
     }
 }
+class PlTieScalar extends PlLvalue {
+    public  PlObject tied;
+
+    public PlTieScalar() {
+    }
+
+    public PlObject get() {
+        return PerlOp.call(tied, "FETCH", new PlArray(), PlCx.VOID);
+    }
+    public PlObject get_scalarref() {
+        return this.get();
+    }
+
+    public PlObject get_arrayref() {
+        return this.get();
+    }
+    public PlObject get_hashref() {
+        return this.get();
+    }
+    public PlObject aget(PlObject i) {
+        return this.get().aget(i);
+    }
+    public PlObject aget(int i) {
+        return this.get().aget(i);
+    }
+
+    public PlObject aget_scalarref(int i) {
+        return this.get().aget_scalarref(i);
+    }
+    public PlObject aget_arrayref(int i) {
+        return this.get().aget_arrayref(i);
+    }
+    public PlObject aget_lvalue(int pos) {
+        return this.get().aget_lvalue(pos);
+    }
+    public PlObject aget_hashref(int i) {
+        return this.get().aget_hashref(i);
+    }
+
+    public PlObject aset(int i, PlObject v) {
+        return this.get().aset(i, v);
+    }
+    public PlObject aset(PlObject i, PlObject v) {
+        return this.get().aset(i, v);
+    }
+    public PlObject hget(PlObject i) {
+        return this.get().hget(i);
+    }
+    public PlObject hget(String i) {
+        return this.get().hget(i);
+    }
+    public PlObject hget_lvalue(String i) {
+        return this.get().hget_lvalue(i);
+    }
+
+    public PlObject hget_scalarref(String i) {
+        return this.get().hget_scalarref(i);
+    }
+    public PlObject hget_arrayref(String i) {
+        return this.get().hget_arrayref(i);
+    }
+    public PlObject hget_arrayref(PlObject i) {
+        return this.get().hget_arrayref(i);
+    }
+    public PlObject hget_hashref(String i) {
+        return this.get().hget_hashref(i);
+    }
+    public PlObject hget_hashref(PlObject i) {
+        return this.get().hget_hashref(i);
+    }
+
+    public PlObject hset(PlObject s, PlObject v) {
+        return this.get().hset(s, v);
+    }
+    public PlObject hset(String s, PlObject v) {
+        return this.get().hset(s, v);
+    }
+
+    public PlObject scalar_deref(String namespace) {
+        return new PlLazyScalarref(this);
+    }
+    public PlObject scalar_deref_lvalue(String namespace) {
+        return tied.scalar_deref_lvalue(namespace);
+    }
+    public PlObject scalar_deref_set(String namespace, PlObject v) {
+        return tied.scalar_deref_set(namespace, v);
+    }
+
+
+    public PlArray array_deref_lvalue() {
+        return tied.array_deref_lvalue();
+    }
+    public PlArray array_deref() {
+        return tied.array_deref();
+    }
+    public PlObject array_deref_set(PlObject v) {
+        return tied.array_deref_set(v);
+    }
+
+    public PlObject hash_deref() {
+        return tied.hash_deref();
+    }
+    public PlObject hash_deref_set(PlObject v) {
+        return tied.hash_deref_set(v);
+    }
+    public PlObject apply(int want, PlArray List__) {
+        return tied.apply(want, List__);
+    }
+
+    // Note: several versions of set()
+    public PlLvalue set(PlObject o) {
+        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        return this;
+    }
+    public PlLvalue set(PlLvalue o) {
+        return this.set(o.get());
+    }
+    public PlLvalue set(PlArray o) {
+        return this.set(o.scalar());
+    }
+    public PlLvalue set(PlHash o) {
+        return this.set(o.scalar());
+    }
+EOT
+    . ( join('', map {
+            my $native = $_;
+            my $perl   = $native_to_perl{$native};
+            $native && $perl ? 
+"    public PlLvalue set($native s) {
+        return this.set(new $perl(s));
+    }
+" : ()
+            }
+            sort keys %native_to_perl ))
+
+    . <<'EOT'
+    public PlObject exists(PlObject a) {
+        return PlCORE.die("exists argument is not a HASH or ARRAY element or a subroutine");
+    }
+    public PlObject delete(PlObject a) {
+        return PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
+    }
+EOT
+    . ( join('', map {
+            my $perl = $_;
+            my $native = $number_binop{$perl}{op};
+"    public PlObject ${perl}(PlObject s) {
+        return this.get().${perl}(s);
+    }
+    public PlObject ${perl}2(PlObject s) {
+        return s.${perl}(this.get());
+    }
+"
+            }
+            sort keys %number_binop ))
+
+    . <<'EOT'
+
+    public PlObject pre_decr() {
+        // --$x
+        return this.set(this.get()._decr());
+    }
+    public PlObject post_decr() {
+        // $x--
+        PlObject res = this.get();
+        this.set(res._decr());
+        return res;
+    }
+    public PlObject pre_incr() {
+        // ++$x
+        return this.set(this.get()._incr());
+    }
+    public PlObject post_incr() {
+        // $x++
+        PlObject res = this.get();
+        if (res.is_undef()) {
+            res = PlCx.INT0;
+        }
+        this.set(res._incr());
+        return res;
+    }
+
+    public PlObject bless(String className) {
+        return tied.bless(className);
+    }
+}
 class PlLazyLvalue extends PlLvalue {
     public  PlLvalue llv;   // $$lv
     public PlLvalue create_scalar() {
