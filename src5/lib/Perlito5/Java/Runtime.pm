@@ -964,10 +964,24 @@ class PerlOp {
         v.tied = self;
         return v;
     }
-    public static final PlLvalue untie_scalar(PlTieScalar v) {
-        PlObject untie = PerlOp.call(v.tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+    public static final PlTieHash tie_hash(PlArray args) {
+        PlTieHash v = new PlTieHash();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEHASH", args, PlCx.VOID);
+        v.tied = self;
+        return v;
+    }
+    public static final PlTieArray tie_array(PlArray args) {
+        PlTieArray v = new PlTieArray();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
+        v.tied = self;
+        return v;
+    }
+    public static final PlLvalue untie(PlObject v) {
+        PlObject untie = PerlOp.call(v.tied(), "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
         if (untie.to_boolean()) {
-            untie.apply(PlCx.VOID, new PlArray(v.tied));
+            untie.apply(PlCx.VOID, new PlArray(v.tied()));
         };
         return new PlLvalue();
     }
@@ -3197,10 +3211,35 @@ class PlLazyScalarref extends PlLazyLvalue {
         return this.llv;
     }
 }
+class PlTieArray extends PlArray {
+    public  PlObject tied;
+
+    public PlTieArray() {
+    }
+    public PlObject tied() {
+        return tied;
+    }
+
+    // TODO
+}
+class PlTieHash extends PlHash {
+    public  PlObject tied;
+
+    public PlTieHash() {
+    }
+    public PlObject tied() {
+        return tied;
+    }
+
+    // TODO
+}
 class PlTieScalar extends PlLvalue {
     public  PlObject tied;
 
     public PlTieScalar() {
+    }
+    public PlObject tied() {
+        return tied;
     }
 
     public PlObject get() {
@@ -3409,9 +3448,6 @@ EOT
 
     public PlObject bless(String className) {
         return this.get().bless(className);
-    }
-    public PlObject tied() {
-        return tied;
     }
 }
 class PlLazyLvalue extends PlLvalue {

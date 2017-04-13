@@ -21364,27 +21364,13 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
             my $v = shift(@arguments);
-            my $meth;
-            if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '%') {;
-                $meth = 'hash'
-            }
-            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '@') {;
-                $meth = 'array'
-            }
-            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $meth = 'scalar';
-                my $tie = 'PerlOp.untie_scalar((PlTieScalar)' . $v->emit_java($level) . ')';
-                if ($v->{'_decl'} eq 'global') {;
-                    return $v->emit_java_global_set_alias($tie, $level)
-                }
-                else {;
-                    return $v->emit_java($level) . ' = ' . $tie
-                }
+            my $tie = 'PerlOp.untie(' . $v->emit_java($level) . ')';
+            if ($v->{'_decl'} eq 'global') {;
+                return $v->emit_java_global_set_alias($tie, $level)
             }
             else {;
-                die('tie ' . chr(39), ref($v), chr(39) . ' not implemented')
+                return $v->emit_java($level) . ' = ' . $tie
             }
-            return 'p5untie_' . $meth . '(' . $v->emit_java($level) . ')'
         }, 'tied' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -26213,10 +26199,24 @@ class PerlOp {
         v.tied = self;
         return v;
     }
-    public static final PlLvalue untie_scalar(PlTieScalar v) {
-        PlObject untie = PerlOp.call(v.tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+    public static final PlTieHash tie_hash(PlArray args) {
+        PlTieHash v = new PlTieHash();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEHASH", args, PlCx.VOID);
+        v.tied = self;
+        return v;
+    }
+    public static final PlTieArray tie_array(PlArray args) {
+        PlTieArray v = new PlTieArray();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
+        v.tied = self;
+        return v;
+    }
+    public static final PlLvalue untie(PlObject v) {
+        PlObject untie = PerlOp.call(v.tied(), "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
         if (untie.to_boolean()) {
-            untie.apply(PlCx.VOID, new PlArray(v.tied));
+            untie.apply(PlCx.VOID, new PlArray(v.tied()));
         };
         return new PlLvalue();
     }
@@ -28407,10 +28407,35 @@ class PlLazyScalarref extends PlLazyLvalue {
         return this.llv;
     }
 }
+class PlTieArray extends PlArray {
+    public  PlObject tied;
+
+    public PlTieArray() {
+    }
+    public PlObject tied() {
+        return tied;
+    }
+
+    // TODO
+}
+class PlTieHash extends PlHash {
+    public  PlObject tied;
+
+    public PlTieHash() {
+    }
+    public PlObject tied() {
+        return tied;
+    }
+
+    // TODO
+}
 class PlTieScalar extends PlLvalue {
     public  PlObject tied;
 
     public PlTieScalar() {
+    }
+    public PlObject tied() {
+        return tied;
     }
 
     public PlObject get() {
@@ -28612,9 +28637,6 @@ class PlTieScalar extends PlLvalue {
 
     public PlObject bless(String className) {
         return this.get().bless(className);
-    }
-    public PlObject tied() {
-        return tied;
     }
 }
 class PlLazyLvalue extends PlLvalue {

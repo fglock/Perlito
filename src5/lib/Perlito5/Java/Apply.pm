@@ -1217,31 +1217,16 @@ package Perlito5::AST::Apply;
             return $v->emit_java( $level ) . ' = PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
         },
         'untie' => sub {
-            my ($self, $level, $wantarray) = @_;
-            my @arguments = @{$self->{arguments}};
-            my $v = shift @arguments;     # TODO - this argument can also be a 'Decl' instead of 'Var'
-
-            my $meth;
-            if ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '%' ) {
-                $meth = 'hash';
-            }
-            elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '@' ) {
-                $meth = 'array';
-            }
-            elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '$' ) {
-                $meth = 'scalar';
-                my $tie = 'PerlOp.untie_scalar((PlTieScalar)' . $v->emit_java( $level ) . ')';
-                if ($v->{_decl} eq 'global') {
-                    return $v->emit_java_global_set_alias($tie, $level);
-                }
-                else {
-                    return $v->emit_java( $level ) . ' = ' . $tie;
-                }
+            my ( $self, $level, $wantarray ) = @_;
+            my @arguments = @{ $self->{arguments} };
+            my $v         = shift @arguments;
+            my $tie       = 'PerlOp.untie(' . $v->emit_java($level) . ')';
+            if ( $v->{_decl} eq 'global' ) {
+                return $v->emit_java_global_set_alias( $tie, $level );
             }
             else {
-                die "tie '", ref($v), "' not implemented";
+                return $v->emit_java($level) . ' = ' . $tie;
             }
-            return 'p5untie_' . $meth . '(' . $v->emit_java( $level ) . ')';
         },
         'tied' => sub {
             my ($self, $level, $wantarray) = @_;
