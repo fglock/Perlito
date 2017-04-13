@@ -26209,7 +26209,10 @@ class PerlOp {
         return v;
     }
     public static final PlLvalue untie_scalar(PlTieScalar v) {
-        PlObject self = PerlOp.call(v.tied, "UNTIE", new PlArray(), PlCx.VOID);
+        PlObject untie = PerlOp.call(v.tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+        if (untie.to_boolean()) {
+            untie.apply(PlCx.VOID, new PlArray(v.tied));
+        };
         return new PlLvalue();
     }
 
