@@ -60,7 +60,7 @@ Perlito5-Java work-in-progress
       - method caching is not implemented
 
   - tied variables are partially implemented
-      - tie scalar todo
+      - tie scalar implemented
       - tie array todo
       - tie hash todo
       - tie filehandle todo
