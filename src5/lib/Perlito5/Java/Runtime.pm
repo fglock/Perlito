@@ -3301,6 +3301,14 @@ class PlTieScalar extends PlLvalue {
         PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
         return this;
     }
+    public PlLvalue set(PlString o) {
+        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        return this;
+    }
+    public PlLvalue set(PlInt o) {
+        PerlOp.call(tied, "STORE", new PlArray(o), PlCx.VOID);
+        return this;
+    }
     public PlLvalue set(PlLvalue o) {
         return this.set(o.get());
     }
@@ -3329,6 +3337,26 @@ EOT
     public PlObject delete(PlObject a) {
         return PlCORE.die("delete argument is not a HASH or ARRAY element or slice");
     }
+
+    public String toString() {
+        return this.get().toString();
+    }
+    public long to_long() {
+        return this.get().to_long();
+    }
+    public double to_double() {
+        return this.get().to_double();
+    }
+    public boolean to_boolean() {
+        return this.get().to_boolean();
+    }
+    public PlObject num_cmp(PlObject b) {
+        return this.get().num_cmp(b);
+    }
+    public PlObject num_cmp2(PlObject b) {
+        return b.num_cmp(this.get());
+    }
+
 EOT
     . ( join('', map {
             my $perl = $_;
