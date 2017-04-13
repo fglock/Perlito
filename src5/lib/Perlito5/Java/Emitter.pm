@@ -295,6 +295,7 @@ package Perlito5::Java;
         prefix:<++>     1
         prefix:<-->     1
         tie             1
+        untie           1
     ); 
 
     my %safe_char = (

@@ -21371,8 +21371,15 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '@') {;
                 $meth = 'array'
             }
-            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {;
-                $meth = 'scalar'
+            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
+                $meth = 'scalar';
+                my $tie = 'new PlLvalue()';
+                if ($v->{'_decl'} eq 'global') {;
+                    return $v->emit_java_global_set_alias($tie, $level)
+                }
+                else {;
+                    return $v->emit_java($level) . ' = ' . $tie
+                }
             }
             else {;
                 die('tie ' . chr(39), ref($v), chr(39) . ' not implemented')
@@ -21873,7 +21880,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
         our %native_op_unary = ('postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
         our %native_op_to_boolean = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
-        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1, 'tie', 1);
+        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1, 'tie', 1, 'untie', 1);
         my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
         sub Perlito5::Java::escape_string {
             my $s = shift;
