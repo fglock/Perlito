@@ -2,6 +2,9 @@ use v5;
 use strict;
 use feature 'say';
 
+say '1..2';
+
+our $counter;
 {
     package TheScalar;
     
@@ -14,6 +17,7 @@ use feature 'say';
     sub FETCH { 
         my $self = shift;
         say "# FETCH ";
+        $counter++;
         return $self->{'zero'};
     }
     
@@ -29,8 +33,6 @@ use feature 'say';
     }
 }
 
-say '1..1';
-
 my $s;
 
 tie $s, 'TheScalar';
@@ -41,6 +43,11 @@ if ($s ne 'first') {
     print 'not '
 };
 say 'ok 1 # ';
+
+if ($counter ne 1) {
+    print 'not '
+};
+say 'ok 2 # FETCH called';
 
 untie $s;
 

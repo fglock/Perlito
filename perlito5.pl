@@ -26204,7 +26204,7 @@ class PerlOp {
     public static final PlTieScalar tie_scalar(PlArray args) {
         PlTieScalar v = new PlTieScalar();
         PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name, "TIESCALAR", args, PlCx.VOID);
+        PlObject self = PerlOp.call(class_name.toString(), "TIESCALAR", args, PlCx.VOID);
         v.tied = self;
         return v;
     }
