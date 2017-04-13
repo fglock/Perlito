@@ -2077,9 +2077,6 @@ package Perlito5::AST::Var;
         my $str_name = $self->{name};
         my $sigil = $self->{_real_sigil} || $self->{sigil};
         my $namespace = $self->{namespace} || $self->{_namespace};
-        if ($sigil ne '$') {
-            die "can't emit_java_global_set_alias() for sigil '$sigil'";
-        }
         if ($sigil eq '$' && $self->{name} > 0) {
             # TODO - for $1 (...) {} is valid perl
             die "not implemented emit_java_global_set_alias() for regex capture";
@@ -2087,7 +2084,10 @@ package Perlito5::AST::Var;
         my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
         $arguments = Perlito5::Java::to_scalar([$arguments], $level+1)
             if ref($arguments);
-        return "PlV.sset_alias(" . $index . ', ' . $arguments . ")";
+        return "PlV.sset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '$';
+        return "PlV.aset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '@';
+        return "PlV.hset_alias(" . $index . ', ' . $arguments . ")" if $sigil eq '%';
+        die "can't emit_java_global_set_alias() for sigil '$sigil'";
     }
 
     sub emit_java {

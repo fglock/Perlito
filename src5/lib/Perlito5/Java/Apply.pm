@@ -1203,18 +1203,17 @@ package Perlito5::AST::Apply;
             }
             elsif ( $v->isa('Perlito5::AST::Var') && $v->sigil eq '$' ) {
                 $meth = 'scalar';
-                my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
-                if ($v->{_decl} eq 'global') {
-                    return $v->emit_java_global_set_alias($tie, $level);
-                }
-                else {
-                    return $v->emit_java( $level ) . ' = ' . $tie;
-                }
             }
             else {
                 die "tie '", ref($v), "' not implemented";
             }
-            return $v->emit_java( $level ) . ' = PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            if ($v->{_decl} eq 'global') {
+                return $v->emit_java_global_set_alias($tie, $level);
+            }
+            else {
+                return $v->emit_java( $level ) . ' = ' . $tie;
+            }
         },
         'untie' => sub {
             my ( $self, $level, $wantarray ) = @_;

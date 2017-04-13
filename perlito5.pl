@@ -21346,20 +21346,19 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '@') {;
                 $meth = 'array'
             }
-            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
-                $meth = 'scalar';
-                my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
-                if ($v->{'_decl'} eq 'global') {;
-                    return $v->emit_java_global_set_alias($tie, $level)
-                }
-                else {;
-                    return $v->emit_java($level) . ' = ' . $tie
-                }
+            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {;
+                $meth = 'scalar'
             }
             else {;
                 die('tie ' . chr(39), ref($v), chr(39) . ' not implemented')
             }
-            return $v->emit_java($level) . ' = PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')'
+            my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            if ($v->{'_decl'} eq 'global') {;
+                return $v->emit_java_global_set_alias($tie, $level)
+            }
+            else {;
+                return $v->emit_java($level) . ' = ' . $tie
+            }
         }, 'untie' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
@@ -22864,15 +22863,15 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $str_name = $self->{'name'};
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
             my $namespace = $self->{'namespace'} || $self->{'_namespace'};
-            if ($sigil ne '$') {;
-                die('can' . chr(39) . 't emit_java_global_set_alias() for sigil ' . chr(39) . $sigil . chr(39))
-            }
             if ($sigil eq '$' && $self->{'name'} > 0) {;
                 die('not implemented emit_java_global_set_alias() for regex capture')
             }
             my $index = Perlito5::Java::escape_string($namespace . '::' . $table->{$sigil} . $str_name);
             ref($arguments) && ($arguments = Perlito5::Java::to_scalar([$arguments], $level + 1));
-            return 'PlV.sset_alias(' . $index . ', ' . $arguments . ')'
+            $sigil eq '$' && return 'PlV.sset_alias(' . $index . ', ' . $arguments . ')';
+            $sigil eq '@' && return 'PlV.aset_alias(' . $index . ', ' . $arguments . ')';
+            $sigil eq '%' && return 'PlV.hset_alias(' . $index . ', ' . $arguments . ')';
+            die('can' . chr(39) . 't emit_java_global_set_alias() for sigil ' . chr(39) . $sigil . chr(39))
         }
         sub Perlito5::AST::Var::emit_java {
             (my($self), my($level), my($wantarray)) = @_;
@@ -26969,6 +26968,9 @@ class PlV {
     public static final PlObject hset_local(String name, PlObject v) {
         return hvar.hget_lvalue_local(name).set(v);
     }
+    public static final void hset_alias(String name, PlHash v) {
+        hvar.hset_alias(name, v);
+    }
 
     // array
     public static final PlArray array_get(String name) {
@@ -26994,6 +26996,9 @@ class PlV {
     }
     public static final PlObject aset_local(String name, PlObject v) {
         return avar.hget_lvalue_local(name).set(v);
+    }
+    public static final void aset_alias(String name, PlArray v) {
+        avar.hset_alias(name, v);
     }
 
     // filehandle
@@ -30635,7 +30640,7 @@ class PlHash extends PlObject {
         }
         return aa.pop();
     }
-    public PlObject hset_alias(String s, PlLvalue lvalue) {
+    public PlObject hset_alias(String s, PlObject lvalue) {
         return this.h.put(s, lvalue);
     }
     public PlObject exists(PlObject i) {

@@ -1734,6 +1734,9 @@ class PlV {
     public static final PlObject hset_local(String name, PlObject v) {
         return hvar.hget_lvalue_local(name).set(v);
     }
+    public static final void hset_alias(String name, PlHash v) {
+        hvar.hset_alias(name, v);
+    }
 
     // array
     public static final PlArray array_get(String name) {
@@ -1759,6 +1762,9 @@ class PlV {
     }
     public static final PlObject aset_local(String name, PlObject v) {
         return avar.hget_lvalue_local(name).set(v);
+    }
+    public static final void aset_alias(String name, PlArray v) {
+        avar.hset_alias(name, v);
     }
 
     // filehandle
@@ -5500,7 +5506,7 @@ class PlHash extends PlObject {
         }
         return aa.pop();
     }
-    public PlObject hset_alias(String s, PlLvalue lvalue) {
+    public PlObject hset_alias(String s, PlObject lvalue) {
         return this.h.put(s, lvalue);
     }
     public PlObject exists(PlObject i) {
