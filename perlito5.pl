@@ -21348,7 +21348,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
                 $meth = 'scalar';
-                my $tie = 'PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+                my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
                 if ($v->{'_decl'} eq 'global') {;
                     return $v->emit_java_global_set_alias($tie, $level)
                 }
@@ -21873,7 +21873,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         our %native_op = ('infix:<->', '-', 'infix:<+>', '+', 'infix:<*>', '*', 'infix:</>', '/', 'infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
         our %native_op_unary = ('postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
         our %native_op_to_boolean = ('infix:<!=>', '!=', 'infix:<==>', '==', 'infix:<<=>', '<=', 'infix:<>=>', '>=', 'infix:<>>', '>', 'infix:<<>', '<');
-        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1);
+        our %valid_java_statement = ('print', 1, 'say', 1, 'printf', 1, 'return', 1, 'push', 1, 'infix:<=>', 1, 'postfix:<++>', 1, 'postfix:<-->', 1, 'prefix:<++>', 1, 'prefix:<-->', 1, 'tie', 1);
         my %safe_char = (' ' => 1, '!' => 1, '#' => 1, '$' => 1, '%' => 1, '&' => 1, '(' => 1, ')' => 1, '*' => 1, '+' => 1, ',' => 1, '-' => 1, '.' => 1, '/' => 1, ':' => 1, ';' => 1, '<' => 1, '=' => 1, '>' => 1, '?' => 1, '@' => 1, '[' => 1, ']' => 1, '^' => 1, '_' => 1, '`' => 1, '{' => 1, '|' => 1, '}' => 1, '~' => 1);
         sub Perlito5::Java::escape_string {
             my $s = shift;
@@ -26192,6 +26192,14 @@ class PerlOp {
     private static String double_escape(String s) {
         // add double escapes: \\\\w instead of \\w
         return s.replace("\\\\", "\\\\\\\\");
+    }
+
+    public static final PlTieScalar tie_scalar(PlArray args) {
+        PlTieScalar v = new PlTieScalar();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name, "TIESCALAR", args, PlCx.VOID);
+        v.tied = self;
+        return v;
     }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {

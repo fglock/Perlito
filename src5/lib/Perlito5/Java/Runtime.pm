@@ -957,6 +957,14 @@ class PerlOp {
         return s.replace("\\", "\\\\");
     }
 
+    public static final PlTieScalar tie_scalar(PlArray args) {
+        PlTieScalar v = new PlTieScalar();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name, "TIESCALAR", args, PlCx.VOID);
+        v.tied = self;
+        return v;
+    }
+
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {
         // [ ... ]
         int offset3 = offset;
