@@ -21336,6 +21336,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
             my $v = shift(@arguments);
+            if (ref($v) eq 'Perlito5::AST::Decl') {;
+                $v = $v->{'var'}
+            }
             my $meth;
             if ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '%') {;
                 $meth = 'hash'
@@ -21343,13 +21346,20 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '@') {;
                 $meth = 'array'
             }
-            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {;
-                $meth = 'scalar'
+            elsif ($v->isa('Perlito5::AST::Var') && $v->sigil() eq '$') {
+                $meth = 'scalar';
+                my $tie = 'PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+                if ($v->{'_decl'} eq 'global') {;
+                    return $v->emit_java_global_set_alias($tie, $level)
+                }
+                else {;
+                    return $v->emit_java($level) . ' = ' . $tie
+                }
             }
             else {;
                 die('tie ' . chr(39), ref($v), chr(39) . ' not implemented')
             }
-            return 'p5tie_' . $meth . '(' . $v->emit_java($level) . ', ' . Perlito5::Java::to_list(\@arguments, $level) . ')'
+            return $v->emit_java($level) . ' = PlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')'
         }, 'untie' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
