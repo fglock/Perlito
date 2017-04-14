@@ -45,7 +45,7 @@ use feature 'say';
 }
 
 sub shift               { say "not ok 100 # PKG::shift()" }
-sub CORE::shift         { say "not ok 101 # CORE::shift()" }
+sub CORE::shift (;+)    { say "not ok 101 # CORE::shift()" }
 sub CORE::GLOBAL::shift { say "not ok 102 # CORE::GLOBAL::shift()" }
 
 say '1..3';
