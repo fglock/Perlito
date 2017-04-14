@@ -27,6 +27,7 @@ Perlito5-Java platform differences
 
   - no XS (because we use Java instead of C)
       - many CPAN modules which use C libraries don't work
+      - some CPAN modules are already ported, see: src5/lib/Perlito5X/Java/
 
   - some system features are not readily available in Java, such as:
       - file permissions for setuid, setgid, and sticky bit are not implemented
@@ -36,11 +37,12 @@ Perlito5-Java platform differences
 Perlito5-Java work-in-progress
 ------------------------------
 
+  - BEGIN blocks
+      - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
+          - lexical variables inside loops don't behave properly if they are captured at compile-time
+      - lexical variables are not shared between closures created in BEGIN blocks
 
-  - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
-      - lexical variables inside loops don't behave properly if they are captured at compile-time
- 
-  - no eval-string (because not-yet-bootstrapped)
+  - no eval-string at runtime (because not-yet-bootstrapped)
       - also no: "do FILE", "require" (because these depend on eval-string)
 
   - runtime error messages do not include the line number in the Perl code
@@ -56,17 +58,18 @@ Perlito5-Java work-in-progress
 
   - object system is partially implemented
       - method resolution order is not selectable
-      - AUTOLOAD for subroutine calls is not implemented
       - method caching is not implemented
+      - interaction between inheritance and overloading need more tests
 
   - tied variables are partially implemented
-        - DESTROY not used because we use Java memory management
-      - tie scalar implemented
+      - DESTROY not used, because we use Java memory management
+      - tie scalar works
       - tie array incomplete
       - tie hash incomplete
       - tie filehandle todo
 
   - overload is partially implemented
+      - overload string, number, boolean work
       - binary operators not implemented
       - mutators and assignment not implemented
       - dereferencing, iterators, filetest not implemented
@@ -74,11 +77,14 @@ Perlito5-Java work-in-progress
       - "fallback" not implemented; fallback mode behaves as "TRUE"
 
   - file handles are partially implemented
-      - __DATA__ sections not working - depend on open-scalarref and seek().
+      - open scalarref not implemented
+          - __DATA__ sections not working, they depend on open-scalarref and seek().
       - open binary mode vs. open utf8 needs more work
       - files don't "auto-close"
 
-  - "my sub x {...}"
+  - subroutines
+      - "my sub x {...}" not implemented
+      - AUTOLOAD for subroutine calls is not implemented
 
   - lvalue $#a and other expressions: substr, ternary, chop, keys, pos
 
@@ -98,6 +104,8 @@ Regex differences
 -----------------
 
   - regex modifiers /ismxgec work the same as Perl; other modifiers are not yet implemented.
+      - /r not implemented
+      - /ee not implemented, it depends on runtime eval-string
 
   - regex variables $1, $2, ... and $&, $', $` work; other variables are not yet implemented.
 
@@ -990,12 +998,13 @@ Tail-call
     caller pops from the stack and call the closures in order
 
 - tailcalls
+
     same-subroutine tailcalls could execute a "redo" in the current subroutine.
 
 Missing features, or partially implemented, or untested
 -------------------------------------------------------
 
-Object-related
+- Object-related
 
     bless (DONE)
     UNIVERSAL::
@@ -1013,7 +1022,7 @@ Object-related
 
     TODO - invalidate method cache when subroutine changes or @INC changes
 
-Perl features
+- Perl features
 
     overload
     tie()
