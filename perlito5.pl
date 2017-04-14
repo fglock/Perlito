@@ -28468,7 +28468,16 @@ class PlTieScalar extends PlLvalue {
     }
 
     public PlObject get_arrayref() {
-        return this.get();
+        PlObject o = this.get();
+        if (o.is_undef()) {
+            PlArrayRef ar = new PlArrayRef();
+            this.set(ar);
+            return ar;
+        }
+        else if (o.is_arrayref()) {
+            return o;
+        }
+        return PlCORE.die("Not an ARRAY reference");
     }
     public PlObject get_hashref() {
         return this.get();
@@ -28494,10 +28503,10 @@ class PlTieScalar extends PlLvalue {
     }
 
     public PlObject aset(int i, PlObject v) {
-        return this.get().aset(i, v);
+        return this.get_arrayref().aset(i, v);
     }
     public PlObject aset(PlObject i, PlObject v) {
-        return this.get().aset(i, v);
+        return this.get_arrayref().aset(i, v);
     }
     public PlObject hget(PlObject i) {
         return this.get().hget(i);
