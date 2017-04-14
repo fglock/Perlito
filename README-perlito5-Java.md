@@ -60,10 +60,10 @@ Perlito5-Java work-in-progress
       - method caching is not implemented
 
   - tied variables are partially implemented
+        - DESTROY not used because we use Java memory management
       - tie scalar implemented
-          - DESTROY not used because we use Java memory management
-      - tie array todo
-      - tie hash todo
+      - tie array incomplete
+      - tie hash incomplete
       - tie filehandle todo
 
   - overload is partially implemented
