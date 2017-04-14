@@ -80,7 +80,7 @@ Perlito5-in-JavaScript differences from "perl"
 
 - Signals are not implemented yet.
 
-- BEGIN blocks are partially implemented.
+- BEGIN blocks are mostly implemented.
 
 - Typeglobs are partially implemented.
 
@@ -88,7 +88,7 @@ Perlito5-in-JavaScript differences from "perl"
 
 - String increment partially implemented - array and hash lookups; not in scalars.
 
-- runtime error messages do not include the line number in the Perl code
+- runtime error messages often do not include the right line number in the Perl code
 
 
 Internals
@@ -675,6 +675,7 @@ Features
 
 - add regex compiler
 - /x modifier
+- /s modifier
 - support all perl5 regex syntax
 - @v = /x/g
 
@@ -745,10 +746,6 @@ Features
     See: p5str
 
 - pack(), unpack()
-
-- BEGIN{} should execute in the environment of the program under compilation
-- BEGIN/END that are defined inside blocks/closures need to run inside some pseudo-environment
-    even if the closure was never created or used in the first place
 
 - flip-flop operator
     if either operand to scalar '..' is a constant the value is implicitly compared to the input line number ($.)

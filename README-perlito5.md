@@ -175,7 +175,7 @@ Parser
 
     - prototypes are not set
 
-    - subroutine predeclaration is not supported
+    - subroutine predeclaration needs tests
 
     - circular references are not tested
 
@@ -347,16 +347,6 @@ Add tests for fixed bugs
     syntax error in hashref subscript - parses 's' as s///:
     ${x->{s}}
     $x->{s}
-~~~
-
-~~~sh
-    dereferencing a bareword in block assumes a global variable:
-
-    $ perl  -e ' use Data::Dumper;        ${ x ->{s} } = 4;  print Dumper \%x '
-    #  { 's' => \4 }
-
-    $ perl  -e ' use Data::Dumper; my %x; ${ x ->{s} } = 4;  print Dumper \%x '
-    #  {}
 ~~~
 
     ---
