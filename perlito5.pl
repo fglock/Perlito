@@ -28490,16 +28490,16 @@ class PlTieScalar extends PlLvalue {
     }
 
     public PlObject aget_scalarref(int i) {
-        return this.get().aget_scalarref(i);
+        return this.get_arrayref().aget_scalarref(i);
     }
     public PlObject aget_arrayref(int i) {
-        return this.get().aget_arrayref(i);
+        return this.get_arrayref().aget_arrayref(i);
     }
     public PlObject aget_lvalue(int pos) {
-        return this.get().aget_lvalue(pos);
+        return this.get_arrayref().aget_lvalue(pos);
     }
     public PlObject aget_hashref(int i) {
-        return this.get().aget_hashref(i);
+        return this.get_arrayref().aget_hashref(i);
     }
 
     public PlObject aset(int i, PlObject v) {
