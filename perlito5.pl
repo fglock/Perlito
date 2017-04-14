@@ -21363,7 +21363,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             (my($self), my($level), my($wantarray)) = @_;
             my @arguments = @{$self->{'arguments'}};
             my $v = shift(@arguments);
-            my $tie = 'PerlOp.untie(' . $v->emit_java($level) . ')';
+            my $tie = $v->emit_java($level) . '.untie()';
             if ($v->{'_decl'} eq 'global') {;
                 return $v->emit_java_global_set_alias($tie, $level)
             }
@@ -26186,11 +26186,6 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    private static String double_escape(String s) {
-        // add double escapes: \\\\w instead of \\w
-        return s.replace("\\\\", "\\\\\\\\");
-    }
-
     public static final PlTieScalar tie_scalar(PlArray args) {
         PlTieScalar v = new PlTieScalar();
         PlObject class_name = args.shift();
@@ -26211,13 +26206,6 @@ class PerlOp {
         PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
         v.tied = self;
         return v;
-    }
-    public static final PlLvalue untie(PlObject v) {
-        PlObject untie = PerlOp.call(v.tied(), "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
-        if (untie.to_boolean()) {
-            untie.apply(PlCx.VOID, new PlArray(v.tied()));
-        };
-        return new PlLvalue();
     }
 
     private static int _regex_character_class_escape(int offset, String s, StringBuilder sb, int length) {
@@ -28417,6 +28405,13 @@ class PlTieArray extends PlArray {
 
     public PlTieArray() {
     }
+    public PlArray untie() {
+        PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+        if (untie.to_boolean()) {
+            untie.apply(PlCx.VOID, new PlArray(tied));
+        };
+        return new PlArray();
+    }
     public PlObject tied() {
         return tied;
     }
@@ -28428,6 +28423,13 @@ class PlTieHash extends PlHash {
 
     public PlTieHash() {
     }
+    public PlHash untie() {
+        PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+        if (untie.to_boolean()) {
+            untie.apply(PlCx.VOID, new PlArray(tied));
+        };
+        return new PlHash();
+    }
     public PlObject tied() {
         return tied;
     }
@@ -28438,6 +28440,13 @@ class PlTieScalar extends PlLvalue {
     public  PlObject tied;
 
     public PlTieScalar() {
+    }
+    public PlLvalue untie() {
+        PlObject untie = PerlOp.call(tied, "can", new PlArray(new PlString("UNTIE")), PlCx.SCALAR);
+        if (untie.to_boolean()) {
+            untie.apply(PlCx.VOID, new PlArray(tied));
+        };
+        return new PlLvalue();
     }
     public PlObject tied() {
         return tied;
@@ -29085,6 +29094,10 @@ class PlLvalue extends PlObject {
         this.o = o.scalar();
     }
 
+    public PlLvalue untie() {
+        return this;
+    }
+
     // internal lazy api
     public PlLvalue create_scalar() {
         if (this.o.is_undef()) {
@@ -29615,6 +29628,10 @@ class PlArray extends PlObject implements Iterable<PlObject> {
         }
         this.each_iterator = 0;
         this.a = aa;
+    }
+
+    public PlArray untie() {
+        return this;
     }
 
     // internal lazy api
@@ -30343,6 +30360,10 @@ class PlHash extends PlObject {
     }
     private HashMap<String, PlObject> to_HashMap() {
         return this.h;
+    }
+
+    public PlHash untie() {
+        return this;
     }
 
     // internal lazy api

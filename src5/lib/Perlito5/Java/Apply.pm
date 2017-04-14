@@ -1219,7 +1219,7 @@ package Perlito5::AST::Apply;
             my ( $self, $level, $wantarray ) = @_;
             my @arguments = @{ $self->{arguments} };
             my $v         = shift @arguments;
-            my $tie       = 'PerlOp.untie(' . $v->emit_java($level) . ')';
+            my $tie       = $v->emit_java($level) . '.untie()';
             if ( $v->{_decl} eq 'global' ) {
                 return $v->emit_java_global_set_alias( $tie, $level );
             }
