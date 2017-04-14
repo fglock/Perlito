@@ -320,6 +320,22 @@ sub emit_globals_after_BEGIN {
     # return a structure with the global variable declarations
     my $vars = [];
     my $dumper_seen = {};
+
+    # dump subroutine stubs (prototypes)
+    for my $fullname (sort keys %$Perlito5::PROTO) {
+        my $proto = $Perlito5::PROTO->{$fullname};
+        my @parts = split "::", $fullname;
+        my $name = pop @parts;
+        push @$vars,
+          Perlito5::AST::Sub->new(
+            'namespace'  => join( "::", @parts ),
+            'sig'        => $proto,
+            'name'       => $name,
+            'block'      => undef,
+            'attributes' => []
+          );
+    }
+
     for my $name (sort keys %$scope) {
         my $item = $scope->{$name};
         _dump_AST_from_scope($name, $item, $vars, $dumper_seen);

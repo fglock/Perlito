@@ -9223,6 +9223,14 @@ use feature 'say';
         }
         my $vars = [];
         my $dumper_seen = {};
+        for my $fullname (sort {;
+            $a cmp $b
+        } keys(%{$Perlito5::PROTO})) {
+            my $proto = $Perlito5::PROTO->{$fullname};
+            my @parts = split('::', $fullname);
+            my $name = pop(@parts);
+            push(@{$vars}, Perlito5::AST::Sub::->new('namespace' => join('::', @parts), 'sig' => $proto, 'name' => $name, 'block' => undef, 'attributes' => []))
+        }
         for my $name (sort {;
             $a cmp $b
         } keys(%{$scope})) {
