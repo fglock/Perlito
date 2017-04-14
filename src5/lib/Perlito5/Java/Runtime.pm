@@ -952,25 +952,28 @@ class PerlOp {
         return PlCx.UNDEF;
     }
 
-    public static final PlTieScalar tie_scalar(PlArray args) {
+    public static final PlTieScalar tie_scalar(PlLvalue old_var, PlArray args) {
         PlTieScalar v = new PlTieScalar();
         PlObject class_name = args.shift();
         PlObject self = PerlOp.call(class_name.toString(), "TIESCALAR", args, PlCx.VOID);
         v.tied = self;
+        v.old_var = old_var;
         return v;
     }
-    public static final PlTieHash tie_hash(PlArray args) {
-        PlTieHash v = new PlTieHash();
-        PlObject class_name = args.shift();
-        PlObject self = PerlOp.call(class_name.toString(), "TIEHASH", args, PlCx.VOID);
-        v.tied = self;
-        return v;
-    }
-    public static final PlTieArray tie_array(PlArray args) {
+    public static final PlTieArray tie_array(PlArray old_var, PlArray args) {
         PlTieArray v = new PlTieArray();
         PlObject class_name = args.shift();
         PlObject self = PerlOp.call(class_name.toString(), "TIEARRAY", args, PlCx.VOID);
         v.tied = self;
+        v.old_var = old_var;
+        return v;
+    }
+    public static final PlTieHash tie_hash(PlHash old_var, PlArray args) {
+        PlTieHash v = new PlTieHash();
+        PlObject class_name = args.shift();
+        PlObject self = PerlOp.call(class_name.toString(), "TIEHASH", args, PlCx.VOID);
+        v.tied = self;
+        v.old_var = old_var;
         return v;
     }
 
@@ -3206,7 +3209,8 @@ class PlLazyScalarref extends PlLazyLvalue {
     }
 }
 class PlTieArray extends PlArray {
-    public  PlObject tied;
+    public PlObject tied;
+    public PlArray old_var;
 
     public PlTieArray() {
     }
@@ -3215,7 +3219,7 @@ class PlTieArray extends PlArray {
         if (untie.to_boolean()) {
             untie.apply(PlCx.VOID, new PlArray(tied));
         };
-        return new PlArray();
+        return old_var;
     }
     public PlObject tied() {
         return tied;
@@ -3224,7 +3228,8 @@ class PlTieArray extends PlArray {
     // TODO
 }
 class PlTieHash extends PlHash {
-    public  PlObject tied;
+    public PlObject tied;
+    public PlHash old_var;
 
     public PlTieHash() {
     }
@@ -3233,7 +3238,7 @@ class PlTieHash extends PlHash {
         if (untie.to_boolean()) {
             untie.apply(PlCx.VOID, new PlArray(tied));
         };
-        return new PlHash();
+        return old_var;
     }
     public PlObject tied() {
         return tied;
@@ -3242,7 +3247,8 @@ class PlTieHash extends PlHash {
     // TODO
 }
 class PlTieScalar extends PlLvalue {
-    public  PlObject tied;
+    public PlObject tied;
+    public PlLvalue old_var;
 
     public PlTieScalar() {
     }
@@ -3251,14 +3257,16 @@ class PlTieScalar extends PlLvalue {
         if (untie.to_boolean()) {
             untie.apply(PlCx.VOID, new PlArray(tied));
         };
-        return new PlLvalue();
+        return old_var;
     }
     public PlObject tied() {
         return tied;
     }
 
     public PlObject get() {
-        return PerlOp.call(tied, "FETCH", new PlArray(), PlCx.VOID);
+        PlObject v = PerlOp.call(tied, "FETCH", new PlArray(), PlCx.VOID);
+        old_var.set(v);
+        return v;
     }
     public PlObject get_scalarref() {
         return this.get();

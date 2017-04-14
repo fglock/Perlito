@@ -1207,7 +1207,7 @@ package Perlito5::AST::Apply;
             else {
                 die "tie '", ref($v), "' not implemented";
             }
-            my $tie = 'PerlOp.tie_' . $meth . '(' . Perlito5::Java::to_list(\@arguments, $level) . ')';
+            my $tie = 'PerlOp.tie_' . $meth . '(' . $v->emit_java( $level ) . ', ' . Perlito5::Java::to_list(\@arguments, $level) . ')';
             if ($v->{_decl} eq 'global') {
                 return $v->emit_java_global_set_alias($tie, $level);
             }
