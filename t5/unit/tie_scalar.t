@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..2';
+say '1..4';
 
 our $counter;
 {
@@ -35,6 +35,8 @@ our $counter;
 
 my $s;
 
+$s = 'before';
+
 tie $s, 'TheScalar';
 
 $s = 'first';
@@ -47,7 +49,7 @@ say 'ok 1 # ';
 if ($counter ne 1) {
     print 'not '
 };
-say 'ok 2 # FETCH called';
+say 'ok 2 # fetch called';
 
 my $t = tied $s;
 if (ref($t) ne "TheScalar") {
@@ -56,4 +58,10 @@ if (ref($t) ne "TheScalar") {
 say 'ok 3 # tied';
 
 untie $s;
+
+if ($s ne 'first') {
+    print 'not '
+};
+say "ok 4 # $s";
+
 
