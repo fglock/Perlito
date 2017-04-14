@@ -585,7 +585,7 @@ Compile-time execution environment
 - test case:
 
 ~~~sh
-    # captured lexical is not emitted:
+    # 'our' variable is not seen:
     
     $ perl perlito5.pl -Isrc5/lib -I. -It -Cjava -e ' use Data::Dumper; @x = (2..4, ";)"); print Dumper \@x '  > Main.java ; javac Main.java ; java Main
     $VAR1 = [
@@ -595,7 +595,7 @@ Compile-time execution environment
         chr(59) . chr(41),
     ];
 
-    Subroutine "Perlito5::Dumper::escape_string" is not capturing the lexical hash "%safe_char".
+    Subroutine "Perlito5::Dumper::escape_string" is not using the hash "%safe_char".
 ~~~    
     
 ~~~sh
@@ -636,9 +636,9 @@ Compile-time execution environment
     # args [ X xxx ]
 
 
-- work in progress: "-C_globals" compiler switch to test BEGIN time serialization
+- work in progress: test BEGIN time serialization
 
-    $ perl perlito5.pl -I src5/lib --bootstrapping -C_globals -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+    $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
 
     TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
 
