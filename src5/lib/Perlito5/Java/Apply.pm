@@ -527,8 +527,10 @@ package Perlito5::AST::Apply;
             'new PlBool(!( ' . Perlito5::Java::to_boolean( $arg, $level ) . '))';
         },
         'prefix:<~>' => sub {
-            my $self = $_[0];
-            'new PlInt(~' . Perlito5::Java::to_num( $self->{arguments}->[0] ) . '.to_long())';
+            my $self  = shift;
+            my $level = shift;
+            my $arg = $self->{arguments}->[0];
+            $arg->emit_java( $level, 'scalar' ) . '.complement()';
         },
         'prefix:<->' => sub {
             my ($self, $level, $wantarray) = @_;

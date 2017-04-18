@@ -2267,6 +2267,10 @@ EOT
     public PlObject neg() {
         return new PlInt(-this.to_long());
     }
+    public PlObject complement() {
+        long v = this.to_long();
+        return new PlInt(v < 0 ? ~v : 4294967295L - v);
+    }
     public PlObject abs() {
         long c = this.to_long();
         return new PlInt(c < 0 ? -c : c);

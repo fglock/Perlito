@@ -20941,8 +20941,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             }
             'new PlBool(!( ' . Perlito5::Java::to_boolean($arg, $level) . '))'
         }, 'prefix:<~>' => sub {
-            my $self = $_[0];
-            'new PlInt(~' . Perlito5::Java::to_num($self->{'arguments'}->[0]) . '.to_long())'
+            my $self = shift;
+            my $level = shift;
+            my $arg = $self->{'arguments'}->[0];
+            $arg->emit_java($level, 'scalar') . '.complement()'
         }, 'prefix:<->' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{'arguments'}->[0];
@@ -27506,6 +27508,10 @@ class PlObject {
     }
     public PlObject neg() {
         return new PlInt(-this.to_long());
+    }
+    public PlObject complement() {
+        long v = this.to_long();
+        return new PlInt(v < 0 ? ~v : 4294967295L - v);
     }
     public PlObject abs() {
         long c = this.to_long();
