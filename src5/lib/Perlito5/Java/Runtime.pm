@@ -5808,6 +5808,14 @@ class PlInt extends PlObject {
     public PlObject neg() {
         return new PlInt(-i);
     }
+    public PlObject mul2(PlObject s) {
+        long v = s.to_long();
+        long res = v * this.i;
+        if (res == 0 && this.i != 0 && v != 0) {
+            return new PlDouble(this.to_double()).mul2(s);
+        }
+        return new PlInt(res);
+    }
 }
 class PlDouble extends PlObject {
     private double i;
