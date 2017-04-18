@@ -8874,7 +8874,9 @@ use feature 'say';
             }
             if ($self->{'code'} eq 'eval') {
                 my $args = $self->{'arguments'};
-                return Perlito5::AST::Apply::->new(%{$self}, 'arguments' => [Perlito5::AST::Apply::->new('code' => 'generate_eval_string', 'namespace' => 'Perlito5::CompileTime::Dumper', 'arguments' => $args)])
+                if (@{$args} && !$args->[0]->isa('Perlito5::AST::Block')) {;
+                    return Perlito5::AST::Apply::->new(%{$self}, 'arguments' => [Perlito5::AST::Apply::->new('code' => 'generate_eval_string', 'namespace' => 'Perlito5::CompileTime::Dumper', 'arguments' => $args)])
+                }
             }
             if ($self->{'code'} eq 'require' && !$self->{'namespace'}) {;
                 return Perlito5::AST::Apply::->new(%{$self}, 'namespace' => 'Perlito5::Grammar::Use')

@@ -163,18 +163,20 @@ package Perlito5::AST::Apply;
         }
 
         if ($self->{code} eq 'eval') {
-            # eval-string inside BEGIN block
             my $args = $self->{arguments};
-            return Perlito5::AST::Apply->new(
-                %$self,
-                arguments => [
-                    Perlito5::AST::Apply->new(
-                        code => 'generate_eval_string',
-                        namespace => 'Perlito5::CompileTime::Dumper',
-                        arguments => $args,
-                    ),
-                ],
-            );
+            if (@$args && !$args->[0]->isa( "Perlito5::AST::Block" )) {
+                # eval-string inside BEGIN block
+                return Perlito5::AST::Apply->new(
+                    %$self,
+                    arguments => [
+                        Perlito5::AST::Apply->new(
+                            code => 'generate_eval_string',
+                            namespace => 'Perlito5::CompileTime::Dumper',
+                            arguments => $args,
+                        ),
+                    ],
+                );
+            }
         }
 
         if ( $self->{code} eq 'require' && !$self->{namespace} ) {
