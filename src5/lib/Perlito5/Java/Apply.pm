@@ -1083,7 +1083,7 @@ package Perlito5::AST::Apply;
                )
             {
                 my $arg2   = $arg->{arguments}->[0];
-                $invocant = 'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')';
+                $invocant = 'PlV.code_lookup_by_name_no_autoload(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')';
             }
             elsif (  ref( $arg ) eq 'Perlito5::AST::Var' 
                && $arg->{sigil} eq '&'
@@ -1588,7 +1588,7 @@ package Perlito5::AST::Apply;
                 # TODO exist() + 'my sub'
                 my $name = $arg->{name};
                 my $namespace = $arg->{namespace} || $Perlito5::PKG_NAME;
-                return 'new PlBool(PlV.cget(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_coderef())';
+                return 'new PlBool(PlV.cget_no_autoload(' . Perlito5::Java::escape_string($namespace . '::' . $name) . ').is_coderef())';
             }
             if (  $arg->isa('Perlito5::AST::Apply')
                && $arg->{code} eq 'prefix:<&>'
@@ -1596,7 +1596,7 @@ package Perlito5::AST::Apply;
             {
                 my $arg2 = $arg->{arguments}->[0];
                 return 'new PlBool('
-                    .   'PlV.code_lookup_by_name(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')'
+                    .   'PlV.code_lookup_by_name_no_autoload(' . Perlito5::Java::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg2->emit_java($level) . ')'
                     . '.is_coderef())';
             }
         },

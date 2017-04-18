@@ -1819,6 +1819,16 @@ class PlV {
         }
         return PlV.cget(s);
     }
+    public static final PlObject code_lookup_by_name_no_autoload(String nameSpace, PlObject name) {
+        if (name.is_coderef()) {
+            return name;
+        }
+        String s = name.toString();
+        if (s.indexOf("::") == -1) {
+            s = nameSpace + "::" + s;
+        }
+        return PlV.cget_no_autoload(s);
+    }
 
     public static final PlObject glob_set(PlString name, PlObject value, String nameSpace) {
         return glob_set(name.toString(), value, nameSpace);
