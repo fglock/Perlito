@@ -311,7 +311,15 @@ sub cmp_ok ($$$@) {
         local $^W = 0;
         local($@,$!);   # don't interfere with $@
                         # eval() sometimes resets $!
-        $pass = eval "\$got $type \$expected";
+        if ($type eq '==') {
+            $pass = ($got == $expected);
+        }
+        elsif ($type eq 'eq') {
+            $pass = ($got eq $expected);
+        }
+        else {
+            die "cmp_ok - don't know what to do with type '$type'\n";
+        }
     }
     #### unless ($pass) {
     ####     # It seems Irix long doubles can have 2147483648 and 2147483648
@@ -1426,28 +1434,28 @@ WHOA
 ####      return $string;
 ####  }
 ####  
-sub latin1_to_native($) {
-    my $string = shift;
-
-    return $string if ord('^') == 94;   # ASCII, Latin1
-    my $cp;
-    if (ord('^') == 95) {    # EBCDIC 1047
-        $cp = \$cp_1047;
-    }
-    elsif (ord('^') == 106) {   # EBCDIC POSIX-BC
-        $cp = \$cp_bc;
-    }
-    elsif (ord('^') == 176)  {   # EBCDIC 037 */
-        $cp = \$cp_0037;
-    }
-    else {
-        die "Unknown native character set";
-    }
-
-    eval '$string =~ tr/' . $straight . '/' . $$cp . '/';
-    return $string;
-}
-
+#### sub latin1_to_native($) {
+####     my $string = shift;
+#### 
+####     return $string if ord('^') == 94;   # ASCII, Latin1
+####     my $cp;
+####     if (ord('^') == 95) {    # EBCDIC 1047
+####         $cp = \$cp_1047;
+####     }
+####     elsif (ord('^') == 106) {   # EBCDIC POSIX-BC
+####         $cp = \$cp_bc;
+####     }
+####     elsif (ord('^') == 176)  {   # EBCDIC 037 */
+####         $cp = \$cp_0037;
+####     }
+####     else {
+####         die "Unknown native character set";
+####     }
+#### 
+####     eval '$string =~ tr/' . $straight . '/' . $$cp . '/';
+####     return $string;
+#### }
+#### 
 ####  sub ord_latin1_to_native {
 ####      # given an input code point, return the platform's native
 ####      # equivalent value.  Anything above latin1 is itself.
