@@ -541,6 +541,10 @@ package Perlito5::AST::Apply;
                 $arg->{num} = -$arg->{num};
                 return $arg->emit_java( $level, 'scalar' );
             }
+            # negation of bareword treated like string
+            if ($arg->isa('Perlito5::AST::Apply') && $arg->{bareword}) {
+                $arg = Perlito5::AST::Buf->new( buf => $arg->{code} );
+            }
             $arg->emit_java( $level, 'scalar' ) . '.neg()';
         },
         'prefix:<+>' => sub {

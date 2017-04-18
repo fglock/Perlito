@@ -20954,6 +20954,9 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 $arg->{'num'} = -$arg->{'num'};
                 return $arg->emit_java($level, 'scalar')
             }
+            if ($arg->isa('Perlito5::AST::Apply') && $arg->{'bareword'}) {;
+                $arg = Perlito5::AST::Buf::->new('buf' => $arg->{'code'})
+            }
             $arg->emit_java($level, 'scalar') . '.neg()'
         }, 'prefix:<+>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
