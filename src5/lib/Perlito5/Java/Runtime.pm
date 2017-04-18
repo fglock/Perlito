@@ -5810,11 +5810,11 @@ class PlInt extends PlObject {
     }
     public PlObject mul2(PlObject s) {
         long v = s.to_long();
-        long res = v * this.i;
-        if (res == 0 && this.i != 0 && v != 0) {
+        // 3037000000 is sqrt(Long.MAX_VALUE)
+        if (i > 3037000000L || i < -3037000000L || v > 3037000000L || v < -3037000000L) {
             return new PlDouble(this.to_double()).mul2(s);
         }
-        return new PlInt(res);
+        return new PlInt(v * i);
     }
 }
 class PlDouble extends PlObject {
