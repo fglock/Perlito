@@ -215,6 +215,18 @@ Parser
 - prototypes (signatures)
     http://perldoc.perl.org/perlsub.html#Prototypes
 
+    code that depends on prototypes being (re)defined later - this breaks when the program is pre-compiled,
+    because prototypes become stubs
+
+~~~perl
+    # t/test.pm
+
+    sub like   ($$@) { like_yn (0,@_) }; # 0 for -      # this breaks if like_yn() is predeclared
+    sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
+    
+    sub like_yn ($$$@) {
+~~~
+
     check that undeclared barewords give the right error
     *foo = sub () { ... }   # does prototype work here?
     check signature in sort()
