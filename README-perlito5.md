@@ -189,7 +189,7 @@ Parser
 - parse example in http://www.perlmonks.org/?node_id=663393
 
 ~~~sh
-    $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
+    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' whatever  / 25 ; # / ; die "this dies!"; '
         whatever(m! 25 ; # !);
         die('this dies!')
     $ perl -MO=Deparse -e ' whatever  / 25 ; # / ; die "this dies!"; '
@@ -638,7 +638,7 @@ Compile-time execution environment
 
 - work in progress: test BEGIN time serialization
 
-    $ perl perlito5.pl -I src5/lib --bootstrapping -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
+    $ perl perlito5.pl -I src5/lib -Cperl5 -e ' my ($x, $y); { $x }; my $z; @aaa = @X::xxx + $bbb; BEGIN { $aaa = [ 1 .. 5 ]; $bbb = { 5, $aaa }; $ccc = sub { my %x; 123 } } $/; my $s; BEGIN { $s = 3 } BEGIN { *ccc2 = \$ccc; } '
 
     TODO - identify aliases: [[[ BEGIN { *ccc2 = \$ccc; } ]]] dumps:
 
