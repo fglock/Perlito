@@ -1685,10 +1685,26 @@ class PlV {
 
     // code
     public static final PlLvalue cget(String name) {
-        return (PlLvalue)cvar.hget_lvalue(name);
+        PlLvalue code = (PlLvalue)cvar.hget_lvalue(name);
+        if ( code.is_coderef() ) {
+            return code;
+        }
+        int pos = name.lastIndexOf("::");
+        if (pos == -1) {
+            return code;
+        }
+        String namespace = name.substring(0, pos);
+        PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
+        if ( autoload.is_coderef() ) {
+            return autoload;
+        }
+        return code;
     }
     public static final PlLvalue cget_local(String name) {
         return (PlLvalue)cvar.hget_lvalue_local(name);
+    }
+    public static final PlLvalue cget_no_autoload(String name) {
+        return (PlLvalue)cvar.hget_lvalue(name);
     }
     public static final PlObject cset(String name, PlObject v) {
         return cvar.hset(name, v);
@@ -3014,12 +3030,12 @@ class PlClass {
             // fully qualified method name
             return PlV.cget(method);
         }
-        methodCode = PlV.cget(className + "::" + method);
+        methodCode = PlV.cget_no_autoload(className + "::" + method);
         if (methodCode.is_undef()) {
             // method not found
 
             // lookup in AUTOLOAD
-            methodCode = PlV.cget(className + "::AUTOLOAD");
+            methodCode = PlV.cget_no_autoload(className + "::AUTOLOAD");
             if (!methodCode.is_undef()) {
                 if (method.charAt(0) == '('     // "overload" methods
                  || method.equals("import")
@@ -3049,7 +3065,7 @@ class PlClass {
             }
 
             // lookup in UNIVERSAL
-            methodCode = PlV.cget("UNIVERSAL::" + method);
+            methodCode = PlV.cget_no_autoload("UNIVERSAL::" + method);
         }
         return methodCode;
     }
