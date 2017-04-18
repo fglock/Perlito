@@ -113,7 +113,7 @@ package Perlito5::AST::Apply;
             return $str;
         }
         if ($op eq '!~') {
-            return '!(' . $str . '.to_boolean())'
+            return 'new PlBool(!(' . $str . '.to_boolean()))'
         }
         die "Error: regex emitter";
     }

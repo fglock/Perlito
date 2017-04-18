@@ -20703,7 +20703,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $str
             }
             if ($op eq '!~') {;
-                return '!(' . $str . '.to_boolean())'
+                return 'new PlBool(!(' . $str . '.to_boolean()))'
             }
             die('Error: regex emitter')
         }
