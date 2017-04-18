@@ -380,14 +380,6 @@ package Perlito5::AST::Apply;
             return [ apply => '(', $code, $self->emit_perl5_args() ];
         }
 
-        if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {
-            # eval-string inside BEGIN block
-            # we add some extra information to the data, to make things more "dumpable"
-            return [ apply => '(', 'eval',
-                         [ apply => '(', 'Perlito5::CompileTime::Dumper::generate_eval_string',
-                            $self->emit_perl5_args() ]];
-        }
-
         if ($code eq 'readline') {
             return [ paren => '<', $self->emit_perl5_args() ];
         }
@@ -557,9 +549,6 @@ package Perlito5::AST::Sub;
             if defined $self->{sig};
 
         if (defined $self->{block}) {
-            # if ($Perlito5::PHASE eq 'BEGIN') {
-            #    $self = $self->emit_compile_time();
-            # }
             push @parts, Perlito5::Perl5::emit_perl5_block( $self->{'block'}{stmts} );
         }
 

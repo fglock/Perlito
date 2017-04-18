@@ -162,8 +162,23 @@ package Perlito5::AST::Apply;
             }
         }
 
-        # use the compile-time "require" command inside BEGIN blocks
+        if ($self->{code} eq 'eval') {
+            # eval-string inside BEGIN block
+            my $args = $self->{arguments};
+            return Perlito5::AST::Apply->new(
+                %$self,
+                arguments => [
+                    Perlito5::AST::Apply->new(
+                        code => 'generate_eval_string',
+                        namespace => 'Perlito5::CompileTime::Dumper',
+                        arguments => $args,
+                    ),
+                ],
+            );
+        }
+
         if ( $self->{code} eq 'require' && !$self->{namespace} ) {
+            # use the compile-time "require" command inside BEGIN blocks
             return Perlito5::AST::Apply->new(
                 %$self,
                 namespace => 'Perlito5::Grammar::Use',

@@ -8872,6 +8872,10 @@ use feature 'say';
                     return Perlito5::AST::Apply::->new('code' => 'compile_time_glob_set', 'namespace' => 'Perlito5::Grammar::Scope', 'arguments' => [Perlito5::AST::Buf::->new('buf' => ($arg->{'namespace'} || $arg->{'_namespace'}) . '::' . $arg->{'name'}), $self->{'arguments'}->[1]->emit_compile_time(), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME)])
                 }
             }
+            if ($self->{'code'} eq 'eval') {
+                my $args = $self->{'arguments'};
+                return Perlito5::AST::Apply::->new(%{$self}, 'arguments' => [Perlito5::AST::Apply::->new('code' => 'generate_eval_string', 'namespace' => 'Perlito5::CompileTime::Dumper', 'arguments' => $args)])
+            }
             if ($self->{'code'} eq 'require' && !$self->{'namespace'}) {;
                 return Perlito5::AST::Apply::->new(%{$self}, 'namespace' => 'Perlito5::Grammar::Use')
             }
@@ -18880,9 +18884,6 @@ CORE.printf = function(List__) {
                     return ['op' => 'prefix:<' . $code . '>', $self->{'special_arg'}->emit_perl5(), ['op' => 'list:<,>', $self->emit_perl5_args()]]
                 }
                 return ['apply' => '(', $code, $self->emit_perl5_args()]
-            }
-            if ($code eq 'eval' && $Perlito5::PHASE eq 'BEGIN') {;
-                return ['apply' => '(', 'eval', ['apply' => '(', 'Perlito5::CompileTime::Dumper::generate_eval_string', $self->emit_perl5_args()]]
             }
             if ($code eq 'readline') {;
                 return ['paren' => '<', $self->emit_perl5_args()]
