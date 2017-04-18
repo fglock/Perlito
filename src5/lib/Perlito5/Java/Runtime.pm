@@ -1696,6 +1696,7 @@ class PlV {
         String namespace = name.substring(0, pos);
         PlLvalue autoload = PlV.cget_no_autoload(namespace + "::AUTOLOAD");
         if ( autoload.is_coderef() ) {
+            PlV.sset(namespace + "::AUTOLOAD", new PlString(name));
             return autoload;
         }
         return code;
