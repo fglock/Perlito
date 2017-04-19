@@ -3,9 +3,9 @@
 BEGIN {
     chdir 't' if -d 't';
     @INC = qw(. ../lib);
+    require "test.pl";
 }
 
-require "test.pl";
 plan( tests => 39 );
 
 $x = 10000;
