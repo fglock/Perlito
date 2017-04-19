@@ -13186,6 +13186,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
             if (a == Infinity || b == Infinity) {
                 p5pkg.CORE.die(["Range iterator outside integer range"]);
             }
+            a = CORE.int([a]);
             while (a <= b) {
                 tmp.push(a);
                 a++;
@@ -13194,23 +13195,42 @@ var p5range = function(a, b, p5want, id, three_dots) {
         else {
             a = p5str(a);
             b = p5str(b);
-            var c = a.substr(0, 1);
-            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {
+            if (a == ' . chr(39) . chr(39) . ') {
+                return [a];
+            }
+            var c1 = a.substr(0, 1);
+            if ( c1 == ' . chr(39) . '+' . chr(39) . ' ) {
                 if (a == "+") {
                     return [a]
                 }
                 a = a.substr(1)
             }
-            else if ( c == ' . chr(39) . '-' . chr(39) . ' ) {
+            else if ( c1 == ' . chr(39) . '-' . chr(39) . ' ) {
                 if (a == "-") {
                     return [a]
                 }
                 return p5range(p5num(a), b, p5want, id, three_dots)
             }
-            c = b.substr(0, 1);
-            if ( c == ' . chr(39) . '+' . chr(39) . ' ) {
+            var c2 = b.substr(0, 1);
+            if ( c2 == ' . chr(39) . '+' . chr(39) . ' ) {
                 b = b.substr(1)
             }
+
+            if (c1 >= "0" && c1 <= "9" && c2 >= "0" && c2 <= "9") {
+                // both sides look like number
+                return p5range(p5num(a), p5num(b), p5want, id, three_dots)
+            }
+
+            // If the initial value specified isn' . chr(39) . 't part of a magical increment sequence
+            // (that is, a non-empty string matching /^[a-zA-Z]*[0-9]*\\z/ ),
+            // only the initial value will be returned.
+            if (!a.match(/^[a-zA-Z]*[0-9]*$/)) {
+                if (a.length > b.length) {
+                    return []
+                }
+                return [a]
+            }
+
             while (  (a.length < b.length)
                   || (a.length == b.length && a <= b) ) {
                 tmp.push(a);
