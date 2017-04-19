@@ -454,15 +454,6 @@ EOT
         int count = plCount.to_int();
         String arg = plArg.toString();
 
-        if (count == 0) {
-            // rtrim
-            int i = arg.length()-1;
-            while (i >= 0 && Character.isWhitespace(arg.charAt(i))) {
-                i--;
-            }
-            arg = arg.substring(0,i+1);
-        }
-
         if (!plReg.is_regex()) {
             String regs = plReg.toString();
             if (regs.equals(" ")) {
@@ -486,6 +477,12 @@ EOT
         Pattern pat = ((PlRegex)plReg).p;
         for (String s : pat.split(arg, count)) {
             res.push(s);
+        }
+        if (count == 0) {
+            // remove trailing empty results
+            while (res.to_int() > 0 && res.aget(-1).toString().equals("")) {
+                res.pop();
+            }
         }
         return res;
     }
