@@ -4823,26 +4823,28 @@ use feature 'say';
                         !$m && Perlito5::Compiler::error('not a valid variable name: ' . join(${'"'}, @{$list}));
                         $MATCH->{'capture'} = $m->{'capture'}
                     }
-                    elsif ($use_decl eq 'use' && $full_ident eq 'constant' && $list) {
+                    elsif ($use_decl eq 'use' && $full_ident eq 'constant') {
                         my @ast;
-                        my $name = shift(@{$list});
-                        if (ref($name) eq 'HASH') {;
-                            for my $key (sort {;
-                                $a cmp $b
-                            } keys(%{$name})) {
-                                my $code = 'sub ' . $key . ' () { ' . Perlito5::Dumper::_dumper($name->{$key}) . ' }';
+                        if ($list) {
+                            my $name = shift(@{$list});
+                            if (ref($name) eq 'HASH') {;
+                                for my $key (sort {;
+                                    $a cmp $b
+                                } keys(%{$name})) {
+                                    my $code = 'sub ' . $key . ' () { ' . Perlito5::Dumper::_dumper($name->{$key}) . ' }';
+                                    my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                                    !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
+                                    push(@ast, $m->{'capture'})
+                                }
+                            }
+                            else {
+                                my $code = 'sub ' . $name . ' () { (' . join(', ', map {;
+                                    Perlito5::Dumper::_dumper($_)
+                                } @{$list}) . ') }';
                                 my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
                                 !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
                                 push(@ast, $m->{'capture'})
                             }
-                        }
-                        else {
-                            my $code = 'sub ' . $name . ' () { (' . join(', ', map {;
-                                Perlito5::Dumper::_dumper($_)
-                            } @{$list}) . ') }';
-                            my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
-                            !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
-                            push(@ast, $m->{'capture'})
                         }
                         $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => \@ast)
                     }
