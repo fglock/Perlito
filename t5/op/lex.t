@@ -2,7 +2,11 @@
 use strict;
 use warnings;
 
-require './test.pl';
+BEGIN {
+    chdir 't' if -d 't';
+    @INC = '../lib';
+    require './test.pl';
+}
 
 plan(tests => 4);
 
