@@ -151,6 +151,16 @@ sub dump_to_ast {
             ],
         );
     }
+    elsif ($ref eq 'Regexp') {
+        my $regex = "$ref";   #  (?: ... )
+        return Perlito5::AST::Apply->new(
+            code => 'p5:qr',
+            arguments => [
+                Perlito5::AST::Buf->new( buf => $regex ), 
+                Perlito5::AST::Buf->new( buf => "" ), 
+            ],
+        );
+    }
 
     # TODO find out what kind of reference this is (ARRAY, HASH, ...)
     # local $@;

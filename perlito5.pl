@@ -9081,6 +9081,10 @@ use feature 'say';
             }
             return Perlito5::AST::Apply::->new('code' => 'do', 'arguments' => [Perlito5::AST::Block::->new('stmts' => [@vars, $source])])
         }
+        elsif ($ref eq 'Regexp') {
+            my $regex = $ref;
+            return Perlito5::AST::Apply::->new('code' => 'p5:qr', 'arguments' => [Perlito5::AST::Buf::->new('buf' => $regex), Perlito5::AST::Buf::->new('buf' => '')])
+        }
         my @out;
         for my $i (sort {;
             $a cmp $b

@@ -377,8 +377,8 @@ sub within ($$$@) {
 
 # Note: this isn't quite as fancy as Test::More::like().
 
-sub like   ($$@) { like_yn (0,@_) }; # 0 for -
-sub unlike ($$@) { like_yn (1,@_) }; # 1 for un-
+sub like   ($$@) { my ($x, $y) = (shift,shift); like_yn (0,$x,$y,@_) }; # 0 for -
+sub unlike ($$@) { my ($x, $y) = (shift,shift); like_yn (1,$x,$y,@_) }; # 1 for un-
 
 sub like_yn ($$$@) {
     my ($flip, undef, $expected, $name, @mess) = @_;
