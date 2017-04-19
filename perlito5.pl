@@ -21910,6 +21910,12 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 if (($c ge 'a' && $c le 'z') || ($c ge 'A' && $c le 'Z') || ($c ge 0 && $c le 9) || exists($safe_char{$c})) {;
                     $tmp = $tmp . $c
                 }
+                elsif (ord($c) > 65535) {
+                    $tmp ne '' && push(@out, '"' . $tmp . '"');
+                    push(@out, 'new String(Character.toChars(' . ord($c) . '))');
+                    $has_char = 1;
+                    $tmp = ''
+                }
                 else {
                     $tmp ne '' && push(@out, '"' . $tmp . '"');
                     push(@out, '(char)' . ord($c) . '');

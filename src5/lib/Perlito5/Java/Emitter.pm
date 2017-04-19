@@ -347,6 +347,16 @@ package Perlito5::Java;
             {
                 $tmp = $tmp . $c;
             }
+            elsif (ord($c) > 65535) {
+
+                # this is necessary to support characters with code > 65535
+                # new String(Character.toChars((int)(1114109L)))
+
+                push @out, "\"$tmp\"" if $tmp ne '';
+                push @out, "new String(Character.toChars(" . ord($c) . "))";
+                $has_char = 1;
+                $tmp = '';
+            }
             else {
                 push @out, "\"$tmp\"" if $tmp ne '';
                 push @out, "(char)" . ord($c) . "";

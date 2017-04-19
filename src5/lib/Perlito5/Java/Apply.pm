@@ -259,6 +259,10 @@ package Perlito5::AST::Apply;
         },
         'chr' => sub {
             my ($self, $level, $wantarray) = @_;
+
+            # this is necessary to support characters with code > 65535
+            # new String(Character.toChars((int)(1114109L)))
+
               'new PlString(new String(Character.toChars('
             . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.to_int())))'
         },
