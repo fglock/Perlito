@@ -475,14 +475,9 @@ EOT
         }
 
         Pattern pat = ((PlRegex)plReg).p;
+        // count == 0 removes trailing empty results
         for (String s : pat.split(arg, count)) {
             res.push(s);
-        }
-        if (count == 0) {
-            // remove trailing empty results
-            while (res.to_int() > 0 && res.aget(-1).toString().equals("")) {
-                res.pop();
-            }
         }
         return res;
     }
