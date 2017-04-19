@@ -357,10 +357,19 @@ package Perlito5::AST::Apply;
             my $q = emit_perl5_choose_regex_quote(
                         $replace0, 
                         $replace1,
+                        $self->{arguments}->[2]->{buf},
                     );
             return 'tr' . $q . $replace0                        # emit_perl5() 
                  .        $q . $replace1                        # emit_perl5()
-                 .        $q;
+                 .        $q . $self->{arguments}->[2]->{buf};
+        }
+        if ($self->{code} eq 'p5:qr') {
+            my $replace0 = emit_perl5_regex_expression($self->{arguments}->[0]);
+            my $q = emit_perl5_choose_regex_quote(
+                        $replace0,
+                        $self->{arguments}->[1]->{buf}, 
+                    );
+            return 'qr' . $q . $replace0 . $q . $self->{arguments}->[1]->{buf};
         }
 
         if ($self->{code} eq 'package')    { return [ stmt => 'package', [ bareword => $self->{namespace} ] ] }
