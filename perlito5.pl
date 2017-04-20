@@ -19323,6 +19323,8 @@ CORE.printf = function(List__) {
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
+        $code = '#line ' . $Perlito5::LINE_NUMBER . '
+' . $code;
         return eval($code)
     }
     sub Perlito5::Perl5::Runtime::emit_perl5 {;
