@@ -980,6 +980,32 @@ var p5str_inc = function(s) {
     return p5str_inc(s.substr(0, s.length-1)) + c.substr(c.length-1, 1);
 };
 
+var p5looks_like_number = function(a) {
+    if (typeof a === "number") {
+        return 1;
+    }
+    a = a.trim();
+    var s1 = a.substr(0, 3).toUpperCase();
+    if ( s1 == "NAN" ) { return 1 };
+    if ( s1 == "INF" ) { return 1 };
+    s1 = a.substr(0, 4).toUpperCase();
+    if ( s1 == "-NAN" ) { return 1 };
+    if ( s1 == "-INF" ) { return 1 };
+
+    if (a.match(/^[0-9]+$/)) {          // 999
+        return 1;
+    }
+    if (a.match(/^[0-9][_0-9]+$/)) {    // 999_999
+        return 1;
+    }
+
+    // TODO - floating point, scientific notation
+    // s1 = parseFloat(a);
+    // if ( isNaN(s1) ) { return 0 };
+    // return 1;
+    return 0;
+}
+
 var p5range_state = {};
 var p5range = function(a, b, p5want, id, three_dots) {
     if (p5want) {
@@ -1021,7 +1047,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
                 b = b.substr(1)
             }
 
-            if (c1 >= "0" && c1 <= "9" && c2 >= "0" && c2 <= "9") {
+            if (p5looks_like_number(c1) && p5looks_like_number(c2)) {
                 // both sides look like number
                 return p5range(p5num(a), p5num(b), p5want, id, three_dots)
             }
