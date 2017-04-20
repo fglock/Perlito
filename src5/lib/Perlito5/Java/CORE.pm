@@ -524,17 +524,18 @@ EOT
         String cap;
         Matcher matcher = pat.matcher(arg);
         while (matcher.find(pos)) {
-            int match_start = matcher.start();
-            if (match_start == pos) {
+            if (matcher.end() == pos) {
                 // pointer didn't move
                 cap = arg.substring(pos, pos+1);
                 res.push(cap);
                 pos++;
+                // PlCORE.say("match: pointer didn't move [" + cap + "] next pos " + pos);
             }
             else {
-                cap = arg.substring(pos, match_start);
+                cap = arg.substring(pos, matcher.start());
                 res.push(cap);
                 pos = matcher.end();
+                // PlCORE.say("match: match [" + cap + "] next pos " + pos);
             }
             count++;
             if ( (limit > 0 && count >= limit) || pos >= arg.length()) {
