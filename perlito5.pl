@@ -21181,7 +21181,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         }, 'scalar' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             if (@{$self->{'arguments'}} > 1) {;
-                return 'PerlOp.context(' . join(', ', Perlito5::Java::to_context($wantarray), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
+                return 'PerlOp.context(' . join(', ', Perlito5::Java::to_context('scalar'), map($_->emit_java($level, $wantarray), @{$self->{'arguments'}})) . ')'
             }
             Perlito5::Java::to_scalar($self->{'arguments'}, $level + 1)
         }, 'ternary:<? :>' => sub {
