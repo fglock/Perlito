@@ -361,6 +361,7 @@ sub require {
     # my $result = do $filename;
     my $source = do_file($filename);
     # print STDERR "require $filename [[ $source ]]\n";
+    local $Perlito5::FILE_NAME = $filename;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
     # use Data::Dumper;

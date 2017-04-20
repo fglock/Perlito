@@ -37,6 +37,7 @@ use feature 'say';
     sub warnings::unimport {;
         $Perlito5::WARNINGS = 0
     }
+    sub warnings::register_categories {}
     1
 }
 {
@@ -4973,6 +4974,7 @@ use feature 'say';
         }
         filename_lookup($filename) eq 'done' && return;
         my $source = do_file($filename);
+        local $Perlito5::FILE_NAME = $filename;
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
@@ -19333,7 +19335,7 @@ CORE.printf = function(List__) {
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        $code = '#line ' . $Perlito5::LINE_NUMBER . '
+        $code = '#line ' . $Perlito5::LINE_NUMBER . ' "' . $Perlito5::FILE_NAME . '"
 ' . $code;
         return eval($code)
     }

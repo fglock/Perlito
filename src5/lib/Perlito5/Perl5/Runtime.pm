@@ -12,7 +12,7 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    $code = "#line $Perlito5::LINE_NUMBER\n" . $code;
+    $code = "#line $Perlito5::LINE_NUMBER \"$Perlito5::FILE_NAME\"\n" . $code;
     return eval($code);
 }
 
