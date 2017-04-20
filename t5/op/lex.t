@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 BEGIN {
+    no strict;
     chdir 't' if -d 't';
     @INC = '../lib';
     require './test.pl';
