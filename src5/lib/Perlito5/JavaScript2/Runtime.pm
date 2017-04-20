@@ -986,23 +986,15 @@ var p5looks_like_number = function(a) {
     }
     a = a.trim();
     var s1 = a.toUpperCase();
-    if ( s1 == "NAN" ) { return 1 };
-    if ( s1 == "INF" ) { return 1 };
-    s1 = a.toUpperCase();
-    if ( s1 == "-NAN" ) { return 1 };
-    if ( s1 == "-INF" ) { return 1 };
-
-    if (a.match(/^[\+\-]?[0-9]+\.?$/)) {          // 999 999.
+    if ( s1 == "NAN" || s1 == "INF" || s1 == "-NAN" || s1 == "-INF" ) {
+        return 1
+    };
+    if (s1.match(/^[\+\-]?[0-9]+\.?(?:E[-+]?[0-9]+)?$/)) {          // 999 999.
         return 1;
     }
-    if (a.match(/^[\+\-]?[0-9]*\.[0-9]+$/)) {    // 999.999 .999
+    if (s1.match(/^[\+\-]?[0-9]*\.[0-9]+(?:E[-+]?[0-9]+)?$/)) {    // 999.999 .999
         return 1;
     }
-
-    // TODO - scientific notation
-    // s1 = parseFloat(a);
-    // if ( isNaN(s1) ) { return 0 };
-    // return 1;
     return 0;
 }
 
