@@ -11,6 +11,7 @@ my %Perlito_internal_module = (
     feature        => 'Perlito5X::feature',
     utf8           => 'Perlito5X::utf8',
     bytes          => 'Perlito5X::bytes',
+    re             => 'Perlito5X::re',
     encoding       => 'Perlito5X::encoding',
     Carp           => 'Perlito5X::Carp',
     Config         => 'Perlito5X::Config',
@@ -362,6 +363,7 @@ sub require {
     my $source = do_file($filename);
     # print STDERR "require $filename [[ $source ]]\n";
     local $Perlito5::FILE_NAME = $filename;
+    local $Perlito5::STRICT = 0;
     my $m = Perlito5::Grammar::exp_stmts($source, 0);
     my $ast = Perlito5::AST::Block->new( stmts => Perlito5::Match::flat($m) );
     # use Data::Dumper;

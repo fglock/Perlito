@@ -1302,6 +1302,9 @@ package Perlito5::AST::Apply;
                 }
             }
             if ($self->{namespace} eq 'Perlito5') {
+                # if ($self->{code} eq 'nop') {
+                #     return "";
+                # }
                 if ($code eq 'eval_ast') {
                     $self->{namespace} = 'Perlito5::JavaScript2::Runtime';
                 }

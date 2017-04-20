@@ -4537,7 +4537,7 @@ use feature 'say';
     undef();
     undef();
     undef();
-    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Config' => 'Perlito5X::Config', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL', 'JSON' => 'Perlito5X::JSON');
+    my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 're' => 'Perlito5X::re', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Config' => 'Perlito5X::Config', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL', 'JSON' => 'Perlito5X::JSON');
     sub Perlito5::Grammar::Use::register_internal_module {
         (my($module), my($real_name)) = @_;
         $Perlito_internal_module{$module} = $real_name
@@ -4975,6 +4975,7 @@ use feature 'say';
         filename_lookup($filename) eq 'done' && return;
         my $source = do_file($filename);
         local $Perlito5::FILE_NAME = $filename;
+        local $Perlito5::STRICT = 0;
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
         my $ast = Perlito5::AST::Block::->new('stmts' => Perlito5::Match::flat($m));
         my $result = Perlito5::Grammar::Block::eval_begin_block($ast);
@@ -5021,7 +5022,17 @@ use feature 'say';
     package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::new {
         my $class = shift;
-        bless({@_, }, $class)
+        my %args = @_;
+        if ($args{'body'}) {
+            my @body;
+            for my $stmt (@{$args{'body'}}) {
+                !defined($stmt) && next;
+                ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'namespace'} eq 'Perlito5' && $stmt->{'code'} eq 'nop' && next;
+                push(@body, $stmt)
+            }
+            $args{'body'} = \@body
+        }
+        bless(\%args, $class)
     }
     sub Perlito5::AST::CompUnit::name {;
         $_[0]->{'name'}
@@ -5056,7 +5067,17 @@ use feature 'say';
     package Perlito5::AST::Block;
     sub Perlito5::AST::Block::new {
         my $class = shift;
-        bless({@_, }, $class)
+        my %args = @_;
+        if ($args{'stmts'}) {
+            my @stmts;
+            for my $stmt (@{$args{'stmts'}}) {
+                !defined($stmt) && next;
+                ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'namespace'} eq 'Perlito5' && $stmt->{'code'} eq 'nop' && next;
+                push(@stmts, $stmt)
+            }
+            $args{'stmts'} = \@stmts
+        }
+        bless(\%args, $class)
     }
     sub Perlito5::AST::Block::sig {;
         $_[0]->{'sig'}
@@ -5941,7 +5962,7 @@ use feature 'say';
         return $m
     }
     sub Perlito5::Grammar::Block::ast_undef {;
-        Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+        Perlito5::AST::Apply::->new('code' => 'nop', 'namespace' => 'Perlito5', 'arguments' => [])
     }
     sub Perlito5::Grammar::Block::special_named_block {
         my $str = $_[0];

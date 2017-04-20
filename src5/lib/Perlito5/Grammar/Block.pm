@@ -155,8 +155,8 @@ sub anon_block {
 
 sub ast_undef {
     Perlito5::AST::Apply->new(
-        code => 'undef',
-        namespace => '',
+        code => 'nop',
+        namespace => 'Perlito5',
         arguments => []
     );
 }

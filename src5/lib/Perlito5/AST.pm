@@ -2,7 +2,20 @@ use v5;
 
 
 package Perlito5::AST::CompUnit;
-sub new { my $class = shift; bless {@_}, $class }
+sub new {
+    my $class = shift;
+    my %args = @_;
+    if ($args{body}) {
+        my @body;
+        for my $stmt ( @{ $args{body} } ) {
+            next if !defined($stmt);
+            next if ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{namespace} eq 'Perlito5' && $stmt->{code} eq 'nop';
+            push @body, $stmt;
+        }
+        $args{body} = \@body;
+    }
+    bless \%args, $class;
+}
 sub name { $_[0]->{name} }
 sub body { $_[0]->{body} }
 
@@ -27,7 +40,20 @@ sub buf { $_[0]->{buf} }
 
 
 package Perlito5::AST::Block;
-sub new { my $class = shift; bless {@_}, $class }
+sub new {
+    my $class = shift;
+    my %args = @_;
+    if ($args{stmts}) {
+        my @stmts;
+        for my $stmt ( @{ $args{stmts} } ) {
+            next if !defined($stmt);
+            next if ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{namespace} eq 'Perlito5' && $stmt->{code} eq 'nop';
+            push @stmts, $stmt;
+        }
+        $args{stmts} = \@stmts;
+    }
+    bless \%args, $class;
+}
 sub sig { $_[0]->{sig} }
 sub stmts { $_[0]->{stmts} }
 
