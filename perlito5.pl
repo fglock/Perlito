@@ -23903,15 +23903,14 @@ class PlCORE {
         //      if (pattern.substr(0, 1) == "^" || pattern.substr(-1,1) == "$") {
         //          flags = flags + "m";
         //      }
-        //      pattern = new RegExp(pattern, flags);
         // --- /TODO ---
 
 
         int pos = 0;
-        int count = 0;
+        int count = 1;
         String cap;
         Matcher matcher = pat.matcher(arg);
-        while (matcher.find(pos)) {
+        while (pos < arg.length() && !(limit > 0 && count >= limit) && matcher.find(pos)) {
             if (matcher.end() == pos) {
                 // pointer didn' . chr(39) . 't move
                 cap = arg.substring(pos, pos+1);
@@ -23926,9 +23925,6 @@ class PlCORE {
                 // PlCORE.say("match: match [" + cap + "] next pos " + pos);
             }
             count++;
-            if ( (limit > 0 && count >= limit) || pos >= arg.length()) {
-                return res;
-            }
             for (int i = 1; i <= matcher.groupCount(); i++) {
                 cap = matcher.group(i);
                 if (cap != null) {
@@ -23936,7 +23932,7 @@ class PlCORE {
                 }
             }
         }
-        if ( (limit > 0 && count >= limit) || pos >= arg.length()) {
+        if ( pos >= arg.length()) {
             return res;
         }
         cap = arg.substring(pos);
