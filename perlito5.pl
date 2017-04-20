@@ -13187,10 +13187,10 @@ var p5looks_like_number = function(a) {
     if ( s1 == "-NAN" ) { return 1 };
     if ( s1 == "-INF" ) { return 1 };
 
-    if (a.match(/^[0-9]+\\.?$/)) {          // 999 999.
+    if (a.match(/^[\\+\\-]?[0-9]+\\.?$/)) {          // 999 999.
         return 1;
     }
-    if (a.match(/^[0-9]*\\.[0-9]+$/)) {    // 999.999 .999
+    if (a.match(/^[\\+\\-]?[0-9]*\\.[0-9]+$/)) {    // 999.999 .999
         return 1;
     }
 
@@ -13209,7 +13209,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
         if (typeof a === "number" || typeof b === "number") {
             a = p5num(a);
             b = p5num(b);
-            if (a == Infinity || b == Infinity) {
+            if (isNaN(a) || isNaN(b) || a == Infinity || b == Infinity) {
                 p5pkg.CORE.die(["Range iterator outside integer range"]);
             }
             a = CORE.int([a]);
@@ -13224,23 +13224,24 @@ var p5range = function(a, b, p5want, id, three_dots) {
             if (a == ' . chr(39) . chr(39) . ') {
                 return [a];
             }
-            var c1 = a.substr(0, 1);
-            if ( c1 == ' . chr(39) . '+' . chr(39) . ' ) {
-                if (a == "+") {
-                    return [a]
-                }
-                a = a.substr(1)
-            }
-            else if ( c1 == ' . chr(39) . '-' . chr(39) . ' ) {
-                if (a == "-") {
-                    return [a]
-                }
-                return p5range(p5num(a), b, p5want, id, three_dots)
-            }
-            var c2 = b.substr(0, 1);
-            if ( c2 == ' . chr(39) . '+' . chr(39) . ' ) {
-                b = b.substr(1)
-            }
+
+            // var c1 = a.substr(0, 1);
+            // if ( c1 == ' . chr(39) . '+' . chr(39) . ' ) {
+            //     if (a == "+") {
+            //         return [a]
+            //     }
+            //     a = a.substr(1)
+            // }
+            // else if ( c1 == ' . chr(39) . '-' . chr(39) . ' ) {
+            //     if (a == "-") {
+            //         return [a]
+            //     }
+            //     return p5range(p5num(a), b, p5want, id, three_dots)
+            // }
+            // var c2 = b.substr(0, 1);
+            // if ( c2 == ' . chr(39) . '+' . chr(39) . ' ) {
+            //     b = b.substr(1)
+            // }
 
             if (p5looks_like_number(a) && p5looks_like_number(b)) {
                 // both sides look like number
