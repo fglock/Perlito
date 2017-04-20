@@ -13180,21 +13180,21 @@ var p5looks_like_number = function(a) {
         return 1;
     }
     a = a.trim();
-    var s1 = a.substr(0, 3).toUpperCase();
+    var s1 = a.toUpperCase();
     if ( s1 == "NAN" ) { return 1 };
     if ( s1 == "INF" ) { return 1 };
-    s1 = a.substr(0, 4).toUpperCase();
+    s1 = a.toUpperCase();
     if ( s1 == "-NAN" ) { return 1 };
     if ( s1 == "-INF" ) { return 1 };
 
-    if (a.match(/^[0-9]+$/)) {          // 999
+    if (a.match(/^[0-9]+\\.?$/)) {          // 999 999.
         return 1;
     }
-    if (a.match(/^[0-9][_0-9]+$/)) {    // 999_999
+    if (a.match(/^[0-9]*\\.[0-9]+$/)) {    // 999.999 .999
         return 1;
     }
 
-    // TODO - floating point, scientific notation
+    // TODO - scientific notation
     // s1 = parseFloat(a);
     // if ( isNaN(s1) ) { return 0 };
     // return 1;
@@ -13242,7 +13242,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
                 b = b.substr(1)
             }
 
-            if (p5looks_like_number(c1) && p5looks_like_number(c2)) {
+            if (p5looks_like_number(a) && p5looks_like_number(b)) {
                 // both sides look like number
                 return p5range(p5num(a), p5num(b), p5want, id, three_dots)
             }
