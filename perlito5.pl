@@ -23834,13 +23834,35 @@ class PlCORE {
         return res.aget(-1);
     }
     public static final PlObject split(int want, PlObject plReg, PlObject plArg, PlObject plCount) {
+        if (want == PlCx.SCALAR) {
+            return PlCORE.split(PlCx.LIST, plReg, plArg, plCount).length_of_array();
+        }
+        int limit = plCount.to_int();
         PlArray res = new PlArray();
+        if (limit == 0) {
+            // strip trailing empty strings and undef
+            res = (PlArray)PlCORE.split(PlCx.LIST, plReg, plArg, PlCx.MIN1);
+            while (res.to_int() > 0) {
+                PlObject item = res.aget(-1);
+                if (item.is_undef() || item.toString().length() == 0) {
+                    res.pop();
+                }
+                else {
+                    return res;
+                }
+            }
+            return res;
+        }
+        String arg = plArg.toString();
+        if (arg.length() == 0) {
+            return res;
+        }
+        // make sure pattern is a RegExp
         if (plReg.is_lvalue()) {
             plReg = plReg.get();
         }
 
-        int count = plCount.to_int();
-        String arg = plArg.toString();
+        // --- TODO ---
 
         if (!plReg.is_regex()) {
             String regs = plReg.toString();
@@ -23863,10 +23885,61 @@ class PlCORE {
         }
 
         Pattern pat = ((PlRegex)plReg).p;
-        // count == 0 removes trailing empty results
-        for (String s : pat.split(arg, count)) {
-            res.push(s);
+
+        //      // make sure pattern is a RegExp
+        //      if (typeof pattern === "object" && (pattern instanceof RegExp)) {
+        //          pattern = pattern.source;
+        //      }
+        //      else {
+        //          pattern = p5str(pattern);
+        //          if (pattern == " ") {
+        //              // single space string is special
+        //              pattern = "(?: |\\t|\\n)+";
+        //              s = s.replace(/^(?: |\\t|\\n)+/, "");
+        //          }
+        //      }
+        //      // add "g", "m" modifiers
+        //      var flags = "g";
+        //      if (pattern.substr(0, 1) == "^" || pattern.substr(-1,1) == "$") {
+        //          flags = flags + "m";
+        //      }
+        //      pattern = new RegExp(pattern, flags);
+        // --- /TODO ---
+
+
+        int pos = 0;
+        int count = 0;
+        String cap;
+        Matcher matcher = pat.matcher(arg);
+        while (matcher.find(pos)) {
+            int match_start = matcher.start();
+            if (match_start == pos) {
+                // pointer didn' . chr(39) . 't move
+                cap = arg.substring(pos, pos+1);
+                res.push(cap);
+                pos++;
+            }
+            else {
+                cap = arg.substring(pos, match_start);
+                res.push(cap);
+                pos = matcher.end();
+            }
+            count++;
+            if ( (limit > 0 && count >= limit) || pos >= arg.length()) {
+                return res;
+            }
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                cap = matcher.group(i);
+                if (cap != null) {
+                    res.push(cap);
+                }
+            }
         }
+        if ( (limit > 0 && count >= limit) || pos >= arg.length()) {
+            return res;
+        }
+        cap = arg.substring(pos);
+        res.push(cap);
         return res;
     }
     public static final PlObject splice(int want, PlArray List__, PlObject offset) {
