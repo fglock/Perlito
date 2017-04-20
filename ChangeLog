@@ -13,6 +13,9 @@
 -- "Use" is no longer an AST node, because all "use" statements
     are executed at compile-time
 
+- JavaScript:
+-- fix "range" special cases
+
 - Java:
 -- "Encode.pm" encode_utf8, decode_utf8
 -- "Scalar::Util", "List::Util" ports.

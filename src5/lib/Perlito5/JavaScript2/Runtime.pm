@@ -1030,25 +1030,7 @@ var p5range = function(a, b, p5want, id, three_dots) {
                 return [a];
             }
 
-            // var c1 = a.substr(0, 1);
-            // if ( c1 == '+' ) {
-            //     if (a == "+") {
-            //         return [a]
-            //     }
-            //     a = a.substr(1)
-            // }
-            // else if ( c1 == '-' ) {
-            //     if (a == "-") {
-            //         return [a]
-            //     }
-            //     return p5range(p5num(a), b, p5want, id, three_dots)
-            // }
-            // var c2 = b.substr(0, 1);
-            // if ( c2 == '+' ) {
-            //     b = b.substr(1)
-            // }
-
-            if (p5looks_like_number(a) && p5looks_like_number(b)) {
+            if (a.substr(0, 1) != '0' && p5looks_like_number(a) && p5looks_like_number(b)) {
                 // both sides look like number
                 return p5range(p5num(a), p5num(b), p5want, id, three_dots)
             }

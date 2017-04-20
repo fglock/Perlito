@@ -269,6 +269,7 @@ $test++;
 $last = "???";
 $count = 0;
 local $@ = "";
+print qq{# "1" .. "Inf" \n};
 eval {
     for ( "1" .. "Inf" ) {
         # print "# '$_'\n";
@@ -291,6 +292,7 @@ $test++;
 $last = "???";
 $count = 0;
 local $@ = "";
+print qq{# "0.0" .. "Inf" \n};
 eval {
     for ( "0.0" .. "Inf" ) {
         # print "# '$_'\n";
@@ -313,6 +315,7 @@ $test++;
 $last = "???";
 $count = 0;
 local $@ = "";
+print qq{# "0.1" .. "Inf" \n};
 eval {
     for ( "0.1" .. "Inf" ) {
         # print "# '$_'\n";
@@ -335,6 +338,7 @@ $test++;
 $last = "???";
 $count = 0;
 local $@ = "";
+print qq{# Ine" .. "Inf" \n};
 eval {
     for ( "Ine" .. "Inf" ) {
         # print "# '$_'\n";
@@ -357,6 +361,7 @@ $test++;
 $last = "???";
 $count = 0;
 local $@ = "";
+print qq{# " 0" .. "Inf" \n};
 eval {
     for ( " 0" .. "Inf" ) {
         # print "# '$_'\n";
