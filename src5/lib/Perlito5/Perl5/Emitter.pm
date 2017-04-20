@@ -240,7 +240,13 @@ package Perlito5::AST::Apply;
         if (! grep { $_ =~ /%/ } @_) {
             return "%";
         }
-        return "_";
+        if (! grep { $_ =~ /:/ } @_) {
+            return ":";
+        }
+        if (! grep { $_ =~ /;/ } @_) {
+            return ";";
+        }
+        return "^";
     }
     sub emit_perl5_regex_expression {
         my $ast = $_[0];

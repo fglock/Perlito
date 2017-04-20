@@ -8,5 +8,9 @@ sub unimport {
     $Perlito5::WARNINGS = 0;
 }
 
+sub register_categories {
+    # TODO
+}
+
 1;
 

@@ -18825,7 +18825,17 @@ CORE.printf = function(List__) {
             } @_)) {;
                 return '%'
             }
-            return '_'
+            if (!(grep {;
+                $_ =~ m/:/
+            } @_)) {;
+                return ':'
+            }
+            if (!(grep {;
+                $_ =~ m/;/
+            } @_)) {;
+                return ';'
+            }
+            return '^'
         }
         sub Perlito5::AST::Apply::emit_perl5_regex_expression {
             my $ast = $_[0];
