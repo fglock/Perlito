@@ -4692,7 +4692,7 @@ use feature 'say';
                 }) && (do {
                     my $version = $MATCH->{'version_string'}->{'capture'}->{'buf'};
                     Perlito5::test_perl_version($version);
-                    $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => []);
+                    $MATCH->{'capture'} = Perlito5::Grammar::Block::ast_nop();
                     1
                 }))
             }) || (do {
@@ -4850,7 +4850,7 @@ use feature 'say';
                         $MATCH->{'capture'} = Perlito5::AST::Block::->new('stmts' => \@ast)
                     }
                     elsif ($Perlito5::EMIT_USE) {;
-                        $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+                        $MATCH->{'capture'} = Perlito5::Grammar::Block::ast_nop()
                     }
                     else {;
                         $MATCH->{'capture'} = parse_time_eval({'mod' => $full_ident, 'code' => $use_decl, 'arguments' => $list})
@@ -4903,7 +4903,7 @@ use feature 'say';
         else {;
             bootstrapping_use($ast)
         }
-        return Perlito5::AST::Apply::->new('code' => 'undef', 'namespace' => '', 'arguments' => [])
+        return Perlito5::Grammar::Block::ast_nop()
     }
     sub Perlito5::Grammar::Use::emit_time_eval {
         my $ast = shift;
@@ -5961,7 +5961,7 @@ use feature 'say';
         }
         return $m
     }
-    sub Perlito5::Grammar::Block::ast_undef {;
+    sub Perlito5::Grammar::Block::ast_nop {;
         Perlito5::AST::Apply::->new('code' => 'nop', 'namespace' => 'Perlito5', 'arguments' => [])
     }
     sub Perlito5::Grammar::Block::special_named_block {
@@ -5985,24 +5985,24 @@ use feature 'say';
         $compile_block->{'name'} = $block_name;
         if ($block_name eq 'INIT') {
             push(@Perlito5::INIT_BLOCK, eval_end_block($block, 'INIT'));
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         elsif ($block_name eq 'END') {
             unshift(@Perlito5::END_BLOCK, eval_end_block($block, 'END'));
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         elsif ($block_name eq 'CHECK') {
             unshift(@Perlito5::CHECK_BLOCK, eval_end_block($block, 'CHECK'));
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         elsif ($block_name eq 'UNITCHECK') {
             unshift(@Perlito5::UNITCHECK_BLOCK, eval_end_block($block, 'UNITCHECK'));
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         elsif ($block_name eq 'BEGIN') {
             local $Perlito5::PHASE = 'BEGIN';
             eval_begin_block($block);
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
             my $sub = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => $block_name, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef);
@@ -6010,7 +6010,7 @@ use feature 'say';
             Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');
             my $full_name = $sub->{'namespace'} . '::' . $sub->{'name'};
             $Perlito5::GLOBAL->{$full_name} = $sub;
-            $m->{'capture'} = ast_undef()
+            $m->{'capture'} = ast_nop()
         }
         else {
             $m->{'capture'} = $block;
@@ -6153,7 +6153,7 @@ use feature 'say';
                 if ($name) {
                     my $full_name = $namespace . '::' . $name;
                     $Perlito5::GLOBAL->{$full_name} = $sub;
-                    $sub = ast_undef()
+                    $sub = ast_nop()
                 }
                 $MATCH->{'capture'} = $sub
             }

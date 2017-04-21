@@ -153,7 +153,7 @@ sub anon_block {
     return $m;
 }
 
-sub ast_undef {
+sub ast_nop {
     Perlito5::AST::Apply->new(
         code => 'nop',
         namespace => 'Perlito5',
@@ -187,26 +187,26 @@ sub special_named_block {
   
     if ($block_name eq 'INIT') {
         push @Perlito5::INIT_BLOCK, eval_end_block( $block, 'INIT' );
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     elsif ($block_name eq 'END') {
         unshift @Perlito5::END_BLOCK, eval_end_block( $block, 'END' );
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     elsif ($block_name eq 'CHECK') {
         unshift @Perlito5::CHECK_BLOCK, eval_end_block( $block, 'CHECK' );
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     elsif ($block_name eq 'UNITCHECK') {
         unshift @Perlito5::UNITCHECK_BLOCK, eval_end_block( $block, 'UNITCHECK' );
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     elsif ($block_name eq 'BEGIN') {
         # say "BEGIN $block_start ", $m->{to}, "[", substr($str, $block_start, $m->{to} - $block_start), "]";
         # local $Perlito5::PKG_NAME = $Perlito5::PKG_NAME;  # BUG - this doesn't work
         local $Perlito5::PHASE = 'BEGIN';
         eval_begin_block( $block );
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
         my $sub = Perlito5::AST::Sub->new(
@@ -223,7 +223,7 @@ sub special_named_block {
         my $full_name = $sub->{namespace} . "::" . $sub->{name};
         $Perlito5::GLOBAL->{$full_name} = $sub;
         # runtime effect of subroutine declaration is "undef"
-        $m->{capture} = ast_undef();
+        $m->{capture} = ast_nop();
     }
     else {
         $m->{capture} = $block;
@@ -309,7 +309,7 @@ token named_sub_def {
                 my $full_name = "${namespace}::$name";
                 $Perlito5::GLOBAL->{$full_name} = $sub;
                 # runtime effect of subroutine declaration is "undef"
-                $sub = ast_undef();
+                $sub = ast_nop();
             }
 
             $MATCH->{capture} = $sub;
