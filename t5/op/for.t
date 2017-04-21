@@ -569,13 +569,13 @@ TODO: {
 ####     }
 #### }->(undef);
 
-SKIP: {
-    skip "No XS::APItest under miniperl", 1, if is_miniperl;
-    skip "no XS::APItest", 1 if !eval { require XS::APItest };
-    my @a;
-    sub {
-        XS::APItest::alias_av(\@a, 0, undef);
-        eval { \$_[0] }
-    }->($a[0]);
-    is $@, "", 'vivify_defelem does not croak on &PL_sv_undef elements';
-}
+## SKIP: {
+##     skip "No XS::APItest under miniperl", 1, if is_miniperl;
+##     skip "no XS::APItest", 1 if !eval { require XS::APItest };
+##     my @a;
+##     sub {
+##         XS::APItest::alias_av(\@a, 0, undef);
+##         eval { \$_[0] }
+##     }->($a[0]);
+##     is $@, "", 'vivify_defelem does not croak on &PL_sv_undef elements';
+## }

@@ -105,6 +105,10 @@ sub note {
     return unless @_;
     _print( _comment(@_) );
 }
+
+sub is_miniperl {
+    0
+}
 ####  
 ####  sub is_miniperl {
 ####      return !defined &DynaLoader::boot_DynaLoader;
