@@ -526,7 +526,8 @@ EOT
             boolean matched = true;
             if (matcher.end() == pos) {
                 // pointer didn't move
-                matched = matcher.find(pos+1);
+                next++;
+                matched = matcher.find(next);
             }
             if (matched) {
                 cap = arg.substring(pos, matcher.start());
@@ -544,9 +545,6 @@ EOT
                         res.push(cap);
                     }
                 }
-            }
-            else {
-                next++;
             }
         }
         if ( pos >= arg.length()) {

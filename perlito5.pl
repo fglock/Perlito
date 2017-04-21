@@ -23872,7 +23872,8 @@ class PlCORE {
             boolean matched = true;
             if (matcher.end() == pos) {
                 // pointer didn' . chr(39) . 't move
-                matched = matcher.find(pos+1);
+                next++;
+                matched = matcher.find(next);
             }
             if (matched) {
                 cap = arg.substring(pos, matcher.start());
@@ -23890,9 +23891,6 @@ class PlCORE {
                         res.push(cap);
                     }
                 }
-            }
-            else {
-                next++;
             }
         }
         if ( pos >= arg.length()) {
