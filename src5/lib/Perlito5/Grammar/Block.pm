@@ -216,12 +216,13 @@ sub special_named_block {
             'namespace'  => $Perlito5::PKG_NAME,
             'sig'        => undef,
         );
-        # evaluate the sub definition in a BEGIN block
-        my $block = Perlito5::AST::Block->new( stmts => [$sub] );
-        Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
         # add named sub to SCOPE
         my $full_name = $sub->{namespace} . "::" . $sub->{name};
+        $Perlito5::PROTO->{$full_name} = undef;
         $Perlito5::GLOBAL->{$full_name} = $sub;
+        # evaluate the sub definition in a BEGIN block
+        $block = Perlito5::AST::Block->new( stmts => [$sub] );
+        Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');  
         # runtime effect of subroutine declaration is "undef"
         $m->{capture} = ast_nop();
     }

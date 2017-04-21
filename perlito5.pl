@@ -42,7 +42,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Match;
     sub Perlito5::Match::flat {
         my $self = $_[0];
@@ -53,7 +52,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Precedence;
-    undef();
     sub Perlito5::Grammar::Precedence::new {
         my $class = shift;
         bless({@_, }, $class)
@@ -316,7 +314,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Bareword;
-    undef();
     sub Perlito5::Grammar::Bareword::the_object {
         my $str = $_[0];
         my $pos = $_[1];
@@ -761,7 +758,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Grammar::Attribute;
     sub Perlito5::Grammar::Attribute::opt_attribute {
         my $str = $_[0];
@@ -915,8 +911,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::TreeGrammar;
-    undef();
-    undef();
     my %dispatch = ('Ref' => sub {;
         Ref(@_)
     }, 'Lookup' => sub {;
@@ -1025,12 +1019,9 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Macro;
-    undef();
     {
         package Perlito5::AST::Apply;
-        undef();
         my %op = ('infix:<+=>' => 'infix:<+>', 'infix:<-=>' => 'infix:<->', 'infix:<*=>' => 'infix:<*>', 'infix:</=>' => 'infix:</>', 'infix:<||=>' => 'infix:<||>', 'infix:<&&=>' => 'infix:<&&>', 'infix:<|=>' => 'infix:<|>', 'infix:<&=>' => 'infix:<&>', 'infix:<//=>' => 'infix:<//>', 'infix:<.=>' => 'list:<.>', 'infix:<x=>' => 'infix:<x>');
         sub Perlito5::AST::Apply::op_assign {
             my $self = $_[0];
@@ -1061,9 +1052,6 @@ use feature 'say';
     }
     {
         package Perlito5::AST::Sub;
-        undef();
-        undef();
-        undef();
         sub Perlito5::AST::Sub::maybe_rewrite_statevars {
             (my($self)) = @_;
             my $block = $self->{'block'} || return 0;
@@ -1201,7 +1189,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Statement;
-    undef();
     my @Statement_chars;
     my %Statement;
     sub Perlito5::Grammar::Statement::add_statement {
@@ -1471,10 +1458,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Expression;
-    undef();
-    undef();
-    undef();
-    undef();
     sub Perlito5::Grammar::Expression::expand_list {
         my $param_list = shift;
         if (ref($param_list) eq 'Perlito5::AST::Apply' && $param_list->code() eq 'list:<,>') {;
@@ -2529,9 +2512,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar;
-    undef();
-    undef();
-    undef();
     sub Perlito5::Grammar::unless {
         my $str = $_[0];
         my $pos = $_[1];
@@ -3282,9 +3262,7 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Grammar::String;
-    undef();
     sub Perlito5::Grammar::String::term_q_quote {
         my $str = $_[0];
         my $pos = $_[1];
@@ -4373,9 +4351,7 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Grammar::Sigil;
-    undef();
     my %special_var = ('$_' => '', '$&' => '', '$`' => '', '$' . chr(39) => '', '$+' => '', '@+' => '', '%+' => '', '$.' => '', '$/' => '', '$|' => '', '$,' => '', '$\\' => '', '$"' => '', '$;' => '', '$%' => '', '$=' => '', '$-' => '', '@-' => '', '%-' => '', '$~' => '', '$^' => '', '$:' => '', '$?' => '', '$!' => '', '%!' => '', '$@' => '', '$$' => '', '$<' => '', '$>' => '', '$(' => '', '$)' => '', '$[' => '', '$]' => '', '$}' => '', '@_' => '', '*_' => '', '*&' => '', '*`' => '', '*' . chr(39) => '', '*+' => '', '*.' => '', '*/' => '', '*|' => '', '*,' => '', '*\\' => '', '*"' => '', '*;' => '', '*%' => '', '*=' => '', '*-' => '', '*~' => '', '*^' => '', '*:' => '', '*?' => '', '*!' => '', '*@' => '', '*$' => '', '*<' => '', '*>' => '', '*(' => '', '*)' => '', '*[' => '', '*]' => '', '*_' => '', '**' => '', '*#' => '', '$#+' => '', '$#-' => '', '$#_' => '');
     sub Perlito5::Grammar::Sigil::term_special_var {
         my $str = $_[0];
@@ -4534,9 +4510,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Use;
-    undef();
-    undef();
-    undef();
     my %Perlito_internal_module = ('strict' => 'Perlito5X::strict', 'warnings' => 'Perlito5X::warnings', 'feature' => 'Perlito5X::feature', 'utf8' => 'Perlito5X::utf8', 'bytes' => 'Perlito5X::bytes', 're' => 'Perlito5X::re', 'encoding' => 'Perlito5X::encoding', 'Carp' => 'Perlito5X::Carp', 'Config' => 'Perlito5X::Config', 'Exporter' => 'Perlito5X::Exporter', 'Data::Dumper' => 'Perlito5X::Dumper', 'UNIVERSAL' => 'Perlito5X::UNIVERSAL', 'JSON' => 'Perlito5X::JSON');
     sub Perlito5::Grammar::Use::register_internal_module {
         (my($module), my($real_name)) = @_;
@@ -5018,7 +4991,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::AST::CompUnit;
     sub Perlito5::AST::CompUnit::new {
         my $class = shift;
@@ -5346,8 +5318,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Scope;
-    undef();
-    undef();
     sub Perlito5::Grammar::Scope::new {;
         return {'block' => [], }
     }
@@ -5477,9 +5447,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
     package Perlito5::AST::CompUnit;
     {;
         sub Perlito5::AST::CompUnit::emit_begin_scratchpad {
@@ -5673,9 +5640,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
     package Perlito5::AST::CompUnit;
     {;
         sub Perlito5::AST::CompUnit::get_captures {;
@@ -5841,11 +5805,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Block;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     our %Named_block = ('BEGIN' => 1, 'UNITCHECK' => 1, 'CHECK' => 1, 'INIT' => 1, 'END' => 1, 'AUTOLOAD' => 1, 'DESTROY' => 1);
     sub Perlito5::Grammar::Block::block {
         my $str = $_[0];
@@ -6006,10 +5965,11 @@ use feature 'say';
         }
         elsif ($block_name eq 'AUTOLOAD' || $block_name eq 'DESTROY') {
             my $sub = Perlito5::AST::Sub::->new('attributes' => [], 'block' => $block, 'name' => $block_name, 'namespace' => $Perlito5::PKG_NAME, 'sig' => undef);
-            my $block = Perlito5::AST::Block::->new('stmts' => [$sub]);
-            Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');
             my $full_name = $sub->{'namespace'} . '::' . $sub->{'name'};
+            $Perlito5::PROTO->{$full_name} = undef;
             $Perlito5::GLOBAL->{$full_name} = $sub;
+            $block = Perlito5::AST::Block::->new('stmts' => [$sub]);
+            Perlito5::Grammar::Block::eval_begin_block($block, 'BEGIN');
             $m->{'capture'} = ast_nop()
         }
         else {
@@ -6447,7 +6407,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Space;
-    undef();
     my %line_index;
     sub Perlito5::Grammar::Space::count_line {
         my $pos = $_[0];
@@ -6923,7 +6882,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Print;
-    undef();
     our %Print = ('print' => 1, 'printf' => 1, 'say' => 1, 'exec' => 1, 'system' => 1);
     sub Perlito5::Grammar::Print::print_decl {
         my $str = $_[0];
@@ -7223,7 +7181,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Map;
-    undef();
     sub Perlito5::Grammar::Map::map_or_grep {
         my $str = $_[0];
         my $pos = $_[1];
@@ -7549,8 +7506,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Number;
-    undef();
-    undef();
     sub Perlito5::Grammar::Number::term_digit {
         my $str = $_[0];
         my $pos = $_[1];
@@ -8258,18 +8213,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     sub Perlito5::Grammar::word {;
         substr($_[0], $_[1], 1) =~ m/\w/ ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
     }
@@ -8701,8 +8644,6 @@ use feature 'say';
 {
     package main;
     package Perlito5;
-    undef();
-    undef();
     defined(${'^O'}) || (${'^O'} = 'perlito5');
     defined($/) || ($/ = chr(10));
     defined(${'"'}) || (${'"'} = ' ');
@@ -8777,9 +8718,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
     package Perlito5::AST::CompUnit;
     {;
         sub Perlito5::AST::CompUnit::emit_compile_time {
@@ -8999,16 +8937,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Compiler;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     sub Perlito5::Compiler::compiler_name {;
         'Perlito5'
     }
@@ -9026,8 +8954,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::DumpToAST;
-    undef();
-    undef();
     sub Perlito5::DumpToAST::dump_to_ast {
         (my($obj), my($seen), my($pos)) = @_;
         !defined($obj) && return Perlito5::AST::Apply::->new('code' => 'undef', 'arguments' => []);
@@ -9154,8 +9080,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::CompileTime::Dumper;
-    undef();
-    undef();
     sub Perlito5::CompileTime::Dumper::generate_eval_string {
         (my($source)) = @_;
         my $m = Perlito5::Grammar::exp_stmts($source, 0);
@@ -9279,7 +9203,6 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar::Regex6;
-    undef();
     sub Perlito5::Grammar::Regex6::term_token {
         my $str = $_[0];
         my $pos = $_[1];
@@ -9937,7 +9860,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::Rul;
     sub Perlito5::Rul::new {
         my $class = shift;
@@ -10260,7 +10182,6 @@ use feature 'say';
     package main;
     package Perlito5::AST::Apply;
     {
-        undef();
         sub Perlito5::AST::Apply::_emit_assignment_javascript2 {
             (my($parameters), my($arguments), my($level), my($wantarray)) = @_;
             if ($parameters->isa('Perlito5::AST::Apply') && ($parameters->code() eq 'my' || $parameters->code() eq 'local' || $parameters->code() eq 'circumfix:<( )>')) {
@@ -11163,11 +11084,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     package Perlito5::JavaScript2;
     {
         my %label;
@@ -12248,7 +12164,6 @@ use feature 'say';
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript2::Runtime;
     sub Perlito5::JavaScript2::Runtime::perl5_to_js {
         (my($source), my($namespace), my($want), my($scope_js)) = @_;
@@ -13692,7 +13607,6 @@ var p5sort = function(namespace, func, args) {
 {
     package main;
     package Perlito5::JavaScript2::Lib;
-    undef();
     sub Perlito5::JavaScript2::Lib::init {;
         Perlito5::Grammar::Use::register_internal_module('MIME::Base64' => 'Perlito5X::JavaScript::MIME::Base64')
     }
@@ -13700,7 +13614,6 @@ var p5sort = function(namespace, func, args) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript2::Array;
     sub Perlito5::JavaScript2::Array::emit_javascript2 {;
         return '//
@@ -14062,7 +13975,6 @@ function p5ArrayOfAlias(o) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript2::CORE;
     sub Perlito5::JavaScript2::CORE::emit_javascript2 {;
         return '//
@@ -14587,7 +14499,6 @@ CORE.split = function(List__, want) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript2::IO;
     sub Perlito5::JavaScript2::IO::emit_javascript2 {;
         return '//
@@ -15208,7 +15119,6 @@ CORE.warn = function(List__) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript2::Sprintf;
     sub Perlito5::JavaScript2::Sprintf::emit_javascript2 {;
         return '/**
@@ -15421,10 +15331,6 @@ CORE.sprintf = function(List__) {
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
-    undef();
     package Perlito5::JavaScript3;
     {
         my %label;
@@ -16715,7 +16621,6 @@ CORE.sprintf = function(List__) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript3::Runtime;
     sub Perlito5::JavaScript3::Runtime::emit_javascript3 {;
         return '//
@@ -17890,7 +17795,6 @@ perl5_to_js = function( source, namespace, var_env_js, p5want ) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript3::CORE;
     sub Perlito5::JavaScript3::CORE::emit_javascript3 {;
         return '//
@@ -18301,7 +18205,6 @@ CORE.prototype = function(List__, data) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript3::IO;
     sub Perlito5::JavaScript3::IO::emit_javascript3 {;
         return '//
@@ -18446,7 +18349,6 @@ if (isNode) {
 }
 {
     package main;
-    undef();
     package Perlito5::JavaScript3::Sprintf;
     sub Perlito5::JavaScript3::Sprintf::emit_javascript3 {;
         return '/**
@@ -18662,9 +18564,6 @@ CORE.printf = function(List__) {
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
     package Perlito5::Perl5;
     {
         sub Perlito5::Perl5::escape_string {;
@@ -19067,8 +18966,6 @@ CORE.printf = function(List__) {
 {
     package main;
     package Perlito5::Perl5::PrettyPrinter;
-    undef();
-    undef();
     my %dispatch = ('stmt' => sub {;
         statement(@_)
     }, 'stmt_modifier' => sub {;
@@ -19372,9 +19269,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 {
     package main;
     package Perlito5::Perl6::TreeGrammar;
-    undef();
-    undef();
-    undef();
     sub Perlito5::Perl6::TreeGrammar::refactor_range_operator {
         (my($class), my($in)) = @_;
         Perlito5::TreeGrammar::render(['And' => ['Lookup' => 'code', ['Value' => 'infix:<..>']], ['Lookup' => 'arguments', ['And' => ['Index' => 0, ['And' => ['Ref' => 'Perlito5::AST::Int'], ['Lookup' => 'int', ['Value' => 0]]]], ['Index' => 1, ['Or' => ['And' => ['Ref' => 'Perlito5::AST::Int'], ['Action' => sub {
@@ -19445,10 +19339,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
-    undef();
     {
         package Perlito5::Perl6;
         sub Perlito5::Perl6::emit_perl6_block {
@@ -19961,8 +19851,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 {
     package main;
     package Perlito5::Perl6::PrettyPrinter;
-    undef();
-    undef();
     my %dispatch = ('stmt' => sub {;
         statement(@_)
     }, 'stmt_modifier' => sub {;
@@ -20238,8 +20126,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 }
 {
     package main;
-    undef();
-    undef();
     package Perlito5::XS;
     {
         sub Perlito5::XS::tab {
@@ -20694,7 +20580,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
     package main;
     package Perlito5::AST::Apply;
     {
-        undef();
         sub Perlito5::AST::Apply::emit_qr_java {
             (my($regex), my($modifier), my($level)) = @_;
             if ($modifier eq '' && ref($regex) eq 'Perlito5::AST::Var' && $regex->{'sigil'} eq '$') {;
@@ -21874,12 +21759,6 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 }
 {
     package main;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     package Perlito5::Java;
     {
         my %label;
@@ -23458,9 +23337,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
 }
 {
     package main;
-    undef();
     package Perlito5::Java::CORE;
-    undef();
     my %FileFunc = ('open' => '        int argCount = List__.to_int();
         Path path = null; 
         String mode = "";
@@ -24928,9 +24805,7 @@ class PlCORE {
 }
 {
     package main;
-    undef();
     package Perlito5::Java::Crypt;
-    undef();
     sub Perlito5::Java::Crypt::emit_java {;
         return '
 /****************************************************************************
@@ -25499,11 +25374,7 @@ class PlCrypt {
 }
 {
     package main;
-    undef();
     package Perlito5::Java::Runtime;
-    undef();
-    undef();
-    undef();
     sub Perlito5::Java::Runtime::emit_java_extends {
         (my($class), my($java_classes)) = @_;
         my @out;
@@ -31610,8 +31481,6 @@ class PlString extends PlObject {
 {
     package main;
     package Perlito5::Java::Lib;
-    undef();
-    undef();
     sub Perlito5::Java::Lib::init {
         Perlito5::Grammar::Use::register_internal_module('MIME::Base64' => 'Perlito5X::Java::MIME::Base64');
         Perlito5::Grammar::Use::register_internal_module('Scalar::Util' => 'Perlito5X::Java::Scalar::Util');
@@ -31624,38 +31493,7 @@ class PlString extends PlObject {
 }
 {
     package main;
-    undef();
     package Perlito5;
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
-    undef();
     my $_V5_COMPILER_NAME = Perlito5::Compiler::compiler_name();
     my $_V5_COMPILER_VERSION = $Perlito5::VERSION;
     my $source = '';
@@ -31973,7 +31811,6 @@ INIT failed--call queue aborted.
             eval {
                 %INC = ();
                 @Perlito5::COMP_UNIT = ();
-                undef();
                 $use_warnings && ($source = 'use warnings;
 ' . $source);
                 my $m;
