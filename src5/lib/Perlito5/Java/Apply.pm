@@ -236,21 +236,26 @@ package Perlito5::AST::Apply;
         },
         'index' => sub {
             my ($self, $level, $wantarray) = @_;
-              'new PlInt('
-            . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().indexOf('
-            . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString()))'
+            if($self->{arguments}->[2]) {
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.index('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ', '
+                . $self->{arguments}->[2]->emit_java($level, 'scalar') . ')'
+            }
+            else {
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.index('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
+            }
         },
         'rindex' => sub {
             my ($self, $level, $wantarray) = @_;
             if($self->{arguments}->[2]) {
-                'new PlInt('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString(), ' . $self->{arguments}->[2]->emit_java($level, 'scalar') . '.to_int()))'
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.rindex('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ', '
+                . $self->{arguments}->[2]->emit_java($level, 'scalar') . ')'
             }
             else {
-                'new PlInt('
-                . $self->{arguments}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf('
-                . $self->{arguments}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                  $self->{arguments}->[0]->emit_java($level, 'scalar') . '.rindex('
+                . $self->{arguments}->[1]->emit_java($level, 'scalar') . ')'
             }
         },
         'ord' => sub {

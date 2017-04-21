@@ -20780,14 +20780,19 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.quotemeta()'
         }, 'index' => sub {
             (my($self), my($level), my($wantarray)) = @_;
-            'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().indexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+            if ($self->{'arguments'}->[2]) {;
+                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.index(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ', ' . $self->{'arguments'}->[2]->emit_java($level, 'scalar') . ')'
+            }
+            else {;
+                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.index(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ')'
+            }
         }, 'rindex' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($self->{'arguments'}->[2]) {;
-                'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString(), ' . $self->{'arguments'}->[2]->emit_java($level, 'scalar') . '.to_int()))'
+                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.rindex(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ', ' . $self->{'arguments'}->[2]->emit_java($level, 'scalar') . ')'
             }
             else {;
-                'new PlInt(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.toString().lastIndexOf(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . '.toString()))'
+                $self->{'arguments'}->[0]->emit_java($level, 'scalar') . '.rindex(' . $self->{'arguments'}->[1]->emit_java($level, 'scalar') . ')'
             }
         }, 'ord' => sub {
             (my($self), my($level), my($wantarray)) = @_;
@@ -27659,7 +27664,37 @@ class PlObject {
         String s = this.toString();
         return new PlString(Matcher.quoteReplacement(s));
     }
-
+    public PlInt index(PlObject substr) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        return new PlInt(s.indexOf(s1));
+    }
+    public PlInt index(PlObject substr, PlObject position) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        int i = position.to_int();
+        if (i < 0) {
+            i = 0;
+        }
+        return new PlInt(s.indexOf(s1, i));
+    }
+    public PlInt rindex(PlObject substr) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        return new PlInt(s.lastIndexOf(s1));
+    }
+    public PlInt rindex(PlObject substr, PlObject position) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        int i = position.to_int();
+        if (i < 0) {
+            if (s1.length() == 0) {
+                return PlCx.INT0;
+            }
+            return PlCx.MIN1;
+        }
+        return new PlInt(s.lastIndexOf(s1, i));
+    }
     public PlObject substr(PlObject offset) {
         // substr EXPR,OFFSET
         String s = this.toString();

@@ -2358,7 +2358,37 @@ EOT
         String s = this.toString();
         return new PlString(Matcher.quoteReplacement(s));
     }
-
+    public PlInt index(PlObject substr) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        return new PlInt(s.indexOf(s1));
+    }
+    public PlInt index(PlObject substr, PlObject position) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        int i = position.to_int();
+        if (i < 0) {
+            i = 0;
+        }
+        return new PlInt(s.indexOf(s1, i));
+    }
+    public PlInt rindex(PlObject substr) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        return new PlInt(s.lastIndexOf(s1));
+    }
+    public PlInt rindex(PlObject substr, PlObject position) {
+        String s = this.toString();
+        String s1 = substr.toString();
+        int i = position.to_int();
+        if (i < 0) {
+            if (s1.length() == 0) {
+                return PlCx.INT0;
+            }
+            return PlCx.MIN1;
+        }
+        return new PlInt(s.lastIndexOf(s1, i));
+    }
     public PlObject substr(PlObject offset) {
         // substr EXPR,OFFSET
         String s = this.toString();
