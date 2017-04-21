@@ -95,8 +95,33 @@ if (typeof p5pkg !== "object") {
     p5pkg.UNIVERSAL = new universal();
     p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";
     p5pkg.UNIVERSAL.isa = function (List__) {
-        // TODO - use @ISA
-        return List__[0]._class_._ref_ == List__[1]
+        var o = List__[0];
+        var s = List__[1];
+        var clas;
+        if (typeof o === "string") {
+            clas = p5pkg[o];
+        }
+        else {
+            clas = o._class_;
+        }
+        if (!clas) {
+            return false;
+        }
+        if (clas._ref_ == s) {
+            return true;
+        }
+        var isa = clas.List_ISA;
+        if (isa) {
+            for (var i = 0; i < isa.length; i++) {
+                if (isa[i] == s) {
+                    return true;
+                }
+                if (p5pkg.UNIVERSAL.isa( isa[i], s )) {
+                    return true;
+                }
+            }
+        }
+        return false;
     };
     p5pkg.UNIVERSAL.can = function (List__) {
         var o = List__[0];
