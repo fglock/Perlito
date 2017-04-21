@@ -1629,7 +1629,9 @@ package Perlito5::AST::Apply;
               && $arg->{code} eq 'p5:m'
             ) {
                 # first argument of split() is a regex
-                push @js, emit_qr_java( $arg->{arguments}->[0], $arg->{arguments}->[1]->{buf} );
+                my $flags = $arg->{arguments}->[1]->{buf};
+                $flags .= "m" if $flags !~ /m/;     # split defaults to multiline
+                push @js, emit_qr_java( $arg->{arguments}->[0], $flags );
                 shift @arguments;
             }
             return 'PlCORE.split('
