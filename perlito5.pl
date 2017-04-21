@@ -23838,7 +23838,7 @@ class PlCORE {
                 plReg = PlCx.SPLIT_SPACE;
             }
             else {
-                plReg = new PlRegex(regs, 0);
+                plReg = new PlRegex(regs, Pattern.MULTILINE);
             }
         }
 
@@ -23894,9 +23894,11 @@ class PlCORE {
             }
         }
         if ( pos >= arg.length()) {
-            return res;
+            cap = "";
         }
-        cap = arg.substring(pos);
+        else {
+            cap = arg.substring(pos);
+        }
         res.push(cap);
         return res;
     }
@@ -25582,7 +25584,7 @@ class PlCx {
     public static final String OVERLOAD_STRING   = "(\\"\\"";  // (""
     public static final String OVERLOAD_NUM      = "(0+";
     public static final String OVERLOAD_BOOL     = "(bool";
-    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\\\s+", 0);
+    public static final PlRegex SPLIT_SPACE      = new PlRegex("\\\\s+", Pattern.MULTILINE);
 ' . '    ' . join('
     ', map {;
             'public static final PlInt ' . ($_ < 0 ? 'MIN' : 'INT') . abs($_) . ' = new PlInt(' . $_ . ');'

@@ -492,7 +492,7 @@ EOT
                 plReg = PlCx.SPLIT_SPACE;
             }
             else {
-                plReg = new PlRegex(regs, 0);
+                plReg = new PlRegex(regs, Pattern.MULTILINE);
             }
         }
 
@@ -548,9 +548,11 @@ EOT
             }
         }
         if ( pos >= arg.length()) {
-            return res;
+            cap = "";
         }
-        cap = arg.substring(pos);
+        else {
+            cap = arg.substring(pos);
+        }
         res.push(cap);
         return res;
     }
