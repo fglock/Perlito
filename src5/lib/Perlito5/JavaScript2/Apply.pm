@@ -352,7 +352,7 @@ package Perlito5::AST::Apply;
         'prefix:<&>' => sub {
             my ($self, $level, $wantarray) = @_;
             my $arg   = $self->{arguments}->[0];
-            'p5code_lookup_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_javascript2($level) . ')([])';
+            'p5cget_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME ) . ', ' . $arg->emit_javascript2($level) . ')([])';
         },
         'circumfix:<[ ]>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1463,12 +1463,12 @@ package Perlito5::AST::Apply;
 
 
         if ( $may_need_autoload ) {
-            # p5call_sub(namespace, name, list, p5want)
+            # p5cget(namespace, name)(list, p5want)
             my $name = $self->{code};
             my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-            return 'p5call_sub('
+            return 'p5cget('
                     . Perlito5::JavaScript2::escape_string($namespace) . ', '
-                    . Perlito5::JavaScript2::escape_string($name) . ', '
+                    . Perlito5::JavaScript2::escape_string($name) . ')('
                     . $arg_code . ', '
                     . Perlito5::JavaScript2::to_context($wantarray)
                  . ')';

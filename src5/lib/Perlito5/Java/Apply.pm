@@ -1824,12 +1824,12 @@ package Perlito5::AST::Apply;
 
         # TODO - autoload
         # if ( $may_need_autoload ) {
-        #     # p5call_sub(namespace, name, list, want)
+        #     # p5cget(namespace, name).apply(list, want)
         #     my $name = $self->{code};
         #     my $namespace = $self->{namespace} || $Perlito5::PKG_NAME;
-        #     return 'p5call_sub('
+        #     return 'p5cget('
         #             . Perlito5::Java::escape_string($namespace) . ', '
-        #             . Perlito5::Java::escape_string($name) . ', '
+        #             . Perlito5::Java::escape_string($name) . ').apply('
         #             . $arg_code . ', '
         #             . Perlito5::Java::to_context($wantarray)
         #          . ')';

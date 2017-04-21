@@ -10376,7 +10376,7 @@ use feature 'say';
         }, 'prefix:<&>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my $arg = $self->{'arguments'}->[0];
-            'p5code_lookup_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_javascript2($level) . ')([])'
+            'p5cget_by_name(' . Perlito5::JavaScript2::escape_string($Perlito5::PKG_NAME) . ', ' . $arg->emit_javascript2($level) . ')([])'
         }, 'circumfix:<[ ]>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             '(new p5ArrayRef(' . Perlito5::JavaScript2::to_list($self->{'arguments'}) . '))'
@@ -11038,7 +11038,7 @@ use feature 'say';
             if ($may_need_autoload) {
                 my $name = $self->{'code'};
                 my $namespace = $self->{'namespace'} || $Perlito5::PKG_NAME;
-                return 'p5call_sub(' . Perlito5::JavaScript2::escape_string($namespace) . ', ' . Perlito5::JavaScript2::escape_string($name) . ', ' . $arg_code . ', ' . Perlito5::JavaScript2::to_context($wantarray) . ')'
+                return 'p5cget(' . Perlito5::JavaScript2::escape_string($namespace) . ', ' . Perlito5::JavaScript2::escape_string($name) . ')(' . $arg_code . ', ' . Perlito5::JavaScript2::to_context($wantarray) . ')'
             }
             $code . '(' . $arg_code . ', ' . Perlito5::JavaScript2::to_context($wantarray) . ')'
         }
@@ -12291,26 +12291,6 @@ function p5make_package(pkg_name) {
     return p5pkg[pkg_name];
 }
 
-function p5code_lookup_by_name(package_name, sub_name) {
-    // sub_name can be a function already
-    if (typeof sub_name === "function") {
-        return sub_name;
-    }
-    // sub_name can have an optional namespace
-    var parts = sub_name.split(/::/);
-    if (parts.length > 1) {
-        sub_name = parts.pop();
-        package_name = parts.join("::");
-    }
-    if (p5pkg.hasOwnProperty(package_name)) {
-        var c = p5pkg[package_name];
-        if ( c.hasOwnProperty(sub_name) ) {
-            return c[sub_name]
-        }
-    }
-    return null;
-}
-
 function p5get_class_for_method(method, class_name, seen) {
     // default mro
     // TODO - cache the methods that were already looked up
@@ -12404,15 +12384,56 @@ function p5call(invocant, method, list, p5want) {
     p5pkg.CORE.die(["Can' . chr(39) . 't call method ", method, " on unblessed reference"]);
 }
 
-function p5call_sub(namespace, name, list, p5want) {
+function p5cget(namespace, name) {
     if(p5pkg[namespace].hasOwnProperty(name)) {
-        return p5pkg[namespace][name](list, p5want)
+        return p5pkg[namespace][name]
     }
     if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
         p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;
-        return p5pkg[namespace]["AUTOLOAD"](list, p5want)
+        return p5pkg[namespace]["AUTOLOAD"]
     }
     p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
+}
+
+function p5cget_by_name(namespace, name) {
+    // name can be a function already
+    if (typeof name === "function") {
+        return name;
+    }
+    // name can have an optional namespace
+    var parts = name.split(/::/);
+    if (parts.length > 1) {
+        name = parts.pop();
+        namespace = parts.join("::");
+    }
+    if(p5pkg[namespace].hasOwnProperty(name)) {
+        return p5pkg[namespace][name]
+    }
+    if(p5pkg[namespace].hasOwnProperty("AUTOLOAD")) {
+        p5pkg[namespace]["v_AUTOLOAD"] = namespace + "::" + name;
+        return p5pkg[namespace]["AUTOLOAD"]
+    }
+    p5pkg.CORE.die(["Undefined subroutine &" + namespace + "::" + name]);
+}
+
+function p5code_lookup_by_name(package_name, sub_name) {
+    // sub_name can be a function already
+    if (typeof sub_name === "function") {
+        return sub_name;
+    }
+    // sub_name can have an optional namespace
+    var parts = sub_name.split(/::/);
+    if (parts.length > 1) {
+        sub_name = parts.pop();
+        package_name = parts.join("::");
+    }
+    if (p5pkg.hasOwnProperty(package_name)) {
+        var c = p5pkg[package_name];
+        if ( c.hasOwnProperty(sub_name) ) {
+            return c[sub_name]
+        }
+    }
+    return null;
 }
 
 function p5sub_exists(name, current_pkg_name) {
