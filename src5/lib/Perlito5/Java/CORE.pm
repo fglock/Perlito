@@ -517,34 +517,36 @@ EOT
         //      }
         // --- /TODO ---
 
-
         int pos = 0;
+        int next = pos;
         int count = 1;
         String cap;
         Matcher matcher = pat.matcher(arg).useTransparentBounds(true);
-        while (pos < arg.length() && !(limit > 0 && count >= limit) && matcher.find(pos)) {
+        while (pos < arg.length() && !(limit > 0 && count >= limit) && matcher.find(next)) {
+            boolean matched = true;
             if (matcher.end() == pos) {
                 // pointer didn't move
-                cap = arg.substring(pos, pos+1);
-                res.push(cap);
-                pos++;
-                // PlCORE.say("match: pointer didn't move [" + cap + "] next pos " + pos);
+                matched = matcher.find(pos+1);
             }
-            else {
+            if (matched) {
                 cap = arg.substring(pos, matcher.start());
                 res.push(cap);
                 pos = matcher.end();
+                next = pos;
                 // PlCORE.say("match: match [" + cap + "] next pos " + pos);
+                count++;
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    cap = matcher.group(i);
+                    if (cap == null) {
+                        res.push(PlCx.UNDEF);
+                    }
+                    else {
+                        res.push(cap);
+                    }
+                }
             }
-            count++;
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                cap = matcher.group(i);
-                if (cap == null) {
-                    res.push(PlCx.UNDEF);
-                }
-                else {
-                    res.push(cap);
-                }
+            else {
+                next++;
             }
         }
         if ( pos >= arg.length()) {
