@@ -21717,7 +21717,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 else {
                     if ($self->{'bareword'}) {;
-                        return Perlito5::Java::escape_string(($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)
+                        return Perlito5::AST::Buf::->new('buf' => ($self->{'namespace'} ? $self->{'namespace'} . '::' : '') . $name)->emit_java($level + 1, 'scalar')
                     }
                     $may_need_autoload = 1
                 }
@@ -21747,7 +21747,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         if (@in || !$optional) {
                             my $arg = shift(@in);
                             if ($arg->{'bareword'}) {;
-                                push(@out, Perlito5::Java::escape_string($arg->{'code'}))
+                                push(@out, Perlito5::AST::Buf::->new('buf' => $arg->{'code'})->emit_java($level + 1, 'scalar'))
                             }
                             else {;
                                 push(@out, $arg->emit_java($level + 1, 'scalar'))
