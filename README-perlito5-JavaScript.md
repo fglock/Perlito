@@ -260,7 +260,7 @@ Regex
 
 - regex extension library: http://xregexp.com
 
-- modifiers: g i m
+- modifiers: g i m s
 
 - slashes must be escaped
 

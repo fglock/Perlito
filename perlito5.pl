@@ -13273,9 +13273,33 @@ var p5negative = function(o) {
     return -o;
 };
 
+function p5regex_s_modifier (s) {
+    var cc = s.split(/(\\\\.)|/);
+    var out = [];
+    var is_char_class = false;
+    for(var i = 0; i < cc.length; i++) {
+        var c = cc[i];
+        if (typeof c != "undefined") {
+            if (c == "[")                    { is_char_class = true }
+            if (c == "]" && is_char_class )  { is_char_class = false }
+            if (c == "." && !is_char_class ) { c = "[\\\\S\\\\s]" }
+            out.push(c);
+        }
+    }
+    return out.join("");
+}
+
+function p5regex_compile (s, flags) {
+    if (flags.indexOf("s") != -1) {
+        flags = flags.replace("s", "");
+        s = p5regex_s_modifier(s);
+    }
+    return new RegExp(s, flags);
+}
+
 var p5qr = function(search, modifier) {
     // TODO - "Regex" stringification
-    var re = new RegExp(search, modifier);
+    var re = p5regex_compile(search, modifier);
     return CORE.bless([(new p5ScalarRef(re)), ' . chr(39) . 'Regex' . chr(39) . ']);
 };
 
@@ -13287,7 +13311,7 @@ var p5m = function(s, search, modifier, want) {
         re = search._scalar_;
     }
     else {
-        re = new RegExp(search, modifier);
+        re = p5regex_compile(search, modifier);
     }
 
     p5_regex_capture = [];
@@ -13318,7 +13342,7 @@ var p5s = function(s, search, fun_replace, modifier, want) {
         re = search._scalar_;
     }
     else {
-        re = new RegExp(search, modifier);
+        re = p5regex_compile(search, modifier);
     }
 
     p5_regex_capture = [];

@@ -15,6 +15,7 @@
 
 - JavaScript:
 -- fix "range" special cases
+-- regex /s modifier
 
 - Java:
 -- "Encode.pm" encode_utf8, decode_utf8
