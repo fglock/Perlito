@@ -18,6 +18,7 @@
 -- regex /s /x modifiers
 
 - Java:
+-- TIESCALAR, AUTOLOAD
 -- "Encode.pm" encode_utf8, decode_utf8
 -- "Scalar::Util", "List::Util" ports.
 -- BEGIN block fixes - "Exporter" works.
