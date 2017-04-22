@@ -13289,10 +13289,34 @@ function p5regex_s_modifier (s) {
     return out.join("");
 }
 
+function p5regex_x_modifier (s) {
+    var cc = s.split(/(\\\\.)|/);
+    var out = [];
+    var is_char_class = false;
+    var is_comment = false;
+    for(var i = 0; i < cc.length; i++) {
+        var c = cc[i];
+        if (typeof c != "undefined") {
+            if (c == "[")                    { is_char_class = true }
+            if (c == "]" && is_char_class )  { is_char_class = false }
+            if (c == " " && !is_char_class ) { c = "" }
+            if (c == "#" && !is_char_class ) { c = ""; is_comment = true }
+            if (c == "\\n" && is_comment )    { c = ""; is_comment = false }
+            if (is_comment)                  { c = "" }
+            out.push(c);
+        }
+    }
+    return out.join("");
+}
+
 function p5regex_compile (s, flags) {
     if (flags.indexOf("s") != -1) {
         flags = flags.replace("s", "");
         s = p5regex_s_modifier(s);
+    }
+    if (flags.indexOf("x") != -1) {
+        flags = flags.replace("x", "");
+        s = p5regex_x_modifier(s);
     }
     return new RegExp(s, flags);
 }

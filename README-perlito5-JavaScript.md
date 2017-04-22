@@ -260,7 +260,7 @@ Regex
 
 - regex extension library: http://xregexp.com
 
-- modifiers: g i m s
+- modifiers: g i m s x
 
 - slashes must be escaped
 
@@ -273,7 +273,7 @@ Regex
     No named capturing groups. Use numbered capturing groups instead.
     No mode modifiers to set matching options within the regular expression.
     No conditionals.
-    No regular expression comments.
+    No regular expression comments with "(?#text)"
 
 
 
