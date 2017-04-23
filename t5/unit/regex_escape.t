@@ -3,7 +3,7 @@ use feature 'say';
 use strict;
 use warnings;
 
-say '1..3';
+say '1..4';
 
 my $str = "Perl";
 
@@ -15,5 +15,9 @@ say 'ok 2';
 
 print "not " if $str =~ /P\053/;   # No match, "\053" is "+" and taken literally.
 say 'ok 3';
+
+my $str = "Pe/rl";
+print "not " unless $str =~ m{Pe/};   # test slash in JS
+say 'ok 4';
 
 

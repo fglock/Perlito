@@ -260,8 +260,6 @@ Regex
 
 - modifiers: g i m s x
 
-- slashes must be escaped
-
 - From http://www.regular-expressions.info/javascript.html
 
     No \A or \Z anchors to match the start or end of the string. Use a caret or dollar instead.
