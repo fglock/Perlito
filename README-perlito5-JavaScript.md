@@ -629,11 +629,6 @@ Features
             \undef,
         ];
 
-- phase order
-    print x();          # js will try to execute this before the sub declaration
-    sub x { "ok\n"; }
-    #  TypeError: Object [object Object] has no method 'x'
-
 - assign old-self to my / local
     local $Some_Global = $Some_Global;
 
