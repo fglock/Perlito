@@ -84,7 +84,6 @@ Perlito5-Java work-in-progress
 
   - subroutines
       - "my sub x {...}" not implemented
-      - AUTOLOAD for subroutine calls is not implemented
 
   - lvalue $#a and other expressions: substr, ternary, chop, keys, pos
 
@@ -1011,7 +1010,6 @@ Missing features, or partially implemented, or untested
         can
         isa
         DOES
-    AUTOLOAD
     (DONE) Scalar::blessed
 
     TODO - unit tests (work in progress)
