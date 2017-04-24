@@ -190,13 +190,13 @@ package Perlito5::Java;
 
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
-        'prefix:<-A>' => 'p5atime',
-        'prefix:<-C>' => 'p5ctime',
-        'prefix:<-M>' => 'p5mtime',
-        'prefix:<-d>' => 'p5is_directory',
-        'prefix:<-e>' => 'p5file_exists',
-        'prefix:<-f>' => 'p5is_file',
-        'prefix:<-s>' => 'p5size',
+        'prefix:<-A>' => 'PerlOp.p5atime',
+        'prefix:<-C>' => 'PerlOp.p5ctime',
+        'prefix:<-M>' => 'PerlOp.p5mtime',
+        'prefix:<-d>' => 'PerlOp.p5is_directory',
+        'prefix:<-e>' => 'PerlOp.p5file_exists',
+        'prefix:<-f>' => 'PerlOp.p5is_file',
+        'prefix:<-s>' => 'PerlOp.p5size',
     );
 
     # these operators need 2 "str" parameters

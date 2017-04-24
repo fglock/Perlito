@@ -849,6 +849,60 @@ class PerlOp {
         return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
 
+    //    'prefix:<-A>' => 'PerlOp.p5atime',
+    //    'prefix:<-C>' => 'PerlOp.p5ctime',
+    //    'prefix:<-M>' => 'PerlOp.p5mtime',
+    //    'prefix:<-d>' => 'PerlOp.p5is_directory',
+    //    'prefix:<-e>' => 'PerlOp.p5file_exists',
+    //    'prefix:<-f>' => 'PerlOp.p5is_file',
+    //    'prefix:<-s>' => 'PerlOp.p5size',
+    public static final PlObject p5atime(PlObject s) {
+        return PlCORE.die("-A not implemented");
+    }
+    public static final PlObject p5ctime(PlObject s) {
+        return PlCORE.die("-C not implemented");
+    }
+    public static final PlObject p5mtime(PlObject s) {
+        try {
+            // TODO - "Script start time minus file modification time, in days"
+            return new PlDouble(new File(s.toString()).lastModified() / 86400.0);
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5is_directory(PlObject s) {
+        try {
+            return new PlBool(new File(s.toString()).isDirectory());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5file_exists(PlObject s) {
+        return PlCORE.die("-e not implemented");
+    }
+    public static final PlObject p5is_file(PlObject s) {
+        try {
+            return new PlBool(new File(s.toString()).isFile());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5size(PlObject s) {
+        try {
+            return new PlInt(new File(s.toString()).length());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+
     public static final PlString string_replicate(PlObject s, PlObject c) {
         int count = c.to_int();
         if ( count < 1 ) {

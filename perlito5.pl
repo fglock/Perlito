@@ -21931,7 +21931,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             $Java_loop_label{$s} = $label;
             return $label
         }
-        our %op_prefix_js_str = ('prefix:<-A>' => 'p5atime', 'prefix:<-C>' => 'p5ctime', 'prefix:<-M>' => 'p5mtime', 'prefix:<-d>' => 'p5is_directory', 'prefix:<-e>' => 'p5file_exists', 'prefix:<-f>' => 'p5is_file', 'prefix:<-s>' => 'p5size');
+        our %op_prefix_js_str = ('prefix:<-A>' => 'PerlOp.p5atime', 'prefix:<-C>' => 'PerlOp.p5ctime', 'prefix:<-M>' => 'PerlOp.p5mtime', 'prefix:<-d>' => 'PerlOp.p5is_directory', 'prefix:<-e>' => 'PerlOp.p5file_exists', 'prefix:<-f>' => 'PerlOp.p5is_file', 'prefix:<-s>' => 'PerlOp.p5size');
         our %op_infix_js_str = ('infix:<eq>' => ' == ', 'infix:<ne>' => ' != ', 'infix:<le>' => ' <= ', 'infix:<ge>' => ' >= ', 'infix:<lt>' => ' < ', 'infix:<gt>' => ' > ');
         our %op_to_boolean = map(+($_ => 1), 'prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'infix:<gt>', 'infix:<lt>', 'prefix:<not>', 'exists', 'defined');
         our %op_to_str = map(+($_ => 1), 'substr', 'join', 'list:<.>', 'chr', 'lc', 'uc', 'lcfirst', 'ucfirst', 'ref');
@@ -26215,6 +26215,60 @@ class PerlOp {
     public static final PlInt ord(PlString s) {
         String item = s.toString();
         return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
+    }
+
+    //    ' . chr(39) . 'prefix:<-A>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5atime' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-C>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5ctime' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-M>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5mtime' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-d>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5is_directory' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-e>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5file_exists' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-f>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5is_file' . chr(39) . ',
+    //    ' . chr(39) . 'prefix:<-s>' . chr(39) . ' => ' . chr(39) . 'PerlOp.p5size' . chr(39) . ',
+    public static final PlObject p5atime(PlObject s) {
+        return PlCORE.die("-A not implemented");
+    }
+    public static final PlObject p5ctime(PlObject s) {
+        return PlCORE.die("-C not implemented");
+    }
+    public static final PlObject p5mtime(PlObject s) {
+        try {
+            // TODO - "Script start time minus file modification time, in days"
+            return new PlDouble(new File(s.toString()).lastModified() / 86400.0);
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5is_directory(PlObject s) {
+        try {
+            return new PlBool(new File(s.toString()).isDirectory());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5file_exists(PlObject s) {
+        return PlCORE.die("-e not implemented");
+    }
+    public static final PlObject p5is_file(PlObject s) {
+        try {
+            return new PlBool(new File(s.toString()).isFile());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
+    }
+    public static final PlObject p5size(PlObject s) {
+        try {
+            return new PlInt(new File(s.toString()).length());
+        }
+        catch(RuntimeException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
     }
 
     public static final PlString string_replicate(PlObject s, PlObject c) {
