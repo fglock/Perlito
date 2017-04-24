@@ -27253,7 +27253,7 @@ class PlV {
         return PlV.cget_no_autoload(s);
     }
 
-    public static final PlObject glob_set(PlString name, PlObject value, String nameSpace) {
+    public static final PlObject glob_set(PlObject name, PlObject value, String nameSpace) {
         return glob_set(name.toString(), value, nameSpace);
     }
     public static final PlObject glob_set(String name, PlObject value, String nameSpace) {
