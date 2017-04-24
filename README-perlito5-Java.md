@@ -61,6 +61,11 @@ Perlito5-Java work-in-progress
     Consult the following stack trace for details.
     java.lang.OutOfMemoryError: Java heap space
 
+    $ time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
+    warning: [options] bootstrap class path not set in conjunction with -source 1.7
+    perlito5.java:40865: error: code too large for try statement
+                            catch(PlNextException e) {
+
     $ java Main -v
 ~~~
 
