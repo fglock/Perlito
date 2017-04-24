@@ -1184,10 +1184,30 @@ use feature 'say';
         _insert_return_in_block($self, 'body');
         _insert_return_in_block($self, 'otherwise')
     }
+    sub Perlito5::Macro::split_deep_if {
+        my $stmt = $_[0];
+        if (ref($stmt) eq 'Perlito5::AST::If' && $stmt->{'otherwise'} && $stmt->{'otherwise'}->isa('Perlito5::AST::Block')) {
+            my $stmts = $stmt->{'otherwise'}->{'stmts'};
+            my $v = $stmts;
+            if ($stmts && @{$stmts} == 1) {
+                my $stmt = $stmts->[0];
+                if (ref($stmt) eq 'Perlito5::AST::If' && $stmt->{'otherwise'} && $stmt->{'otherwise'}->isa('Perlito5::AST::Block')) {
+                    my $stmts = $stmt->{'otherwise'}->{'stmts'};
+                    if ($stmts && @{$stmts} == 1) {
+                        my $stmt = $v->[0];
+                        $v->[0] = Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Block::->new('stmts' => [$stmt])], 'code' => 'do')
+                    }
+                }
+            }
+        }
+    }
     sub Perlito5::Macro::split_code_too_large {
         my @stmts = @_;
-        while (@stmts > 15) {
-            my @do = splice(@stmts, -8, 8);
+        for my $stmt (@stmts) {;
+            split_deep_if($stmt)
+        }
+        while (@stmts > 20) {
+            my @do = splice(@stmts, -15, 15);
             push(@stmts, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Block::->new('stmts' => \@do)], 'code' => 'do'))
         }
         return @stmts

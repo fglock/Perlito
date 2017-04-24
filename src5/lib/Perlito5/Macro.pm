@@ -443,12 +443,52 @@ sub insert_return_in_if {
     _insert_return_in_block($self, 'otherwise');
 }
 
+sub split_deep_if {
+    my $stmt = $_[0];
+
+    if (ref($stmt) eq 'Perlito5::AST::If' && $stmt->{otherwise} && $stmt->{otherwise}->isa('Perlito5::AST::Block')) {
+        # if ... else if ...
+        my $stmts = $stmt->{otherwise}{stmts};
+        my $v = $stmts;
+        if ($stmts && @$stmts == 1) {
+            my $stmt = $stmts->[0];
+            if (ref($stmt) eq 'Perlito5::AST::If' && $stmt->{otherwise} && $stmt->{otherwise}->isa('Perlito5::AST::Block')) {
+                # if ... else if ...
+                ### my $stmts = $stmt->{otherwise}{stmts};
+                ### if ($stmts && @$stmts == 1) {
+                ###     my $stmt = $stmts->[0];
+                ###     if (ref($stmt) eq 'Perlito5::AST::If' && $stmt->{otherwise} && $stmt->{otherwise}->isa('Perlito5::AST::Block')) {
+                ###         # if ... else if ...
+                        my $stmts = $stmt->{otherwise}{stmts};
+
+                        if ($stmts && @$stmts == 1) {
+                            my $stmt = $v->[0];
+                            $v->[0] = 
+                                Perlito5::AST::Apply->new(
+                                    'arguments' => [
+                                        Perlito5::AST::Block->new(
+                                            'stmts' => [ $stmt ],
+                                        ),
+                                    ],
+                                    'code' => 'do',
+                                );
+                        }
+                ###     }
+                ### }
+            }
+        }
+    }
+}
+ 
 sub split_code_too_large {
     # work around Java "Code too large" error
     my @stmts = @_;
-    while (@stmts > 15) {
+    for my $stmt (@stmts) {
+        split_deep_if($stmt);   # find deep nested ifs
+    }
+    while (@stmts > 20) {
         # print STDERR "Code too large, split ", scalar(@stmts), " nodes\n";
-        my @do = splice(@stmts, -8, 8);
+        my @do = splice(@stmts, -15, 15);
         push @stmts,
             Perlito5::AST::Apply->new(
                 'arguments' => [
