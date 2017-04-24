@@ -1092,6 +1092,9 @@ package Perlito5::Java::LexicalBlock;
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::Block' ) ) {
                 # "block" returns a value
+
+                Perlito5::Macro::_insert_return_in_block({ block => $last_statement }, 'block');
+
                 push @str, $last_statement->emit_java($level, 'runtime') . '';
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {

@@ -1171,7 +1171,7 @@ use feature 'say';
             push(@{$body->{'stmts'}}, Perlito5::AST::Apply::->new('arguments' => [], 'code' => 'return', 'namespace' => ''))
         }
         else {
-            my $last_statement = $body->{'stmts'}->[0];
+            my $last_statement = $body->{'stmts'}->[-1];
             if ($last_statement->isa('Perlito5::AST::If')) {;
                 Perlito5::Macro::insert_return_in_if($last_statement)
             }
@@ -22440,7 +22440,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                         push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
                     }
                 }
-                elsif ($last_statement->isa('Perlito5::AST::Block')) {;
+                elsif ($last_statement->isa('Perlito5::AST::Block')) {
+                    Perlito5::Macro::_insert_return_in_block({'block' => $last_statement, }, 'block');
                     push(@str, $last_statement->emit_java($level, 'runtime') . '')
                 }
                 elsif ($last_statement->isa('Perlito5::AST::If')) {

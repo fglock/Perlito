@@ -427,7 +427,7 @@ sub _insert_return_in_block {
                         );
     }
     else {
-        my $last_statement = $body->{stmts}[0];
+        my $last_statement = $body->{stmts}[-1];
         if ($last_statement->isa('Perlito5::AST::If')) {
             Perlito5::Macro::insert_return_in_if($last_statement);
         }
