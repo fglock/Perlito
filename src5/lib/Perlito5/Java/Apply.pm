@@ -450,9 +450,9 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF';
             }
             # and1(x) ? y : and3()
-            'PerlOp.and1('
+            '(PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
         },
         'infix:<and>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -462,9 +462,9 @@ package Perlito5::AST::Apply;
                 . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF';
             }
             # and1(x) ? y : and3()
-            'PerlOp.and1('
+            '(PerlOp.and1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
         },
         'infix:<||>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -474,9 +474,9 @@ package Perlito5::AST::Apply;
                 . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
-            'PerlOp.or1('
+            '(PerlOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ''
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'infix:<or>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -486,9 +486,9 @@ package Perlito5::AST::Apply;
                 . ' PlCx.UNDEF : ' . $self->{arguments}->[1]->emit_java($level, $wantarray);
             }
             # or1(x) ? or2() : y
-            'PerlOp.or1('
+            '(PerlOp.or1('
                 . $self->{arguments}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : '
-                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ''
+                . $self->{arguments}->[1]->emit_java($level, $wantarray) . ')'
         },
         'infix:<xor>' => sub {
             my ($self, $level, $wantarray) = @_;
@@ -1008,7 +1008,7 @@ package Perlito5::AST::Apply;
             }
             else {
                 # eval string
-                die "Java eval string not yet implemented";
+                return q{PlCORE.die("Java eval string not yet implemented")};
             }
 
             # TODO - test return() from inside eval

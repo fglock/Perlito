@@ -20948,25 +20948,25 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             if ($wantarray eq 'void') {;
                 return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
             }
-            'PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
+            '(PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
         }, 'infix:<and>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq 'void') {;
                 return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PlCx.UNDEF'
             }
-            'PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3()'
+            '(PerlOp.and1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ' : PerlOp.and3())'
         }, 'infix:<||>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq 'void') {;
                 return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
             }
-            'PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ''
+            '(PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ')'
         }, 'infix:<or>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             if ($wantarray eq 'void') {;
                 return Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? ' . ' PlCx.UNDEF : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray)
             }
-            'PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ''
+            '(PerlOp.or1(' . $self->{'arguments'}->[0]->emit_java($level, 'scalar') . ') ? PerlOp.or2() : ' . $self->{'arguments'}->[1]->emit_java($level, $wantarray) . ')'
         }, 'infix:<xor>' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             '( ' . Perlito5::Java::to_boolean($self->{'arguments'}->[0], $level) . ' ? new PlBool(!' . Perlito5::Java::to_boolean($self->{'arguments'}->[1], $level) . ') : ' . ($self->{'arguments'}->[1])->emit_java($level, $wantarray) . ')'
@@ -21298,7 +21298,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 return $ast->emit_java($level + 1, $wantarray)
             }
             else {;
-                die('Java eval string not yet implemented')
+                return 'PlCORE.die("Java eval string not yet implemented")'
             }
             my $context = Perlito5::Java::to_context($wantarray);
             Perlito5::Java::emit_wrap_java($level, ($context eq 'p5want' ? () : 'var want = ' . $context . ';'), 'var r;', 'p5pkg["main"]["v_@"] = "";', 'var p5strict = p5pkg["Perlito5"]["v_STRICT"];', 'p5pkg["Perlito5"]["v_STRICT"] = ' . $Perlito5::STRICT . ';', 'try {', ['r = ' . $eval . ''], '}', 'catch(err) {', ['if ( err instanceof p5_error || err instanceof Error ) {', ['p5pkg["main"]["v_@"] = err;', 'if (p5str(p5pkg["main"]["v_@"]).substr(-1, 1) != "\\n") {', ['try {' . '', ['p5pkg["main"]["v_@"] = p5pkg["main"]["v_@"] + "\\n" + err.stack + "\\n";'], '}', 'catch(err) { }'], '}'], '}', 'else {', ['return(err);'], '}'], '}', 'p5pkg["Perlito5"]["v_STRICT"] = p5strict;', 'return r;')
