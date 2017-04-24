@@ -1304,15 +1304,16 @@ package Perlito5::AST::Decl;
             my $var = $self->{var};
             my $var_set;
             my $tmp_name  = Perlito5::JavaScript2::get_label();
+            my $id = $Perlito5::ID++;
+            my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name, _decl => 'my', _id => $id );
             if ( ref($var) eq 'Perlito5::AST::Var' ) {
-                $var_set = $var->emit_javascript2 . ' = v_' . $tmp_name;
+                $var_set = $var->emit_javascript2 . ' = ' .  $tmp->emit_javascript2;
             }
             else {
-                my $tmp = Perlito5::AST::Var->new(sigil => '$', name => $tmp_name, _decl => 'my' );
                 $var_set = $var->emit_javascript2_set($tmp);
             }
             return Perlito5::JavaScript2::emit_wrap_javascript2($level, $wantarray, 
-                     'var v_' . $tmp_name . ' = ' . $var->emit_javascript2 . ';',
+                     'var ' . $tmp->emit_javascript2 . ' = ' . $var->emit_javascript2 . ';',
                      'p5LOCAL.push(function(){ ' . $var_set . ' });',
                      'return ' . $var->emit_javascript2_set(
                                     Perlito5::AST::Apply->new( code => 'undef', arguments => [], namespace => '' ),
