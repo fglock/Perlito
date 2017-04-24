@@ -26212,7 +26212,7 @@ class PerlOp {
         return boolean_stack.remove(0);
     }
 
-    public static final PlInt ord(PlString s) {
+    public static final PlInt ord(PlObject s) {
         String item = s.toString();
         return new PlInt(item.length() > 0 ? Character.codePointAt(item, 0) : 0);
     }
