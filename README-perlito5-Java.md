@@ -48,8 +48,19 @@ Perlito5-Java work-in-progress
 
 ~~~sh
     $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
-    $ # time javac perlito5.java
+
+    $ # time javac perlito5.java    # never finishes
+
     $ time javac -source 7 perlito5.java
+    warning: [options] bootstrap class path not set in conjunction with -source 1.7
+    The system is out of resources.
+    java.lang.StackOverflowError
+
+    $ time javac -J-Xms1024m -J-Xmx1024m -J-Xss1024m -source 7 perlito5.java
+    The system is out of resources.
+    Consult the following stack trace for details.
+    java.lang.OutOfMemoryError: Java heap space
+
     $ java Main -v
 ~~~
 
