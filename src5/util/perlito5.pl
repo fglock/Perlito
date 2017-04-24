@@ -511,6 +511,13 @@ if ($backend) {
                     # -c switch
                     say $Perlito5::FILE_NAME . " syntax OK";
                 }
+                # elsif ($backend eq 'eval') {
+                #     my $block =
+                #         Perlito5::AST::Block->new(
+                #             stmts => [ map { @{ $_->{body} } } @$comp_units ],
+                #         );
+                #     Perlito5::eval_ast($block);
+                # }
                 elsif ($backend eq 'perl5') {
                     if ( $expand_use ) {
                         print Perlito5::Perl5::Runtime->emit_perl5();

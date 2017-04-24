@@ -332,6 +332,14 @@ package Perlito5::AST::Sub;
                 $Perlito5::BEGIN_SUBS{$id} = $code;
                 $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_} for keys %capture;
 
+                if (!@stmts) {
+                    unshift @stmts,
+                        Perlito5::AST::Apply->new(
+                            code => 'return',
+                            arguments => [],
+                        );
+                }
+
                 unshift @stmts,
                   Perlito5::AST::Apply->new(
                     code => 'infix:<&&>',

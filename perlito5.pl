@@ -8921,6 +8921,9 @@ use feature 'say';
                     $Perlito5::BEGIN_SUBS{$id} = $code;
                     $Perlito5::BEGIN_LEXICALS{$_} = $capture{$_}
                         for keys(%capture);
+                    if (!@stmts) {;
+                        unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => []))
+                    }
                     unshift(@stmts, Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Var::LIST_ARG(), Perlito5::AST::Apply::->new('code' => 'infix:<&&>', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'infix:<eq>', 'arguments' => [Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Var::LIST_ARG_INDEX(0)], 'code' => 'ref'), Perlito5::AST::Buf::->new('buf' => 'Perlito5::dump')]), Perlito5::AST::Apply::->new('code' => 'return', 'arguments' => [Perlito5::AST::Apply::->new('code' => 'circumfix:<{ }>', 'arguments' => [Perlito5::AST::Buf::->new('buf' => '__SUB__'), Perlito5::AST::Buf::->new('buf' => $id), Perlito5::AST::Buf::->new('buf' => '__PKG__'), Perlito5::AST::Buf::->new('buf' => $Perlito5::PKG_NAME), map {;
                         (Perlito5::AST::Buf::->new('buf' => $_), Perlito5::AST::Apply::->new('code' => 'prefix:<\\>', 'arguments' => [$capture{$_}]))
                     } sort {;
