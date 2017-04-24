@@ -60,7 +60,8 @@ sub eval_ast {
     Perlito5::set_global_phase("UNITCHECK");
     $_->() while $_ = shift @Perlito5::UNITCHECK_BLOCK;
     # warn "in eval BASE_SCOPE exit: ", Data::Dumper::Dumper($Perlito5::BASE_SCOPE);
-    return JS::inline('eval("(function(){" + v_js_code + "})()")');
+    $_ = $js_code;
+    return JS::inline('eval("(function(){" + p5pkg.main.v__ + "})()")');
 }
 
 sub emit_javascript2 {

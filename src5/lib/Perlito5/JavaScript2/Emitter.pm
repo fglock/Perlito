@@ -20,6 +20,7 @@ package Perlito5::JavaScript2;
     }
 
     our $is_inside_subroutine;  # 'shift @_' vs. 'shift @ARGV'
+    # our %JavaScript_var_name;   # 101 => 'this.env.[0]'
 
     # prefix operators that take a "str" parameter
     our %op_prefix_js_str = (
@@ -1208,11 +1209,16 @@ package Perlito5::AST::Var;
     sub emit_javascript2 {
         my ($self, $level, $wantarray) = @_;
         my $sigil = $self->{_real_sigil} || $self->{sigil};
-        my $str_name = $self->{name};
         my $decl_type = $self->{_decl} || 'global';
         if ( $decl_type ne 'my' && $decl_type ne 'state' ) {
             return $self->emit_javascript2_global($level, $wantarray);
         }
+
+        my $str_name = $self->{name} . "_" . $self->{_id};
+
+        # $str_name = $Perlito5::JavaScript2::JavaScript_var_name{$self->{_id}}
+        #     if exists $Perlito5::JavaScript2::JavaScript_var_name{$self->{_id}};
+
         if ( $sigil eq '@' ) {
             if ( $wantarray eq 'scalar' ) {
                 return $self->emit_javascript2($level, 'list') . '.length';

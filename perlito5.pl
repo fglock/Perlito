@@ -11742,11 +11742,11 @@ use feature 'say';
         sub Perlito5::AST::Var::emit_javascript2 {
             (my($self), my($level), my($wantarray)) = @_;
             my $sigil = $self->{'_real_sigil'} || $self->{'sigil'};
-            my $str_name = $self->{'name'};
             my $decl_type = $self->{'_decl'} || 'global';
             if ($decl_type ne 'my' && $decl_type ne 'state') {;
                 return $self->emit_javascript2_global($level, $wantarray)
             }
+            my $str_name = $self->{'name'} . '_' . $self->{'_id'};
             if ($sigil eq '@') {
                 if ($wantarray eq 'scalar') {;
                     return $self->emit_javascript2($level, 'list') . '.length'
@@ -12196,7 +12196,8 @@ use feature 'say';
         Perlito5::set_global_phase('UNITCHECK');
         $_->()
             while $_ = shift(@Perlito5::UNITCHECK_BLOCK);
-        return JS::inline('eval("(function(){" + v_js_code + "})()")')
+        $_ = $js_code;
+        return JS::inline('eval("(function(){" + p5pkg.main.v__ + "})()")')
     }
     sub Perlito5::JavaScript2::Runtime::emit_javascript2 {;
         return '//
