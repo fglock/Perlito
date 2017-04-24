@@ -223,6 +223,7 @@ sub emit_globals_after_BEGIN {
     delete $scope->{'$main::]'};
     delete $scope->{'$main::ARGV'};
     delete $scope->{'@main::_'};
+    local $_;   # not sure about keeping $_
 
     for my $v ( '$main::0', '$main::a', '$main::b', '$main::_' ) {
         # inject special variables like $0 (script name) in the scope, if it is not there already
