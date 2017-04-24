@@ -48,7 +48,8 @@ Perlito5-Java work-in-progress
 
 ~~~sh
     $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
-    $ time javac perlito5.java
+    $ # time javac perlito5.java
+    $ time javac -source 7 perlito5.java
     $ java Main -v
 ~~~
 
