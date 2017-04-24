@@ -15,7 +15,7 @@ print ` java Main `;
 
 __END__
 
-Note: large source files seems to trigger this problem:
+Note: large source files seem to trigger this problem:
 
 http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
 http://stackoverflow.com/questions/34223249/slow-compilation-with-jooq-3-6-plain-sql-and-the-javac-compiler
