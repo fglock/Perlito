@@ -62,8 +62,6 @@ Perlito5-in-JavaScript differences from "perl"
 - Variable aliasing is not implemented yet;
   modifying $_ or $_[0] doesn't change the original variable.
 
-- Variable redeclaration is not implemented yet.
-
 - utf8 is not implemented yet.
 
 - Regex is missing some features;
@@ -434,8 +432,6 @@ Tail call (TODO)
 
     - variable aliasing ($_[0], for-loop, map)
 
-    - variable redeclaration
-
     - make perlito usable for CPAN smoke tests:
 
         node perlito5.js Makefile.PL
@@ -699,7 +695,6 @@ Features
     $a = qr//;
     print $a->x, "\n";  # 123
 
-- bug: variable redeclaration does not work
 - javascript "var" erases the outer value within the whole current lexical scope
 - bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables

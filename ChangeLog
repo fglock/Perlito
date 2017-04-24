@@ -16,6 +16,7 @@
 - JavaScript:
 -- fix "range" special cases
 -- regex /s /x modifiers
+-- variable redeclaration
 
 - Java:
 -- TIESCALAR, AUTOLOAD
