@@ -12,12 +12,36 @@ sub new {
             next if ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{namespace} eq 'Perlito5' && $stmt->{code} eq 'nop';
             push @body, $stmt;
         }
+        @body = Perlito5::Macro::split_code_too_large(@body)
+            if $Perlito5::CODE_TOO_LARGE;
         $args{body} = \@body;
     }
     bless \%args, $class;
 }
 sub name { $_[0]->{name} }
 sub body { $_[0]->{body} }
+
+
+
+package Perlito5::AST::Block;
+sub new {
+    my $class = shift;
+    my %args = @_;
+    if ($args{stmts}) {
+        my @stmts;
+        for my $stmt ( @{ $args{stmts} } ) {
+            next if !defined($stmt);
+            next if ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{namespace} eq 'Perlito5' && $stmt->{code} eq 'nop';
+            push @stmts, $stmt;
+        }
+        @stmts = Perlito5::Macro::split_code_too_large(@stmts)
+            if $Perlito5::CODE_TOO_LARGE;
+        $args{stmts} = \@stmts;
+    }
+    bless \%args, $class;
+}
+sub sig { $_[0]->{sig} }
+sub stmts { $_[0]->{stmts} }
 
 
 
@@ -36,26 +60,6 @@ sub num { $_[0]->{num} }
 package Perlito5::AST::Buf;
 sub new { my $class = shift; bless {@_}, $class }
 sub buf { $_[0]->{buf} }
-
-
-
-package Perlito5::AST::Block;
-sub new {
-    my $class = shift;
-    my %args = @_;
-    if ($args{stmts}) {
-        my @stmts;
-        for my $stmt ( @{ $args{stmts} } ) {
-            next if !defined($stmt);
-            next if ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{namespace} eq 'Perlito5' && $stmt->{code} eq 'nop';
-            push @stmts, $stmt;
-        }
-        $args{stmts} = \@stmts;
-    }
-    bless \%args, $class;
-}
-sub sig { $_[0]->{sig} }
-sub stmts { $_[0]->{stmts} }
 
 
 

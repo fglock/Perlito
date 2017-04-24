@@ -1184,6 +1184,14 @@ use feature 'say';
         _insert_return_in_block($self, 'body');
         _insert_return_in_block($self, 'otherwise')
     }
+    sub Perlito5::Macro::split_code_too_large {
+        my @stmts = @_;
+        while (@stmts > 15) {
+            my @do = splice(@stmts, -8, 8);
+            push(@stmts, Perlito5::AST::Apply::->new('arguments' => [Perlito5::AST::Block::->new('stmts' => \@do)], 'code' => 'do'))
+        }
+        return @stmts
+    }
     1
 }
 {
@@ -5002,6 +5010,7 @@ use feature 'say';
                 ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'namespace'} eq 'Perlito5' && $stmt->{'code'} eq 'nop' && next;
                 push(@body, $stmt)
             }
+            $Perlito5::CODE_TOO_LARGE && (@body = Perlito5::Macro::split_code_too_large(@body));
             $args{'body'} = \@body
         }
         bless(\%args, $class)
@@ -5011,6 +5020,28 @@ use feature 'say';
     }
     sub Perlito5::AST::CompUnit::body {;
         $_[0]->{'body'}
+    }
+    package Perlito5::AST::Block;
+    sub Perlito5::AST::Block::new {
+        my $class = shift;
+        my %args = @_;
+        if ($args{'stmts'}) {
+            my @stmts;
+            for my $stmt (@{$args{'stmts'}}) {
+                !defined($stmt) && next;
+                ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'namespace'} eq 'Perlito5' && $stmt->{'code'} eq 'nop' && next;
+                push(@stmts, $stmt)
+            }
+            $Perlito5::CODE_TOO_LARGE && (@stmts = Perlito5::Macro::split_code_too_large(@stmts));
+            $args{'stmts'} = \@stmts
+        }
+        bless(\%args, $class)
+    }
+    sub Perlito5::AST::Block::sig {;
+        $_[0]->{'sig'}
+    }
+    sub Perlito5::AST::Block::stmts {;
+        $_[0]->{'stmts'}
     }
     package Perlito5::AST::Int;
     sub Perlito5::AST::Int::new {
@@ -5035,27 +5066,6 @@ use feature 'say';
     }
     sub Perlito5::AST::Buf::buf {;
         $_[0]->{'buf'}
-    }
-    package Perlito5::AST::Block;
-    sub Perlito5::AST::Block::new {
-        my $class = shift;
-        my %args = @_;
-        if ($args{'stmts'}) {
-            my @stmts;
-            for my $stmt (@{$args{'stmts'}}) {
-                !defined($stmt) && next;
-                ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->{'namespace'} eq 'Perlito5' && $stmt->{'code'} eq 'nop' && next;
-                push(@stmts, $stmt)
-            }
-            $args{'stmts'} = \@stmts
-        }
-        bless(\%args, $class)
-    }
-    sub Perlito5::AST::Block::sig {;
-        $_[0]->{'sig'}
-    }
-    sub Perlito5::AST::Block::stmts {;
-        $_[0]->{'stmts'}
     }
     package Perlito5::AST::Index;
     sub Perlito5::AST::Index::new {
@@ -5739,6 +5749,7 @@ use feature 'say';
             $self->{'arguments'} && push(@var, map {;
                 $_->get_captures()
             } @{$self->{'arguments'}});
+            ref($self->{'special_arg'}) && push(@var, $self->{'special_arg'}->get_captures());
             if ($code eq 'my' || $code eq 'our' || $code eq 'state') {;
                 push(@var, (map {;
                     ref($_) eq 'Perlito5::AST::Var' ? ({'dont' => $_->{'_id'}, }) : ()
@@ -23397,7 +23408,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             for $_ (@captures_ast) {
                 my $capture_name = 'this.env[' . $i . ']';
                 my $sigil = $_->{'_real_sigil'} || $_->{'sigil'};
-                if ($sigil eq '@') {;
+                if ($sigil eq '$') {;
+                    $capture_name = '((PlLvalue)' . $capture_name . ')'
+                }
+                elsif ($sigil eq '@') {;
                     $capture_name = '((PlArray)' . $capture_name . ')'
                 }
                 elsif ($sigil eq '%') {;
@@ -31979,6 +31993,7 @@ Internet, point your browser at http://www.perl.org/, the Perl Home Page.' . '
         }
         $backend eq 'java' && Perlito5::Java::Lib::init();
         ($backend eq 'js' || ${'^O'} eq 'node.js') && Perlito5::JavaScript2::Lib::init();
+        $backend eq 'java' && ($Perlito5::CODE_TOO_LARGE = 1);
         $Perlito5::EXPAND_USE = 1;
         $bootstrapping && ($Perlito5::EXPAND_USE = 0);
         if ($execute) {

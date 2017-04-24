@@ -49,7 +49,18 @@ Perlito5-Java work-in-progress
 ~~~sh
     $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
 
-    $ # time javac perlito5.java    # never finishes
+    $ time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
+    warning: [options] bootstrap class path not set in conjunction with -source 1.7
+
+    $ java Main -v
+    This is Perlito5 9.021, an implementation of the Perl language.
+~~~
+
+      - other compiler options that don't seem to work:
+
+~~~sh
+    $ time javac perlito5.java
+    # never finishes
 
     $ time javac -source 7 perlito5.java
     warning: [options] bootstrap class path not set in conjunction with -source 1.7
@@ -60,14 +71,8 @@ Perlito5-Java work-in-progress
     The system is out of resources.
     Consult the following stack trace for details.
     java.lang.OutOfMemoryError: Java heap space
-
-    $ time javac -J-Xms2000m -J-Xmx2000m -J-Xss2000m -source 7 perlito5.java
-    warning: [options] bootstrap class path not set in conjunction with -source 1.7
-    perlito5.java:40865: error: code too large for try statement
-                            catch(PlNextException e) {
-
-    $ java Main -v
 ~~~
+
 
   - BEGIN blocks
       - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
@@ -527,6 +532,8 @@ Workaround JVM bytecode size limit
 
 According to the Java Virtual Machine specification,
 the bytecode of a method must not be bigger than 65536 bytes:
+
+  - See: $Perlito5::CODE_TOO_LARGE in the /src5
 
   - Test.java:2309: error: code too large
 

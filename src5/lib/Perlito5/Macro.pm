@@ -443,6 +443,25 @@ sub insert_return_in_if {
     _insert_return_in_block($self, 'otherwise');
 }
 
+sub split_code_too_large {
+    # work around Java "Code too large" error
+    my @stmts = @_;
+    while (@stmts > 15) {
+        # print STDERR "Code too large, split ", scalar(@stmts), " nodes\n";
+        my @do = splice(@stmts, -8, 8);
+        push @stmts,
+            Perlito5::AST::Apply->new(
+                'arguments' => [
+                    Perlito5::AST::Block->new(
+                        'stmts' => \@do,
+                    ),
+                ],
+                'code' => 'do',
+            );
+    }
+    return @stmts;
+}
+
 1;
 
 =begin

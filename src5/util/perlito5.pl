@@ -348,6 +348,10 @@ if ($backend) {
     Perlito5::JavaScript2::Lib::init()
         if $backend eq 'js' || $^O eq 'node.js';
 
+    # work around java code size limitation
+    $Perlito5::CODE_TOO_LARGE = 1
+        if $backend eq 'java';
+
     $Perlito5::EXPAND_USE = 1;
     # partially disable "use":
     # force "use" code to be inlined instead of eval-ed
