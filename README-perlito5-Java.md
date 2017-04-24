@@ -37,6 +37,15 @@ Perlito5-Java platform differences
 Perlito5-Java work-in-progress
 ------------------------------
 
+  - bootstrapping the compiler
+      - eval-string not implemented, some operations will die()
+
+~~~sh
+    $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
+    $ time javac perlito5.java
+    $ java Main -v
+~~~
+
   - BEGIN blocks
       - Loops containing: BEGIN blocks, "use" statements, or named subroutines.
           - lexical variables inside loops don't behave properly if they are captured at compile-time
