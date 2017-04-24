@@ -2750,7 +2750,10 @@ package Perlito5::AST::Sub;
         for (@captures_ast) {
             my $capture_name = 'this.env[' . $i . ']';
             my $sigil = $_->{_real_sigil} || $_->{sigil};
-            if ($sigil eq '@') {
+            if ($sigil eq '$') {
+                $capture_name = "((PlLvalue)$capture_name)";
+            }
+            elsif ($sigil eq '@') {
                 $capture_name = "((PlArray)$capture_name)";
             }
             elsif ($sigil eq '%') {
