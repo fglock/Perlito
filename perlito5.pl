@@ -27416,6 +27416,9 @@ class PlObject {
     public PlObject end_of_array_index() {
         return PlCORE.die("Not an ARRAY reference");
     }
+    public PlObject set_end_of_array_index(PlObject o) {
+        return PlCORE.die("Not an ARRAY reference");
+    }
     public boolean is_undef() {
         return false;
     }
@@ -30545,6 +30548,16 @@ class PlArray extends PlObject implements Iterable<PlObject> {
     }
     public PlObject end_of_array_index() {
         return new PlInt(this.a.size() - 1);
+    }
+    public PlObject set_end_of_array_index(PlObject o) {
+        int size = o.to_int() + 1;
+        while (this.a.size() < size) {
+            this.push(PlCx.UNDEF);
+        }
+        while (size < this.a.size() && this.a.size() > 0) {
+            this.pop();
+        }
+        return o;
     }
     public double to_double() {
         return 0.0 + this.to_long();
