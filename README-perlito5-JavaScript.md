@@ -661,8 +661,6 @@ Features
 - cache the mro
 
 - add regex compiler
-- /x modifier
-- /s modifier
 - support all perl5 regex syntax
 - @v = /x/g
 
@@ -694,18 +692,6 @@ Features
     }
     $a = qr//;
     print $a->x, "\n";  # 123
-
-- javascript "var" erases the outer value within the whole current lexical scope
-- bug: "my" variables - this doesn't work as expected: my $v = $v
-   possible fix: rename variables
-   possible fix: initialize variables to null
-- add tests using closures, to check that the redeclared variable is a different variable
-    $ perl   -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
-    10
-    [space]
-    $ nodejs perlito5.js -Isrc5/lib  -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
-    10
-    10
 
 - lvalue ternary: ($a_or_b ? $a : $b) = $c;
 - lvalue substr()
@@ -769,6 +755,16 @@ Features
 
 Implemented but missing more tests
 ----------------------------------
+
+- add tests: "my" variables - this doesn't work as expected: my $v = $v
+
+- add tests using closures, to check that the redeclared variable is a different variable
+    $ perl   -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
+    10
+    [space]
+    $ nodejs perlito5.js -Isrc5/lib  -e '  my $x = 10; print "$x\n"; my $x; print "$x\n"; '
+    10
+    10
 
 - /e modifier
 
