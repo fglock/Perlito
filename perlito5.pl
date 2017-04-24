@@ -22442,7 +22442,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 }
                 elsif ($last_statement->isa('Perlito5::AST::Block')) {
                     Perlito5::Macro::_insert_return_in_block({'block' => $last_statement, }, 'block');
-                    push(@str, $last_statement->emit_java($level, 'runtime') . '')
+                    push(@str, $last_statement->emit_java($level, 'runtime') . '');
+                    if ($last_statement->{'label'}) {;
+                        push(@str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';')
+                    }
                 }
                 elsif ($last_statement->isa('Perlito5::AST::If')) {
                     Perlito5::Macro::insert_return_in_if($last_statement);

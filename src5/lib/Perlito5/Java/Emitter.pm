@@ -1096,6 +1096,11 @@ package Perlito5::Java::LexicalBlock;
                 Perlito5::Macro::_insert_return_in_block({ block => $last_statement }, 'block');
 
                 push @str, $last_statement->emit_java($level, 'runtime') . '';
+
+                # workaround - this is only needed if the block has a THROW (next/redo/last)
+                if ($last_statement->{label}) {
+                    push @str, emit_return($has_local, $local_label, 'PerlOp.context(want)') . ';'; 
+                }
             }
             elsif ( $last_statement->isa( 'Perlito5::AST::If' ) ) {
                 # "if" returns a value
