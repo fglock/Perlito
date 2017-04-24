@@ -39,6 +39,8 @@ Perlito5-Java work-in-progress
 
   - bootstrapping the compiler
       - eval-string not implemented, some operations will die()
+      - it seems to trigger this problem:
+          http://stackoverflow.com/questions/30707387/troubleshoot-slow-compilation
 
 ~~~sh
     $ perl perlito5.pl --bootstrapping -Isrc5/lib -Cjava src5/util/perlito5.pl > perlito5.java
