@@ -126,6 +126,13 @@ package Perlito5::AST::Apply;
         else {
             $arguments = $self->{arguments};
         }
+        my $special_arg;
+        if (ref $self->{special_arg}) {
+            $special_arg = $self->{special_arg}->emit_compile_time();
+        }
+        else {
+            $special_arg = $self->{special_arg};
+        }
 
         # allow this code to generate subs:
         # $ perl perlito5.pl -Isrc5/lib -Ccompile_time -e ' BEGIN { for my $v ("a" .. "c") { *{$v} = sub { *{$v} = \123; return shift() . $v } } } '
@@ -191,6 +198,7 @@ package Perlito5::AST::Apply;
             %$self,
             code => $code,
             arguments => $arguments,
+            ( $special_arg ? ( special_arg => $special_arg ) : () ),
         );
     }
 }

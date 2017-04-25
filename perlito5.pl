@@ -8857,6 +8857,13 @@ use feature 'say';
             else {;
                 $arguments = $self->{'arguments'}
             }
+            my $special_arg;
+            if (ref($self->{'special_arg'})) {;
+                $special_arg = $self->{'special_arg'}->emit_compile_time()
+            }
+            else {;
+                $special_arg = $self->{'special_arg'}
+            }
             if ($self->{'code'} eq 'infix:<=>') {
                 my $arg = $self->{'arguments'}->[0];
                 if (ref($arg) eq 'Perlito5::AST::Apply' && $arg->{'code'} eq 'prefix:<*>') {;
@@ -8875,7 +8882,7 @@ use feature 'say';
             if ($self->{'code'} eq 'require' && !$self->{'namespace'}) {;
                 return Perlito5::AST::Apply::->new(%{$self}, 'namespace' => 'Perlito5::Grammar::Use')
             }
-            return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments)
+            return __PACKAGE__->new(%{$self}, 'code' => $code, 'arguments' => $arguments, ($special_arg ? ('special_arg' => $special_arg) : ()))
         }
     }
     package Perlito5::AST::If;
