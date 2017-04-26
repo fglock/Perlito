@@ -43,6 +43,10 @@ my %FileFunc = (
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
+            else if (mode.equals("<:encoding(UTF-8)")) {
+                fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
+                fh.outputStream = null;
+            }
             else if (mode.equals(">")) {
                 // TODO: charset
                 fh.reader = null;
