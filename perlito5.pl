@@ -23516,6 +23516,16 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             else if (argCount > 1) {
                 // MODE,EXPR,LIST?
                 mode = List__.aget(0).toString();
+
+                if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
+                    // TODO - input stream, charset
+
+                    InputStream is = new PlStringInputStream(List__.aget(1).scalar_deref("main"));
+                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.outputStream = null;
+                    return PlCx.INT1;
+                }
+
                 s = List__.aget(1).toString();
             }
             if (mode.equals("<") || mode.equals("")) {
@@ -29447,7 +29457,7 @@ class PlLazyLvalue extends PlLvalue {
             $a cmp $b
         } keys(%java_classes))) . '}
 class PlLvalue extends PlObject {
-    private PlObject o;
+    public PlObject o;
     public Integer pos;
     public boolean regex_zero_length_flag;
 
@@ -29911,25 +29921,25 @@ class PlLvalue extends PlObject {
         } sort {;
             $a cmp $b
         } keys(%java_classes))) . '}
-class PlROvalue extends PlLazyLvalue {
+class PlROvalue extends PlLvalue {
 
     // Note: several versions of PlROvalue()
     public PlROvalue() {
-        this.llv = new PlLvalue(PlCx.UNDEF);
+        this.o = PlCx.UNDEF;
     }
     public PlROvalue(PlObject o) {
-        this.llv = new PlLvalue(o);
+        this.o = o;
     }
     public PlROvalue(PlLvalue o) {
-        this.llv = new PlLvalue(o.get());
+        this.o = o.get();
     }
     public PlROvalue(PlArray o) {
         // $a = @x
-        this.llv = new PlLvalue(o.scalar());
+        this.o = o.scalar();
     }
     public PlROvalue(PlHash o) {
         // $a = %x
-        this.llv = new PlLvalue(o.scalar());
+        this.o = o.scalar();
     }
 
     public PlLvalue set(Object o) {

@@ -4089,7 +4089,7 @@ EOT
     . <<'EOT'
 }
 class PlLvalue extends PlObject {
-    private PlObject o;
+    public PlObject o;
     public Integer pos;
     public boolean regex_zero_length_flag;
 
@@ -4573,25 +4573,25 @@ EOT
 
     . <<'EOT'
 }
-class PlROvalue extends PlLazyLvalue {
+class PlROvalue extends PlLvalue {
 
     // Note: several versions of PlROvalue()
     public PlROvalue() {
-        this.llv = new PlLvalue(PlCx.UNDEF);
+        this.o = PlCx.UNDEF;
     }
     public PlROvalue(PlObject o) {
-        this.llv = new PlLvalue(o);
+        this.o = o;
     }
     public PlROvalue(PlLvalue o) {
-        this.llv = new PlLvalue(o.get());
+        this.o = o.get();
     }
     public PlROvalue(PlArray o) {
         // $a = @x
-        this.llv = new PlLvalue(o.scalar());
+        this.o = o.scalar();
     }
     public PlROvalue(PlHash o) {
         // $a = %x
-        this.llv = new PlLvalue(o.scalar());
+        this.o = o.scalar();
     }
 
     public PlLvalue set(Object o) {
