@@ -57,6 +57,16 @@ my %FileFunc = (
             else if (argCount > 1) {
                 // MODE,EXPR,LIST?
                 mode = List__.aget(0).toString();
+
+                if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
+                    // TODO - input stream, charset
+
+                    InputStream is = new PlStringInputStream(List__.aget(1).scalar_deref("main"));
+                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.outputStream = null;
+                    return PlCx.INT1;
+                }
+
                 s = List__.aget(1).toString();
             }
             if (mode.equals("<") || mode.equals("")) {
