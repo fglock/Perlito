@@ -23487,6 +23487,14 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 PlCORE.die("TODO - not implemented: single argument open()");
             }
             else if (argCount == 1) {
+
+                if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
+                    InputStream is = new PlStringInputStream(List__.aget(0).scalar_deref("main"));
+                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.outputStream = null;
+                    return PlCx.INT1;
+                }
+
                 // EXPR
                 s = List__.aget(0).toString();
                 if (s.length() > 0 && s.charAt(0) == ' . chr(39) . '+' . chr(39) . ') {
@@ -23504,30 +23512,32 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 while (s.length() > 0 && (s.charAt(0) == ' . chr(39) . ' ' . chr(39) . ' || s.charAt(0) == ' . chr(39) . '\\t' . chr(39) . ')) {
                     s = s.substring(1);
                 }
-                path = Paths.get(s);
             }
             else if (argCount > 1) {
                 // MODE,EXPR,LIST?
                 mode = List__.aget(0).toString();
                 s = List__.aget(1).toString();
-                path = Paths.get(s);
             }
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals("<:encoding(UTF-8)")) {
+                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals(">")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
             }
             else if (mode.equals(">>")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
             }
@@ -25619,6 +25629,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.nio.charset.*;
+import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -28047,6 +28058,56 @@ class PlGlobRef extends PlReference {
         return true;
     }
 }
+
+
+class PlStringInputStream extends InputStream{
+    // read from string
+    // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
+    PlObject s;
+    ByteBuffer buf;
+
+    PlStringInputStream(PlObject o) {
+        this.s = o;
+        try {
+            byte[] bytes = s.toString().getBytes("UTF-8");
+            this.buf = ByteBuffer.wrap(bytes);
+        }
+        catch(UnsupportedEncodingException e) {
+            PlCORE.warn(PlCx.VOID, new PlArray(new PlString("encoding error in PlStringInputStream: " + e.getMessage())));
+        }
+    }
+    public synchronized int read() throws IOException {
+        if (!buf.hasRemaining()) {
+            return -1;
+        }
+        return buf.get();
+    }
+    public synchronized int read(byte[] bytes, int off, int len) throws IOException {
+        len = Math.min(len, buf.remaining());
+        buf.get(bytes, off, len);
+        return len;
+    }
+}
+
+// class PlStringOutputStream extends OutputStream {
+//     // write to string
+//     // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
+// 
+//     PlString buf;
+//     PlStringOutputStream(PlString buf) {
+//         this.buf = buf;
+//     }
+//     public synchronized void write(int b) throws IOException {
+//         buf.put((byte) b);
+//     }
+// 
+//     public synchronized void write(byte[] bytes, int off, int len) throws IOException {
+//         buf.put(bytes, off, len);
+//     }
+//     
+// }
+// 
+
 class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
     public String typeglob_name;

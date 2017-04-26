@@ -28,6 +28,14 @@ my %FileFunc = (
                 PlCORE.die("TODO - not implemented: single argument open()");
             }
             else if (argCount == 1) {
+
+                if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
+                    InputStream is = new PlStringInputStream(List__.aget(0).scalar_deref("main"));
+                    fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.outputStream = null;
+                    return PlCx.INT1;
+                }
+
                 // EXPR
                 s = List__.aget(0).toString();
                 if (s.length() > 0 && s.charAt(0) == '+') {
@@ -45,30 +53,32 @@ my %FileFunc = (
                 while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
                     s = s.substring(1);
                 }
-                path = Paths.get(s);
             }
             else if (argCount > 1) {
                 // MODE,EXPR,LIST?
                 mode = List__.aget(0).toString();
                 s = List__.aget(1).toString();
-                path = Paths.get(s);
             }
             if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals("<:encoding(UTF-8)")) {
+                path = Paths.get(s);
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
             }
             else if (mode.equals(">")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE));
             }
             else if (mode.equals(">>")) {
                 // TODO: charset
+                path = Paths.get(s);
                 fh.reader = null;
                 fh.outputStream = new PrintStream(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
             }

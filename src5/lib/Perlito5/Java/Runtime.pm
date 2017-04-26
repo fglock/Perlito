@@ -183,6 +183,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.nio.charset.*;
+import java.nio.ByteBuffer;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -2656,30 +2657,39 @@ class PlGlobRef extends PlReference {
     }
 }
 
-// 
-// class PlStringInputStream extends InputStream{
-//     // read from string
-//   
-//     String buf;
-//     int pos;
-//     PlStringInputStream(PlString buf) {
-//         this.buf = buf.toString();
-//         this.pos = 0;
-//     }
-//     public synchronized int read() throws IOException {
-//         if (pos >= buf.length()) {
-//             return -1;
-//         }
-//         return buf.charAt(pos++);
-//     }
-//     public synchronized int read(byte[] bytes, int off, int len) throws IOException {
-//         len = Math.min(len, buf.length() - pos);
-//         buf.get(bytes, off, len);
-//         return len;
-//     }
-// }
+
+class PlStringInputStream extends InputStream{
+    // read from string
+    // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
+    PlObject s;
+    ByteBuffer buf;
+
+    PlStringInputStream(PlObject o) {
+        this.s = o;
+        try {
+            byte[] bytes = s.toString().getBytes("UTF-8");
+            this.buf = ByteBuffer.wrap(bytes);
+        }
+        catch(UnsupportedEncodingException e) {
+            PlCORE.warn(PlCx.VOID, new PlArray(new PlString("encoding error in PlStringInputStream: " + e.getMessage())));
+        }
+    }
+    public synchronized int read() throws IOException {
+        if (!buf.hasRemaining()) {
+            return -1;
+        }
+        return buf.get();
+    }
+    public synchronized int read(byte[] bytes, int off, int len) throws IOException {
+        len = Math.min(len, buf.remaining());
+        buf.get(bytes, off, len);
+        return len;
+    }
+}
+
 // class PlStringOutputStream extends OutputStream {
 //     // write to string
+//     // See: http://www.java2s.com/Code/JavaAPI/java.io/extendsOutputStream.htm
 // 
 //     PlString buf;
 //     PlStringOutputStream(PlString buf) {
