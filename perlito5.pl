@@ -23791,6 +23791,8 @@ class PlCORE {
             else {
                 // TODO - add module name, line number
                 s = s + " at " + PlV.sget("main::0") + "\\n";
+                // Java stack trace
+                s = s + Arrays.toString(Thread.currentThread().getStackTrace());
             }
             List__.set(new PlArray(new PlString(s)));
         }
