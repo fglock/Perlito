@@ -63,7 +63,7 @@ my %FileFunc = (
                 if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
                     // TODO - input stream, charset
 
-                    PlObject o = List__.aget(0).scalar_deref("main");
+                    PlObject o = List__.aget(1).scalar_deref("main");
                     InputStream is = new PlStringInputStream(o);
                     fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     fh.reader.mark(o.toString().length());
@@ -296,8 +296,8 @@ EOT
 EOT
     # seek FILEHANDLE,POSITION,WHENCE
     seek => <<'EOT',
-        int position = List__.aget(1).to_int();
-        int whence   = List__.aget(2).to_int();
+        int position = List__.aget(0).to_int();
+        int whence   = List__.aget(1).to_int();
         try {
 
             // TODO - random access files, more tests

@@ -23527,7 +23527,7 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
                     // TODO - input stream, charset
 
-                    PlObject o = List__.aget(0).scalar_deref("main");
+                    PlObject o = List__.aget(1).scalar_deref("main");
                     InputStream is = new PlStringInputStream(o);
                     fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     fh.reader.mark(o.toString().length());
@@ -23736,8 +23736,8 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             die("TODO: sysread with OFFSET");
         }
         return new PlInt(leng);
-', 'seek' => '        int position = List__.aget(1).to_int();
-        int whence   = List__.aget(2).to_int();
+', 'seek' => '        int position = List__.aget(0).to_int();
+        int whence   = List__.aget(1).to_int();
         try {
 
             // TODO - random access files, more tests

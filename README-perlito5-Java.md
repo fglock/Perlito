@@ -114,8 +114,8 @@ Perlito5-Java work-in-progress
       - "fallback" not implemented; fallback mode behaves as "TRUE"
 
   - file handles are partially implemented
-      - open scalarref not implemented
-          - __DATA__ sections not working, they depend on open-scalarref and seek().
+      - open scalarref works
+      - <DATA> works
       - open binary mode vs. open utf8 needs more work
       - files don't "auto-close"
 
