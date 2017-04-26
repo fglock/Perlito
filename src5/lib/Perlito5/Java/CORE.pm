@@ -360,7 +360,7 @@ EOT
                 // TODO - add module name, line number
                 s = s + " at " + PlV.sget("main::0") + "\n";
                 // Java stack trace
-                s = s + Arrays.toString(Thread.currentThread().getStackTrace());
+                s = s + Arrays.toString(new Throwable().getStackTrace());
             }
             List__.set(new PlArray(new PlString(s)));
         }
