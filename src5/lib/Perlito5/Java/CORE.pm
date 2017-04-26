@@ -14,6 +14,7 @@ my %FileFunc = (
         int argCount = List__.to_int();
         Path path = null; 
         String mode = "";
+        String s = "";
         try {
             fh.readlineBuffer = new StringBuilder();
             fh.eof = false;
@@ -26,19 +27,33 @@ my %FileFunc = (
             if (argCount == 0) {
                 PlCORE.die("TODO - not implemented: single argument open()");
             }
-            if (argCount == 1) {
+            else if (argCount == 1) {
                 // EXPR
-                String s = List__.aget(0).toString();
+                s = List__.aget(0).toString();
+                if (s.length() > 0 && s.charAt(0) == '+') {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                if (s.length() > 1 && s.substring(0, 2) == ">>") {
+                    mode = mode + s.substring(0, 2);
+                    s = s.substring(2);
+                }
+                else if (s.length() > 0 && (s.charAt(0) == '>' || s.charAt(0) == '<')) {
+                    mode = mode + s.substring(0, 1);
+                    s = s.substring(1);
+                }
+                while (s.length() > 0 && (s.charAt(0) == ' ' || s.charAt(0) == '\t')) {
+                    s = s.substring(1);
+                }
                 path = Paths.get(s);
-                PlCORE.die("TODO - not implemented: 2-argument open()");
             }
-            if (argCount > 1) {
+            else if (argCount > 1) {
                 // MODE,EXPR,LIST?
                 mode = List__.aget(0).toString();
-                String s = List__.aget(1).toString();
+                s = List__.aget(1).toString();
                 path = Paths.get(s);
             }
-            if (mode.equals("<")) {
+            if (mode.equals("<") || mode.equals("")) {
                 // TODO: charset
                 fh.reader = Files.newBufferedReader(path, PlCx.UTF8);
                 fh.outputStream = null;
