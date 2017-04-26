@@ -23494,8 +23494,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             else if (argCount == 1) {
 
                 if (List__.aget(0).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
-                    InputStream is = new PlStringInputStream(List__.aget(0).scalar_deref("main"));
+                    PlObject o = List__.aget(0).scalar_deref("main");
+                    InputStream is = new PlStringInputStream(o);
                     fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;
                 }
@@ -23525,8 +23527,10 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
                 if (List__.aget(1).ref().str_eq(new PlString("SCALAR")).to_boolean()) {
                     // TODO - input stream, charset
 
-                    InputStream is = new PlStringInputStream(List__.aget(1).scalar_deref("main"));
+                    PlObject o = List__.aget(0).scalar_deref("main");
+                    InputStream is = new PlStringInputStream(o);
                     fh.reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    fh.reader.mark(o.toString().length());
                     fh.outputStream = null;
                     return PlCx.INT1;
                 }
@@ -23734,24 +23738,25 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
         return new PlInt(leng);
 ', 'seek' => '        int position = List__.aget(1).to_int();
         int whence   = List__.aget(2).to_int();
-        PlCORE.die("seek() is not yet implemented");
-        // try {
+        try {
 
+            // TODO - random access files, more tests
             // See: http://stackoverflow.com/questions/262618/java-bufferedreader-back-to-the-top-of-a-text-file
 
-            // fh.readlineBuffer = new StringBuilder();
-            // fh.eof = true;
-            // if (fh.outputStream != null) {
-            //     fh.outputStream.close();
-            // }
-            // if (fh.reader != null) {
-            //     fh.reader.close();
-            // }
-        // }
-        // catch(IOException e) {
-        //     PlV.sset("main::!", new PlString(e.getMessage()));
-        //     return PlCx.UNDEF;
-        // }
+            // position = 0
+            fh.reader.reset();
+            fh.readlineBuffer = new StringBuilder();
+            fh.eof = false;
+
+            if (position > 0) {
+                PlCORE.read(PlCx.VOID, fh, new PlArray(PlCx.UNDEF, new PlInt(position)));
+            }
+
+        }
+        catch(IOException e) {
+            PlV.sset("main::!", new PlString(e.getMessage()));
+            return PlCx.UNDEF;
+        }
         return PlCx.INT1;
 ');
     sub Perlito5::Java::CORE::emit_java {;
