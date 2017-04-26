@@ -2655,6 +2655,47 @@ class PlGlobRef extends PlReference {
         return true;
     }
 }
+
+// 
+// class PlStringInputStream extends InputStream{
+//     // read from string
+//   
+//     String buf;
+//     int pos;
+//     PlStringInputStream(PlString buf) {
+//         this.buf = buf.toString();
+//         this.pos = 0;
+//     }
+//     public synchronized int read() throws IOException {
+//         if (pos >= buf.length()) {
+//             return -1;
+//         }
+//         return buf.charAt(pos++);
+//     }
+//     public synchronized int read(byte[] bytes, int off, int len) throws IOException {
+//         len = Math.min(len, buf.length() - pos);
+//         buf.get(bytes, off, len);
+//         return len;
+//     }
+// }
+// class PlStringOutputStream extends OutputStream {
+//     // write to string
+// 
+//     PlString buf;
+//     PlStringOutputStream(PlString buf) {
+//         this.buf = buf;
+//     }
+//     public synchronized void write(int b) throws IOException {
+//         buf.put((byte) b);
+//     }
+// 
+//     public synchronized void write(byte[] bytes, int off, int len) throws IOException {
+//         buf.put(bytes, off, len);
+//     }
+//     
+// }
+// 
+
 class PlFileHandle extends PlReference {
     public static final PlString REF = new PlString("GLOB");
     public String typeglob_name;
