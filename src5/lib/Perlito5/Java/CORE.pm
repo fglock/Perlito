@@ -290,6 +290,31 @@ EOT
         }
         return new PlInt(leng);
 EOT
+    # seek FILEHANDLE,POSITION,WHENCE
+    seek => <<'EOT',
+        int position = List__.aget(1).to_int();
+        int whence   = List__.aget(2).to_int();
+        PlCORE.die("seek() is not yet implemented");
+        // try {
+
+            // See: http://stackoverflow.com/questions/262618/java-bufferedreader-back-to-the-top-of-a-text-file
+
+            // fh.readlineBuffer = new StringBuilder();
+            // fh.eof = true;
+            // if (fh.outputStream != null) {
+            //     fh.outputStream.close();
+            // }
+            // if (fh.reader != null) {
+            //     fh.reader.close();
+            // }
+        // }
+        // catch(IOException e) {
+        //     PlV.sset("main::!", new PlString(e.getMessage()));
+        //     return PlCx.UNDEF;
+        // }
+        return PlCx.INT1;
+EOT
+
 );
 
 

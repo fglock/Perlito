@@ -21599,6 +21599,11 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             my $fun = shift(@in) || bless({'arguments' => [], 'bareword' => 1, 'code' => 'ARGV', 'namespace' => 'main'}, 'Perlito5::AST::Apply');
             my $list = Perlito5::Java::to_list(\@in, $level);
             'PlCORE.readline(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . $list . ')'
+        }, 'seek' => sub {
+            (my($self), my($level), my($wantarray)) = @_;
+            my @in = @{$self->{'arguments'}};
+            my $fun = shift(@in);
+            'PlCORE.seek(' . Perlito5::Java::to_context($wantarray) . ', ' . Perlito5::Java::to_filehandle($fun, $level + 1) . ', ' . Perlito5::Java::to_param_list(\@in, $level + 1) . ')'
         }, 'map' => sub {
             (my($self), my($level), my($wantarray)) = @_;
             my @in = @{$self->{'arguments'}};
@@ -23727,6 +23732,27 @@ use feature ' . chr(39) . 'say' . chr(39) . ';
             die("TODO: sysread with OFFSET");
         }
         return new PlInt(leng);
+', 'seek' => '        int position = List__.aget(1).to_int();
+        int whence   = List__.aget(2).to_int();
+        PlCORE.die("seek() is not yet implemented");
+        // try {
+
+            // See: http://stackoverflow.com/questions/262618/java-bufferedreader-back-to-the-top-of-a-text-file
+
+            // fh.readlineBuffer = new StringBuilder();
+            // fh.eof = true;
+            // if (fh.outputStream != null) {
+            //     fh.outputStream.close();
+            // }
+            // if (fh.reader != null) {
+            //     fh.reader.close();
+            // }
+        // }
+        // catch(IOException e) {
+        //     PlV.sset("main::!", new PlString(e.getMessage()));
+        //     return PlCx.UNDEF;
+        // }
+        return PlCx.INT1;
 ');
     sub Perlito5::Java::CORE::emit_java {;
         return '

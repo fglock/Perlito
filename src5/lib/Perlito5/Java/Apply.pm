@@ -1443,6 +1443,16 @@ package Perlito5::AST::Apply;
              .      $list
              . ')';
         },
+        'seek' => sub {
+            my ($self, $level, $wantarray) = @_;
+            my @in  = @{$self->{arguments}};
+            my $fun = shift(@in);
+            'PlCORE.seek('
+             .      Perlito5::Java::to_context($wantarray) . ', '
+             .      Perlito5::Java::to_filehandle($fun, $level+1) . ', '
+             .      Perlito5::Java::to_param_list(\@in, $level+1)  
+             . ')';
+        },
         'map' => sub {
             my ($self, $level, $wantarray) = @_;
             my @in  = @{$self->{arguments}};
