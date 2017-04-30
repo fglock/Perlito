@@ -1133,7 +1133,7 @@ use feature 'say';
             for my $branch ('stmts', 'arguments') {;
                 if (exists($node->{$branch}) && ref($node->{$branch}) eq 'ARRAY') {;
                     for $_ (0 .. $#{$node->{$branch}}) {
-                        (my($retnode), my(@retrules)) = @{$node->{'_find_state_expr'} //= [find_state_expr($node->{$branch}->[$_], @rules, ['Lookup' => $branch], ['Index' => $_])]};
+                        (my($retnode), my(@retrules)) = find_state_expr($node->{$branch}->[$_], @rules, ['Lookup' => $branch], ['Index' => $_]);
                         if ($retnode) {;
                             return ($retnode, @retrules)
                         }
@@ -5698,13 +5698,11 @@ use feature 'say';
     {;
         sub Perlito5::AST::Block::get_captures {
             (my($self)) = @_;
-            return @{$self->{'_get_captures'} //= do {
-                my @var;
-                for my $stmt (@{$self->{'stmts'}}) {;
-                    push(@var, $stmt->get_captures())
-                }
-                \@var
-            }}
+            my @var;
+            for my $stmt (@{$self->{'stmts'}}) {;
+                push(@var, $stmt->get_captures())
+            }
+            return @var
         }
     }
     package Perlito5::AST::Index;

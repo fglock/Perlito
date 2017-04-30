@@ -27,15 +27,11 @@ package Perlito5::AST::Block;
 {
     sub get_captures {
         my ($self) = @_;
-        return @{
-            $self->{_get_captures} //= do {
-                my @var;
-                for my $stmt ( @{ $self->{stmts} } ) {
-                    push @var, $stmt->get_captures();
-                }
-                \@var;
-              }
-        };
+        my @var;
+        for my $stmt (@{$self->{stmts}}) {
+            push @var, $stmt->get_captures();
+        }
+        return @var;
     }
 }
 
