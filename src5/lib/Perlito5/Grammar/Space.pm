@@ -20,7 +20,7 @@ my %space = (
                     my $str = $_[0];
                     my $pos = $_[1];
                     count_line($pos);
-                    $pos++ if substr($str, $pos, 1) eq chr(13);
+                    $pos++ if $str->[$pos] eq chr(13);
                     my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
                     $m->{to};
                 },
@@ -28,7 +28,7 @@ my %space = (
     chr(13) => sub {
                     my $str = $_[0];
                     my $pos = $_[1];
-                    if (substr($str, $pos, 1) eq chr(10)) {
+                    if ($str->[$pos] eq chr(10)) {
                         count_line($pos);
                         $pos++;
                     }
@@ -43,49 +43,54 @@ sub term_space {
     my $str = $_[0];
     my $pos = $_[1];
     my $p = $pos;
-    # $p++ while substr($str, $p, 1) eq ' ';
-    while (exists $space{substr($str, $p, 1)}) {
-        $p = $space{substr($str, $p, 1)}->($str, $p+1)
+    while ( $p <= @$str && $space{ $str->[$p] }) {
+        $p = $space{ $str->[$p] }->($str, $p+1)
     }
-    return term_end( $str, $p )
-        if substr($str, $p, 7) eq '__END__'
-        || substr($str, $p, 8) eq '__DATA__';
+    if ( $str->[$p] eq '_' ) {
+        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
+        return term_end( $str, $p )
+            if $s eq '__END__'
+            || $s . $str->[$p+7] eq '__DATA__';
+    }
     return { str => $str, from => $pos, to => $p, capture => [ 'space',   ' ' ] }
 }
 
 sub term_end {
     my $str = $_[0];
     my $p = $_[1];
+    # print STDERR "term_end $p\n";
+
     my $is_data = 0;
-    if ( substr($str, $_[1], 7) eq '__END__' && $Perlito5::PKG_NAME eq 'main' ) {
+    my $s = join( "", @{$str}[ $p .. $p + 6 ] );
+    if ( $s eq '__END__' && $Perlito5::PKG_NAME eq 'main' ) {
         $p = $p + 7;
         $is_data = 1;
     }
-    elsif ( substr($str, $_[1], 8) eq '__DATA__' ) {
+    elsif ( $s . $str->[$p+7] eq '__DATA__' ) {
         $p = $p + 8;
         $is_data = 1;
     }
     my $m = Perlito5::Grammar::Space::to_eol($str, $p);
     $p = $m->{to};
-    if ( substr($str, $p, 1) eq chr(10) ) {
+    if ( $str->[$p] eq chr(10) ) {
         count_line($p);
         $p++;
-        $p++ if substr($str, $p, 1) eq chr(13);
+        $p++ if $str->[$p] eq chr(13);
     }
-    elsif ( substr($str, $p, 1) eq chr(13) ) {
+    elsif ( $str->[$p] eq chr(13) ) {
         $p++;
-        if (substr($str, $p, 1) eq chr(10)) {
+        if ($str->[$p] eq chr(10)) {
             count_line($p);
             $p++;
         }
     }
     if ($is_data) {
-        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $p, data => $_[0] };
+        $Perlito5::DATA_SECTION{ $Perlito5::PKG_NAME } = { pos => $p, data => join( "", @$str ) };
         # TODO - leave the DATA filehandle open
         # open(main::DATA, '<', \$Perlito5::DATA_SECTION{main}{data});
         # seek(main::DATA, $Perlito5::DATA_SECTION{main}{pos}, 0);
     }
-    return { str => $str, from => $_[1], to => length($_[0]), capture => [ 'space',   ' ' ] }
+    return { str => $str, from => $_[1], to => scalar(@$str), capture => [ 'space',   ' ' ] }
 }
 
 Perlito5::Grammar::Precedence::add_term( '#'        => \&term_space );
@@ -145,32 +150,40 @@ token start_of_line {
 };
 
 sub ws {
-    my $str = shift;
-    my $pos = shift;
+    my $str = $_[0];
+    my $pos = $_[1];
     my $p = $pos;
-    while (exists $space{substr($str, $p, 1)}) {
-        $p = $space{substr($str, $p, 1)}->($str, $p+1)
+    while ( $p <= @$str && $space{ $str->[$p] }) {
+        $p = $space{ $str->[$p] }->($str, $p+1)
     }
-    return term_end( $str, $p )
-        if substr($str, $p, 7) eq '__END__'
-        || substr($str, $p, 8) eq '__DATA__';
+    if ( $str->[$p] eq '_' ) {
+        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
+        return term_end( $str, $p )
+            if $s eq '__END__'
+            || $s . $str->[$p+7] eq '__DATA__';
+    }
     if ($p == $pos) {
-        return 0;
+        return;
     }
     return { str => $str, from => $pos, to => $p }
 }
 
 sub opt_ws {
-    my $str = shift;
-    my $pos = shift;
+    my $str = $_[0];
+    my $pos = $_[1];
     my $p = $pos;
-    while (exists $space{substr($str, $p, 1)}) {
-        $p = $space{substr($str, $p, 1)}->($str, $p+1)
+    # if ($p == 50) { print STDERR "[[ ", join("", @{$str}), "]]\n"; }
+    # print STDERR "$pos: $Perlito5::FILE_NAME $Perlito5::LINE_NUMBER\n";
+    while ( $p <= @$str && $space{ $str->[$p] }) {
+        $p = $space{ $str->[$p] }->($str, $p+1)
     }
-    return term_end( $str, $p )
-        if substr($str, $p, 7) eq '__END__'
-        || substr($str, $p, 8) eq '__DATA__';
-    return { str => $str, from => $pos, to => $p }
+    if ( $str->[$p] eq '_' ) {
+        my $s = join( "", @{$str}[ $p .. $p + 6 ] );
+        return term_end( $_[0], $p )
+            if $s eq '__END__'
+            || $s . $str->[$p+7] eq '__DATA__';
+    }
+    return { str => $_[0], from => $pos, to => $p }
 }
 
 1;

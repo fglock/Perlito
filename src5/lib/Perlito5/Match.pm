@@ -4,9 +4,10 @@ package Perlito5::Match;
 
 sub flat {
     my $self = $_[0];
-    defined( $self->{capture} )
-    ? $self->{capture}
-    : substr( $self->{str}, $self->{from}, ( $self->{to} - $self->{from} ) )
+    return $self->{capture} if defined( $self->{capture} );
+    return join( "",
+        @{ $self->{str} }[ $self->{from} .. $self->{to} - 1 ]
+    );
 }
 
 1;

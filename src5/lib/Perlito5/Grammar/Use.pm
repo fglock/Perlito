@@ -118,7 +118,7 @@ token stmt_use {
 
             if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                 my $code = 'our (' . join(', ', @$list) . ')';
-                my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
                 Perlito5::Compiler::error "not a valid variable name: @$list"
                     if !$m;
                 $MATCH->{capture} = $m->{capture};
@@ -133,7 +133,7 @@ token stmt_use {
                                 .   Perlito5::Dumper::_dumper($name->{$key})
                                 . ' }';
                             # say "will do: $code";
-                            my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                            my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
                             Perlito5::Compiler::error "not a valid constant: @$list"
                                 if !$m;
                             # say Perlito5::Dumper::Dumper($m->{capture});
@@ -148,7 +148,7 @@ token stmt_use {
                               )
                             . ') }';
                         # say "will do: $code";
-                        my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                        my $m = Perlito5::Grammar::Statement::statement_parse( [ split "", $code ], 0);
                         Perlito5::Compiler::error "not a valid constant: @$list"
                             if !$m;
                         # say Perlito5::Dumper::Dumper($m->{capture});
@@ -334,7 +334,7 @@ sub bootstrapping_use {
 sub require {
     my $filename = shift;
 
-    my $m2 = version_string($filename, 0);
+    my $m2 = version_string( [ split '', $filename ], 0);
     if ($m2) {
         # "use v5", "use v5.8" - check perl version
         my $version = $m2->{"version_string"}{capture}{buf};

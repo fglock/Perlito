@@ -8,7 +8,7 @@ sub opt_attribute {
 
     my @attributes;
     my $ws = Perlito5::Grammar::Space::opt_ws( $str, $pos );
-    if (substr($str, $ws->{to}, 1) ne ':') {
+    if ($str->[ $ws->{to} ] ne ':') {
         # no colon, return an empty list
         return { to => $pos, capture => [] }
     }
@@ -22,7 +22,7 @@ sub opt_attribute {
 
         my $attr = [ Perlito5::Match::flat($m), undef ];
         $to = $m->{to};
-        my $delimiter = substr( $str, $to, 1 );
+        my $delimiter = $str->[$to];
         if ($delimiter eq '(') {
             # "ident(params)"
             my $params = Perlito5::Grammar::String::string_interpolation_parse($str, $m->{to} + 1, '(', ')', 0);
@@ -34,7 +34,7 @@ sub opt_attribute {
 
         # check if the attribute list continues
         $ws = Perlito5::Grammar::Space::opt_ws( $str, $to );
-        if (substr($str, $ws->{to}, 1) eq ':') {
+        if ($str->[$ws->{to}] eq ':') {
             $ws = Perlito5::Grammar::Space::opt_ws( $str, $ws->{to} + 1 );
         }
         $p = $ws->{to};

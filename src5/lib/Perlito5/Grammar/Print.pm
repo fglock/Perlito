@@ -33,30 +33,18 @@ token the_object {
             }
     ]
 
+    <.Perlito5::Grammar::Space::opt_ws>
+
+    <!before ',' | '?' | '->' | '[' | '{' >
+
     {
         my $pos = $MATCH->{to};
-        my $m = Perlito5::Grammar::Space::ws($MATCH->{str}, $pos);
-        $pos = $m->{to} if $m;
+        my $s = $str->[$pos];
 
-        my $s = substr($MATCH->{str}, $pos, 1);
-        my $s2 = substr($MATCH->{str}, $pos, 2);
-
-        # print Perlito5::Dumper::Dumper $MATCH;
-        # print "after: $MATCH->{capture} $pos '$MATCH->{str}' '$s' '$s2'\n";
-
-        if (  $s eq ',' 
-           || $s eq '?'
-           || $s2 eq '->' 
-           || $s eq '[' 
-           || $s eq '{' 
-           ) 
-        {
-            return
-        }
         if ( $s eq '+' ) {
             my $m = Perlito5::Grammar::Space::ws($MATCH->{str}, $pos + 1);
             if ($m) {
-                return 
+                return
             }
             # print "space + non-space\n";
         }
@@ -69,13 +57,11 @@ token the_object {
                    && $next_op ne "<<"; # start HEREDOC
         }
     }
-
 };
 
 sub typeglob {
     my $str = $_[0];
     my $pos = $_[1];
-
     my $p = $pos;
     my $m_namespace = Perlito5::Grammar::optional_namespace_before_ident( $str, $p );
     my $namespace = Perlito5::Match::flat($m_namespace);
@@ -98,7 +84,10 @@ sub typeglob {
     my $name = Perlito5::Match::flat($m_name);
     $p = $m_name->{to};
 
-    if ( substr( $str, $p, 2) eq '::' ) {
+    my $s  = $str->[$p];
+    my $s2 = $s . $str->[$p + 1];
+
+    if ( $s2 eq '::' ) {
         # ::X::y::
         $m_name->{to} = $p + 2;
         $m_name->{capture} = Perlito5::AST::Var->new(

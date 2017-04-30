@@ -108,7 +108,7 @@ sub term_special_var {
     #  ' ${main::x} '
     #
 
-    my $s = substr( $str, $pos, 3 );
+    my $s = $str->[$pos] . $str->[$pos + 1] . $str->[$pos + 2];
     if ( $s eq '$#[' ) {
         # special case: $# is not valid, but @# is ok
         $len = 2;
@@ -117,14 +117,14 @@ sub term_special_var {
         $len = length($s);
     }
     else {
-        $s = substr( $str, $pos, 2 );
+        $s = $str->[$pos] . $str->[$pos + 1];
         if ( exists $special_var{$s} ) {
             $len = 2;
         }
     }
     if ( $len ) {
-        my $c0 = substr( $str, $pos + $len - 1, 1 );
-        my $c1 = substr( $str, $pos + $len, 1 );
+        my $c0 = $str->[ $pos + $len - 1 ];
+        my $c1 = $str->[ $pos + $len ];
         if  ( 
                 ( $c0 eq '$' || $c0 eq '@' || $c0 eq '%' || $c0 eq '*' || $c0 eq '&' )
             &&  
@@ -169,12 +169,12 @@ sub term_sigil {
     my $str = $_[0];
     my $pos = $_[1];
 
-    my $c1 = substr($str, $pos, 1);
+    my $c1 = $str->[$pos];
     return unless exists $sigil{$c1};
 
     my $p = $pos + 1;
     my $sigil = $c1;
-    if (substr($str, $pos, 2) eq '$#') {
+    if ( $c1 eq '$' && $str->[$pos+1] eq '#') {
         $sigil = '$#';
         $p++;
     }
@@ -183,7 +183,7 @@ sub term_sigil {
     $p = $m->{to};
 
     my $p0 = $p;
-    $c1 = substr($str, $p, 1);
+    $c1 = $str->[$p];
     my $q = $p + 1;
     if ( $c1 eq '{' ) {
         #  ${ ...
@@ -204,7 +204,7 @@ sub term_sigil {
             }
             if ($namespace || $name) {
                 my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
-                if (substr($str, $pos, 1) eq '{' || substr($str, $pos, 1) eq '[' || substr($str, $pos, 1) eq '}') {
+                if ($str->[$pos] eq '{' || $str->[$pos] eq '[' || $str->[$pos] eq '}') {
                     # we are not parsing:  ${subr()}
                     # we are parsing:  ${var}  ${var{index}}
                     # create the 'Var' object
@@ -219,7 +219,7 @@ sub term_sigil {
                     $m->{capture} = [ 'term', $m->{capture} ];
                     $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{to});
                     my $p = $spc->{to};
-                    if ( substr($str, $p, 1) eq '}' ) {
+                    if ( $str->[$p] eq '}' ) {
                         $m->{to} = $p + 1;
                         return $m;
                     }
@@ -236,7 +236,7 @@ sub term_sigil {
                 $name = $name . Perlito5::Match::flat($m);
                 $p = $m->{to};
             }
-            if ( substr($str, $p, 1) eq '}' ) {
+            if ( $str->[$p] eq '}' ) {
                 $caret->{capture} = [ 'term', 
                         Perlito5::AST::Var->new(
                             name => $name,
@@ -248,19 +248,19 @@ sub term_sigil {
                 return $caret;
             }
         }
-        my $special = $sigil . substr($str, $p, 1);
+        my $special = $sigil . $str->[$p];
         if ( exists $special_var{$special} ) {
             # ${@}  $#{+}  - special variable
             my $m = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
             my $p2 = $m->{to};
-            my $c2 = substr($str, $p2, 1);
+            my $c2 = $str->[$p2];
             if ($c2 eq '}') {
                 $m->{to} = $p2 + 1;
                 $m->{capture} = [ 'term', 
                         Perlito5::AST::Var->new(
                                 sigil       => $sigil,
                                 namespace   => '',
-                                name        => substr($str, $p, 1),
+                                name        => $str->[$p],
                                 ( $sigil eq '$#' ? ( _real_sigil => '@' ) : () ),
                                 _namespace  => 'main',
                             )
@@ -268,7 +268,7 @@ sub term_sigil {
                 return $m;
             }
         }
-        if (substr($str, $p, 1) eq '}') {
+        if ($str->[$p] eq '}') {
             # ${}
             Perlito5::Compiler::error "syntax error";
         }
@@ -329,7 +329,7 @@ sub term_sigil {
         #  $$ ...
         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
         my $p2 = $m2->{to};
-        my $c2 = substr($str, $p2, 1);
+        my $c2 = $str->[$p2];
         if ($c2 ne ',' && $c2 ne ';') {
             # not $$; not $$,
             $m = term_sigil( $str, $p );

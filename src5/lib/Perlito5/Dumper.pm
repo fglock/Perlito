@@ -134,8 +134,7 @@ sub escape_string {
     my $tmp = '';
     return "''" if $s eq '';
     return 0+$s if (0+$s) eq $s && $s =~ /[0-9]/;
-    for my $i (0 .. length($s) - 1) {
-        my $c = substr($s, $i, 1);
+    for my $c ( split "", $s ) {
         if ( $c eq '\\' ) {
             $tmp = $tmp . '\\' . '\\';
         }

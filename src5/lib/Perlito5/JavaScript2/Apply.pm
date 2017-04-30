@@ -751,8 +751,9 @@ package Perlito5::AST::Apply;
                 # eval string
 
                 # retrieve the parse-time env
+                # TODO - use "dump_to_ast"
                 my $scope_perl5 = Perlito5::Dumper::ast_dumper( [$self->{_scope}] );
-                my $m = Perlito5::Grammar::Expression::term_square( $scope_perl5, 0 );
+                my $m = Perlito5::Grammar::Expression::term_square( [ split "", $scope_perl5 ], 0 );
                 if (!$m || $m->{to} < length($scope_perl5) ) {
                     die "invalid internal scope in eval\n";
                 }

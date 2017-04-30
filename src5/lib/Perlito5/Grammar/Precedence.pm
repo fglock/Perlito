@@ -77,12 +77,13 @@ sub op_parse {
     my $str  = shift;
     my $pos  = shift;
     my $last_is_term = shift;
+    my $tok = join( "", @{$str}[ $pos .. $pos + 15 ] );
 
     for my $len ( @$End_token_chars ) {
-        my $term = substr($str, $pos, $len);
+        my $term = substr($tok, 0, $len);
         if (exists($End_token->{$term})) {
-            my $c1 = substr($str, $pos + $len - 1, 1);
-            my $c2 = substr($str, $pos + $len, 1);
+            my $c1 = substr($tok, $len - 1, 1);
+            my $c2 = substr($tok, $len, 1);
             if (  !(is_ident_middle($c1) && is_ident_middle($c2) )
                && !($c1 eq '<' && $c2 eq '<')
                )
@@ -101,10 +102,10 @@ sub op_parse {
 
     if ( !$last_is_term ) {
         for my $len ( @Term_chars ) {
-            my $term = substr($str, $pos, $len);
+            my $term = substr($tok, 0, $len);
             if (exists($Term{$term})) {
-                my $c1 = substr($str, $pos + $len - 1, 1);
-                my $c2 = substr($str, $pos + $len, 1);
+                my $c1 = substr($tok, $len - 1, 1);
+                my $c2 = substr($tok, $len, 1);
                 if ( is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
                     my $m = $Term{$term}->($str, $pos);
                     return $m if $m;
@@ -115,7 +116,7 @@ sub op_parse {
 
     # check for operators that need special parsing
     for my $len ( @Parsed_op_chars ) {
-        my $op = substr($str, $pos, $len);
+        my $op = substr($tok, 0, $len);
         if (exists($Parsed_op{$op})) {
             my $m = $Parsed_op{$op}->($str, $pos);
             return $m if $m;
@@ -123,10 +124,10 @@ sub op_parse {
     }
 
     for my $len ( @Op_chars ) {
-        my $op = substr($str, $pos, $len);
+        my $op = substr($tok, 0, $len);
         if (exists($Op{$op})) {
-            my $c1 = substr($str, $pos + $len - 1, 1);
-            my $c2 = substr($str, $pos + $len, 1);
+            my $c1 = substr($tok, $len - 1, 1);
+            my $c2 = substr($tok, $len, 1);
             if (   (  !(is_ident_middle($c1) && is_ident_middle($c2))   # "and" can't be followed by "_"
                    && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
                    ) 

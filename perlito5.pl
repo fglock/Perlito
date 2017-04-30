@@ -45,7 +45,8 @@ use feature 'say';
     package Perlito5::Match;
     sub Perlito5::Match::flat {
         my $self = $_[0];
-        defined($self->{'capture'}) ? $self->{'capture'} : substr($self->{'str'}, $self->{'from'}, ($self->{'to'} - $self->{'from'}))
+        defined($self->{'capture'}) && return $self->{'capture'};
+        return join('', @{$self->{'str'}}[$self->{'from'} .. $self->{'to'} - 1])
     }
     1
 }
@@ -110,11 +111,12 @@ use feature 'say';
         my $str = shift;
         my $pos = shift;
         my $last_is_term = shift;
+        my $tok = join('', @{$str}[$pos .. $pos + 15]);
         for my $len (@{$End_token_chars}) {
-            my $term = substr($str, $pos, $len);
+            my $term = substr($tok, 0, $len);
             if (exists($End_token->{$term})) {
-                my $c1 = substr($str, $pos + $len - 1, 1);
-                my $c2 = substr($str, $pos + $len, 1);
+                my $c1 = substr($tok, $len - 1, 1);
+                my $c2 = substr($tok, $len, 1);
                 if (!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '<' && $c2 eq '<')) {;
                     return {'str' => $str, 'from' => $pos, 'to' => $pos, 'capture' => ['end', $term]}
                 }
@@ -122,10 +124,10 @@ use feature 'say';
         }
         if (!$last_is_term) {;
             for my $len (@Term_chars) {
-                my $term = substr($str, $pos, $len);
+                my $term = substr($tok, 0, $len);
                 if (exists($Term{$term})) {
-                    my $c1 = substr($str, $pos + $len - 1, 1);
-                    my $c2 = substr($str, $pos + $len, 1);
+                    my $c1 = substr($tok, $len - 1, 1);
+                    my $c2 = substr($tok, $len, 1);
                     if (is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2)) {
                         my $m = $Term{$term}->($str, $pos);
                         $m && return $m
@@ -134,17 +136,17 @@ use feature 'say';
             }
         }
         for my $len (@Parsed_op_chars) {
-            my $op = substr($str, $pos, $len);
+            my $op = substr($tok, 0, $len);
             if (exists($Parsed_op{$op})) {
                 my $m = $Parsed_op{$op}->($str, $pos);
                 $m && return $m
             }
         }
         for my $len (@Op_chars) {
-            my $op = substr($str, $pos, $len);
+            my $op = substr($tok, 0, $len);
             if (exists($Op{$op})) {
-                my $c1 = substr($str, $pos + $len - 1, 1);
-                my $c2 = substr($str, $pos + $len, 1);
+                my $c1 = substr($tok, $len - 1, 1);
+                my $c2 = substr($tok, $len, 1);
                 if ((!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '&' && $c2 eq '&')) || ($c1 eq 'x' && $c2 ge 0 && $c2 le 9)) {
                     if (exists($Operator->{'infix'}->{$op}) && !exists($Operator->{'prefix'}->{$op}) && !$last_is_term) {}
                     else {;
@@ -324,7 +326,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -343,7 +345,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::curly_parse($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -353,7 +355,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::curly_parse'});
                     1
                 }))
@@ -398,7 +400,7 @@ use feature 'say';
             return $m_name
         }
         $p = $m_name->{'to'};
-        if (substr($str, $p, 2) eq '::') {
+        if ($str->[$p] eq ':' && $str->[$p + 1] eq ':') {
             $m_name->{'to'} = $p + 2;
             $m_name->{'capture'} = ['term', Perlito5::AST::Var::->new('sigil' => '::', 'name' => '', 'namespace' => $namespace . '::' . $name)];
             return $m_name
@@ -409,7 +411,7 @@ use feature 'say';
         if ($m) {;
             $p = $m->{'to'}
         }
-        if (substr($str, $p, 2) eq '!=' || substr($str, $p, 2) eq '!~') {
+        if ($str->[$p] eq '!' && ($str->[$p + 1] eq '=' || $str->[$p + 1] eq '~')) {
             $m_name->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => 1)];
             return $m_name
         }
@@ -431,7 +433,7 @@ use feature 'say';
             my $package = Perlito5::Match::flat($invocant);
             if ($package) {
                 $invocant->{'capture'} = Perlito5::AST::Var::->new('sigil' => '::', 'name' => '', 'namespace' => $package);
-                if (substr($str, $invocant->{'to'}, 2) eq '::') {;
+                if ($str->[$invocant->{'to'}] eq ':' && $str->[$invocant->{'to'} + 1] eq ':') {;
                     $invocant->{'to'} = $invocant->{'to'} + 2
                 }
                 elsif (!$Perlito5::PACKAGES->{$package}) {;
@@ -447,8 +449,8 @@ use feature 'say';
             my $arg = [];
             $m = Perlito5::Grammar::Space::ws($str, $p);
             $m && ($p = $m->{'to'});
-            if (substr($str, $p, 2) eq '->') {}
-            elsif (substr($str, $p, 1) eq '(') {
+            if ($str->[$p] eq '-' && $str->[$p + 1] eq '>') {}
+            elsif ($str->[$p] eq '(') {
                 my $m = Perlito5::Grammar::Expression::term_paren($str, $p);
                 if ($m) {
                     $arg = $m->{'capture'}->[2];
@@ -467,12 +469,12 @@ use feature 'say';
             $m_name->{'to'} = $p;
             return $m_name
         }
-        if (substr($str, $p, 2) eq '=>') {
+        if ($str->[$p] eq '=' && $str->[$p + 1] eq '>') {
             $m_name->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => 1)];
             $m_name->{'to'} = $p;
             return $m_name
         }
-        if (substr($str, $p, 2) eq '->') {
+        if ($str->[$p] eq '-' && $str->[$p + 1] eq '>') {
             if ($is_subroutine_name) {;
                 $m_name->{'capture'} = ['term', Perlito5::AST::Apply::->new('arguments' => [], 'code' => $name, 'namespace' => $namespace)]
             }
@@ -509,7 +511,7 @@ use feature 'say';
             if ($sig_part eq '&') {
                 $m = Perlito5::Grammar::Space::ws($str, $p);
                 $m && ($p = $m->{'to'});
-                if (substr($str, $p, 1) ne '(') {
+                if ($str->[$p] ne '(') {
                     $sig = substr($sig, 1);
                     $m = Perlito5::Grammar::Bareword::prototype_is_ampersand($str, $p);
                     $m && ($capture = $m->{'capture'});
@@ -520,21 +522,21 @@ use feature 'say';
                     push(@args, $capture)
                 }
             }
-            if (substr($sig, 0, 1) eq ';' && substr($str, $p, 2) eq '//') {
+            if (substr($sig, 0, 1) eq ';' && $str->[$p] eq '/' && $str->[$p + 1] eq '/') {
                 $m_name->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => $name, 'namespace' => $namespace, 'arguments' => [], 'bareword' => 1)];
                 $m_name->{'to'} = $p;
                 return $m_name
             }
             if ($sig eq '') {
-                if (substr($str, $p, 1) eq '(') {
+                if ($str->[$p] eq '(') {
                     $p++;
                     $has_paren = 1;
                     my $m = Perlito5::Grammar::Space::ws($str, $p);
                     if ($m) {;
                         $p = $m->{'to'}
                     }
-                    if (substr($str, $p, 1) ne ')') {;
-                        Perlito5::Compiler::error('syntax error near ', substr($str, $pos, 10))
+                    if ($str->[$p] ne ')') {;
+                        Perlito5::Compiler::error('syntax error near ', join('', @{$str}[$pos .. $pos + 10]))
                     }
                     $p++
                 }
@@ -553,7 +555,7 @@ use feature 'say';
             if ($sig eq '_' || $sig eq '$' || $sig eq '+' || $sig eq ';$') {
                 my $m;
                 my $arg;
-                if (substr($str, $p, 1) eq '(') {
+                if ($str->[$p] eq '(') {
                     $m = Perlito5::Grammar::Expression::term_paren($str, $p);
                     if (!$m) {;
                         return $m
@@ -594,7 +596,7 @@ use feature 'say';
                 return $m
             }
             if ($sig eq ';@' || $sig eq '@') {
-                if (substr($str, $p, 1) eq '(') {
+                if ($str->[$p] eq '(') {
                     $m = Perlito5::Grammar::Expression::term_paren($str, $p);
                     $has_paren = 1;
                     my $arg = $m->{'capture'}->[2];
@@ -615,7 +617,7 @@ use feature 'say';
             }
             if ($sig eq '*') {}
         }
-        if (substr($str, $p, 1) eq '(') {
+        if ($str->[$p] eq '(') {
             $m = Perlito5::Grammar::Expression::term_paren($str, $p);
             if (!$m) {;
                 return $m
@@ -680,7 +682,7 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('sub' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                ((('s' eq $str->[$MATCH->{'to'} + 0]) && ('u' eq $str->[$MATCH->{'to'} + 1]) && ('b' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -724,7 +726,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = (('\\' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                    my $res = ((('\\' eq $str->[$MATCH->{'to'} + 0]) && ('\\' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                         my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -733,7 +735,7 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && ('&' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})));
+                    }) && (('&' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -764,7 +766,7 @@ use feature 'say';
         my $pos = $_[1];
         my @attributes;
         my $ws = Perlito5::Grammar::Space::opt_ws($str, $pos);
-        if (substr($str, $ws->{'to'}, 1) ne ':') {;
+        if ($str->[$ws->{'to'}] ne ':') {;
             return {'to' => $pos, 'capture' => []}
         }
         $ws = Perlito5::Grammar::Space::opt_ws($str, $ws->{'to'} + 1);
@@ -775,7 +777,7 @@ use feature 'say';
         while (1) {
             my $attr = [Perlito5::Match::flat($m), undef];
             $to = $m->{'to'};
-            my $delimiter = substr($str, $to, 1);
+            my $delimiter = $str->[$to];
             if ($delimiter eq '(') {
                 my $params = Perlito5::Grammar::String::string_interpolation_parse($str, $m->{'to'} + 1, '(', ')', 0);
                 !$params && Perlito5::Compiler::error('syntax error');
@@ -784,7 +786,7 @@ use feature 'say';
             }
             push(@attributes, $attr);
             $ws = Perlito5::Grammar::Space::opt_ws($str, $to);
-            if (substr($str, $ws->{'to'}, 1) eq ':') {;
+            if ($str->[$ws->{'to'}] eq ':') {;
                 $ws = Perlito5::Grammar::Space::opt_ws($str, $ws->{'to'} + 1)
             }
             $p = $ws->{'to'};
@@ -883,8 +885,7 @@ use feature 'say';
         my $tmp = '';
         $s eq '' && return chr(39) . chr(39);
         (0 + $s) eq $s && $s =~ m/[0-9]/ && return 0 + $s;
-        for my $i (0 .. length($s) - 1) {
-            my $c = substr($s, $i, 1);
+        for my $c (split('', $s)) {
             if ($c eq '\\') {;
                 $tmp = $tmp . '\\' . '\\'
             }
@@ -1210,7 +1211,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('...' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('.' eq $str->[$MATCH->{'to'} + 0]) && ('.' eq $str->[$MATCH->{'to'} + 1]) && ('.' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
             $MATCH->{'capture'} = Perlito5::AST::Apply::->new('code' => 'die', 'namespace' => '', 'arguments' => [Perlito5::AST::Buf::->new('buf' => 'Unimplemented')]);
             1
         })));
@@ -1220,7 +1221,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('format' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('f' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ('m' eq $str->[$MATCH->{'to'} + 3]) && ('a' eq $str->[$MATCH->{'to'} + 4]) && ('t' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1264,7 +1265,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('=' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1280,7 +1281,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('package' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('p' eq $str->[$MATCH->{'to'} + 0]) && ('a' eq $str->[$MATCH->{'to'} + 1]) && ('c' eq $str->[$MATCH->{'to'} + 2]) && ('k' eq $str->[$MATCH->{'to'} + 3]) && ('a' eq $str->[$MATCH->{'to'} + 4]) && ('g' eq $str->[$MATCH->{'to'} + 5]) && ('e' eq $str->[$MATCH->{'to'} + 6]) && ($MATCH->{'to'} += 7)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1356,10 +1357,11 @@ use feature 'say';
     sub Perlito5::Grammar::Statement::exp_stmt {
         my $str = $_[0];
         my $pos = $_[1];
+        my $tok = join('', @{$str}[$pos .. $pos + 15]);
         for my $len (@Statement_chars) {
-            my $term = substr($str, $pos, $len);
+            my $term = substr($tok, 0, $len);
             if (exists($Statement{$term})) {
-                my $m = $Statement{$term}->($str, $pos);
+                my $m = $Statement{$term}->($_[0], $pos);
                 $m && return $m
             }
         }
@@ -1370,11 +1372,12 @@ use feature 'say';
     sub Perlito5::Grammar::Statement::statement_modifier {
         my $str = $_[0];
         my $pos = $_[1];
+        my $tok = join('', @{$str}[$pos .. $pos + 15]);
         my $expression = $_[2];
         for my $len (@Modifier_chars) {
-            my $term = substr($str, $pos, $len);
+            my $term = substr($tok, 0, $len);
             if (exists($Modifier{$term})) {
-                my $m = modifier($str, $pos + $len, $term, $expression);
+                my $m = modifier($_[0], $pos + $len, $term, $expression);
                 $m && return $m
             }
         }
@@ -1430,7 +1433,7 @@ use feature 'say';
         if (!$res) {;
             return
         }
-        if (substr($str, $res->{'to'}, 1) eq ':' && $res->{'capture'}->isa('Perlito5::AST::Apply') && $res->{'capture'}->{'bareword'}) {
+        if ($str->[$res->{'to'}] eq ':' && $res->{'capture'}->isa('Perlito5::AST::Apply') && $res->{'capture'}->{'bareword'}) {
             my $label = $res->{'capture'}->{'code'};
             my $ws = Perlito5::Grammar::Space::opt_ws($str, $res->{'to'} + 1);
             my $stmt = statement_parse($str, $ws->{'to'});
@@ -1444,7 +1447,7 @@ use feature 'say';
         }
         my $modifier = statement_modifier($str, $res->{'to'}, Perlito5::Match::flat($res));
         my $p = $modifier ? $modifier->{'to'} : $res->{'to'};
-        my $terminator = substr($str, $p, 1);
+        my $terminator = $str->[$p];
         if ($terminator ne ';' && $terminator ne '}' && $terminator ne '') {
             my $type = 'Number or Bareword';
             $terminator ge 0 && $terminator le 9 && ($type = 'Number');
@@ -1697,7 +1700,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('->' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('-' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1709,7 +1712,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = paren_parse($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -1719,13 +1722,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = ['postfix_or_term', '.( )', Perlito5::Match::flat($MATCH->{'paren_parse'})];
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('[' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = square_parse($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -1735,13 +1738,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((']' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = ['postfix_or_term', '.[ ]', Perlito5::Match::flat($MATCH->{'square_parse'})];
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
                         ((do {
@@ -1772,7 +1775,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'capture'} = ['postfix_or_term', '.{ }', Perlito5::AST::Buf::->new('buf' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}))];
                             1
                         }))
@@ -1791,7 +1794,7 @@ use feature 'say';
                         }) && (do {
                             my $pos1 = $MATCH->{'to'};
                             (do {;
-                                ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                                (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                             }) || (do {
                                 $MATCH->{'to'} = $pos1;
                                 (do {
@@ -1807,7 +1810,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::ident($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -1829,7 +1832,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $m2 = paren_parse($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -1839,7 +1842,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::AST::Var::->new('sigil' => '$', 'namespace' => '', 'name' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'})), Perlito5::Match::flat($MATCH->{'paren_parse'})];
                             1
                         }))
@@ -1875,7 +1878,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $m2 = paren_parse($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -1885,7 +1888,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::full_ident'}), Perlito5::Match::flat($MATCH->{'paren_parse'})];
                             1
                         }))
@@ -1899,7 +1902,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('@*' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                ((('@' eq $str->[$MATCH->{'to'} + 0]) && ('*' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                     $MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', '@*'];
                     1
                 }))
@@ -1911,7 +1914,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('?' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('?' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = ternary5_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1921,7 +1924,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (':' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((':' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             $MATCH->{'capture'} = ['op', '? :', Perlito5::Match::flat($MATCH->{'ternary5_parse'})];
             1
         })));
@@ -1931,7 +1934,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = paren_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1941,7 +1944,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             $MATCH->{'capture'} = ['postfix_or_term', '( )', Perlito5::Match::flat($MATCH->{'paren_parse'})];
             1
         })));
@@ -1951,7 +1954,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('[' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = square_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -1961,7 +1964,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((']' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             $MATCH->{'capture'} = ['postfix_or_term', '[ ]', Perlito5::Match::flat($MATCH->{'square_parse'})];
             1
         })));
@@ -1971,7 +1974,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m = $MATCH;
             if (!(do {
                 my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
@@ -2014,7 +2017,7 @@ use feature 'say';
                         $MATCH = $m
                     }
                     1
-                }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = ['postfix_or_term', 'block', [Perlito5::AST::Apply::->new('arguments' => [], 'bareword' => 1, 'code' => Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}), 'namespace' => '')]];
                     1
                 }))
@@ -2055,7 +2058,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         (do {
@@ -2075,7 +2078,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('pos' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('p' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2106,7 +2109,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && (do {
@@ -2124,13 +2127,13 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('my' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))
+                (('m' eq $str->[$MATCH->{'to'} + 0]) && ('y' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('state' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'}))
+                (('s' eq $str->[$MATCH->{'to'} + 0]) && ('t' eq $str->[$MATCH->{'to'} + 1]) && ('a' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ('e' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('our' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
+                (('o' eq $str->[$MATCH->{'to'} + 0]) && ('u' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3))
             })
         }));
         $tmp ? $MATCH : 0
@@ -2248,7 +2251,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('not' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('n' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('t' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2257,7 +2260,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = paren_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2267,7 +2270,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'prefix:<not>', 'arguments' => expand_list(Perlito5::Match::flat($MATCH->{'paren_parse'})), 'namespace' => '')];
             1
         })));
@@ -2277,7 +2280,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('local' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('l' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('c' eq $str->[$MATCH->{'to'} + 2]) && ('a' eq $str->[$MATCH->{'to'} + 3]) && ('l' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2319,7 +2322,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('return' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('r' eq $str->[$MATCH->{'to'} + 0]) && ('e' eq $str->[$MATCH->{'to'} + 1]) && ('t' eq $str->[$MATCH->{'to'} + 2]) && ('u' eq $str->[$MATCH->{'to'} + 3]) && ('r' eq $str->[$MATCH->{'to'} + 4]) && ('n' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2349,7 +2352,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('eval' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('e' eq $str->[$MATCH->{'to'} + 0]) && ('v' eq $str->[$MATCH->{'to'} + 1]) && ('a' eq $str->[$MATCH->{'to'} + 2]) && ('l' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2524,7 +2527,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('unless' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('u' eq $str->[$MATCH->{'to'} + 0]) && ('n' eq $str->[$MATCH->{'to'} + 1]) && ('l' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ('s' eq $str->[$MATCH->{'to'} + 4]) && ('s' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2577,7 +2580,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                }) && (('e' eq $str->[$MATCH->{'to'} + 0]) && ('l' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                     my $m2 = block2($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2602,7 +2605,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('els' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                }) && (('e' eq $str->[$MATCH->{'to'} + 0]) && ('l' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                     my $m2 = if_($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2633,7 +2636,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('if' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('i' eq $str->[$MATCH->{'to'} + 0]) && ('f' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2686,7 +2689,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('else' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                }) && (('e' eq $str->[$MATCH->{'to'} + 0]) && ('l' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                     my $m2 = block2($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2711,7 +2714,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('els' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                }) && (('e' eq $str->[$MATCH->{'to'} + 0]) && ('l' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                     my $m2 = if_($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2742,7 +2745,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('when' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('w' eq $str->[$MATCH->{'to'} + 0]) && ('h' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('n' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -2800,9 +2803,9 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('f' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
             my $m = $MATCH;
-            if (!('each' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))) {;
+            if (!(('e' eq $str->[$MATCH->{'to'} + 0]) && ('a' eq $str->[$MATCH->{'to'} + 1]) && ('c' eq $str->[$MATCH->{'to'} + 2]) && ('h' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4))) {;
                 $MATCH = $m
             }
             1
@@ -2852,7 +2855,7 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                            my $res = (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -2887,7 +2890,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2897,7 +2900,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = block($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -2936,7 +2939,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
                         ((do {
@@ -2970,7 +2973,7 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                            my $res = ((';' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }))
@@ -2978,7 +2981,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ((';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        (((';' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'c_style_for'} = 1;
                             1
                         }) && (do {
@@ -3014,7 +3017,7 @@ use feature 'say';
                                     }
                                 })
                             })
-                        }) && (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && ((';' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $pos1 = $MATCH->{'to'};
                             (do {;
                                 (do {
@@ -3049,7 +3052,7 @@ use feature 'say';
                         $MATCH->{'to'} = $pos1;
                         1
                     })
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = block($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -3095,7 +3098,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('while' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('w' eq $str->[$MATCH->{'to'} + 0]) && ('h' eq $str->[$MATCH->{'to'} + 1]) && ('i' eq $str->[$MATCH->{'to'} + 2]) && ('l' eq $str->[$MATCH->{'to'} + 3]) && ('e' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3107,7 +3110,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3117,7 +3120,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3157,7 +3160,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('until' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('u' eq $str->[$MATCH->{'to'} + 0]) && ('n' eq $str->[$MATCH->{'to'} + 1]) && ('t' eq $str->[$MATCH->{'to'} + 2]) && ('i' eq $str->[$MATCH->{'to'} + 3]) && ('l' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3169,7 +3172,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3179,7 +3182,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3216,7 +3219,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('given' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('g' eq $str->[$MATCH->{'to'} + 0]) && ('i' eq $str->[$MATCH->{'to'} + 1]) && ('v' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ('n' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3228,7 +3231,7 @@ use feature 'say';
         }) && (do {
             Perlito5::Grammar::Scope::create_new_compile_time_scope();
             1
-        }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Expression::paren_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3238,7 +3241,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3278,10 +3281,10 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('q' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('q' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         ((do {
@@ -3296,15 +3299,15 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                            my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
-                        }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                        }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                     })
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                ((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $m2 = q_quote_parse($str, $MATCH->{'to'});
@@ -3329,10 +3332,10 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('qq' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                ((('q' eq $str->[$MATCH->{'to'} + 0]) && ('q' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         ((do {
@@ -3347,15 +3350,15 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                            my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
-                        }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                        }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                     })
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('"' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('"' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $m2 = qq_quote_parse($str, $MATCH->{'to'});
@@ -3377,10 +3380,10 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('qw' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('q' eq $str->[$MATCH->{'to'} + 0]) && ('w' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ((do {
@@ -3395,10 +3398,10 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                    my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
-                }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
             })
         }) && (do {
             my $m2 = qw_quote_parse($str, $MATCH->{'to'});
@@ -3423,10 +3426,10 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('m' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('m' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         ((do {
@@ -3441,15 +3444,15 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                            my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
-                        }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                        }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                     })
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('/' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('/' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $m2 = m_quote_parse($str, $MATCH->{'to'});
@@ -3471,10 +3474,10 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('s' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('s' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ((do {
@@ -3489,10 +3492,10 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                    my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
-                }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
             })
         }) && (do {
             my $m2 = s_quote_parse($str, $MATCH->{'to'});
@@ -3517,10 +3520,10 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('qx' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                ((('q' eq $str->[$MATCH->{'to'} + 0]) && ('x' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
                         ((do {
@@ -3535,15 +3538,15 @@ use feature 'say';
                         }) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                            my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                             $MATCH = $tmp;
                             $res ? 0 : 1
-                        }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                        }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                     })
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('`' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('`' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $m2 = qx_quote_parse($str, $MATCH->{'to'});
@@ -3565,7 +3568,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('<' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = glob_quote_parse($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -3588,15 +3591,15 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('tr' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))
+                (('t' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('y' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('y' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ((do {
@@ -3611,10 +3614,10 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                    my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
-                }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
             })
         }) && (do {
             my $m2 = tr_quote_parse($str, $MATCH->{'to'});
@@ -3636,10 +3639,10 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('qr' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('q' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 ((do {
@@ -3654,10 +3657,10 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('=>' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                    my $res = (('=' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                     $MATCH = $tmp;
                     $res ? 0 : 1
-                }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
             })
         }) && (do {
             my $m2 = qr_quote_parse($str, $MATCH->{'to'});
@@ -3682,7 +3685,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::q_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
         return string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0)
@@ -3690,7 +3693,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::qq_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
         return string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1)
@@ -3698,7 +3701,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::qw_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
         my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
@@ -3710,7 +3713,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::m_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
@@ -3732,7 +3735,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::s_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
@@ -3747,7 +3750,7 @@ use feature 'say';
         if (exists($pair{$delimiter})) {
             $m = Perlito5::Grammar::Space::opt_ws($str, $p);
             $p = $m->{'to'};
-            $delimiter = substr($str, $p, 1);
+            $delimiter = $str->[$p];
             $open_delimiter = $delimiter;
             $p++;
             $closing_delimiter = $delimiter;
@@ -3755,7 +3758,8 @@ use feature 'say';
         }
         $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 0);
         $part2 || return $part2;
-        my $replace = substr($str, $p, $part2->{'to'} - $p - 1);
+        my @replace = @{$str}[$p .. $part2->{'to'} - 2];
+        my $replace;
         $p = $part2->{'to'};
         my $modifiers = '';
         $m = Perlito5::Grammar::ident($str, $p);
@@ -3763,8 +3767,7 @@ use feature 'say';
             $modifiers = Perlito5::Match::flat($m)
         }
         if ($modifiers =~ m/e/) {
-            $replace = '{' . $replace . '}';
-            my $m = Perlito5::Grammar::block($replace, 0);
+            my $m = Perlito5::Grammar::block(['{', @replace, '}'], 0);
             if (!$m) {;
                 Perlito5::Compiler::error('syntax error')
             }
@@ -3774,12 +3777,11 @@ use feature 'say';
             }
         }
         else {
-            $replace = $open_delimiter . $replace . $closing_delimiter;
             if (exists($pair{$delimiter})) {
                 $interpolate = 2;
                 $delimiter eq chr(39) && ($interpolate = 3)
             }
-            my $m = string_interpolation_parse($replace, 1, $open_delimiter, $closing_delimiter, $interpolate);
+            my $m = string_interpolation_parse([$open_delimiter, @replace, $closing_delimiter], 1, $open_delimiter, $closing_delimiter, $interpolate);
             if (!$m) {;
                 Perlito5::Compiler::error('syntax error')
             }
@@ -3794,7 +3796,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::qr_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
@@ -3816,7 +3818,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::qx_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
         my $m = string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
@@ -3828,18 +3830,18 @@ use feature 'say';
     sub Perlito5::Grammar::String::glob_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($delimiter = $pair{$delimiter});
-        if (substr($str, $pos, 3) eq '<>>') {;
+        if ($str->[$pos] eq '<' && $str->[$pos + 1] eq '>' && $str->[$pos + 2] eq '>') {;
             return {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Apply::->new('code' => 'readline', 'arguments' => [Perlito5::AST::Apply::->new('code' => '<>', 'arguments' => [], 'namespace' => '', 'bareword' => 1)], 'namespace' => '')}
         }
-        if (substr($str, $pos, 1) eq '>') {;
+        if ($str->[$pos] eq '>') {;
             return {'str' => $str, 'from' => $pos, 'to' => $pos + 1, 'capture' => Perlito5::AST::Apply::->new('code' => 'readline', 'arguments' => [], 'namespace' => '')}
         }
         my $p = $pos;
         my $sigil = '::';
-        if (substr($str, $p, 1) eq '$') {
+        if ($str->[$p] eq '$') {
             $sigil = '$';
             $p++
         }
@@ -3847,7 +3849,7 @@ use feature 'say';
         my $namespace = Perlito5::Match::flat($m_namespace);
         $p = $m_namespace->{'to'};
         my $m_name = Perlito5::Grammar::ident($str, $p);
-        if ($m_name && substr($str, $m_name->{'to'}, 1) eq '>') {
+        if ($m_name && $str->[$m_name->{'to'}] eq '>') {
             if ($sigil eq '::') {;
                 return {'str' => $str, 'from' => $pos, 'to' => $m_name->{'to'} + 1, 'capture' => Perlito5::AST::Apply::->new('code' => 'readline', 'arguments' => [Perlito5::AST::Apply::->new('code' => Perlito5::Match::flat($m_name), 'arguments' => [], 'namespace' => $namespace, 'bareword' => 1)], 'namespace' => '')}
             }
@@ -3862,7 +3864,7 @@ use feature 'say';
     sub Perlito5::Grammar::String::tr_quote_parse {
         my $str = $_[0];
         my $pos = $_[1];
-        my $delimiter = substr($str, $pos - 1, 1);
+        my $delimiter = $str->[$pos - 1];
         my $open_delimiter = $delimiter;
         my $closing_delimiter = $delimiter;
         exists($pair{$delimiter}) && ($closing_delimiter = $pair{$delimiter});
@@ -3877,7 +3879,7 @@ use feature 'say';
         if (exists($pair{$delimiter})) {
             $m = Perlito5::Grammar::Space::opt_ws($str, $p);
             $p = $m->{'to'};
-            $delimiter = substr($str, $p, 1);
+            $delimiter = $str->[$p];
             my $open_delimiter = $delimiter;
             $p++;
             $closing_delimiter = $delimiter;
@@ -3929,9 +3931,9 @@ use feature 'say';
         my $balanced = $open_delimiter && exists($pair{$open_delimiter});
         my @args;
         my $buf = '';
-        while ($p < length($str) && substr($str, $p, length($delimiter)) ne $delimiter) {
-            my $c = substr($str, $p, 1);
-            my $c2 = substr($str, $p + 1, 1);
+        while ($p < @{$str} && join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter) {
+            my $c = $str->[$p];
+            my $c2 = $str->[$p + 1];
             my $m;
             my $more = '';
             if ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
@@ -4010,7 +4012,7 @@ use feature 'say';
                 }
                 if ($c) {
                     if ($interpolate == 2) {;
-                        $m = {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => substr($str, $p, 2))}
+                        $m = {'str' => $str, 'from' => $p, 'to' => $p + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => $str->[$p] . $str->[$p + 1])}
                     }
                     elsif ($interpolate == 1) {;
                         $m = Perlito5::Grammar::String::double_quoted_unescape($str, $p)
@@ -4055,7 +4057,7 @@ use feature 'say';
         if (length($buf)) {;
             push(@args, Perlito5::AST::Buf::->new('buf' => $buf))
         }
-        substr($str, $p, length($delimiter)) ne $delimiter && Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator ' . chr(39) . $delimiter . chr(39) . ' anywhere before EOF');
+        join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter && Perlito5::Compiler::error('Can' . chr(39) . 't find string terminator ' . chr(39) . $delimiter . chr(39) . ' anywhere before EOF');
         $p += length($delimiter);
         my $ast;
         if (!@args) {;
@@ -4076,12 +4078,12 @@ use feature 'say';
         my $delimiter;
         my $type = 'double_quote';
         my $p = $pos;
-        if (substr($str, $p, 2) eq '<<') {
+        if ($str->[$p] eq '<' && $str->[$p + 1] eq '<') {
             $p += 2;
-            my $quote = substr($str, $p, 1);
+            my $quote = $str->[$p];
             if ($quote eq chr(39) || $quote eq '"') {
                 $p += 1;
-                my $m = string_interpolation_parse($str, $p, $quote, $quote, 0);
+                my $m = string_interpolation_parse($_[0], $p, $quote, $quote, 0);
                 if ($m) {
                     $p = $m->{'to'};
                     $delimiter = Perlito5::Match::flat($m)->{'buf'};
@@ -4117,20 +4119,20 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('
-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('
+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m = $MATCH;
-                    if (!(chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {;
+                    if (!((chr(13) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))) {;
                         $MATCH = $m
                     }
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (((chr(13) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m = $MATCH;
-                    if (!('
-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) {;
+                    if (!(('
+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))) {;
                         $MATCH = $m
                     }
                     1
@@ -4151,30 +4153,30 @@ use feature 'say';
         my $result = $here->[1];
         my $delimiter = $here->[2];
         if ($type eq 'single_quote') {;
-            while ($p < length($str)) {
-                if (substr($str, $p, length($delimiter)) eq $delimiter) {
-                    push(@{$result}, Perlito5::AST::Buf::->new('buf' => substr($str, $pos, $p - $pos)));
+            while ($p < @{$str}) {
+                if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
+                    push(@{$result}, Perlito5::AST::Buf::->new('buf' => join('', @{$str}[$pos .. $p - 1])));
                     $p += length($delimiter);
                     my $m = newline($str, $p);
-                    if ($p >= length($str) || $m) {
+                    if ($p >= @{$str} || $m) {
                         $m && ($p = $m->{'to'});
                         return {'str' => $str, 'from' => $pos, 'to' => $p - 1}
                     }
                 }
-                while ($p < length($str) && (substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13))) {;
+                while ($p < @{$str} && ($str->[$p] ne chr(10) && $str->[$p] ne chr(13))) {;
                     $p++
                 }
-                while ($p < length($str) && (substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13))) {;
+                while ($p < @{$str} && ($str->[$p] eq chr(10) || $str->[$p] eq chr(13))) {;
                     $p++
                 }
             }
         }
         else {
             my $m;
-            if (substr($str, $p, length($delimiter)) eq $delimiter) {
+            if (join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter) {
                 $p += length($delimiter);
                 $m = newline($str, $p);
-                if ($p >= length($str) || $m) {
+                if ($p >= @{$str} || $m) {
                     push(@{$result}, Perlito5::AST::Buf::->new('buf' => ''));
                     $m && ($p = $m->{'to'});
                     return {'str' => $str, 'from' => $pos, 'to' => $p}
@@ -4196,31 +4198,31 @@ use feature 'say';
     sub Perlito5::Grammar::String::double_quoted_unescape {
         my $str = $_[0];
         my $pos = $_[1];
-        my $c2 = substr($str, $pos + 1, 1);
+        my $c2 = $str->[$pos + 1];
         my $m;
         if (exists($escape_sequence{$c2})) {;
             $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 2, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($escape_sequence{$c2}))}
         }
         elsif ($c2 eq 'c') {
-            my $c3 = ord(uc(substr($str, $pos + 2, 1))) - ord('A') + 1;
+            my $c3 = ord(uc($str->[$pos + 2])) - ord('A') + 1;
             $c3 < 0 && ($c3 = 128 + $c3);
             $m = {'str' => $str, 'from' => $pos, 'to' => $pos + 3, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($c3))}
         }
         elsif ($c2 eq 'x') {
-            if (substr($str, $pos + 2, 1) eq '{') {
+            if ($str->[$pos + 2] eq '{') {
                 my $p = $pos + 3;
                 $p++
-                    while $p < length($str) && substr($str, $p, 1) ne '}';
-                my $hex_code = substr($str, $pos + 3, $p - $pos - 3);
+                    while $p < @{$str} && $str->[$p] ne '}';
+                my $hex_code = join('', @{$str}[$pos + 3 .. $p - 1]);
                 $hex_code || ($hex_code = 0);
                 my $tmp = oct('0x' . $hex_code);
                 $m = {'str' => $str, 'from' => $pos, 'to' => $p + 1, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($tmp))}
             }
             else {
                 my $p = $pos + 2;
-                $hex{uc(substr($str, $p, 1))} && $p++;
-                $hex{uc(substr($str, $p, 1))} && $p++;
-                my $hex_code = substr($str, $pos + 2, $p - $pos - 2);
+                $hex{uc($str->[$p])} && $p++;
+                $hex{uc($str->[$p])} && $p++;
+                my $hex_code = join('', @{$str}[$pos + 2 .. $p - 1]);
                 $hex_code || ($hex_code = 0);
                 my $tmp = oct('0x' . $hex_code);
                 $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($tmp))}
@@ -4228,10 +4230,10 @@ use feature 'say';
         }
         elsif (exists($octal{$c2})) {
             my $p = $pos + 1;
-            $octal{substr($str, $p, 1)} && $p++;
-            $octal{substr($str, $p, 1)} && $p++;
-            $octal{substr($str, $p, 1)} && $p++;
-            my $oct_code = substr($str, $pos + 1, $p - $pos - 1);
+            $octal{$str->[$p]} && $p++;
+            $octal{$str->[$p]} && $p++;
+            $octal{$str->[$p]} && $p++;
+            my $oct_code = join('', @{$str}[$pos + 1 .. $p - 1]);
             my $tmp = oct($oct_code);
             $m = {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => Perlito5::AST::Buf::->new('buf' => chr($tmp))}
         }
@@ -4250,37 +4252,37 @@ use feature 'say';
         my $pos = $m_var->{'to'};
         my $p = $pos;
         my $m_index;
-        if (substr($str, $p, 3) eq '->[') {
+        if ($str->[$p] eq '-' && $str->[$p + 1] eq '>' && $str->[$p + 2] eq '[') {
             $p += 3;
             $m_index = Perlito5::Grammar::Expression::list_parse($str, $p);
             $m_index || Perlito5::Compiler::error('syntax error');
             my $exp = $m_index->{'capture'};
             $p = $m_index->{'to'};
-            ($exp eq '*undef*' || substr($str, $p, 1) ne ']') && Perlito5::Compiler::error('syntax error');
+            ($exp eq '*undef*' || $str->[$p] ne ']') && Perlito5::Compiler::error('syntax error');
             $p++;
             $m_index->{'capture'} = Perlito5::AST::Call::->new('method' => 'postcircumfix:<[ ]>', 'invocant' => $m_var->{'capture'}, 'arguments' => $exp);
             $m_index->{'to'} = $p;
             return double_quoted_var_with_subscript($m_index, $interpolate)
         }
-        if (substr($str, $p, 3) eq '->{') {
+        if ($str->[$p] eq '-' && $str->[$p + 1] eq '>' && $str->[$p + 2] eq '{') {
             $pos += 2;
             $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
             $m_index || Perlito5::Compiler::error('syntax error');
             $m_index->{'capture'} = Perlito5::AST::Call::->new('method' => 'postcircumfix:<{ }>', 'invocant' => $m_var->{'capture'}, 'arguments' => Perlito5::Match::flat($m_index)->[2]->[0]);
             return double_quoted_var_with_subscript($m_index, $interpolate)
         }
-        if (substr($str, $p, 1) eq '[') {
+        if ($str->[$p] eq '[') {
             if ($interpolate == 2) {
-                my $m = Perlito5::Grammar::Number::term_digit($str, $p + 1) || (substr($str, $p + 1, 1) eq '-' && Perlito5::Grammar::Number::term_digit($str, $p + 2)) || Perlito5::Grammar::Sigil::term_sigil($str, $p + 1);
+                my $m = Perlito5::Grammar::Number::term_digit($str, $p + 1) || ($str->[$p + 1] eq '-' && Perlito5::Grammar::Number::term_digit($str, $p + 2)) || Perlito5::Grammar::Sigil::term_sigil($str, $p + 1);
                 $m || return $m_var;
-                substr($str, $m->{'to'}, 1) eq ']' || return $m_var
+                $str->[$m->{'to'}] eq ']' || return $m_var
             }
             $p++;
             $m_index = Perlito5::Grammar::Expression::list_parse($str, $p);
             if ($m_index) {
                 my $exp = $m_index->{'capture'};
                 $p = $m_index->{'to'};
-                if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
+                if ($exp ne '*undef*' && $str->[$p] eq ']') {
                     $p++;
                     my $value = $m_var->{'capture'};
                     if (ref($value) eq 'Perlito5::AST::Var') {;
@@ -4308,8 +4310,8 @@ use feature 'say';
         my $pos = $_[1];
         my $delimiter = $_[2];
         my $interpolate = $_[3];
-        my $c = substr($str, $pos, 1);
-        my $c2 = substr($str, $pos + 1, 1);
+        my $c = $str->[$pos];
+        my $c2 = $str->[$pos + 1];
         if ($c eq '$' && $c2 eq ')') {;
             return 0
         }
@@ -4323,13 +4325,13 @@ use feature 'say';
         elsif ($c eq '$' && $c2 eq '$' && !Perlito5::Grammar::word($str, $pos + 2)) {;
             return {'str' => $str, 'capture' => Perlito5::AST::Var::->new('name' => '$', 'sigil' => '$', 'namespace' => ''), 'from' => $pos, 'to' => $pos + 2}
         }
-        elsif ($c eq '$' && substr($str, $pos + 1, length($delimiter)) ne $delimiter) {
+        elsif ($c eq '$' && join('', @{$str}[$pos + 1 .. $pos + length($delimiter)]) ne $delimiter) {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
             $m || return $m;
             $m->{'capture'} = $m->{'capture'}->[1];
             return double_quoted_var_with_subscript($m, $interpolate)
         }
-        elsif ($c eq '@' && substr($str, $pos + 1, length($delimiter)) ne $delimiter && ($c2 lt 0 || $c2 gt 9)) {
+        elsif ($c eq '@' && join('', @{$str}[$pos + 1 .. $pos + length($delimiter)]) ne $delimiter && ($c2 lt 0 || $c2 gt 9)) {
             my $m = Perlito5::Grammar::Sigil::term_sigil($str, $pos);
             $m || return $m;
             $m->{'capture'} = $m->{'capture'}->[1];
@@ -4365,7 +4367,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $len = 0;
-        my $s = substr($str, $pos, 3);
+        my $s = $str->[$pos] . $str->[$pos + 1] . $str->[$pos + 2];
         if ($s eq '$#[') {;
             $len = 2
         }
@@ -4373,14 +4375,14 @@ use feature 'say';
             $len = length($s)
         }
         else {
-            $s = substr($str, $pos, 2);
+            $s = $str->[$pos] . $str->[$pos + 1];
             if (exists($special_var{$s})) {;
                 $len = 2
             }
         }
         if ($len) {
-            my $c0 = substr($str, $pos + $len - 1, 1);
-            my $c1 = substr($str, $pos + $len, 1);
+            my $c0 = $str->[$pos + $len - 1];
+            my $c1 = $str->[$pos + $len];
             if (($c0 eq '$' || $c0 eq '@' || $c0 eq '%' || $c0 eq '*' || $c0 eq '&') && ($c1 eq '$' || $c1 eq '@' || $c1 eq '%' || $c1 eq '*' || $c1 eq '&' || ($c1 ge 'a' && $c1 le 'z') || ($c1 ge 'A' && $c1 le 'Z') || ($c1 ge 0 && $c1 le 9))) {}
             else {;
                 return {'str' => $str, 'from' => $pos, 'to' => $pos + $len, 'capture' => ['term', Perlito5::AST::Var::->new('sigil' => substr($s, 0, $len - 1), 'namespace' => $special_var{$s}, 'name' => substr($s, $len - 1, 1), '_namespace' => 'main')]}
@@ -4392,18 +4394,18 @@ use feature 'say';
     sub Perlito5::Grammar::Sigil::term_sigil {
         my $str = $_[0];
         my $pos = $_[1];
-        my $c1 = substr($str, $pos, 1);
+        my $c1 = $str->[$pos];
         exists($sigil{$c1}) || return;
         my $p = $pos + 1;
         my $sigil = $c1;
-        if (substr($str, $pos, 2) eq '$#') {
+        if ($c1 eq '$' && $str->[$pos + 1] eq '#') {
             $sigil = '$#';
             $p++
         }
         my $m = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $m->{'to'};
         my $p0 = $p;
-        $c1 = substr($str, $p, 1);
+        $c1 = $str->[$p];
         my $q = $p + 1;
         if ($c1 eq '{') {
             my $p = $q;
@@ -4421,14 +4423,14 @@ use feature 'say';
                 }
                 if ($namespace || $name) {
                     my $spc = Perlito5::Grammar::Space::opt_ws($str, $pos);
-                    if (substr($str, $pos, 1) eq '{' || substr($str, $pos, 1) eq '[' || substr($str, $pos, 1) eq '}') {
+                    if ($str->[$pos] eq '{' || $str->[$pos] eq '[' || $str->[$pos] eq '}') {
                         $m->{'capture'} = Perlito5::AST::Var::->new('sigil' => $sigil, 'namespace' => $namespace, 'name' => $name);
                         $m->{'to'} = $spc->{'to'};
                         $m = Perlito5::Grammar::String::double_quoted_var_with_subscript($m);
                         $m->{'capture'} = ['term', $m->{'capture'}];
                         $spc = Perlito5::Grammar::Space::opt_ws($str, $m->{'to'});
                         my $p = $spc->{'to'};
-                        if (substr($str, $p, 1) eq '}') {
+                        if ($str->[$p] eq '}') {
                             $m->{'to'} = $p + 1;
                             return $m
                         }
@@ -4444,24 +4446,24 @@ use feature 'say';
                     $name = $name . Perlito5::Match::flat($m);
                     $p = $m->{'to'}
                 }
-                if (substr($str, $p, 1) eq '}') {
+                if ($str->[$p] eq '}') {
                     $caret->{'capture'} = ['term', Perlito5::AST::Var::->new('name' => $name, 'namespace' => '', 'sigil' => $sigil)];
                     $caret->{'to'} = $p + 1;
                     return $caret
                 }
             }
-            my $special = $sigil . substr($str, $p, 1);
+            my $special = $sigil . $str->[$p];
             if (exists($special_var{$special})) {
                 my $m = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
                 my $p2 = $m->{'to'};
-                my $c2 = substr($str, $p2, 1);
+                my $c2 = $str->[$p2];
                 if ($c2 eq '}') {
                     $m->{'to'} = $p2 + 1;
-                    $m->{'capture'} = ['term', Perlito5::AST::Var::->new('sigil' => $sigil, 'namespace' => '', 'name' => substr($str, $p, 1), ($sigil eq '$#' ? ('_real_sigil' => '@') : ()), '_namespace' => 'main')];
+                    $m->{'capture'} = ['term', Perlito5::AST::Var::->new('sigil' => $sigil, 'namespace' => '', 'name' => $str->[$p], ($sigil eq '$#' ? ('_real_sigil' => '@') : ()), '_namespace' => 'main')];
                     return $m
                 }
             }
-            if (substr($str, $p, 1) eq '}') {;
+            if ($str->[$p] eq '}') {;
                 Perlito5::Compiler::error('syntax error')
             }
             $m = Perlito5::Grammar::block($str, $p0);
@@ -4484,7 +4486,7 @@ use feature 'say';
         if ($c1 eq '$') {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $p + 1);
             my $p2 = $m2->{'to'};
-            my $c2 = substr($str, $p2, 1);
+            my $c2 = $str->[$p2];
             if ($c2 ne ',' && $c2 ne ';') {
                 $m = term_sigil($str, $p);
                 if ($m) {
@@ -4530,10 +4532,10 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('use' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
+                (('u' eq $str->[$MATCH->{'to'} + 0]) && ('s' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('no' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))
+                (('n' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))
             })
         }));
         $tmp ? $MATCH : 0
@@ -4584,7 +4586,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('require' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('r' eq $str->[$MATCH->{'to'} + 0]) && ('e' eq $str->[$MATCH->{'to'} + 1]) && ('q' eq $str->[$MATCH->{'to'} + 2]) && ('u' eq $str->[$MATCH->{'to'} + 3]) && ('i' eq $str->[$MATCH->{'to'} + 4]) && ('r' eq $str->[$MATCH->{'to'} + 5]) && ('e' eq $str->[$MATCH->{'to'} + 6]) && ($MATCH->{'to'} += 7)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -4690,7 +4692,7 @@ use feature 'say';
                     }
                 }) && (do {
                     my $m = $MATCH;
-                    if (!(('-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                    if (!((('-' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                         my $m2 = Perlito5::Grammar::ident($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -4747,7 +4749,7 @@ use feature 'say';
                     }) && (do {
                         my $tmp = $MATCH;
                         $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                        my $res = (',' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                        my $res = ((',' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
                     }))) {;
@@ -4801,7 +4803,7 @@ use feature 'say';
                     }
                     if ($use_decl eq 'use' && $full_ident eq 'vars' && $list) {
                         my $code = 'our (' . join(', ', @{$list}) . ')';
-                        my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                        my $m = Perlito5::Grammar::Statement::statement_parse([split('', $code)], 0);
                         !$m && Perlito5::Compiler::error('not a valid variable name: ' . join(${'"'}, @{$list}));
                         $MATCH->{'capture'} = $m->{'capture'}
                     }
@@ -4814,7 +4816,7 @@ use feature 'say';
                                     $a cmp $b
                                 } keys(%{$name})) {
                                     my $code = 'sub ' . $key . ' () { ' . Perlito5::Dumper::_dumper($name->{$key}) . ' }';
-                                    my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                                    my $m = Perlito5::Grammar::Statement::statement_parse([split('', $code)], 0);
                                     !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
                                     push(@ast, $m->{'capture'})
                                 }
@@ -4823,7 +4825,7 @@ use feature 'say';
                                 my $code = 'sub ' . $name . ' () { (' . join(', ', map {;
                                     Perlito5::Dumper::_dumper($_)
                                 } @{$list}) . ') }';
-                                my $m = Perlito5::Grammar::Statement::statement_parse($code, 0);
+                                my $m = Perlito5::Grammar::Statement::statement_parse([split('', $code)], 0);
                                 !$m && Perlito5::Compiler::error('not a valid constant: ' . join(${'"'}, @{$list}));
                                 push(@ast, $m->{'capture'})
                             }
@@ -4947,7 +4949,7 @@ use feature 'say';
     }
     sub Perlito5::Grammar::Use::require {
         my $filename = shift;
-        my $m2 = version_string($filename, 0);
+        my $m2 = version_string([split('', $filename)], 0);
         if ($m2) {
             my $version = $m2->{'version_string'}->{'capture'}->{'buf'};
             Perlito5::test_perl_version($version);
@@ -5822,7 +5824,7 @@ use feature 'say';
         my $pos = $_[1];
         my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
         $pos = $m->{'to'};
-        if (substr($str, $pos, 1) ne '{') {;
+        if ($str->[$pos] ne '{') {;
             return
         }
         $pos++;
@@ -5836,7 +5838,7 @@ use feature 'say';
         my $capture = Perlito5::Match::flat($m);
         $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
         $pos = $m->{'to'};
-        if (substr($str, $pos, 1) ne '}') {;
+        if ($str->[$pos] ne '}') {;
             Perlito5::Compiler::error('syntax error')
         }
         $m->{'to'} = $pos + 1;
@@ -5886,7 +5888,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('continue' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+                }) && (('c' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('n' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ('i' eq $str->[$MATCH->{'to'} + 4]) && ('n' eq $str->[$MATCH->{'to'} + 5]) && ('u' eq $str->[$MATCH->{'to'} + 6]) && ('e' eq $str->[$MATCH->{'to'} + 7]) && ($MATCH->{'to'} += 8)) && (do {
                     my $m2 = block($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6138,7 +6140,7 @@ use feature 'say';
     sub Perlito5::Grammar::Block::named_sub {
         my $str = $_[0];
         my $pos = $_[1];
-        substr($str, $pos, 3) eq 'sub' || return;
+        $str->[$pos] eq 's' && $str->[$pos + 1] eq 'u' && $str->[$pos + 2] eq 'b' || return;
         my $ws = Perlito5::Grammar::Space::ws($str, $pos + 3);
         $ws || return;
         my $p = $ws->{'to'};
@@ -6154,7 +6156,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('sub' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('s' eq $str->[$MATCH->{'to'} + 0]) && ('u' eq $str->[$MATCH->{'to'} + 1]) && ('b' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -6183,7 +6185,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('do' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('d' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
             my $m2 = Perlito5::Grammar::block($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -6210,34 +6212,34 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {;
-                    (';' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    ((';' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('\\' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('[' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    ((']' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('*' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('@' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('@' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('%' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('%' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ('&' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('&' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 })
             }) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{'to'}) {;
@@ -6271,7 +6273,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6280,7 +6282,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6289,7 +6291,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = '_';
                     1
                 }))
@@ -6304,7 +6306,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6332,7 +6334,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = '' . Perlito5::Match::flat($MATCH->{'args_sig'});
                     1
                 }))
@@ -6434,7 +6436,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         count_line($pos);
-        substr($str, $pos, 1) eq chr(13) && $pos++;
+        $str->[$pos] eq chr(13) && $pos++;
         my $m = Perlito5::Grammar::Space::start_of_line($_[0], $pos);
         $m->{'to'}
     }, chr(12) => sub {;
@@ -6442,7 +6444,7 @@ use feature 'say';
     }, chr(13) => sub {
         my $str = $_[0];
         my $pos = $_[1];
-        if (substr($str, $pos, 1) eq chr(10)) {
+        if ($str->[$pos] eq chr(10)) {
             count_line($pos);
             $pos++
         }
@@ -6455,42 +6457,46 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $p = $pos;
-        while (exists($space{substr($str, $p, 1)})) {;
-            $p = $space{substr($str, $p, 1)}->($str, $p + 1)
+        while ($p <= @{$str} && $space{$str->[$p]}) {;
+            $p = $space{$str->[$p]}->($str, $p + 1)
         }
-        (substr($str, $p, 7) eq '__END__' || substr($str, $p, 8) eq '__DATA__') && return term_end($str, $p);
+        if ($str->[$p] eq '_') {
+            my $s = join('', @{$str}[$p .. $p + 6]);
+            ($s eq '__END__' || $s . $str->[$p + 7] eq '__DATA__') && return term_end($str, $p)
+        }
         return {'str' => $str, 'from' => $pos, 'to' => $p, 'capture' => ['space', ' ']}
     }
     sub Perlito5::Grammar::Space::term_end {
         my $str = $_[0];
         my $p = $_[1];
         my $is_data = 0;
-        if (substr($str, $_[1], 7) eq '__END__' && $Perlito5::PKG_NAME eq 'main') {
+        my $s = join('', @{$str}[$p .. $p + 6]);
+        if ($s eq '__END__' && $Perlito5::PKG_NAME eq 'main') {
             $p = $p + 7;
             $is_data = 1
         }
-        elsif (substr($str, $_[1], 8) eq '__DATA__') {
+        elsif ($s . $str->[$p + 7] eq '__DATA__') {
             $p = $p + 8;
             $is_data = 1
         }
         my $m = Perlito5::Grammar::Space::to_eol($str, $p);
         $p = $m->{'to'};
-        if (substr($str, $p, 1) eq chr(10)) {
+        if ($str->[$p] eq chr(10)) {
             count_line($p);
             $p++;
-            substr($str, $p, 1) eq chr(13) && $p++
+            $str->[$p] eq chr(13) && $p++
         }
-        elsif (substr($str, $p, 1) eq chr(13)) {
+        elsif ($str->[$p] eq chr(13)) {
             $p++;
-            if (substr($str, $p, 1) eq chr(10)) {
+            if ($str->[$p] eq chr(10)) {
                 count_line($p);
                 $p++
             }
         }
         if ($is_data) {;
-            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $p, 'data' => $_[0]}
+            $Perlito5::DATA_SECTION{$Perlito5::PKG_NAME} = {'pos' => $p, 'data' => join('', @{$str})}
         }
-        return {'str' => $str, 'from' => $_[1], 'to' => length($_[0]), 'capture' => ['space', ' ']}
+        return {'str' => $str, 'from' => $_[1], 'to' => scalar(@{$str}), 'capture' => ['space', ' ']}
     }
     Perlito5::Grammar::Precedence::add_term('#' => \&term_space);
     Perlito5::Grammar::Precedence::add_term(chr(9) => \&term_space);
@@ -6514,16 +6520,16 @@ use feature 'say';
                 my $res = (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('
-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('
+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ((chr(13) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     })
                 });
                 $MATCH = $tmp;
                 $res ? 0 : 1
-            }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) && ($last_match_null < 2)) {
+            }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'})) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{'to'}) {;
                     $last_match_null = $last_match_null + 1
                 }
@@ -6549,13 +6555,13 @@ use feature 'say';
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('
-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('
+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ((chr(13) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     })
-                }) && ('=cut' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                }) && (('=' eq $str->[$MATCH->{'to'} + 0]) && ('c' eq $str->[$MATCH->{'to'} + 1]) && ('u' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                     my $m2 = to_eol($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6567,7 +6573,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}) && (do {
                     my $m2 = to_eol($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6600,13 +6606,13 @@ use feature 'say';
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('
-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('
+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (chr(13) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        ((chr(13) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     })
-                }) && ('=end' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                }) && (('=' eq $str->[$MATCH->{'to'} + 0]) && ('e' eq $str->[$MATCH->{'to'} + 1]) && ('n' eq $str->[$MATCH->{'to'} + 2]) && ('d' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                     my $m2 = to_eol($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6618,7 +6624,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}) && (do {
                     my $m2 = to_eol($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -6657,10 +6663,10 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('=' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('=' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('pod' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                        ((('p' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('d' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                             my $m2 = pod_pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6672,7 +6678,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('head' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                        ((('h' eq $str->[$MATCH->{'to'} + 0]) && ('e' eq $str->[$MATCH->{'to'} + 1]) && ('a' eq $str->[$MATCH->{'to'} + 2]) && ('d' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                             my $m2 = pod_pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6684,7 +6690,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('item' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                        ((('i' eq $str->[$MATCH->{'to'} + 0]) && ('t' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('m' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                             my $m2 = pod_pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6696,7 +6702,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('over' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                        ((('o' eq $str->[$MATCH->{'to'} + 0]) && ('v' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('r' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                             my $m2 = pod_pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6708,7 +6714,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('begin' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+                        ((('b' eq $str->[$MATCH->{'to'} + 0]) && ('e' eq $str->[$MATCH->{'to'} + 1]) && ('g' eq $str->[$MATCH->{'to'} + 2]) && ('i' eq $str->[$MATCH->{'to'} + 3]) && ('n' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
                             my $m2 = pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6720,7 +6726,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('for' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                        ((('f' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                             my $m2 = pod_begin($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6732,7 +6738,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('encoding' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+                        ((('e' eq $str->[$MATCH->{'to'} + 0]) && ('n' eq $str->[$MATCH->{'to'} + 1]) && ('c' eq $str->[$MATCH->{'to'} + 2]) && ('o' eq $str->[$MATCH->{'to'} + 3]) && ('d' eq $str->[$MATCH->{'to'} + 4]) && ('i' eq $str->[$MATCH->{'to'} + 5]) && ('n' eq $str->[$MATCH->{'to'} + 6]) && ('g' eq $str->[$MATCH->{'to'} + 7]) && ($MATCH->{'to'} += 8)) && (do {
                             my $m2 = to_eol($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6744,7 +6750,7 @@ use feature 'say';
                         }))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('cut' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'})) && (do {
+                        ((('c' eq $str->[$MATCH->{'to'} + 0]) && ('u' eq $str->[$MATCH->{'to'} + 1]) && ('t' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3)) && (do {
                             my $m2 = to_eol($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -6758,17 +6764,17 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('#' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('#' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{'to'};
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            (' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((' ' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((chr(9) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{'to'}) {;
@@ -6783,7 +6789,7 @@ use feature 'say';
                     $MATCH = $m;
                     $MATCH->{'to'} = $to;
                     1
-                }) && ('line' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+                }) && (('l' eq $str->[$MATCH->{'to'} + 0]) && ('i' eq $str->[$MATCH->{'to'} + 1]) && ('n' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{'to'};
@@ -6791,10 +6797,10 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            (' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((' ' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((chr(9) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{'to'}) {;
@@ -6827,10 +6833,10 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            (' ' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((' ' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (chr(9) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((chr(9) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{'to'}) {;
@@ -6866,27 +6872,33 @@ use feature 'say';
         $tmp ? $MATCH : 0
     }
     sub Perlito5::Grammar::Space::ws {
-        my $str = shift;
-        my $pos = shift;
+        my $str = $_[0];
+        my $pos = $_[1];
         my $p = $pos;
-        while (exists($space{substr($str, $p, 1)})) {;
-            $p = $space{substr($str, $p, 1)}->($str, $p + 1)
+        while ($p <= @{$str} && $space{$str->[$p]}) {;
+            $p = $space{$str->[$p]}->($str, $p + 1)
         }
-        (substr($str, $p, 7) eq '__END__' || substr($str, $p, 8) eq '__DATA__') && return term_end($str, $p);
+        if ($str->[$p] eq '_') {
+            my $s = join('', @{$str}[$p .. $p + 6]);
+            ($s eq '__END__' || $s . $str->[$p + 7] eq '__DATA__') && return term_end($str, $p)
+        }
         if ($p == $pos) {;
-            return 0
+            return
         }
         return {'str' => $str, 'from' => $pos, 'to' => $p}
     }
     sub Perlito5::Grammar::Space::opt_ws {
-        my $str = shift;
-        my $pos = shift;
+        my $str = $_[0];
+        my $pos = $_[1];
         my $p = $pos;
-        while (exists($space{substr($str, $p, 1)})) {;
-            $p = $space{substr($str, $p, 1)}->($str, $p + 1)
+        while ($p <= @{$str} && $space{$str->[$p]}) {;
+            $p = $space{$str->[$p]}->($str, $p + 1)
         }
-        (substr($str, $p, 7) eq '__END__' || substr($str, $p, 8) eq '__DATA__') && return term_end($str, $p);
-        return {'str' => $str, 'from' => $pos, 'to' => $p}
+        if ($str->[$p] eq '_') {
+            my $s = join('', @{$str}[$p .. $p + 6]);
+            ($s eq '__END__' || $s . $str->[$p + 7] eq '__DATA__') && return term_end($_[0], $p)
+        }
+        return {'str' => $_[0], 'from' => $pos, 'to' => $p}
     }
     1
 }
@@ -6901,19 +6913,19 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('printf' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'}))
+                (('p' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ('i' eq $str->[$MATCH->{'to'} + 2]) && ('n' eq $str->[$MATCH->{'to'} + 3]) && ('t' eq $str->[$MATCH->{'to'} + 4]) && ('f' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('print' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'}))
+                (('p' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ('i' eq $str->[$MATCH->{'to'} + 2]) && ('n' eq $str->[$MATCH->{'to'} + 3]) && ('t' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('say' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
+                (('s' eq $str->[$MATCH->{'to'} + 0]) && ('a' eq $str->[$MATCH->{'to'} + 1]) && ('y' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('exec' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))
+                (('e' eq $str->[$MATCH->{'to'} + 0]) && ('x' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('c' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('system' eq substr($str, $MATCH->{'to'}, 6) && ($MATCH->{'to'} = 6 + $MATCH->{'to'}))
+                (('s' eq $str->[$MATCH->{'to'} + 0]) && ('y' eq $str->[$MATCH->{'to'} + 1]) && ('s' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ('e' eq $str->[$MATCH->{'to'} + 4]) && ('m' eq $str->[$MATCH->{'to'} + 5]) && ($MATCH->{'to'} += 6))
             })
         }));
         $tmp ? $MATCH : 0
@@ -6928,7 +6940,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -6944,7 +6956,7 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && (do {
@@ -6956,7 +6968,7 @@ use feature 'say';
                 ((do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 1 : 0
                 }) && (do {
@@ -6988,7 +7000,7 @@ use feature 'say';
                 }) && (do {
                     my $tmp = $MATCH;
                     $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                    my $res = ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                    my $res = (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                     $MATCH = $tmp;
                     $res ? 0 : 1
                 }) && (do {
@@ -6997,14 +7009,40 @@ use feature 'say';
                 }))
             })
         }) && (do {
-            my $pos = $MATCH->{'to'};
-            my $m = Perlito5::Grammar::Space::ws($MATCH->{'str'}, $pos);
-            $m && ($pos = $m->{'to'});
-            my $s = substr($MATCH->{'str'}, $pos, 1);
-            my $s2 = substr($MATCH->{'str'}, $pos, 2);
-            if ($s eq ',' || $s eq '?' || $s2 eq '->' || $s eq '[' || $s eq '{') {;
-                return
+            my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
+            if ($m2) {
+                $MATCH->{'to'} = $m2->{'to'};
+                1
             }
+            else {;
+                0
+            }
+        }) && (do {
+            my $tmp = $MATCH;
+            $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
+            my $res = (do {
+                my $pos1 = $MATCH->{'to'};
+                (do {;
+                    ((',' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('?' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('-' eq $str->[$MATCH->{'to'} + 0]) && ('>' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('[' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
+                }) || (do {
+                    $MATCH->{'to'} = $pos1;
+                    (('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
+                })
+            });
+            $MATCH = $tmp;
+            $res ? 0 : 1
+        }) && (do {
+            my $pos = $MATCH->{'to'};
+            my $s = $str->[$pos];
             if ($s eq '+') {
                 my $m = Perlito5::Grammar::Space::ws($MATCH->{'str'}, $pos + 1);
                 if ($m) {;
@@ -7038,7 +7076,9 @@ use feature 'say';
         }
         my $name = Perlito5::Match::flat($m_name);
         $p = $m_name->{'to'};
-        if (substr($str, $p, 2) eq '::') {
+        my $s = $str->[$p];
+        my $s2 = $s . $str->[$p + 1];
+        if ($s2 eq '::') {
             $m_name->{'to'} = $p + 2;
             $m_name->{'capture'} = Perlito5::AST::Var::->new('sigil' => '::', 'name' => '', 'namespace' => $namespace . '::' . $name);
             return $m_name
@@ -7085,7 +7125,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7129,7 +7169,7 @@ use feature 'say';
                             1
                         })
                     })
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $list = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Expression::list_parse'});
                     !ref($list) && return;
                     $MATCH->{'capture'} = ['term', print_ast(Perlito5::Match::flat($MATCH->{'print_decl'}), Perlito5::Match::flat($MATCH->{'the_object'}), Perlito5::Grammar::Expression::expand_list($list))];
@@ -7199,10 +7239,10 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('map' eq substr($str, $MATCH->{'to'}, 3) && ($MATCH->{'to'} = 3 + $MATCH->{'to'}))
+                (('m' eq $str->[$MATCH->{'to'} + 0]) && ('a' eq $str->[$MATCH->{'to'} + 1]) && ('p' eq $str->[$MATCH->{'to'} + 2]) && ($MATCH->{'to'} += 3))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('grep' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'}))
+                (('g' eq $str->[$MATCH->{'to'} + 0]) && ('r' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('p' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4))
             })
         }));
         $tmp ? $MATCH : 0
@@ -7259,7 +7299,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7288,7 +7328,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => Perlito5::Match::flat($MATCH->{'map_or_grep'}), 'special_arg' => $MATCH->{'Perlito5::Grammar::block'}->{'capture'}, 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}->{'capture'}), 'namespace' => '')];
                     1
                 }))
@@ -7321,7 +7361,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('sort' eq substr($str, $MATCH->{'to'}, 4) && ($MATCH->{'to'} = 4 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('s' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('r' eq $str->[$MATCH->{'to'} + 2]) && ('t' eq $str->[$MATCH->{'to'} + 3]) && ($MATCH->{'to'} += 4)) && (do {
             my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -7333,7 +7373,7 @@ use feature 'say';
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = Perlito5::Grammar::Space::opt_ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7390,7 +7430,7 @@ use feature 'say';
                         ((do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                            my $res = (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -7420,7 +7460,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (')' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((')' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = ['term', Perlito5::AST::Apply::->new('code' => 'sort', 'special_arg' => $MATCH->{'_tmp'}, 'arguments' => Perlito5::Grammar::Expression::expand_list($MATCH->{'Perlito5::Grammar::Expression::list_parse'}->{'capture'}), 'namespace' => '')];
                     1
                 }))
@@ -7465,7 +7505,7 @@ use feature 'say';
                         ((do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                            my $res = (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                             $MATCH = $tmp;
                             $res ? 1 : 0
                         }) && (do {
@@ -7592,8 +7632,10 @@ use feature 'say';
     }
     Perlito5::Grammar::Precedence::add_term($_ => \&term_digit)
         for '.', 0 .. 9;
-    sub Perlito5::Grammar::Number::digit {;
-        substr($_[0], $_[1], 1) =~ m/\d/ ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
+    sub Perlito5::Grammar::Number::digit {
+        my $str = $_[0];
+        my $pos = $_[1];
+        $str->[$pos] ge 0 && $str->[$pos] le 9 ? {'str' => $str, 'from' => $pos, 'to' => $pos + 1} : 0
     }
     sub Perlito5::Grammar::Number::exponent {
         my $str = $_[0];
@@ -7602,18 +7644,18 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('e' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('e' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('E' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('E' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('-' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('-' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 1
@@ -7626,7 +7668,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {;
-                    ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (do {
@@ -7664,7 +7706,7 @@ use feature 'say';
         my $tmp = (((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = digit($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -7680,7 +7722,7 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
                             (do {
@@ -7741,7 +7783,7 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
                             (do {
@@ -7783,10 +7825,10 @@ use feature 'say';
                         })
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $tmp = $MATCH;
                             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                            my $res = ('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                            my $res = (('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                             $MATCH = $tmp;
                             $res ? 0 : 1
                         }) && (do {
@@ -7796,7 +7838,7 @@ use feature 'say';
                             while ((do {
                                 my $pos1 = $MATCH->{'to'};
                                 (do {;
-                                    ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                                    (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                                 }) || (do {
                                     $MATCH->{'to'} = $pos1;
                                     (do {
@@ -7905,7 +7947,7 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {;
-                    ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                    (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     (do {
@@ -7939,16 +7981,16 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = (((0 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = ((((0 eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $pos1 = $MATCH->{'to'};
             (do {;
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('x' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('x' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        ('X' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('X' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     })
                 }) && (do {
                     my $last_match_null = 0;
@@ -7984,10 +8026,10 @@ use feature 'say';
                 ((do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        ('b' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('b' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     }) || (do {
                         $MATCH->{'to'} = $pos1;
-                        ('B' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                        (('B' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                     })
                 }) && (do {
                     my $last_match_null = 0;
@@ -7997,13 +8039,13 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (0 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((0 eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
-                            (1 eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            ((1 eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         })
                     }) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{'to'}) {;
@@ -8030,7 +8072,7 @@ use feature 'say';
                     while ((do {
                         my $pos1 = $MATCH->{'to'};
                         (do {;
-                            ('_' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                            (('_' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
                         }) || (do {
                             $MATCH->{'to'} = $pos1;
                             (do {
@@ -8106,7 +8148,7 @@ use feature 'say';
             my $m = $MATCH;
             my $to = $MATCH->{'to'};
             my $count = 0;
-            while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+            while (((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                 my $m2 = digits_underscore($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -8151,7 +8193,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('v' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('v' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = val_int($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -8173,14 +8215,14 @@ use feature 'say';
                 else {;
                     0
                 }
-            }) && ('(' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})));
+            }) && (('(' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)));
             $MATCH = $tmp;
             $res ? 0 : 1
         }) && (do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{'to'};
-            while ((('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+            while (((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                 my $m2 = digits_underscore($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -8224,27 +8266,38 @@ use feature 'say';
 {
     package main;
     package Perlito5::Grammar;
-    sub Perlito5::Grammar::word {;
-        substr($_[0], $_[1], 1) =~ m/\w/ ? {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + 1} : 0
+    sub Perlito5::Grammar::word {
+        my $str = $_[0];
+        my $pos = $_[1];
+        ($str->[$pos] ge 'a' && $str->[$pos] le 'z') || ($str->[$pos] ge 'A' && $str->[$pos] le 'Z') || ($str->[$pos] ge 0 && $str->[$pos] le 9) || ($str->[$pos] eq '_') || return;
+        $pos++;
+        return {'str' => $_[0], 'from' => $_[1], 'to' => $pos}
     }
     sub Perlito5::Grammar::ident {
-        substr($_[0], $_[1], 256) !~ m/^([a-zA-Z_]\w*)/ && return;
-        length($1) > 251 && die('Identifier too long');
-        return {'str' => $_[0], 'from' => $_[1], 'to' => $_[1] + length($1)}
+        my $str = $_[0];
+        my $pos = $_[1];
+        ($str->[$pos] ge 'a' && $str->[$pos] le 'z') || ($str->[$pos] ge 'A' && $str->[$pos] le 'Z') || ($str->[$pos] eq '_') || return;
+        $pos++;
+        while (($str->[$pos] ge 'a' && $str->[$pos] le 'z') || ($str->[$pos] ge 'A' && $str->[$pos] le 'Z') || ($str->[$pos] ge 0 && $str->[$pos] le 9) || ($str->[$pos] eq '_')) {;
+            $pos++
+        }
+        ($pos - $_[1]) > 251 && die('Identifier too long');
+        return {'str' => $_[0], 'from' => $_[1], 'to' => $pos}
     }
     sub Perlito5::Grammar::caret_char {
-        my $c = substr($_[0], $_[1], 1);
+        my $str = $_[0];
         my $pos = $_[1];
+        my $c = $str->[$pos];
         if ($c eq '^') {
             $pos++;
-            $c = substr($_[0], $pos, 1);
+            $c = $str->[$pos];
             ($c lt 'A' || $c gt 'Z') && return 0;
             $c = chr(ord($c) - ord('A') + 1)
         }
         elsif (Perlito5::Grammar::Space::ws($_[0], $pos)) {;
-            return 0
+            return
         }
-        ($c lt chr(1) || $c gt chr(26)) && return 0;
+        ($c lt chr(1) || $c gt chr(26)) && return;
         return {'str' => $_[0], 'from' => $_[1], 'to' => $pos + 1, 'capture' => $c}
     }
     sub Perlito5::Grammar::full_ident {
@@ -8264,7 +8317,7 @@ use feature 'say';
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{'to'};
-            while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+            while ((((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                 my $m2 = ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -8305,14 +8358,14 @@ use feature 'say';
         }) && (do {
             my $tmp = $MATCH;
             $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-            my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+            my $res = ((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
             $MATCH = $tmp;
             $res ? 1 : 0
         }) && (do {
             my $last_match_null = 0;
             my $m = $MATCH;
             my $to = $MATCH->{'to'};
-            while ((('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+            while ((((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                 my $m2 = ident($str, $MATCH->{'to'});
                 if ($m2) {
                     $MATCH->{'to'} = $m2->{'to'};
@@ -8324,7 +8377,7 @@ use feature 'say';
             }) && (do {
                 my $tmp = $MATCH;
                 $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                my $res = ('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}));
+                my $res = ((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2));
                 $MATCH = $tmp;
                 $res ? 1 : 0
             })) && ($last_match_null < 2)) {
@@ -8364,7 +8417,7 @@ use feature 'say';
                     my $last_match_null = 0;
                     my $m = $MATCH;
                     my $to = $MATCH->{'to'};
-                    while (('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && ($last_match_null < 2)) {
+                    while (((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && ($last_match_null < 2)) {
                         if ($to == $MATCH->{'to'}) {;
                             $last_match_null = $last_match_null + 1
                         }
@@ -8383,7 +8436,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'})) && (do {
+                (((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2)) && (do {
                     my $m2 = optional_namespace_before_ident($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -8478,7 +8531,7 @@ use feature 'say';
             (do {;
                 ((do {
                     my $m = $MATCH;
-                    if (!('::' eq substr($str, $MATCH->{'to'}, 2) && ($MATCH->{'to'} = 2 + $MATCH->{'to'}))) {;
+                    if (!((':' eq $str->[$MATCH->{'to'} + 0]) && (':' eq $str->[$MATCH->{'to'} + 1]) && ($MATCH->{'to'} += 2))) {;
                         $MATCH = $m
                     }
                     1
@@ -8513,19 +8566,19 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('$' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('$' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('%' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('%' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('@' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('@' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('&' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('&' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('*' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }));
         $tmp ? $MATCH : 0
@@ -8618,6 +8671,9 @@ use feature 'say';
     sub Perlito5::Grammar::exp_stmts {
         my $str = $_[0];
         my $pos = $_[1] // 0;
+        if (!ref($str)) {;
+            $str = [split('', $str)]
+        }
         push(@PKG, $Perlito5::PKG_NAME);
         if ($pos == 0) {
             my $m = Perlito5::Grammar::Space::start_of_line($str, $pos);
@@ -8628,7 +8684,7 @@ use feature 'say';
         my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
         $pos = $m->{'to'};
         while ($m) {
-            if (substr($str, $pos, 1) eq ';') {
+            if ($str->[$pos] eq ';') {
                 $has_semicolon = 1;
                 $m = Perlito5::Grammar::Space::opt_ws($str, $pos + 1);
                 $pos = $m->{'to'}
@@ -8638,7 +8694,7 @@ use feature 'say';
                 if ($m) {
                     push(@stmts, $m->{'capture'});
                     $pos = $m->{'to'};
-                    if (substr($str, $pos, 1) eq ';') {
+                    if ($str->[$pos] eq ';') {
                         $has_semicolon = 1;
                         $pos = $pos + 1
                     }
@@ -9229,7 +9285,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = ((('token' eq substr($str, $MATCH->{'to'}, 5) && ($MATCH->{'to'} = 5 + $MATCH->{'to'})) && (do {
+        my $tmp = (((('t' eq $str->[$MATCH->{'to'} + 0]) && ('o' eq $str->[$MATCH->{'to'} + 1]) && ('k' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ('n' eq $str->[$MATCH->{'to'} + 4]) && ($MATCH->{'to'} += 5)) && (do {
             my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -9257,7 +9313,7 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $m2 = Perlito5::Grammar::Regex6::rule($str, $MATCH->{'to'});
             if ($m2) {
                 $MATCH->{'to'} = $m2->{'to'};
@@ -9267,8 +9323,9 @@ use feature 'say';
             else {;
                 0
             }
-        }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+        }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
             my $source = Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::ident'}) . '{ ' . 'my $str     = $_[0]; ' . 'my $pos     = $_[1]; ' . 'my $MATCH = { str => $str, from => $pos, to => $pos }; ' . 'my $tmp = ( ' . Perlito5::Match::flat($MATCH->{'Perlito5::Grammar::Regex6::rule'})->emit_perl5() . '); ' . '$tmp ? $MATCH : 0; ' . '}';
+            $source = [split(m//, $source)];
             my $ast = Perlito5::Grammar::Block::named_sub_def($source, 0);
             $MATCH->{'capture'} = ['term', Perlito5::Match::flat($ast)];
             1
@@ -9280,7 +9337,7 @@ use feature 'say';
         my $str = $_[0];
         my $pos = $_[1];
         my $MATCH = {'str' => $str, 'from' => $pos, 'to' => $pos};
-        my $tmp = (('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})));
+        my $tmp = (('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}));
         $tmp ? $MATCH : 0
     }
     sub Perlito5::Grammar::Regex6::literal {
@@ -9294,16 +9351,16 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {;
-                    (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    ((('\\' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ((do {
                         my $tmp = $MATCH;
                         $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                        my $res = (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                        my $res = ((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
-                    }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                 })
             }) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{'to'}) {;
@@ -9333,10 +9390,10 @@ use feature 'say';
             while (((do {
                 my $tmp = $MATCH;
                 $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                my $res = ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                my $res = (('>' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                 $MATCH = $tmp;
                 $res ? 0 : 1
-            }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))) && ($last_match_null < 2)) {
+            }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'})) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{'to'}) {;
                     $last_match_null = $last_match_null + 1
                 }
@@ -9365,10 +9422,10 @@ use feature 'say';
             while ((do {
                 my $pos1 = $MATCH->{'to'};
                 (do {;
-                    (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    ((('\\' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                    (((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                         my $m2 = literal($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -9377,10 +9434,10 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    }) && ((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
-                    (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                    ((('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                         my $m2 = string_code($str, $MATCH->{'to'});
                         if ($m2) {
                             $MATCH->{'to'} = $m2->{'to'};
@@ -9389,16 +9446,16 @@ use feature 'say';
                         else {;
                             0
                         }
-                    }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)))
                 }) || (do {
                     $MATCH->{'to'} = $pos1;
                     ((do {
                         my $tmp = $MATCH;
                         $MATCH = {'from' => $tmp->{'to'}, 'to' => $tmp->{'to'}};
-                        my $res = ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}));
+                        my $res = (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1));
                         $MATCH = $tmp;
                         $res ? 0 : 1
-                    }) && ('' ne substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                    }) && ('' ne $str->[$MATCH->{'to'}] && ++$MATCH->{'to'}))
                 })
             }) && ($last_match_null < 2)) {
                 if ($to == $MATCH->{'to'}) {;
@@ -9443,7 +9500,7 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                (('<before' eq substr($str, $MATCH->{'to'}, 7) && ($MATCH->{'to'} = 7 + $MATCH->{'to'})) && (do {
+                ((('<' eq $str->[$MATCH->{'to'} + 0]) && ('b' eq $str->[$MATCH->{'to'} + 1]) && ('e' eq $str->[$MATCH->{'to'} + 2]) && ('f' eq $str->[$MATCH->{'to'} + 3]) && ('o' eq $str->[$MATCH->{'to'} + 4]) && ('r' eq $str->[$MATCH->{'to'} + 5]) && ('e' eq $str->[$MATCH->{'to'} + 6]) && ($MATCH->{'to'} += 7)) && (do {
                     my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -9462,13 +9519,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('>' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Rul::Before::->new('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}));
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('<!before' eq substr($str, $MATCH->{'to'}, 8) && ($MATCH->{'to'} = 8 + $MATCH->{'to'})) && (do {
+                ((('<' eq $str->[$MATCH->{'to'} + 0]) && ('!' eq $str->[$MATCH->{'to'} + 1]) && ('b' eq $str->[$MATCH->{'to'} + 2]) && ('e' eq $str->[$MATCH->{'to'} + 3]) && ('f' eq $str->[$MATCH->{'to'} + 4]) && ('o' eq $str->[$MATCH->{'to'} + 5]) && ('r' eq $str->[$MATCH->{'to'} + 6]) && ('e' eq $str->[$MATCH->{'to'} + 7]) && ($MATCH->{'to'} += 8)) && (do {
                     my $m2 = Perlito5::Grammar::Space::ws($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -9487,13 +9544,13 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('>' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Rul::NotBefore::->new('rule_exp' => Perlito5::Match::flat($MATCH->{'rule'}));
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ((chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                (((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = literal($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -9503,16 +9560,16 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (chr(39) eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((chr(39) eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Rul::Constant::->new('constant' => Perlito5::Match::flat($MATCH->{'literal'}));
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('<' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('<' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $m2 = metasyntax_exp($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -9522,7 +9579,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && (('>' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'capture'} = Perlito5::Rul::Subrule::->new('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures' => 0);
                             1
                         }))
@@ -9538,7 +9595,7 @@ use feature 'say';
                             else {;
                                 0
                             }
-                        }) && ('>' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        }) && (('>' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             $MATCH->{'capture'} = Perlito5::Rul::Subrule::->new('metasyntax' => Perlito5::Match::flat($MATCH->{'metasyntax_exp'}), 'captures' => 1);
                             1
                         }))
@@ -9546,7 +9603,7 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('{' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('{' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = parsed_code($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -9556,16 +9613,16 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && ('}' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && (('}' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Rul::Block::->new('closure' => Perlito5::Match::flat($MATCH->{'parsed_code'}));
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('\\' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('\\' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('c' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('c' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $m2 = Perlito5::Grammar::Number::digits($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -9599,13 +9656,13 @@ use feature 'say';
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('.' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('.' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Rul::Dot::->new();
                     1
                 }))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                (('[' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                ((('[' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     my $m2 = rule($str, $MATCH->{'to'});
                     if ($m2) {
                         $MATCH->{'to'} = $m2->{'to'};
@@ -9615,7 +9672,7 @@ use feature 'say';
                     else {;
                         0
                     }
-                }) && (']' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                }) && ((']' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                     $MATCH->{'capture'} = Perlito5::Match::flat($MATCH->{'rule'});
                     1
                 }))
@@ -9630,13 +9687,13 @@ use feature 'say';
         my $tmp = ((do {
             my $pos1 = $MATCH->{'to'};
             (do {;
-                ('?' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('?' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('*' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('*' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
-                ('+' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'}))
+                (('+' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1))
             })
         }));
         $tmp ? $MATCH : 0
@@ -9804,7 +9861,7 @@ use feature 'say';
                 }) && (do {
                     my $pos1 = $MATCH->{'to'};
                     (do {;
-                        (('|' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})) && (do {
+                        ((('|' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)) && (do {
                             my $m2 = or_list_exp($str, $MATCH->{'to'});
                             if ($m2) {
                                 $MATCH->{'to'} = $m2->{'to'};
@@ -9858,7 +9915,7 @@ use feature 'say';
                         $MATCH = $m
                     }
                     1
-                }) && ('|' eq substr($str, $MATCH->{'to'}, 1) && ($MATCH->{'to'} = 1 + $MATCH->{'to'})))
+                }) && (('|' eq $str->[$MATCH->{'to'} + 0]) && ($MATCH->{'to'} += 1)))
             }) || (do {
                 $MATCH->{'to'} = $pos1;
                 1
@@ -9890,14 +9947,20 @@ use feature 'say';
     sub Perlito5::Rul::constant {
         my $str = shift;
         my $len = length($str);
-        if ($str eq '\\') {;
-            $str = '\\\\'
-        }
-        if ($str eq chr(39)) {;
-            $str = '\\' . chr(39)
-        }
-        if ($len) {;
-            '( ' . chr(39) . $str . chr(39) . ' eq substr( $str, $MATCH->{to}, ' . $len . ') ' . '&& ( $MATCH->{to} = ' . $len . ' + $MATCH->{to} )' . ')'
+        if ($len) {
+            my @cond;
+            my $i = 0;
+            for my $char (split(m//, $str)) {
+                if ($char eq '\\') {;
+                    $char = '\\\\'
+                }
+                if ($char eq chr(39)) {;
+                    $char = '\\' . chr(39)
+                }
+                push(@cond, '(' . chr(39) . $char . chr(39) . ' eq $str->[$MATCH->{to} + ' . $i . '])');
+                $i++
+            }
+            return '(' . join(' && ', @cond, '($MATCH->{to} += ' . $len . ')') . ')'
         }
         else {;
             return 1
@@ -10030,7 +10093,7 @@ use feature 'say';
     }
     sub Perlito5::Rul::Dot::emit_perl5 {
         my $self = $_[0];
-        '( ' . chr(39) . chr(39) . ' ne substr( $str, $MATCH->{to}, 1 ) ' . '&& ($MATCH->{to} = 1 + $MATCH->{to})' . ')'
+        '(' . chr(39) . chr(39) . ' ne $str->[$MATCH->{to}] ' . '&& ++$MATCH->{to}' . ')'
     }
     sub Perlito5::Rul::Dot::set_captures_to_array {;
         my $self = $_[0]
@@ -10615,7 +10678,7 @@ use feature 'say';
             }
             else {
                 my $scope_perl5 = Perlito5::Dumper::ast_dumper([$self->{'_scope'}]);
-                my $m = Perlito5::Grammar::Expression::term_square($scope_perl5, 0);
+                my $m = Perlito5::Grammar::Expression::term_square([split('', $scope_perl5)], 0);
                 if (!$m || $m->{'to'} < length($scope_perl5)) {;
                     die('invalid internal scope in eval
 ')

@@ -80,7 +80,7 @@ my %octal = map +($_ => 1), qw/ 0 1 2 3 4 5 6 7 /;
 sub q_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     return string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
@@ -88,7 +88,7 @@ sub q_quote_parse {
 sub qq_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     return string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1);
@@ -96,7 +96,7 @@ sub qq_quote_parse {
 sub qw_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
 
@@ -113,7 +113,7 @@ sub qw_quote_parse {
 sub m_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
@@ -147,7 +147,7 @@ sub m_quote_parse {
 sub s_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
@@ -167,7 +167,7 @@ sub s_quote_parse {
         # warn "pair delimiter $delimiter at $p";
         $m = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $m->{to};
-        $delimiter = substr( $str, $p, 1 );
+        $delimiter = $str->[$p];
         $open_delimiter = $delimiter;
         $p++;
         # warn "second delimiter $delimiter";
@@ -177,7 +177,8 @@ sub s_quote_parse {
     # scan for closing delimiter
     $part2 = string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 0);
     $part2 || return $part2;
-    my $replace = substr( $str, $p, $part2->{to} - $p - 1 );
+    my @replace = @{$str}[ $p .. $part2->{to} - 2 ];
+    my $replace;
 
     # read the modifiers
     $p = $part2->{'to'};
@@ -189,8 +190,7 @@ sub s_quote_parse {
 
     if ($modifiers =~ /e/) {
         # $part2 is code
-        $replace = '{' . $replace . '}';                # make a "block"
-        my $m = Perlito5::Grammar::block($replace, 0);  # parse the block
+        my $m = Perlito5::Grammar::block( [ '{', @replace, '}' ], 0);  # parse the block
         if (!$m) {
             Perlito5::Compiler::error "syntax error";
         }
@@ -217,12 +217,11 @@ sub s_quote_parse {
     }
     else {
         # $part2 is string
-        $replace = $open_delimiter . $replace . $closing_delimiter;
         if (exists($pair{$delimiter})) {
             $interpolate = 2;
             $delimiter eq chr(39) && ($interpolate = 3);
         }
-        my $m = string_interpolation_parse($replace, 1, $open_delimiter, $closing_delimiter, $interpolate);
+        my $m = string_interpolation_parse( [ $open_delimiter, @replace, $closing_delimiter ], 1, $open_delimiter, $closing_delimiter, $interpolate);
         if (!$m) {;
             Perlito5::Compiler::error('syntax error')
         }
@@ -247,7 +246,7 @@ sub s_quote_parse {
 sub qr_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[ $pos-1 ];
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
@@ -280,7 +279,7 @@ sub qr_quote_parse {
 sub qx_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
 
@@ -297,7 +296,7 @@ sub qx_quote_parse {
 sub glob_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     # Special cases:
@@ -307,7 +306,8 @@ sub glob_quote_parse {
     # <$var>             - file
     # < anything else >  - is a glob() call
 
-    if ( substr( $str, $pos, 3 ) eq '<>>' ) {
+    if ( $str->[$pos] eq '<' && $str->[$pos+1] eq '>' && $str->[$pos+2] eq '>' ) {
+        # <<>>
         return {
             str  => $str, 
             from => $pos, 
@@ -327,7 +327,7 @@ sub glob_quote_parse {
         };
     }
 
-    if ( substr( $str, $pos, 1 ) eq '>' ) {
+    if ( $str->[$pos] eq '>' ) {
         return {
             str  => $str, 
             from => $pos, 
@@ -343,7 +343,7 @@ sub glob_quote_parse {
 
     my $p = $pos;
     my $sigil = '::';
-    if ( substr( $str, $p, 1 ) eq '$' ) {
+    if ( $str->[$p] eq '$' ) {
         $sigil = '$';
         $p++;
     }
@@ -351,7 +351,7 @@ sub glob_quote_parse {
     my $namespace = Perlito5::Match::flat($m_namespace);
     $p = $m_namespace->{to};
     my $m_name      = Perlito5::Grammar::ident( $str, $p );
-    if ($m_name && substr( $str, $m_name->{to}, 1 ) eq '>' ) {
+    if ($m_name && $str->[$m_name->{to}] eq '>' ) {
         if ($sigil eq '::') {
             return {
                 str  => $str, 
@@ -402,7 +402,7 @@ sub glob_quote_parse {
 sub tr_quote_parse {
     my $str = $_[0];
     my $pos = $_[1];
-    my $delimiter = substr( $str, $pos-1, 1 );
+    my $delimiter = $str->[$pos-1];
     my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
@@ -422,7 +422,7 @@ sub tr_quote_parse {
         # warn "pair delimiter $delimiter at $p";
         $m = Perlito5::Grammar::Space::opt_ws($str, $p);
         $p = $m->{to};
-        $delimiter = substr( $str, $p, 1 );
+        $delimiter = $str->[$p];
         my $open_delimiter = $delimiter;
         $p++;
         # warn "second delimiter $delimiter";
@@ -493,12 +493,12 @@ sub string_interpolation_parse {
 
     my @args;
     my $buf = '';
-    while (  $p < length($str)
-          && substr($str, $p, length($delimiter)) ne $delimiter
+    while (  $p < @$str
+          && join('', @{$str}[ $p .. $p + length($delimiter) - 1]) ne $delimiter
           )
     {
-        my $c = substr($str, $p, 1);
-        my $c2 = substr($str, $p+1, 1);
+        my $c = $str->[$p];
+        my $c2 = $str->[$p+1];
         my $m;
         my $more = '';
         if ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
@@ -585,7 +585,7 @@ sub string_interpolation_parse {
             if ($c) {
                 if ($interpolate == 2) {
                     # regex
-                    $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Buf->new( buf => substr($str, $p, 2) ) }
+                    $m = { str => $str, from => $p, to => $p+2, capture => Perlito5::AST::Buf->new( buf => $str->[$p] . $str->[$p+1] ) }
                 }
                 elsif ($interpolate == 1) {
                     # double-quotes
@@ -639,7 +639,7 @@ sub string_interpolation_parse {
     }
 
     Perlito5::Compiler::error "Can't find string terminator '$delimiter' anywhere before EOF"
-        if substr($str, $p, length($delimiter)) ne $delimiter;
+        if join('', @{$str}[ $p .. $p + length($delimiter) - 1]) ne $delimiter;
 
     $p += length($delimiter);
 
@@ -678,12 +678,13 @@ sub here_doc_wanted {
     my $delimiter;
     my $type = 'double_quote';
     my $p = $pos;
-    if ( substr($str, $p, 2) eq '<<' ) {
+    if ( $str->[$p] eq '<' && $str->[$p + 1] eq '<' ) {
+        # <<
         $p += 2;
-        my $quote = substr($str, $p, 1);
+        my $quote = $str->[$p];
         if ( $quote eq "'" || $quote eq '"' ) {
             $p += 1;
-            my $m = string_interpolation_parse($str, $p, $quote, $quote, 0);
+            my $m = string_interpolation_parse($_[0], $p, $quote, $quote, 0);
             if ( $m ) {
                 $p = $m->{to};
                 $delimiter = Perlito5::Match::flat($m)->{buf};
@@ -764,7 +765,6 @@ sub here_doc {
             'str' => $str, 'from' => $pos, 'to' => $pos
         };
     }
-
     my $p = $pos;
     my $here = shift @Here_doc;
     my $type      = $here->[0];
@@ -772,14 +772,14 @@ sub here_doc {
     my $delimiter = $here->[2];
     # say "got a newline and we are looking for a $type that ends with ", $delimiter;
     if ($type eq 'single_quote') {
-        while ( $p < length($str) ) {
-            if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
+        while ( $p < @$str ) {
+            if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
                 # this will put the text in the right place in the AST
-                push @$result, Perlito5::AST::Buf->new(buf => substr($str, $pos, $p - $pos));
+                push @$result, Perlito5::AST::Buf->new(buf => join('', @{$str}[ $pos .. $p - 1]));
                 $p += length($delimiter);
-                # say "$p ", length($str);
+                # say "$p ", scalar(@$str);
                 my $m = newline( $str, $p );
-                if ( $p >= length($str) || $m ) {
+                if ( $p >= @$str || $m ) {
                     # return true
                     $p = $m->{to} if $m;
                     return {
@@ -788,14 +788,14 @@ sub here_doc {
                 }
             }
             # ... next line
-            while (  $p < length($str)
-                  && ( substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13) )
+            while (  $p < @$str
+                  && ( $str->[$p] ne chr(10) && $str->[$p] ne chr(13) )
                   )
             {
                 $p++
             }
-            while (  $p < length($str)
-                  && ( substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13) )
+            while (  $p < @$str
+                  && ( $str->[$p] eq chr(10) || $str->[$p] eq chr(13) )
                   )
             {
                 $p++
@@ -805,10 +805,10 @@ sub here_doc {
     else {
         # double_quote
         my $m;
-        if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
+        if ( join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter ) {
             $p += length($delimiter);
             $m = newline( $str, $p );
-            if ( $p >= length($str) || $m ) {
+            if ( $p >= @$str || $m ) {
                 push @$result, Perlito5::AST::Buf->new( buf => '' );
                 $p = $m->{to} if $m;
                 return {
@@ -835,7 +835,7 @@ sub double_quoted_unescape {
     my $str = $_[0];
     my $pos = $_[1];
 
-    my $c2 = substr($str, $pos+1, 1);
+    my $c2 = $str->[$pos+1];
     my $m;
     if ( exists $escape_sequence{$c2} ) {
         $m = {
@@ -848,7 +848,7 @@ sub double_quoted_unescape {
     elsif ( $c2 eq 'c' ) {
         # \cC = Control-C
         # \c0 = "p"
-        my $c3 = ord(uc(substr($str, $pos+2, 1))) - ord('A') + 1;
+        my $c3 = ord(uc( $str->[$pos+2] )) - ord('A') + 1;
         $c3 = 128 + $c3 
             if $c3 < 0;
         $m = {
@@ -859,12 +859,12 @@ sub double_quoted_unescape {
         };
     }
     elsif ( $c2 eq 'x' ) {
-        if (substr($str, $pos+2, 1) eq '{') {
+        if ($str->[$pos+2] eq '{') {
             # \x{03a3}         - unicode hex
             my $p = $pos+3;
             $p++
-                while $p < length($str) && substr($str, $p, 1) ne '}';
-            my $hex_code = substr($str, $pos+3, $p - $pos - 3);
+                while $p < @$str && $str->[$p] ne '}';
+            my $hex_code = join("", @{$str}[ $pos+3 .. $p - 1 ]);
             $hex_code = "0" unless $hex_code;
             my $tmp = oct( "0x" . $hex_code );
             $m = {
@@ -877,9 +877,9 @@ sub double_quoted_unescape {
         else {
             # "\x"+hex  - max 2 digit hex
             my $p = $pos+2;
-            $p++ if $hex{ uc substr($str, $p, 1) };
-            $p++ if $hex{ uc substr($str, $p, 1) };
-            my $hex_code = substr($str, $pos+2, $p - $pos - 2);
+            $p++ if $hex{ uc $str->[$p] };
+            $p++ if $hex{ uc $str->[$p] };
+            my $hex_code = join("", @{$str}[ $pos+2 .. $p - 1 ]);
             $hex_code = "0" unless $hex_code;
             my $tmp = oct( "0x" . $hex_code );
             $m = {
@@ -893,10 +893,10 @@ sub double_quoted_unescape {
     elsif ( exists $octal{$c2} ) {
         # "\"+octal        - initial zero is optional; max 3 digit octal (377)
         my $p = $pos+1;
-        $p++ if $octal{ substr($str, $p, 1) };
-        $p++ if $octal{ substr($str, $p, 1) };
-        $p++ if $octal{ substr($str, $p, 1) };
-        my $oct_code = substr($str, $pos+1, $p - $pos - 1);
+        $p++ if $octal{ $str->[$p] };
+        $p++ if $octal{ $str->[$p] };
+        $p++ if $octal{ $str->[$p] };
+        my $oct_code = join("", @{$str}[ $pos+1 .. $p - 1 ]);
         my $tmp = oct($oct_code);
         $m = {
             str => $str,
@@ -929,13 +929,14 @@ sub double_quoted_var_with_subscript {
     my $pos = $m_var->{to};
     my $p = $pos;
     my $m_index;
-    if (substr($str, $p, 3) eq '->[') {
+    if ($str->[$p] eq '-' && $str->[$p+1] eq '>' && $str->[$p+2] eq '[') {
+        # ->[
         $p += 3;
         $m_index = Perlito5::Grammar::Expression::list_parse($str, $p);
         Perlito5::Compiler::error "syntax error" unless $m_index;
         my $exp = $m_index->{capture};
         $p = $m_index->{to};
-        Perlito5::Compiler::error "syntax error" if $exp eq '*undef*' || substr($str, $p, 1) ne ']';
+        Perlito5::Compiler::error "syntax error" if $exp eq '*undef*' || $str->[$p] ne ']';
         $p++;
         $m_index->{capture} = Perlito5::AST::Call->new(
                 method    => 'postcircumfix:<[ ]>',
@@ -945,7 +946,8 @@ sub double_quoted_var_with_subscript {
         $m_index->{to} = $p;
         return double_quoted_var_with_subscript($m_index, $interpolate);
     }
-    if (substr($str, $p, 3) eq '->{') {
+    if ($str->[$p] eq '-' && $str->[$p+1] eq '>' && $str->[$p+2] eq '{') {
+        # '->{'
         $pos += 2;
         $m_index = Perlito5::Grammar::Expression::term_curly($str, $pos);
         Perlito5::Compiler::error "syntax error" unless $m_index;
@@ -956,18 +958,18 @@ sub double_quoted_var_with_subscript {
             );
         return double_quoted_var_with_subscript($m_index, $interpolate);
     }
-    if (substr($str, $p, 1) eq '[') {
+    if ($str->[$p] eq '[') {
 
         if ($interpolate == 2) {
             # inside a regex: disambiguate from char-class
             # these are valid indexes: 12 -1 $x
             my $m = Perlito5::Grammar::Number::term_digit($str, $p+1)
-                 || (  substr($str, $p+1, 1) eq '-'
+                 || (  $str->[$p+1] eq '-'
                     && Perlito5::Grammar::Number::term_digit($str, $p+2)
                     )
                  || Perlito5::Grammar::Sigil::term_sigil($str, $p+1);
             return $m_var unless $m;
-            return $m_var unless substr($str, $m->{to}, 1) eq ']';
+            return $m_var unless $str->[$m->{to}] eq ']';
         }
 
         $p++;
@@ -975,7 +977,7 @@ sub double_quoted_var_with_subscript {
         if ($m_index) {
             my $exp = $m_index->{capture};
             $p = $m_index->{to};
-            if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
+            if ($exp ne '*undef*' && $str->[$p] eq ']') {
                 $p++;
                 my $value = $m_var->{capture};
                 if (ref($value) eq 'Perlito5::AST::Var') {
@@ -1012,8 +1014,8 @@ sub double_quoted_var {
     my $delimiter = $_[2];
     my $interpolate = $_[3];  # 0 - single-quote; 1 - double-quote; 2 - regex
 
-    my $c = substr($str, $pos, 1);
-    my $c2 = substr($str, $pos+1, 1);
+    my $c = $str->[$pos];
+    my $c2 = $str->[$pos+1];
 
     if ($c eq '$' && $c2 eq ')') {
         return 0;
@@ -1041,7 +1043,8 @@ sub double_quoted_var {
             to => $pos+2,
         };
     }
-    elsif ($c eq '$' && substr($str, $pos+1, length($delimiter)) ne $delimiter)
+    elsif ($c eq '$'
+          && join('', @{$str}[ $pos+1 .. $pos + length($delimiter) ]) ne $delimiter)
     {
         # TODO - this only covers simple expressions
         # TODO - syntax errors are allowed here - this should backtrack
@@ -1053,7 +1056,7 @@ sub double_quoted_var {
         return double_quoted_var_with_subscript($m, $interpolate);
     }
     elsif ($c eq '@'
-        && substr($str, $pos+1, length($delimiter)) ne $delimiter       # not end of string
+        && join('', @{$str}[ $pos+1 .. $pos + length($delimiter) ]) ne $delimiter  # not end of string
         && ($c2 lt "0" || $c2 gt "9")                                   # not a digit
         )
     {

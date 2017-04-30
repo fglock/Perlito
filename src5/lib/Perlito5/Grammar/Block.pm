@@ -22,7 +22,7 @@ sub block {
     my $pos = $_[1];
     my $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
     $pos = $m->{to};
-    if ( substr($str, $pos, 1) ne '{' ) {
+    if ( $str->[$pos] ne '{' ) {
         return
     }
     $pos++;
@@ -40,7 +40,7 @@ sub block {
     my $capture = Perlito5::Match::flat($m);
     $m = Perlito5::Grammar::Space::opt_ws($str, $pos);
     $pos = $m->{to};
-    if ( substr($str, $pos, 1) ne '}' ) {
+    if ( $str->[$pos] ne '}' ) {
         Perlito5::Compiler::error "syntax error";
     }
     $m->{to} = $pos + 1;
@@ -328,7 +328,7 @@ sub named_sub {
     my $pos = $_[1];
 
     return
-        unless substr($str, $pos, 3) eq 'sub';
+        unless $str->[$pos] eq 's' && $str->[$pos+1] eq 'u' && $str->[$pos+2] eq 'b';
     my $ws = Perlito5::Grammar::Space::ws( $str, $pos + 3 );
     return
         unless $ws;

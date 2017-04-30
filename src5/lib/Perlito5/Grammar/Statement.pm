@@ -132,10 +132,12 @@ token stmt_package {
 sub exp_stmt {
     my $str = $_[0];
     my $pos = $_[1];
+    my $tok = join( "", @{$str}[ $pos .. $pos + 15 ] );
+
     for my $len ( @Statement_chars ) {
-        my $term = substr($str, $pos, $len);
+        my $term = substr($tok, 0, $len);
         if (exists($Statement{$term})) {
-            my $m = $Statement{$term}->($str, $pos);
+            my $m = $Statement{$term}->($_[0], $pos);
             return $m if $m;
         }
     }
@@ -158,11 +160,13 @@ my %Modifier = (
 sub statement_modifier {
     my $str = $_[0];
     my $pos = $_[1];
+    my $tok = join( "", @{$str}[ $pos .. $pos + 15 ] );
+
     my $expression = $_[2]; 
     for my $len ( @Modifier_chars ) {
-        my $term = substr($str, $pos, $len);
+        my $term = substr($tok, 0, $len);
         if (exists($Modifier{$term})) {
-            my $m = modifier($str, $pos + $len, $term, $expression);
+            my $m = modifier($_[0], $pos + $len, $term, $expression);
             return $m if $m;
         }
     }
@@ -172,6 +176,7 @@ sub statement_modifier {
 sub modifier {
     my $str = $_[0];
     my $pos = $_[1];
+
     my $modifier = $_[2];
     my $expression = $_[3]; 
 
@@ -294,7 +299,7 @@ sub statement_parse_inner {
     }
 
     # did we just see a label?
-    if (  substr($str, $res->{to}, 1) eq ':'
+    if (  $str->[$res->{to}] eq ':'
        && $res->{capture}->isa('Perlito5::AST::Apply')
        && $res->{capture}{bareword}
        )
@@ -321,7 +326,7 @@ sub statement_parse_inner {
     my $modifier = statement_modifier($str, $res->{to}, Perlito5::Match::flat($res));
 
     my $p = $modifier ? $modifier->{to} : $res->{to};
-    my $terminator = substr($str, $p, 1);
+    my $terminator = $str->[$p];
     if (   $terminator ne ';'
         && $terminator ne '}'
         && $terminator ne '' )

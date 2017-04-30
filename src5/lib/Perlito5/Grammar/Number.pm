@@ -23,11 +23,13 @@ Perlito5::Grammar::Precedence::add_term( $_  => \&term_digit )
 
 
 sub digit {
-    substr( $_[0], $_[1], 1 ) =~ m/\d/
+    my $str = $_[0];
+    my $pos = $_[1];
+    $str->[$pos] ge '0' && $str->[$pos] le '9'
     ? {
-        str  => $_[0],
-        from => $_[1],
-        to   => $_[1] + 1,
+        str  => $str,
+        from => $pos,
+        to   => $pos + 1,
       }
     : 0;
 }

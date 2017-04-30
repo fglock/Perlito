@@ -25,6 +25,7 @@ token term_token {
                 '); ' .
                 '$tmp ? $MATCH : 0; '
             . '}';
+        $source = [ split //, $source ];
         my $ast = Perlito5::Grammar::Block::named_sub_def( $source, 0 );
         $MATCH->{capture} = [ 'term', Perlito5::Match::flat($ast) ];
     }

@@ -7,16 +7,25 @@ sub new { my $class = shift; bless {@_}, $class }
 sub constant {
     my $str = shift;
     my $len = length $str;
-    if ($str eq '\\') {
-        $str = '\\\\';
-    }
-    if ($str eq '\'') {
-        $str = '\\\'';
-    }
     if ( $len ) {
-        '( \'' . $str . '\' eq substr( $str, $MATCH->{to}, ' . $len . ') ' .
-        '&& ( $MATCH->{to} = ' . $len . ' + $MATCH->{to} )' .
-        ')';
+        my @cond;
+        my $i = 0;
+        for my $char (split(//, $str)) {
+            if ($char eq '\\') {
+                $char = '\\\\';
+            }
+            if ($char eq '\'') {
+                $char = '\\\'';
+            }
+            push @cond, '(\'' . $char . '\' eq $str->[$MATCH->{to} + ' . $i . '])';
+            $i++;
+        }
+        return '('
+        . join ( ' && ',
+                 @cond,
+                 '($MATCH->{to} += ' . $len . ')'
+          )
+        . ')';
     }
     else {
         return '1'
@@ -217,8 +226,8 @@ sub new { my $class = shift; bless {@_}, $class }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '( \'\' ne substr( $str, $MATCH->{to}, 1 ) ' .
-    '&& ($MATCH->{to} = 1 + $MATCH->{to})' .
+    '(\'\' ne $str->[$MATCH->{to}] ' .
+    '&& ++$MATCH->{to}' .
     ')';
 }
 sub set_captures_to_array {

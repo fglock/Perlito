@@ -52,7 +52,7 @@ sub term_bareword {
     }
     $p = $m_name->{to};
 
-    if ( substr( $str, $p, 2) eq '::' ) {
+    if ( $str->[$p] eq ':' && $str->[$p+1] eq ':' ) {
         # ::X::y::
         $m_name->{to} = $p + 2;
         $m_name->{capture} = [ 'term', 
@@ -77,7 +77,8 @@ sub term_bareword {
         $p = $m->{to};
     }
 
-    if ( substr( $str, $p, 2) eq '!=' || substr( $str, $p, 2) eq '!~' ) {
+    if ( $str->[$p] eq '!' && ( $str->[$p+1] eq '=' || $str->[$p+1] eq '~' ) ) {
+        # != or !~
         # "X::y != ..."  subroutine call
         $m_name->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
@@ -123,7 +124,7 @@ sub term_bareword {
                                      name  => '',
                                      namespace => $package,
                                  );
-            if ( substr( $str, $invocant->{to}, 2) eq '::' ) {
+            if ( $str->[$invocant->{to}] eq ':' && $str->[$invocant->{to}+1] eq ':' ) {
                 # ::X::y::
                 $invocant->{to} = $invocant->{to} + 2;
             }
@@ -152,9 +153,10 @@ sub term_bareword {
         my $arg = [];
         $m = Perlito5::Grammar::Space::ws( $str, $p );
         $p = $m->{to} if $m;
-        if ( substr($str, $p, 2) eq '->' ) {
+        if ( $str->[$p] eq '-' && $str->[$p+1] eq '>' ) {
+            # ->
         }
-        elsif ( substr($str, $p, 1) eq '(' ) {
+        elsif ( $str->[$p] eq '(' ) {
             my $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
             if ( $m ) {
                 $arg = $m->{capture}[2];
@@ -181,7 +183,8 @@ sub term_bareword {
         return $m_name;
     }
 
-    if ( substr( $str, $p, 2 ) eq '=>' ) {
+    if ( $str->[$p] eq '=' && $str->[$p+1] eq '>' ) {
+        # =>
         # autoquote bareword
         $m_name->{capture} = [ 'term', 
                     Perlito5::AST::Apply->new(
@@ -194,7 +197,8 @@ sub term_bareword {
         $m_name->{to} = $p;
         return $m_name;
     }
-    if ( substr( $str, $p, 2 ) eq '->' ) {
+    if ( $str->[$p] eq '-' && $str->[$p+1] eq '>' ) {
+        # ->
         if ( $is_subroutine_name ) {
             # call()->method call
             $m_name->{capture} = [ 'term', 
@@ -306,7 +310,7 @@ sub term_bareword {
         if ($sig_part eq '&') {
             $m = Perlito5::Grammar::Space::ws( $str, $p );
             $p = $m->{to} if $m;
-            if ( substr($str, $p, 1) ne '(' ) {
+            if ( $str->[$p] ne '(' ) {
                 $sig = substr($sig, 1);
                 $m = Perlito5::Grammar::Bareword::prototype_is_ampersand( $str, $p );
                 $capture = $m->{capture} if $m;
@@ -320,7 +324,7 @@ sub term_bareword {
             }
         }
 
-        if ( substr($sig, 0, 1) eq ';' && substr($str, $p, 2) eq '//' ) {
+        if ( substr($sig, 0, 1) eq ';' && $str->[$p] eq '/' && $str->[$p+1] eq '/' ) {
             # argument is optional - shift(), pop() followed by //
             #
             # special case - see test t5/01-perlito/25-syntax-defined-or.t
@@ -340,15 +344,15 @@ sub term_bareword {
 
         if ( $sig eq '' ) {
             # empty sig - we allow (), but only if it is empty
-            if ( substr($str, $p, 1) eq '(' ) {
+            if ( $str->[$p] eq '(' ) {
                 $p++;
                 $has_paren = 1;
                 my $m = Perlito5::Grammar::Space::ws( $str, $p );
                 if ($m) {
                     $p = $m->{to}
                 }
-                if ( substr($str, $p, 1) ne ')' ) {
-                    Perlito5::Compiler::error( "syntax error near ", substr( $str, $pos, 10 ));
+                if ( $str->[$p] ne ')' ) {
+                    Perlito5::Compiler::error( "syntax error near ", join("", @{$str}[ $pos .. $pos + 10 ] ));
                 }
                 $p++;
             }
@@ -445,7 +449,7 @@ sub term_bareword {
         if ( $sig eq '_' || $sig eq '$' || $sig eq '+' || $sig eq ';$' ) {
             my $m;
             my $arg;
-            if ( substr($str, $p, 1) eq '(' ) {
+            if ( $str->[$p] eq '(' ) {
                 $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
                 if ( !$m ) { return $m };
                 $p = $m->{to};
@@ -500,7 +504,7 @@ sub term_bareword {
         }
 
         if ( $sig eq ';@' || $sig eq '@' ) {
-            if ( substr($str, $p, 1) eq '(' ) {
+            if ( $str->[$p] eq '(' ) {
                 $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
                 $has_paren = 1;
                 my $arg = $m->{capture}[2];
@@ -543,7 +547,7 @@ sub term_bareword {
 
     # maybe it's a subroutine call
 
-    if ( substr($str, $p, 1) eq '(' ) {
+    if ( $str->[$p] eq '(' ) {
         $m = Perlito5::Grammar::Expression::term_paren( $str, $p );
         if ( !$m ) { return $m };
         my $arg = $m->{capture}[2];
