@@ -343,13 +343,13 @@ sub find_state_expr {
     for my $branch (qw(stmts arguments)) {
         if (exists $node->{$branch} && ref $node->{$branch} eq 'ARRAY'){
             for (0..$#{$node->{$branch}}) {
-                my ($retnode, @retrules) = find_state_expr(
+                my ($retnode, @retrules) = @{ $node->{_find_state_expr} //= [ find_state_expr(
                     $node->{$branch}[$_],
                     # The rules are the rules to reach $node
                     # plus the rules to reach $node->{$branch}{$_}
                     # from $node.
                     @rules, [Lookup => $branch], [Index => $_]
-                );
+                ) ] };
                 if ($retnode) {
                     return ($retnode, @retrules);
                 }
