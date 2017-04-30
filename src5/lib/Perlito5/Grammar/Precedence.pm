@@ -44,6 +44,7 @@ sub is_num {
 sub is_ident_middle {
     my $c = shift;
        ($c ge 'a' && $c le 'z')
+    || ($c ge 'A' && $c le 'Z')
     || ($c ge '0' && $c le '9')
     || ($c eq '_')
 }
