@@ -3931,7 +3931,8 @@ use feature 'say';
         my $balanced = $open_delimiter && exists($pair{$open_delimiter});
         my @args;
         my $buf = '';
-        while ($p < @{$str} && join('', @{$str}[$p .. $p + length($delimiter) - 1]) ne $delimiter) {
+        my $d1 = substr($delimiter, 0, 1);
+        while ($p < @{$str} && !($str->[$p] eq $d1 && join('', @{$str}[$p .. $p + length($delimiter) - 1]) eq $delimiter)) {
             my $c = $str->[$p];
             my $c2 = $str->[$p + 1];
             my $m;

@@ -493,8 +493,12 @@ sub string_interpolation_parse {
 
     my @args;
     my $buf = '';
+    my $d1 = substr($delimiter, 0, 1);
+
     while (  $p < @$str
-          && join('', @{$str}[ $p .. $p + length($delimiter) - 1]) ne $delimiter
+          && ! (  $str->[$p] eq $d1
+               && join('', @{$str}[ $p .. $p + length($delimiter) - 1]) eq $delimiter
+               )
           )
     {
         my $c = $str->[$p];
