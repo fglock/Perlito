@@ -2,6 +2,7 @@
 package Perlito5::Grammar::Precedence;
 
 use feature 'say';
+use strict;
 
 # Perlito5::Grammar::Precedence attributes:
 #   get_token - code ref
@@ -77,13 +78,14 @@ sub op_parse {
     my $str  = shift;
     my $pos  = shift;
     my $last_is_term = shift;
-    my $tok = join( "", @{$str}[ $pos .. $pos + 15 ] );
+
+    my $tok = join( "", @{$str}[ $pos .. $pos + 10 ] );
 
     for my $len ( @$End_token_chars ) {
         my $term = substr($tok, 0, $len);
         if (exists($End_token->{$term})) {
-            my $c1 = substr($tok, $len - 1, 1);
-            my $c2 = substr($tok, $len, 1);
+            my $c1 = $str->[$pos + $len - 1];
+            my $c2 = $str->[$pos + $len];
             if (  !(is_ident_middle($c1) && is_ident_middle($c2) )
                && !($c1 eq '<' && $c2 eq '<')
                )
@@ -104,8 +106,8 @@ sub op_parse {
         for my $len ( @Term_chars ) {
             my $term = substr($tok, 0, $len);
             if (exists($Term{$term})) {
-                my $c1 = substr($tok, $len - 1, 1);
-                my $c2 = substr($tok, $len, 1);
+                my $c1 = $str->[$pos + $len - 1];
+                my $c2 = $str->[$pos + $len];
                 if ( is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2) ) {
                     my $m = $Term{$term}->($str, $pos);
                     return $m if $m;
@@ -126,8 +128,8 @@ sub op_parse {
     for my $len ( @Op_chars ) {
         my $op = substr($tok, 0, $len);
         if (exists($Op{$op})) {
-            my $c1 = substr($tok, $len - 1, 1);
-            my $c2 = substr($tok, $len, 1);
+            my $c1 = $str->[$pos + $len - 1];
+            my $c2 = $str->[$pos + $len];
             if (   (  !(is_ident_middle($c1) && is_ident_middle($c2))   # "and" can't be followed by "_"
                    && !($c1 eq '&' && $c2 eq '&')                       # "&" can't be followed by "&"
                    ) 

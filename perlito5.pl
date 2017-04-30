@@ -111,12 +111,12 @@ use feature 'say';
         my $str = shift;
         my $pos = shift;
         my $last_is_term = shift;
-        my $tok = join('', @{$str}[$pos .. $pos + 15]);
+        my $tok = join('', @{$str}[$pos .. $pos + 10]);
         for my $len (@{$End_token_chars}) {
             my $term = substr($tok, 0, $len);
             if (exists($End_token->{$term})) {
-                my $c1 = substr($tok, $len - 1, 1);
-                my $c2 = substr($tok, $len, 1);
+                my $c1 = $str->[$pos + $len - 1];
+                my $c2 = $str->[$pos + $len];
                 if (!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '<' && $c2 eq '<')) {;
                     return {'str' => $str, 'from' => $pos, 'to' => $pos, 'capture' => ['end', $term]}
                 }
@@ -126,8 +126,8 @@ use feature 'say';
             for my $len (@Term_chars) {
                 my $term = substr($tok, 0, $len);
                 if (exists($Term{$term})) {
-                    my $c1 = substr($tok, $len - 1, 1);
-                    my $c2 = substr($tok, $len, 1);
+                    my $c1 = $str->[$pos + $len - 1];
+                    my $c2 = $str->[$pos + $len];
                     if (is_num($c1) || !is_ident_middle($c1) || !is_ident_middle($c2)) {
                         my $m = $Term{$term}->($str, $pos);
                         $m && return $m
@@ -145,8 +145,8 @@ use feature 'say';
         for my $len (@Op_chars) {
             my $op = substr($tok, 0, $len);
             if (exists($Op{$op})) {
-                my $c1 = substr($tok, $len - 1, 1);
-                my $c2 = substr($tok, $len, 1);
+                my $c1 = $str->[$pos + $len - 1];
+                my $c2 = $str->[$pos + $len];
                 if ((!(is_ident_middle($c1) && is_ident_middle($c2)) && !($c1 eq '&' && $c2 eq '&')) || ($c1 eq 'x' && $c2 ge 0 && $c2 le 9)) {
                     if (exists($Operator->{'infix'}->{$op}) && !exists($Operator->{'prefix'}->{$op}) && !$last_is_term) {}
                     else {;
